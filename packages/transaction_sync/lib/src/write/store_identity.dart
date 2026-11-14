@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+
 import '../domain/wallet_catalog_port.dart';
 
 /// Only a digest is persisted: confidential descriptors include blinding keys.

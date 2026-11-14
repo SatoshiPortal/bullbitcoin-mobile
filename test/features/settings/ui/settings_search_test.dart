@@ -223,9 +223,8 @@ void main() {
     });
 
     test('testnet credentials is not marked as a superuser item', () {
-      final credentials = _englishItems(
-        isDevModeEnabled: true,
-      ).byId(SettingsItemId.testnetCredentials);
+      final credentials = _englishItems(isDevModeEnabled: true)
+          .byId(SettingsItemId.testnetCredentials);
 
       expect(credentials.isSuperuser, isFalse);
     });

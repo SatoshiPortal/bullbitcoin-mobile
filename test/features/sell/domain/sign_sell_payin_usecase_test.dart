@@ -31,12 +31,10 @@ void main() {
 
   group('bitcoin', () {
     test('returns the signed psbt with its vsize', () async {
-      when(
-        () => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => 'signed-psbt');
-      when(
-        () => bitcoin.getTxSize(psbt: any(named: 'psbt')),
-      ).thenAnswer((_) async => 110);
+      when(() => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => 'signed-psbt');
+      when(() => bitcoin.getTxSize(psbt: any(named: 'psbt')))
+          .thenAnswer((_) async => 110);
 
       final result = await usecase.bitcoin(
         psbt: 'unsigned',
@@ -52,9 +50,8 @@ void main() {
     test(
       'sanitizes a signing error, keeping the reason for logs only',
       () async {
-        when(
-          () => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')),
-        ).thenThrow(Exception(_rawReason));
+        when(() => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')))
+            .thenThrow(Exception(_rawReason));
 
         final result = await usecase.bitcoin(
           psbt: 'unsigned',

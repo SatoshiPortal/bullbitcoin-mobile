@@ -35,7 +35,7 @@ class MempoolServerStorageDatasource {
     MempoolServerNetwork network,
   ) async {
     try {
-      return _fetchServerByNetwork(network, isCustom: true);
+      return await _fetchServerByNetwork(network, isCustom: true);
     } catch (_) {
       return null;
     }

@@ -24,9 +24,9 @@ void main() {
   setUpAll(() async {
     final loader = FontLoader('Golos')
       ..addFont(
-        File(
-          '../../assets/fonts/GolosText.ttf',
-        ).readAsBytes().then(ByteData.sublistView),
+        File('../../assets/fonts/GolosText.ttf')
+            .readAsBytes()
+            .then(ByteData.sublistView),
       );
     await loader.load();
   });

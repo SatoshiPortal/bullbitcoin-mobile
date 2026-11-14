@@ -46,25 +46,21 @@ void main() {
       final labels = _Labels();
       when(() => metadata.fetch(id)).thenAnswer((_) async => row);
       when(() => native.issuedReceiveIndex(row)).thenAnswer((_) async => 7);
-      when(
-        () => liquid.getLastUnusedAddressIndex(wallet: any(named: 'wallet')),
-      ).thenAnswer((_) async => 0);
-      when(
-        () => liquid.getAddressByIndex(any(), wallet: any(named: 'wallet')),
-      ).thenAnswer((call) async {
-        final index = call.positionalArguments.first as int;
-        return (
-          standard: 'standard$index',
-          confidential: 'confidential$index',
-          index: index,
-        );
-      });
-      when(
-        () => liquid.getTransactions(wallet: any(named: 'wallet')),
-      ).thenAnswer((_) async => []);
-      when(
-        () => liquid.getAddressBalancesSat(wallet: any(named: 'wallet')),
-      ).thenAnswer((_) async => {});
+      when(() => liquid.getLastUnusedAddressIndex(wallet: any(named: 'wallet')))
+          .thenAnswer((_) async => 0);
+      when(() => liquid.getAddressByIndex(any(), wallet: any(named: 'wallet')))
+          .thenAnswer((call) async {
+            final index = call.positionalArguments.first as int;
+            return (
+              standard: 'standard$index',
+              confidential: 'confidential$index',
+              index: index,
+            );
+          });
+      when(() => liquid.getTransactions(wallet: any(named: 'wallet')))
+          .thenAnswer((_) async => []);
+      when(() => liquid.getAddressBalancesSat(wallet: any(named: 'wallet')))
+          .thenAnswer((_) async => {});
       when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
       final repository = WalletAddressRepository(
         native: native,

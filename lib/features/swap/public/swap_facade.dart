@@ -27,6 +27,7 @@ export '../domain/swap_sync_port.dart';
 export '../domain/usecases/restore_swaps_usecase.dart';
 export '../domain/usecases/rescue_swap_usecase.dart';
 export '../presentation/swap_failure_l10n.dart';
+
 export 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 export 'package:bb_mobile/features/swap/domain/entities/order_swap_quote.dart';

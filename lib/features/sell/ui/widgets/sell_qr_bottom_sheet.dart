@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullText, Gap;
 
 class SellQrBottomSheet extends StatelessWidget {

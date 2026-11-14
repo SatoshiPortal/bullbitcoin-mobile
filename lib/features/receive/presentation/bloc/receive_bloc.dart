@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dar
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, NetworkCapabilities, NetworkCapability, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';

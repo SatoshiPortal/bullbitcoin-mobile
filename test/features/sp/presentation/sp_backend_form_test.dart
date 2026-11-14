@@ -208,18 +208,16 @@ void main() {
     });
 
     test('failFetching leaves the fetching state and holds the failure', () {
-      final form = const SpBackendForm(
-        isFetchingDefaults: true,
-      ).failFetching(const SpBackendUnreachable('blindbit down'));
+      final form = const SpBackendForm(isFetchingDefaults: true)
+          .failFetching(const SpBackendUnreachable('blindbit down'));
 
       expect(form.isFetchingDefaults, isFalse);
       expect(form.error, isA<SpBackendUnreachable>());
     });
 
     test('startFetching enters the fetching state and clears the error', () {
-      final form = const SpBackendForm(
-        error: SpUnexpected('stale'),
-      ).startFetching();
+      final form = const SpBackendForm(error: SpUnexpected('stale'))
+          .startFetching();
 
       expect(form.isFetchingDefaults, isTrue);
       expect(form.error, isNull);

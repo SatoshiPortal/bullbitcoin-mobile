@@ -1,9 +1,13 @@
 import 'dart:async';
+
 import 'package:bull_logger/bull_logger.dart';
+
 import '../domain/settings_failure.dart';
+
 import 'package:background_tasks/background_tasks.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
+
 import '../domain/repositories/background_preferences_repository.dart';
 
 final class BackgroundPreferencesRepositoryImpl

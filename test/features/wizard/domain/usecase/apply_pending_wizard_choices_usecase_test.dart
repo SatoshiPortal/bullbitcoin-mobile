@@ -33,18 +33,14 @@ void main() {
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.savePending(any())).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
-    when(
-      () => settings.setLanguage(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setThemeMode(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setCurrency(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setErrorReportingEnabled(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => settings.setLanguage(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setThemeMode(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setErrorReportingEnabled(any()))
+        .thenAnswer((_) async => const Ok(null));
   });
 
   test('short-circuits when nothing is staged', () async {
@@ -139,9 +135,8 @@ void main() {
         touched: {WizardField.defaultCurrency},
       ),
     );
-    when(
-      () => settings.setCurrency(any()),
-    ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
 
     await usecase.execute();
 

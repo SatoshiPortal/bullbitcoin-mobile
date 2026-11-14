@@ -40,9 +40,8 @@ void main() {
     cancelAll = MockCancelAllLimitOrdersUsecase();
     notifications = MockExchangeNotificationService();
     notificationStream = StreamController<NotificationMessage>.broadcast();
-    when(
-      () => notifications.messageStream,
-    ).thenAnswer((_) => notificationStream.stream);
+    when(() => notifications.messageStream)
+        .thenAnswer((_) => notificationStream.stream);
   });
 
   tearDown(() => notificationStream.close());
@@ -75,9 +74,9 @@ void main() {
 
   blocTest<LimitOrdersCubit, LimitOrdersState>(
     'stores a load failure without dropping the loading flag',
-    setUp: () => when(
-      () => listActive.execute(),
-    ).thenAnswer((_) async => const Err(LimitOrdersLoadFailure('list'))),
+    setUp: () =>
+        when(() => listActive.execute())
+            .thenAnswer((_) async => const Err(LimitOrdersLoadFailure('list'))),
     build: buildCubit,
     act: (cubit) => cubit.load(),
     verify: (cubit) {

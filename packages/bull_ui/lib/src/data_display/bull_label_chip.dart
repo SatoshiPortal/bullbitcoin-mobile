@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A generic label chip. **Re-implemented** in `bull_ui` (not imported from
 /// `features/labels`, which a package may never depend on — acyclic rule).

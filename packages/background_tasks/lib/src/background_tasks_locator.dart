@@ -36,8 +36,9 @@ final class BackgroundTaskResources {
   }
 }
 
-typedef BackgroundTaskSetup =
-    Future<BackgroundTaskHandler> Function(BackgroundTaskResources resources);
+typedef BackgroundTaskSetup = Future<BackgroundTaskHandler> Function(
+  BackgroundTaskResources resources,
+);
 
 /// Selects one setup before constructing anything. Factories must open only their task's capabilities and register each owned resource for cleanup. Wallet factories must check the app schema before opening its database.
 final class BackgroundTasksLocator {

@@ -15,9 +15,8 @@ void main() {
   Future<Result<bool, FundExchangeFailure>> run(
     Result<ConfidentialSepaAvailability, RecipientsFailure> availability,
   ) {
-    when(
-      () => facade.getConfidentialSepaAvailability(),
-    ).thenAnswer((_) async => availability);
+    when(() => facade.getConfidentialSepaAvailability())
+        .thenAnswer((_) async => availability);
     return GetConfidentialSepaFundingAvailabilityUsecase(facade).execute();
   }
 

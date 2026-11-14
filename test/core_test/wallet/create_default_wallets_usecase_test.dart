@@ -30,9 +30,9 @@ void main() {
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
     secrets = s.Secrets(scratchDirectory: () async => '/tmp');
-    stored =
-        (await secrets.import(words: words) as Ok<s.Secret, s.SecretFailure>)
-            .value;
+    stored = (await secrets.import(
+      words: words,
+    ) as Ok<s.Secret, s.SecretFailure>).value;
     registerFallbackValue(stored);
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
@@ -206,10 +206,9 @@ void main() {
     storage.entries['seed_3442193e'] =
         '{"bytes":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],'
         '"runtimeType":"bytes"}';
-    final seedOnly =
-        (await secrets.fetch(Fingerprint('3442193e'))
-                as Ok<s.Secret, s.SecretFailure>)
-            .value;
+    final seedOnly = (await secrets.fetch(
+      Fingerprint('3442193e'),
+    ) as Ok<s.Secret, s.SecretFailure>).value;
     expect(seedOnly.info.language, isNull);
     await expectLater(
       create.execute(secret: seedOnly),
@@ -240,9 +239,8 @@ void main() {
         final bitcoin = _Wallet();
         final liquid = _Wallet();
         when(() => bitcoin.id).thenReturn('bitcoin');
-        when(
-          () => wallets.deleteWallet(walletId: 'bitcoin'),
-        ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
+        when(() => wallets.deleteWallet(walletId: 'bitcoin'))
+            .thenAnswer((_) async => const Ok<void, WalletFailure>(null));
         when(
           () => wallets.createWallet(
             secret: any(named: 'secret'),
@@ -361,10 +359,10 @@ void main() {
   test(
     'a supplied passphrase secret is refused before wallet access',
     () async {
-      final protected =
-          (await secrets.import(words: words, passphrase: 'test passphrase')
-                  as Ok<s.Secret, s.SecretFailure>)
-              .value;
+      final protected = (await secrets.import(
+        words: words,
+        passphrase: 'test passphrase',
+      ) as Ok<s.Secret, s.SecretFailure>).value;
       final persisted = Map<String, String>.of(storage.entries);
 
       await expectLater(

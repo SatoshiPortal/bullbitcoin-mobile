@@ -51,20 +51,18 @@ void main() {
       ];
       when(metadata.fetchAll).thenAnswer((_) async => rows);
       registerFallbackValue(WalletModel.fromMetadata(rows.first));
-      when(
-        () => bdk.getBalance(wallet: any(named: 'wallet')),
-      ).thenThrow(StateError('not initialized'));
+      when(() => bdk.getBalance(wallet: any(named: 'wallet')))
+          .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
-        synchronize:
-            (
-              _, {
-              discover = false,
-              allowInitialScan = true,
-              reason = SyncReason.auto,
-            }) async {},
+        synchronize: (
+          _, {
+          discover = false,
+          allowInitialScan = true,
+          reason = SyncReason.auto,
+        }) async {},
         isSyncing: ({walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
@@ -98,13 +96,12 @@ void main() {
           walletMetadataDatasource: metadata,
           bdkWalletDatasource: bdk,
           lwkWalletDatasource: lwk,
-          synchronize:
-              (
-                _, {
-                discover = false,
-                allowInitialScan = true,
-                reason = SyncReason.auto,
-              }) async {},
+          synchronize: (
+            _, {
+            discover = false,
+            allowInitialScan = true,
+            reason = SyncReason.auto,
+          }) async {},
           isSyncing: ({walletId}) => false,
           syncStarted: const Stream.empty(),
           syncFinished: const Stream.empty(),
@@ -114,9 +111,8 @@ void main() {
           Fingerprint('73c5da0a'),
         );
         expect(result.fold((value) => value, (_) => false), true);
-        when(
-          metadata.fetchAll,
-        ).thenAnswer((_) async => [row.copyWith(signer: Signer.none)]);
+        when(metadata.fetchAll)
+            .thenAnswer((_) async => [row.copyWith(signer: Signer.none)]);
         final watchOnly = await repository.hasSecretReference(
           Fingerprint('73c5da0a'),
         );

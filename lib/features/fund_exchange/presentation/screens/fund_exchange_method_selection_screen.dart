@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_method_list_tile.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_restricted_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullFadingLinearProgress, BullShimmerBox, BullShimmerLine, Gap;

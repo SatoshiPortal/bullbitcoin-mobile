@@ -20,9 +20,10 @@ jobs:
     permissions:
       contents: read
     env:
-      RUST_VERSION: 1.95.0
-      BDK_RUST_VERSION: 1.85.1
-      RUSTUP_TOOLCHAIN: 1.95.0
+      RUST_VERSION: 1.100.0
+      BDK_RUST_VERSION: 1.100.0
+      PAYJOIN_RUST_VERSION: 1.85.1
+      RUSTUP_TOOLCHAIN: 1.100.0
       RUSTUP_AUTO_INSTALL: 0
       CARGO_NET_GIT_FETCH_WITH_CLI: true
       CARGO_INCREMENTAL: 0
@@ -131,56 +132,21 @@ jobs:
         run: |
           rustup toolchain install "$RUST_VERSION" --profile minimal
           rustup component add --toolchain "$RUST_VERSION" clippy rustfmt
-          rustup target add --toolchain "$RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim
+          rustup target add --toolchain "$RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
           rustup toolchain install "$BDK_RUST_VERSION" --profile minimal
           rustup component add --toolchain "$BDK_RUST_VERSION" clippy rustfmt
-          rustup target add --toolchain "$BDK_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim
+          rustup target add --toolchain "$BDK_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 
-          # Cargokit requests `rustup run stable` directly, which otherwise
-          # bypasses RUSTUP_TOOLCHAIN and floats every six weeks. bdk_dart's
-          # explicit 1.85.1 request passes through unchanged. Any bare
-          # `stable` argument is rewritten, wherever it sits in argv.
-          # The image ships two rustups — /opt/homebrew/bin and ~/.cargo/bin —
-          # and Xcode build phases resolve their own PATH. Wrapping only the
-          # first one on this step's PATH left cargokit reaching the other:
-          # `stable` stayed floating (it pulled 1.97.1) and the mutex was
-          # bypassed, which is why serializing appeared to change nothing.
-          # Collect the list before touching anything, since moving a binary
-          # changes what a later lookup resolves to.
-          rustup_paths="$(type -a -p rustup | sort -u)
-          $HOME/.cargo/bin/rustup"
-          wrapped=0
-          for rustup_path in $rustup_paths; do
-            case "$rustup_path" in *.real) continue;; esac
-            [ -x "$rustup_path" ] || continue
-            [ -e "$rustup_path.real" ] && continue
-            mv "$rustup_path" "$rustup_path.real"
-            cat > "$rustup_path" <<EOF
-          #!/bin/bash
-          args=()
-          for arg in "\$@"; do
-            [ "\$arg" = "stable" ] && arg="$RUST_VERSION"
-            args+=("\$arg")
-          done
-          exec "\$(dirname "\$0")/rustup.real" "\${args[@]}"
-          EOF
-            chmod +x "$rustup_path"
-            wrapped=$((wrapped + 1))
-          done
+          # Official hosted Payjoin explicitly selects this upstream compiler.
+          rustup toolchain install "$PAYJOIN_RUST_VERSION" --profile minimal
+          rustup component add --toolchain "$PAYJOIN_RUST_VERSION" clippy rustfmt
+          rustup target add --toolchain "$PAYJOIN_RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
+          rustup run "$PAYJOIN_RUST_VERSION" rustc --version | grep -F "rustc $PAYJOIN_RUST_VERSION"
 
-          if [ "$wrapped" -lt 2 ]; then
-            echo "::error::Wrapped $wrapped rustup binaries, expected at least 2. The runner image layout changed; check which rustup the Xcode build phases resolve before trusting the version pin."
-            exit 1
-          fi
-
-          # Assert the pin through every wrapper, not just the one on this PATH.
-          for rustup_path in $rustup_paths; do
-            case "$rustup_path" in *.real) continue;; esac
-            [ -x "$rustup_path" ] || continue
-            "$rustup_path" run stable rustc --version | grep -F "rustc $RUST_VERSION"
-          done
+          rustup run "$RUST_VERSION" rustc --version | grep -F "rustc $RUST_VERSION"
           rustup run "$BDK_RUST_VERSION" rustc --version | grep -F "rustc $BDK_RUST_VERSION"
+          echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
 
       - name: Install Flutter and generate sources
         run: |

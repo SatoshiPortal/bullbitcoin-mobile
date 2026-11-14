@@ -45,9 +45,8 @@ void main() {
 
   test('wraps each event in Ok', () async {
     const wallet = 'wallet-id';
-    when(
-      () => watchStarted.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) => Stream.value(wallet));
+    when(() => watchStarted.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) => Stream.value(wallet));
 
     final events = await usecase.started().toList();
 
@@ -59,15 +58,14 @@ void main() {
     // The regression this guards: an `await for` would rethrow and kill the
     // subscription, so one hiccup froze the sync indicator permanently.
     const wallet = 'wallet-id';
-    when(
-      () => watchStarted.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) => Stream<String>.multi((controller) {
-        controller.addError(Exception('electrum read timed out'));
-        controller.add(wallet);
-        controller.close();
-      }),
-    );
+    when(() => watchStarted.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) => Stream<String>.multi((controller) {
+            controller.addError(Exception('electrum read timed out'));
+            controller.add(wallet);
+            controller.close();
+          }),
+        );
 
     final events = await usecase.started().toList();
 
@@ -78,9 +76,8 @@ void main() {
   });
 
   test('a throw on subscribe becomes a single Err event', () async {
-    when(
-      () => watchFinished.execute(walletId: any(named: 'walletId')),
-    ).thenThrow(StateError('stream controller already closed'));
+    when(() => watchFinished.execute(walletId: any(named: 'walletId')))
+        .thenThrow(StateError('stream controller already closed'));
 
     final events = await usecase.finished().toList();
 

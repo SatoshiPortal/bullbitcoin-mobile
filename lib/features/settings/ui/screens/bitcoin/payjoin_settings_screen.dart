@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch, Gap;

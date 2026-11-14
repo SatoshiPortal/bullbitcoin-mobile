@@ -5,14 +5,14 @@ version: 0.0.1
 resolution: workspace
 
 environment:
-  sdk: "3.12.2"
-  flutter: "3.44.9"
+  sdk: ">=3.14.0 <4.0.0"
+  flutter: ">=3.50.0"
 
 dependencies:
   flutter:
     sdk: flutter
   logging: ^1.2.0
-  no_screenshot: ^1.1.0
+  no_screenshot: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -23,9 +23,9 @@ void main() {
   late _MockGetSettings settings;
   late PriceChartCubit cubit;
 
-  void answer(Result<List<PricePoint>, PriceChartFailure> result) => when(
-    () => history.execute(currencyCode: any(named: 'currencyCode')),
-  ).thenAnswer((_) async => result);
+  void answer(Result<List<PricePoint>, PriceChartFailure> result) =>
+      when(() => history.execute(currencyCode: any(named: 'currencyCode')))
+          .thenAnswer((_) async => result);
 
   setUp(() {
     history = _MockGetPriceHistory();

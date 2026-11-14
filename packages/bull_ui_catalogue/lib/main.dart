@@ -1,7 +1,7 @@
 import 'package:bull_ui/bull_ui.dart'
     show BullUiLocalizations, bullUiLocalizationsDelegates;
 import 'package:bull_ui_catalogue/catalogue_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -26,11 +26,14 @@ class BullUiCatalogue extends StatelessWidget {
       // `materialAppBuilder` wraps each use-case in a nested `MaterialApp`,
       // whose Navigator trips `_history.isNotEmpty` during layout on 3.44.1.
       // The catalogue's outer app already provides MediaQuery/Directionality/
-      // Overlay, and the theme is injected by `MaterialThemeAddon` (a `Theme`
+      // Overlay, and the theme is injected by `ThemeAddon` (a `Theme`
       // widget), so the per-use-case shell only needs a `Material` ancestor —
       // no second `MaterialApp`/Navigator. Drop this once on widgetbook v4.
-      appBuilder: (context, child) =>
-          Material(type: MaterialType.transparency, child: child),
+      appBuilder: (context, child) => Localizations.override(
+        context: context,
+        delegates: const [GlobalMaterialLocalizations.delegate],
+        child: Material(type: MaterialType.transparency, child: child),
+      ),
       addons: [
         LocalizationAddon(
           locales: BullUiLocalizations.supportedLocales,
@@ -38,7 +41,9 @@ class BullUiCatalogue extends StatelessWidget {
         ),
         // Light + dark, each carrying the BullTheme extension that components
         // read via `context.bull`. This is exactly how the app wires bull_ui.
-        MaterialThemeAddon(
+        ThemeAddon<ThemeData>(
+          themeBuilder: (context, theme, child) =>
+              Theme(data: theme, child: child),
           themes: [
             WidgetbookTheme(
               name: 'Light',

@@ -24,9 +24,8 @@ void main() {
     );
     final mainnet = _Gateway();
     final testnet = _Gateway();
-    when(
-      () => mainnet.registerResponsibilityConsent(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => mainnet.registerResponsibilityConsent())
+        .thenAnswer((_) async => const Ok(null));
     final gateway = DelegatingFundingGateway(
       bullbitcoinFundingGateway: mainnet,
       bullBitcoinTestnetFundingGateway: testnet,

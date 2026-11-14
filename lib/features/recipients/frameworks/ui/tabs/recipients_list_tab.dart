@@ -13,7 +13,7 @@ import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l1
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullRefreshIndicator, BullShapesX, BullShimmerBox, Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecipientsListTab extends StatefulWidget {

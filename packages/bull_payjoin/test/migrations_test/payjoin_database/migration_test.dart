@@ -8,6 +8,7 @@ import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:test/test.dart';
+
 import 'generated/schema.dart';
 
 import 'generated/schema_v1.dart' as v1;
@@ -240,7 +241,7 @@ void main() {
 
     // Each connection runs in its own isolate, like the app's: one waiting on
     // the other's write lock cannot stall the one that has to commit.
-    final barrier = _AlterBarrier();
+    final barrier = _MigrationBarrier();
     PayjoinDatabase open() => PayjoinDatabase.forTesting(
       NativeDatabase.createInBackground(
         file,
@@ -257,7 +258,7 @@ void main() {
       evidenceByUri(second),
     ]);
 
-    // Both steps were inside the migration, about to add the column, at once.
+    // Both connections observed schema 2 before either started its migration.
     expect(barrier.arrivals, 2);
     const migrated = {
       'unfinished-with-proposal': 1,
@@ -270,26 +271,31 @@ void main() {
   });
 }
 
-/// Routes the migration's own statements through [interceptor]: drift hands
-/// `beforeOpen` the raw executor otherwise.
+/// Synchronizes after drift reads the schema, before migration takes a write lock.
 final class _MigrationUser implements QueryExecutorUser {
   final QueryExecutorUser _user;
-  final QueryInterceptor _interceptor;
+  final _MigrationBarrier _barrier;
 
-  _MigrationUser(this._user, this._interceptor);
+  _MigrationUser(this._user, this._barrier);
 
   @override
   int get schemaVersion => _user.schemaVersion;
 
   @override
-  Future<void> beforeOpen(QueryExecutor executor, OpeningDetails details) =>
-      _user.beforeOpen(executor.interceptWith(_interceptor), details);
+  Future<void> beforeOpen(
+    QueryExecutor executor,
+    OpeningDetails details,
+  ) async {
+    if (details.versionBefore == 2 && details.versionNow == 3) {
+      await _barrier.arrive();
+    }
+    await _user.beforeOpen(executor, details);
+  }
 }
 
-/// Holds every connection right before its `ALTER TABLE` until two are
-/// there, so both have decided to migrate before either adds the column.
+/// Holds connections before migration until both have observed the old schema.
 /// Fails the open instead of waiting forever when the second never arrives.
-final class _AlterBarrier extends QueryInterceptor {
+final class _MigrationBarrier extends QueryInterceptor {
   final _both = Completer<void>();
   int arrivals = 0;
 
@@ -297,18 +303,9 @@ final class _AlterBarrier extends QueryInterceptor {
   Future<bool> ensureOpen(QueryExecutor executor, QueryExecutorUser user) =>
       executor.ensureOpen(_MigrationUser(user, this));
 
-  @override
-  Future<void> runCustom(
-    QueryExecutor executor,
-    String statement,
-    List<Object?> args,
-  ) async {
-    if (statement.startsWith('ALTER TABLE') &&
-        statement.contains('has_network_evidence')) {
-      arrivals++;
-      if (arrivals == 2) _both.complete();
-      await _both.future.timeout(const Duration(seconds: 10));
-    }
-    return executor.runCustom(statement, args);
+  Future<void> arrive() async {
+    arrivals++;
+    if (arrivals == 2) _both.complete();
+    await _both.future.timeout(const Duration(seconds: 10));
   }
 }

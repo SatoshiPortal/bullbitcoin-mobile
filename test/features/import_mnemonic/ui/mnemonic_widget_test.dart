@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -39,7 +39,7 @@ Future<void> pumpWidget(
       // The passphrase field renders BullInputText, which reads the BullTheme
       // extension off the ambient ThemeData and throws without it.
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         // MnemonicWidget owns its own scroll and docks the keyboard, so it is

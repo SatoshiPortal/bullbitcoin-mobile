@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.da
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_failure_l10n.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -489,9 +489,8 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         BullText(
-                          AllSeedViewFetchFailure(
-                            failure.logMessage,
-                          ).toTranslated(context),
+                          AllSeedViewFetchFailure(failure.logMessage)
+                              .toTranslated(context),
                           style: context.font.bodyMedium,
                           color: context.appColors.error,
                         ),

@@ -65,9 +65,8 @@ void main() {
   });
 
   test('returns the balance failure when the balance read fails', () {
-    when(
-      () => balanceUsecase.execute(),
-    ).thenReturn(const Err(SpUnexpected('no session')));
+    when(() => balanceUsecase.execute())
+        .thenReturn(const Err(SpUnexpected('no session')));
     final result = usecase.execute(Sats.fromInt(999999));
     expect(failureOf(result), isA<SpUnexpected>());
   });

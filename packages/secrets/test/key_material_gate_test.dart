@@ -14,9 +14,8 @@ void main() {
 
   setUpAll(() {
     var current = Directory.current;
-    while (!File(
-      '${current.path}/packages/secrets/pubspec.yaml',
-    ).existsSync()) {
+    while (!File('${current.path}/packages/secrets/pubspec.yaml')
+        .existsSync()) {
       if (current.parent.path == current.path) {
         throw StateError('No repository');
       }

@@ -20,9 +20,8 @@ void main() {
       slow: RelativeFee(250),
       minRelay: RelativeFee(25),
     );
-    when(
-      () => fees.getNetworkFees(network: Network.bitcoinRegtest),
-    ).thenAnswer((_) async => options);
+    when(() => fees.getNetworkFees(network: Network.bitcoinRegtest))
+        .thenAnswer((_) async => options);
     final usecase = GetNetworkFeesUsecase(
       feesRepository: fees,
       settingsRepository: settings,

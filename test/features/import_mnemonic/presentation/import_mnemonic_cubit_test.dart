@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
@@ -164,48 +165,42 @@ void main() {
   }
 
   group('ImportMnemonicCubit guards', () {
-    test(
-      'updateMnemonic with empty label emits ImportMnemonicEmptyLabelFailure — no usecase called',
-      () async {
-        final cubit = buildCubit();
+    test('updateMnemonic with empty label emits ImportMnemonicEmptyLabelFailure — no usecase called', () async {
+      final cubit = buildCubit();
 
-        await cubit.updateMnemonic((
-          label: '',
-          passphrase: '',
-          words: const <String>[],
-          language: bip39.Language.english,
-        ));
+      await cubit.updateMnemonic((
+        label: '',
+        passphrase: '',
+        words: const <String>[],
+        language: bip39.Language.english,
+      ));
 
-        expect(cubit.state.failure, isA<ImportMnemonicEmptyLabelFailure>());
-        verifyNever(
-          () => checkDuplicate.execute(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        );
+      expect(cubit.state.failure, isA<ImportMnemonicEmptyLabelFailure>());
+      verifyNever(
+        () => checkDuplicate.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      );
 
-        cubit.close();
-      },
-    );
+      cubit.close();
+    });
 
-    test(
-      'import with no mnemonic set emits ImportMnemonicNullMnemonicFailure — no usecase called',
-      () async {
-        final cubit = buildCubit();
+    test('import with no mnemonic set emits ImportMnemonicNullMnemonicFailure — no usecase called', () async {
+      final cubit = buildCubit();
 
-        await cubit.import();
+      await cubit.import();
 
-        expect(cubit.state.failure, isA<ImportMnemonicNullMnemonicFailure>());
-        verifyNever(
-          () => importWallet.execute(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            label: any(named: 'label'),
-          ),
-        );
+      expect(cubit.state.failure, isA<ImportMnemonicNullMnemonicFailure>());
+      verifyNever(
+        () => importWallet.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          label: any(named: 'label'),
+        ),
+      );
 
-        cubit.close();
-      },
-    );
+      cubit.close();
+    });
 
     test('clearFailure resets failure to null', () async {
       final cubit = buildCubit();

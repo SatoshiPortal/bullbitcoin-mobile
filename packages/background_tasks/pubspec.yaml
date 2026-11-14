@@ -5,8 +5,8 @@ version: 0.1.0
 resolution: workspace
 
 environment:
-  sdk: "3.12.2"
-  flutter: "3.44.9"
+  sdk: ">=3.14.0 <4.0.0"
+  flutter: ">=3.50.0"
 
 dependencies:
   flutter:
@@ -19,7 +19,7 @@ dependencies:
   crypto: ^3.0.7
   meta: ^1.17.0
   primitives:
-  sqlite3: ^2.9.4
+  sqlite3: ^3.5.2
 
 dev_dependencies:
   shared_preferences_platform_interface: ^2.4.2

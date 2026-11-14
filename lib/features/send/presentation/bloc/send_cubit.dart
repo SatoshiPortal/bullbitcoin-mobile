@@ -15,6 +15,7 @@ import 'package:primitives/primitives.dart'
         Outpoint,
         Result,
         Sats;
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -4025,8 +4026,7 @@ class SendCubit extends Cubit<SendState>
                 payjoinSender: null,
                 step: SendStep.confirm,
                 failure: const SendTransactionConfirmationFailure(
-                  logMessage:
-                      'Payjoin expired and the transaction could not be broadcast',
+                  logMessage: 'Payjoin expired and the transaction could not be broadcast',
                   isBroadcastFailure: true,
                 ),
               ),

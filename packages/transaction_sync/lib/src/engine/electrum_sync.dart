@@ -1,7 +1,9 @@
 import '../write/lease_diagnostics.dart';
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+
 import '../write/writer_diagnostics.dart';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -386,9 +388,8 @@ Future<_Attempt> _performSync(_SyncParams params) async {
   );
   try {
     final current = await revisions.read(params.descriptor.key);
-    if (current case Ok(
-      value: final state,
-    ) when state.lifecycle == WalletLifecycle.deleted) {
+    if (current case Ok(value: final state)
+        when state.lifecycle == WalletLifecycle.deleted) {
       return (
         result: const Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncNotFoundFailure(),

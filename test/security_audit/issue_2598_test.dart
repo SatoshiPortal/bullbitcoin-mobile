@@ -9,31 +9,27 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Security audit #2598 secret material in logs', () {
-    test(
-      'redacts a mnemonic embedded in an exception from the TSV row',
-      () async {
-        final directory = await Directory.systemTemp.createTemp('issue-2598-');
-        addTearDown(() async {
-          await log.flush();
-          await directory.delete(recursive: true);
-        });
-
-        log = Logger.replace(directory: directory);
-        await log.ensureLogsExist();
-        const mnemonic =
-            'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
-
-        log.severe(
-          error: FormatException('Invalid mnemonic: $mnemonic'),
-          trace: StackTrace.current,
-        );
+    test('redacts a mnemonic embedded in an exception from the TSV row', () async {
+      final directory = await Directory.systemTemp.createTemp('issue-2598-');
+      addTearDown(() async {
         await log.flush();
+        await directory.delete(recursive: true);
+      });
 
-        final contents = await File(
-          '${directory.path}/bull_logs.tsv',
-        ).readAsString();
-        expect(contents, isNot(contains(mnemonic)));
-      },
-    );
+      log = Logger.replace(directory: directory);
+      await log.ensureLogsExist();
+      const mnemonic =
+          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+      log.severe(
+        error: FormatException('Invalid mnemonic: $mnemonic'),
+        trace: StackTrace.current,
+      );
+      await log.flush();
+
+      final contents = await File('${directory.path}/bull_logs.tsv')
+          .readAsString();
+      expect(contents, isNot(contains(mnemonic)));
+    });
   });
 }

@@ -5,17 +5,19 @@ version: 0.0.1
 resolution: workspace
 
 environment:
-  sdk: "3.12.2"
-  flutter: "3.44.9"
+  sdk: ">=3.14.0 <4.0.0"
+  flutter: ">=3.50.0"
 
 dependencies:
+  material_ui: ^1.11.0
+  cupertino_ui: ^1.1.6
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   bull_logger:
   bull_ui:
   primitives:
-  go_router: ^17.0.0
+  go_router: ^18.1.4
   get_it: ^9.1.1
   meta: ^1.17.0
   flutter_localizations:

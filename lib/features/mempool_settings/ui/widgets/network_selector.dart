@@ -2,7 +2,7 @@ import 'package:bull_ui/bull_ui.dart' show BullShapesX;
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class NetworkSelector extends StatelessWidget {
   final MempoolServerNetwork selectedNetwork;

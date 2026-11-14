@@ -7,8 +7,8 @@ import 'package:bb_mobile/features/buy/ui/screens/buy_success_screen.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -28,9 +28,8 @@ void main() {
     final settingsCubit = _MockSettingsCubit();
     final order = _MockBuyOrder();
     when(() => buyBloc.state).thenReturn(BuyState(buyOrder: order));
-    when(
-      () => buyBloc.stream,
-    ).thenAnswer((_) => const Stream<BuyState>.empty());
+    when(() => buyBloc.stream)
+        .thenAnswer((_) => const Stream<BuyState>.empty());
     when(() => settingsCubit.state).thenReturn(
       const SettingsState(
         storedSettings: SettingsEntity(
@@ -40,9 +39,8 @@ void main() {
         ),
       ),
     );
-    when(
-      () => settingsCubit.stream,
-    ).thenAnswer((_) => const Stream<SettingsState>.empty());
+    when(() => settingsCubit.stream)
+        .thenAnswer((_) => const Stream<SettingsState>.empty());
     when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
     when(() => order.orderId).thenReturn('order-42');
     when(() => order.payoutAmount).thenReturn(0.001);
@@ -79,7 +77,7 @@ void main() {
       MaterialApp.router(
         routerConfig: router,
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
       ),
     );
@@ -105,9 +103,8 @@ void main() {
       final settingsCubit = _MockSettingsCubit();
       order = _MockBuyOrder();
       when(() => buyBloc.state).thenReturn(BuyState(buyOrder: order));
-      when(
-        () => buyBloc.stream,
-      ).thenAnswer((_) => const Stream<BuyState>.empty());
+      when(() => buyBloc.stream)
+          .thenAnswer((_) => const Stream<BuyState>.empty());
       when(() => settingsCubit.state).thenReturn(
         const SettingsState(
           storedSettings: SettingsEntity(
@@ -117,9 +114,8 @@ void main() {
           ),
         ),
       );
-      when(
-        () => settingsCubit.stream,
-      ).thenAnswer((_) => const Stream<SettingsState>.empty());
+      when(() => settingsCubit.stream)
+          .thenAnswer((_) => const Stream<SettingsState>.empty());
       when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
       when(() => order.orderId).thenReturn('order-42');
       when(() => order.payoutAmount).thenReturn(0.0001);
@@ -128,15 +124,14 @@ void main() {
       when(() => order.bitcoinAddress).thenReturn(null);
       when(() => order.transactionId).thenReturn(null);
       when(() => order.scheduledPayoutTime).thenReturn(null);
-      when(
-        () => order.payjoinOutcome,
-      ).thenReturn(OrderPayjoinOutcome.inProgress);
+      when(() => order.payjoinOutcome)
+          .thenReturn(OrderPayjoinOutcome.inProgress);
       when(() => order.createdAt).thenReturn(DateTime.now().subtract(age));
 
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MultiBlocProvider(
             providers: [

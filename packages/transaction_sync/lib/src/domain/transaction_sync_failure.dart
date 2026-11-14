@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import 'wallet_revision.dart';
 
 /// Recoverable outcomes. No foreign exception, descriptor or endpoint is kept.

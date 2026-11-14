@@ -1,7 +1,9 @@
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:sqlite3/sqlite3.dart';
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:bb_mobile/features/wallet/data/wallet_payment_observer.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
@@ -85,7 +87,7 @@ void main() {
         isNotNull,
       );
     } finally {
-      database.dispose();
+      database.close();
     }
   });
 }

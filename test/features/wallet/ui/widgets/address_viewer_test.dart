@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,9 +17,8 @@ void main() {
       const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
       const url = 'https://explorer.example/address/$address';
       final urls = _Urls();
-      when(
-        () => urls.bitcoinAddress(address, isTestnet: false),
-      ).thenAnswer((_) async => url);
+      when(() => urls.bitcoinAddress(address, isTestnet: false))
+          .thenAnswer((_) async => url);
       Object? copied;
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
         SystemChannels.platform,
@@ -39,7 +38,7 @@ void main() {
           value: urls,
           child: MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: const Scaffold(body: AddressViewer(address)),
           ),
@@ -65,7 +64,7 @@ void main() {
         value: urls,
         child: MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: const Scaffold(body: AddressViewer('bcrt1qexample')),
         ),

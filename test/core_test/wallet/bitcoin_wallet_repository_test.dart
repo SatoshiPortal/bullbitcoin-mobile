@@ -4,6 +4,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
+
 // Unit tests for the repository-boundary guarantees of
 // `BitcoinWalletRepository.buildPsbt`:
 //
@@ -126,9 +127,8 @@ void main() {
       frozenWalletUtxoDatasource: frozenDatasource,
     );
 
-    when(
-      () => metadataDatasource.fetch(_walletId),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(_walletId))
+        .thenAnswer((_) async => metadata);
     // Frozen store is empty by default; individual tests override it.
     when(() => frozenDatasource.getAllFrozen()).thenAnswer((_) async => []);
     when(

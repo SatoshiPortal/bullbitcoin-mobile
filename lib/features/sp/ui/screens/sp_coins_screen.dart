@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_coin_source_l10n.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_badge.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SpCoinsScreen extends StatelessWidget {

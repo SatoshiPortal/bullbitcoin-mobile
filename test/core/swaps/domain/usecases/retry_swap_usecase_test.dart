@@ -80,9 +80,8 @@ void main() {
       ).thenAnswer((_) async => 150);
       // Boltz is dead; the mempool fee estimate is also unreachable, so the
       // usecase must fall back to the relay floor (1 sat/vb on bitcoin).
-      when(
-        () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-      ).thenThrow(Exception('fee api down'));
+      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+          .thenThrow(Exception('fee api down'));
       when(
         () => repo.refundBitcoinToLightningSwap(
           swapId: any(named: 'swapId'),
@@ -126,9 +125,8 @@ void main() {
             claimAddressForChainSwaps: null,
           ),
         ).thenAnswer((_) async => 120);
-        when(
-          () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-        ).thenThrow(Exception('fee api down'));
+        when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+            .thenThrow(Exception('fee api down'));
         when(
           () => repo.claimLightningToBitcoinSwap(
             swapId: any(named: 'swapId'),
@@ -137,9 +135,8 @@ void main() {
             cooperate: any(named: 'cooperate'),
           ),
         ).thenAnswer((_) async => 'claim-txid');
-        when(
-          () => repo.getSwap(swapId: 'swap-2'),
-        ).thenAnswer((_) async => swap);
+        when(() => repo.getSwap(swapId: 'swap-2'))
+            .thenAnswer((_) async => swap);
 
         await usecase.execute(swap);
 
@@ -173,32 +170,28 @@ void main() {
   });
 }
 
-LnSendSwap _lnSend({required SwapStatus status}) =>
-    Swap.lnSend(
-          id: 'swap-1',
-          keyIndex: 0,
-          type: SwapType.bitcoinToLightning,
-          status: status,
-          environment: Environment.mainnet,
-          creationTime: DateTime(2024),
-          sendWalletId: 'w1',
-          invoice: 'lnbc1',
-          paymentAddress: 'bc1qlockup',
-          paymentAmount: 100000,
-          refundAddress: 'bc1qrefund',
-        )
-        as LnSendSwap;
+LnSendSwap _lnSend({required SwapStatus status}) => Swap.lnSend(
+  id: 'swap-1',
+  keyIndex: 0,
+  type: SwapType.bitcoinToLightning,
+  status: status,
+  environment: Environment.mainnet,
+  creationTime: DateTime(2024),
+  sendWalletId: 'w1',
+  invoice: 'lnbc1',
+  paymentAddress: 'bc1qlockup',
+  paymentAmount: 100000,
+  refundAddress: 'bc1qrefund',
+) as LnSendSwap;
 
-LnReceiveSwap _lnReceive({required SwapStatus status}) =>
-    Swap.lnReceive(
-          id: 'swap-2',
-          keyIndex: 0,
-          type: SwapType.lightningToBitcoin,
-          status: status,
-          environment: Environment.mainnet,
-          creationTime: DateTime(2024),
-          receiveWalletId: 'w1',
-          invoice: 'lnbc2',
-          receiveAddress: 'bc1qclaim',
-        )
-        as LnReceiveSwap;
+LnReceiveSwap _lnReceive({required SwapStatus status}) => Swap.lnReceive(
+  id: 'swap-2',
+  keyIndex: 0,
+  type: SwapType.lightningToBitcoin,
+  status: status,
+  environment: Environment.mainnet,
+  creationTime: DateTime(2024),
+  receiveWalletId: 'w1',
+  invoice: 'lnbc2',
+  receiveAddress: 'bc1qclaim',
+) as LnReceiveSwap;

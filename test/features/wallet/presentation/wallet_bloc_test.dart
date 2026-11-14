@@ -4,11 +4,13 @@ import 'package:transaction_sync/transaction_sync.dart'
     show TransactionSyncBusyFailure;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
+
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
@@ -19,7 +21,9 @@ import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+
 import 'dart:async';
+
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -115,15 +119,13 @@ void main() {
       () async {
         final syncGate = Completer<Result<void, WalletFailure>>();
         final sync = _MockSyncWalletsUsecase();
-        when(
-          () => sync.execute(trigger: SyncTrigger.user),
-        ).thenAnswer((_) => syncGate.future);
+        when(() => sync.execute(trigger: SyncTrigger.user))
+            .thenAnswer((_) => syncGate.future);
         final pending = Completer<Result<int, WalletFailure>>();
         final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
         final wallets = _MockGetWalletsUsecase();
-        when(
-          () => balance.execute(walletIds: any(named: 'walletIds')),
-        ).thenAnswer((_) => pending.future);
+        when(() => balance.execute(walletIds: any(named: 'walletIds')))
+            .thenAnswer((_) => pending.future);
         when(() => wallets.execute()).thenAnswer(
           (_) async => Ok(catalogueChanged ? <Wallet>[] : [_syncedWallet]),
         );
@@ -167,12 +169,10 @@ void main() {
       final wallets = _MockGetWalletsUsecase();
       final readWallet = _stubbedReadWallet();
       final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
-      when(
-        () => wallets.execute(),
-      ).thenAnswer((_) async => Ok([_syncedWallet]));
-      when(
-        () => balance.execute(walletIds: [_syncedWallet.id]),
-      ).thenAnswer((_) async => const Ok(42));
+      when(() => wallets.execute())
+          .thenAnswer((_) async => Ok([_syncedWallet]));
+      when(() => balance.execute(walletIds: [_syncedWallet.id]))
+          .thenAnswer((_) async => const Ok(42));
       final bloc = createBloc(
         _MockExternalTorStatusUsecase(),
         getWallets: wallets,
@@ -211,12 +211,10 @@ void main() {
       origin: 'other',
       balanceSat: BigInt.from(7),
     );
-    when(
-      () => wallets.execute(),
-    ).thenAnswer((_) async => Ok([_syncedWallet, other]));
-    when(
-      () => balance.execute(walletIds: any(named: 'walletIds')),
-    ).thenAnswer((_) async => const Ok(42));
+    when(() => wallets.execute())
+        .thenAnswer((_) async => Ok([_syncedWallet, other]));
+    when(() => balance.execute(walletIds: any(named: 'walletIds')))
+        .thenAnswer((_) async => const Ok(42));
     final bloc = createBloc(
       _MockExternalTorStatusUsecase(),
       getWallets: wallets,
@@ -285,9 +283,8 @@ void main() {
       final second = Completer<Result<Wallet, WalletFailure>>();
       final read = _ReadWallet();
       var count = 0;
-      when(
-        () => read.execute(_syncedWallet.id),
-      ).thenAnswer((_) => count++ == 0 ? first.future : second.future);
+      when(() => read.execute(_syncedWallet.id))
+          .thenAnswer((_) => count++ == 0 ? first.future : second.future);
       final bloc = createBloc(
         _MockExternalTorStatusUsecase(),
         readWallet: read,
@@ -317,9 +314,8 @@ void main() {
     () async {
       final pending = Completer<Result<Wallet, WalletFailure>>();
       final read = _ReadWallet();
-      when(
-        () => read.execute(_syncedWallet.id),
-      ).thenAnswer((_) => pending.future);
+      when(() => read.execute(_syncedWallet.id))
+          .thenAnswer((_) => pending.future);
       final bloc = createBloc(
         _MockExternalTorStatusUsecase(),
         readWallet: read,
@@ -345,9 +341,8 @@ void main() {
         final targeted = Completer<Result<Wallet, WalletFailure>>();
         final read = _ReadWallet();
         final updated = _syncedWallet.copyWith(balanceSat: BigInt.from(19));
-        when(
-          () => read.execute(_syncedWallet.id),
-        ).thenAnswer((_) => targeted.future);
+        when(() => read.execute(_syncedWallet.id))
+            .thenAnswer((_) => targeted.future);
         final bloc = createBloc(
           _MockExternalTorStatusUsecase(),
           getWallets: wallets,
@@ -382,9 +377,8 @@ void main() {
       final second = Completer<Result<int, WalletFailure>>();
       final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
       var count = 0;
-      when(
-        () => balance.execute(walletIds: any(named: 'walletIds')),
-      ).thenAnswer((_) => count++ == 0 ? first.future : second.future);
+      when(() => balance.execute(walletIds: any(named: 'walletIds')))
+          .thenAnswer((_) => count++ == 0 ? first.future : second.future);
       final bloc = createBloc(
         _MockExternalTorStatusUsecase(),
         getUnconfirmed: balance,
@@ -412,15 +406,12 @@ void main() {
         final dir = Directory.systemTemp.createTempSync('review-fix2-busy-');
         log = Logger.replace(directory: dir);
         final getWallets = _MockGetWalletsUsecase();
-        when(
-          () => getWallets.execute(),
-        ).thenAnswer((_) async => Ok([_syncedWallet]));
-        when(
-          () => getWallets.execute(onlyBitcoin: true),
-        ).thenAnswer((_) async => Ok([_syncedWallet]));
-        when(
-          () => getWallets.execute(onlyLiquid: true),
-        ).thenAnswer((_) async => const Ok(<Wallet>[]));
+        when(() => getWallets.execute())
+            .thenAnswer((_) async => Ok([_syncedWallet]));
+        when(() => getWallets.execute(onlyBitcoin: true))
+            .thenAnswer((_) async => Ok([_syncedWallet]));
+        when(() => getWallets.execute(onlyLiquid: true))
+            .thenAnswer((_) async => const Ok(<Wallet>[]));
         final single = _MockSyncWalletUsecase();
         when(
           () => single.execute(
@@ -468,13 +459,12 @@ void main() {
       });
       final viewBloc = _ViewWalletBloc();
       when(() => viewBloc.state).thenReturn(settled);
-      when(
-        () => viewBloc.stream,
-      ).thenAnswer((_) => const Stream<WalletState>.empty());
+      when(() => viewBloc.stream)
+          .thenAnswer((_) => const Stream<WalletState>.empty());
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: BlocProvider<WalletBloc>.value(
@@ -491,9 +481,8 @@ void main() {
   test('spinner waiter does not request another foreground sync', () async {
     final sync = _MockSyncWalletsUsecase();
     final gate = Completer<Result<void, WalletFailure>>();
-    when(
-      () => sync.execute(trigger: SyncTrigger.automatic),
-    ).thenAnswer((_) => gate.future);
+    when(() => sync.execute(trigger: SyncTrigger.automatic))
+        .thenAnswer((_) => gate.future);
     final bloc = _blocWithFailingLoad(const WalletStorageFailure(), sync: sync);
     addTearDown(bloc.close);
     await bloc.waitForRefresh();
@@ -520,15 +509,12 @@ void main() {
       final dir = await Directory.systemTemp.createTemp('refresh-logging-');
       log = Logger.replace(directory: dir);
       final getWallets = _MockGetWalletsUsecase();
-      when(
-        () => getWallets.execute(),
-      ).thenAnswer((_) async => Ok([_syncedWallet]));
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => Ok([_syncedWallet]));
-      when(
-        () => getWallets.execute(onlyLiquid: true),
-      ).thenAnswer((_) async => const Err(NoWalletsFoundFailure()));
+      when(() => getWallets.execute())
+          .thenAnswer((_) async => Ok([_syncedWallet]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok([_syncedWallet]));
+      when(() => getWallets.execute(onlyLiquid: true))
+          .thenAnswer((_) async => const Err(NoWalletsFoundFailure()));
       final single = _MockSyncWalletUsecase();
       var nativePasses = 0;
       final syncGate = Completer<void>();
@@ -590,8 +576,7 @@ void main() {
         expect(
           callerDiagnostics,
           isEmpty,
-          reason:
-              'The native boundary owns the failed pass; waiters must not repeat it.',
+          reason: 'The native boundary owns the failed pass; waiters must not repeat it.',
         );
       } finally {
         if (!syncGate.isCompleted) syncGate.complete();
@@ -709,24 +694,21 @@ void main() {
     },
   );
 
-  test(
-    'a failed wallet load is reported, not shown as an empty wallet',
-    () async {
-      // Before #1895 this state was invisible: WalletStatus.failure was never
-      // read by the UI, so a failed load rendered a 0-sat home screen that reads
-      // as "you have no wallets" rather than as an error.
-      final bloc = _blocWithFailingLoad(
-        const WalletStorageFailure('getWallets failed: SqliteException'),
-      );
-      addTearDown(bloc.close);
+  test('a failed wallet load is reported, not shown as an empty wallet', () async {
+    // Before #1895 this state was invisible: WalletStatus.failure was never
+    // read by the UI, so a failed load rendered a 0-sat home screen that reads
+    // as "you have no wallets" rather than as an error.
+    final bloc = _blocWithFailingLoad(
+      const WalletStorageFailure('getWallets failed: SqliteException'),
+    );
+    addTearDown(bloc.close);
 
-      bloc.add(const WalletStarted());
-      await pumpEventQueue();
+    bloc.add(const WalletStarted());
+    await pumpEventQueue();
 
-      expect(bloc.state.status, WalletStatus.failure);
-      expect(bloc.state.loadFailure, isA<WalletStorageFailure>());
-    },
-  );
+    expect(bloc.state.status, WalletStatus.failure);
+    expect(bloc.state.loadFailure, isA<WalletStorageFailure>());
+  });
 
   test('a failed sync round is reported, not silently dropped', () async {
     // The wallets themselves load, so the list stays correct — but a refresh
@@ -819,9 +801,8 @@ SyncWalletsUsecase _stubbedSync() {
   // mocktail needs a concrete SyncTrigger to match  against.
   registerFallbackValue(SyncTrigger.automatic);
   final sync = _MockSyncWalletsUsecase();
-  when(
-    () => sync.execute(trigger: any(named: 'trigger')),
-  ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
+  when(() => sync.execute(trigger: any(named: 'trigger')))
+      .thenAnswer((_) async => const Ok<void, WalletFailure>(null));
   return sync;
 }
 
@@ -888,14 +869,12 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
 
   registerFallbackValue(SyncTrigger.automatic);
   final sync = _MockSyncWalletsUsecase();
-  when(
-    () => sync.execute(trigger: any(named: 'trigger')),
-  ).thenAnswer((_) async => Err<void, WalletFailure>(failure));
+  when(() => sync.execute(trigger: any(named: 'trigger')))
+      .thenAnswer((_) async => Err<void, WalletFailure>(failure));
 
   final syncing = _MockCheckWalletSyncingUsecase();
-  when(
-    () => syncing.execute(walletId: any(named: 'walletId')),
-  ).thenReturn(const Ok<bool, WalletFailure>(false));
+  when(() => syncing.execute(walletId: any(named: 'walletId')))
+      .thenReturn(const Ok<bool, WalletFailure>(false));
 
   return WalletBloc(
     readWalletUsecase: _stubbedReadWallet(),

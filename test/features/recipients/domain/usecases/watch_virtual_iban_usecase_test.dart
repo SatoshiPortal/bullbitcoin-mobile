@@ -79,9 +79,8 @@ void main() {
   setUp(() {
     environment = _MockGetRecipientsEnvironmentUsecase();
     notifications = _FakeExchangeNotificationRepository();
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Ok(Environment.testnet));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Ok(Environment.testnet));
   });
 
   tearDown(() => notifications.controller.close());
@@ -101,9 +100,9 @@ void main() {
       findResults: [const Ok(null)],
     );
 
-    final events = await usecase(
-      repository,
-    ).execute(createIfAbsent: false).toList();
+    final events = await usecase(repository)
+        .execute(createIfAbsent: false)
+        .toList();
 
     expect(events.map((e) => (e as Ok).value), [null]);
     expect(repository.creates, 0);
@@ -116,9 +115,9 @@ void main() {
       createResult: const Ok(_pending),
     );
 
-    final events = await usecase(
-      repository,
-    ).execute(createIfAbsent: true).toList();
+    final events = await usecase(repository)
+        .execute(createIfAbsent: true)
+        .toList();
 
     expect(repository.creates, 1);
     expect(events.map((e) => (e as Ok).value), [_pending, _pending, _active]);
@@ -127,9 +126,9 @@ void main() {
   test('an active virtual IBAN is reported once', () async {
     final repository = _FakeVirtualIbanRepository(findResults: [Ok(_active)]);
 
-    final events = await usecase(
-      repository,
-    ).execute(createIfAbsent: true).toList();
+    final events = await usecase(repository)
+        .execute(createIfAbsent: true)
+        .toList();
 
     expect(events.map((e) => (e as Ok).value), [_active]);
     expect(repository.creates, 0);
@@ -141,9 +140,9 @@ void main() {
       createResult: const Err(RecipientsEuResidencyRequiredFailure()),
     );
 
-    final events = await usecase(
-      repository,
-    ).execute(createIfAbsent: true).toList();
+    final events = await usecase(repository)
+        .execute(createIfAbsent: true)
+        .toList();
 
     expect(events, hasLength(1));
     expect(
@@ -157,9 +156,9 @@ void main() {
       findResults: [const Ok(_pending), const Err(RecipientsNetworkFailure())],
     );
 
-    final events = await usecase(
-      repository,
-    ).execute(createIfAbsent: true).toList();
+    final events = await usecase(repository)
+        .execute(createIfAbsent: true)
+        .toList();
 
     expect(events, hasLength(2));
     expect((events.last as Err).failure, isA<RecipientsNetworkFailure>());
@@ -204,14 +203,13 @@ void main() {
   );
 
   test('an unreadable environment is reported', () async {
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
     final repository = _FakeVirtualIbanRepository(findResults: []);
 
-    final events = await usecase(
-      repository,
-    ).execute(createIfAbsent: true).toList();
+    final events = await usecase(repository)
+        .execute(createIfAbsent: true)
+        .toList();
 
     expect(events, hasLength(1));
     expect(repository.finds, 0);

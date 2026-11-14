@@ -20,9 +20,8 @@ void main() {
   group('FetchAllLabelsUsecase', () {
     test('maps a repository failure to a sanitized LabelFailure '
         'without leaking the raw exception', () async {
-      when(
-        () => repository.fetchAll(),
-      ).thenThrow(Exception('drift: database is locked at /data/secret.db'));
+      when(() => repository.fetchAll())
+          .thenThrow(Exception('drift: database is locked at /data/secret.db'));
 
       final result = await usecase.execute();
 

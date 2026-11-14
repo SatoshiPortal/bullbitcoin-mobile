@@ -60,9 +60,8 @@ void main() {
   });
 
   test('asks the testnet price in the testnet environment', () async {
-    when(
-      getSettings.execute,
-    ).thenAnswer((_) async => _settings(environment: Environment.testnet));
+    when(getSettings.execute)
+        .thenAnswer((_) async => _settings(environment: Environment.testnet));
 
     _rate(await usecase.execute());
     expect(getIndexPrice.requests.single.network, BitcoinNetwork.testnet);

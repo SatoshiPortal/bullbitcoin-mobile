@@ -49,10 +49,8 @@ class CancelAbandonedBuyPayjoinUsecase {
         return Err(BuyUnexpectedFailure(failure.logMessage));
     }
     for (final payjoin in payjoins) {
-      if (payjoin case PayjoinReceiverSession(
-        :final id,
-        :final pjUri,
-      ) when _samePayjoinEndpoint(pjUri, uri)) {
+      if (payjoin case PayjoinReceiverSession(:final id, :final pjUri)
+          when _samePayjoinEndpoint(pjUri, uri)) {
         final cancelResult = await _receiver.cancel(id);
         if (cancelResult case Err(:final failure)) {
           log.warning(

@@ -31,9 +31,8 @@ void main() {
       (r as Err<LimitOrder, LimitOrdersFailure>).failure;
 
   void stubRate({double indexPrice = 100000}) {
-    when(
-      () => repository.getRate(any()),
-    ).thenAnswer((_) async => Ok(limitOrderRate(indexPrice: indexPrice)));
+    when(() => repository.getRate(any()))
+        .thenAnswer((_) async => Ok(limitOrderRate(indexPrice: indexPrice)));
   }
 
   setUp(() {
@@ -69,9 +68,8 @@ void main() {
     'allows an amount above the current balance (funded at execution)',
     () async {
       stubRate();
-      when(
-        () => repository.create(any()),
-      ).thenAnswer((_) async => Ok(limitOrder()));
+      when(() => repository.create(any()))
+          .thenAnswer((_) async => Ok(limitOrder()));
 
       final result = await usecase.execute(
         limitPrice: 90000,
@@ -101,9 +99,8 @@ void main() {
 
   test('creates the order with a trimmed address', () async {
     stubRate();
-    when(
-      () => repository.create(any()),
-    ).thenAnswer((_) async => Ok(limitOrder()));
+    when(() => repository.create(any()))
+        .thenAnswer((_) async => Ok(limitOrder()));
 
     final result = await usecase.execute(
       limitPrice: 90000,
@@ -121,9 +118,8 @@ void main() {
   });
 
   test('forwards a rate failure untouched', () async {
-    when(
-      () => repository.getRate(any()),
-    ).thenAnswer((_) async => const Err(LimitOrdersLoadFailure('rate')));
+    when(() => repository.getRate(any()))
+        .thenAnswer((_) async => const Err(LimitOrdersLoadFailure('rate')));
 
     final result = await usecase.execute(
       limitPrice: 90000,

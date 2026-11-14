@@ -34,35 +34,30 @@ void main() {
   tearDown(() => database.close());
 
   test('keeps mainnet and testnet settings independent', () async {
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(Environment.mainnet));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(Environment.mainnet));
     const mainnet = AutoSwap(enabled: false, balanceThresholdSats: 111111);
     await repository.updateAutoSwapParams(mainnet);
 
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(Environment.testnet));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(Environment.testnet));
     const testnet = AutoSwap(enabled: false, balanceThresholdSats: 222222);
     await repository.updateAutoSwapParams(testnet);
 
     expect(await repository.getAutoSwapParams(), testnet);
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(Environment.mainnet));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(Environment.mainnet));
     expect(await repository.getAutoSwapParams(), mainnet);
   });
   test(
     'regtest cannot read or overwrite either historical settings row',
     () async {
-      when(
-        settingsRepository.fetch,
-      ).thenAnswer((_) async => _settings(Environment.mainnet));
+      when(settingsRepository.fetch)
+          .thenAnswer((_) async => _settings(Environment.mainnet));
       const saved = AutoSwap(enabled: false, balanceThresholdSats: 111111);
       await repository.updateAutoSwapParams(saved);
-      when(
-        settingsRepository.fetch,
-      ).thenAnswer((_) async => _settings(Environment.regtest));
+      when(settingsRepository.fetch)
+          .thenAnswer((_) async => _settings(Environment.regtest));
       await expectLater(
         repository.getAutoSwapParams(),
         throwsA(isA<AutoswapNetworkUnavailableException>()),
@@ -80,9 +75,8 @@ void main() {
           isA<AutoswapUnsupportedNetworkFailure>(),
         ),
       );
-      when(
-        settingsRepository.fetch,
-      ).thenAnswer((_) async => _settings(Environment.mainnet));
+      when(settingsRepository.fetch)
+          .thenAnswer((_) async => _settings(Environment.mainnet));
       expect(await repository.getAutoSwapParams(), saved);
     },
   );

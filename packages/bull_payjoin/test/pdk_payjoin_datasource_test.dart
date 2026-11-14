@@ -118,9 +118,8 @@ void main() {
       expect(persister.load(), ['a', 'b']);
       expect(() => persister.events.add('c'), throwsUnsupportedError);
       expect(
-        InMemoryJsonReceiverSessionPersister.fromJson(
-          persister.toJson(),
-        ).load(),
+        InMemoryJsonReceiverSessionPersister.fromJson(persister.toJson())
+            .load(),
         ['a', 'b'],
       );
     });
@@ -495,18 +494,17 @@ void main() {
       ).withExpiration(expirationSecs: 3600).build().save(persister: persister);
       if (cancelled) initialized.cancel().save(persister: persister);
       return PayjoinModel.receiver(
-            id: 'receiver-1',
-            address: receiverAddress,
-            isTestnet: true,
-            receiver: persister.toJson(),
-            walletId: 'w1',
-            pjUri:
-                'bitcoin:$receiverAddress?pj=${PayjoinConstants.serverUrls.first.toString()}',
-            maxFeeRateSatPerVb: BigInt.from(100),
-            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            expireAfterSec: expireAfterSec,
-          )
-          as PayjoinReceiverModel;
+        id: 'receiver-1',
+        address: receiverAddress,
+        isTestnet: true,
+        receiver: persister.toJson(),
+        walletId: 'w1',
+        pjUri:
+            'bitcoin:$receiverAddress?pj=${PayjoinConstants.serverUrls.first.toString()}',
+        maxFeeRateSatPerVb: BigInt.from(100),
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        expireAfterSec: expireAfterSec,
+      ) as PayjoinReceiverModel;
     }
 
     _MockDio relayDio() {
@@ -524,19 +522,17 @@ void main() {
     PayjoinSenderModel sender({
       required int createdAt,
       required int expireAfterSec,
-    }) =>
-        PayjoinModel.sender(
-              uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
-              isTestnet: true,
-              sender: '[]',
-              walletId: 'w1',
-              originalPsbt: 'cHNidP8=',
-              originalTxId: 'orig-txid',
-              amountSat: 50000,
-              createdAt: createdAt,
-              expireAfterSec: expireAfterSec,
-            )
-            as PayjoinSenderModel;
+    }) => PayjoinModel.sender(
+      uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
+      isTestnet: true,
+      sender: '[]',
+      walletId: 'w1',
+      originalPsbt: 'cHNidP8=',
+      originalTxId: 'orig-txid',
+      amountSat: 50000,
+      createdAt: createdAt,
+      expireAfterSec: expireAfterSec,
+    ) as PayjoinSenderModel;
 
     PayjoinSenderModel expiredSender() =>
         sender(createdAt: 0, expireAfterSec: 300);
@@ -568,9 +564,8 @@ void main() {
           log: PayjoinLogger(logs),
           dio: relayDio(),
         );
-        final receiver = initializedReceiver(
-          expireAfterSec: 3600,
-        ).copyWith(receiver: '{invalid');
+        final receiver = initializedReceiver(expireAfterSec: 3600)
+            .copyWith(receiver: '{invalid');
         datasource.startListeningForRequest(receiver);
         async.elapse(retryDelay * 3);
         expect(logs.at(PayjoinLogLevel.warning).map((event) => event.code), [

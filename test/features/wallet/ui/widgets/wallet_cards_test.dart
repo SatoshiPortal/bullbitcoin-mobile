@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +46,7 @@ Widget _buildCards({
     theme: ThemeData(extensions: testBullExtensions),
     localizationsDelegates: const [
       bullUiLocalizationsDelegate,
-      ...AppLocalizations.localizationsDelegates,
+      ...appLocalizationsDelegates,
     ],
     supportedLocales: AppLocalizations.supportedLocales,
     home: MultiBlocProvider(
@@ -99,7 +99,7 @@ Widget _buildCardsRouter({
     routerConfig: router,
     localizationsDelegates: const [
       bullUiLocalizationsDelegate,
-      ...AppLocalizations.localizationsDelegates,
+      ...appLocalizationsDelegates,
     ],
     supportedLocales: AppLocalizations.supportedLocales,
   );

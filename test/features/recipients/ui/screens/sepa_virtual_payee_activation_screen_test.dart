@@ -7,8 +7,8 @@ import 'package:bb_mobile/features/recipients/domain/usecases/watch_sepa_virtual
 import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:bb_mobile/features/recipients/presentation/sepa_virtual_payee_activation_cubit.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/sepa_virtual_payee_activation_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -27,9 +27,8 @@ void main() {
   Future<AppLocalizations> pumpView(WidgetTester tester) async {
     events = StreamController<_Event>();
     final usecase = _MockWatchSepaVirtualPayeeActivationUsecase();
-    when(
-      () => usecase.execute(recipientId: any(named: 'recipientId')),
-    ).thenAnswer((_) => events.stream);
+    when(() => usecase.execute(recipientId: any(named: 'recipientId')))
+        .thenAnswer((_) => events.stream);
     cubit = SepaVirtualPayeeActivationCubit(
       watchSepaVirtualPayeeActivationUsecase: usecase,
       recipientId: 'r-1',
@@ -41,7 +40,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: cubit,

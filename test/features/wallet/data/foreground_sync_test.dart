@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -131,9 +132,8 @@ void main() {
     'thrown refresh preserves last outcome, including initial null',
     () async {
       final port = locator<SwapSyncPort>();
-      when(
-        swaps.refreshOrdersWithOutcome,
-      ).thenThrow(Exception('private detail'));
+      when(swaps.refreshOrdersWithOutcome)
+          .thenThrow(Exception('private detail'));
       final initial = await port.request();
       expect(initial.lastOutcome, isNull);
       expect(initial.failure, isA<SwapUnexpectedFailure>());
@@ -227,9 +227,8 @@ void main() {
   );
 
   test('SP failure fails the pass without throttling its retry', () async {
-    when(
-      sp.syncWallet,
-    ).thenAnswer((_) async => const Err(SpBackendUnreachable('private')));
+    when(sp.syncWallet)
+        .thenAnswer((_) async => const Err(SpBackendUnreachable('private')));
     final result = await locator<SyncSpForWalletUsecase>().execute();
     expect(result, isA<Err<void, WalletFailure>>());
     await expectLater(

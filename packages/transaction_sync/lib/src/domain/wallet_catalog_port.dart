@@ -67,9 +67,8 @@ final class BitcoinWalletDescriptor extends PublicWalletDescriptor {
       descriptor.isNotEmpty &&
       descriptor.contains('(') &&
       descriptor.contains(')') &&
-      !RegExp(
-        r'\b[xtyuzvYUZV]prv|\b[5KLc9][1-9A-HJ-NP-Za-km-z]{50,51}\b',
-      ).hasMatch(descriptor);
+      !RegExp(r'\b[xtyuzvYUZV]prv|\b[5KLc9][1-9A-HJ-NP-Za-km-z]{50,51}\b')
+          .hasMatch(descriptor);
 }
 
 /// The catalog's existing confidential descriptor, including its SLIP77

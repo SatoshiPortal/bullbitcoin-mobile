@@ -17,9 +17,8 @@ void main() {
   });
 
   test('preserves a keychain-locked failure', () async {
-    when(
-      () => pinCodeRepository.isPinCodeSet(),
-    ).thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
+    when(() => pinCodeRepository.isPinCodeSet())
+        .thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
 
     final result = await usecase.execute();
 

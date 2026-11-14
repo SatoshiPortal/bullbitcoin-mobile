@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/inputs/labeled_input_frame.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A labelled field for a secret the user has to type on the system keyboard,
 /// such as a BIP39 passphrase.

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart' show BullDetailsTableItem, BullSnackBar;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class PaymentDetailRow extends StatelessWidget {
   final String title;

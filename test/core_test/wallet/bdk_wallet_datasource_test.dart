@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
+
 // Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
 // dropped manual UTXO selection and the RBF-off sequence flag.
 //
@@ -33,7 +34,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+
 import 'support/bdk_test_store.dart';
+
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
@@ -154,14 +157,12 @@ void main() {
       networkKind: bdk.NetworkKind.test,
     );
 
-    walletModel =
-        WalletModel.publicBdk(
-              id: 'bdk-wallet-datasource-test',
-              externalDescriptor: external.toString(),
-              internalDescriptor: internal.toString(),
-              network: Network.bitcoinTestnet,
-            )
-            as PublicBdkWalletModel;
+    walletModel = WalletModel.publicBdk(
+      id: 'bdk-wallet-datasource-test',
+      externalDescriptor: external.toString(),
+      internalDescriptor: internal.toString(),
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
 
     // Build the wallet once here to fund it, then persist so the
     // datasource's own (separate) `BdkTestStore.createWallet` call sees the

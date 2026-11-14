@@ -59,9 +59,8 @@ void main() {
 
     test('returns the utxos from the core usecase', () async {
       final utxos = [walletUtxoFixture()];
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => utxos);
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => utxos);
 
       final result = await usecase.execute(walletId: 'w1');
 
@@ -70,9 +69,8 @@ void main() {
     });
 
     test('maps GetUtxosUsecaseException to CoinsLoadFailure', () async {
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(GetUtxosUsecaseException('boom'));
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenThrow(GetUtxosUsecaseException('boom'));
 
       final result = await usecase.execute(walletId: 'w1');
 
@@ -81,9 +79,8 @@ void main() {
     });
 
     test('maps another exception to CoinsUnexpectedFailure', () async {
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('weird'));
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenThrow(Exception('weird'));
 
       final result = await usecase.execute(walletId: 'w1');
 
@@ -92,9 +89,8 @@ void main() {
     });
 
     test('allows programmer errors to propagate', () async {
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(StateError('programmer defect'));
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenThrow(StateError('programmer defect'));
 
       await expectLater(
         usecase.execute(walletId: 'w1'),

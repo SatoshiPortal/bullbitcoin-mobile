@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_scan_start_selector.dart';
 import 'package:primitives/primitives.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 

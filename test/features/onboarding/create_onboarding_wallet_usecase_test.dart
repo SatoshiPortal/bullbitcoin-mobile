@@ -25,9 +25,8 @@ void main() {
   group('CreateOnboardingWalletUsecase', () {
     test('maps a foreign wallet-setup failure to OnboardingWalletSetupFailure '
         'without leaking the raw exception', () async {
-      when(
-        () => createDefaultWalletsUsecase.execute(),
-      ).thenThrow(Exception('BDK: descriptor derivation failed 0xdeadbeef'));
+      when(() => createDefaultWalletsUsecase.execute())
+          .thenThrow(Exception('BDK: descriptor derivation failed 0xdeadbeef'));
 
       final result = await usecase.execute();
 
@@ -40,9 +39,8 @@ void main() {
 
     test('returns Ok with the wallets on success', () async {
       final wallets = [_MockWallet()];
-      when(
-        () => createDefaultWalletsUsecase.execute(),
-      ).thenAnswer((_) async => wallets);
+      when(() => createDefaultWalletsUsecase.execute())
+          .thenAnswer((_) async => wallets);
 
       final result = await usecase.execute();
 

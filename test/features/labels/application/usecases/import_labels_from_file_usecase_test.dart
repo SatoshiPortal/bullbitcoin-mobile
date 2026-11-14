@@ -56,9 +56,8 @@ void main() {
     final file = _FakeLabelsFile(const Ok(jsonl));
     when(() => import.call(any())).thenAnswer((_) async => const Ok(1));
 
-    final result = await build(
-      file,
-    ).execute(format: LabelFormat.bip329, path: '/picked/labels.jsonl');
+    final result = await build(file)
+        .execute(format: LabelFormat.bip329, path: '/picked/labels.jsonl');
 
     expect(file.readPath, '/picked/labels.jsonl');
     expect(file.readMaxBytes, _limit);
@@ -74,9 +73,8 @@ void main() {
       const Err(LabelsFileTooLargeFailure(maxBytes: _limit)),
     );
 
-    final result = await build(
-      file,
-    ).execute(format: LabelFormat.bip329, path: '/picked/big.jsonl');
+    final result = await build(file)
+        .execute(format: LabelFormat.bip329, path: '/picked/big.jsonl');
 
     final failure = (result as Err<int, LabelFailure>).failure;
     expect((failure as LabelsFileTooLargeFailure).maxBytes, _limit);
@@ -85,13 +83,11 @@ void main() {
 
   test('an import failure is forwarded as-is', () async {
     final file = _FakeLabelsFile(const Ok('{}'));
-    when(
-      () => import.call(any()),
-    ).thenAnswer((_) async => const Err(LabelsFileEmptyFailure()));
+    when(() => import.call(any()))
+        .thenAnswer((_) async => const Err(LabelsFileEmptyFailure()));
 
-    final result = await build(
-      file,
-    ).execute(format: LabelFormat.bip329, path: '/picked/labels.jsonl');
+    final result = await build(file)
+        .execute(format: LabelFormat.bip329, path: '/picked/labels.jsonl');
 
     expect(
       (result as Err<int, LabelFailure>).failure,

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
@@ -72,9 +73,8 @@ void main() {
       final owner = _MockSeedOwner();
       references.register(owner);
       if (outcome == 'throws') {
-        when(
-          () => owner.getCustodyFingerprints(),
-        ).thenThrow(Exception('unavailable'));
+        when(() => owner.getCustodyFingerprints())
+            .thenThrow(Exception('unavailable'));
       } else {
         when(() => owner.getCustodyFingerprints()).thenAnswer(
           (_) async => outcome == 'referenced'
@@ -97,9 +97,8 @@ void main() {
 
   group('DeleteSecretUsecase', () {
     test('deletes when no wallet uses the secret', () async {
-      when(
-        () => walletRepository.getCustodyFingerprints(),
-      ).thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+      when(() => walletRepository.getCustodyFingerprints())
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
 
       expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
       expect(storedSecrets(), isEmpty);
@@ -115,9 +114,8 @@ void main() {
         // origin fingerprint but never held the seed. Counting it as a user
         // would leave the entry undeletable from the one screen that exists
         // to clean up orphans — the same rule DeleteWalletUsecase applies.
-        when(
-          () => walletRepository.getCustodyFingerprints(),
-        ).thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+        when(() => walletRepository.getCustodyFingerprints())
+            .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
 
         expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
         expect(storedSecrets(), isEmpty);
@@ -127,9 +125,8 @@ void main() {
     test(
       'refuses, and keeps the secret, when a wallet still uses it',
       () async {
-        when(
-          () => walletRepository.getCustodyFingerprints(),
-        ).thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({id}));
+        when(() => walletRepository.getCustodyFingerprints())
+            .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({id}));
 
         final result = await usecase.execute(id);
 
@@ -140,9 +137,8 @@ void main() {
 
     test('refuses when the wallets cannot be listed', () async {
       // A guard that cannot be evaluated has failed: deleting here would be deleting blind.
-      when(
-        () => walletRepository.getCustodyFingerprints(),
-      ).thenThrow(Exception('boom'));
+      when(() => walletRepository.getCustodyFingerprints())
+          .thenThrow(Exception('boom'));
 
       final result = await usecase.execute(id);
 

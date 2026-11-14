@@ -8,9 +8,9 @@ import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_histo
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bull_pricer/bull_pricer.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -39,9 +39,8 @@ void main() {
     int? selectedDataPointIndex,
   }) async {
     final watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
-    when(
-      () => watchCurrencyChanges.execute(),
-    ).thenAnswer((_) => const Stream<String>.empty());
+    when(() => watchCurrencyChanges.execute())
+        .thenAnswer((_) => const Stream<String>.empty());
 
     final bitcoinPriceBloc = BitcoinPriceBloc(
       getSettingsUsecase: _MockGetSettingsUsecase(),
@@ -65,7 +64,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: MultiBlocProvider(

@@ -114,18 +114,15 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
     when(
       () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => <Swap>[]);
-    when(
-      () => orderRepository.getOrders(),
-    ).thenAnswer((_) async => const Ok(<Order>[]));
-    when(
-      () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
-    ).thenAnswer((_) async {});
+    when(() => orderRepository.getOrders())
+        .thenAnswer((_) async => const Ok(<Order>[]));
+    when(() => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')))
+        .thenAnswer((_) async {});
     when(
       () => getTransactionOrderSwapsUsecase.execute(
         walletId: any(named: 'walletId'),

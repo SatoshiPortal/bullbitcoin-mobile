@@ -8,12 +8,8 @@ import 'package:unorm_dart/unorm_dart.dart' show nfkd;
 /// One mnemonic word painted without a string-bearing widget in the tree.
 final class PaintedWord extends _PaintedText {
   @internal
-  PaintedWord(
-    String word, {
-    Language language = Language.english,
-    super.style,
-    super.key,
-  }) : super([nfkd(word)], _Cell.word, language: language, plain: nfkd(word));
+  PaintedWord(String word, {super.language, super.style, super.key})
+    : super([nfkd(word)], _Cell.word, plain: nfkd(word));
 }
 
 /// A passphrase painted without exposing its text to the host.
@@ -32,17 +28,12 @@ final class PaintedPassphrase extends _PaintedText {
 /// A complete mnemonic painted as a grid of words, without exposing its words to the host.
 final class PaintedMnemonic extends _PaintedText {
   @internal
-  PaintedMnemonic(
-    List<String> words, {
-    Language language = Language.english,
-    super.style,
-    super.key,
-  }) : super(
-         words.map(nfkd).toList(),
-         _Cell.word,
-         language: language,
-         plain: words.map(nfkd).join(language.separator),
-       );
+  PaintedMnemonic(List<String> words, {super.language, super.style, super.key})
+    : super(
+        words.map(nfkd).toList(),
+        _Cell.word,
+        plain: words.map(nfkd).join(language.separator),
+      );
 }
 
 /// Secret text shares one private renderer. The host can place its widget but cannot read its text; screenshot protection belongs to the host screen.

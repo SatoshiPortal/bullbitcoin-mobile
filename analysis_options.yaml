@@ -24,7 +24,14 @@ analyzer:
     # must fail a build, not merely warn.
     invalid_use_of_internal_member: error
   exclude:
+    - features/**/lib/generated/**
+    # Flutter-generated delegates still reference deprecated SDK design exports.
+    - lib/generated/**
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
     - pubspec.yaml
+    - build/**
+    - android/**
+    - ios/**
+    - linux/**
   

@@ -39,9 +39,13 @@ sealed class DcaState with _$DcaState {
       initial: (failure) => null,
       buyInput: (defaultLightningAddress, balances, currency) =>
           defaultLightningAddress,
-      walletSelection:
-          (defaultLightningAddress, balances, amount, currency, frequency) =>
-              defaultLightningAddress,
+      walletSelection: (
+        defaultLightningAddress,
+        balances,
+        amount,
+        currency,
+        frequency,
+      ) => defaultLightningAddress,
       confirmation:
           (
             defaultLightningAddress,
@@ -171,9 +175,13 @@ sealed class DcaState with _$DcaState {
     return when(
       initial: (failure) => null,
       buyInput: (defaultLightningAddress, balances, currency) => currency,
-      walletSelection:
-          (defaultLightningAddress, balances, amount, currency, frequency) =>
-              currency,
+      walletSelection: (
+        defaultLightningAddress,
+        balances,
+        amount,
+        currency,
+        frequency,
+      ) => currency,
       confirmation:
           (
             defaultLightningAddress,
@@ -196,9 +204,13 @@ sealed class DcaState with _$DcaState {
   List<UserBalance> get balances => when(
     initial: (failure) => [],
     buyInput: (defaultLightningAddress, balances, currency) => balances,
-    walletSelection:
-        (defaultLightningAddress, balances, amount, currency, frequency) =>
-            balances,
+    walletSelection: (
+      defaultLightningAddress,
+      balances,
+      amount,
+      currency,
+      frequency,
+    ) => balances,
     confirmation:
         (
           defaultLightningAddress,

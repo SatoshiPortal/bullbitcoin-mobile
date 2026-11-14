@@ -26,40 +26,37 @@ void main() {
     String? transactionId,
     String? originalTransactionId,
     bool aborted = false,
-  }) =>
-      PayjoinModel.receiver(
-            id: 'r1',
-            address: 'bcrt1qaddress',
-            isTestnet: true,
-            receiver: '[]',
-            walletId: 'w1',
-            pjUri: 'bitcoin:bcrt1qaddress?pj=https://payjo.in/x',
-            maxFeeRateSatPerVb: BigInt.from(10000),
-            createdAt: 1700000000,
-            expireAfterSec: 86400,
-            originalTxBytes: Uint8List.fromList([1, 2, 3]),
-            originalTxId: originalTransactionId,
-            amountSat: 5000,
-            txId: transactionId,
-            isAborted: aborted,
-          )
-          as PayjoinReceiverModel;
+  }) => PayjoinModel.receiver(
+    id: 'r1',
+    address: 'bcrt1qaddress',
+    isTestnet: true,
+    receiver: '[]',
+    walletId: 'w1',
+    pjUri: 'bitcoin:bcrt1qaddress?pj=https://payjo.in/x',
+    maxFeeRateSatPerVb: BigInt.from(10000),
+    createdAt: 1700000000,
+    expireAfterSec: 86400,
+    originalTxBytes: Uint8List.fromList([1, 2, 3]),
+    originalTxId: originalTransactionId,
+    amountSat: 5000,
+    txId: transactionId,
+    isAborted: aborted,
+  ) as PayjoinReceiverModel;
 
   PayjoinSenderModel sender({bool expired = false, bool completed = false}) =>
       PayjoinModel.sender(
-            uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
-            isTestnet: true,
-            sender: '[]',
-            walletId: 'w1',
-            originalPsbt: 'cHNidP8=',
-            originalTxId: originalTxId,
-            amountSat: 5000,
-            createdAt: 1700000000,
-            expireAfterSec: 86400,
-            isExpired: expired,
-            isCompleted: completed,
-          )
-          as PayjoinSenderModel;
+        uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
+        isTestnet: true,
+        sender: '[]',
+        walletId: 'w1',
+        originalPsbt: 'cHNidP8=',
+        originalTxId: originalTxId,
+        amountSat: 5000,
+        createdAt: 1700000000,
+        expireAfterSec: 86400,
+        isExpired: expired,
+        isCompleted: completed,
+      ) as PayjoinSenderModel;
 
   group('fetchByTxId', () {
     test('finds an aborted fallback by its original transaction id', () async {

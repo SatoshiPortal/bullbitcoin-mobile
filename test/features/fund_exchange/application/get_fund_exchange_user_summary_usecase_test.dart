@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.da
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
+
 import '../result_helpers.dart';
 
 /// The shared core use-case stringifies its cause, so its message carries

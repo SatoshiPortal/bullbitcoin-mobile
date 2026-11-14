@@ -25,9 +25,8 @@ void main() {
   });
 
   void stub(Result<Wallet, WalletFailure> result) {
-    when(
-      () => walletRepository.getWallet(any(), sync: any(named: 'sync')),
-    ).thenAnswer((_) async => result);
+    when(() => walletRepository.getWallet(any(), sync: any(named: 'sync')))
+        .thenAnswer((_) async => result);
   }
 
   test('returns the wallet when it exists', () async {

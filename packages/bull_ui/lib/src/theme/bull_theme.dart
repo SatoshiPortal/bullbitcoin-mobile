@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The `bull_ui` colour palette, injected by the app as a [ThemeExtension].
 ///

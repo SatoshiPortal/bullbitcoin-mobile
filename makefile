@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rustc-pins-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -56,7 +56,7 @@ format-check:
 
 bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
-	@if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
+	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
 	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^lib/core/themes/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
 
@@ -83,7 +83,7 @@ secrets-api-docs:
 secrets-api-docs-check:
 	@fvm dart packages/secrets/tool/api_docs.dart --check
 
-checks: analyze bull-ui-check native-write-check custody-check secrets-api-docs-check fix-check format-check unit-test
+checks: analyze bull-ui-check native-write-check custody-check secrets-api-docs-check fix-check format-check rustc-pins-test unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
@@ -115,6 +115,7 @@ translations:
 	@echo "🌐 Generating translations files"
 	@$(MAKE) novlang-translations
 	@fvm flutter gen-l10n
+	@(cd features/logs && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) novlang-bridge
@@ -225,10 +226,10 @@ container-tools:
 	@set -e; \
 	flutter_version=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc); \
 	jvm_target=$$(grep -E '^android\.jvmTarget=' android/gradle.properties | cut -d= -f2); \
-	android_api=$$(grep -E '^android\.compileSdk=' android/gradle.properties | cut -d= -f2); \
+	android_api=$$(grep -E '^android\.sdkPlatform=' android/gradle.properties | cut -d= -f2); \
 	android_build_tools=$$(grep -E '^android\.buildToolsVersion=' android/gradle.properties | cut -d= -f2); \
 	android_ndk=$$(grep -E '^android\.ndkVersion=' android/gradle.properties | cut -d= -f2); \
-	for kv in "flutter (.fvmrc)=$$flutter_version" "android.jvmTarget=$$jvm_target" "android.compileSdk=$$android_api" "android.buildToolsVersion=$$android_build_tools" "android.ndkVersion=$$android_ndk"; do \
+	for kv in "flutter (.fvmrc)=$$flutter_version" "android.jvmTarget=$$jvm_target" "android.sdkPlatform=$$android_api" "android.buildToolsVersion=$$android_build_tools" "android.ndkVersion=$$android_ndk"; do \
 		if [ -z "$${kv#*=}" ]; then \
 			echo "ERROR: $${kv%%=*} resolved empty — check .fvmrc / android/gradle.properties" >&2; \
 			exit 1; \
@@ -236,11 +237,13 @@ container-tools:
 	done; \
 	$(CONTAINER) build -f Containerfile.tools -t bull-tools \
 		--build-arg FLUTTER_VERSION=$$flutter_version \
+		--build-arg RUST_VERSION=$(RUST_VERSION) \
 		--build-arg JVM_TARGET=$$jvm_target \
 		--build-arg ANDROID_API_LEVEL=$$android_api \
 		--build-arg ANDROID_BUILD_TOOLS=$$android_build_tools \
 		--build-arg ANDROID_NDK=$$android_ndk \
 		--build-arg BDK_RUST_VERSION=$(BDK_RUST_VERSION) \
+		--build-arg PAYJOIN_RUST_VERSION=$(PAYJOIN_RUST_VERSION) \
 		$(if $(EXPECTED_RUST_VERSION),--build-arg EXPECTED_RUST_VERSION=$(EXPECTED_RUST_VERSION)) \
 		.
 
@@ -327,89 +330,29 @@ android: container-app
 	@sha256sum $(HOST_OUTPUT)
 	@if [ "$(FORMAT)" = "apk" ]; then $(MAKE) --no-print-directory verify-rustc-pins APK=$(HOST_OUTPUT); fi
 
-# Guards against the rustup shim in Containerfile.tools regressing: without it,
-# cargokit's `rustup run stable` silently uses whatever upstream Rust is current
-# on build day instead of the pinned version, breaking reproducibility invisibly
-# (this is exactly how it broke before — two builds on the same day matched by
-# coincidence, not by pinning). Compares the rustc version string every compiler
-# embeds in its output against the pinned toolchains running live inside bull-app.
-#
-# Fails CLOSED: an empty/failed toolchain lookup, a tracked lib present with no
-# embedded version, a version mismatch, or zero tracked Rust libs found all
-# ABORT — a green result must mean the pins were actually checked, never that a
-# check was skipped. Keep TRACKED_RUST_LIBS in sync with the case below; a lib
-# from that list that is absent from the APK is reported loudly (a build should
-# ship all of them, but we only warn rather than hard-fail here because the exact
-# shipped set is confirmed by a real build, not by this static guard). Any
-# shipped Rust .so NOT in the list (e.g. a newly added plugin, or ark/boltz if
-# they ever ship as standalone OpenSSL-linking libs rather than statically
-# linked into librust_lib_bull_sdk.so) prints an ℹ️ line naming it and its
-# embedded rustc, so a real build surfaces the gap — add it to the list + case
-# to promote it from info to a verified pin.
-#
-# Single source of truth for bdk_dart's pinned Rust channel: passed as a
-# --build-arg to Containerfile.tools (overriding its default) AND used below to
-# read the live pin out of bull-app. Keep in sync with the `channel` in
-# bdk-dart's native/rust-toolchain.toml (bdk_dart is transitive via bull_sdk).
-BDK_RUST_VERSION ?= 1.85.1
-TRACKED_RUST_LIBS := libbdk_dart_ffi.so libonion.so libpayjoin_flutter.so librust_lib_bull_sdk.so
+# Check every expected ABI and Rust library in the APK against the exact pinned
+# compilers used by Native Assets. The shell verifier fails on missing ABI/lib,
+# invalid archive, absent or conflicting compiler markers, and new Rust libs.
+# A debug arm64-only APK can pass EXPECTED_ABIS=arm64-v8a explicitly.
+RUST_VERSION ?= 1.100.0
+# Prevent rustup from installing unrelated declared targets during hook setup.
+# Each hook still selects its own pinned compiler for the Cargo build.
+export RUSTUP_TOOLCHAIN ?= $(RUST_VERSION)
+export RUSTUP_AUTO_INSTALL ?= 0
+BDK_RUST_VERSION ?= $(RUST_VERSION)
+# Official hosted Payjoin pins this compiler explicitly in native/rust-toolchain.toml.
+PAYJOIN_RUST_VERSION ?= 1.85.1
+EXPECTED_ABIS ?= armeabi-v7a arm64-v8a x86_64
 verify-rustc-pins:
-	@command -v strings >/dev/null 2>&1 || { echo "❌ 'strings' (binutils) not found — cannot verify rustc pins. Install binutils; failing closed rather than skipping the check (a skipped check must never read as green)."; exit 1; }
-	@tmpdir=$$(mktemp -d); \
-	trap 'rm -rf "$$tmpdir"' EXIT; \
-	unzip -q -o "$(APK)" -d "$$tmpdir" 'lib/*/*.so' 2>/dev/null || true; \
-	abi_dirs=$$(find "$$tmpdir/lib" -mindepth 1 -maxdepth 1 -type d 2>/dev/null); \
-	if [ -z "$$abi_dirs" ]; then echo "❌ no native libraries extracted from $(APK) (unreadable APK, or no lib/*/*.so) — cannot verify rustc pins"; exit 1; fi; \
-	echo "🔎 Verifying Rust libraries embed the pinned rustc versions..."; \
-	cargokit_rustc=$$($(CONTAINER) run --rm bull-app rustup run stable rustc --version | awk '{print $$2}'); \
-	bdk_rustc=$$($(CONTAINER) run --rm bull-app rustup run $(BDK_RUST_VERSION) rustc --version | awk '{print $$2}'); \
-	if [ -z "$$cargokit_rustc" ] || [ -z "$$bdk_rustc" ]; then \
-		echo "❌ could not read pinned toolchain versions from bull-app (cargokit='$$cargokit_rustc' bdk='$$bdk_rustc') — cannot verify rustc pins"; \
-		exit 1; \
-	fi; \
-	fail=0; seen=" "; \
-	for abi_dir in $$abi_dirs; do \
-		abi=$$(basename "$$abi_dir"); \
-		echo "  · ABI $$abi"; \
-		for so in "$$abi_dir"/*.so; do \
-			[ -e "$$so" ] || { echo "❌ no .so files under $$abi_dir — cannot verify rustc pins"; exit 1; }; \
-			name=$$(basename "$$so"); \
-			case "$$name" in \
-				libbdk_dart_ffi.so) expected="$$bdk_rustc" ;; \
-				libonion.so|libpayjoin_flutter.so|librust_lib_bull_sdk.so) expected="$$cargokit_rustc" ;; \
-				*) expected="" ;; \
-			esac; \
-			embedded=$$(strings "$$so" 2>/dev/null | grep -m1 -o 'rustc version [0-9][0-9A-Za-z.+-]*' | awk '{print $$3}'); \
-			if [ -z "$$expected" ]; then \
-				[ -n "$$embedded" ] && echo "      ℹ️  $$name: rustc $$embedded (no pin tracked, add it to TRACKED_RUST_LIBS + the case above if this is a new Rust plugin)"; \
-				continue; \
-			fi; \
-			seen="$$seen$$abi/$$name "; \
-			if [ -z "$$embedded" ]; then \
-				echo "      ❌ $$name: tracked Rust lib but no embedded 'rustc version' string found (stripped, or the grep pattern needs updating)"; \
-				fail=1; continue; \
-			fi; \
-			if [ "$$embedded" != "$$expected" ]; then \
-				echo "      ❌ $$name: embedded rustc $$embedded, expected pinned $$expected"; \
-				fail=1; \
-			else \
-				echo "      ✅ $$name: rustc $$embedded (matches pin)"; \
-			fi; \
-		done; \
+	@set -e; \
+	for version in $(RUST_VERSION) $(BDK_RUST_VERSION) $(PAYJOIN_RUST_VERSION); do \
+		actual=$$($(CONTAINER) run --rm bull-app rustup run $$version rustc --version); \
+		case "$$actual" in "rustc $$version ("*) ;; *) echo "Unexpected Rust compiler: $$actual" >&2; exit 1 ;; esac; \
 	done; \
-	checked=0; \
-	for want in $(TRACKED_RUST_LIBS); do \
-		case "$$seen" in *"/$$want "*) checked=$$((checked+1)) ;; *) echo "  ⚠️  expected Rust lib $$want not found in any ABI of $(APK) — its pin was NOT verified" ;; esac; \
-	done; \
-	if [ "$$checked" = "0" ]; then \
-		echo "❌ none of the tracked Rust libs ($(TRACKED_RUST_LIBS)) were found — the rustc-pin check verified nothing; treating as failure"; \
-		exit 1; \
-	fi; \
-	if [ "$$fail" = "1" ]; then \
-		echo "❌ A Rust library was not built with its pinned toolchain — reproducibility is broken. Check the rustup shim in Containerfile.tools."; \
-		exit 1; \
-	fi; \
-	echo "✅ Tracked Rust libraries embed their pinned rustc versions (all ABIs)."
+	bash tools/verify_rustc_pins.sh "$(APK)" "$(RUST_VERSION)" "$(PAYJOIN_RUST_VERSION)" $(EXPECTED_ABIS)
+
+rustc-pins-test:
+	@python3 -m unittest tools.testing.test_verify_rustc_pins
 
 verify:
 	@echo "🔍 Verifying reproducible build"
@@ -449,10 +392,12 @@ devcontainer-up:
 test: unit-test integration-test
 
 # One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
+# Optionally bound test processes inside each package on shared machines.
+TEST_CONCURRENCY ?=
 unit-test:
 	@echo "🏃‍ running unit tests of every workspace member"
-	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --enable-vmservice --reporter=compact
-	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact
+	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the

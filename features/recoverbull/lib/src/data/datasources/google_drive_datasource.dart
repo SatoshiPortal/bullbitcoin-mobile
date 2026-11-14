@@ -1,9 +1,14 @@
 import 'package:http/http.dart' as http;
+
 import '../mappers/encrypted_vault_mapper.dart';
+
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:bull_logger/bull_logger.dart';
+
 import '../models/drive_file_metadata_model.dart';
+
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -13,25 +18,87 @@ class GoogleDriveAppDatasource {
       'nextPageToken,files(id, name, createdTime, modifiedTime)';
   static const metadataPageSize = 1000;
   final Future<GoogleDriveMetadataPage> Function(String? pageToken)? pageLister;
-  static final _sharedGoogle = GoogleSignIn(
-    scopes: ['https://www.googleapis.com/auth/drive.appdata'],
-  );
+  static const _scopes = ['https://www.googleapis.com/auth/drive.appdata'];
+  static final _sharedGoogle = GoogleSignIn.instance;
+  static final Future<void> _sharedInitialization = _sharedGoogle.initialize();
   final GoogleSignIn _google;
 
   drive.DriveApi? _driveApi;
   http.Client? _client;
   String? _authenticatedAccount;
-  final Future<http.Client?> Function() _authenticatedClient;
+  final Future<http.Client?> Function()? _authenticatedClient;
+  Future<void>? _initialization;
+  GoogleSignInAccount? _currentAccount;
+  int _authenticationEpoch = 0;
+  late final StreamSubscription<GoogleSignInAuthenticationEvent>
+  _authentication;
   bool _disposed = false;
 
   GoogleDriveAppDatasource({
     this.pageLister,
     GoogleSignIn? googleSignIn,
-    Future<http.Client?> Function()? authenticatedClient,
-  }) : _google = googleSignIn ?? _sharedGoogle,
-       _authenticatedClient =
-           authenticatedClient ??
-           (() => (googleSignIn ?? _sharedGoogle).authenticatedClient());
+    this._authenticatedClient,
+  }) : _google = googleSignIn ?? _sharedGoogle {
+    _authentication = _google.authenticationEvents.listen(
+      (event) {
+        switch (event) {
+          case GoogleSignInAuthenticationEventSignIn(:final user):
+            if (_currentAccount?.email != user.email) _authenticationEpoch++;
+            _currentAccount = user;
+            if (_authenticatedAccount != null &&
+                _authenticatedAccount != user.email) {
+              _clearClient();
+            }
+          case GoogleSignInAuthenticationEventSignOut():
+            _authenticationEpoch++;
+            _currentAccount = null;
+            _clearClient();
+        }
+      },
+      onError: (Object error, StackTrace stack) {
+        log.warning('recoverbull.drive.authentication.unavailable');
+      },
+    );
+  }
+
+  Future<void> _initialize() =>
+      _initialization ??= identical(_google, _sharedGoogle)
+      ? _sharedInitialization
+      : _google.initialize();
+
+  Future<http.Client?> _clientFor(
+    GoogleSignInAccount account, {
+    required bool interactive,
+    required int epoch,
+  }) async {
+    final authenticate = _authenticatedClient;
+    if (authenticate != null) return await authenticate();
+    final authorization = await account.authorizationClient
+        .authorizationForScopes(_scopes);
+    _checkAccount(account.email, epoch);
+    if (authorization != null) return authorization.authClient(scopes: _scopes);
+    if (!interactive) return null;
+    return (await account.authorizationClient.authorizeScopes(_scopes))
+        .authClient(scopes: _scopes);
+  }
+
+  void _acceptAccount(GoogleSignInAccount? account, int epoch) {
+    if (_disposed) throw const _DriveAuthenticationCancelledException();
+    if (_authenticationEpoch == epoch) {
+      _currentAccount = account;
+    } else if (_authenticationEpoch != epoch + 1 ||
+        _currentAccount?.email != account?.email) {
+      throw const _DriveAuthenticationCancelledException();
+    }
+  }
+
+  void _checkAccount(String account, int epoch) {
+    if (_disposed ||
+        _authenticationEpoch != epoch ||
+        _currentAccount?.email != account) {
+      throw const _DriveAuthenticationCancelledException();
+    }
+  }
 
   drive.DriveApi get _connectedApi {
     _checkConnection();
@@ -50,15 +117,19 @@ class GoogleDriveAppDatasource {
   Future<void> connect() async {
     if (_disposed) throw StateError('Drive datasource is disposed');
     try {
-      final account = await _google.signIn();
-      if (account == null) throw Exception('Drive sign-in unavailable');
+      await _initialize();
+      if (_disposed) throw const _DriveAuthenticationCancelledException();
+      final beforeAuthentication = _authenticationEpoch;
+      final account = await _google.authenticate(scopeHint: _scopes);
+      _acceptAccount(account, beforeAuthentication);
+      final epoch = _authenticationEpoch;
 
-      final client = await _authenticatedClient();
+      final client = await _clientFor(account, interactive: true, epoch: epoch);
       if (client == null) {
         throw Exception('Drive authenticated client unavailable');
       }
 
-      _replaceClient(client, account.email);
+      _replaceClient(client, account.email, epoch);
     } on Exception {
       log.warning('recoverbull.drive.operation.failed');
       // Only forget the cached client: disconnecting would revoke the user's
@@ -72,7 +143,18 @@ class GoogleDriveAppDatasource {
   Future<String?> connectSilently() async {
     if (_disposed) throw StateError('Drive datasource is disposed');
     try {
-      final account = await _google.signInSilently(suppressErrors: false);
+      await _initialize();
+      if (_disposed) throw const _DriveAuthenticationCancelledException();
+      final beforeAuthentication = _authenticationEpoch;
+      final attempt = _google.attemptLightweightAuthentication(
+        reportAllExceptions: true,
+      );
+      // Event-only platforms cannot grant a discovery capability synchronously.
+      // A pending attempt is not evidence that the user signed out.
+      if (attempt == null) return null;
+      final account = await attempt;
+      _acceptAccount(account, beforeAuthentication);
+      final epoch = _authenticationEpoch;
       if (account == null) {
         // A real sign-out is different from a transient probe failure.
         _clearClient();
@@ -83,13 +165,17 @@ class GoogleDriveAppDatasource {
         // Never let an authenticated operation reuse the previous account.
         _clearClient();
       }
-      final client = await _authenticatedClient();
+      final client = await _clientFor(
+        account,
+        interactive: false,
+        epoch: epoch,
+      );
       if (client == null) return null;
-      _replaceClient(client, account.email);
+      _replaceClient(client, account.email, epoch);
       return account.email;
     } on Exception {
       log.warning('recoverbull.drive.discovery.unavailable');
-      final currentAccount = _google.currentUser;
+      final currentAccount = _currentAccount;
       if (currentAccount == null ||
           currentAccount.email != _authenticatedAccount) {
         _clearClient();
@@ -102,14 +188,18 @@ class GoogleDriveAppDatasource {
 
   Future<void> disconnect() async {
     try {
+      await _initialize();
       await _google.disconnect();
+      _currentAccount = null;
     } finally {
       _clearClient();
     }
   }
 
-  void _replaceClient(http.Client client, String account) {
-    if (_disposed || _google.currentUser?.email != account) {
+  void _replaceClient(http.Client client, String account, int epoch) {
+    if (_disposed ||
+        _authenticationEpoch != epoch ||
+        _currentAccount?.email != account) {
       if (!identical(_client, client)) _closeClient(client);
       _clearClient();
       throw const _DriveAuthenticationCancelledException();
@@ -143,6 +233,7 @@ class GoogleDriveAppDatasource {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    unawaited(_authentication.cancel());
     _clearClient();
   }
 

@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_us
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/ui/widgets/autobuy_home_card.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -28,7 +28,7 @@ void main() {
     required Future<void> Function() onStatusChanged,
   }) => MaterialApp(
     theme: AppTheme.themeData(AppThemeType.light),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: BlocProvider.value(
@@ -107,9 +107,8 @@ void main() {
 
   testWidgets('confirms and applies deactivation', (tester) async {
     var statusChanged = false;
-    when(
-      () => setAutoBuy.execute(enabled: false),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => setAutoBuy.execute(enabled: false))
+        .thenAnswer((_) async => const Ok(null));
 
     await tester.pumpWidget(
       app(

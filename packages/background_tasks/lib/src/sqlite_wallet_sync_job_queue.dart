@@ -114,7 +114,7 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
         lease_token TEXT, lease_expires_at INTEGER, absent INTEGER NOT NULL DEFAULT 0)''',
       );
     } catch (_) {
-      if (_ownsDatabase) _database.dispose();
+      if (_ownsDatabase) _database.close();
       rethrow;
     }
   }
@@ -457,6 +457,6 @@ final class SqliteWalletSyncJobQueue implements WalletSyncJobQueue {
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
-    if (_ownsDatabase) _database.dispose();
+    if (_ownsDatabase) _database.close();
   }
 }

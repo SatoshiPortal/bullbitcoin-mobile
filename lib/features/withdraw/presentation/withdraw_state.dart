@@ -65,31 +65,34 @@ sealed class WithdrawState with _$WithdrawState {
     return whenOrNull(
       amountInput: (userSummary) =>
           WithdrawAmountInputState(userSummary: userSummary),
-      recipientInput:
-          (
-            userSummary,
-            amount,
-            currency,
-            isCreatingWithdrawOrder,
-            newRecipientFailure,
-            selectedRecipientFailure,
-            recipientToActivate,
-          ) => WithdrawAmountInputState(userSummary: userSummary),
-      paymentDetailsInput:
-          (userSummary, amount, currency, recipient, isCreating, failure) =>
-              WithdrawAmountInputState(userSummary: userSummary),
-      confirmation:
-          (
-            userSummary,
-            amount,
-            currency,
-            recipient,
-            order,
-            interacSecurityDetails,
-            saveSecurityDetailsAsDefault,
-            isConfirmingWithdrawal,
-            failure,
-          ) => WithdrawAmountInputState(userSummary: userSummary),
+      recipientInput: (
+        userSummary,
+        amount,
+        currency,
+        isCreatingWithdrawOrder,
+        newRecipientFailure,
+        selectedRecipientFailure,
+        recipientToActivate,
+      ) => WithdrawAmountInputState(userSummary: userSummary),
+      paymentDetailsInput: (
+        userSummary,
+        amount,
+        currency,
+        recipient,
+        isCreating,
+        failure,
+      ) => WithdrawAmountInputState(userSummary: userSummary),
+      confirmation: (
+        userSummary,
+        amount,
+        currency,
+        recipient,
+        order,
+        interacSecurityDetails,
+        saveSecurityDetailsAsDefault,
+        isConfirmingWithdrawal,
+        failure,
+      ) => WithdrawAmountInputState(userSummary: userSummary),
     );
   }
 

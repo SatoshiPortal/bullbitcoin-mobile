@@ -17,8 +17,7 @@ const _allowedTargets = <String, String>{
   'address_view': 'settings wallet',
   'all_seed_view': 'app_unlock wallet',
   'announcements': 'settings swap',
-  'app_startup':
-      'app_unlock import_mnemonic logs onboarding pin_code recoverbull settings wallet',
+  'app_startup': 'app_unlock import_mnemonic logs onboarding pin_code recoverbull settings wallet',
   'app_unlock': 'pin_code wallet',
   'autobuy': 'default_wallets exchange wallet',
   'autoswap': 'labels send swap wallet',
@@ -33,8 +32,7 @@ const _allowedTargets = <String, String>{
   'dca': 'exchange fund_exchange settings wallet',
   'default_wallets': 'exchange wallet',
   'electrum_settings': 'tor_settings wallet',
-  'exchange':
-      'autobuy bitcoin_price dca exchange_support_chat fund_exchange settings transactions withdraw',
+  'exchange': 'autobuy bitcoin_price dca exchange_support_chat fund_exchange settings transactions withdraw',
   'exchange_settings': 'exchange',
   'exchange_support_chat': 'exchange',
   'fees': 'electrum_settings wallet',
@@ -42,28 +40,22 @@ const _allowedTargets = <String, String>{
   'import_coldcard': 'import_watch_only_wallet',
   'import_mnemonic': 'electrum_settings wallet',
   'import_qr_device': 'import_watch_only_wallet',
-  'import_wallet':
-      'bitbox import_coldcard import_mnemonic import_qr_device import_watch_only_wallet ledger settings',
+  'import_wallet': 'bitbox import_coldcard import_mnemonic import_qr_device import_watch_only_wallet ledger settings',
   'import_watch_only_wallet': 'wallet',
   'labels': 'wallet',
   'ledger': 'import_watch_only_wallet wallet',
   'limit_orders': 'default_wallets exchange fund_exchange wallet',
   'mempool_settings': 'settings',
-  'onboarding':
-      'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
-  'pay':
-      'bitcoin_price exchange fees recipients send settings transactions wallet',
+  'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
+  'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
   'pin_code': 'app_unlock settings test_wallet_backup wallet',
   'psbt_flow': 'broadcast_signed_tx wallet',
   'receive': 'bitbox labels ledger settings swap transactions wallet',
   'recipients': 'exchange settings',
   'replace_by_fee': 'fees send wallet',
-  'sell':
-      'bitcoin_price exchange fees labels recipients send settings transactions wallet',
-  'send':
-      'bitbox consolidation electrum_settings fees labels ledger psbt_flow settings sp swap transactions wallet',
-  'settings':
-      'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
+  'sell': 'bitcoin_price exchange fees labels recipients send settings transactions wallet',
+  'send': 'bitbox consolidation electrum_settings fees labels ledger psbt_flow settings sp swap transactions wallet',
+  'settings': 'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
   'status_check': 'electrum_settings recoverbull wallet',
   'support': 'exchange_support_chat',
@@ -72,8 +64,7 @@ const _allowedTargets = <String, String>{
   'test_wallet_backup': 'onboarding recoverbull wallet',
   'transactions':
       'buy electrum_settings exchange labels pay replace_by_fee swap wallet',
-  'wallet':
-      'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive recoverbull send settings sp swap tor_settings transactions',
+  'wallet': 'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive recoverbull send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'settings',
 };
@@ -162,8 +153,7 @@ void main() {
         'lib/features/sp/renamed.dart':
             "import '../../core/barrel.dart'; import 'local.dart';",
         'lib/features/sp/local.dart': '',
-        'lib/core/barrel.dart':
-            "export 'barrel.dart'; export '../features/wallet/public/api.dart';",
+        'lib/core/barrel.dart': "export 'barrel.dart'; export '../features/wallet/public/api.dart';",
         'lib/features/wallet/public/api.dart':
             "export '../data/repository.dart' if (dart.library.io) "
             "'package:bb_mobile/features/swap/anything.dart'; "
@@ -197,9 +187,9 @@ void main() {
         final root = configFile.absolute.uri.resolve(
           package['rootUri'] as String,
         );
-        final lib = Directory(
-          root.toFilePath(),
-        ).uri.resolve(package['packageUri'] as String? ?? 'lib/').toFilePath();
+        final lib = Directory(root.toFilePath()).uri
+            .resolve(package['packageUri'] as String? ?? 'lib/')
+            .toFilePath();
         if (p.isWithin(Directory.current.path, lib)) {
           packages[package['name'] as String] = p.relative(lib);
         }

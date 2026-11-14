@@ -5,8 +5,8 @@ version: 6.15.0+228
 
 
 environment:
-  sdk: "3.12.2"
-  flutter: "3.44.9"
+  sdk: ">=3.14.0 <4.0.0"
+  flutter: ">=3.50.0"
 workspace:
   - packages/secrets
   - packages/bull_payjoin
@@ -30,6 +30,8 @@ workspace:
   - features/recoverbull
 
 dependencies:
+  cupertino_ui: ^1.1.6
+  material_ui: ^1.11.0
   flutter:
     sdk: flutter
   secrets:
@@ -51,8 +53,8 @@ dependencies:
   bull_logs:
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
-  flutter_svg: ^2.2.4
-  go_router: ^17.0.0
+  flutter_svg: ^2.4.0
+  go_router: ^18.1.4
   flutter_secure_storage: ^10.3.3
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
@@ -64,21 +66,21 @@ dependencies:
   flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
-  file_picker: 10.3.6
+  file_picker: ^13.3.3
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      ref: 50089d72ede5578428aa5c7c019cdb7accd6c4e5
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      ref: 50089d72ede5578428aa5c7c019cdb7accd6c4e5
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      ref: 50089d72ede5578428aa5c7c019cdb7accd6c4e5
       path: packages/bitbox-transport
   universal_ble: ^1.2.0
   auto_size_text: ^3.0.0
@@ -86,7 +88,7 @@ dependencies:
   convert: ^3.1.2
   crypto: ^3.0.7
   synchronized: ^3.4.0
-  json_annotation: ^4.9.0
+  json_annotation: ^4.12.0
   flutter_localizations:
     sdk: flutter
   intl: any
@@ -105,22 +107,18 @@ dependencies:
   bip329_labels: ^2.0.0
   bs58check: ^1.0.2
   gif: ^2.3.0
-  custom_sliding_segmented_control: ^1.8.5
-  shimmer: ^3.0.0
-  flutter_zxing: ^2.2.1
-  webview_cookie_manager:
-    git:
-      url: https://github.com/fryette/webview_cookie_manager.git
-      ref: e03954491a6952e04d7fceeae4c4d074392c0fe2
-  webview_flutter: ^4.13.0
+  custom_sliding_segmented_control: ^2.0.0
+  shimmer: ^4.0.0
+  flutter_zxing: ^3.1.1
+  webview_flutter: ^4.14.1
   webview_flutter_android: ^4.10.10
   webview_flutter_wkwebview: ^3.23.4
   async: ^2.11.0
-  drift: ^2.29.0
-  drift_flutter: ^0.2.7
-  sqlite3: ^2.9.4
-  package_info_plus: ^9.0.0
-  share_plus: ^12.0.1
+  drift: ^2.35.4
+  drift_flutter: ^0.3.1
+  sqlite3: ^3.5.2
+  package_info_plus: ^10.2.2
+  share_plus: ^13.3.1
   bolt11_decoder:
     git:
       url: https://github.com/fusion44/dart_bolt11_decoder
@@ -128,7 +126,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      ref: 50089d72ede5578428aa5c7c019cdb7accd6c4e5
       path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
@@ -137,7 +135,7 @@ dependencies:
       url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins
       path: packages/ledger-bitcoin
       ref: c4240d1f518c5903b67191253212754a31ed5333
-  permission_handler: ^12.0.1
+  permission_handler: ^13.0.2
   cbor: ^6.3.7
   ur:
     git:
@@ -151,16 +149,16 @@ dependencies:
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
-  sentry_flutter: ^9.22.0
-  keyboard_actions: ^4.2.1
+  sentry_flutter: ^9.26.0
+  keyboard_actions: ^5.0.3
 
 dev_dependencies:
   # Parse import, conditional export and part directives in the shell boundary test.
-  analyzer: ^10.2.0
+  analyzer: ^13.0.0
   build_runner: ^2.10.4
   fake_async: ^1.3.3
   flutter_lints: ^6.0.0
-  freezed: ^3.2.3
+  freezed: ^4.0.0
   flutter_test:
     sdk: flutter
   integration_test:
@@ -173,11 +171,23 @@ dev_dependencies:
   path_provider_platform_interface: ^2.1.2
   test: ^1.26.3
   flutter_gen_runner: any
-  drift_dev: ^2.29.0
+  drift_dev: ^2.35.3
   melos: ^7.8.1
   # Direct dep for tools/novlang_bridge.dart, which reads the novlang manifest.
   yaml: ^3.1.3
   bloc_test: ^10.0.0
+
+# Payjoin 0.26.0's archive predates upstream's hooks-2 metadata-only fix:
+# https://github.com/payjoin/rust-payjoin/commit/6c39a08
+# Keep the official archive; remove these once its released constraints allow 2.
+dependency_overrides:
+  hooks: ^2.0.2
+  code_assets: ^2.0.0
+
+hooks:
+  user_defines:
+    payjoin:
+      build: source
 
 # Melos monorepo workspace. The Flutter app remains at the root
 # (useRootAsPackage) while shared modules are extracted incrementally into the

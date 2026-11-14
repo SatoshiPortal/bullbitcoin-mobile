@@ -62,9 +62,8 @@ void main() {
         end: any(named: 'end'),
       ),
     ).thenAnswer((_) async => const Ok<String, TransactionFailure>('csv'));
-    when(
-      () => saver.save(any()),
-    ).thenAnswer((_) async => const Ok<bool, TransactionFailure>(false));
+    when(() => saver.save(any()))
+        .thenAnswer((_) async => const Ok<bool, TransactionFailure>(false));
 
     final cubit = buildCubit();
     addTearDown(cubit.close);

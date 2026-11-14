@@ -10,10 +10,9 @@ void main() {
     () async {
       FakeSecureStoragePlatform().install();
       final secrets = Secrets(scratchDirectory: () async => '.');
-      final secret =
-          (await secrets.import(words: '${'abandon ' * 11}about'.split(' '))
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      final secret = (await secrets.import(
+        words: '${'abandon ' * 11}about'.split(' '),
+      ) as Ok<Secret, SecretFailure>).value;
       final messages = <String>[];
       final previous = debugPrint;
       debugPrint = (message, {wrapWidth}) {

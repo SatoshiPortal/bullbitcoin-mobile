@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
+
 import 'dart:async';
+
 import 'package:transaction_sync/read.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
@@ -10,7 +12,9 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -178,11 +182,9 @@ void main() {
       () async {
         final storage = FakeSecureStoragePlatform()..install();
         final secrets = Secrets(scratchDirectory: () async => directory.path);
-        final secret =
-            await secrets.import(
-                  words: [...List.filled(11, 'abandon'), 'about'],
-                )
-                as Ok<Secret, SecretFailure>;
+        final secret = await secrets.import(
+          words: [...List.filled(11, 'abandon'), 'about'],
+        ) as Ok<Secret, SecretFailure>;
         final local = row.copyWith(
           signer: Signer.local,
           masterFingerprint: secret.value.id.hex,
@@ -207,9 +209,8 @@ void main() {
         );
         if (deleteWallet) {
           final swaps = _Swaps();
-          when(
-            () => swaps.getOngoingSwaps(walletId: id),
-          ).thenAnswer((_) async => []);
+          when(() => swaps.getOngoingSwaps(walletId: id))
+              .thenAnswer((_) async => []);
           expect(
             await DeleteWalletUsecase(
               walletRepository: guardedRepository,
@@ -263,16 +264,14 @@ void main() {
       ],
     );
     expect(await repository.getCustodyFingerprints(), isA<Err>());
-    when(
-      () => metadata.fetchAll(),
-    ).thenThrow(const FormatException('unreadable row'));
+    when(() => metadata.fetchAll())
+        .thenThrow(const FormatException('unreadable row'));
     expect(await repository.getCustodyFingerprints(), isA<Err>());
   });
 
   test('invalid catalog origin does not hide a healthy wallet', () async {
-    when(
-      () => metadata.fetchAll(),
-    ).thenAnswer((_) async => [row.copyWith(id: 'invalid'), row]);
+    when(() => metadata.fetchAll())
+        .thenAnswer((_) async => [row.copyWith(id: 'invalid'), row]);
     final result = await repository.getWallets();
     expect(result, isA<Ok>());
     if (result case Ok(:final value)) {
@@ -285,20 +284,19 @@ void main() {
     () async {
       final other = row.copyWith(id: 'wpkh([11223344/84h/1h/0h])');
       when(() => metadata.fetchAll()).thenAnswer((_) async => [row, other]);
-      when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
-        invocation,
-      ) async {
-        final model = invocation.namedArguments[#wallet] as WalletModel;
-        if (model.id == id) throw const FileSystemException('unavailable');
-        return BalanceModel(
-          confirmedSat: BigInt.one,
-          immatureSat: BigInt.zero,
-          trustedPendingSat: BigInt.zero,
-          untrustedPendingSat: BigInt.zero,
-          spendableSat: BigInt.one,
-          totalSat: BigInt.one,
-        );
-      });
+      when(() => bdk.getBalance(wallet: any(named: 'wallet')))
+          .thenAnswer((invocation) async {
+            final model = invocation.namedArguments[#wallet] as WalletModel;
+            if (model.id == id) throw const FileSystemException('unavailable');
+            return BalanceModel(
+              confirmedSat: BigInt.one,
+              immatureSat: BigInt.zero,
+              trustedPendingSat: BigInt.zero,
+              untrustedPendingSat: BigInt.zero,
+              spendableSat: BigInt.one,
+              totalSat: BigInt.one,
+            );
+          });
       final result = await repository.getWallets();
       expect(result, isA<Ok>());
       if (result case Ok(:final value)) {
@@ -335,9 +333,8 @@ void main() {
     final gate = Completer<void>();
     policy.gate = gate.future;
     final started = repository.walletSyncStartedStream.first;
-    final syncing = SyncWalletUsecase(
-      walletRepository: repository,
-    ).execute(wallet);
+    final syncing = SyncWalletUsecase(walletRepository: repository)
+        .execute(wallet);
     try {
       await started;
       verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
@@ -389,9 +386,8 @@ void main() {
       internalDescriptor: 'wpkh(change)',
     );
     final catalog = _Catalog();
-    when(
-      () => catalog.find(descriptor.key),
-    ).thenAnswer((_) async => Ok(descriptor));
+    when(() => catalog.find(descriptor.key))
+        .thenAnswer((_) async => Ok(descriptor));
     final background = BackgroundWalletSyncImpl(
       catalog,
       ElectrumSync(
@@ -454,13 +450,12 @@ void main() {
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
-        synchronize:
-            (
-              metadata, {
-              bool discover = false,
-              allowInitialScan = true,
-              SyncReason reason = SyncReason.auto,
-            }) async => requests.add((discover, allowInitialScan)),
+        synchronize: (
+          metadata, {
+          bool discover = false,
+          allowInitialScan = true,
+          SyncReason reason = SyncReason.auto,
+        }) async => requests.add((discover, allowInitialScan)),
         isSyncing: ({String? walletId}) => false,
         syncStarted: const Stream.empty(),
         syncFinished: const Stream.empty(),
@@ -529,9 +524,8 @@ void main() {
     final wallet =
         (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
     await expectLater(
-      SyncWalletUsecase(
-        walletRepository: repository,
-      ).execute(wallet, discover: true, reason: SyncReason.manual),
+      SyncWalletUsecase(walletRepository: repository)
+          .execute(wallet, discover: true, reason: SyncReason.manual),
       throwsA(
         isA<WalletSnapshotException>().having(
           (error) => error.failure,
@@ -605,12 +599,10 @@ void main() {
     'descriptor import persists catalog then creates offline before sync',
     () async {
       final descriptor = _Descriptor();
-      when(
-        () => descriptor.network,
-      ).thenReturn(satoshifier.Network.bitcoinTestnet);
-      when(
-        () => descriptor.derivation,
-      ).thenReturn(satoshifier.Derivation.bip84);
+      when(() => descriptor.network)
+          .thenReturn(satoshifier.Network.bitcoinTestnet);
+      when(() => descriptor.derivation)
+          .thenReturn(satoshifier.Derivation.bip84);
       when(() => descriptor.external).thenReturn('wpkh(public)');
       when(() => descriptor.internal).thenReturn('wpkh(change)');
       when(() => descriptor.pubkey).thenReturn(
@@ -635,12 +627,11 @@ void main() {
       final originalBalance = await bdk.getBalance(
         wallet: WalletModel.fromMetadata(row),
       );
-      when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
-        _,
-      ) async {
-        expect(provisioned, isTrue);
-        return originalBalance;
-      });
+      when(() => bdk.getBalance(wallet: any(named: 'wallet')))
+          .thenAnswer((_) async {
+            expect(provisioned, isTrue);
+            return originalBalance;
+          });
       clearInteractions(bdk);
       final importing = WalletRepository(
         native: native,

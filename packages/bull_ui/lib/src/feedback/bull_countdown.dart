@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A `m:ss` countdown to a [DateTime], stopping at `0:00`.
 ///
@@ -80,10 +80,8 @@ class BullCountdownState extends State<BullCountdown> {
       '${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
       style:
           widget.textStyle ??
-          Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: colors.primary,
-          ),
+          Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w500, color: colors.primary),
     );
   }
 }

@@ -1,5 +1,8 @@
-typedef TorLogCallback =
-    void Function(Object? message, {Object? error, StackTrace? trace});
+typedef TorLogCallback = void Function(
+  Object? message, {
+  Object? error,
+  StackTrace? trace,
+});
 
 final class TorLogger {
   final TorLogCallback? configCallback;

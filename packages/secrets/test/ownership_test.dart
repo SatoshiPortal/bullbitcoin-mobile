@@ -72,9 +72,9 @@ void main() {
       input.setAll(0, b); // the caller reuses its buffer
       final info = ok(await pending);
 
-      final written =
-          jsonDecode(storage.entries['seed_${info.id.hex}']!)
-              as Map<String, dynamic>;
+      final written = jsonDecode(
+        storage.entries['seed_${info.id.hex}']!,
+      ) as Map<String, dynamic>;
 
       expect(info.id, Fingerprint(aFingerprint));
       expect(
@@ -196,8 +196,7 @@ void main() {
         expect(
           (result as Err<String, SecretFailure>).failure,
           isA<FingerprintMismatchFailure>(),
-          reason:
-              'its own failure, never a not-found: callers read that as "the seed is gone"',
+          reason: 'its own failure, never a not-found: callers read that as "the seed is gone"',
         );
       },
     );

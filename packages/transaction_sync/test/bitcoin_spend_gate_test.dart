@@ -91,59 +91,56 @@ void main() {
     },
   );
 
-  test(
-    'observed predecessor admits RBF and revalidation cannot be cleared by revision recovery',
-    () async {
-      await accepted();
+  test('observed predecessor admits RBF and revalidation cannot be cleared by revision recovery', () async {
+    await accepted();
+    expect(
+      await gate.check(wallet.key, replacing: txid),
+      BitcoinSpendStatus.replacementPending,
+    );
+    final store = BitcoinSpendGateStore(revisions.spendGatePath);
+    try {
+      store.observed(wallet, 1, {txid});
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
       expect(
         await gate.check(wallet.key, replacing: txid),
+        BitcoinSpendStatus.ready,
+      );
+      // The replacement is a new obligation, unobserved until a sync sees it.
+      final admission = await gate.acquire(wallet.key);
+      expect(
+        (admission as BitcoinSpendAdmission).accepted(replacement).durable,
+        isTrue,
+      );
+      admission.close();
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+      expect(
+        await gate.check(wallet.key, replacing: replacement),
         BitcoinSpendStatus.replacementPending,
       );
-      final store = BitcoinSpendGateStore(revisions.spendGatePath);
-      try {
-        store.observed(wallet, 1, {txid});
-        expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
-        expect(
-          await gate.check(wallet.key, replacing: txid),
-          BitcoinSpendStatus.ready,
-        );
-        // The replacement is a new obligation, unobserved until a sync sees it.
-        final admission = await gate.acquire(wallet.key);
-        expect(
-          (admission as BitcoinSpendAdmission).accepted(replacement).durable,
-          isTrue,
-        );
-        admission.close();
-        expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
-        expect(
-          await gate.check(wallet.key, replacing: replacement),
-          BitcoinSpendStatus.replacementPending,
-        );
-        // The pass that sees the replacement settles the original it
-        // conflicts with; both stay recorded.
-        store.observed(wallet, 1, {replacement, txid});
-        expect(store.tracked(wallet), [txid, replacement]);
-        expect(
-          await gate.check(wallet.key, replacing: replacement),
-          BitcoinSpendStatus.ready,
-        );
-        // This marker precedes native persistence. Generic interrupted-write
-        // reconciliation cannot erase it, even if native state was already saved.
-        store.requireValidation(wallet.key);
-        revisions.begin(wallet.key, WriteIntent.sync);
-        revisions.finish(wallet.key);
-        expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
-        expect(
-          await gate.check(wallet.key, replacing: replacement),
-          BitcoinSpendStatus.replacementPending,
-        );
-        store.observed(wallet, 1, {});
-        expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
-      } finally {
-        store.close();
-      }
-    },
-  );
+      // The pass that sees the replacement settles the original it
+      // conflicts with; both stay recorded.
+      store.observed(wallet, 1, {replacement, txid});
+      expect(store.tracked(wallet), [txid, replacement]);
+      expect(
+        await gate.check(wallet.key, replacing: replacement),
+        BitcoinSpendStatus.ready,
+      );
+      // This marker precedes native persistence. Generic interrupted-write
+      // reconciliation cannot erase it, even if native state was already saved.
+      store.requireValidation(wallet.key);
+      revisions.begin(wallet.key, WriteIntent.sync);
+      revisions.finish(wallet.key);
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+      expect(
+        await gate.check(wallet.key, replacing: replacement),
+        BitcoinSpendStatus.replacementPending,
+      );
+      store.observed(wallet, 1, {});
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+    } finally {
+      store.close();
+    }
+  });
 
   test('a settled spend is retained and blocks again after a reset', () async {
     await accepted();
@@ -164,9 +161,10 @@ void main() {
   });
 
   test('writer contention is busy, not an unobserved payment', () async {
-    final held =
-        WriterLock.acquire(writerLockDirectory(dir.path), wallet.key)
-            as Ok<WriterLock, TransactionSyncFailure>;
+    final held = WriterLock.acquire(
+      writerLockDirectory(dir.path),
+      wallet.key,
+    ) as Ok<WriterLock, TransactionSyncFailure>;
     try {
       expect(await gate.check(wallet.key), BitcoinSpendStatus.busy);
     } finally {
@@ -215,28 +213,25 @@ void main() {
       expect(marker.existsSync(), isTrue);
       expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
     } finally {
-      db.dispose();
+      db.close();
     }
   });
 
-  test(
-    'accepted storage failure stays accepted and blocks admission until recorded',
-    () async {
-      final db = sqlite3.open(revisions.spendGatePath);
-      db.execute(
-        "CREATE TRIGGER fail_record BEFORE INSERT ON broadcasts BEGIN SELECT RAISE(FAIL, 'storage unavailable'); END",
-      );
-      final admission = await gate.acquire(wallet.key) as BitcoinSpendAdmission;
-      final receipt = admission.accepted(txid);
-      expect(receipt.txid, txid);
-      expect(receipt.durable, isFalse);
-      admission.close();
-      expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
-      db.execute('DROP TRIGGER fail_record');
-      db.dispose();
-      expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
-    },
-  );
+  test('accepted storage failure stays accepted and blocks admission until recorded', () async {
+    final db = sqlite3.open(revisions.spendGatePath);
+    db.execute(
+      "CREATE TRIGGER fail_record BEFORE INSERT ON broadcasts BEGIN SELECT RAISE(FAIL, 'storage unavailable'); END",
+    );
+    final admission = await gate.acquire(wallet.key) as BitcoinSpendAdmission;
+    final receipt = admission.accepted(txid);
+    expect(receipt.txid, txid);
+    expect(receipt.durable, isFalse);
+    admission.close();
+    expect(await gate.check(wallet.key), BitcoinSpendStatus.unavailable);
+    db.execute('DROP TRIGGER fail_record');
+    db.close();
+    expect(await gate.check(wallet.key), BitcoinSpendStatus.pending);
+  });
 
   test('headless opening does not provision missing gate schema', () async {
     final emptyPath = '${dir.path}/headless.sqlite';

@@ -1,4 +1,5 @@
 import 'report.dart';
+
 import 'package:bull_logger/bull_logger.dart';
 
 final class ReportLoggerAdapter implements LoggerReporter {

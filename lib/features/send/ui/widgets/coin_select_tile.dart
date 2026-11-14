@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullCheckbox, BullShapesX, BullSpacing, BullText, Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CoinSelectTile extends StatelessWidget {
   final WalletUtxo utxo;

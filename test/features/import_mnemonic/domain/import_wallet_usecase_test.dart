@@ -61,9 +61,8 @@ void main() {
   setUpAll(() async {
     // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
     FakeSecureStoragePlatform().install();
-    final fallback = await Secrets(
-      scratchDirectory: () async => '/tmp',
-    ).import(words: words);
+    final fallback = await Secrets(scratchDirectory: () async => '/tmp')
+        .import(words: words);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(Network.bitcoinMainnet);
@@ -90,13 +89,11 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => checkDuplicate.isReferenced(any(), any()),
-    ).thenAnswer((_) async => false);
+    when(() => checkDuplicate.isReferenced(any(), any()))
+        .thenAnswer((_) async => false);
     // No wallet references any seed unless a test says so.
-    when(
-      () => walletRepository.getWallets(),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
+    when(() => walletRepository.getWallets())
+        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
     when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
   });
 
@@ -245,9 +242,8 @@ void main() {
     test(
       'strict import rejects a referenced duplicate without cleanup',
       () async {
-        when(
-          () => checkDuplicate.isReferenced(any(), any()),
-        ).thenAnswer((_) async => true);
+        when(() => checkDuplicate.isReferenced(any(), any()))
+            .thenAnswer((_) async => true);
         // The mocked preflight says the words are new, as it can after a stale
         // read or a concurrent storage operation. Import still rejects them.
         expect(
@@ -283,9 +279,8 @@ void main() {
         var creations = 0;
         stubCreateWallet(() async {
           creations++;
-          when(
-            () => checkDuplicate.isReferenced(any(), any()),
-          ).thenAnswer((_) async => true);
+          when(() => checkDuplicate.isReferenced(any(), any()))
+              .thenAnswer((_) async => true);
           return wallet;
         });
 
@@ -338,9 +333,8 @@ void main() {
       'cleanup retains the new secret when wallet references cannot be read',
       () async {
         stubCreateWallet(() async => throw Exception('wallet creation failed'));
-        when(
-          () => walletRepository.getWallets(),
-        ).thenThrow(Exception('wallet lookup failed'));
+        when(() => walletRepository.getWallets())
+            .thenThrow(Exception('wallet lookup failed'));
 
         final result = await usecase.execute(mnemonicWords: words);
 

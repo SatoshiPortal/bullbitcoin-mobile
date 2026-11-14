@@ -1,7 +1,10 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:sqlite3/sqlite3.dart';
+
 import 'dart:async';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
@@ -116,9 +119,9 @@ void main() {
         );
       };
       var finished = false;
-      final run = task(
-        keys: [key, second],
-      ).executeAll().then((_) => finished = true);
+      final run = task(keys: [key, second])
+          .executeAll()
+          .then((_) => finished = true);
       await started.future;
       expect(
         await const SharedPreferencesBackgroundSyncIntervalStore().write(
@@ -242,7 +245,7 @@ void main() {
   test('outbox failure cannot retry a committed sync', () async {
     await baseline();
     final database = sqlite3.open('${directory.path}/outbox');
-    addTearDown(database.dispose);
+    addTearDown(database.close);
     database.execute(
       "CREATE TRIGGER reject_observation BEFORE INSERT ON notification_outbox BEGIN SELECT RAISE(ABORT, 'injected'); END",
     );

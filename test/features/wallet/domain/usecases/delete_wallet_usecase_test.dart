@@ -53,9 +53,8 @@ void main() {
 
   test('delegates deletion when no active order uses the wallet', () async {
     when(swapFacade.getPendingOrders).thenAnswer((_) async => const Ok([]));
-    when(
-      () => coreDelete.execute(walletId: 'wallet-1'),
-    ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
+    when(() => coreDelete.execute(walletId: 'wallet-1'))
+        .thenAnswer((_) async => const Ok<void, WalletFailure>(null));
 
     final result = await usecase.execute(walletId: 'wallet-1');
 

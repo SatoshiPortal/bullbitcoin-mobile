@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Minimal [BullTheme] for widget tests. A bare `MaterialApp` would crash
 /// `context.bull` (the accessor force-unwraps the extension), so every test

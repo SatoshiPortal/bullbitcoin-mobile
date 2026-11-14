@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';

@@ -94,20 +94,16 @@ void main() {
       expect(failure, isNot(isA<SecretNotFoundFailure>()));
     });
 
-    test(
-      'a genuinely absent secret still reports not-found',
-      () async {
-        final secrets = secretsWith(FakeSecureStoragePlatform());
+    test('a genuinely absent secret still reports not-found', () async {
+      final secrets = secretsWith(FakeSecureStoragePlatform());
 
-        final result = await secrets.fetch(id);
+      final result = await secrets.fetch(id);
 
-        expect(
-          (result as Err<Secret, SecretFailure>).failure,
-          isA<SecretNotFoundFailure>(),
-        );
-      },
-      timeout: const Timeout(Duration(seconds: 20)),
-    );
+      expect(
+        (result as Err<Secret, SecretFailure>).failure,
+        isA<SecretNotFoundFailure>(),
+      );
+    }, timeout: const Timeout(Duration(seconds: 20)));
 
     test('every wire shape of -25308 is recognised as a lock', () async {
       // The plugin has carried this OSStatus in `details`, in `code` as
@@ -135,22 +131,18 @@ void main() {
       }
     });
 
-    test(
-      'an unrelated platform error is a read failure, not a lock',
-      () async {
-        final result = await secretsWith(
-          FakeSecureStoragePlatform(
-            scripted: List.filled(5, PlatformException(code: 'StorageError')),
-          ),
-        ).fetch(id);
+    test('an unrelated platform error is a read failure, not a lock', () async {
+      final result = await secretsWith(
+        FakeSecureStoragePlatform(
+          scripted: List.filled(5, PlatformException(code: 'StorageError')),
+        ),
+      ).fetch(id);
 
-        final failure = (result as Err<Secret, SecretFailure>).failure;
-        expect(failure, isA<FetchSecretFailure>());
-        expect(failure, isNot(isA<KeystoreLockedFailure>()));
-        expect(failure, isNot(isA<SecretNotFoundFailure>()));
-      },
-      timeout: const Timeout(Duration(seconds: 20)),
-    );
+      final failure = (result as Err<Secret, SecretFailure>).failure;
+      expect(failure, isA<FetchSecretFailure>());
+      expect(failure, isNot(isA<KeystoreLockedFailure>()));
+      expect(failure, isNot(isA<SecretNotFoundFailure>()));
+    }, timeout: const Timeout(Duration(seconds: 20)));
 
     test('the lock is reported without burning the retry budget', () async {
       // Retrying cannot help: the lock clears on user unlock, not on
@@ -279,22 +271,18 @@ void main() {
       timeout: const Timeout(Duration(seconds: 20)),
     );
 
-    test(
-      'the same holds for a module key: corrupt, not missing',
-      () async {
-        final storage = FakeSecureStoragePlatform(
-          scripted: ['', null, null, null, null],
-        );
+    test('the same holds for a module key: corrupt, not missing', () async {
+      final storage = FakeSecureStoragePlatform(
+        scripted: ['', null, null, null, null],
+      );
 
-        final result = await secretsWith(
-          storage,
-        ).databaseKeys(module: 'swaps').get(name: 'main');
+      final result = await secretsWith(storage)
+          .databaseKeys(module: 'swaps')
+          .get(name: 'main');
 
-        final failure = (result as Err<DatabaseKey, SecretFailure>).failure;
-        expect(failure, isA<DatabaseKeyCorruptFailure>());
-      },
-      timeout: const Timeout(Duration(seconds: 20)),
-    );
+      final failure = (result as Err<DatabaseKey, SecretFailure>).failure;
+      expect(failure, isA<DatabaseKeyCorruptFailure>());
+    }, timeout: const Timeout(Duration(seconds: 20)));
 
     test(
       'an early error followed by a clean null is still an absence',
@@ -381,9 +369,8 @@ void main() {
     test('a bad checksum', () async {
       final storage = FakeSecureStoragePlatform();
 
-      final result = await secretsWith(
-        storage,
-      ).import(words: List.filled(12, 'abandon'));
+      final result = await secretsWith(storage)
+          .import(words: List.filled(12, 'abandon'));
 
       expect(
         (result as Err<Secret, SecretFailure>).failure,
@@ -394,9 +381,8 @@ void main() {
 
     test('an unknown word, without repeating it', () async {
       // bip39 names the word in its message. The failure must not.
-      final result = await secretsWith(
-        FakeSecureStoragePlatform(),
-      ).import(words: [...words.sublist(0, 11), 'zzzzbogus']);
+      final result = await secretsWith(FakeSecureStoragePlatform())
+          .import(words: [...words.sublist(0, 11), 'zzzzbogus']);
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
       expect(failure, isA<InvalidMnemonicFailure>());
@@ -404,9 +390,8 @@ void main() {
     });
 
     test('contains validates the candidate', () async {
-      final result = await secretsWith(
-        FakeSecureStoragePlatform(),
-      ).contains(words: List.filled(12, 'abandon'));
+      final result = await secretsWith(FakeSecureStoragePlatform())
+          .contains(words: List.filled(12, 'abandon'));
 
       expect(
         (result as Err<bool, SecretFailure>).failure,
@@ -464,9 +449,8 @@ void main() {
 
       test('a trailing space is still an invalid mnemonic', () async {
         final failure = err(
-          await secretsWith(
-            FakeSecureStoragePlatform(),
-          ).import(words: ['${words.first} ', ...words.sublist(1)]),
+          await secretsWith(FakeSecureStoragePlatform())
+              .import(words: ['${words.first} ', ...words.sublist(1)]),
         );
 
         expect(failure, isA<InvalidMnemonicFailure>());
@@ -475,9 +459,8 @@ void main() {
       test('contains refuses the same list import refuses', () async {
         // Candidate lookup and import must agree about malformed input.
         final failure = err(
-          await secretsWith(
-            FakeSecureStoragePlatform(),
-          ).contains(words: regrouped),
+          await secretsWith(FakeSecureStoragePlatform())
+              .contains(words: regrouped),
         );
 
         expect(failure, isA<InvalidMnemonicFailure>());
@@ -558,10 +541,9 @@ void main() {
       final secrets = secretsWith(
         FakeSecureStoragePlatform(entries: {'seed_aabbccdd': bytesEntry}),
       );
-      final secret =
-          (await secrets.fetch(Fingerprint('aabbccdd'))
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      final secret = (await secrets.fetch(
+        Fingerprint('aabbccdd'),
+      ) as Ok<Secret, SecretFailure>).value;
 
       final result = await secret.derive.descriptors.liquid(
         network: LiquidNetwork.mainnet,
@@ -578,10 +560,9 @@ void main() {
       final secrets = secretsWith(
         FakeSecureStoragePlatform(entries: {'seed_aabbccdd': bytesEntry}),
       );
-      final secret =
-          (await secrets.fetch(Fingerprint('aabbccdd'))
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      final secret = (await secrets.fetch(
+        Fingerprint('aabbccdd'),
+      ) as Ok<Secret, SecretFailure>).value;
 
       final result = await secret.sign.psbt(
         'cHNidP8=',
@@ -624,10 +605,9 @@ void main() {
       final secrets = secretsWith(
         FakeSecureStoragePlatform(entries: {'seed_aabbccdd': bytesEntry}),
       );
-      final secret =
-          (await secrets.fetch(Fingerprint('aabbccdd'))
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      final secret = (await secrets.fetch(
+        Fingerprint('aabbccdd'),
+      ) as Ok<Secret, SecretFailure>).value;
 
       final result = await secret.derive.swapKey(
         network: BitcoinNetwork.mainnet,
@@ -723,9 +703,8 @@ void main() {
     // Before: a count BIP39 does not define reached the boundary as the storage model's `FormatException`, and read as "the keystore refused" whether the words came from the user or from a vault. Two origins, two remedies, one wrong answer. Each origin now decides for itself.
     test('from an import, it is an invalid mnemonic', () async {
       FakeSecureStoragePlatform().install();
-      final result = await Secrets(
-        scratchDirectory: () async => '/tmp',
-      ).import(words: List.filled(11, 'abandon'));
+      final result = await Secrets(scratchDirectory: () async => '/tmp')
+          .import(words: List.filled(11, 'abandon'));
       expect(
         (result as Err<Secret, SecretFailure>).failure,
         isA<InvalidMnemonicFailure>(),

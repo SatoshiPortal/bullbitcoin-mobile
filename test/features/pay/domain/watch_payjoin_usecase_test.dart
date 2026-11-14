@@ -22,12 +22,10 @@ void main() {
   test('publishes updates for only the requested session', () async {
     final sessions = _MockPayjoinSessions();
     final payjoin = _session();
-    when(
-      () => sessions.byId(payjoin.id),
-    ).thenAnswer((_) async => Ok<PayjoinSession?, PayjoinFailure>(payjoin));
-    when(
-      () => sessions.watch(sessionIds: {payjoin.id}),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => sessions.byId(payjoin.id))
+        .thenAnswer((_) async => Ok<PayjoinSession?, PayjoinFailure>(payjoin));
+    when(() => sessions.watch(sessionIds: {payjoin.id}))
+        .thenAnswer((_) => const Stream.empty());
 
     final updates = WatchPayjoinUsecase(sessions).execute(payjoin.id);
 

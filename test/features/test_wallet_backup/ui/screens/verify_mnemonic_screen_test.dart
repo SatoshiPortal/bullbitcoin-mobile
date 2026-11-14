@@ -12,8 +12,8 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_walle
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/verify_mnemonic_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -113,12 +113,12 @@ void main() {
   setUp(() async {
     FakeSecureStoragePlatform().install();
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
-    _secretA =
-        ((await secrets.import(words: _wordsA)) as Ok<Secret, SecretFailure>)
-            .value;
-    _secretB =
-        ((await secrets.import(words: _wordsB)) as Ok<Secret, SecretFailure>)
-            .value;
+    _secretA = ((await secrets.import(
+      words: _wordsA,
+    )) as Ok<Secret, SecretFailure>).value;
+    _secretB = ((await secrets.import(
+      words: _wordsB,
+    )) as Ok<Secret, SecretFailure>).value;
     _walletA = _wallet(_secretA.id.hex);
     _walletB = _wallet(_secretB.id.hex);
 
@@ -141,15 +141,14 @@ void main() {
   });
 
   void stubSecret(Secret secret) {
-    when(
-      () => getSecretUsecase.execute(secret.id.hex),
-    ).thenAnswer((_) async => Ok(secret));
+    when(() => getSecretUsecase.execute(secret.id.hex))
+        .thenAnswer((_) async => Ok(secret));
   }
 
   Future<void> pumpScreen(WidgetTester tester) => tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocProvider<TestWalletBackupBloc>.value(
         value: bloc,
@@ -224,9 +223,8 @@ void main() {
 
     expect(spinner, findsNothing);
     expectChallengeFor(_walletA, findsOneWidget);
-    verify(
-      () => getSecretUsecase.execute(_walletA.masterFingerprint),
-    ).called(1);
+    verify(() => getSecretUsecase.execute(_walletA.masterFingerprint))
+        .called(1);
   });
 
   testWidgets('reloads the words when the selected wallet changes', (
@@ -254,15 +252,13 @@ void main() {
     await flush(tester);
 
     bloc.seed(
-      _selected(
-        _walletA,
-      ).copyWith(verificationStatus: BackupVerificationStatus.failure),
+      _selected(_walletA)
+          .copyWith(verificationStatus: BackupVerificationStatus.failure),
     );
     await flush(tester);
 
-    verify(
-      () => getSecretUsecase.execute(_walletA.masterFingerprint),
-    ).called(1);
+    verify(() => getSecretUsecase.execute(_walletA.masterFingerprint))
+        .called(1);
     expectChallengeFor(_walletA, findsOneWidget);
     await drainSnackBar(tester);
   });
@@ -273,9 +269,8 @@ void main() {
     // Wallet A's read is held open until after wallet B's has landed, so the
     // stale result arrives last and must not replace B's words.
     final slowReadOfA = Completer<_SecretResult>();
-    when(
-      () => getSecretUsecase.execute(_walletA.masterFingerprint),
-    ).thenAnswer((_) => slowReadOfA.future);
+    when(() => getSecretUsecase.execute(_walletA.masterFingerprint))
+        .thenAnswer((_) => slowReadOfA.future);
     stubSecret(_secretB);
 
     bloc.seed(_selected(_walletA));

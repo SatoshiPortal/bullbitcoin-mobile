@@ -49,9 +49,8 @@ void main() {
 
   test('forwards the order on success', () async {
     final order = _order();
-    when(
-      () => getOrder.execute(orderId: 'order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => getOrder.execute(orderId: 'order-1'))
+        .thenAnswer((_) async => order);
 
     expect(_valueOf(await usecase.execute('order-1')), order);
   });

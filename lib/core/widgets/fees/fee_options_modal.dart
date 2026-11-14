@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullSelectableList, BullSelectableListItem, BullText, Gap;
 
@@ -97,8 +97,6 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
           builder: (context, async) {
             final snapshot = async.data ?? widget.viewState.snapshot;
             return BBKeyboardActions(
-              isDialog: true,
-              focusNodes: [_customFeeNode],
               child: Column(
                 crossAxisAlignment: .stretch,
                 children: [

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/constants.dart';

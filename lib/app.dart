@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -15,8 +16,8 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -26,7 +27,7 @@ import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:bull_ui/bull_ui.dart'
     show BullSupportScope, bullUiLocalizationsDelegate;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:novlang/novlang.dart';
@@ -200,15 +201,20 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       supportedLocales: AppLocalizations.supportedLocales,
                       builder: (context, child) {
                         if (child == null) return const SizedBox.shrink();
-                        final app = SettingsFacade.amountScope(
-                          navigatorKey: AppRouter.rootNavigatorKey,
-                          child: BullSupportScope(
-                            onContactSupport: SupportFacade.contactSupport,
-                            child: AppStartupWidget(
-                              app: locator<RecoverBullFeature>().withAlerts(
-                                child,
-                                onOpen: () => AppRouter.router.pushNamed(
-                                  'recoverbullFlows',
+                        // keyboard_actions still uses SDK Material widgets;
+                        // the official bridge supports this transition.
+                        // ignore: deprecated_member_use
+                        final app = MaterialUiCompatibilityBridge(
+                          child: SettingsFacade.amountScope(
+                            navigatorKey: AppRouter.rootNavigatorKey,
+                            child: BullSupportScope(
+                              onContactSupport: SupportFacade.contactSupport,
+                              child: AppStartupWidget(
+                                app: locator<RecoverBullFeature>().withAlerts(
+                                  child,
+                                  onOpen: () => AppRouter.router.pushNamed(
+                                    'recoverbullFlows',
+                                  ),
                                 ),
                               ),
                             ),

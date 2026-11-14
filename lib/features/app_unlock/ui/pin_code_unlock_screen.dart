@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/app_unlock/presentation/app_unlock_failure_l1
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullDialPad, BullInputText, BullSnackBar, BullTopBar, Gap;

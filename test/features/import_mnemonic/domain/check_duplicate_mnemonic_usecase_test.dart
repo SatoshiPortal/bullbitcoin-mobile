@@ -157,9 +157,8 @@ void main() {
         when(() => valid.masterFingerprint).thenReturn('73c5da0a');
         when(() => valid.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
         when(() => valid.networkCode).thenReturn('bitcoinMainnet');
-        when(
-          () => metadata.fetchAll(),
-        ).thenAnswer((_) async => [invalid, valid]);
+        when(() => metadata.fetchAll())
+            .thenAnswer((_) async => [invalid, valid]);
         expect(
           await usecase.execute(mnemonicWords: words),
           isA<Err<void, ImportMnemonicFailure>>().having(
@@ -185,21 +184,24 @@ void main() {
       expect(result, isA<Ok<void, ImportMnemonicFailure>>());
     });
 
-    test('a keystore error is unexpected, and carries no stored text', () async {
-      const sentinel = 'SYNTHETIC_KEYSTORE_SENTINEL';
-      expect(
-        await secrets.import(words: words),
-        isA<Ok<Secret, SecretFailure>>(),
-      );
-      // contains now reads and compares the stored seed, so every retry must fail.
-      storage.scripted.addAll(List.filled(5, Exception(sentinel)));
+    test(
+      'a keystore error is unexpected, and carries no stored text',
+      () async {
+        const sentinel = 'SYNTHETIC_KEYSTORE_SENTINEL';
+        expect(
+          await secrets.import(words: words),
+          isA<Ok<Secret, SecretFailure>>(),
+        );
+        // contains now reads and compares the stored seed, so every retry must fail.
+        storage.scripted.addAll(List.filled(5, Exception(sentinel)));
 
-      final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(mnemonicWords: words);
 
-      final failure = (result as Err).failure;
-      expect(failure, isA<ImportMnemonicUnexpectedFailure>());
-      // The package reports a foreign exception by type; the message it wrote never reaches this layer, so neither does anything the keystore held.
-      expect(failure.logMessage, isNot(contains(sentinel)));
-    });
+        final failure = (result as Err).failure;
+        expect(failure, isA<ImportMnemonicUnexpectedFailure>());
+        // The package reports a foreign exception by type; the message it wrote never reaches this layer, so neither does anything the keystore held.
+        expect(failure.logMessage, isNot(contains(sentinel)));
+      },
+    );
   });
 }

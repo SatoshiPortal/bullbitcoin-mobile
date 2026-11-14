@@ -47,26 +47,23 @@ void main() {
     });
   }
 
-  test(
-    'immediate completion is quiet on sync failure; unknown destination is skipped',
-    () async {
-      var requests = 0;
-      final usecase = SyncBuyReceiptUsecase(
-        WalletFacade(
-          const Stream.empty(),
-          pollWallet: (id, {required isActive}) async {
-            requests++;
-            throw Exception('unavailable');
-          },
-        ),
-      );
-      final completed = order('buy', OrderPayoutStatus.completed);
-      usecase.execute(order: completed);
-      expect(requests, 0);
-      usecase.execute(order: completed, destinationWalletId: 'destination');
-      usecase.execute(order: completed);
-      await Future<void>.delayed(Duration.zero);
-      expect(requests, 1);
-    },
-  );
+  test('immediate completion is quiet on sync failure; unknown destination is skipped', () async {
+    var requests = 0;
+    final usecase = SyncBuyReceiptUsecase(
+      WalletFacade(
+        const Stream.empty(),
+        pollWallet: (id, {required isActive}) async {
+          requests++;
+          throw Exception('unavailable');
+        },
+      ),
+    );
+    final completed = order('buy', OrderPayoutStatus.completed);
+    usecase.execute(order: completed);
+    expect(requests, 0);
+    usecase.execute(order: completed, destinationWalletId: 'destination');
+    usecase.execute(order: completed);
+    await Future<void>.delayed(Duration.zero);
+    expect(requests, 1);
+  });
 }

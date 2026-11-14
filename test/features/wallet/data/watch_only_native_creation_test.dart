@@ -35,8 +35,7 @@ class _Reserved implements ReservedAddressPort {
 void main() {
   test('mainnet descriptor retains BIP32 mainnet key version', () async {
     final metadata = await WalletMetadataService.deriveFromXpub(
-      xpub:
-          'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
+      xpub: 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
     );
@@ -57,10 +56,9 @@ void main() {
             network: Network.bitcoinTestnet,
             scriptType: ScriptType.bip84,
           );
-          final descriptor =
-              (WalletCatalogPortImpl.descriptorFromMetadata(metadata)
-                      as p.Ok<PublicWalletDescriptor, TransactionSyncFailure>)
-                  .value;
+          final descriptor = (WalletCatalogPortImpl.descriptorFromMetadata(
+            metadata,
+          ) as p.Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
           final catalog = _Catalog(descriptor);
           final writer = NativeWalletWriter(
             lockDirectory: '${directory.path}/locks',

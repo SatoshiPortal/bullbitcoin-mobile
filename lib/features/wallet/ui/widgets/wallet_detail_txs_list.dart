@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WalletDetailTxsList extends StatelessWidget {

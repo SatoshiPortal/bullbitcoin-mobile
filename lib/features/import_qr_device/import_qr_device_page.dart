@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/import_qr_device/device_instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullInfoCard, BullText, Gap;
 import 'package:go_router/go_router.dart';

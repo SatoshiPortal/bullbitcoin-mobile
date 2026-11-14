@@ -61,9 +61,8 @@ void main() {
     });
 
     test('falls back to recommended when precise 404s', () async {
-      when(
-        () => dio.get<dynamic>(_precise),
-      ).thenThrow(_dioError(_precise, statusCode: 404));
+      when(() => dio.get<dynamic>(_precise))
+          .thenThrow(_dioError(_precise, statusCode: 404));
       when(() => dio.get<dynamic>(_recommended)).thenAnswer(
         (_) async => _ok(_recommended, {
           'fastestFee': 3,
@@ -82,9 +81,8 @@ void main() {
     });
 
     test('falls back on a transient precise error (500)', () async {
-      when(
-        () => dio.get<dynamic>(_precise),
-      ).thenThrow(_dioError(_precise, statusCode: 500));
+      when(() => dio.get<dynamic>(_precise))
+          .thenThrow(_dioError(_precise, statusCode: 500));
       when(() => dio.get<dynamic>(_recommended)).thenAnswer(
         (_) async => _ok(_recommended, {
           'fastestFee': 2,
@@ -100,9 +98,8 @@ void main() {
     });
 
     test('falls back when precise returns a non-200 (e.g. 204)', () async {
-      when(
-        () => dio.get<dynamic>(_precise),
-      ).thenAnswer((_) async => _status(_precise, 204));
+      when(() => dio.get<dynamic>(_precise))
+          .thenAnswer((_) async => _status(_precise, 204));
       when(() => dio.get<dynamic>(_recommended)).thenAnswer(
         (_) async => _ok(_recommended, {
           'fastestFee': 4,
@@ -120,9 +117,8 @@ void main() {
     test('falls back when precise 200 body is missing a fee field', () async {
       // A 200 with a partial body makes MempoolFeesModel.fromJson throw;
       // that must trigger the recommended fallback, not fail the fetch.
-      when(
-        () => dio.get<dynamic>(_precise),
-      ).thenAnswer((_) async => _ok(_precise, {'fastestFee': 2.0}));
+      when(() => dio.get<dynamic>(_precise))
+          .thenAnswer((_) async => _ok(_precise, {'fastestFee': 2.0}));
       when(() => dio.get<dynamic>(_recommended)).thenAnswer(
         (_) async => _ok(_recommended, {
           'fastestFee': 3,
@@ -184,12 +180,10 @@ void main() {
     });
 
     test('throws MempoolFeesException when both endpoints fail', () async {
-      when(
-        () => dio.get<dynamic>(_precise),
-      ).thenThrow(_dioError(_precise, statusCode: 404));
-      when(
-        () => dio.get<dynamic>(_recommended),
-      ).thenThrow(_dioError(_recommended, statusCode: 404));
+      when(() => dio.get<dynamic>(_precise))
+          .thenThrow(_dioError(_precise, statusCode: 404));
+      when(() => dio.get<dynamic>(_recommended))
+          .thenThrow(_dioError(_recommended, statusCode: 404));
 
       expect(
         () => datasource.fetchBitcoinNetworkFees(baseUrl: _baseUrl),

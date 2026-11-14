@@ -1,5 +1,6 @@
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
+
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/src/write/bitcoin_spend_gate_store.dart';
 import 'package:transaction_sync/read.dart';
@@ -8,6 +9,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/src/data/bdk_electrum_cache.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -343,9 +345,8 @@ void main() {
       store.wallet.persist(persister: store.persister);
       store.close();
       final phase = await isolated.load('S7-incoming-unrevealed-in-gap', 1);
-      final mode = completed(
-        await sync.execute(descriptor, discover: discover),
-      ).mode;
+      final mode = completed(await sync.execute(descriptor, discover: discover))
+          .mode;
       final reopened = _Wallet.open(path);
       try {
         return (mode, _observe(reopened.wallet, phase.ids), phase);
@@ -596,7 +597,7 @@ void main() {
         );
       } finally {
         blocker.execute('DROP TRIGGER fail_persist');
-        blocker.dispose();
+        blocker.close();
       }
       final reopened = _Wallet.open(path);
       expect(reopened.wallet.latestCheckpoint().height, 0);
@@ -634,9 +635,10 @@ void main() {
     test(
       'writer contention skips native sync and emits a visible failure',
       () async {
-        final acquisition =
-            WriterLock.acquire(writerLockDirectory(dir.path), descriptor.key)
-                as Ok<WriterLock, TransactionSyncFailure>;
+        final acquisition = WriterLock.acquire(
+          writerLockDirectory(dir.path),
+          descriptor.key,
+        ) as Ok<WriterLock, TransactionSyncFailure>;
         try {
           final finished = sync.finished.first;
           final result = await sync.execute(descriptor);
@@ -1092,47 +1094,40 @@ void main() {
       });
     }
 
-    test(
-      'unchanged revealed scripts preserve revision; changed scripts advance it',
-      () async {
-        await fixture.load('S10-no-change', 0);
-        final initial = completed(await sync.execute(descriptor));
-        final unchanged = completed(await sync.execute(descriptor));
-        expect(unchanged.mode, SyncMode.revealedScripts);
-        expect(unchanged.revision, initial.revision);
-        await fixture.load('S5-incoming-older-revealed', 1);
-        final changed = completed(await sync.execute(descriptor));
-        expect(changed.mode, SyncMode.revealedScripts);
-        expect(
-          changed.revision?.revision,
-          greaterThan(initial.revision?.revision ?? 0),
-        );
-        final revisions = RevisionStore(writerMetadataPath(dir.path));
-        try {
-          final result = await revisions.read(descriptor.key);
-          expect(
-            result,
-            isA<Ok<WalletRevisionState, TransactionSyncFailure>>(),
-          );
-          final state =
-              (result as Ok<WalletRevisionState, TransactionSyncFailure>).value;
-          expect(state.stamp, changed.revision);
-          expect(state.syncFailed, isFalse);
-        } finally {
-          await revisions.close();
-        }
-      },
-    );
+    test('unchanged revealed scripts preserve revision; changed scripts advance it', () async {
+      await fixture.load('S10-no-change', 0);
+      final initial = completed(await sync.execute(descriptor));
+      final unchanged = completed(await sync.execute(descriptor));
+      expect(unchanged.mode, SyncMode.revealedScripts);
+      expect(unchanged.revision, initial.revision);
+      await fixture.load('S5-incoming-older-revealed', 1);
+      final changed = completed(await sync.execute(descriptor));
+      expect(changed.mode, SyncMode.revealedScripts);
+      expect(
+        changed.revision?.revision,
+        greaterThan(initial.revision?.revision ?? 0),
+      );
+      final revisions = RevisionStore(writerMetadataPath(dir.path));
+      try {
+        final result = await revisions.read(descriptor.key);
+        expect(result, isA<Ok<WalletRevisionState, TransactionSyncFailure>>());
+        final state =
+            (result as Ok<WalletRevisionState, TransactionSyncFailure>).value;
+        expect(state.stamp, changed.revision);
+        expect(state.syncFailed, isFalse);
+      } finally {
+        await revisions.close();
+      }
+    });
 
     test('successful sync publishes an initialized durable revision', () async {
       await fixture.load(electrumFixtureScenarios.first, 0);
       completed(await sync.execute(descriptor));
       final revisions = RevisionStore(writerMetadataPath(dir.path));
       try {
-        final state =
-            (await revisions.read(descriptor.key)
-                    as Ok<WalletRevisionState, TransactionSyncFailure>)
-                .value;
+        final state = (await revisions.read(
+          descriptor.key,
+        ) as Ok<WalletRevisionState, TransactionSyncFailure>).value;
         expect(state.lifecycle, WalletLifecycle.active);
         expect(state.initializedSchema, writerSchemaVersion);
         expect(state.stamp.revision, 2);
@@ -1210,7 +1205,7 @@ void main() {
             row['txid'] as String,
         };
       } finally {
-        db.dispose();
+        db.close();
       }
     }
 
@@ -1229,14 +1224,14 @@ void main() {
       db.execute('UPDATE parent_transaction SET raw = ?', [
         Uint8List.fromList([1, 2, 3]),
       ]);
-      db.dispose();
+      db.close();
 
       _scan(fixture, path, cached: true);
 
       // The bad row was dropped by the prefill and fetched again.
       expect(storedTxids(), {phase.ids['P']});
       final check = sqlite3.open(BdkElectrumCache.pathFor(path));
-      addTearDown(check.dispose);
+      addTearDown(check.close);
       final raw = check.select('SELECT raw FROM parent_transaction').single;
       expect((raw['raw'] as Uint8List).length, greaterThan(3));
     });

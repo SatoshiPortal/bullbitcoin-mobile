@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_sync_estimator.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 

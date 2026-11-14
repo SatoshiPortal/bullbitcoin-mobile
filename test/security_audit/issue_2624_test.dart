@@ -2,6 +2,7 @@
 // Finding: history loading writes privileged exchange labels from unverified server data.
 // Regression test for the fix.
 import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

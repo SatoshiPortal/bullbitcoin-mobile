@@ -1,4 +1,7 @@
 import 'dart:async';
+
+import 'package:bull_recoverbull/bull_recoverbull.dart' show RecoverBullFeature;
+
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/entities/backup_monitoring.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
@@ -8,7 +11,7 @@ import 'package:bull_recoverbull/src/domain/usecases/watch_backup_monitoring_use
 import 'package:bull_recoverbull/src/presentation/backup_monitoring_cubit.dart';
 import 'package:bull_recoverbull/src/ui/widgets/backup_monitoring_panel.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -29,8 +32,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(extensions: testBullExtensions),
-          localizationsDelegates:
-              RecoverBullLocalizations.localizationsDelegates,
+          localizationsDelegates: RecoverBullFeature.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,
           home: Scaffold(body: BackupMonitoringPanel(cubit: cubit)),
         ),

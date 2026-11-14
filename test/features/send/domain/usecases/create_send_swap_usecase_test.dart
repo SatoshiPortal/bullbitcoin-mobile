@@ -41,9 +41,8 @@ void main() {
   test(
     'regtest refuses before receive-address or provider side effects',
     () async {
-      when(
-        () => getWallet.execute('wallet-1'),
-      ).thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
+      when(() => getWallet.execute('wallet-1'))
+          .thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
       final result = await usecase.execute(
         walletId: 'wallet-1',
         amountSat: 1000,
@@ -66,12 +65,10 @@ void main() {
     'creates an output-fixed order with an owned fallback address',
     () async {
       final invoice = _invoice(amountSat: 1000);
-      when(
-        () => getWallet.execute('wallet-1'),
-      ).thenAnswer((_) async => _wallet(Network.liquidTestnet));
-      when(
-        () => getReceiveAddress.execute(walletId: 'wallet-1'),
-      ).thenAnswer((_) async => _address());
+      when(() => getWallet.execute('wallet-1'))
+          .thenAnswer((_) async => _wallet(Network.liquidTestnet));
+      when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
+          .thenAnswer((_) async => _address());
       when(
         () => swapFacade.createOrder(
           amountSat: BigInt.from(1000),
@@ -114,12 +111,10 @@ void main() {
 
   test('allows an entered amount for an amountless invoice', () async {
     final invoice = _invoice(amountSat: 0);
-    when(
-      () => getWallet.execute('wallet-1'),
-    ).thenAnswer((_) async => _wallet(Network.bitcoinTestnet));
-    when(
-      () => getReceiveAddress.execute(walletId: 'wallet-1'),
-    ).thenAnswer((_) async => _address());
+    when(() => getWallet.execute('wallet-1'))
+        .thenAnswer((_) async => _wallet(Network.bitcoinTestnet));
+    when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
+        .thenAnswer((_) async => _address());
     when(
       () => swapFacade.createOrder(
         amountSat: BigInt.from(2000),
@@ -175,9 +170,8 @@ void main() {
   });
 
   test('rejects a Bitcoin hardware wallet before deriving fallback', () async {
-    when(
-      () => getWallet.execute('wallet-1'),
-    ).thenAnswer((_) async => _wallet(Network.bitcoinTestnet, remote: true));
+    when(() => getWallet.execute('wallet-1'))
+        .thenAnswer((_) async => _wallet(Network.bitcoinTestnet, remote: true));
 
     final result = await usecase.execute(
       walletId: 'wallet-1',
@@ -198,13 +192,12 @@ void main() {
 
 Bolt11PaymentRequest _invoice({required int amountSat, int? expiresAt}) =>
     PaymentRequest.bolt11(
-          invoice: 'lntb-invoice',
-          amountSat: amountSat,
-          paymentHash: 'hash',
-          expiresAt: expiresAt ?? 2000000000,
-          isTestnet: true,
-        )
-        as Bolt11PaymentRequest;
+      invoice: 'lntb-invoice',
+      amountSat: amountSat,
+      paymentHash: 'hash',
+      expiresAt: expiresAt ?? 2000000000,
+      isTestnet: true,
+    ) as Bolt11PaymentRequest;
 
 Wallet _wallet(Network network, {bool remote = false}) => Wallet(
   origin: 'wallet-1',

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+
 import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
@@ -227,9 +228,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
   String? _tryFinalize(String psbtBase64) {
     try {
-      return PsbtBuilder.fromPsbt(
-        Psbt.fromBase64(psbtBase64),
-      ).finalizeAll().toHex();
+      return PsbtBuilder.fromPsbt(Psbt.fromBase64(psbtBase64))
+          .finalizeAll()
+          .toHex();
     } on Exception {
       return null;
     }

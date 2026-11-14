@@ -24,9 +24,8 @@ void main() {
     when(
       () => settingsRepository.setTorTransportMode(TorTransportMode.snowflake),
     ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => embeddedTor.setMode(TorTransportMode.snowflake),
-    ).thenAnswer((_) async => ready);
+    when(() => embeddedTor.setMode(TorTransportMode.snowflake))
+        .thenAnswer((_) async => ready);
     final usecase = UpdateTorTransportModeUsecase(
       settingsRepository,
       embeddedTor,

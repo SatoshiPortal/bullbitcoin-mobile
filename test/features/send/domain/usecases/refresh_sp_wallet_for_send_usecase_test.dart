@@ -67,9 +67,8 @@ void main() {
   });
 
   test('an unreadable network fails instead of assuming mainnet', () async {
-    when(
-      network.execute,
-    ).thenReturn(const Err(SendUnexpectedFailure('no session')));
+    when(network.execute)
+        .thenReturn(const Err(SendUnexpectedFailure('no session')));
 
     // Guessing mainnet here would describe a signet wallet as a mainnet one.
     final failure = failureOf(await usecase.execute());
@@ -79,9 +78,8 @@ void main() {
   });
 
   test('no SP wallet yields null', () async {
-    when(
-      facade.refresh,
-    ).thenAnswer((_) async => const Ok<SpWallet?, SpFailure>(null));
+    when(facade.refresh)
+        .thenAnswer((_) async => const Ok<SpWallet?, SpFailure>(null));
 
     expect(walletOf(await usecase.execute()), isNull);
   });

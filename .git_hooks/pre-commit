@@ -92,9 +92,9 @@ fi
 # (Until a first-party analyzer rule lands, this grep is the enforcement.)
 # Only relevant when files under the coins UI are staged.
 if echo "$staged" | grep -q '^lib/features/coins/ui/'; then
-  if grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui" >/dev/null 2>&1; then
-    echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not package:flutter/{material,cupertino,widgets}.dart:"
-    grep -rEl "package:flutter/(material|cupertino|widgets)\.dart" "$REPO_ROOT/lib/features/coins/ui"
+  if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" "$REPO_ROOT/lib/features/coins/ui" >/dev/null 2>&1; then
+    echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter or standalone Material/Cupertino UI:"
+    grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" "$REPO_ROOT/lib/features/coins/ui"
     exit 1
   fi
 fi

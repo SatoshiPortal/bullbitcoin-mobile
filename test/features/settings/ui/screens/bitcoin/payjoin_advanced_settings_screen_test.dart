@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -12,7 +12,7 @@ class _MockSettingsCubit extends Mock implements SettingsCubit {}
 
 Widget _buildPage(SettingsCubit settingsCubit) => MaterialApp(
   theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SettingsCubit>.value(
     value: settingsCubit,
@@ -29,15 +29,12 @@ void main() {
   setUp(() {
     settingsCubit = _MockSettingsCubit();
     when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(
-      () => settingsCubit.state,
-    ).thenReturn(SettingsState(payjoinPolicy: PayjoinPolicy.defaults()));
-    when(
-      () => settingsCubit.setPayjoinMinAmount(any()),
-    ).thenAnswer((_) async {});
-    when(
-      () => settingsCubit.setPayjoinExpireAfterSec(any()),
-    ).thenAnswer((_) async {});
+    when(() => settingsCubit.state)
+        .thenReturn(SettingsState(payjoinPolicy: PayjoinPolicy.defaults()));
+    when(() => settingsCubit.setPayjoinMinAmount(any()))
+        .thenAnswer((_) async {});
+    when(() => settingsCubit.setPayjoinExpireAfterSec(any()))
+        .thenAnswer((_) async {});
   });
 
   testWidgets('shows the stored expiry in minutes with its units', (

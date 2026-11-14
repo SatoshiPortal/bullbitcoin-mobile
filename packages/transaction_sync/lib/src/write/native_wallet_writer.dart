@@ -1,4 +1,5 @@
 import 'lease_diagnostics.dart';
+
 import 'dart:math' as math;
 
 import 'writer_diagnostics.dart';
@@ -8,6 +9,7 @@ import 'bitcoin_spend_gate_store.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
+
 import '../../transaction_sync.dart';
 import '../domain/native_network_policy.dart';
 import 'native_write_session.dart';
@@ -302,11 +304,13 @@ final class NativeWalletWriter implements LiquidReadAdmission {
       }
     }
     _value(result);
-    if (operation case WriterSyncSpendObservation(
-      :final observedSpendTransactions,
-      :final spendTransactionInputs,
-      :final settledSpendTransactions,
-    ) when key.network is BitcoinNetwork) {
+    if (operation
+        case WriterSyncSpendObservation(
+          :final observedSpendTransactions,
+          :final spendTransactionInputs,
+          :final settledSpendTransactions,
+        )
+        when key.network is BitcoinNetwork) {
       final observed = revisions.openSpendGate();
       try {
         observed.observed(descriptor, expectedGeneration, {
@@ -317,9 +321,8 @@ final class NativeWalletWriter implements LiquidReadAdmission {
         observed.close();
       }
     }
-    if (operation case WriterSyncChanges(
-      hasChanges: false,
-    ) when !record.needsSync && !record.state.syncFailed) {
+    if (operation case WriterSyncChanges(hasChanges: false)
+        when !record.needsSync && !record.state.syncFailed) {
       revisions.cancelUnchanged(key, record, syncSucceeded: true);
       return WriterUnchanged(record.state.stamp);
     }

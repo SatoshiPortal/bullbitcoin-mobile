@@ -17,9 +17,8 @@ void main() {
   });
 
   test('maps an expired broadcast start to a confirmation failure', () async {
-    when(
-      () => facade.markBroadcastUnknown('local-1'),
-    ).thenAnswer((_) async => const Err(SwapOrderExpiredFailure('expired')));
+    when(() => facade.markBroadcastUnknown('local-1'))
+        .thenAnswer((_) async => const Err(SwapOrderExpiredFailure('expired')));
 
     final result = await usecase.execute(
       localId: 'local-1',

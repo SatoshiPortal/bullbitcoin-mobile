@@ -34,25 +34,22 @@ void main() {
   });
 
   group('RecoverOnboardingWalletUsecase', () {
-    test(
-      'maps a foreign wallet-setup failure during recovery to OnboardingWalletSetupFailure '
-      'without leaking the raw exception',
-      () async {
-        when(
-          () => createDefaultWalletsUsecase.execute(
-            mnemonicWords: any(named: 'mnemonicWords'),
-          ),
-        ).thenThrow(Exception('BDK: invalid mnemonic checksum'));
+    test('maps a foreign wallet-setup failure during recovery to OnboardingWalletSetupFailure '
+        'without leaking the raw exception', () async {
+      when(
+        () => createDefaultWalletsUsecase.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+        ),
+      ).thenThrow(Exception('BDK: invalid mnemonic checksum'));
 
-        final result = await usecase.execute(mnemonicWords: mnemonicWords);
+      final result = await usecase.execute(mnemonicWords: mnemonicWords);
 
-        expect(result, isA<Err<void, OnboardingFailure>>());
-        final failure = (result as Err<void, OnboardingFailure>).failure;
-        expect(failure, isA<OnboardingWalletSetupFailure>());
-        expect(failure.logMessage, isNull);
-        verifyNever(() => completePhysicalBackupVerificationUsecase.execute());
-      },
-    );
+      expect(result, isA<Err<void, OnboardingFailure>>());
+      final failure = (result as Err<void, OnboardingFailure>).failure;
+      expect(failure, isA<OnboardingWalletSetupFailure>());
+      expect(failure.logMessage, isNull);
+      verifyNever(() => completePhysicalBackupVerificationUsecase.execute());
+    });
 
     test(
       'maps a foreign backup-verification failure to '
@@ -63,9 +60,8 @@ void main() {
             mnemonicWords: any(named: 'mnemonicWords'),
           ),
         ).thenAnswer((_) async => []);
-        when(
-          () => completePhysicalBackupVerificationUsecase.execute(),
-        ).thenThrow(Exception('No default wallet found'));
+        when(() => completePhysicalBackupVerificationUsecase.execute())
+            .thenThrow(Exception('No default wallet found'));
 
         final result = await usecase.execute(mnemonicWords: mnemonicWords);
 
@@ -82,9 +78,8 @@ void main() {
           mnemonicWords: any(named: 'mnemonicWords'),
         ),
       ).thenAnswer((_) async => []);
-      when(
-        () => completePhysicalBackupVerificationUsecase.execute(),
-      ).thenAnswer((_) async {});
+      when(() => completePhysicalBackupVerificationUsecase.execute())
+          .thenAnswer((_) async {});
 
       final result = await usecase.execute(mnemonicWords: mnemonicWords);
 

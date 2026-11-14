@@ -45,14 +45,12 @@ void main() {
     final regtestWallet = WalletMock();
     final testnetWallet = WalletMock();
     when(() => regtestWallet.network).thenReturn(app.Network.bitcoinRegtest);
-    when(
-      () => regtestWallet.masterFingerprint,
-    ).thenReturn(regtestSecret.id.hex);
+    when(() => regtestWallet.masterFingerprint)
+        .thenReturn(regtestSecret.id.hex);
     when(() => testnetWallet.network).thenReturn(app.Network.bitcoinTestnet);
     when(() => testnetWallet.masterFingerprint).thenReturn('11223344');
-    when(
-      () => wallets.getWallets(onlyDefaults: true, onlyBitcoin: true),
-    ).thenAnswer((_) async => Ok([regtestWallet, testnetWallet]));
+    when(() => wallets.getWallets(onlyDefaults: true, onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([regtestWallet, testnetWallet]));
     final result = await GetSpSecretUsecase(
       walletRepository: wallets,
       secrets: secrets,
@@ -60,8 +58,7 @@ void main() {
     expect(
       result,
       isA<Err<Secret, SpFailure>>(),
-      reason:
-          'The testnet secret is absent; a regtest secret must never be returned',
+      reason: 'The testnet secret is absent; a regtest secret must never be returned',
     );
   });
   for (final regtestFirst in [true, false]) {
@@ -73,31 +70,27 @@ void main() {
         words: [...List.filled(11, 'abandon'), 'about'],
       );
       final testnetResult = await secrets.import(
-        words:
-            'legal winner thank year wave sausage worth useful legal winner thank yellow'
-                .split(' '),
+        words: 'legal winner thank year wave sausage worth useful legal winner thank yellow'
+            .split(' '),
       );
       final regtestSecret = (regtestResult as Ok<Secret, SecretFailure>).value;
       final testnetSecret = (testnetResult as Ok<Secret, SecretFailure>).value;
       final regtestWallet = WalletMock();
       final testnetWallet = WalletMock();
       when(() => regtestWallet.network).thenReturn(app.Network.bitcoinRegtest);
-      when(
-        () => regtestWallet.masterFingerprint,
-      ).thenReturn(regtestSecret.id.hex);
+      when(() => regtestWallet.masterFingerprint)
+          .thenReturn(regtestSecret.id.hex);
       when(() => testnetWallet.network).thenReturn(app.Network.bitcoinTestnet);
-      when(
-        () => testnetWallet.masterFingerprint,
-      ).thenReturn(testnetSecret.id.hex);
-      when(
-        () => wallets.getWallets(onlyDefaults: true, onlyBitcoin: true),
-      ).thenAnswer(
-        (_) async => Ok(
-          regtestFirst
-              ? [regtestWallet, testnetWallet]
-              : [testnetWallet, regtestWallet],
-        ),
-      );
+      when(() => testnetWallet.masterFingerprint)
+          .thenReturn(testnetSecret.id.hex);
+      when(() => wallets.getWallets(onlyDefaults: true, onlyBitcoin: true))
+          .thenAnswer(
+            (_) async => Ok(
+              regtestFirst
+                  ? [regtestWallet, testnetWallet]
+                  : [testnetWallet, regtestWallet],
+            ),
+          );
       final result = await GetSpSecretUsecase(
         walletRepository: wallets,
         secrets: secrets,

@@ -63,6 +63,24 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
 
+        // Apply Flutter's requested platforms to plugin JNI libraries too.
+        // Flutter otherwise packages every supported ABI in an unsplit APK.
+        def targetPlatforms = project.findProperty('target-platform')
+        def splitPerAbi = project.findProperty('split-per-abi')?.toString()?.equalsIgnoreCase('true') ?: false
+        if (targetPlatforms != null && !splitPerAbi) {
+            def platformAbis = [
+                'android-arm': 'armeabi-v7a',
+                'android-arm64': 'arm64-v8a',
+                'android-x64': 'x86_64',
+            ]
+            ndk.abiFilters.clear()
+            targetPlatforms.toString().split(',', -1).each { platform ->
+                def abi = platformAbis[platform.trim()]
+                if (abi == null) throw new GradleException("Invalid Flutter target platform: ${platform}")
+                ndk.abiFilters.add(abi)
+            }
+        }
+
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"

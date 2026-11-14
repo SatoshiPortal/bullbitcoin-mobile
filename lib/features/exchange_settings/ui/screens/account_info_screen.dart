@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/exchange_settings/presentation/account_info_c
 import 'package:bb_mobile/features/exchange_settings/presentation/account_info_state.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/exchange_settings_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

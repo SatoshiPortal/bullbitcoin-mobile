@@ -77,9 +77,8 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => []);
-    when(
-      () => swapHistoryRepository.getSwapByTxId(any()),
-    ).thenAnswer((_) async => null);
+    when(() => swapHistoryRepository.getSwapByTxId(any()))
+        .thenAnswer((_) async => null);
     when(() => getTransactionOrderSwapsUsecase.execute()).thenAnswer(
       (_) async => const bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
     );
@@ -120,12 +119,10 @@ void main() {
     'credential failure does not hide the remaining transaction data',
     () async {
       final payjoin = _payjoinSession();
-      when(
-        () => payjoinSessions.byTransactionId(_txId),
-      ).thenAnswer((_) async => Ok([payjoin]));
-      when(
-        () => mainnetOrderRepository.getOrderByTxId(_txId),
-      ).thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+      when(() => payjoinSessions.byTransactionId(_txId))
+          .thenAnswer((_) async => Ok([payjoin]));
+      when(() => mainnetOrderRepository.getOrderByTxId(_txId))
+          .thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
       final transactions = unwrap(await usecase.execute(_txId));
       expect(transactions, hasLength(1));
       expect(transactions.single.payjoin, payjoin);
@@ -138,12 +135,10 @@ void main() {
     () async {
       final payjoin = _payjoinSession();
       final order = _buyOrder();
-      when(
-        () => payjoinSessions.byTransactionId(_txId),
-      ).thenAnswer((_) async => Ok([payjoin]));
-      when(
-        () => mainnetOrderRepository.getOrderByTxId(_txId),
-      ).thenAnswer((_) async => Ok(order));
+      when(() => payjoinSessions.byTransactionId(_txId))
+          .thenAnswer((_) async => Ok([payjoin]));
+      when(() => mainnetOrderRepository.getOrderByTxId(_txId))
+          .thenAnswer((_) async => Ok(order));
 
       final transactions = unwrap(await usecase.execute(_txId));
 
@@ -157,12 +152,10 @@ void main() {
 
   test('still returns the payjoin when no order matches the txid', () async {
     final payjoin = _payjoinSession();
-    when(
-      () => payjoinSessions.byTransactionId(_txId),
-    ).thenAnswer((_) async => Ok([payjoin]));
-    when(
-      () => mainnetOrderRepository.getOrderByTxId(_txId),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => payjoinSessions.byTransactionId(_txId))
+        .thenAnswer((_) async => Ok([payjoin]));
+    when(() => mainnetOrderRepository.getOrderByTxId(_txId))
+        .thenAnswer((_) async => const Ok(null));
 
     final transactions = unwrap(await usecase.execute(_txId));
 

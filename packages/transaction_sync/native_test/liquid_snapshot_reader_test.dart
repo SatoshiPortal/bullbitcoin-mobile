@@ -22,8 +22,7 @@ void main() {
     final key = WalletKey(id: 'fixture', network: LiquidNetwork.testnet);
     final native = await lwk.Descriptor.newConfidential(
       network: lwk.LiquidNetwork.testnet,
-      mnemonic:
-          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+      mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
     );
     final descriptor = LiquidWalletDescriptor(
       key: key,
@@ -52,8 +51,7 @@ void main() {
       // A changed catalog must be refused before LWK can create a second cache.
       final other = await lwk.Descriptor.newConfidential(
         network: lwk.LiquidNetwork.testnet,
-        mnemonic:
-            'legal winner thank year wave sausage worth useful legal winner thank yellow',
+        mnemonic: 'legal winner thank year wave sausage worth useful legal winner thank yellow',
       );
       catalog.descriptor = LiquidWalletDescriptor(
         key: key,
@@ -150,8 +148,7 @@ void main() {
       // A second published BIP39 vector produces a different native cache.
       final otherNative = await lwk.Descriptor.newConfidential(
         network: lwk.LiquidNetwork.testnet,
-        mnemonic:
-            'legal winner thank year wave sausage worth useful legal winner thank yellow',
+        mnemonic: 'legal winner thank year wave sausage worth useful legal winner thank yellow',
       );
       final other = LiquidWalletDescriptor(
         key: key,
@@ -183,9 +180,8 @@ void main() {
       expect(admission.released, admission.acquired);
 
       await File('${store.path}/000000000000').delete();
-      final outside = await File(
-        '${root.path}/outside',
-      ).writeAsString('not an update');
+      final outside = await File('${root.path}/outside')
+          .writeAsString('not an update');
       await Link('${store.path}/000000000000').create(outside.path);
       expect(
         (await reader.liquid(descriptor) as Err).failure,

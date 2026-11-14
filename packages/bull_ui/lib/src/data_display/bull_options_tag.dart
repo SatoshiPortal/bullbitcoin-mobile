@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A small bordered tag with a drop shadow.
 class BullOptionsTag extends StatelessWidget {

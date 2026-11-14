@@ -222,9 +222,8 @@ void main() {
 
     test('returns the confirmed order', () async {
       final order = _MockWithdrawOrder();
-      when(
-        () => mainnet.confirmWithdrawOrder('order-1'),
-      ).thenAnswer((_) async => order);
+      when(() => mainnet.confirmWithdrawOrder('order-1'))
+          .thenAnswer((_) async => order);
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -232,9 +231,8 @@ void main() {
     });
 
     test('sanitizes a failure, keeping the raw reason out of logs', () async {
-      when(
-        () => mainnet.confirmWithdrawOrder('order-1'),
-      ).thenThrow(Exception(_rawReason));
+      when(() => mainnet.confirmWithdrawOrder('order-1'))
+          .thenThrow(Exception(_rawReason));
 
       switch (await build().execute(orderId: 'order-1')) {
         case Ok():
@@ -247,9 +245,8 @@ void main() {
 
     test('maps a missing or inactive API key to unauthenticated', () async {
       for (final exception in [ApiKeyNotFoundException()]) {
-        when(
-          () => mainnet.confirmWithdrawOrder('order-1'),
-        ).thenThrow(exception);
+        when(() => mainnet.confirmWithdrawOrder('order-1'))
+            .thenThrow(exception);
 
         final result = await build().execute(orderId: 'order-1');
 
@@ -281,9 +278,8 @@ void main() {
     });
 
     test('sanitizes the still-throwing core use-case', () async {
-      when(
-        getUserSummary.execute,
-      ).thenThrow(GetExchangeUserSummaryException(_rawReason));
+      when(getUserSummary.execute)
+          .thenThrow(GetExchangeUserSummaryException(_rawReason));
 
       switch (await build().execute()) {
         case Ok():

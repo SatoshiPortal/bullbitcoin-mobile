@@ -13,7 +13,7 @@ void main() {
         final queue = SqliteWalletSyncJobQueue(database: database);
         addTearDown(() async {
           await queue.close();
-          database.dispose();
+          database.close();
         });
         final reader = _Revisions();
         Future<List<WalletSyncJobClaim>> claim() async {

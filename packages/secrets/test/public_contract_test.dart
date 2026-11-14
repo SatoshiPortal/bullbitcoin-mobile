@@ -81,11 +81,9 @@ void main() {
             id,
           ),
         );
-        expect(
-          storage.writes,
-          [entry],
-          reason: 'the losing import never rewrites the first value',
-        );
+        expect(storage.writes, [
+          entry,
+        ], reason: 'the losing import never rewrites the first value');
         expect(storage.entries, {'seed_${id.hex}': storage.writes.single});
       },
     );
@@ -176,31 +174,28 @@ void main() {
       },
     );
 
-    test(
-      'mnemonic verification uses words while seed verification includes the passphrase',
-      () async {
-        final secrets = service(
-          FakeSecureStoragePlatform(
-            entries: {
-              'seed_${id.hex}': entry,
-              'seed_${protectedId.hex}': jsonEncode({
-                'mnemonicWords': words,
-                'passphrase': 'TREZOR',
-                'runtimeType': 'mnemonic',
-              }),
-            },
-          ),
-        );
-        final plain = ok(await secrets.fetch(id));
-        final protected = ok(await secrets.fetch(protectedId));
+    test('mnemonic verification uses words while seed verification includes the passphrase', () async {
+      final secrets = service(
+        FakeSecureStoragePlatform(
+          entries: {
+            'seed_${id.hex}': entry,
+            'seed_${protectedId.hex}': jsonEncode({
+              'mnemonicWords': words,
+              'passphrase': 'TREZOR',
+              'runtimeType': 'mnemonic',
+            }),
+          },
+        ),
+      );
+      final plain = ok(await secrets.fetch(id));
+      final protected = ok(await secrets.fetch(protectedId));
 
-        expect(ok(await plain.verify.mnemonic(words)), isTrue);
-        expect(ok(await protected.verify.mnemonic(words)), isTrue);
-        expect(ok(await protected.verify.seed(seedHex)), isTrue);
-        expect(ok(await protected.verify.seed(seedHex.toUpperCase())), isTrue);
-        expect(ok(await plain.verify.seed(seedHex)), isFalse);
-      },
-    );
+      expect(ok(await plain.verify.mnemonic(words)), isTrue);
+      expect(ok(await protected.verify.mnemonic(words)), isTrue);
+      expect(ok(await protected.verify.seed(seedHex)), isTrue);
+      expect(ok(await protected.verify.seed(seedHex.toUpperCase())), isTrue);
+      expect(ok(await plain.verify.seed(seedHex)), isFalse);
+    });
 
     test(
       'legacy seeds verify every stored byte but cannot verify words',

@@ -28,12 +28,11 @@ import 'package:primitives/primitives.dart' show Outpoint;
 /// `fetchOhttpKeys`, which is the default implementation used in production;
 /// tests can inject a fake to exercise the relay fallback logic offline.
 /// [timeout] bounds each of the dependency's three HTTP stages.
-typedef OhttpKeysFetcher =
-    Future<OhttpKeys> Function({
-      required String ohttpRelayUrl,
-      required String directoryUrl,
-      required Duration timeout,
-    });
+typedef OhttpKeysFetcher = Future<OhttpKeys> Function({
+  required String ohttpRelayUrl,
+  required String directoryUrl,
+  required Duration timeout,
+});
 
 class PdkPayjoinDatasource {
   final List<core.Uri> _servers;
@@ -358,20 +357,18 @@ class PdkPayjoinDatasource {
       final id = sha256.convert(utf8.encode(pjUri)).toString().substring(0, 16);
 
       // Create and store the model to keep track of the payjoin session
-      final model =
-          PayjoinModel.receiver(
-                id: id,
-                address: address,
-                isTestnet: isTestnet,
-                receiver: persister.toJson(),
-                walletId: walletId,
-                pjUri: pjUri,
-                maxFeeRateSatPerVb: maxFeeRateSatPerVb,
-                createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-                expireAfterSec: expireAfterSec,
-                isTrade: isTrade,
-              )
-              as PayjoinReceiverModel;
+      final model = PayjoinModel.receiver(
+        id: id,
+        address: address,
+        isTestnet: isTestnet,
+        receiver: persister.toJson(),
+        walletId: walletId,
+        pjUri: pjUri,
+        maxFeeRateSatPerVb: maxFeeRateSatPerVb,
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        expireAfterSec: expireAfterSec,
+        isTrade: isTrade,
+      ) as PayjoinReceiverModel;
 
       // The directory poll is not started here: the engine arms it once the
       // session row is persisted and the policy re-check has passed, the way
@@ -419,19 +416,17 @@ class PdkPayjoinDatasource {
 
     // Create the model with the data needed to keep track of the payjoin
     // session BEFORE publishing anything.
-    final model =
-        PayjoinModel.sender(
-              uri: parsedUri.asString(),
-              isTestnet: isTestnet,
-              sender: persister.toJson(),
-              walletId: walletId,
-              originalPsbt: originalPsbt,
-              originalTxId: (await BitcoinTx.fromPsbt(originalPsbt)).txid,
-              amountSat: amountSat,
-              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-              expireAfterSec: expirySec,
-            )
-            as PayjoinSenderModel;
+    final model = PayjoinModel.sender(
+      uri: parsedUri.asString(),
+      isTestnet: isTestnet,
+      sender: persister.toJson(),
+      walletId: walletId,
+      originalPsbt: originalPsbt,
+      originalTxId: (await BitcoinTx.fromPsbt(originalPsbt)).txid,
+      amountSat: amountSat,
+      createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      expireAfterSec: expirySec,
+    ) as PayjoinSenderModel;
 
     // Write-ahead: the caller persists the session row here, before the
     // signed original reaches the directory. A crash after the POST with no

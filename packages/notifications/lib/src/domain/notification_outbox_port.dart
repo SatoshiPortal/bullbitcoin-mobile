@@ -1,7 +1,10 @@
 import 'package:meta/meta.dart';
+
 import 'local_notification.dart';
 import 'notifications_failure.dart';
+
 import 'package:primitives/primitives.dart';
+
 import 'notification_reconcile_result.dart';
 
 final class NotificationTopicObservation {

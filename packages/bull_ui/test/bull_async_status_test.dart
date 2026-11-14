@@ -1,7 +1,8 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart'
+import 'package:material_ui/material_ui.dart'
     show MediaQuery, MediaQueryData, TextStyle;
 import 'package:flutter_test/flutter_test.dart';
+
 import 'test_app.dart';
 
 void main() {

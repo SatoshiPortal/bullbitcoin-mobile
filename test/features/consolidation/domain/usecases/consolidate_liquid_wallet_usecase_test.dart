@@ -44,12 +44,10 @@ void main() {
           maximumInputs: any(named: 'maximumInputs'),
         ),
       ).thenAnswer((_) async => ['pset-1', 'pset-2']);
-      when(
-        () => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-1'),
-      ).thenAnswer((_) async => (200, 50));
-      when(
-        () => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-2'),
-      ).thenAnswer((_) async => (210, 60));
+      when(() => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-1'))
+          .thenAnswer((_) async => (200, 50));
+      when(() => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-2'))
+          .thenAnswer((_) async => (210, 60));
 
       final preview = await usecase.prepare(walletId: walletId);
 
@@ -122,12 +120,10 @@ void main() {
         );
 
         expect(txids, ['txid-signed-pset-1', 'txid-signed-pset-2']);
-        verify(
-          () => repo.signPset(pset: 'pset-1', walletId: walletId),
-        ).called(1);
-        verify(
-          () => repo.signPset(pset: 'pset-2', walletId: walletId),
-        ).called(1);
+        verify(() => repo.signPset(pset: 'pset-1', walletId: walletId))
+            .called(1);
+        verify(() => repo.signPset(pset: 'pset-2', walletId: walletId))
+            .called(1);
       },
     );
 
@@ -155,9 +151,8 @@ void main() {
           walletId: any(named: 'walletId'),
         ),
       ).thenAnswer((_) async => 'signed');
-      when(
-        () => broadcast.execute(any()),
-      ).thenThrow(Exception('broadcast rejected'));
+      when(() => broadcast.execute(any()))
+          .thenThrow(Exception('broadcast rejected'));
 
       await expectLater(
         () => usecase.broadcast(walletId: walletId, unsignedPsets: ['pset-1']),

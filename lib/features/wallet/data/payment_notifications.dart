@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:background_tasks/background_tasks.dart';

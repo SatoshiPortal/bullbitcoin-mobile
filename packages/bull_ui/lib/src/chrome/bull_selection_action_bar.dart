@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Sticky bottom bar with a summary line above a row of action buttons
 /// (typically `BullToolButton`s). **New (key gap).** Generic slots — the
@@ -43,10 +43,8 @@ class BullSelectionActionBar extends StatelessWidget {
             children: [
               Text(
                 summary,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: colors.text,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.w600, color: colors.text),
               ),
               const SizedBox(height: 8),
               Row(

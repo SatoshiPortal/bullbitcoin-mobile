@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
+
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -82,9 +84,8 @@ void main() {
     test('a passphrase produces a different fingerprint', () async {
       expect(
         ok(
-          await repoWith(
-            FakeSecureStoragePlatform(),
-          ).idOf(words: words, passphrase: 'TREZOR'),
+          await repoWith(FakeSecureStoragePlatform())
+              .idOf(words: words, passphrase: 'TREZOR'),
         ).hex,
         trezorFingerprint,
       );
@@ -559,9 +560,9 @@ void main() {
       final storage = FakeSecureStoragePlatform();
       await keysWith(storage).forModule(module: 'swaps', name: 'main');
 
-      final envelope =
-          jsonDecode(storage.entries['com.bullbitcoin.secrets/dek/swaps/main']!)
-              as Map<String, dynamic>;
+      final envelope = jsonDecode(
+        storage.entries['com.bullbitcoin.secrets/dek/swaps/main']!,
+      ) as Map<String, dynamic>;
 
       expect(envelope['v'], 1);
       expect(envelope['kind'], 'dek');
@@ -705,26 +706,22 @@ void main() {
       expect(again.hex, first.hex);
     });
 
-    test(
-      'existing() opens and never creates',
-      () async {
-        final storage = FakeSecureStoragePlatform();
-        final keys = keysWith(storage);
+    test('existing() opens and never creates', () async {
+      final storage = FakeSecureStoragePlatform();
+      final keys = keysWith(storage);
 
-        expect(
-          err(await keys.existing(module: 'swaps', name: 'main')),
-          isA<SecretNotFoundFailure>(),
-        );
-        expect(storage.entries, isEmpty, reason: 'nothing was generated');
+      expect(
+        err(await keys.existing(module: 'swaps', name: 'main')),
+        isA<SecretNotFoundFailure>(),
+      );
+      expect(storage.entries, isEmpty, reason: 'nothing was generated');
 
-        final created = ok(await keys.forModule(module: 'swaps', name: 'main'));
-        expect(
-          ok(await keys.existing(module: 'swaps', name: 'main')).hex,
-          created.hex,
-        );
-      },
-      timeout: const Timeout(Duration(seconds: 30)),
-    );
+      final created = ok(await keys.forModule(module: 'swaps', name: 'main'));
+      expect(
+        ok(await keys.existing(module: 'swaps', name: 'main')).hex,
+        created.hex,
+      );
+    }, timeout: const Timeout(Duration(seconds: 30)));
 
     test(
       'existing() calls every unusable value corrupt, whatever its shape',
@@ -763,9 +760,8 @@ void main() {
       // Without the x'…' form SQLCipher treats the hex as a passphrase
       // and runs 256 000 PBKDF2 rounds over an already-random key.
       final key = ok(
-        await keysWith(
-          FakeSecureStoragePlatform(),
-        ).forModule(module: 'swaps', name: 'main'),
+        await keysWith(FakeSecureStoragePlatform())
+            .forModule(module: 'swaps', name: 'main'),
       );
 
       expect(key.pragma, "x'${key.hex}'");

@@ -84,9 +84,9 @@ void main() {
       expect(() => result.value.clear(), throwsUnsupportedError);
       for (final entry in networks.entries) {
         final key = WalletKey(id: entry.key, network: entry.value);
-        final found =
-            await port.find(key)
-                as Ok<PublicWalletDescriptor, TransactionSyncFailure>;
+        final found = await port.find(
+          key,
+        ) as Ok<PublicWalletDescriptor, TransactionSyncFailure>;
         expect(found.value.key, key);
         expect(found.value.origin, entry.key);
         switch (found.value) {
@@ -114,9 +114,9 @@ void main() {
         WalletKey(id: 'missing', network: BitcoinNetwork.mainnet),
         WalletKey(id: networks.keys.first, network: BitcoinNetwork.signet),
       ]) {
-        final missing =
-            await port.find(key)
-                as Err<PublicWalletDescriptor, TransactionSyncFailure>;
+        final missing = await port.find(
+          key,
+        ) as Err<PublicWalletDescriptor, TransactionSyncFailure>;
         expect(missing.failure, isA<TransactionSyncNotFoundFailure>());
       }
     },
@@ -139,9 +139,9 @@ void main() {
       expect(result.value, hasLength(1));
     }
     catalog.failure = Exception('private diagnostic');
-    final result =
-        await port.find(WalletKey(id: bitcoin, network: BitcoinNetwork.mainnet))
-            as Err<PublicWalletDescriptor, TransactionSyncFailure>;
+    final result = await port.find(
+      WalletKey(id: bitcoin, network: BitcoinNetwork.mainnet),
+    ) as Err<PublicWalletDescriptor, TransactionSyncFailure>;
     expect(result.failure, isA<TransactionSyncStorageFailure>());
     expect(result.failure.toString(), isNot(contains('private diagnostic')));
     catalog.failure = StateError('programmer failure');

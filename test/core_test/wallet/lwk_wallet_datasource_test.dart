@@ -48,9 +48,8 @@ void main() {
   setUp(() {
     lwkWallet = _MockLwkWallet();
     datasource = LwkWalletDatasource(readWallet: (_) async => lwkWallet);
-    when(
-      () => lwkWallet.policyAsset(),
-    ).thenAnswer((_) async => AssetConstants.lbtcTestnet);
+    when(() => lwkWallet.policyAsset())
+        .thenAnswer((_) async => AssetConstants.lbtcTestnet);
     when(
       () => lwkWallet.buildCustomTx(
         utxos: any(named: 'utxos'),
@@ -212,9 +211,8 @@ void main() {
   test(
     'rejects a missing consolidation address index before building',
     () async {
-      when(
-        () => lwkWallet.utxos(),
-      ).thenAnswer((_) async => [coin('first'), coin('second')]);
+      when(() => lwkWallet.utxos())
+          .thenAnswer((_) async => [coin('first'), coin('second')]);
       when(() => lwkWallet.addressLastUnused()).thenAnswer(
         (_) async => const lwk.Address(standard: '', confidential: ''),
       );

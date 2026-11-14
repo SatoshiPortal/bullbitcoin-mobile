@@ -29,15 +29,13 @@ void main() {
     final result = await usecase.execute(AnnouncementId.payjoinPrivacy);
 
     expect(result, isA<Ok<void, dynamic>>());
-    verify(
-      () => dismissalRepository.dismiss(AnnouncementId.payjoinPrivacy),
-    ).called(1);
+    verify(() => dismissalRepository.dismiss(AnnouncementId.payjoinPrivacy))
+        .called(1);
   });
 
   test('returns a failure when persistence throws', () async {
-    when(
-      () => dismissalRepository.dismiss(any()),
-    ).thenThrow(Exception('disk full'));
+    when(() => dismissalRepository.dismiss(any()))
+        .thenThrow(Exception('disk full'));
 
     final result = await usecase.execute(AnnouncementId.payjoinPrivacy);
 

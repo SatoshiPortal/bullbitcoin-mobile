@@ -65,9 +65,9 @@ void main() {
       ]),
     );
 
-    final updates = await WatchPayjoinUsecase(
-      sessions,
-    ).execute(ids: [payjoin.id]).toList();
+    final updates = await WatchPayjoinUsecase(sessions)
+        .execute(ids: [payjoin.id])
+        .toList();
 
     expect(updates, hasLength(2));
     expect(updates.last, isA<core.Ok<PayjoinSession, SendFailure>>());

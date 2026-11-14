@@ -15,8 +15,10 @@ import 'read_wallet_sync_jobs.dart';
 import 'sqlite_wallet_sync_job_queue.dart';
 
 typedef NotificationCopy = ({String title, String body});
-typedef NotificationCopyBuilder =
-    NotificationCopy Function(int count, WalletSyncChain chain);
+typedef NotificationCopyBuilder = NotificationCopy Function(
+  int count,
+  WalletSyncChain chain,
+);
 
 /// Admission and retry policy only; native writer ownership belongs to the
 /// injected port. No Secrets, native handles, widgets or application locator.
@@ -328,9 +330,8 @@ final class WalletTransactionSyncBackgroundTask {
           : 'empty'} chain=${chain.name} elapsed_ms=${elapsed.elapsed.inMilliseconds} budget_ms=${budget?.inMilliseconds ?? 'unlimited'} admitted=${handled.length}',
     );
     final delivered = await notifications?.deliverPending();
-    if (delivered case Err(
-      failure: final failure,
-    ) when failure is! NotificationsPermissionDeniedFailure) {
+    if (delivered case Err(failure: final failure)
+        when failure is! NotificationsPermissionDeniedFailure) {
       _log(
         BackgroundLogLevel.warning,
         'Background notifications retry: category=delivery',

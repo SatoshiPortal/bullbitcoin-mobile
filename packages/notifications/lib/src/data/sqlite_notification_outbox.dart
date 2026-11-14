@@ -41,7 +41,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
         rethrow;
       }
     } catch (_) {
-      database.dispose();
+      database.close();
       rethrow;
     }
   }
@@ -422,7 +422,7 @@ final class SqliteNotificationOutbox implements NotificationOutboxPort {
     }
   }
 
-  void dispose() => _database.dispose();
+  void dispose() => _database.close();
 
   int _hashCandidate(String eventId) {
     final digest = sha256.convert(utf8.encode(eventId)).bytes;

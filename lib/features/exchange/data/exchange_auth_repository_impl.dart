@@ -22,9 +22,8 @@ final class ExchangeAuthRepositoryImpl implements ExchangeAuthRepository {
       if (model == null || !model.isActive) {
         return const Err(ExchangeAuthenticationFailure());
       }
-      return ExchangeApiKeyMapper.toDomain(
-        model,
-      ).mapErr((_) => const ExchangeAuthenticationFailure());
+      return ExchangeApiKeyMapper.toDomain(model)
+          .mapErr((_) => const ExchangeAuthenticationFailure());
     } on Exception {
       // Platform errors may contain cookies or the entire response.
       return const Err(ExchangeAuthenticationFailure());

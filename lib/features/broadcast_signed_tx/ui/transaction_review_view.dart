@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_failure_l10n.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullFadingLinearProgress, BullText, Gap;

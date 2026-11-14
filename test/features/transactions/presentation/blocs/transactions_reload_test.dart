@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bb_mobile/features/transactions/domain/usecases/watch_transaction_reloads_usecase.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 
@@ -50,12 +51,10 @@ void main() {
     final b = _Wallet();
     when(() => a.id).thenReturn('a');
     when(() => b.id).thenReturn('b');
-    when(
-      () => started.execute(walletId: 'a'),
-    ).thenAnswer((_) => const Stream.empty());
-    when(
-      () => finished.execute(walletId: 'a'),
-    ).thenAnswer((_) => finishes.stream.where((wallet) => wallet.id == 'a'));
+    when(() => started.execute(walletId: 'a'))
+        .thenAnswer((_) => const Stream.empty());
+    when(() => finished.execute(walletId: 'a'))
+        .thenAnswer((_) => finishes.stream.where((wallet) => wallet.id == 'a'));
     var reads = 0;
     when(() => read.execute(walletId: 'a')).thenAnswer((_) async {
       reads++;
@@ -114,9 +113,8 @@ void main() {
     );
     when(() => a.id).thenReturn('a');
     when(() => b.id).thenReturn('b');
-    when(
-      () => wallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => Ok([a, b]));
+    when(() => wallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([a, b]));
     var walletRuns = 0;
     for (final entry in [(a, first), (b, second)]) {
       when(
@@ -132,23 +130,20 @@ void main() {
         finishes.add(entry.$1);
       });
     }
-    when(
-      () => started.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => started.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) => const Stream.empty());
     var finishSubscriptions = 0;
-    when(() => finished.execute(walletId: any(named: 'walletId'))).thenAnswer((
-      _,
-    ) {
-      finishSubscriptions++;
-      return finishes.stream;
-    });
+    when(() => finished.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) {
+          finishSubscriptions++;
+          return finishes.stream;
+        });
     var reads = 0;
-    when(() => read.execute(walletId: any(named: 'walletId'))).thenAnswer((
-      _,
-    ) async {
-      reads++;
-      return const Ok([]);
-    });
+    when(() => read.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async {
+          reads++;
+          return const Ok([]);
+        });
     final cubit = TransactionsCubit(
       getTransactionsUsecase: read,
       refreshTransactionLabelsUsecase: _Labels(),

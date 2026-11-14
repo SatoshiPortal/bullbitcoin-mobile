@@ -121,39 +121,35 @@ void main() {
     String? proposalPsbt,
     String? transactionId,
     bool isTrade = false,
-  }) =>
-      PayjoinModel.receiver(
-            id: id,
-            address: 'tb1qreceiver',
-            isTestnet: true,
-            receiver: '[]',
-            walletId: 'wallet-1',
-            pjUri: 'bitcoin:tb1qreceiver?pj=https://payjo.in/$id',
-            maxFeeRateSatPerVb: BigInt.from(10000),
-            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            expireAfterSec: 3600,
-            originalTxBytes: originalTransaction,
-            originalTxId: originalTransactionId,
-            amountSat: 50000,
-            proposalPsbt: proposalPsbt,
-            txId: transactionId,
-            isTrade: isTrade,
-          )
-          as PayjoinReceiverModel;
+  }) => PayjoinModel.receiver(
+    id: id,
+    address: 'tb1qreceiver',
+    isTestnet: true,
+    receiver: '[]',
+    walletId: 'wallet-1',
+    pjUri: 'bitcoin:tb1qreceiver?pj=https://payjo.in/$id',
+    maxFeeRateSatPerVb: BigInt.from(10000),
+    createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+    expireAfterSec: 3600,
+    originalTxBytes: originalTransaction,
+    originalTxId: originalTransactionId,
+    amountSat: 50000,
+    proposalPsbt: proposalPsbt,
+    txId: transactionId,
+    isTrade: isTrade,
+  ) as PayjoinReceiverModel;
 
-  PayjoinSenderModel sender() =>
-      PayjoinModel.sender(
-            uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
-            isTestnet: true,
-            sender: '[]',
-            walletId: 'wallet-1',
-            originalPsbt: 'cHNidP8=',
-            originalTxId: 'original-tx',
-            amountSat: 50000,
-            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            expireAfterSec: 3600,
-          )
-          as PayjoinSenderModel;
+  PayjoinSenderModel sender() => PayjoinModel.sender(
+    uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
+    isTestnet: true,
+    sender: '[]',
+    walletId: 'wallet-1',
+    originalPsbt: 'cHNidP8=',
+    originalTxId: 'original-tx',
+    amountSat: 50000,
+    createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+    expireAfterSec: 3600,
+  ) as PayjoinSenderModel;
 
   // Single-input, single-output unsigned PSBT. Real enough for BitcoinTx to
   // extract the spent outpoint, which is what the freeze reads.
@@ -168,21 +164,19 @@ void main() {
     String uri = 'bitcoin:tb1qsender?pj=https://payjo.in',
     String? proposalPsbt,
     String? transactionId,
-  }) =>
-      PayjoinModel.sender(
-            uri: uri,
-            isTestnet: true,
-            sender: '[]',
-            walletId: 'wallet-1',
-            originalPsbt: oneInputPsbt,
-            originalTxId: 'original-tx',
-            amountSat: 50000,
-            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
-            expireAfterSec: 3600,
-            proposalPsbt: proposalPsbt,
-            txId: transactionId,
-          )
-          as PayjoinSenderModel;
+  }) => PayjoinModel.sender(
+    uri: uri,
+    isTestnet: true,
+    sender: '[]',
+    walletId: 'wallet-1',
+    originalPsbt: oneInputPsbt,
+    originalTxId: 'original-tx',
+    amountSat: 50000,
+    createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
+    expireAfterSec: 3600,
+    proposalPsbt: proposalPsbt,
+    txId: transactionId,
+  ) as PayjoinSenderModel;
 
   setUp(() async {
     database = PayjoinDatabase.forTesting(NativeDatabase.memory());
@@ -220,9 +214,8 @@ void main() {
     when(() => pdk.expiredPayjoins).thenAnswer((_) => const Stream.empty());
     when(() => pdk.dispose()).thenAnswer((_) async {});
     when(() => pdk.stopPolling(any())).thenReturn(null);
-    when(
-      () => transactions.watchWallet(any()),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => transactions.watchWallet(any()))
+        .thenAnswer((_) => const Stream.empty());
     when(
       () => transactions.isTransactionVisible(
         walletId: any(named: 'walletId'),
@@ -1790,9 +1783,8 @@ void main() {
 
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       when(
         () => transactions.isTransactionVisible(
           walletId: any(named: 'walletId'),
@@ -1860,9 +1852,8 @@ void main() {
       });
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       when(
         () => transactions.isTransactionVisible(
           walletId: any(named: 'walletId'),
@@ -1896,9 +1887,8 @@ void main() {
 
         final walletEvents = StreamController<void>.broadcast();
         addTearDown(walletEvents.close);
-        when(
-          () => transactions.watchWallet(any()),
-        ).thenAnswer((_) => walletEvents.stream);
+        when(() => transactions.watchWallet(any()))
+            .thenAnswer((_) => walletEvents.stream);
         when(
           () => transactions.isTransactionVisible(
             walletId: any(named: 'walletId'),
@@ -1931,9 +1921,8 @@ void main() {
 
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       await engine.resumePayjoinsOnStartup();
 
       final retried = sender().copyWith(originalTxId: 'retried-tx');
@@ -1999,9 +1988,8 @@ void main() {
       await local.storeSender(live);
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       var blocked = true;
       var attempts = 0;
       when(
@@ -2069,9 +2057,8 @@ void main() {
         proposalPsbt: oneInputPsbt,
         txId: (await BitcoinTx.fromPsbt(oneInputPsbt)).txid,
       );
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       when(
         () => wallet.signPsbt(
           walletId: any(named: 'walletId'),
@@ -2113,27 +2100,24 @@ void main() {
       );
     }
 
-    test(
-      'budget survives refresh bursts and foreground; explicit retry uses same proposal',
-      () async {
-        await local.storeSender(model);
-        await engine.resumePayjoinsOnStartup();
-        for (var i = 0; i < 8; i++) {
-          await refresh();
-        }
-        expect(attempts, PayjoinRepositoryImpl.proposalRetryLimit);
-        await expectReserved();
-        blocked = false;
-        await engine.resumePayjoinsOnStartup();
+    test('budget survives refresh bursts and foreground; explicit retry uses same proposal', () async {
+      await local.storeSender(model);
+      await engine.resumePayjoinsOnStartup();
+      for (var i = 0; i < 8; i++) {
         await refresh();
-        expect(broadcasts, 0);
-        final result = await engine.retryProposal(model.id);
-        expect(result, isA<Ok<internal.Payjoin, PayjoinFailure>>());
-        expect(broadcasts, 1);
-        expect((await local.fetchSender(model.id))?.isCompleted, isTrue);
-        expect(engine.proposalSpendFailure(model.id), isNull);
-      },
-    );
+      }
+      expect(attempts, PayjoinRepositoryImpl.proposalRetryLimit);
+      await expectReserved();
+      blocked = false;
+      await engine.resumePayjoinsOnStartup();
+      await refresh();
+      expect(broadcasts, 0);
+      final result = await engine.retryProposal(model.id);
+      expect(result, isA<Ok<internal.Payjoin, PayjoinFailure>>());
+      expect(broadcasts, 1);
+      expect((await local.fetchSender(model.id))?.isCompleted, isTrue);
+      expect(engine.proposalSpendFailure(model.id), isNull);
+    });
 
     Future<void> expectReleased() async {
       final row = await local.fetchSender(model.id);
@@ -2144,22 +2128,19 @@ void main() {
       expect(engine.proposalSpendFailure(model.id), isNull);
     }
 
-    test(
-      'proposal received at expiry is recorded, then released without any broadcast',
-      () async {
-        final expired = expiredSender();
-        await local.storeSender(expired);
-        model = expired.copyWith(proposalPsbt: oneInputPsbt, txId: model.txId);
-        proposals.add(model);
-        await pumpEventQueue(times: 40);
-        expect((await local.fetchSender(model.id))?.proposalPsbt, oneInputPsbt);
-        await expectReserved();
-        await engine.resumePayjoinsOnStartup();
-        expect(attempts, 0);
-        expect(broadcasts, 0);
-        await expectReleased();
-      },
-    );
+    test('proposal received at expiry is recorded, then released without any broadcast', () async {
+      final expired = expiredSender();
+      await local.storeSender(expired);
+      model = expired.copyWith(proposalPsbt: oneInputPsbt, txId: model.txId);
+      proposals.add(model);
+      await pumpEventQueue(times: 40);
+      expect((await local.fetchSender(model.id))?.proposalPsbt, oneInputPsbt);
+      await expectReserved();
+      await engine.resumePayjoinsOnStartup();
+      expect(attempts, 0);
+      expect(broadcasts, 0);
+      await expectReleased();
+    });
 
     test('deadline stops retries without releasing inputs', () async {
       engine.proposalRetryWindow = const Duration(milliseconds: 20);
@@ -2272,29 +2253,26 @@ void main() {
       expect(broadcasts, 0);
     });
 
-    test(
-      'a paused proposal stays reserved until the session expires, then is released',
-      () async {
-        // Expires between one and two seconds from now.
-        model = model.copyWith(
-          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 3598,
-        );
-        engine.proposalRetryWindow = const Duration(milliseconds: 20);
-        await local.storeSender(model);
-        await engine.resumePayjoinsOnStartup();
-        await Future<void>.delayed(const Duration(milliseconds: 40));
-        await engine.resumePayjoinsOnStartup();
-        expect(attempts, 1);
-        await expectReserved();
-        await Future<void>.delayed(const Duration(milliseconds: 2100));
-        await pumpEventQueue(times: 40);
-        blocked = false;
-        await refresh();
-        expect(attempts, 1);
-        expect(broadcasts, 0);
-        await expectReleased();
-      },
-    );
+    test('a paused proposal stays reserved until the session expires, then is released', () async {
+      // Expires between one and two seconds from now.
+      model = model.copyWith(
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 3598,
+      );
+      engine.proposalRetryWindow = const Duration(milliseconds: 20);
+      await local.storeSender(model);
+      await engine.resumePayjoinsOnStartup();
+      await Future<void>.delayed(const Duration(milliseconds: 40));
+      await engine.resumePayjoinsOnStartup();
+      expect(attempts, 1);
+      await expectReserved();
+      await Future<void>.delayed(const Duration(milliseconds: 2100));
+      await pumpEventQueue(times: 40);
+      blocked = false;
+      await refresh();
+      expect(attempts, 1);
+      expect(broadcasts, 0);
+      await expectReleased();
+    });
 
     test('an expired session whose payjoin is on the network completes '
         'instead of expiring', () async {
@@ -2504,9 +2482,8 @@ void main() {
               psbt: any(named: 'psbt'),
             ),
           ).thenAnswer((_) async {
-            evidenceAtWire = (await local.fetchSender(
-              unproposed.id,
-            ))?.hasNetworkEvidence;
+            evidenceAtWire = (await local.fetchSender(unproposed.id))
+                ?.hasNetworkEvidence;
             throw Exception('unknown original outcome');
           });
           await send(unproposed);
@@ -2636,9 +2613,8 @@ void main() {
       await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
       walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       await engine.resumePayjoinsOnStartup();
 
       final retried = sender().copyWith(originalTxId: 'retried-tx');
@@ -2914,9 +2890,8 @@ void main() {
       });
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
 
       await engine.createPayjoinSender(
         walletId: first.walletId,

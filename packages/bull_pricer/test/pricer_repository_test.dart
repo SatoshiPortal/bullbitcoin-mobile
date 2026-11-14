@@ -455,17 +455,13 @@ void main() {
       expect(await indexFailure(), isA<PricerNetworkFailure>());
     });
 
-    test(
-      'a price service silent for 10 s is a network failure',
-      () async {
-        api.answerAfter = Completer<void>().future;
-        final watch = Stopwatch()..start();
+    test('a price service silent for 10 s is a network failure', () async {
+      api.answerAfter = Completer<void>().future;
+      final watch = Stopwatch()..start();
 
-        expect(await indexFailure(), isA<PricerNetworkFailure>());
-        expect(watch.elapsed, lessThan(const Duration(seconds: 12)));
-      },
-      timeout: const Timeout(Duration(seconds: 30)),
-    );
+      expect(await indexFailure(), isA<PricerNetworkFailure>());
+      expect(watch.elapsed, lessThan(const Duration(seconds: 12)));
+    }, timeout: const Timeout(Duration(seconds: 30)));
 
     test('a dropped connection is a network failure', () async {
       api.offline = true;

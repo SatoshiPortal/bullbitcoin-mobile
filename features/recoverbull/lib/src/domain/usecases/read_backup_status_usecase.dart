@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import '../entities/backup_status.dart';
 import '../entities/vault_context.dart';
 import '../recoverbull_failure.dart';

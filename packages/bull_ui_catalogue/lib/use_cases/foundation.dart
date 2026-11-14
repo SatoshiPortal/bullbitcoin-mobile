@@ -5,7 +5,7 @@
 // `Foundation/` node via `@UseCase(path:)`.
 
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart' as m;
+import 'package:material_ui/material_ui.dart' as m;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 // ---------------------------------------------------------------------------

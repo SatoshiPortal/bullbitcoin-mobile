@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -77,7 +77,6 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
       body: SafeArea(
         child: BBKeyboardActions(
           disableScroll: true,
-          focusNodes: [_amountNode],
           child: BullScrollableColumn(
             crossAxisAlignment: .start,
             children: [

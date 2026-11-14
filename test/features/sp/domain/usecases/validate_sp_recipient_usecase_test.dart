@@ -34,9 +34,8 @@ void main() {
       r is Err<SpRecipient, SpFailure> ? r.failure : null;
 
   test('accepts a matching-network silent payment address', () async {
-    when(
-      () => networkUsecase.execute(),
-    ).thenReturn(const Ok(BitcoinNetwork.mainnet));
+    when(() => networkUsecase.execute())
+        .thenReturn(const Ok(BitcoinNetwork.mainnet));
     when(
       () => validator.validateRecipientAddress(
         'sp1qexample',
@@ -53,9 +52,8 @@ void main() {
   });
 
   test('rejects a testnet address on a mainnet wallet', () async {
-    when(
-      () => networkUsecase.execute(),
-    ).thenReturn(const Ok(BitcoinNetwork.mainnet));
+    when(() => networkUsecase.execute())
+        .thenReturn(const Ok(BitcoinNetwork.mainnet));
     when(
       () => validator.validateRecipientAddress(
         'tsp1qexample',
@@ -71,9 +69,8 @@ void main() {
   });
 
   test('rejects an sprt1 address on a testnet wallet', () async {
-    when(
-      () => networkUsecase.execute(),
-    ).thenReturn(const Ok(BitcoinNetwork.testnet));
+    when(() => networkUsecase.execute())
+        .thenReturn(const Ok(BitcoinNetwork.testnet));
     when(
       () => validator.validateRecipientAddress(
         'sprt1qexample',
@@ -89,9 +86,8 @@ void main() {
   });
 
   test('fails closed on a network read error', () async {
-    when(
-      () => networkUsecase.execute(),
-    ).thenReturn(const Err(SpUnexpected('read')));
+    when(() => networkUsecase.execute())
+        .thenReturn(const Err(SpUnexpected('read')));
     final result = await usecase.execute(
       input: 'sp1qexample',
       amountSat: Sats.zero,
@@ -103,9 +99,8 @@ void main() {
   });
 
   test('accepts a standard bitcoin address on a matching network', () async {
-    when(
-      () => networkUsecase.execute(),
-    ).thenReturn(const Ok(BitcoinNetwork.mainnet));
+    when(() => networkUsecase.execute())
+        .thenReturn(const Ok(BitcoinNetwork.mainnet));
     when(
       () => validator.validateRecipientAddress(
         'bc1qexample',
@@ -125,9 +120,8 @@ void main() {
   });
 
   test('rejects a standard bitcoin address from another network', () async {
-    when(
-      () => networkUsecase.execute(),
-    ).thenReturn(const Ok(BitcoinNetwork.testnet));
+    when(() => networkUsecase.execute())
+        .thenReturn(const Ok(BitcoinNetwork.testnet));
     when(
       () => validator.validateRecipientAddress(
         'bc1qexample',
@@ -143,9 +137,8 @@ void main() {
   });
 
   test('rejects an unrecognized address with SpInvalidAddress', () async {
-    when(
-      () => networkUsecase.execute(),
-    ).thenReturn(const Ok(BitcoinNetwork.mainnet));
+    when(() => networkUsecase.execute())
+        .thenReturn(const Ok(BitcoinNetwork.mainnet));
     when(
       () => validator.validateRecipientAddress(
         'lnbc1qexample',

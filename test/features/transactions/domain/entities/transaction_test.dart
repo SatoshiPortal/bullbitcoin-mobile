@@ -192,9 +192,8 @@ void main() {
     test('is null when the transaction has no payjoin', () {
       expect(const Transaction().displayPayjoinStatus, isNull);
       expect(
-        Transaction(
-          walletTransaction: _walletTx(txId: 'any'),
-        ).displayPayjoinStatus,
+        Transaction(walletTransaction: _walletTx(txId: 'any'))
+            .displayPayjoinStatus,
         isNull,
       );
     });
@@ -208,9 +207,8 @@ void main() {
         PayjoinStatus.expired,
       ]) {
         expect(
-          Transaction(
-            payjoin: _senderPayjoin(status: status),
-          ).displayPayjoinStatus,
+          Transaction(payjoin: _senderPayjoin(status: status))
+              .displayPayjoinStatus,
           status,
         );
       }

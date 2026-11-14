@@ -1,4 +1,5 @@
 import 'package:convert/convert.dart' as convert;
+
 import '../../domain/entities/encrypted_vault.dart';
 import '../models/encrypted_vault_model.dart';
 

@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinNetwork, BitcoinUnit;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -81,12 +82,10 @@ class _Harness {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => started.execute(walletId: 'wallet-a'),
-    ).thenAnswer((_) => const Stream.empty());
-    when(
-      () => finished.execute(walletId: 'wallet-a'),
-    ).thenAnswer((_) => finishes.stream);
+    when(() => started.execute(walletId: 'wallet-a'))
+        .thenAnswer((_) => const Stream.empty());
+    when(() => finished.execute(walletId: 'wallet-a'))
+        .thenAnswer((_) => finishes.stream);
     cubit = TransactionsCubit(
       walletId: global ? null : 'wallet-a',
       getTransactionsUsecase: GetTransactionsUsecase(

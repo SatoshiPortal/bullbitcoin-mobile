@@ -172,9 +172,8 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       // The quote just used the rate-limit slot, so this call is the one that
       // gets refused. Nothing was created server-side, so one retry is safe.
       // Keep the wait short: the quote it submits goes stale.
-      if (createResult case Err(
-        :final failure,
-      ) when failure is SwapRateLimitedFailure) {
+      if (createResult case Err(:final failure)
+          when failure is SwapRateLimitedFailure) {
         final wait = failure.retryAfter ?? _createRetryDelay;
         if (wait <= _maxCreateRetryDelay) {
           await _delay(wait);

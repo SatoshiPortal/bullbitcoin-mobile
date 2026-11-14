@@ -45,9 +45,8 @@ void main() {
     summary = _MockGetExchangeUserSummaryUsecase();
     virtualIbans = _MockVirtualIbanRepository();
     environment = _MockGetRecipientsEnvironmentUsecase();
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Ok(Environment.mainnet));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Ok(Environment.mainnet));
   });
 
   Future<Result<ConfidentialSepaAvailability, RecipientsFailure>> run({
@@ -55,9 +54,8 @@ void main() {
     Result<VirtualIban?, RecipientsFailure> virtualIban = const Ok(null),
   }) {
     when(() => summary.execute()).thenAnswer((_) async => _summaryWith(groups));
-    when(
-      () => virtualIbans.find(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => virtualIban);
+    when(() => virtualIbans.find(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => virtualIban);
     return GetConfidentialSepaAvailabilityUsecase(
       getExchangeUserSummaryUsecase: summary,
       virtualIbanRepository: virtualIbans,

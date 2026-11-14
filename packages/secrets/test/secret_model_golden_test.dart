@@ -48,9 +48,9 @@ void main() {
 
   group('mnemonic entry', () {
     test('decodes the stored shape', () {
-      final model =
-          SecretModel.fromJson(jsonDecode(mnemonicJson) as Map<String, dynamic>)
-              as MnemonicSecretModel;
+      final model = SecretModel.fromJson(
+        jsonDecode(mnemonicJson) as Map<String, dynamic>,
+      ) as MnemonicSecretModel;
 
       expect(model.mnemonicWords, words);
       expect(model.passphrase, isNull);
@@ -87,36 +87,26 @@ void main() {
       expect(jsonEncode(model.toJson()), passphraseJson);
     });
 
-    test(
-      'a missing passphrase key decodes as absent, and is written back canonically',
-      () {
-        // No writer ever produced this shape (`include_if_null: true`, always),
-        // so it is a latitude the decoder grants, not a compatibility need.
-        // Pinned so that tightening it is a deliberate, visible change.
-        final absentKeyJson = mnemonicJson.replaceFirst(
-          ',"passphrase":null',
-          '',
-        );
-        expect(
-          absentKeyJson,
-          isNot(mnemonicJson),
-          reason: 'the key was removed',
-        );
+    test('a missing passphrase key decodes as absent, and is written back canonically', () {
+      // No writer ever produced this shape (`include_if_null: true`, always),
+      // so it is a latitude the decoder grants, not a compatibility need.
+      // Pinned so that tightening it is a deliberate, visible change.
+      final absentKeyJson = mnemonicJson.replaceFirst(',"passphrase":null', '');
+      expect(absentKeyJson, isNot(mnemonicJson), reason: 'the key was removed');
 
-        final model = SecretModel.fromJson(
-          jsonDecode(absentKeyJson) as Map<String, dynamic>,
-        );
-        expect((model as MnemonicSecretModel).passphrase, isNull);
-        expect(jsonEncode(model.toJson()), mnemonicJson);
-      },
-    );
+      final model = SecretModel.fromJson(
+        jsonDecode(absentKeyJson) as Map<String, dynamic>,
+      );
+      expect((model as MnemonicSecretModel).passphrase, isNull);
+      expect(jsonEncode(model.toJson()), mnemonicJson);
+    });
   });
 
   group('bytes entry', () {
     test('decodes the stored shape', () {
-      final model =
-          SecretModel.fromJson(jsonDecode(bytesJson) as Map<String, dynamic>)
-              as BytesSecretModel;
+      final model = SecretModel.fromJson(
+        jsonDecode(bytesJson) as Map<String, dynamic>,
+      ) as BytesSecretModel;
       expect(model.bytes, [
         0,
         1,
@@ -180,10 +170,9 @@ void main() {
       expect(
         () => SecretModel.fromJson(
           jsonDecode(
-                '{"mnemonicWords":[1,2,3],"passphrase":null,'
-                '"runtimeType":"mnemonic"}',
-              )
-              as Map<String, dynamic>,
+            '{"mnemonicWords":[1,2,3],"passphrase":null,'
+            '"runtimeType":"mnemonic"}',
+          ) as Map<String, dynamic>,
         ),
         throwsFormatException,
       );
@@ -224,10 +213,9 @@ void main() {
       expect(
         () => SecretModel.fromJson(
           jsonDecode(
-                '{"mnemonicWords":${jsonEncode(List.filled(12, 'abandon'))},'
-                '"passphrase":42,"runtimeType":"mnemonic"}',
-              )
-              as Map<String, dynamic>,
+            '{"mnemonicWords":${jsonEncode(List.filled(12, 'abandon'))},'
+            '"passphrase":42,"runtimeType":"mnemonic"}',
+          ) as Map<String, dynamic>,
         ),
         throwsFormatException,
       );
@@ -262,10 +250,9 @@ void main() {
         expect(
           () => SecretModel.fromJson(
             jsonDecode(
-                  '{"mnemonicWords":$list,"passphrase":null,'
-                  '"runtimeType":"mnemonic"}',
-                )
-                as Map<String, dynamic>,
+              '{"mnemonicWords":$list,"passphrase":null,'
+              '"runtimeType":"mnemonic"}',
+            ) as Map<String, dynamic>,
           ),
           throwsFormatException,
           reason: '$count words',

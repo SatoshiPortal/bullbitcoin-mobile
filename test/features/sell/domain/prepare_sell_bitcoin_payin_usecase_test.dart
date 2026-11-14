@@ -67,9 +67,8 @@ void main() {
 
   test('returns the psbt together with its real fee', () async {
     stubPrepare();
-    when(
-      () => calculateFees.execute(psbt: any(named: 'psbt')),
-    ).thenAnswer((_) async => 220);
+    when(() => calculateFees.execute(psbt: any(named: 'psbt')))
+        .thenAnswer((_) async => 220);
 
     final value =
         (await run() as Ok<PreparedSellBitcoinPayin, SellFailure>).value;
@@ -106,9 +105,8 @@ void main() {
 
   test('a fee-measurement failure fails the whole build', () async {
     stubPrepare();
-    when(
-      () => calculateFees.execute(psbt: any(named: 'psbt')),
-    ).thenThrow(Exception(_rawReason));
+    when(() => calculateFees.execute(psbt: any(named: 'psbt')))
+        .thenThrow(Exception(_rawReason));
 
     expect(
       await run(),

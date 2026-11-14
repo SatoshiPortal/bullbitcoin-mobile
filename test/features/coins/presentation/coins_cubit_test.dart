@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/coins/domain/usecases/watch_wallet_revisions_usecase.dart';
 import 'package:primitives/primitives.dart' as primitives;
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -78,18 +79,14 @@ void main() {
     startedController = StreamController<String>.broadcast();
     finishedController = StreamController<Wallet>.broadcast();
 
-    when(
-      () => watchStarted.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) => startedController.stream);
-    when(
-      () => watchFinished.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) => finishedController.stream);
-    when(
-      () => labelsFacade.fetchDistinctLabels(),
-    ).thenAnswer((_) async => <String>{});
-    when(
-      () => refreshCoins.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async {});
+    when(() => watchStarted.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) => startedController.stream);
+    when(() => watchFinished.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) => finishedController.stream);
+    when(() => labelsFacade.fetchDistinctLabels())
+        .thenAnswer((_) async => <String>{});
+    when(() => refreshCoins.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async {});
   });
 
   tearDown(() {
@@ -100,9 +97,8 @@ void main() {
 
   test('wallet revisions coalesce local reloads without sync events', () {
     fakeAsync((async) {
-      when(
-        () => getUtxos.execute(walletId: walletId),
-      ).thenAnswer((_) async => const Ok([]));
+      when(() => getUtxos.execute(walletId: walletId))
+          .thenAnswer((_) async => const Ok([]));
       final cubit = buildCubit();
       WalletRevisionState revision(String id, int number) =>
           WalletRevisionState(
@@ -141,9 +137,8 @@ void main() {
         walletUtxoFixture(sats: 100),
         walletUtxoFixture(sats: 200),
       ];
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => Ok(utxos));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok(utxos));
 
       final cubit = buildCubit();
       await cubit.load();
@@ -154,9 +149,8 @@ void main() {
     });
 
     test('emits empty when no utxos', () async {
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => const Ok([]));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => const Ok([]));
 
       final cubit = buildCubit();
       await cubit.load();
@@ -166,9 +160,8 @@ void main() {
     });
 
     test('emits error holding a CoinsFailure on failure', () async {
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => const Err(CoinsLoadFailure()));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => const Err(CoinsLoadFailure()));
 
       final cubit = buildCubit();
       await cubit.load();
@@ -180,9 +173,8 @@ void main() {
   });
 
   test('refresh syncs before reloading coins', () async {
-    when(
-      () => getUtxos.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => const Ok([]));
+    when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const Ok([]));
     final cubit = buildCubit();
 
     await cubit.refresh();
@@ -210,9 +202,8 @@ void main() {
         walletUtxoFixture(sats: 100, txId: 'a', isFrozen: false),
         walletUtxoFixture(sats: 200, txId: 'b', isFrozen: true),
       ];
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => Ok(utxos));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok(utxos));
 
       final cubit = buildCubit();
       await cubit.load();
@@ -228,9 +219,8 @@ void main() {
         walletUtxoFixture(txId: 'a'),
         walletUtxoFixture(txId: 'b'),
       ];
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => Ok(initial));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok(initial));
 
       final cubit = buildCubit();
       await cubit.load();
@@ -240,9 +230,8 @@ void main() {
       expect(cubit.state.selectedOutpoints, {'a:0', 'b:0'});
 
       // 'b' is spent — gone from the next load.
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => Ok([walletUtxoFixture(txId: 'a')]));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok([walletUtxoFixture(txId: 'a')]));
       await cubit.load();
 
       expect(cubit.state.selectedOutpoints, {'a:0'});
@@ -252,9 +241,8 @@ void main() {
 
   group('freeze / unfreeze', () {
     test('freeze success reloads and exits selection', () async {
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => Ok([walletUtxoFixture(txId: 'a')]));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok([walletUtxoFixture(txId: 'a')]));
       when(
         () => freezeUtxos.execute(
           walletId: any(named: 'walletId'),
@@ -283,9 +271,8 @@ void main() {
     });
 
     test('freeze failure holds error and preserves selection', () async {
-      when(
-        () => getUtxos.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => Ok([walletUtxoFixture(txId: 'a')]));
+      when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => Ok([walletUtxoFixture(txId: 'a')]));
       when(
         () => freezeUtxos.execute(
           walletId: any(named: 'walletId'),
@@ -340,12 +327,11 @@ void main() {
     test('started sets syncing=true; finished triggers debounced reload', () {
       fakeAsync((async) {
         var loadCalls = 0;
-        when(
-          () => getUtxos.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer((_) async {
-          loadCalls++;
-          return Ok([walletUtxoFixture()]);
-        });
+        when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+            .thenAnswer((_) async {
+              loadCalls++;
+              return Ok([walletUtxoFixture()]);
+            });
 
         final cubit = buildCubit();
 
@@ -371,12 +357,11 @@ void main() {
     test('rapid finished events collapse to a single reload (debounce)', () {
       fakeAsync((async) {
         var loadCalls = 0;
-        when(
-          () => getUtxos.execute(walletId: any(named: 'walletId')),
-        ).thenAnswer((_) async {
-          loadCalls++;
-          return Ok([walletUtxoFixture()]);
-        });
+        when(() => getUtxos.execute(walletId: any(named: 'walletId')))
+            .thenAnswer((_) async {
+              loadCalls++;
+              return Ok([walletUtxoFixture()]);
+            });
 
         final cubit = buildCubit();
 

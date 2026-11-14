@@ -4,9 +4,9 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_account_actions.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/exchange_api_key.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
@@ -93,9 +93,8 @@ void main() {
     notifications = _MockWatchNotifications();
     announcements = _MockGetAnnouncements();
     savePreferences = _MockSavePreferences();
-    when(
-      announcements.execute,
-    ).thenAnswer((_) async => const Ok(<Announcement>[]));
+    when(announcements.execute)
+        .thenAnswer((_) async => const Ok(<Announcement>[]));
 
     when(notifications.accountChanges).thenAnswer((_) => const Stream.empty());
     when(notifications.connect).thenAnswer((_) async => const Ok(null));
@@ -153,9 +152,8 @@ void main() {
     test('returns a failure without refreshing the account', () async {
       final operation = _MockCompleteAuthentication();
       const failure = ExchangeAuthenticationFailure();
-      when(
-        () => operation.execute(isCurrent: any(named: 'isCurrent')),
-      ).thenAnswer((_) async => const Err(failure));
+      when(() => operation.execute(isCurrent: any(named: 'isCurrent')))
+          .thenAnswer((_) async => const Err(failure));
       final cubit = build();
       addTearDown(cubit.close);
       expect(await cubit.completeAuthentication(operation), same(failure));
@@ -164,9 +162,8 @@ void main() {
     });
     test('refreshes the account after persistence succeeds', () async {
       final operation = _MockCompleteAuthentication();
-      when(
-        () => operation.execute(isCurrent: any(named: 'isCurrent')),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => operation.execute(isCurrent: any(named: 'isCurrent')))
+          .thenAnswer((_) async => const Ok(null));
       final cubit = build();
       addTearDown(cubit.close);
       expect(await cubit.completeAuthentication(operation), isNull);
@@ -198,9 +195,8 @@ void main() {
       () async {
         final response = Completer<Result<void, ExchangeFailure>>();
         final operation = _MockCompleteAuthentication();
-        when(
-          () => operation.execute(isCurrent: any(named: 'isCurrent')),
-        ).thenAnswer((_) => response.future);
+        when(() => operation.execute(isCurrent: any(named: 'isCurrent')))
+            .thenAnswer((_) => response.future);
         when(clearSession.execute).thenAnswer((_) async => const Ok(null));
         final cubit = build();
         addTearDown(cubit.close);
@@ -219,12 +215,10 @@ void main() {
         final response = Completer<Result<void, ExchangeFailure>>();
         final first = _MockCompleteAuthentication();
         final second = _MockCompleteAuthentication();
-        when(
-          () => first.execute(isCurrent: any(named: 'isCurrent')),
-        ).thenAnswer((_) => response.future);
-        when(
-          () => second.execute(isCurrent: any(named: 'isCurrent')),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => first.execute(isCurrent: any(named: 'isCurrent')))
+            .thenAnswer((_) => response.future);
+        when(() => second.execute(isCurrent: any(named: 'isCurrent')))
+            .thenAnswer((_) async => const Ok(null));
         final cubit = build();
         addTearDown(cubit.close);
         final pending = cubit.completeAuthentication(first);
@@ -235,29 +229,24 @@ void main() {
       },
     );
 
-    test(
-      'an older account response cannot replace the newly authenticated account',
-      () async {
-        final response = Completer<Result<UserSummary, ExchangeFailure>>();
-        var calls = 0;
-        final newerAccount = _account.copyWith(userNumber: 2);
-        when(getAccount.execute).thenAnswer(
-          (_) =>
-              ++calls == 1 ? response.future : Future.value(Ok(newerAccount)),
-        );
-        final operation = _MockCompleteAuthentication();
-        when(
-          () => operation.execute(isCurrent: any(named: 'isCurrent')),
-        ).thenAnswer((_) async => const Ok(null));
-        final cubit = build();
-        addTearDown(cubit.close);
-        final pending = cubit.fetchUserSummary();
-        await cubit.completeAuthentication(operation);
-        response.complete(const Ok(_account));
-        await pending;
-        expect(cubit.state.userSummary, newerAccount);
-      },
-    );
+    test('an older account response cannot replace the newly authenticated account', () async {
+      final response = Completer<Result<UserSummary, ExchangeFailure>>();
+      var calls = 0;
+      final newerAccount = _account.copyWith(userNumber: 2);
+      when(getAccount.execute).thenAnswer(
+        (_) => ++calls == 1 ? response.future : Future.value(Ok(newerAccount)),
+      );
+      final operation = _MockCompleteAuthentication();
+      when(() => operation.execute(isCurrent: any(named: 'isCurrent')))
+          .thenAnswer((_) async => const Ok(null));
+      final cubit = build();
+      addTearDown(cubit.close);
+      final pending = cubit.fetchUserSummary();
+      await cubit.completeAuthentication(operation);
+      response.complete(const Ok(_account));
+      await pending;
+      expect(cubit.state.userSummary, newerAccount);
+    });
   });
 
   group('account actions finishing after a session change', () {
@@ -266,9 +255,8 @@ void main() {
       when(requestDeletion.execute).thenAnswer((_) => response.future);
       when(clearSession.execute).thenAnswer((_) async => const Ok(null));
       final operation = _MockCompleteAuthentication();
-      when(
-        () => operation.execute(isCurrent: any(named: 'isCurrent')),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => operation.execute(isCurrent: any(named: 'isCurrent')))
+          .thenAnswer((_) async => const Ok(null));
       final cubit = build();
       addTearDown(cubit.close);
       final pending = cubit.deleteAccount();
@@ -287,14 +275,12 @@ void main() {
       'an old preference failure does not leak into the new session',
       () async {
         final response = Completer<Result<void, ExchangeFailure>>();
-        when(
-          () => savePreferences.execute(dcaEnabled: false),
-        ).thenAnswer((_) => response.future);
+        when(() => savePreferences.execute(dcaEnabled: false))
+            .thenAnswer((_) => response.future);
         when(clearSession.execute).thenAnswer((_) async => const Ok(null));
         final operation = _MockCompleteAuthentication();
-        when(
-          () => operation.execute(isCurrent: any(named: 'isCurrent')),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => operation.execute(isCurrent: any(named: 'isCurrent')))
+            .thenAnswer((_) async => const Ok(null));
         final cubit = build();
         addTearDown(cubit.close);
         final pending = cubit.stopDca();
@@ -409,9 +395,8 @@ void main() {
     });
 
     test('a failed clear restores the notification socket', () async {
-      when(
-        clearSession.execute,
-      ).thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
+      when(clearSession.execute)
+          .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
       final cubit = build();
       addTearDown(cubit.close);
 
@@ -426,9 +411,8 @@ void main() {
     // The use-case owns the full-set merge over a fresh summary; the cubit
     // only names the field it changes.
     test('changes only the DCA flag through the use-case', () async {
-      when(
-        () => savePreferences.execute(dcaEnabled: false),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => savePreferences.execute(dcaEnabled: false))
+          .thenAnswer((_) async => const Ok(null));
       final cubit = build();
       addTearDown(cubit.close);
 
@@ -465,7 +449,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: cubit,

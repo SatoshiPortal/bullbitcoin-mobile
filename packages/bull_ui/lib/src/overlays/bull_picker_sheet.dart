@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 
 /// Generic single-selection bottom-sheet picker.
@@ -47,9 +47,8 @@ class BullPickerSheet<T> extends StatelessWidget {
               const Spacer(),
               Text(
                 title,
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: colors.onSurface),
+                style: Theme.of(context).textTheme.headlineMedium
+                    ?.copyWith(color: colors.onSurface),
               ),
               const Spacer(),
               IconButton(

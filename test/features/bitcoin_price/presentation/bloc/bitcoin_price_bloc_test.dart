@@ -46,9 +46,8 @@ void main() {
   );
 
   void stubPrice(Future<double?> Function() answer, {String currency = 'USD'}) {
-    when(
-      () => getBitcoinPrice.execute(currencyCode: currency),
-    ).thenAnswer((_) => _result(answer()));
+    when(() => getBitcoinPrice.execute(currencyCode: currency))
+        .thenAnswer((_) => _result(answer()));
   }
 
   setUp(() {
@@ -56,9 +55,8 @@ void main() {
     getBitcoinPrice = _MockGetBitcoinPriceUsecase();
     watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
 
-    when(
-      () => watchCurrencyChanges.execute(),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => watchCurrencyChanges.execute())
+        .thenAnswer((_) => const Stream.empty());
     when(() => getSettings.execute()).thenAnswer(
       (_) async => SettingsEntity(
         environment: Environment.mainnet,

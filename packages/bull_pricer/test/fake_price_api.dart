@@ -116,9 +116,9 @@ final class FakePriceApi {
   }
 
   Future<void> _answer(HttpRequest httpRequest) async {
-    final rpc =
-        jsonDecode(await utf8.decoder.bind(httpRequest).join())
-            as Map<String, Object?>;
+    final rpc = jsonDecode(
+      await utf8.decoder.bind(httpRequest).join(),
+    ) as Map<String, Object?>;
     final request = FakePriceRequest(
       host: httpRequest.headers.host ?? '',
       method: rpc['method'] as String,

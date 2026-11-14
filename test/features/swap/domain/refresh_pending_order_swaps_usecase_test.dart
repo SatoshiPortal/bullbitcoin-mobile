@@ -25,15 +25,12 @@ void main() {
       final second = _record('local-2', 'order-2');
       final firstRefresh = Completer<Result<OrderSwapRecord, SwapFailure>>();
       final delays = <Duration>[];
-      when(
-        repository.getPendingOrders,
-      ).thenAnswer((_) async => Ok([first, second]));
-      when(
-        () => repository.refreshOrder('local-1'),
-      ).thenAnswer((_) => firstRefresh.future);
-      when(
-        () => repository.refreshOrder('local-2'),
-      ).thenAnswer((_) async => Ok(second));
+      when(repository.getPendingOrders)
+          .thenAnswer((_) async => Ok([first, second]));
+      when(() => repository.refreshOrder('local-1'))
+          .thenAnswer((_) => firstRefresh.future);
+      when(() => repository.refreshOrder('local-2'))
+          .thenAnswer((_) async => Ok(second));
       final usecase = RefreshPendingOrderSwapsUsecase(
         repository,
         delay: (duration) async => delays.add(duration),
@@ -58,9 +55,8 @@ void main() {
   test('stops the batch when the global API rate limit is reached', () async {
     final first = _record('local-1', 'order-1');
     final second = _record('local-2', 'order-2');
-    when(
-      repository.getPendingOrders,
-    ).thenAnswer((_) async => Ok([first, second]));
+    when(repository.getPendingOrders)
+        .thenAnswer((_) async => Ok([first, second]));
     when(() => repository.refreshOrder('local-1')).thenAnswer(
       (_) async =>
           const Err(SwapRateLimitedFailure(retryAfter: Duration(seconds: 2))),

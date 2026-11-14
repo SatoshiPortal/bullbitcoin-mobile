@@ -40,15 +40,12 @@ void main() {
     );
 
     // No lockout in effect unless a test says otherwise.
-    when(
-      () => attemptsRepository.getLockedUntil(),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => attemptsRepository.setLockedUntil(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => attemptsRepository.getFailedUnlockAttempts(),
-    ).thenAnswer((_) async => const Ok(0));
+    when(() => attemptsRepository.getLockedUntil())
+        .thenAnswer((_) async => const Ok(null));
+    when(() => attemptsRepository.setLockedUntil(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => attemptsRepository.getFailedUnlockAttempts())
+        .thenAnswer((_) async => const Ok(0));
     when(() => timeoutCalculator.calculateTimeout(any())).thenReturn(0);
   });
 
@@ -56,12 +53,10 @@ void main() {
     test(
       'returns Ok(UnlockAttempt(success: true)) and resets counter',
       () async {
-        when(
-          () => pinCodeRepository.verifyPinCode(any()),
-        ).thenAnswer((_) async => const Ok(true));
-        when(
-          () => attemptsRepository.setFailedUnlockAttempts(0),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => pinCodeRepository.verifyPinCode(any()))
+            .thenAnswer((_) async => const Ok(true));
+        when(() => attemptsRepository.setFailedUnlockAttempts(0))
+            .thenAnswer((_) async => const Ok(null));
 
         final result = await usecase.execute('1234');
 
@@ -73,12 +68,10 @@ void main() {
     );
 
     test('clears any persisted lockout', () async {
-      when(
-        () => pinCodeRepository.verifyPinCode(any()),
-      ).thenAnswer((_) async => const Ok(true));
-      when(
-        () => attemptsRepository.setFailedUnlockAttempts(0),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => pinCodeRepository.verifyPinCode(any()))
+          .thenAnswer((_) async => const Ok(true));
+      when(() => attemptsRepository.setFailedUnlockAttempts(0))
+          .thenAnswer((_) async => const Ok(null));
 
       await usecase.execute('1234');
 
@@ -90,16 +83,13 @@ void main() {
     test(
       'increments counter and returns Ok(UnlockAttempt(success: false))',
       () async {
-        when(
-          () => pinCodeRepository.verifyPinCode(any()),
-        ).thenAnswer((_) async => const Ok(false));
-        when(
-          () => attemptsRepository.getFailedUnlockAttempts(),
-        ).thenAnswer((_) async => const Ok(2));
+        when(() => pinCodeRepository.verifyPinCode(any()))
+            .thenAnswer((_) async => const Ok(false));
+        when(() => attemptsRepository.getFailedUnlockAttempts())
+            .thenAnswer((_) async => const Ok(2));
         when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
-        when(
-          () => attemptsRepository.setFailedUnlockAttempts(3),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => attemptsRepository.setFailedUnlockAttempts(3))
+            .thenAnswer((_) async => const Ok(null));
 
         final result = await usecase.execute('0000');
 
@@ -112,16 +102,13 @@ void main() {
     );
 
     test('persists a wall-clock lockout for the computed timeout', () async {
-      when(
-        () => pinCodeRepository.verifyPinCode(any()),
-      ).thenAnswer((_) async => const Ok(false));
-      when(
-        () => attemptsRepository.getFailedUnlockAttempts(),
-      ).thenAnswer((_) async => const Ok(2));
+      when(() => pinCodeRepository.verifyPinCode(any()))
+          .thenAnswer((_) async => const Ok(false));
+      when(() => attemptsRepository.getFailedUnlockAttempts())
+          .thenAnswer((_) async => const Ok(2));
       when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
-      when(
-        () => attemptsRepository.setFailedUnlockAttempts(3),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => attemptsRepository.setFailedUnlockAttempts(3))
+          .thenAnswer((_) async => const Ok(null));
 
       final before = DateTime.now();
       await usecase.execute('0000');
@@ -150,9 +137,8 @@ void main() {
         when(() => attemptsRepository.getLockedUntil()).thenAnswer(
           (_) async => Ok(DateTime.now().add(const Duration(seconds: 30))),
         );
-        when(
-          () => attemptsRepository.getFailedUnlockAttempts(),
-        ).thenAnswer((_) async => const Ok(4));
+        when(() => attemptsRepository.getFailedUnlockAttempts())
+            .thenAnswer((_) async => const Ok(4));
         when(() => timeoutCalculator.calculateTimeout(4)).thenReturn(30);
 
         final result = await usecase.execute('1234');
@@ -172,9 +158,8 @@ void main() {
         when(() => attemptsRepository.getLockedUntil()).thenAnswer(
           (_) async => Ok(DateTime.now().subtract(const Duration(seconds: 1))),
         );
-        when(
-          () => attemptsRepository.getFailedUnlockAttempts(),
-        ).thenAnswer((_) async => const Ok(4));
+        when(() => attemptsRepository.getFailedUnlockAttempts())
+            .thenAnswer((_) async => const Ok(4));
         when(() => timeoutCalculator.calculateTimeout(4)).thenReturn(30);
 
         final result = await usecase.execute('1234');
@@ -186,15 +171,12 @@ void main() {
 
     test('an elapsed monotonic cooldown lets the attempt through', () async {
       unlockCooldown.start(0);
-      when(
-        () => attemptsRepository.getFailedUnlockAttempts(),
-      ).thenAnswer((_) async => const Ok(4));
-      when(
-        () => pinCodeRepository.verifyPinCode(any()),
-      ).thenAnswer((_) async => const Ok(true));
-      when(
-        () => attemptsRepository.setFailedUnlockAttempts(0),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => attemptsRepository.getFailedUnlockAttempts())
+          .thenAnswer((_) async => const Ok(4));
+      when(() => pinCodeRepository.verifyPinCode(any()))
+          .thenAnswer((_) async => const Ok(true));
+      when(() => attemptsRepository.setFailedUnlockAttempts(0))
+          .thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute('1234');
 
@@ -219,54 +201,43 @@ void main() {
       },
     );
 
-    test(
-      'returns Err(AppUnlockUnexpectedFailure) when getFailedUnlockAttempts fails',
-      () async {
-        when(
-          () => pinCodeRepository.verifyPinCode(any()),
-        ).thenAnswer((_) async => const Ok(false));
-        when(() => attemptsRepository.getFailedUnlockAttempts()).thenAnswer(
-          (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
-        );
+    test('returns Err(AppUnlockUnexpectedFailure) when getFailedUnlockAttempts fails', () async {
+      when(() => pinCodeRepository.verifyPinCode(any()))
+          .thenAnswer((_) async => const Ok(false));
+      when(() => attemptsRepository.getFailedUnlockAttempts()).thenAnswer(
+        (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
+      );
 
-        final result = await usecase.execute('0000');
+      final result = await usecase.execute('0000');
 
-        expect(result, isA<Err>());
-        expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
-      },
-    );
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
+    });
 
-    test(
-      'returns Err(AppUnlockUnexpectedFailure) when setFailedUnlockAttempts fails',
-      () async {
-        when(
-          () => pinCodeRepository.verifyPinCode(any()),
-        ).thenAnswer((_) async => const Ok(true));
-        when(() => attemptsRepository.setFailedUnlockAttempts(0)).thenAnswer(
-          (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
-        );
+    test('returns Err(AppUnlockUnexpectedFailure) when setFailedUnlockAttempts fails', () async {
+      when(() => pinCodeRepository.verifyPinCode(any()))
+          .thenAnswer((_) async => const Ok(true));
+      when(() => attemptsRepository.setFailedUnlockAttempts(0)).thenAnswer(
+        (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
+      );
 
-        final result = await usecase.execute('1234');
+      final result = await usecase.execute('1234');
 
-        expect(result, isA<Err>());
-        expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
-      },
-    );
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<AppUnlockUnexpectedFailure>());
+    });
 
     test(
       'keeps the runtime cooldown when persisting its timestamp fails',
       () async {
-        when(
-          () => attemptsRepository.getFailedUnlockAttempts(),
-        ).thenAnswer((_) async => const Ok(2));
-        when(
-          () => pinCodeRepository.verifyPinCode(any()),
-        ).thenAnswer((_) async => const Ok(false));
+        when(() => attemptsRepository.getFailedUnlockAttempts())
+            .thenAnswer((_) async => const Ok(2));
+        when(() => pinCodeRepository.verifyPinCode(any()))
+            .thenAnswer((_) async => const Ok(false));
         when(() => timeoutCalculator.calculateTimeout(2)).thenReturn(0);
         when(() => timeoutCalculator.calculateTimeout(3)).thenReturn(30);
-        when(
-          () => attemptsRepository.setFailedUnlockAttempts(3),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => attemptsRepository.setFailedUnlockAttempts(3))
+            .thenAnswer((_) async => const Ok(null));
         when(() => attemptsRepository.setLockedUntil(any())).thenAnswer(
           (_) async => const Err(AppUnlockUnexpectedFailure('storage error')),
         );
