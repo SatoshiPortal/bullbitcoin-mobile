@@ -1,6 +1,9 @@
 import 'dart:async';
+
 import 'package:transaction_sync/src/write/lease_diagnostics.dart';
+
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -553,28 +556,25 @@ void main() {
     },
   );
 
-  test(
-    'intent precedes persist; reserved and used addresses skipped; reopen reuses',
-    () async {
-      reserved.indices.add(0);
-      sessions.used.add(1);
-      sessions.beforeOpen = () =>
-          expect(store.record(key)?.intent, WriteIntent.receive);
-      sessions.beforePersist = () {
-        final pending = store.record(key);
-        expect(pending?.intent, WriteIntent.receive);
-        expect(pending?.candidate, 2);
-        expect(pending?.issued, isNull);
-      };
-      final first = await writer.receive(key, expectedGeneration: 1) as Ok;
-      expect((first.value as ReceiveAddressIssued).index, 2);
-      sessions.beforePersist = null;
-      final second = await writer.receive(key, expectedGeneration: 1) as Ok;
-      expect((second.value as ReceiveAddressIssued).address, '2');
-      expect(sessions.opens, 3);
-      expect(store.record(key)?.intent, isNull);
-    },
-  );
+  test('intent precedes persist; reserved and used addresses skipped; reopen reuses', () async {
+    reserved.indices.add(0);
+    sessions.used.add(1);
+    sessions.beforeOpen = () =>
+        expect(store.record(key)?.intent, WriteIntent.receive);
+    sessions.beforePersist = () {
+      final pending = store.record(key);
+      expect(pending?.intent, WriteIntent.receive);
+      expect(pending?.candidate, 2);
+      expect(pending?.issued, isNull);
+    };
+    final first = await writer.receive(key, expectedGeneration: 1) as Ok;
+    expect((first.value as ReceiveAddressIssued).index, 2);
+    sessions.beforePersist = null;
+    final second = await writer.receive(key, expectedGeneration: 1) as Ok;
+    expect((second.value as ReceiveAddressIssued).address, '2');
+    expect(sessions.opens, 3);
+    expect(store.record(key)?.intent, isNull);
+  });
 
   test(
     'missing active store rebuilds and restores issued receive index',
@@ -725,7 +725,7 @@ void main() {
       expect(store.record(key)?.intent, isNull);
       expect(store.record(key)?.issued, 0);
     } finally {
-      database.dispose();
+      database.close();
     }
   });
 
@@ -863,9 +863,8 @@ void main() {
     final reopened = RevisionStore('${dir.path}/metadata.sqlite');
     addTearDown(reopened.close);
     expect(
-      await writing(
-        reopened,
-      ).sync(key, expectedGeneration: 1, operation: Sync((_) {})),
+      await writing(reopened)
+          .sync(key, expectedGeneration: 1, operation: Sync((_) {})),
       isA<Ok>(),
     );
     expect(
@@ -873,9 +872,8 @@ void main() {
       BitcoinSpendStatus.unavailable,
     );
     expect(
-      await writing(
-        reopened,
-      ).sync(bitcoin.key, expectedGeneration: 1, operation: Sync((_) {})),
+      await writing(reopened)
+          .sync(bitcoin.key, expectedGeneration: 1, operation: Sync((_) {})),
       isA<Err<WriterOutcome, TransactionSyncFailure>>().having(
         (result) => result.failure,
         'failure',

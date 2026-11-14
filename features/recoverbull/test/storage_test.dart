@@ -112,7 +112,7 @@ void main() {
     future.execute('CREATE TABLE future_data (value TEXT)');
     future.execute("INSERT INTO future_data VALUES ('preserve')");
     future.execute('PRAGMA user_version = 99');
-    future.dispose();
+    future.close();
     final before = await File(path).readAsBytes();
     await expectLater(owner.open(), throwsA(anything));
     expect(await File(path).readAsBytes(), before);
@@ -136,7 +136,7 @@ void main() {
         isEmpty,
       );
       expect(raw.select('PRAGMA user_version').single['user_version'], 0);
-      raw.dispose();
+      raw.close();
       final repository = BackupMetadataRepositoryImpl(await owner.open());
       expect(_ok(await repository.settings()).permissionGranted, isFalse);
     },

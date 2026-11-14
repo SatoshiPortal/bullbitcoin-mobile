@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
@@ -18,7 +19,7 @@ import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
 import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:screen_privacy/screen_privacy.dart';
@@ -27,7 +28,7 @@ const _channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
 
 Widget app(Widget child) => MaterialApp(
   theme: ThemeData(extensions: testBullExtensions),
-  localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+  localizationsDelegates: RecoverBullFeature.localizationsDelegates,
   supportedLocales: RecoverBullLocalizations.supportedLocales,
   home: child,
 );

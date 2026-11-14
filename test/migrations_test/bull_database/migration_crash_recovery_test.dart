@@ -90,17 +90,13 @@ void main() {
   // Exhaustive file-backed crash points exceed 30 s when suites share disk I/O.
   group('killed after any commit while upgrading on an older release', () {
     for (final MapEntry(key: version, value: fixture) in _fixtures.entries) {
-      test(
-        'from schema $version, the next launch recovers',
-        () async {
-          await _everyCrashPoint(
-            seed: (file) => _seedFixture(file, version, fixture),
-            expectRegtest: version == 16,
-            crashingOpen: (executor) => _ReleasedMigrationOrder(executor),
-          );
-        },
-        timeout: const Timeout(Duration(minutes: 2)),
-      );
+      test('from schema $version, the next launch recovers', () async {
+        await _everyCrashPoint(
+          seed: (file) => _seedFixture(file, version, fixture),
+          expectRegtest: version == 16,
+          crashingOpen: (executor) => _ReleasedMigrationOrder(executor),
+        );
+      }, timeout: const Timeout(Duration(minutes: 2)));
     }
   });
 
@@ -301,7 +297,7 @@ int _labelRows(File file) {
     if (!hasTable) return 0;
     return db.select('SELECT COUNT(*) AS c FROM labels').single['c'] as int;
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -324,7 +320,7 @@ void _leaveUnfinished(File file, {required bool dropHalf}) {
     }
     db.userVersion = 0;
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -366,6 +362,6 @@ Map<String, List<String>> _dump(File file) {
     }
     return dump;
   } finally {
-    db.dispose();
+    db.close();
   }
 }

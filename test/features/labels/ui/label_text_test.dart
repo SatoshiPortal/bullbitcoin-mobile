@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:novlang/novlang.dart';
 
@@ -13,10 +13,7 @@ Future<void> _pump(
   await tester.pumpWidget(
     MaterialApp(
       locale: const Locale('en'),
-      localizationsDelegates: [
-        NovlangAppLocalizationsDelegate(policy),
-        ...AppLocalizations.localizationsDelegates,
-      ],
+      localizationsDelegates: novlangLocalizationsDelegates(policy),
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: LabelText(label)),
     ),

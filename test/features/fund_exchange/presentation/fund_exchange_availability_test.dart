@@ -11,9 +11,9 @@ import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.da
 import 'package:bb_mobile/features/fund_exchange/domain/get_confidential_sepa_funding_availability_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_method_selection_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -54,12 +54,10 @@ void main() {
   setUp(() {
     getAvailability = _MockGetAvailability();
     final getSummary = _MockGetUserSummary();
-    when(
-      () => getSummary.execute(),
-    ).thenAnswer((_) async => const Ok(_summary));
-    when(
-      () => getAvailability.execute(),
-    ).thenAnswer((_) async => const Err(FundExchangeNetworkFailure()));
+    when(() => getSummary.execute())
+        .thenAnswer((_) async => const Ok(_summary));
+    when(() => getAvailability.execute())
+        .thenAnswer((_) async => const Err(FundExchangeNetworkFailure()));
     bloc = FundExchangeBloc(
       getFundExchangeUserSummaryUsecase: getSummary,
       getFundingDetailsUsecase: _MockGetFundingDetails(),
@@ -105,9 +103,8 @@ void main() {
   );
 
   test('confirmed ineligibility does not show an error', () async {
-    when(
-      () => getAvailability.execute(),
-    ).thenAnswer((_) async => const Ok(false));
+    when(() => getAvailability.execute())
+        .thenAnswer((_) async => const Ok(false));
     bloc.add(const FundExchangeEvent.started());
     await pumpEventQueue();
 
@@ -131,9 +128,8 @@ void main() {
       );
       expect(bloc.state.isLoadingConfidentialSepaAvailability, isFalse);
 
-      when(
-        () => getAvailability.execute(),
-      ).thenAnswer((_) async => const Ok(false));
+      when(() => getAvailability.execute())
+          .thenAnswer((_) async => const Ok(false));
       bloc.add(const FundExchangeEvent.confidentialSepaAvailabilityRetried());
       await pumpEventQueue();
 
@@ -170,7 +166,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<FundExchangeBloc>.value(
           value: bloc,

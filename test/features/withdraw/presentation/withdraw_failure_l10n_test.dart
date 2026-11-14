@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A raw reason of the shape the exchange API actually produces — it quotes a
@@ -33,7 +33,7 @@ Future<String> _translate(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {

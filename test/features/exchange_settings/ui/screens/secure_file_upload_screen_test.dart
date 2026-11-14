@@ -6,8 +6,8 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_
 import 'package:bb_mobile/features/exchange_settings/domain/usecases/upload_exchange_document_usecase.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/secure_file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/ui/screens/secure_file_upload_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -38,9 +38,8 @@ Future<SecureFileUploadCubit> _pump(
 
   final uploadUsecase = _MockUploadDocument();
   if (upload != null) {
-    when(
-      () => uploadUsecase.execute(userId: any(named: 'userId')),
-    ).thenAnswer((_) async => upload);
+    when(() => uploadUsecase.execute(userId: any(named: 'userId')))
+        .thenAnswer((_) async => upload);
   }
 
   final cubit = SecureFileUploadCubit(
@@ -65,7 +64,7 @@ Future<SecureFileUploadCubit> _pump(
       value: cubit,
       child: MaterialApp.router(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         routerConfig: router,
       ),

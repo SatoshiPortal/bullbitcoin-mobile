@@ -1,9 +1,11 @@
 import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+
 import 'notifications_test.dart' show FakeGateway;
 
 void main() {
@@ -45,7 +47,7 @@ void main() {
 
       final database = sqlite3.open(path);
       addTearDown(() {
-        database.dispose();
+        database.close();
         outbox.dispose();
         directory.deleteSync(recursive: true);
       });

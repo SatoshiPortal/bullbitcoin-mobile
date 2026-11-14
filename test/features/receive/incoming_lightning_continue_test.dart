@@ -1,7 +1,9 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+
 import 'dart:async';
+
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -31,8 +33,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
@@ -105,18 +107,15 @@ void main() {
           ),
         );
         final enabled = _MockWatchReceivePayjoinEnabledUsecase();
-        when(
-          () => enabled.execute(),
-        ).thenAnswer((_) => const Stream<bool>.empty());
+        when(() => enabled.execute())
+            .thenAnswer((_) => const Stream<bool>.empty());
         final minimum = _MockWatchReceivePayjoinMinAmountUsecase();
-        when(
-          () => minimum.execute(),
-        ).thenAnswer((_) => const Stream<int>.empty());
+        when(() => minimum.execute())
+            .thenAnswer((_) => const Stream<int>.empty());
         final wallets = _MockGetReceiveWalletsUsecase();
         if (!unsupported) {
-          when(
-            () => wallets.execute(onlyLiquid: true, onlyDefaults: true),
-          ).thenAnswer((_) async => const Ok([]));
+          when(() => wallets.execute(onlyLiquid: true, onlyDefaults: true))
+              .thenAnswer((_) async => const Ok([]));
         }
         final refusal = unsupported
             ? isA<ReceiveUnsupportedNetworkFailure>()
@@ -179,7 +178,7 @@ void main() {
           MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) {
               Device.init(context);
@@ -192,8 +191,7 @@ void main() {
         // unhandled URL with the custom scheme registered in Runner/Info.plist.
         final message = const JSONMethodCodec().encodeMethodCall(
           const MethodCall('pushRouteInformation', {
-            'location':
-                'com.googleusercontent.apps.97584343569-0mc4e5q9q1qino4vvo97mqomdi89sae5:/receive/lightning',
+            'location': 'com.googleusercontent.apps.97584343569-0mc4e5q9q1qino4vvo97mqomdi89sae5:/receive/lightning',
           }),
         );
         await tester.binding.defaultBinaryMessenger.handlePlatformMessage(

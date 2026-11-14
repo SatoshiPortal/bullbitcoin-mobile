@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/labels/locator.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/core_locator.dart';
@@ -27,11 +28,11 @@ class _NativeTor implements TorNativeInitializer {
   }
 }
 
-final class _Picker extends FilePicker {}
+final class _Picker extends FilePickerPlatform {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  FilePicker.platform = _Picker();
+  FilePickerPlatform.instance = _Picker();
 
   test(
     'foreground RecoverBull mounts with the owning modules registrations',

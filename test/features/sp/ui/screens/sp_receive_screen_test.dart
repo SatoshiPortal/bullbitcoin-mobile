@@ -7,21 +7,22 @@ import 'package:bb_mobile/features/sp/ui/screens/sp_receive_screen.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSegmented, BullShimmerBox;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../sp_cubit_harness.dart';
 import '../../sp_test_streams.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 class _MockSpCubit extends Mock implements SpCubit {}
 
 Widget _buildPage(SpCubit cubit) => MaterialApp(
   theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpCubit>.value(
     value: cubit,
@@ -31,7 +32,7 @@ Widget _buildPage(SpCubit cubit) => MaterialApp(
 
 Widget _buildMockPage(_MockSpCubit cubit) => MaterialApp(
   theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpCubit>.value(
     value: cubit,
@@ -54,9 +55,8 @@ void main() {
         spWalletData(spAddress: 'sp1qtestaddress'),
       ),
     );
-    when(
-      () => harness.watchUsecase.execute(),
-    ).thenAnswer((_) => openSpNotificationStream());
+    when(() => harness.watchUsecase.execute())
+        .thenAnswer((_) => openSpNotificationStream());
 
     cubit = harness.build();
   });

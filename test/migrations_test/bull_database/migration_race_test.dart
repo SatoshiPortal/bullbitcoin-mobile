@@ -152,6 +152,6 @@ void _seedLabels(File file, int version) {
       );
     }
   } finally {
-    db.dispose();
+    db.close();
   }
 }

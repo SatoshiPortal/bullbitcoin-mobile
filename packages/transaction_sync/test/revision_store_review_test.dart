@@ -42,7 +42,7 @@ void main() {
         reader = RevisionStore(path);
         expect(reader, isNotNull);
       } finally {
-        writer.dispose();
+        writer.close();
         await reader?.close();
         await initial.close();
         directory.deleteSync(recursive: true);
@@ -88,7 +88,7 @@ void main() {
           2,
         );
       } finally {
-        observer.dispose();
+        observer.close();
         await store.close();
         directory.deleteSync(recursive: true);
       }
@@ -138,7 +138,7 @@ void main() {
           );
         }
       } finally {
-        observer.dispose();
+        observer.close();
         await store.close();
         directory.deleteSync(recursive: true);
       }

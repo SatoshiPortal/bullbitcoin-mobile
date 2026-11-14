@@ -6,8 +6,8 @@ import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.d
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/ui/screens/autobuy_screen.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,15 +29,14 @@ void main() {
     final cubit = AutoBuyCubit(setAutoBuy, getStatus);
     addTearDown(cubit.close);
 
-    when(
-      () => getStatus.execute(),
-    ).thenAnswer((_) async => const Err(AutoBuyAccountUnavailableFailure()));
+    when(() => getStatus.execute())
+        .thenAnswer((_) async => const Err(AutoBuyAccountUnavailableFailure()));
     await cubit.loadStatus();
 
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: cubit,

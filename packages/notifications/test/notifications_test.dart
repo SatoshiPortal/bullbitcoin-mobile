@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -198,12 +199,9 @@ void main() {
           event('aggregate-${events.length}');
       expect(
         ((await facade.reconcileTopicsAndEnqueue([
-                  NotificationTopicObservation('a', [event('a1')]),
-                  NotificationTopicObservation('b', [event('b1')]),
-                ], aggregate)
-                as Ok)
-            .value
-            .pendingCount),
+          NotificationTopicObservation('a', [event('a1')]),
+          NotificationTopicObservation('b', [event('b1')]),
+        ], aggregate) as Ok).value.pendingCount),
         1,
       );
 
@@ -270,7 +268,7 @@ void main() {
   test('refuses a future schema without rewriting it', () {
     final path = '${directory.path}/future.sqlite';
     final database = sqlite3.open(path);
-    addTearDown(database.dispose);
+    addTearDown(database.close);
     database.execute('PRAGMA user_version = 2');
     expect(
       () => SqliteNotificationOutbox(databasePath: path),
@@ -401,12 +399,9 @@ void main() {
       outbox = SqliteNotificationOutbox(
         databasePath: '${directory.path}/notifications.sqlite',
       );
-      final retryClaims =
-          (await outbox.claimPending(
-                    now: DateTime.now().add(const Duration(minutes: 6)),
-                  )
-                  as Ok)
-              .value;
+      final retryClaims = (await outbox.claimPending(
+        now: DateTime.now().add(const Duration(minutes: 6)),
+      ) as Ok).value;
       expect(
         retryClaims.map((claim) => claim.platformId).toSet(),
         hasLength(2),
@@ -416,14 +411,12 @@ void main() {
 
   test('obsolete claim tokens are rejected after lease reclaim', () async {
     await pending(outbox, 'lease');
-    final first =
-        (await outbox.claimPending(now: DateTime.utc(2026, 9, 2, 12)) as Ok)
-            .value
-            .single;
-    final second =
-        (await outbox.claimPending(now: DateTime.utc(2026, 9, 2, 12, 6)) as Ok)
-            .value
-            .single;
+    final first = (await outbox.claimPending(
+      now: DateTime.utc(2026, 9, 2, 12),
+    ) as Ok).value.single;
+    final second = (await outbox.claimPending(
+      now: DateTime.utc(2026, 9, 2, 12, 6),
+    ) as Ok).value.single;
     expect(await outbox.markDelivered('lease', first.claimToken), isA<Err>());
     expect(await outbox.markDelivered('lease', second.claimToken), isA<Ok>());
   });

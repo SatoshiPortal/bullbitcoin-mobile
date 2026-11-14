@@ -10,12 +10,12 @@ import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_settings_screen.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 
 // Stands in for the wallet home the composition root injects.
 const _exitPath = '/exit-target';
@@ -29,7 +29,7 @@ Widget _buildPage({
   required SpSettingsCubit settingsCubit,
 }) => MaterialApp(
   theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: MultiBlocProvider(
     providers: [
@@ -67,7 +67,7 @@ Widget _buildRouterPage({
   return MaterialApp.router(
     theme: AppTheme.themeData(AppThemeType.light),
     routerConfig: router,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
   );
 }
@@ -83,9 +83,8 @@ void main() {
   setUp(() {
     spCubit = _MockSpCubit();
     settingsCubit = _MockSpSettingsCubit();
-    when(
-      () => spCubit.state,
-    ).thenReturn(const SpState(network: BitcoinNetwork.mainnet));
+    when(() => spCubit.state)
+        .thenReturn(const SpState(network: BitcoinNetwork.mainnet));
     when(() => spCubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => spCubit.load()).thenAnswer((_) async {});
     when(() => spCubit.reloadAfterBackendChange()).thenAnswer((_) async {});
@@ -103,9 +102,8 @@ void main() {
         ),
       ),
     );
-    when(
-      () => settingsCubit.stream,
-    ).thenAnswer((_) => const Stream<SpSettingsState>.empty());
+    when(() => settingsCubit.stream)
+        .thenAnswer((_) => const Stream<SpSettingsState>.empty());
     when(() => settingsCubit.initFromNetwork(any())).thenAnswer((_) async {});
     when(() => settingsCubit.setNetwork(any())).thenAnswer((_) async {});
     when(() => settingsCubit.setBlindbitUrl(any())).thenReturn(null);
