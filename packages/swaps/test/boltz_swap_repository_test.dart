@@ -54,6 +54,7 @@ void main() {
     String? refundTxid,
     String? sendTxid = 'lockup-txid',
     String? refundAddress = 'lq1refund',
+    int? claimFees,
   }) => SwapModel.chain(
     id: 'D5gdAL9UI29W',
     type: SwapType.liquidToBitcoin.name,
@@ -68,6 +69,7 @@ void main() {
     receiveTxid: receiveTxid,
     refundTxid: refundTxid,
     refundAddress: refundAddress,
+    claimFees: claimFees,
   );
 
   BoltzSwapRepository repo({
@@ -106,12 +108,14 @@ void main() {
     String? refundTxid,
     String? sendTxid = 'lockup-txid',
     String? refundAddress = 'lq1refund',
+    int? claimFees,
   }) => chainModel(
     status: status,
     receiveTxid: receiveTxid,
     refundTxid: refundTxid,
     sendTxid: sendTxid,
     refundAddress: refundAddress,
+    claimFees: claimFees,
   ).toEntity();
 
   setUp(() {
@@ -189,6 +193,135 @@ void main() {
   });
 
   group('claim', () {
+    void stubClaimBroadcast() {
+      when(
+        () => boltz.claimLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: any(named: 'tryCooperate'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 'claim-hex');
+      when(
+        () => boltz.broadcastChainSwapClaim(
+          swapId: any(named: 'swapId'),
+          signedTxHex: any(named: 'signedTxHex'),
+          broadcastViaBoltz: any(named: 'broadcastViaBoltz'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 'claim-txid');
+    }
+
+    int claimedFee() =>
+        verify(
+              () => boltz.claimLbtcToBtcChainSwap(
+                swapId: any(named: 'swapId'),
+                claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+                absoluteFees: captureAny(named: 'absoluteFees'),
+                tryCooperate: any(named: 'tryCooperate'),
+                electrum: any(named: 'electrum'),
+              ),
+            ).captured.single
+            as int;
+
+    test('pays the live fee over the stored creation-time quote', () async {
+      when(
+        () => boltz.getChainClaimTxSize(
+          swapId: any(named: 'swapId'),
+          claimAddress: any(named: 'claimAddress'),
+          isCooperative: any(named: 'isCooperative'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 200);
+      stubClaimBroadcast();
+
+      final txid = await repo(
+        fastest: 900,
+      ).claim(chainSwap(status: 'claimable', claimFees: 300));
+
+      expect(txid, 'claim-txid');
+      expect(claimedFee(), 900);
+    });
+
+    test('prices the script-path fallback on its own size', () async {
+      when(
+        () => boltz.getChainClaimTxSize(
+          swapId: any(named: 'swapId'),
+          claimAddress: any(named: 'claimAddress'),
+          isCooperative: true,
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 200);
+      when(
+        () => boltz.getChainClaimTxSize(
+          swapId: any(named: 'swapId'),
+          claimAddress: any(named: 'claimAddress'),
+          isCooperative: false,
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 300);
+      when(
+        () => boltz.claimLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: true,
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenThrow(Exception('coop refused'));
+      when(
+        () => boltz.claimLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: false,
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 'claim-hex');
+      when(
+        () => boltz.broadcastChainSwapClaim(
+          swapId: any(named: 'swapId'),
+          signedTxHex: any(named: 'signedTxHex'),
+          broadcastViaBoltz: any(named: 'broadcastViaBoltz'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 'claim-txid');
+
+      await repo(fastest: 1).claim(chainSwap(status: 'claimable'));
+
+      verify(
+        () => boltz.claimLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+          absoluteFees: 300,
+          tryCooperate: false,
+          electrum: any(named: 'electrum'),
+        ),
+      ).called(1);
+    });
+
+    test(
+      'falls back to the stored fee when the claim cannot be sized',
+      () async {
+        when(
+          () => boltz.getChainClaimTxSize(
+            swapId: any(named: 'swapId'),
+            claimAddress: any(named: 'claimAddress'),
+            isCooperative: any(named: 'isCooperative'),
+            electrum: any(named: 'electrum'),
+          ),
+        ).thenThrow(Exception('sizing failed'));
+        stubClaimBroadcast();
+
+        await repo(
+          fastest: 900,
+        ).claim(chainSwap(status: 'claimable', claimFees: 300));
+
+        expect(claimedFee(), 300);
+      },
+    );
+
     test('sizes a chain claim against the user\'s electrum', () async {
       when(
         () => boltz.getChainClaimTxSize(

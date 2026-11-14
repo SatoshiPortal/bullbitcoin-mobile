@@ -1601,72 +1601,67 @@ class BoltzSwapRepository implements SwapRepository {
         isTestnet: _isTestnet,
         isTransient: _isServerFailure,
         operation: (connection) async {
-          // Pin the claim fee to the stored creation-time claimFee: the
-          // receive/transfer screens promise amount-minus-quoted-fees, so a
-          // live fee changes what the user actually receives. Rescued swaps
-          // carry no trustworthy stored fee and use live estimation. The
-          // stored value originated as a server quote, so the half-amount
-          // burn cap applies to it too — a quote above the cap is treated
-          // as untrustworthy and re-estimated live.
+          // A claim always pays the live (fastest) estimate: one that sits
+          // unconfirmed can lose the swap at its timeout. The user saw and
+          // accepted the fee cost on the confirm screen. The stored
+          // creation-time claimFee is only the fallback when no live estimate
+          // can be made, and a stored value above the half-amount burn cap is
+          // an untrustworthy server quote and is never used.
           final storedClaimFee = swap.fees?.claimFee;
           final amountSat = _amountSatOrNull(swap);
           final feeCap = amountSat != null && amountSat > 0
               ? amountSat ~/ 2
               : null;
-          int absoluteFees;
-          if (storedClaimFee != null &&
-              storedClaimFee > 0 &&
-              (feeCap == null || storedClaimFee <= feeCap)) {
-            absoluteFees = storedClaimFee;
-          } else {
-            // Cooperative sizing round-trips Boltz and can fail (notably for
-            // rescued swaps); the script-path size is computed locally, so
-            // try that next — same fallback the original watcher had. A
-            // zero-Boltz retry skips the cooperative attempt entirely.
-            int txSize;
-            if (scriptPathOnly) {
-              txSize = await getSwapClaimTxSize(
-                swapId: swap.id,
-                swapType: swap.type,
-                isCooperative: false,
-                claimAddressForChainSwaps: swap is ChainSwap
-                    ? claimAddress
-                    : null,
-                electrum: connection,
+          final storedFee =
+              storedClaimFee != null &&
+                  storedClaimFee > 0 &&
+                  (feeCap == null || storedClaimFee <= feeCap)
+              ? storedClaimFee
+              : null;
+
+          Future<int> sizedFee({required bool cooperative}) async =>
+              _resolveFees(
+                txSize: await getSwapClaimTxSize(
+                  swapId: swap.id,
+                  swapType: swap.type,
+                  isCooperative: cooperative,
+                  claimAddressForChainSwaps: swap is ChainSwap
+                      ? claimAddress
+                      : null,
+                  electrum: connection,
+                ),
+                isLiquid: claimOnLiquid,
+                amountSat: amountSat,
               );
-            } else {
+
+          // Cooperative sizing round-trips Boltz and can fail (notably for
+          // rescued swaps); the script-path size is computed locally, so try
+          // that next.
+          Future<int> feesFor({required bool cooperative}) async {
+            try {
+              if (!cooperative) return await sizedFee(cooperative: false);
               try {
-                txSize = await getSwapClaimTxSize(
-                  swapId: swap.id,
-                  swapType: swap.type,
-                  claimAddressForChainSwaps: swap is ChainSwap
-                      ? claimAddress
-                      : null,
-                  electrum: connection,
-                );
+                return await sizedFee(cooperative: true);
               } catch (_) {
-                txSize = await getSwapClaimTxSize(
-                  swapId: swap.id,
-                  swapType: swap.type,
-                  isCooperative: false,
-                  claimAddressForChainSwaps: swap is ChainSwap
-                      ? claimAddress
-                      : null,
-                  electrum: connection,
-                );
+                return await sizedFee(cooperative: false);
               }
+            } catch (e) {
+              if (storedFee == null) rethrow;
+              swapsLog.warning(
+                'SWAPS: live claim fee unavailable for ${swap.id} '
+                '(${_errorMessage(e)}); using the stored fee',
+              );
+              return storedFee;
             }
-            absoluteFees = await _resolveFees(
-              txSize: txSize,
-              isLiquid: claimOnLiquid,
-              amountSat: _amountSatOrNull(swap),
-            );
           }
-          unsubscribeFromSwaps([swap.id]);
+
           String txid;
+          int absoluteFees;
           if (scriptPathOnly) {
             // Zero-Boltz retry: cooperative signing requests Boltz's partial
             // signature, so go straight to the script path.
+            absoluteFees = await feesFor(cooperative: false);
+            unsubscribeFromSwaps([swap.id]);
             txid = await _broadcastClaim(
               swap,
               claimAddress: claimAddress,
@@ -1675,6 +1670,8 @@ class BoltzSwapRepository implements SwapRepository {
               electrum: connection,
             );
           } else {
+            absoluteFees = await feesFor(cooperative: true);
+            unsubscribeFromSwaps([swap.id]);
             try {
               txid = await _broadcastClaim(
                 swap,
@@ -1689,6 +1686,9 @@ class BoltzSwapRepository implements SwapRepository {
                 '(${_errorMessage(e)}); trying script path',
                 error: e,
               );
+              // The script-path claim is a larger transaction: price it on
+              // its own size so it does not go out under the rate.
+              absoluteFees = await feesFor(cooperative: false);
               txid = await _broadcastClaim(
                 swap,
                 claimAddress: claimAddress,
