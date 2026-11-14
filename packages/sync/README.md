@@ -45,7 +45,7 @@ Each asynchronous `Future<Result<T, SyncFailure>>` is shown as `T`. Other return
 
 ```text
 Sync
-|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, legacyFreezes:, inputReservations:) -> Sync
+|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, freezes:, inputReservations:) -> Sync
 |-- static openExisting(documentsDirectory:, catalog:, connections:) -> HeadlessSync
 |-- wallet(key) -> Wallet
 |-- changes
@@ -56,8 +56,7 @@ Sync
 |-- coins
 |   |-- listFrozen() -> List<FrozenOutpoint>
 |   |-- freeze(outpoint, origin:) -> PolicyRevision
-|   |-- unfreeze(outpoint) -> PolicyRevision
-|   `-- recover() -> void
+|   `-- unfreeze(outpoint) -> PolicyRevision
 `-- close() -> Future<void>
 ```
 
