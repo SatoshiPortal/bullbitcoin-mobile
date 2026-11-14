@@ -31,6 +31,19 @@ enum LabelSystem {
     };
   }
 
+  /// Literal that autoswap stored as its transaction label and order note
+  /// before it used [LabelSystem.autoSwap]. Published versions wrote it, so it
+  /// is still in users' databases; it is only recognized to be displayed, the
+  /// stored data is never rewritten and it stays an ordinary, editable label.
+  static const legacyAutoTransferLabel = 'Auto-Transfer';
+
+  /// The system label a stored [label] is shown as, or `null` when it is shown
+  /// as written.
+  static LabelSystem? displayedAs(String label) {
+    if (label == legacyAutoTransferLabel) return LabelSystem.autoSwap;
+    return isSystemLabel(label) ? fromLabel(label) : null;
+  }
+
   static bool isSystemLabel(String label) {
     try {
       fromLabel(label);
