@@ -551,6 +551,30 @@ void main() {
       expect(connections.attempts, 2);
     });
 
+    test('the worker never creates the revision store', () async {
+      final elsewhere = Directory.systemTemp.createTempSync(
+        'electrum_no_store_',
+      );
+      addTearDown(() => elsewhere.deleteSync(recursive: true));
+      File(
+        path,
+      ).copySync(nativeWalletStoragePath(elsewhere.path, descriptor.key));
+      final worker = ElectrumSync(
+        connections: FixtureConnections([fixture.url]),
+        documentsDirectory: () async => elsewhere.path,
+        readRevision: (_) async => const Err(TransactionSyncNotFoundFailure()),
+      );
+      final result = await worker.execute(descriptor);
+      expect(
+        (result as Err<SyncCompletion, TransactionSyncFailure>).failure,
+        isA<TransactionSyncStorageFailure>(),
+      );
+      expect(
+        Directory('${elsewhere.path}/transaction_sync').existsSync(),
+        isFalse,
+      );
+    });
+
     test('corrupt native store is preserved and never retried', () async {
       File(path).writeAsStringSync('corrupted native wallet');
       connections = FixtureConnections([fixture.url, fixture.url]);
