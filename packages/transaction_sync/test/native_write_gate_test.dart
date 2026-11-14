@@ -132,6 +132,27 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
     );
   });
 
+  test('outside the writer, hydration never extends to mutation', () async {
+    const package = 'packages/transaction_sync/lib/src';
+    final mutation = await inspect('read_mutation', '''
+import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bull_sdk/lwk.dart' as lwk;
+Object persist(bdk.Wallet wallet) => wallet.persist;
+Object sync(lwk.Wallet wallet) => wallet.sync_;
+''', path: '$package/read/other.dart');
+    expect(mutation, contains(contains('Wallet.persist')));
+    expect(mutation, contains(contains('Wallet.sync_')));
+    const hydration =
+        "import 'package:bull_sdk/lwk.dart' as lwk; final init = lwk.Wallet.init;";
+    for (final path in ['$package/domain/other.dart', '$package/other.dart']) {
+      expect(
+        await inspect('hydration', hydration, path: path),
+        contains(contains('Wallet.init')),
+        reason: path,
+      );
+    }
+  });
+
   test('native file deletion and its sync variant are rejected', () async {
     final violations = await inspect('delete', '''
 import 'dart:io';
