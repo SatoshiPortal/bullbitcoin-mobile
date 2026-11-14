@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
@@ -30,7 +30,8 @@ class TransactionDetailsTable extends StatelessWidget {
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );
     final txId = transaction?.txId;
-    final isTestnet = transaction?.isTestnet ?? false;
+    final canExplore = transaction?.supportsPublicExplorer ?? false;
+    final isTestnet = canExplore ? transaction?.isTestnet ?? false : false;
     final isLiquid = transaction?.isLiquid ?? false;
     final labels = transaction?.labels ?? [];
     final wallet = context.select(
@@ -94,7 +95,9 @@ class TransactionDetailsTable extends StatelessWidget {
             displayValue: StringFormatting.truncateMiddle(txId),
             copyValue: txId,
             onCopied: showCopied,
-            displayWidget: isLiquid
+            displayWidget: !canExplore
+                ? null
+                : isLiquid
                 ? TransactionViewer.liquid(
                     txId,
                     style: TextStyle(color: context.appColors.primary),

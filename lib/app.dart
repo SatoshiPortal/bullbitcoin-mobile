@@ -1,9 +1,10 @@
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'dart:async';
 
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
@@ -72,7 +73,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   }
 
   // Wallet/swap sync on resume is handled by SyncCoordinator's own
-  // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
+  // AppLifecycleListener — see lib/features/wallet/data/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
     log.info(state.name);
     if (locator.isRegistered<PayjoinLifecycle>()) {
@@ -173,46 +174,49 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           : AppThemeType.light;
                   }
 
-                  return MaterialApp.router(
-                    title: 'BullBitcoin Wallet',
-                    debugShowCheckedModeBanner: kDebugMode,
-                    routerConfig: AppRouter.router,
-                    theme: AppTheme.themeData(appThemeType),
-                    locale: language?.locale,
-                    localizationsDelegates: [
-                      ...AppLocalizations.localizationsDelegates,
-                      LogsLocalizations.delegate,
-                      bullUiLocalizationsDelegate,
-                      ...RecoverBullFeature.localizationsDelegates,
-                    ],
-                    supportedLocales: AppLocalizations.supportedLocales,
-                    builder: (context, child) {
-                      if (child == null) return const SizedBox.shrink();
-                      final app = SettingsFacade.amountScope(
-                        navigatorKey: AppRouter.rootNavigatorKey,
-                        child: BullSupportScope(
-                          onContactSupport: SupportFacade.contactSupport,
-                          child: AppStartupWidget(
-                            app: locator<RecoverBullFeature>().withAlerts(
-                              child,
-                              onOpen: () => AppRouter.router.pushNamed(
-                                'recoverbullFlows',
+                  return RepositoryProvider<MempoolUrlBuilder>.value(
+                    value: locator<MempoolUrlBuilder>(),
+                    child: MaterialApp.router(
+                      title: 'BullBitcoin Wallet',
+                      debugShowCheckedModeBanner: kDebugMode,
+                      routerConfig: AppRouter.router,
+                      theme: AppTheme.themeData(appThemeType),
+                      locale: language?.locale,
+                      localizationsDelegates: [
+                        ...AppLocalizations.localizationsDelegates,
+                        LogsLocalizations.delegate,
+                        bullUiLocalizationsDelegate,
+                        ...RecoverBullFeature.localizationsDelegates,
+                      ],
+                      supportedLocales: AppLocalizations.supportedLocales,
+                      builder: (context, child) {
+                        if (child == null) return const SizedBox.shrink();
+                        final app = SettingsFacade.amountScope(
+                          navigatorKey: AppRouter.rootNavigatorKey,
+                          child: BullSupportScope(
+                            onContactSupport: SupportFacade.contactSupport,
+                            child: AppStartupWidget(
+                              app: locator<RecoverBullFeature>().withAlerts(
+                                child,
+                                onOpen: () => AppRouter.router.pushNamed(
+                                  'recoverbullFlows',
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                      // Mark beta-channel builds (`make android beta`) with a
-                      // corner banner. Release mode drops the Flutter debug
-                      // banner, so this is how testers tell beta from production.
-                      if (appFlavor != 'beta') return app;
-                      return Banner(
-                        message: 'BETA',
-                        location: BannerLocation.topEnd,
-                        color: Theme.of(context).colorScheme.error,
-                        child: app,
-                      );
-                    },
+                        );
+                        // Mark beta-channel builds (`make android beta`) with a
+                        // corner banner. Release mode drops the Flutter debug
+                        // banner, so this is how testers tell beta from production.
+                        if (appFlavor != 'beta') return app;
+                        return Banner(
+                          message: 'BETA',
+                          location: BannerLocation.topEnd,
+                          color: Theme.of(context).colorScheme.error,
+                          child: app,
+                        );
+                      },
+                    ),
                   );
                 },
               ),

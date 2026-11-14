@@ -609,6 +609,15 @@ class WalletMetadatas extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'unresolved\'',
+    defaultValue: const CustomExpression('\'unresolved\''),
+  );
   late final GeneratedColumn<String> masterFingerprint =
       GeneratedColumn<String>(
         'master_fingerprint',
@@ -735,6 +744,7 @@ class WalletMetadatas extends Table
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    network,
     masterFingerprint,
     xpubFingerprint,
     isEncryptedVaultTested,
@@ -765,6 +775,10 @@ class WalletMetadatas extends Table
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
+      )!,
+      network: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}network'],
       )!,
       masterFingerprint: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -843,6 +857,7 @@ class WalletMetadatas extends Table
 class WalletMetadatasData extends DataClass
     implements Insertable<WalletMetadatasData> {
   final String id;
+  final String network;
   final String masterFingerprint;
   final String xpubFingerprint;
   final int isEncryptedVaultTested;
@@ -860,6 +875,7 @@ class WalletMetadatasData extends DataClass
   final String? birthday;
   const WalletMetadatasData({
     required this.id,
+    required this.network,
     required this.masterFingerprint,
     required this.xpubFingerprint,
     required this.isEncryptedVaultTested,
@@ -880,6 +896,7 @@ class WalletMetadatasData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['network'] = Variable<String>(network);
     map['master_fingerprint'] = Variable<String>(masterFingerprint);
     map['xpub_fingerprint'] = Variable<String>(xpubFingerprint);
     map['is_encrypted_vault_tested'] = Variable<int>(isEncryptedVaultTested);
@@ -917,6 +934,7 @@ class WalletMetadatasData extends DataClass
   WalletMetadatasCompanion toCompanion(bool nullToAbsent) {
     return WalletMetadatasCompanion(
       id: Value(id),
+      network: Value(network),
       masterFingerprint: Value(masterFingerprint),
       xpubFingerprint: Value(xpubFingerprint),
       isEncryptedVaultTested: Value(isEncryptedVaultTested),
@@ -954,6 +972,7 @@ class WalletMetadatasData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return WalletMetadatasData(
       id: serializer.fromJson<String>(json['id']),
+      network: serializer.fromJson<String>(json['network']),
       masterFingerprint: serializer.fromJson<String>(json['masterFingerprint']),
       xpubFingerprint: serializer.fromJson<String>(json['xpubFingerprint']),
       isEncryptedVaultTested: serializer.fromJson<int>(
@@ -988,6 +1007,7 @@ class WalletMetadatasData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'network': serializer.toJson<String>(network),
       'masterFingerprint': serializer.toJson<String>(masterFingerprint),
       'xpubFingerprint': serializer.toJson<String>(xpubFingerprint),
       'isEncryptedVaultTested': serializer.toJson<int>(isEncryptedVaultTested),
@@ -1012,6 +1032,7 @@ class WalletMetadatasData extends DataClass
 
   WalletMetadatasData copyWith({
     String? id,
+    String? network,
     String? masterFingerprint,
     String? xpubFingerprint,
     int? isEncryptedVaultTested,
@@ -1029,6 +1050,7 @@ class WalletMetadatasData extends DataClass
     Value<String?> birthday = const Value.absent(),
   }) => WalletMetadatasData(
     id: id ?? this.id,
+    network: network ?? this.network,
     masterFingerprint: masterFingerprint ?? this.masterFingerprint,
     xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
     isEncryptedVaultTested:
@@ -1056,6 +1078,7 @@ class WalletMetadatasData extends DataClass
   WalletMetadatasData copyWithCompanion(WalletMetadatasCompanion data) {
     return WalletMetadatasData(
       id: data.id.present ? data.id.value : this.id,
+      network: data.network.present ? data.network.value : this.network,
       masterFingerprint: data.masterFingerprint.present
           ? data.masterFingerprint.value
           : this.masterFingerprint,
@@ -1096,6 +1119,7 @@ class WalletMetadatasData extends DataClass
   String toString() {
     return (StringBuffer('WalletMetadatasData(')
           ..write('id: $id, ')
+          ..write('network: $network, ')
           ..write('masterFingerprint: $masterFingerprint, ')
           ..write('xpubFingerprint: $xpubFingerprint, ')
           ..write('isEncryptedVaultTested: $isEncryptedVaultTested, ')
@@ -1118,6 +1142,7 @@ class WalletMetadatasData extends DataClass
   @override
   int get hashCode => Object.hash(
     id,
+    network,
     masterFingerprint,
     xpubFingerprint,
     isEncryptedVaultTested,
@@ -1139,6 +1164,7 @@ class WalletMetadatasData extends DataClass
       identical(this, other) ||
       (other is WalletMetadatasData &&
           other.id == this.id &&
+          other.network == this.network &&
           other.masterFingerprint == this.masterFingerprint &&
           other.xpubFingerprint == this.xpubFingerprint &&
           other.isEncryptedVaultTested == this.isEncryptedVaultTested &&
@@ -1158,6 +1184,7 @@ class WalletMetadatasData extends DataClass
 
 class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String> id;
+  final Value<String> network;
   final Value<String> masterFingerprint;
   final Value<String> xpubFingerprint;
   final Value<int> isEncryptedVaultTested;
@@ -1176,6 +1203,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<int> rowid;
   const WalletMetadatasCompanion({
     this.id = const Value.absent(),
+    this.network = const Value.absent(),
     this.masterFingerprint = const Value.absent(),
     this.xpubFingerprint = const Value.absent(),
     this.isEncryptedVaultTested = const Value.absent(),
@@ -1195,6 +1223,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   });
   WalletMetadatasCompanion.insert({
     required String id,
+    this.network = const Value.absent(),
     required String masterFingerprint,
     required String xpubFingerprint,
     required int isEncryptedVaultTested,
@@ -1223,6 +1252,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
        isDefault = Value(isDefault);
   static Insertable<WalletMetadatasData> custom({
     Expression<String>? id,
+    Expression<String>? network,
     Expression<String>? masterFingerprint,
     Expression<String>? xpubFingerprint,
     Expression<int>? isEncryptedVaultTested,
@@ -1242,6 +1272,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (network != null) 'network': network,
       if (masterFingerprint != null) 'master_fingerprint': masterFingerprint,
       if (xpubFingerprint != null) 'xpub_fingerprint': xpubFingerprint,
       if (isEncryptedVaultTested != null)
@@ -1269,6 +1300,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
 
   WalletMetadatasCompanion copyWith({
     Value<String>? id,
+    Value<String>? network,
     Value<String>? masterFingerprint,
     Value<String>? xpubFingerprint,
     Value<int>? isEncryptedVaultTested,
@@ -1288,6 +1320,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   }) {
     return WalletMetadatasCompanion(
       id: id ?? this.id,
+      network: network ?? this.network,
       masterFingerprint: masterFingerprint ?? this.masterFingerprint,
       xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
       isEncryptedVaultTested:
@@ -1317,6 +1350,9 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
     }
     if (masterFingerprint.present) {
       map['master_fingerprint'] = Variable<String>(masterFingerprint.value);
@@ -1383,6 +1419,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   String toString() {
     return (StringBuffer('WalletMetadatasCompanion(')
           ..write('id: $id, ')
+          ..write('network: $network, ')
           ..write('masterFingerprint: $masterFingerprint, ')
           ..write('xpubFingerprint: $xpubFingerprint, ')
           ..write('isEncryptedVaultTested: $isEncryptedVaultTested, ')
@@ -3960,21 +3997,13 @@ class ElectrumServers extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<int> isTestnet = GeneratedColumn<int>(
-    'is_testnet',
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (is_testnet IN (0, 1))',
-  );
-  late final GeneratedColumn<int> isLiquid = GeneratedColumn<int>(
-    'is_liquid',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (is_liquid IN (0, 1))',
+    $customConstraints: 'NOT NULL',
   );
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -3993,20 +4022,14 @@ class ElectrumServers extends Table
     $customConstraints: 'NOT NULL CHECK (is_custom IN (0, 1))',
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    url,
-    isTestnet,
-    isLiquid,
-    priority,
-    isCustom,
-  ];
+  List<GeneratedColumn> get $columns => [url, network, priority, isCustom];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'electrum_servers';
   @override
-  Set<GeneratedColumn> get $primaryKey => {url};
+  Set<GeneratedColumn> get $primaryKey => {network, url};
   @override
   ElectrumServersData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -4015,13 +4038,9 @@ class ElectrumServers extends Table
         DriftSqlType.string,
         data['${effectivePrefix}url'],
       )!,
-      isTestnet: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}is_testnet'],
-      )!,
-      isLiquid: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}is_liquid'],
+      network: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}network'],
       )!,
       priority: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -4040,7 +4059,7 @@ class ElectrumServers extends Table
   }
 
   @override
-  List<String> get customConstraints => const ['PRIMARY KEY(url)'];
+  List<String> get customConstraints => const ['PRIMARY KEY(network, url)'];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -4048,14 +4067,12 @@ class ElectrumServers extends Table
 class ElectrumServersData extends DataClass
     implements Insertable<ElectrumServersData> {
   final String url;
-  final int isTestnet;
-  final int isLiquid;
+  final String network;
   final int priority;
   final int isCustom;
   const ElectrumServersData({
     required this.url,
-    required this.isTestnet,
-    required this.isLiquid,
+    required this.network,
     required this.priority,
     required this.isCustom,
   });
@@ -4063,8 +4080,7 @@ class ElectrumServersData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['url'] = Variable<String>(url);
-    map['is_testnet'] = Variable<int>(isTestnet);
-    map['is_liquid'] = Variable<int>(isLiquid);
+    map['network'] = Variable<String>(network);
     map['priority'] = Variable<int>(priority);
     map['is_custom'] = Variable<int>(isCustom);
     return map;
@@ -4073,8 +4089,7 @@ class ElectrumServersData extends DataClass
   ElectrumServersCompanion toCompanion(bool nullToAbsent) {
     return ElectrumServersCompanion(
       url: Value(url),
-      isTestnet: Value(isTestnet),
-      isLiquid: Value(isLiquid),
+      network: Value(network),
       priority: Value(priority),
       isCustom: Value(isCustom),
     );
@@ -4087,8 +4102,7 @@ class ElectrumServersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ElectrumServersData(
       url: serializer.fromJson<String>(json['url']),
-      isTestnet: serializer.fromJson<int>(json['isTestnet']),
-      isLiquid: serializer.fromJson<int>(json['isLiquid']),
+      network: serializer.fromJson<String>(json['network']),
       priority: serializer.fromJson<int>(json['priority']),
       isCustom: serializer.fromJson<int>(json['isCustom']),
     );
@@ -4098,8 +4112,7 @@ class ElectrumServersData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'url': serializer.toJson<String>(url),
-      'isTestnet': serializer.toJson<int>(isTestnet),
-      'isLiquid': serializer.toJson<int>(isLiquid),
+      'network': serializer.toJson<String>(network),
       'priority': serializer.toJson<int>(priority),
       'isCustom': serializer.toJson<int>(isCustom),
     };
@@ -4107,22 +4120,19 @@ class ElectrumServersData extends DataClass
 
   ElectrumServersData copyWith({
     String? url,
-    int? isTestnet,
-    int? isLiquid,
+    String? network,
     int? priority,
     int? isCustom,
   }) => ElectrumServersData(
     url: url ?? this.url,
-    isTestnet: isTestnet ?? this.isTestnet,
-    isLiquid: isLiquid ?? this.isLiquid,
+    network: network ?? this.network,
     priority: priority ?? this.priority,
     isCustom: isCustom ?? this.isCustom,
   );
   ElectrumServersData copyWithCompanion(ElectrumServersCompanion data) {
     return ElectrumServersData(
       url: data.url.present ? data.url.value : this.url,
-      isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
-      isLiquid: data.isLiquid.present ? data.isLiquid.value : this.isLiquid,
+      network: data.network.present ? data.network.value : this.network,
       priority: data.priority.present ? data.priority.value : this.priority,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
     );
@@ -4132,8 +4142,7 @@ class ElectrumServersData extends DataClass
   String toString() {
     return (StringBuffer('ElectrumServersData(')
           ..write('url: $url, ')
-          ..write('isTestnet: $isTestnet, ')
-          ..write('isLiquid: $isLiquid, ')
+          ..write('network: $network, ')
           ..write('priority: $priority, ')
           ..write('isCustom: $isCustom')
           ..write(')'))
@@ -4141,57 +4150,50 @@ class ElectrumServersData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(url, isTestnet, isLiquid, priority, isCustom);
+  int get hashCode => Object.hash(url, network, priority, isCustom);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ElectrumServersData &&
           other.url == this.url &&
-          other.isTestnet == this.isTestnet &&
-          other.isLiquid == this.isLiquid &&
+          other.network == this.network &&
           other.priority == this.priority &&
           other.isCustom == this.isCustom);
 }
 
 class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
   final Value<String> url;
-  final Value<int> isTestnet;
-  final Value<int> isLiquid;
+  final Value<String> network;
   final Value<int> priority;
   final Value<int> isCustom;
   final Value<int> rowid;
   const ElectrumServersCompanion({
     this.url = const Value.absent(),
-    this.isTestnet = const Value.absent(),
-    this.isLiquid = const Value.absent(),
+    this.network = const Value.absent(),
     this.priority = const Value.absent(),
     this.isCustom = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ElectrumServersCompanion.insert({
     required String url,
-    required int isTestnet,
-    required int isLiquid,
+    required String network,
     required int priority,
     required int isCustom,
     this.rowid = const Value.absent(),
   }) : url = Value(url),
-       isTestnet = Value(isTestnet),
-       isLiquid = Value(isLiquid),
+       network = Value(network),
        priority = Value(priority),
        isCustom = Value(isCustom);
   static Insertable<ElectrumServersData> custom({
     Expression<String>? url,
-    Expression<int>? isTestnet,
-    Expression<int>? isLiquid,
+    Expression<String>? network,
     Expression<int>? priority,
     Expression<int>? isCustom,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (url != null) 'url': url,
-      if (isTestnet != null) 'is_testnet': isTestnet,
-      if (isLiquid != null) 'is_liquid': isLiquid,
+      if (network != null) 'network': network,
       if (priority != null) 'priority': priority,
       if (isCustom != null) 'is_custom': isCustom,
       if (rowid != null) 'rowid': rowid,
@@ -4200,16 +4202,14 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
 
   ElectrumServersCompanion copyWith({
     Value<String>? url,
-    Value<int>? isTestnet,
-    Value<int>? isLiquid,
+    Value<String>? network,
     Value<int>? priority,
     Value<int>? isCustom,
     Value<int>? rowid,
   }) {
     return ElectrumServersCompanion(
       url: url ?? this.url,
-      isTestnet: isTestnet ?? this.isTestnet,
-      isLiquid: isLiquid ?? this.isLiquid,
+      network: network ?? this.network,
       priority: priority ?? this.priority,
       isCustom: isCustom ?? this.isCustom,
       rowid: rowid ?? this.rowid,
@@ -4222,11 +4222,8 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
     if (url.present) {
       map['url'] = Variable<String>(url.value);
     }
-    if (isTestnet.present) {
-      map['is_testnet'] = Variable<int>(isTestnet.value);
-    }
-    if (isLiquid.present) {
-      map['is_liquid'] = Variable<int>(isLiquid.value);
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
     }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
@@ -4244,8 +4241,7 @@ class ElectrumServersCompanion extends UpdateCompanion<ElectrumServersData> {
   String toString() {
     return (StringBuffer('ElectrumServersCompanion(')
           ..write('url: $url, ')
-          ..write('isTestnet: $isTestnet, ')
-          ..write('isLiquid: $isLiquid, ')
+          ..write('network: $network, ')
           ..write('priority: $priority, ')
           ..write('isCustom: $isCustom, ')
           ..write('rowid: $rowid')

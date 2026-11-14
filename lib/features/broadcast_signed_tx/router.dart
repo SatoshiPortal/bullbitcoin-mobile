@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart';
@@ -20,12 +21,21 @@ enum BroadcastSignedTxRoute {
 class BroadcastSignedTxRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
-      final unsignedPsbt = state.extra is String
-          ? state.extra! as String
-          : null;
+      final (unsignedPsbt, network) = switch (state.extra) {
+        (String psbt, Wallet? wallet) => (psbt, wallet?.network),
+        (psbt: final String psbt, wallet: final Wallet? wallet) => (
+          psbt,
+          wallet?.network,
+        ),
+        String psbt => (psbt, null),
+        _ => (null, null),
+      };
 
       return BlocProvider(
-        create: (_) => locator<BroadcastSignedTxCubit>(param1: unsignedPsbt),
+        create: (_) => locator<BroadcastSignedTxCubit>(
+          param1: unsignedPsbt,
+          param2: network,
+        ),
         child: child,
       );
     },

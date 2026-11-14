@@ -1,6 +1,10 @@
 // dart format width=80
 // ignore_for_file: unused_local_variable, unused_import
+import 'dart:async';
+import 'dart:io';
+
 import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:test/test.dart';
@@ -134,5 +138,177 @@ void main() {
         },
       );
     });
+  }
+
+  const insertSender =
+      'INSERT INTO payjoin_senders '
+      '(uri, is_testnet, sender, wallet_id, original_psbt, original_tx_id, '
+      'amount_sat, created_at, expire_after_sec, proposal_psbt, tx_id, '
+      'is_expired, is_completed, is_aborted) '
+      "VALUES (?, 0, '[]', 'wallet-1', 'cHNidP8=', 'original-tx', 50000, "
+      '1700000000, 86400, ?, ?, ?, ?, ?)';
+
+  Future<void> seedSenders(v2.DatabaseAtV2 old) async {
+    for (final (uri, proposal, expired, completed, aborted) in [
+      ('unfinished-with-proposal', 'cHNidP8=', 0, 0, 0),
+      ('unfinished-without-proposal', null, 0, 0, 0),
+      ('expired', 'cHNidP8=', 1, 0, 0),
+      ('completed', 'cHNidP8=', 0, 1, 0),
+      ('aborted', null, 0, 0, 1),
+    ]) {
+      await old.customStatement(insertSender, [
+        uri,
+        proposal,
+        if (proposal == null) null else 'payjoin-tx',
+        expired,
+        completed,
+        aborted,
+      ]);
+    }
+  }
+
+  Future<Map<String, int>> evidenceByUri(PayjoinDatabase db) async => {
+    for (final row in await db.select(db.payjoinSenders).get())
+      row.uri: row.hasNetworkEvidence ? 1 : 0,
+  };
+
+  // Schema 2 kept no trace of a payment that went out without a recorded
+  // outcome, so an unfinished sender cannot be told apart from one that never
+  // attempted: it must migrate as holding evidence, never as free to release.
+  test(
+    'migration from v2 to v3 assumes evidence for unfinished senders',
+    () async {
+      final schema = await verifier.schemaAt(2);
+      final old = v2.DatabaseAtV2(schema.newConnection());
+      await seedSenders(old);
+      await old.close();
+
+      final db = PayjoinDatabase.forTesting(schema.newConnection());
+      await verifier.migrateAndValidate(db, 3);
+
+      expect(await evidenceByUri(db), {
+        'unfinished-with-proposal': 1,
+        'unfinished-without-proposal': 1,
+        'expired': 0,
+        'completed': 0,
+        'aborted': 0,
+      });
+      final kept =
+          await (db.select(db.payjoinSenders)
+                ..where((row) => row.uri.equals('unfinished-with-proposal')))
+              .getSingle();
+      expect(kept.proposalPsbt, 'cHNidP8=');
+      expect(kept.txId, 'payjoin-tx');
+      expect(kept.originalTxId, 'original-tx');
+      await db.close();
+    },
+  );
+
+  test('re-running the v2 to v3 step never backfills again', () async {
+    final schema = await verifier.schemaAt(2);
+    final old = v2.DatabaseAtV2(schema.newConnection());
+    await seedSenders(old);
+    await old.close();
+    final first = PayjoinDatabase.forTesting(schema.newConnection());
+    await verifier.migrateAndValidate(first, 3);
+    // What a session created after the upgrade, or a withdrawn attempt, holds.
+    await first.customStatement(
+      'UPDATE payjoin_senders SET has_network_evidence = 0',
+    );
+    await first.customStatement('PRAGMA user_version = 2');
+    await first.close();
+
+    final second = PayjoinDatabase.forTesting(schema.newConnection());
+    await verifier.migrateAndValidate(second, 3);
+    expect((await evidenceByUri(second)).values, everyElement(0));
+    await second.close();
+  });
+
+  test('two connections reaching the v2 to v3 step together both '
+      'open', () async {
+    final directory = await Directory.systemTemp.createTemp('payjoin-v3-');
+    addTearDown(() => directory.delete(recursive: true));
+    final file = File('${directory.path}/payjoin.sqlite');
+    final old = v2.DatabaseAtV2(
+      NativeDatabase(
+        file,
+        setup: (db) => db.execute('PRAGMA journal_mode = WAL;'),
+      ),
+    );
+    await seedSenders(old);
+    await old.close();
+
+    // Each connection runs in its own isolate, like the app's: one waiting on
+    // the other's write lock cannot stall the one that has to commit.
+    final barrier = _AlterBarrier();
+    PayjoinDatabase open() => PayjoinDatabase.forTesting(
+      NativeDatabase.createInBackground(
+        file,
+        setup: (db) => db.execute('PRAGMA busy_timeout = 2000;'),
+      ).interceptWith(barrier),
+    );
+    final first = open();
+    final second = open();
+    addTearDown(first.close);
+    addTearDown(second.close);
+
+    final evidence = await Future.wait([
+      evidenceByUri(first),
+      evidenceByUri(second),
+    ]);
+
+    // Both steps were inside the migration, about to add the column, at once.
+    expect(barrier.arrivals, 2);
+    const migrated = {
+      'unfinished-with-proposal': 1,
+      'unfinished-without-proposal': 1,
+      'expired': 0,
+      'completed': 0,
+      'aborted': 0,
+    };
+    expect(evidence, [migrated, migrated]);
+  });
+}
+
+/// Routes the migration's own statements through [interceptor]: drift hands
+/// `beforeOpen` the raw executor otherwise.
+final class _MigrationUser implements QueryExecutorUser {
+  final QueryExecutorUser _user;
+  final QueryInterceptor _interceptor;
+
+  _MigrationUser(this._user, this._interceptor);
+
+  @override
+  int get schemaVersion => _user.schemaVersion;
+
+  @override
+  Future<void> beforeOpen(QueryExecutor executor, OpeningDetails details) =>
+      _user.beforeOpen(executor.interceptWith(_interceptor), details);
+}
+
+/// Holds every connection right before its `ALTER TABLE` until two are
+/// there, so both have decided to migrate before either adds the column.
+/// Fails the open instead of waiting forever when the second never arrives.
+final class _AlterBarrier extends QueryInterceptor {
+  final _both = Completer<void>();
+  int arrivals = 0;
+
+  @override
+  Future<bool> ensureOpen(QueryExecutor executor, QueryExecutorUser user) =>
+      executor.ensureOpen(_MigrationUser(user, this));
+
+  @override
+  Future<void> runCustom(
+    QueryExecutor executor,
+    String statement,
+    List<Object?> args,
+  ) async {
+    if (statement.startsWith('ALTER TABLE') &&
+        statement.contains('has_network_evidence')) {
+      arrivals++;
+      if (arrivals == 2) _both.complete();
+      await _both.future.timeout(const Duration(seconds: 10));
+    }
+    return executor.runCustom(statement, args);
   }
 }

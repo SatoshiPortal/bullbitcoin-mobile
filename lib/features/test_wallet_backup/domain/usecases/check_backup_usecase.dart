@@ -1,7 +1,8 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -54,9 +55,7 @@ class CheckBackupUsecase {
       return switch (await _backupStatus(
         rb.VaultContext(
           fingerprint: rb.Fingerprint(bitcoin.masterFingerprint),
-          network: bitcoin.network.isTestnet
-              ? rb.BitcoinNetwork.testnet
-              : rb.BitcoinNetwork.mainnet,
+          network: bitcoin.network.bitcoin,
         ),
       )) {
         rb.Ok(:final value) => Ok(value.isVerified),

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
@@ -53,6 +53,7 @@ class WalletDetailScreen extends StatelessWidget {
     });
     final walletName = wallet != null ? wallet.displayLabel(context) : '';
 
+    final balanceSat = wallet?.balanceSat;
     return Scaffold(
       appBar: AppBar(
         title: walletName.isEmpty
@@ -77,6 +78,8 @@ class WalletDetailScreen extends StatelessWidget {
       ),
       body: wallet == null
           ? const BullShimmerBox(height: 100)
+          : balanceSat == null
+          ? Center(child: Text(context.loc.walletLoadFailed))
           : BlocProvider<TransactionsCubit>(
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
@@ -86,9 +89,12 @@ class WalletDetailScreen extends StatelessWidget {
                     context.read<BitcoinPriceBloc>().add(
                       const BitcoinPriceFetched(),
                     );
-                    await context.read<WalletBloc>().refresh();
-                    if (context.mounted) {
-                      await context.read<TransactionsCubit>().loadTxs();
+                    final transactions = context.read<TransactionsCubit>();
+                    transactions.deferReloads();
+                    try {
+                      await context.read<WalletBloc>().refresh();
+                    } finally {
+                      await transactions.resumeReloads();
                     }
                   },
                   slivers: [
@@ -97,14 +103,14 @@ class WalletDetailScreen extends StatelessWidget {
                         isLiquid: wallet.isLiquid,
                         signer: wallet.signer,
                         balanceText: CurrencyText(
-                          wallet.balanceSat.toInt(),
+                          balanceSat.toInt(),
                           style: Theme.of(context).textTheme.displaySmall
                               ?.copyWith(color: context.appColors.onPrimary),
                           showFiat: false,
                         ),
                         eyeToggle: const EyeToggle(),
                         fiatBalance: HomeFiatBalance(
-                          balanceSat: wallet.balanceSat.toInt(),
+                          balanceSat: balanceSat.toInt(),
                         ),
                         syncingIndicator: const TxsSyncingIndicator(),
                       ),

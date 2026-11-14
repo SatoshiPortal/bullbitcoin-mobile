@@ -7742,7 +7742,7 @@ final class Schema16 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape21 walletMetadatas = Shape21(
+  late final Shape43 walletMetadatas = Shape43(
     source: i0.VersionedTable(
       entityName: 'wallet_metadatas',
       withoutRowId: false,
@@ -7750,6 +7750,7 @@ final class Schema16 extends i0.VersionedSchema {
       tableConstraints: ['PRIMARY KEY(id)'],
       columns: [
         _column_126,
+        _column_288,
         _column_127,
         _column_128,
         _column_129,
@@ -7869,19 +7870,13 @@ final class Schema16 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape26 electrumServers = Shape26(
+  late final Shape44 electrumServers = Shape44(
     source: i0.VersionedTable(
       entityName: 'electrum_servers',
       withoutRowId: false,
       isStrict: false,
-      tableConstraints: ['PRIMARY KEY(url)'],
-      columns: [
-        _column_178,
-        _column_159,
-        _column_179,
-        _column_180,
-        _column_181,
-      ],
+      tableConstraints: ['PRIMARY KEY(network, url)'],
+      columns: [_column_178, _column_182, _column_180, _column_181],
       attachedDatabase: database,
     ),
     alias: null,
@@ -8124,6 +8119,68 @@ final class Schema16 extends i0.VersionedSchema {
     'order_swaps_local_payin_txid',
     'CREATE INDEX order_swaps_local_payin_txid ON order_swaps (local_payin_transaction_id)',
   );
+}
+
+class Shape43 extends i0.VersionedTable {
+  Shape43({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get network =>
+      columnsByName['network']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get masterFingerprint =>
+      columnsByName['master_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get xpubFingerprint =>
+      columnsByName['xpub_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isEncryptedVaultTested =>
+      columnsByName['is_encrypted_vault_tested']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isPhysicalBackupTested =>
+      columnsByName['is_physical_backup_tested']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get latestEncryptedBackup =>
+      columnsByName['latest_encrypted_backup']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get latestPhysicalBackup =>
+      columnsByName['latest_physical_backup']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get xpub =>
+      columnsByName['xpub']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get externalPublicDescriptor =>
+      columnsByName['external_public_descriptor']!
+          as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get internalPublicDescriptor =>
+      columnsByName['internal_public_descriptor']!
+          as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get signer =>
+      columnsByName['signer']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get signerDevice =>
+      columnsByName['signer_device']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isDefault =>
+      columnsByName['is_default']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get label =>
+      columnsByName['label']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get syncedAt =>
+      columnsByName['synced_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get birthday =>
+      columnsByName['birthday']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_288(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'network',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL DEFAULT \'unresolved\'',
+      defaultValue: const i1.CustomExpression('\'unresolved\''),
+    );
+
+class Shape44 extends i0.VersionedTable {
+  Shape44({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get url =>
+      columnsByName['url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get network =>
+      columnsByName['network']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get priority =>
+      columnsByName['priority']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isCustom =>
+      columnsByName['is_custom']! as i1.GeneratedColumn<int>;
 }
 
 i0.MigrationStepWithVersion migrationSteps({

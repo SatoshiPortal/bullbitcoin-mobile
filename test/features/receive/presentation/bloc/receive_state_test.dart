@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -293,6 +293,14 @@ void main() {
   });
 
   group('ReceiveState.isPayjoinAwaitingFunds', () {
+    test('false while the selected wallet is unavailable', () {
+      const state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        payjoinGloballyEnabled: true,
+      );
+      expect(state.isPayjoinAwaitingFunds, isFalse);
+    });
+
     test('true when payjoin is enabled globally but this wallet has no '
         'confirmed balance yet', () {
       final state = buildState(

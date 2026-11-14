@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/how_to_decide.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -57,13 +56,11 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 title: context.loc.backupWalletEncryptedVaultTitle,
                 description: context.loc.backupWalletEncryptedVaultDescription,
                 tag: context.loc.backupWalletEncryptedVaultTag,
-                onTap: () => locator<RecoverBullFeature>().open(
-                  context,
-                  switch (widget.flow) {
-                    BackupSettingsFlow.backup => RecoverBullFlow.secureVault,
-                    BackupSettingsFlow.test => RecoverBullFlow.testVault,
-                  },
-                ),
+                onTap: () =>
+                    RecoverBullFeature.open(context, switch (widget.flow) {
+                      BackupSettingsFlow.backup => RecoverBullFlow.secureVault,
+                      BackupSettingsFlow.test => RecoverBullFlow.testVault,
+                    }),
               ),
               const Gap(16),
 

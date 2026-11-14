@@ -2,23 +2,24 @@ import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
+
+import 'developer_network.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -86,7 +87,11 @@ Future<void> main({bool isInitialized = false}) async {
       psbt: prepared.unsignedPsbt,
       walletId: walletId,
     );
-    await broadcastBitcoinTx.execute(signed.signedPsbt, isPsbt: true);
+    await broadcastBitcoinTx.execute(
+      signed.signedPsbt,
+      isPsbt: true,
+      network: Network.bitcoinTestnet,
+    );
     await Future<void>.delayed(const Duration(seconds: 3));
     // Fail fast: a funding sync that failed would otherwise surface as a
     // confusing balance assertion further down.
@@ -169,12 +174,9 @@ Future<void> main({bool isInitialized = false}) async {
   // full wallet sync before every one of their tests.
   group('funded testnet Payjoin', () {
     setUpAll(() async {
-      // Setup: assert rather than discard, so a failed write surfaces here
-      // instead of as a confusing failure further down the test.
-      expect(
-        await locator<SetEnvironmentUsecase>().execute(Environment.testnet),
-        isA<Ok<void, SettingsFailure>>(),
-      );
+      // Testnet is a developer network: enable it as a user would.
+      // Restored when the group ends, even if this setup fails.
+      await selectDeveloperNetwork(Environment.testnet);
       final currentPolicy = await policy.load();
       previousPayjoinPolicy = switch (currentPolicy) {
         Ok(:final value) => value,
@@ -210,24 +212,17 @@ Future<void> main({bool isInitialized = false}) async {
       );
     });
 
+    // The network and developer flags are restored by selectDeveloperNetwork,
+    // independently of this policy restore.
     tearDownAll(() async {
-      try {
-        if (previousPayjoinPolicy case final previous?) {
-          for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
-            final restored = await policy.setActionEnabled(
-              action,
-              enabled: previous.allows(action),
-            );
-            if (restored case Err(:final failure)) throw failure;
-          }
+      if (previousPayjoinPolicy case final previous?) {
+        for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
+          final restored = await policy.setActionEnabled(
+            action,
+            enabled: previous.allows(action),
+          );
+          if (restored case Err(:final failure)) throw failure;
         }
-      } finally {
-        // Teardown: assert rather than discard, so a failed restore surfaces
-        // here instead of leaking into whatever test runs next.
-        expect(
-          await locator<SetEnvironmentUsecase>().execute(Environment.mainnet),
-          isA<Ok<void, SettingsFailure>>(),
-        );
       }
     });
 

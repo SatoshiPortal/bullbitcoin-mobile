@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_payjoin_toggle_button.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -112,6 +113,32 @@ class ReceiveQRDetails extends StatelessWidget {
     final isPayjoinSuppressedByAmount = context.select(
       (ReceiveBloc bloc) => bloc.state.isPayjoinSuppressedByAmount,
     );
+
+    final failure = context.select((ReceiveBloc bloc) => bloc.state.failure);
+    if (!isLightning && qrData.isEmpty && failure != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            BBText(
+              failure.toTranslated(context),
+              style: context.font.bodyMedium,
+            ),
+            const Gap(16),
+            BBButton.big(
+              label: context.loc.retry,
+              onPressed: () => context.read<ReceiveBloc>().add(
+                isBitcoin
+                    ? ReceiveBitcoinStarted(selectedWallet)
+                    : const ReceiveLiquidStarted(),
+              ),
+              bgColor: context.appColors.onSurface,
+              textColor: context.appColors.surface,
+            ),
+          ],
+        ),
+      );
+    }
 
     final gap = Device.screen.height * 0.02;
     return Padding(

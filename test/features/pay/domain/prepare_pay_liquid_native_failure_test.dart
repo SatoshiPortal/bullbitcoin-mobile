@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -40,6 +40,9 @@ void main() {
     final metadata = _Metadata();
     final frozen = _Frozen();
     reset(sdk);
+    when(
+      () => sdk.lwkApiTypesAddressValidate(addressString: 'recipient'),
+    ).thenAnswer((_) async => lwk.LiquidNetwork.testnet);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           channel,
@@ -48,6 +51,7 @@ void main() {
     when(() => metadata.fetch(walletId)).thenAnswer(
       (_) async => const WalletMetadataModel(
         id: walletId,
+        networkCode: 'liquidTestnet',
         masterFingerprint: '73c5da0a',
         xpubFingerprint: 'deadbeef',
         isEncryptedVaultTested: false,
@@ -60,7 +64,7 @@ void main() {
       ),
     );
     when(() => frozen.getAllFrozen()).thenAnswer((_) async => []);
-    // Only the native call is substituted: the real LwkFacade and real
+    // Only the native call is substituted: the reader capability and real
     // LwkWalletDatasource must propagate its failure through the repository.
     when(
       () => sdk.lwkApiWalletWalletInit(
@@ -72,7 +76,13 @@ void main() {
     repository = LiquidWalletRepository(
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => Directory.systemTemp.path),
-      lwkWalletDatasource: LwkWalletDatasource(),
+      lwkWalletDatasource: LwkWalletDatasource(
+        readWallet: (_) => lwk.Wallet.init(
+          network: lwk.LiquidNetwork.testnet,
+          dbpath: Directory.systemTemp.path,
+          descriptor: const lwk.Descriptor(ctDescriptor: 'descriptor'),
+        ),
+      ),
       frozenWalletUtxoDatasource: frozen,
     );
   });

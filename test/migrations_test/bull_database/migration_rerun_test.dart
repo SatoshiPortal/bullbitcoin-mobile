@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
@@ -70,6 +71,7 @@ void main() {
   });
 
   test('a step that fails part-way leaves the database as it was', () async {
+    log = Logger.replace(directory: dir);
     final file = File('${dir.path}/${SqliteDatabase.name}.sqlite');
     final seeded = v10.DatabaseAtV10(NativeDatabase(file));
     await seeded.customSelect('SELECT 1').get();
@@ -89,6 +91,14 @@ void main() {
       throwsA(anything),
     );
     await failing.close();
+    final rows = await log.readLogs();
+    expect(
+      rows
+          .where((row) => row.split('\t')[1] == 'SEVERE')
+          .map((row) => row.split('\t')[2]),
+      ['Schema migration failed step=from10To11 reason=storage'],
+    );
+    expect(rows.join(), isNot(contains('injected failure')));
 
     expect(_userVersion(file), 10);
     expect(_columns(file, 'settings'), isNot(contains('theme_mode')));
@@ -135,11 +145,21 @@ void _seedUserData(File file) {
       'INSERT INTO wallet_metadatas (id, master_fingerprint, xpub_fingerprint, '
       'is_encrypted_vault_tested, is_physical_backup_tested, xpub, '
       'external_public_descriptor, internal_public_descriptor, signer, '
-      'signer_device, is_default, label, birthday) VALUES '
+      'signer_device, is_default, label, birthday, network) VALUES '
       "('73c5da0a/84h/0h/0h', '73c5da0a', 'e0b0c1d2', 1, 0, 'xpub6C', "
       "'wpkh([73c5da0a/84h/0h/0h]xpub6C/0/*)', "
       "'wpkh([73c5da0a/84h/0h/0h]xpub6C/1/*)', 'local', NULL, 1, 'Savings', "
-      "'2024-04-20T00:00:00.000')",
+      "'2024-04-20T00:00:00.000', 'bitcoinMainnet')",
+    );
+    db.execute(
+      'INSERT INTO wallet_metadatas (id, master_fingerprint, xpub_fingerprint, '
+      'is_encrypted_vault_tested, is_physical_backup_tested, xpub, '
+      'external_public_descriptor, internal_public_descriptor, signer, '
+      'signer_device, is_default, label, birthday, network) VALUES '
+      "('73c5da0a/84h/1h/0h:regtest', '73c5da0a', 'e0b0c1d2', 1, 0, 'xpub6C', "
+      "'wpkh([73c5da0a/84h/1h/0h]xpub6C/0/*)', "
+      "'wpkh([73c5da0a/84h/1h/0h]xpub6C/1/*)', 'local', NULL, 1, 'Savings', "
+      "'2024-04-20T00:00:00.000', 'bitcoinRegtest')",
     );
     db.execute(
       'INSERT INTO swaps (id, type, direction, status, is_testnet, key_index, '
@@ -151,8 +171,12 @@ void _seedUserData(File file) {
     db.execute('UPDATE auto_swap SET enabled = 0, show_warning = 0');
     db.execute('UPDATE electrum_settings SET stop_gap = 50');
     db.execute(
-      'INSERT INTO electrum_servers (url, is_testnet, is_liquid, priority, '
-      "is_custom) VALUES ('ssl://custom.example:50002', 0, 0, 7, 1)",
+      'INSERT INTO electrum_servers (url, network, priority, '
+      "is_custom) VALUES ('ssl://custom.example:50002', 'bitcoinMainnet', 7, 1)",
+    );
+    db.execute(
+      'INSERT INTO electrum_servers (url, network, priority, '
+      "is_custom) VALUES ('tcp://127.0.0.1:51000', 'bitcoinRegtest', 9, 1)",
     );
     db.execute('UPDATE mempool_settings SET use_for_fee_estimation = 0');
     db.execute('UPDATE mempool_servers SET enable_ssl = 0');
@@ -170,10 +194,22 @@ void _expectUserData(File file) {
     expect(settings['use_tor_proxy'], 1);
     expect(settings['tor_proxy_port'], 9150);
     expect(db.select('SELECT * FROM labels'), hasLength(5));
-    final wallet = db.select('SELECT * FROM wallet_metadatas').single;
+    expect(db.select('SELECT * FROM wallet_metadatas'), hasLength(2));
+    final regtest = db
+        .select(
+          "SELECT * FROM wallet_metadatas WHERE network = 'bitcoinRegtest'",
+        )
+        .single;
+    expect(regtest['id'], '73c5da0a/84h/1h/0h:regtest');
+    final wallet = db
+        .select(
+          "SELECT * FROM wallet_metadatas WHERE network = 'bitcoinMainnet'",
+        )
+        .single;
     expect(wallet['id'], '73c5da0a/84h/0h/0h');
     expect(wallet['signer'], 'local');
     expect(wallet['birthday'], '2024-04-20T00:00:00.000');
+    expect(wallet['network'], 'bitcoinMainnet');
     expect(
       db
           .select('SELECT id, status FROM swaps ORDER BY id')
@@ -192,7 +228,14 @@ void _expectUserData(File file) {
     final custom = db.select(
       'SELECT * FROM electrum_servers WHERE is_custom = 1',
     );
-    expect(custom.map((row) => row['url']), ['ssl://custom.example:50002']);
+    expect(
+      custom.map((row) => row['url']),
+      unorderedEquals(['ssl://custom.example:50002', 'tcp://127.0.0.1:51000']),
+    );
+    final regtestServer = custom.singleWhere(
+      (row) => row['network'] == 'bitcoinRegtest',
+    );
+    expect(regtestServer['priority'], 9);
     for (final row in db.select('SELECT * FROM mempool_settings')) {
       expect(row['use_for_fee_estimation'], 0);
     }

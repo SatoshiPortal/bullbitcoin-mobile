@@ -13,15 +13,29 @@ void main() {
 
   String? redirect(
     String path, {
+    NetworkEnv environment = NetworkEnv.mainnet,
     bool isSuperuser = true,
     bool isDevModeEnabled = true,
     bool isSpWalletSetup = true,
   }) => spRedirect(
     path,
+    environment: environment,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
     gateClosedRedirectPath: walletHome,
+  );
+
+  test(
+    'regtest gates established and setup routes without deleting the account',
+    () {
+      for (final path in [
+        ...SpRoute.values.map((r) => r.path),
+        SpSetupRoute.spSetup.path,
+      ]) {
+        expect(redirect(path, environment: NetworkEnv.regtest), walletHome);
+      }
+    },
   );
 
   group('non-SP paths are always allowed', () {

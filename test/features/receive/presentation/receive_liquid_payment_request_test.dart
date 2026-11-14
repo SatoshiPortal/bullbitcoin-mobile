@@ -1,13 +1,15 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final network in [Network.liquidMainnet, Network.liquidTestnet]) {
-    final address = network.isTestnet ? 'tlq1testaddress' : 'lq1testaddress';
+    final address = network.requireHistoricalTestnet()
+        ? 'tlq1testaddress'
+        : 'lq1testaddress';
     final wallet = Wallet(
       origin: 'test-origin',
       network: network,
@@ -46,12 +48,14 @@ void main() {
             // The send parser requires liquidtestnet for testnet addresses.
             expect(
               uri.scheme,
-              network.isTestnet ? 'liquidtestnet' : 'liquidnetwork',
+              network.requireHistoricalTestnet()
+                  ? 'liquidtestnet'
+                  : 'liquidnetwork',
             );
             expect(uri.path, address);
             expect(
               uri.queryParameters['assetid'],
-              network.isTestnet
+              network.requireHistoricalTestnet()
                   ? AssetConstants.lbtcTestnet
                   : AssetConstants.lbtcMainnet,
             );
@@ -72,14 +76,16 @@ void main() {
 
         expect(
           uri.scheme,
-          network.isTestnet ? 'liquidtestnet' : 'liquidnetwork',
+          network.requireHistoricalTestnet()
+              ? 'liquidtestnet'
+              : 'liquidnetwork',
         );
         expect(uri.path, address);
         expect(uri.queryParameters['amount'], '0.0001');
         expect(uri.queryParameters.containsKey('message'), isFalse);
         expect(
           uri.queryParameters['assetid'],
-          network.isTestnet
+          network.requireHistoricalTestnet()
               ? AssetConstants.lbtcTestnet
               : AssetConstants.lbtcMainnet,
         );

@@ -1,10 +1,13 @@
+import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
+import 'dart:io';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
@@ -120,12 +123,17 @@ class _SeedablePayBloc extends PayBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.retryPayjoinProposalUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
   });
 
   void seed(PayState state) => emit(state);
 }
+
+class _PrivacyReporter extends Mock implements LoggerReporter {}
+
+class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}
 
 void main() {
   // Unsigned single-input single-output PSBT with a witness UTXO — enough for
@@ -172,6 +180,7 @@ void main() {
   late _MockSendWithPayjoin sendWithPayjoin;
   late _MockWatchPayjoin watchPayjoin;
   late _MockGetPayjoin getPayjoin;
+  late _MockRetryPayjoin retryPayjoin;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
   late _MockPayOrder payOrder;
   late _MockWallet wallet;
@@ -218,6 +227,7 @@ void main() {
       );
 
   setUpAll(() {
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(const NetworkFee.absolute(200));
     registerFallbackValue(<WalletUtxo>[]);
     registerFallbackValue(<BitcoinTransactionRecipient>[]);
@@ -294,7 +304,12 @@ void main() {
       )),
     );
     when(
-      () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+      () => broadcastPayPayin.bitcoin(
+        any(),
+        walletId: any(named: 'walletId'),
+        isPsbt: any(named: 'isPsbt'),
+        network: app.Network.bitcoinMainnet,
+      ),
     ).thenAnswer((_) async => Ok<String, PayFailure>(expectedTxid));
     when(
       () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
@@ -306,6 +321,7 @@ void main() {
       () => watchPayjoin.execute(any()),
     ).thenAnswer((_) => const Stream.empty());
     getPayjoin = _MockGetPayjoin();
+    retryPayjoin = _MockRetryPayjoin();
     when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
 
     bloc = _SeedablePayBloc(
@@ -325,6 +341,7 @@ void main() {
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
       getPayjoinUsecase: getPayjoin,
+      retryPayjoinProposalUsecase: retryPayjoin,
       previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
       previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
     );
@@ -418,6 +435,58 @@ void main() {
 
   group('PayBloc — broadcast latch', () {
     test(
+      'confirmation Error persists and reports only safe metadata',
+      () async {
+        const foreign =
+            'tcp://private-electrum.invalid:50001 foreign-rejection';
+        final directory = await Directory.systemTemp.createTemp('confirm-log-');
+        final reporter = _PrivacyReporter();
+        registerFallbackValue(StackTrace.empty);
+        log = Logger.replace(directory: directory, reporter: reporter);
+        addTearDown(() async {
+          await log.flush();
+          log = Logger.replace(directory: Directory.current);
+          await directory.delete(recursive: true);
+        });
+        bloc.seed(
+          (bloc.state as PayPaymentState).copyWith(isPayjoinEnabled: false),
+        );
+        when(
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            walletId: any(named: 'walletId'),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
+        ).thenAnswer(
+          (_) =>
+              Future.error(StateError(foreign), StackTrace.fromString(foreign)),
+        );
+        bloc.add(const PayEvent.sendPaymentConfirmed());
+        await bloc.stream.firstWhere(
+          (state) => state is PayPaymentState && state.error != null,
+        );
+        await pumpEventQueue();
+        await log.flush();
+        final disk = await log.logsFile.readAsString();
+        expect(disk, isNot(contains('private-electrum.invalid')));
+        const code = 'pay_payin_confirmation_failed';
+        expect(disk, contains(code));
+        final captured = verify(
+          () => reporter.reportError(
+            message: '$code category=unexpected',
+            exception: captureAny(named: 'exception'),
+            stackTrace: captureAny(named: 'stackTrace'),
+            category: ReportCategory.error,
+          ),
+        ).captured;
+        expect(captured[0].toString(), 'Exception: $code');
+        expect(captured[1].toString(), isNot(contains(foreign)));
+        expect((bloc.state as PayPaymentState).isConfirmingPayment, isFalse);
+      },
+    );
+
+    test(
       'does not report success while a Payjoin is only requested',
       () async {
         const bip21 =
@@ -430,7 +499,7 @@ void main() {
         when(
           () => sendWithPayjoin.execute(
             walletId: any(named: 'walletId'),
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: any(named: 'bip21'),
             unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
             amountSat: any(named: 'amountSat'),
@@ -503,7 +572,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -546,7 +615,12 @@ void main() {
       );
       verify(() => watchPayjoin.execute(bip21)).called(1);
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          walletId: any(named: 'walletId'),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
     });
 
@@ -562,7 +636,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -598,7 +672,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -634,7 +708,7 @@ void main() {
       verify(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -678,7 +752,12 @@ void main() {
         await Future<void>.delayed(const Duration(milliseconds: 100));
 
         verify(
-          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            walletId: any(named: 'walletId'),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
         ).called(1);
         verify(
           () => preparePayBitcoinPayin.execute(
@@ -866,7 +945,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -907,6 +986,142 @@ void main() {
       );
     });
 
+    for (final outcome in ['failure', 'completed', 'expired', 'late']) {
+      test(
+        'paused proposal preserves the payment and retries safely: $outcome',
+        () async {
+          final previousLogger = log;
+          final logger = _MockLogger();
+          log = logger;
+          addTearDown(() => log = previousLogger);
+          const bip21 =
+              'bitcoin:bc1q0000000000000000000000000000000000000'
+              '?amount=0.001&pj=https://payjo.in/session';
+          when(() => payOrder.bip21URI).thenReturn(bip21);
+          when(
+            () => payOrder.confirmationDeadline,
+          ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+          PayjoinSenderSession session(PayjoinStatus status) =>
+              PayjoinSenderSession(
+                status: status,
+                spendFailure: status == PayjoinStatus.proposed
+                    ? const PayjoinSpendBlockedFailure()
+                    : null,
+                hasProposal: status != PayjoinStatus.requested,
+                uri: bip21,
+                network: BitcoinNetwork.mainnet,
+                walletId: 'wallet-1',
+                originalTransactionId: expectedTxid,
+                amount: Sats.fromInt(100000),
+                createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
+                expiresAt: DateTime.now().add(
+                  Duration(minutes: outcome == 'expired' ? -5 : 5),
+                ),
+              );
+          when(
+            () => sendWithPayjoin.execute(
+              walletId: any(named: 'walletId'),
+              network: any(named: 'network'),
+              bip21: any(named: 'bip21'),
+              unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+              amountSat: any(named: 'amountSat'),
+              networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+              expireAfterSec: any(named: 'expireAfterSec'),
+            ),
+          ).thenAnswer(
+            (_) async => Ok<PayjoinSenderSession, PayFailure>(
+              session(PayjoinStatus.requested),
+            ),
+          );
+          final updates =
+              StreamController<Result<PayjoinSession, PayFailure>>();
+          addTearDown(updates.close);
+          when(
+            () => watchPayjoin.execute(bip21),
+          ).thenAnswer((_) => updates.stream);
+          final retry = Completer<Result<PayjoinSession, PayFailure>>();
+          when(
+            () => retryPayjoin.execute(bip21),
+          ).thenAnswer((_) => retry.future);
+          bloc.seed(paymentState());
+
+          bloc.add(const PayEvent.sendPaymentConfirmed());
+          await untilCalled(() => watchPayjoin.execute(bip21));
+          updates.add(Ok(session(PayjoinStatus.proposed)));
+          await pumpEventQueue();
+          final paused = bloc.state as PayPaymentState;
+          expect(paused.isPayinBroadcast, isFalse);
+          expect(paused.isConfirmingPayment, isTrue);
+          expect(
+            paused.error,
+            isA<PayPayjoinPausedFailure>(),
+            reason:
+                'A paused retained proposal must expose localized recoverable feedback rather than an indefinite confirming spinner',
+          );
+
+          expect(paused.pausedPayjoinSession?.id, bip21);
+          expect(paused.payOrder, same(payOrder));
+          clearInteractions(sendWithPayjoin);
+          clearInteractions(preparePayBitcoinPayin);
+          // Confirm must neither reconstruct the payin nor erase the pause.
+          bloc.add(const PayEvent.sendPaymentConfirmed());
+          await pumpEventQueue();
+          expect(
+            (bloc.state as PayPaymentState).error,
+            isA<PayPayjoinPausedFailure>(),
+          );
+          bloc.add(const PayEvent.payjoinProposalRetryRequested());
+          bloc.add(const PayEvent.payjoinProposalRetryRequested());
+          await pumpEventQueue();
+          if (outcome == 'expired') {
+            verifyNever(() => retryPayjoin.execute(any()));
+          } else {
+            verify(() => retryPayjoin.execute(bip21)).called(1);
+            expect(
+              (bloc.state as PayPaymentState).isRetryingPayjoinProposal,
+              isTrue,
+            );
+            if (outcome == 'late') {
+              updates.add(Ok(session(PayjoinStatus.completed)));
+              await pumpEventQueue();
+            }
+            if (outcome == 'completed') {
+              // Successful completion still belongs to the watched session.
+              updates.add(Ok(session(PayjoinStatus.completed)));
+              retry.complete(Ok(session(PayjoinStatus.completed)));
+            } else {
+              retry.complete(const Err(PayPayjoinPausedFailure()));
+            }
+            await pumpEventQueue();
+          }
+          if (outcome == 'completed' || outcome == 'late') {
+            final settled = bloc.state;
+            expect(
+              settled is PaySuccessState ||
+                  (settled is PayPaymentState &&
+                      settled.isPayinBroadcast &&
+                      settled.pausedPayjoinSession == null &&
+                      settled.error == null),
+              isTrue,
+            );
+          } else {
+            final retained = bloc.state as PayPaymentState;
+            expect(
+              retained.pausedPayjoinSession,
+              same(paused.pausedPayjoinSession),
+            );
+            expect(retained.error, isA<PayPayjoinPausedFailure>());
+            expect(retained.isConfirmingPayment, isTrue);
+            expect(retained.isRetryingPayjoinProposal, isFalse);
+            expect(retained.isPayinBroadcast, isFalse);
+            expect(retained.payOrder, same(payOrder));
+          }
+          verifyZeroInteractions(sendWithPayjoin);
+          verifyZeroInteractions(preparePayBitcoinPayin);
+        },
+      );
+    }
+
     test('absolute custom fees pass their actual rate to Payjoin', () async {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
@@ -921,7 +1136,7 @@ void main() {
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -975,7 +1190,7 @@ void main() {
       verify(
         () => sendWithPayjoin.execute(
           walletId: 'wallet-1',
-          isTestnet: false,
+          network: BitcoinNetwork.mainnet,
           bip21: bip21,
           unsignedOriginalPsbt: unsignedPsbt,
           amountSat: 100000,
@@ -1005,7 +1220,12 @@ void main() {
       // The exchange expires the order at its deadline and does not credit a
       // payin sent after it.
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          walletId: any(named: 'walletId'),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
       // A fresh quote is asked for instead.
       verify(
@@ -1056,6 +1276,7 @@ void main() {
           sendWithPayjoinUsecase: sendWithPayjoin,
           watchPayjoinUsecase: watchPayjoin,
           getPayjoinUsecase: getPayjoin,
+          retryPayjoinProposalUsecase: retryPayjoin,
           previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
           previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
         );
@@ -1257,7 +1478,12 @@ void main() {
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       verifyNever(
-        () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          walletId: any(named: 'walletId'),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
       );
     });
 
@@ -1482,7 +1708,12 @@ void main() {
         // hardcoded Fastest rate must appear nowhere.
         expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
         verify(
-          () => broadcastPayPayin.bitcoin(any(), isPsbt: any(named: 'isPsbt')),
+          () => broadcastPayPayin.bitcoin(
+            any(),
+            walletId: any(named: 'walletId'),
+            isPsbt: any(named: 'isPsbt'),
+            network: app.Network.bitcoinMainnet,
+          ),
         ).called(1);
       },
       timeout: const Timeout(Duration(seconds: 60)),

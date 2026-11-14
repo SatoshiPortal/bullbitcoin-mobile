@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -117,9 +117,12 @@ class _AddCustomServerBottomSheetState
       (ElectrumSettingsBloc bloc) => bloc.state.isLiquid,
     );
     final environment = context.select(
-      (ElectrumSettingsBloc bloc) => bloc.state.environment?.isTestnet == true
-          ? context.loc.electrumTestnet
-          : context.loc.electrumMainnet,
+      (ElectrumSettingsBloc bloc) => switch (bloc.state.environment) {
+        ElectrumEnvironment.mainnet => context.loc.electrumMainnet,
+        ElectrumEnvironment.testnet => context.loc.electrumTestnet,
+        ElectrumEnvironment.regtest => context.loc.electrumRegtest,
+        null => context.loc.oopsSomethingWentWrong,
+      },
     );
 
     return GestureDetector(

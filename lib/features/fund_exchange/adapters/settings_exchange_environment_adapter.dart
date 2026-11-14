@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/exchange_environment_port.dart';
 
@@ -11,6 +12,12 @@ class SettingsExchangeEnvironmentAdapter implements ExchangeEnvironmentPort {
   @override
   Future<bool> get isTestnet async {
     final settings = await _getSettingsUsecase.execute();
-    return settings.environment.isTestnet;
+    if (!NetworkCapabilities.supports(
+      BitcoinNetwork.fromName(settings.activeNetwork.name),
+      NetworkCapability.exchange,
+    )) {
+      throw const UnsupportedExchangeNetworkException();
+    }
+    return settings.environment.requireHistoricalTestnet();
   }
 }

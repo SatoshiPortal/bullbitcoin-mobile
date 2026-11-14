@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
@@ -65,6 +65,28 @@ void main() {
       ),
     );
   });
+
+  test(
+    'regtest refuses confirmation before backend or recipient access',
+    () async {
+      when(settingsRepository.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      final result = await usecase.execute(
+        orderId: 'order-1',
+        interacSecurityDetails: interacSecurityDetails,
+        saveSecurityDetailsAsDefault: true,
+      );
+      expect(_err(result), isA<WithdrawUnsupportedNetworkFailure>());
+      verifyZeroInteractions(mainnetRepository);
+      verifyZeroInteractions(testnetRepository);
+      verifyZeroInteractions(recipientsFacade);
+    },
+  );
 
   test('confirms the order before saving Interac defaults', () async {
     final order = _MockWithdrawOrder();
