@@ -92,17 +92,18 @@ List<String> productionDartFiles(String root) {
 }
 
 List<String> checkUnit(CompilationUnit unit, String relativePath) {
-  if (relativePath.startsWith('packages/transaction_sync/lib/src/write/') ||
-      relativePath.startsWith('packages/transaction_sync/lib/src/engine/')) {
-    return [];
-  }
+  // Native store mutations are confined to the writer, sync passes included.
+  if (relativePath.startsWith(writerModules)) return [];
   final visitor = _NativeWriteVisitor(relativePath, unit);
   unit.accept(visitor);
   return visitor.violations.toList()..sort();
 }
 
-const snapshotModule =
-    'packages/transaction_sync/lib/src/read/wallet_snapshot_reader.dart';
+const writerModules = 'packages/transaction_sync/lib/src/data/write/';
+
+/// Reader modules may hydrate existing stores, never mutate them.
+const readerModules = 'packages/transaction_sync/lib/src/data/read/';
+const snapshotModule = '${readerModules}wallet_snapshot_reader.dart';
 const _dryScanFile = 'lib/features/wallet/data/bdk_wallet_datasource.dart';
 
 class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
@@ -137,7 +138,7 @@ class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
     }
     final symbol = nativeWriteSymbol(element);
     if (symbol == null) return;
-    if (path.startsWith('packages/transaction_sync/lib/src/read/')) {
+    if (path.startsWith(readerModules)) {
       final owner = element.enclosingElement?.name;
       if (element.name == 'Persister' ||
           element.name == 'PersisterInterface' ||

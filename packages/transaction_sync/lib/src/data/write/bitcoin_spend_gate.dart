@@ -1,17 +1,17 @@
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';
-import '../domain/bitcoin_spend.dart';
-import '../domain/transaction_sync_failure.dart';
-import '../domain/public_wallet_descriptor.dart';
-import '../domain/ports/wallet_catalog_port.dart';
-import '../domain/wallet_key.dart';
-import '../domain/wallet_revision.dart';
-import 'spend_gate_store_datasource.dart';
-import 'native_store_paths.dart';
-import 'revision_store_datasource.dart';
+import '../../domain/bitcoin_spend.dart';
+import '../../domain/transaction_sync_failure.dart';
+import '../../domain/public_wallet_descriptor.dart';
+import '../../domain/ports/wallet_catalog_port.dart';
+import '../../domain/wallet_key.dart';
+import '../../domain/wallet_revision.dart';
+import '../datasources/spend_gate_store_datasource.dart';
+import '../native_store_paths.dart';
+import '../datasources/revision_store_datasource.dart';
 import 'writer_lock.dart';
-import 'lease_diagnostics.dart';
+import '../lease_diagnostics.dart';
 
 /// Foreground spend admission shares the single writer's cross-isolate lease.
 /// Only durable receipts survive restart; a post-accept storage failure blocks

@@ -1,11 +1,11 @@
-import '../write/lease_diagnostics.dart';
+import '../lease_diagnostics.dart';
 import 'package:primitives/primitives.dart';
-import '../domain/transaction_sync_failure.dart';
-import '../domain/public_wallet_descriptor.dart';
-import '../domain/wallet_revision.dart';
-import '../write/revision_store_datasource.dart';
-import '../write/store_identity.dart';
-import '../domain/ports/wallet_read_readiness_port.dart';
+import '../../domain/transaction_sync_failure.dart';
+import '../../domain/public_wallet_descriptor.dart';
+import '../../domain/wallet_revision.dart';
+import '../datasources/revision_store_datasource.dart';
+import '../store_identity.dart';
+import '../../domain/ports/wallet_read_readiness_port.dart';
 
 /// Read-only verification of the proof committed by the writer, under admission.
 final class PersistedWalletReadiness implements WalletReadReadinessPort {

@@ -1,12 +1,12 @@
-import 'lease_diagnostics.dart';
+import '../lease_diagnostics.dart';
 import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
-import '../domain/transaction_sync_failure.dart';
-import '../domain/wallet_key.dart';
-import 'native_store_paths.dart';
+import '../../domain/transaction_sync_failure.dart';
+import '../../domain/wallet_key.dart';
+import '../native_store_paths.dart';
 
 /// Only package:sqlite3 may open these files. Never unlink them, including on
 /// wallet deletion. Acquire in the isolate awaiting the actual native work.

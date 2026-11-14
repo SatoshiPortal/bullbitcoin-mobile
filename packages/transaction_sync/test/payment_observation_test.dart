@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/src/engine/payment_observation.dart';
+import 'package:transaction_sync/src/data/write/sync/payment_observation.dart';
 
 void main() {
   setUp(() async {

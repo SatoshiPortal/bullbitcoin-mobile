@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:sqlite3/sqlite3.dart';
-import '../domain/public_wallet_descriptor.dart';
-import '../domain/wallet_key.dart';
-import 'store_identity.dart';
+import '../../domain/public_wallet_descriptor.dart';
+import '../../domain/wallet_key.dart';
+import '../store_identity.dart';
 
 /// Recovery metadata only; the native wallet remains the transaction authority.
 /// Every operation runs under the wallet writer lease. Never quarantine this DB.

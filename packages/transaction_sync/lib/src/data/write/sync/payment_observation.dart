@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/transaction_sync_failure.dart';
+import '../../../domain/transaction_sync_failure.dart';
 
 /// Missing observations must never be treated as an empty payment history.
 Future<T?> collectPaymentObservation<T>(

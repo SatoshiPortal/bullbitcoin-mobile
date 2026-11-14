@@ -3,19 +3,19 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:sqlite3/sqlite3.dart';
 
-import '../domain/ports/reserved_address_port.dart';
-import '../domain/ports/wallet_catalog_port.dart';
-import '../domain/ports/wallet_revision_reader_port.dart';
-import '../domain/repositories/wallet_writer_repository.dart';
-import '../domain/wallet_revision.dart';
+import '../../domain/ports/reserved_address_port.dart';
+import '../../domain/ports/wallet_catalog_port.dart';
+import '../../domain/ports/wallet_revision_reader_port.dart';
+import '../../domain/repositories/wallet_writer_repository.dart';
+import '../../domain/wallet_revision.dart';
 import '../read/persisted_wallet_readiness.dart';
 import '../read/wallet_snapshot_reader.dart';
 import 'bitcoin_spend_gate.dart';
-import 'spend_gate_store_datasource.dart';
-import 'native_store_paths.dart';
+import '../datasources/spend_gate_store_datasource.dart';
+import '../native_store_paths.dart';
 import 'native_wallet_writer_repository.dart';
-import 'revision_store_datasource.dart';
-import 'sqlite_wallet_revision_reader.dart';
+import '../datasources/revision_store_datasource.dart';
+import '../sqlite_wallet_revision_reader.dart';
 
 /// What the foreground app uses. Only [openForeground] creates the package
 /// stores; it does so before any sync pass can run.

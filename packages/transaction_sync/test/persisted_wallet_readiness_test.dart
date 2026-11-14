@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
-import 'package:transaction_sync/src/write/revision_store_datasource.dart';
-import 'package:transaction_sync/src/write/store_identity.dart';
+import 'package:transaction_sync/src/data/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:transaction_sync/src/data/store_identity.dart';
 
 void main() {
   test('LWK tagged hash matches the pinned native regression vector', () {

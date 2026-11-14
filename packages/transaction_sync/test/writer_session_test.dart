@@ -4,12 +4,12 @@ import 'dart:isolate';
 
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
-import 'package:transaction_sync/src/write/lease_diagnostics.dart';
-import 'package:transaction_sync/src/write/revision_store_datasource.dart';
-import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
-import 'package:transaction_sync/src/write/writer_lock.dart';
-import 'package:transaction_sync/src/write/writer_session.dart';
-import 'package:transaction_sync/src/write/writer_sync_operation.dart';
+import 'package:transaction_sync/src/data/lease_diagnostics.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:transaction_sync/src/data/sqlite_wallet_revision_reader.dart';
+import 'package:transaction_sync/src/data/write/writer_lock.dart';
+import 'package:transaction_sync/src/data/write/writer_session.dart';
+import 'package:transaction_sync/src/data/write/writer_sync_operation.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 import 'native_wallet_writer_test.dart'

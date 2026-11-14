@@ -1,4 +1,4 @@
-import '../write/lease_diagnostics.dart';
+import '../lease_diagnostics.dart';
 import 'dart:io';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -6,17 +6,17 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import '../domain/ports/wallet_read_readiness_port.dart';
+import '../../domain/ports/wallet_read_readiness_port.dart';
 
-import '../domain/transaction_sync_failure.dart';
-import '../domain/native_network_policy.dart';
-import '../domain/public_wallet_descriptor.dart';
-import '../domain/ports/wallet_catalog_port.dart';
-import '../domain/wallet_key.dart';
-import '../write/native_store_paths.dart';
-import '../domain/wallet_revision.dart';
-import '../domain/ports/read_admission_port.dart';
-import '../domain/ports/wallet_revision_reader_port.dart';
+import '../../domain/transaction_sync_failure.dart';
+import '../../domain/native_network_policy.dart';
+import '../../domain/public_wallet_descriptor.dart';
+import '../../domain/ports/wallet_catalog_port.dart';
+import '../../domain/wallet_key.dart';
+import '../native_store_paths.dart';
+import '../../domain/wallet_revision.dart';
+import '../../domain/ports/read_admission_port.dart';
+import '../../domain/ports/wallet_revision_reader_port.dart';
 
 /// A borrowed native handle hydrated from a writer-initialized store.
 /// Consumers must not mutate, dispose or persist this shared reader handle.

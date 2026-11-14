@@ -100,13 +100,13 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
     },
   );
 
-  test('writer and engine are privileged, other package code is not', () async {
+  test('the writer is privileged, other package code is not', () async {
     const source =
         "import 'package:bull_sdk/lwk.dart' as lwk; final init = lwk.Wallet.init;";
-    for (final folder in ['write', 'engine']) {
+    for (final folder in ['data/write', 'data/write/sync']) {
       expect(
         await inspect(
-          folder,
+          'privileged',
           source,
           path: 'packages/transaction_sync/lib/src/$folder/test.dart',
         ),
@@ -126,7 +126,7 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
       await inspect(
         'other_read',
         source,
-        path: 'packages/transaction_sync/lib/src/read/other.dart',
+        path: 'packages/transaction_sync/lib/src/data/read/other.dart',
       ),
       isEmpty,
     );
@@ -139,12 +139,17 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 Object persist(bdk.Wallet wallet) => wallet.persist;
 Object sync(lwk.Wallet wallet) => wallet.sync_;
-''', path: '$package/read/other.dart');
+''', path: '$package/data/read/other.dart');
     expect(mutation, contains(contains('Wallet.persist')));
     expect(mutation, contains(contains('Wallet.sync_')));
     const hydration =
         "import 'package:bull_sdk/lwk.dart' as lwk; final init = lwk.Wallet.init;";
-    for (final path in ['$package/domain/other.dart', '$package/other.dart']) {
+    for (final path in [
+      '$package/domain/other.dart',
+      '$package/data/other.dart',
+      '$package/data/writer.dart',
+      '$package/other.dart',
+    ]) {
       expect(
         await inspect('hydration', hydration, path: path),
         contains(contains('Wallet.init')),

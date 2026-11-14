@@ -1,13 +1,13 @@
-import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
-import 'package:transaction_sync/src/write/native_store_paths.dart';
-import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store_datasource.dart';
-import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
-import 'package:transaction_sync/src/write/writer_sync_operation.dart';
-import 'package:transaction_sync/src/write/lease_diagnostics.dart';
-import 'package:transaction_sync/src/write/native_write_session.dart';
-import 'package:transaction_sync/src/write/writer_diagnostics.dart';
-import 'package:transaction_sync/src/write/writer_session.dart';
+import 'package:transaction_sync/src/data/datasources/spend_gate_store_datasource.dart';
+import 'package:transaction_sync/src/data/native_store_paths.dart';
+import 'package:transaction_sync/src/data/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:transaction_sync/src/data/sqlite_wallet_revision_reader.dart';
+import 'package:transaction_sync/src/data/write/writer_sync_operation.dart';
+import 'package:transaction_sync/src/data/lease_diagnostics.dart';
+import 'package:transaction_sync/src/data/write/native_write_session.dart';
+import 'package:transaction_sync/src/data/writer_diagnostics.dart';
+import 'package:transaction_sync/src/data/write/writer_session.dart';
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';

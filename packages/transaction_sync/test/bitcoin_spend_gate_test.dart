@@ -5,10 +5,10 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
-import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
-import 'package:transaction_sync/src/write/native_store_paths.dart';
-import 'package:transaction_sync/src/write/revision_store_datasource.dart';
-import 'package:transaction_sync/src/write/writer_lock.dart';
+import 'package:transaction_sync/src/data/datasources/spend_gate_store_datasource.dart';
+import 'package:transaction_sync/src/data/native_store_paths.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:transaction_sync/src/data/write/writer_lock.dart';
 
 final class _Reserved implements ReservedAddressPort {
   @override

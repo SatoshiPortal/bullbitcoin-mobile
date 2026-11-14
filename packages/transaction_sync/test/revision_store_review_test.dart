@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/src/write/revision_store_datasource.dart';
-import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:transaction_sync/src/data/sqlite_wallet_revision_reader.dart';
 
 void main() {
   test(

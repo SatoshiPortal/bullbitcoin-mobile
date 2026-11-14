@@ -1,8 +1,8 @@
-import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
-import 'package:transaction_sync/src/write/native_store_paths.dart';
-import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store_datasource.dart';
-import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
+import 'package:transaction_sync/src/data/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/data/native_store_paths.dart';
+import 'package:transaction_sync/src/data/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:transaction_sync/src/data/sqlite_wallet_revision_reader.dart';
 import 'dart:io';
 
 import 'package:bull_sdk/bull_sdk.dart' show BullSdk;

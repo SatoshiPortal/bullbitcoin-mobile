@@ -1,8 +1,8 @@
-import '../write/lease_diagnostics.dart';
+import '../../lease_diagnostics.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
-import '../write/writer_diagnostics.dart';
+import '../../writer_diagnostics.dart';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -12,21 +12,21 @@ import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import '../write/native_write_session.dart';
-import '../write/revision_store_datasource.dart';
-import '../write/native_store_paths.dart';
-import '../write/sqlite_wallet_revision_reader.dart';
-import '../write/writer_session.dart';
-import '../write/writer_sync_operation.dart';
-import '../domain/native_network_policy.dart';
-import '../domain/sync_completion.dart';
-import '../domain/sync_reason.dart';
-import '../domain/wallet_revision.dart';
-import '../domain/transaction_sync_failure.dart';
-import '../domain/public_wallet_descriptor.dart';
-import '../domain/ports/wallet_connection_port.dart';
-import '../domain/wallet_key.dart';
-import 'electrum_cache_datasource.dart';
+import '../native_write_session.dart';
+import '../../datasources/revision_store_datasource.dart';
+import '../../native_store_paths.dart';
+import '../../sqlite_wallet_revision_reader.dart';
+import '../writer_session.dart';
+import '../writer_sync_operation.dart';
+import '../../../domain/native_network_policy.dart';
+import '../../../domain/sync_completion.dart';
+import '../../../domain/sync_reason.dart';
+import '../../../domain/wallet_revision.dart';
+import '../../../domain/transaction_sync_failure.dart';
+import '../../../domain/public_wallet_descriptor.dart';
+import '../../../domain/ports/wallet_connection_port.dart';
+import '../../../domain/wallet_key.dart';
+import '../datasources/electrum_cache_datasource.dart';
 import 'payment_observation.dart';
 
 /// One Electrum operation inside the writer lease. Headless callers cannot provision or reconcile.

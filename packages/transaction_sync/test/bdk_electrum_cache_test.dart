@@ -1,18 +1,18 @@
-import 'package:transaction_sync/src/read/persisted_wallet_readiness.dart';
-import 'package:transaction_sync/src/write/spend_gate_store_datasource.dart';
-import 'package:transaction_sync/src/write/native_store_paths.dart';
-import 'package:transaction_sync/src/write/native_wallet_writer_repository.dart';
-import 'package:transaction_sync/src/write/revision_store_datasource.dart';
-import 'package:transaction_sync/src/write/sqlite_wallet_revision_reader.dart';
+import 'package:transaction_sync/src/data/read/persisted_wallet_readiness.dart';
+import 'package:transaction_sync/src/data/datasources/spend_gate_store_datasource.dart';
+import 'package:transaction_sync/src/data/native_store_paths.dart';
+import 'package:transaction_sync/src/data/write/native_wallet_writer_repository.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
+import 'package:transaction_sync/src/data/sqlite_wallet_revision_reader.dart';
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
 import 'package:transaction_sync/write.dart';
 import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/src/write/writer_lock.dart';
+import 'package:transaction_sync/src/data/write/writer_lock.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/src/engine/electrum_cache_datasource.dart';
+import 'package:transaction_sync/src/data/write/datasources/electrum_cache_datasource.dart';
 import 'dart:io';
 import 'dart:typed_data';
 

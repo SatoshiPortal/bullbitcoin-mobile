@@ -7,7 +7,7 @@ import '../domain/ports/wallet_revision_reader_port.dart';
 import '../domain/transaction_sync_failure.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
-import 'revision_store_datasource.dart';
+import 'datasources/revision_store_datasource.dart';
 
 /// Domain reads of the revision store plus this isolate's change stream. The
 /// writer publishes each state after its commit; [read] publishes what it

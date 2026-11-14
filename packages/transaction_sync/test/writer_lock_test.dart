@@ -5,8 +5,8 @@ import 'dart:isolate';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/src/write/writer_lock.dart';
-import 'package:transaction_sync/src/write/lease_diagnostics.dart';
+import 'package:transaction_sync/src/data/write/writer_lock.dart';
+import 'package:transaction_sync/src/data/lease_diagnostics.dart';
 
 final _key = WalletKey(id: 'lock-test', network: LiquidNetwork.testnet);
 

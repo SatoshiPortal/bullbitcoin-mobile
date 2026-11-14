@@ -2,7 +2,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
-import '../domain/transaction_sync_failure.dart';
+import '../../domain/transaction_sync_failure.dart';
 
 /// Consumer authorization against the captured wallet network, not URI parsing.
 /// Testnet and regtest Base58 encodings are ambiguous; regtest accepts only its

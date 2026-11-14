@@ -4,8 +4,8 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/src/write/lease_diagnostics.dart';
-import 'package:transaction_sync/src/write/writer_lock.dart';
+import 'package:transaction_sync/src/data/lease_diagnostics.dart';
+import 'package:transaction_sync/src/data/write/writer_lock.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 void main() {
