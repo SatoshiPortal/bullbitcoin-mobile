@@ -29,7 +29,7 @@ Shared code never imports `data/write`, and `data/read` never does. `make native
 
 ## Writer
 
-`WriterSession` (`data/write/writer_session.dart`) holds the one safety sequence: lock, generation and descriptor hash, resume of an interrupted intent, durable intent, native mutation, spend evidence, revision, release. The lock is held through actual native completion, never released by a timer, and no mutation is retried. The app enters through `NativeWalletWriterRepository`, which resolves descriptors from the catalog and checks address reservations; the sync worker enters with the descriptor it received, adopts an existing store in the foreground and resumes interrupted intents there only. The lock is a SQLite `BEGIN IMMEDIATE` with `busy_timeout = 0`; writers retry for up to one second, readers never wait and serve a stale snapshot instead.
+`WriterSession` (`data/write/writer_session.dart`) holds the one safety sequence: lock, generation and descriptor hash, resume of an interrupted intent, durable intent, native mutation, spend evidence, revision, release. The lock is held through actual native completion, never released by a timer, and no mutation is retried. The app enters through `NativeWalletWriterRepository`, which resolves descriptors from the catalog and checks address reservations; the sync worker enters with the descriptor it received, adopts an existing store in the foreground under the same lock acquisition as the sync that follows, and resumes interrupted intents there only. The lock is a SQLite `BEGIN IMMEDIATE` with `busy_timeout = 0`; writers retry for up to one second, readers never wait and serve a stale snapshot instead.
 
 ## Electrum sync
 
