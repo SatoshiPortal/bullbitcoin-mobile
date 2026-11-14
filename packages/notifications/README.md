@@ -11,7 +11,7 @@ Local notifications for the app: a durable store of observed events and of the a
 - `outbox`: pending or claimed aggregates only, deleted once delivered.
 - `platform_ids`: a counter allocated with each aggregate in the same transaction. An ID is never reused, so a notification still on screen is never replaced; exhaustion is refused.
 
-An `Observation` carries one topic and event identities, never text. The two transactions that matter are in `SqliteNotificationStoreRepository`:
+An `Observation` carries one topic and event identities, never text. The package knows nothing of wallets: `lib/features/wallet/data/wallet_payment_observer.dart` maps payments to topics and events. The two transactions that matter are in `SqliteNotificationStoreRepository`:
 
 - `recordForeground` stores what a foreground sync saw and initializes its topic. Those events are never announced.
 - `recordBackground` ignores a topic the foreground never observed. Otherwise the events it stored for the first time become one pending aggregate, built by the caller, in the same transaction.
@@ -29,7 +29,3 @@ A pending aggregate stays until it is delivered, even if the app shows its payme
 - undetermined: keep everything pending (`NotificationsPermissionUndeterminedFailure`).
 
 A tap opens the app: notifications carry no destination. `initialize` never asks for the permission; `notificationPermissions` serves settings and the startup wizard without a store.
-
-## Phase A
-
-The wallet identity and observation files (`wallet_payment_notification_identity`, `wallet_sync_completion`, `wallet_payment_observation_adapter`) still live here, with the dependency on `transaction_sync` they need. The barrel still shows `FlutterLocalNotificationGateway` and `SqliteNotificationOutbox`, which `lib/features/wallet` constructs by name. All of these move to the wallet feature in phase B.

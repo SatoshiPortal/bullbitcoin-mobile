@@ -16,8 +16,8 @@ After the chain, `deliverPending` shows the announcements. A refused permission 
 
 ## Queue
 
-`SqliteWalletSyncJobQueueRepository` keeps scheduling state only: hashed wallet identities, stamps, attempts, backoff and leases. Lease tokens keep a stale run from completing a job another run took over; they never own or release the native writer lock. Every operation returns a `Result` that tells a lost claim from a storage failure. The queue is created by a single `CREATE` with `user_version` 1 through `openForeground`; `openExisting` never creates or migrates it.
+`SqliteWalletSyncJobQueueRepository` keeps scheduling state only: hashed wallet identities, stamps, attempts, backoff and leases. Lease tokens keep a stale run from completing a job another run took over; they never own or release the native writer lock. Every operation returns a `Result` that tells a lost claim from a storage failure. The queue is created by a single `CREATE` with `user_version` 1 through `openForeground`; `openExisting` never creates or migrates it. The barrel exports these two openings as factories, not the SQLite class.
 
-## Phase A
+## Composition
 
-`background_tasks` still depends on `notifications`: `NotificationsPaymentAnnouncement` implements the announcement port here, and `WalletTransactionSyncBackgroundTask`, `SqliteWalletSyncJobQueue` and the `BackgroundWalletSync` alias remain for `lib/features/wallet`. Phase B moves that composition and the announcement to the wallet feature, opens the queue with `openExisting` in the background and creates it in the foreground.
+The package depends on `transaction_sync` for its domain types only, never on `notifications`. The wallet feature implements both ports and builds the use case in `lib/features/wallet/background_setup.dart`. The foreground creates the queue (`openForegroundWalletSyncJobQueue`) behind `backgroundSyncAvailable`; the background opens it with `openExistingWalletSyncJobQueue` and defers the task when it is missing, older or newer.
