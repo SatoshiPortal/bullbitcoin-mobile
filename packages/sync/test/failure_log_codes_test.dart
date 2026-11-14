@@ -12,7 +12,7 @@ void main() {
       await log.flush();
       directory.deleteSync(recursive: true);
     });
-    const failures = <SyncFailure>[
+    final failures = <SyncFailure>[
       SyncBusyFailure(),
       SyncNotFoundFailure(),
       SyncUnsupportedNetworkFailure(),
@@ -31,6 +31,14 @@ void main() {
       SyncAlreadyInChainFailure(),
       SyncOutcomeUnknownFailure(),
       SyncUnrecognizedReplyFailure(),
+      SyncSpendBlockedFailure(BitcoinSpendStatus.pending),
+      SyncProtectedInputsFailure(),
+      SyncInsufficientFundsFailure(),
+      SyncNoSpendableInputsFailure(),
+      SyncFeeRateTooLowFailure(),
+      SyncConsolidationRequiredFailure(),
+      SyncOriginalSignaturesFailure(SignatureCheck.invalid),
+      SyncSpendRefusedFailure(),
     ];
     for (final failure in failures) {
       log.warning('Wallet sync unavailable category=${failure.logCode}');
@@ -59,6 +67,14 @@ void main() {
       'already_in_chain',
       'outcome_unknown',
       'unrecognized_reply',
+      'spend_blocked',
+      'protected_inputs',
+      'insufficient_funds',
+      'no_spendable_inputs',
+      'fee_rate_too_low',
+      'consolidation_required',
+      'original_signatures',
+      'spend_refused',
     });
     expect(lines.join(), isNot(contains('[REDACTED]')));
   });
