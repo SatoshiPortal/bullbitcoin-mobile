@@ -121,10 +121,10 @@ final class _Source implements FrameSource {
   _Source(this._frame, this._native);
 
   @override
-  Future<Result<WalletFrame, SyncFailure>> load(
+  Future<Result<LoadedFrame, SyncFailure>> load(
     WalletKey key,
     WalletFrame? current,
-  ) async => Ok(current ?? await _frame(key));
+  ) async => Ok((frame: current ?? await _frame(key), admitted: true));
 
   @override
   Future<Result<DerivedAddress, SyncFailure>> derive(

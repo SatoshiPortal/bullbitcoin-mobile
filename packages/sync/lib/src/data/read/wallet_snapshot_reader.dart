@@ -23,9 +23,21 @@ import '../../domain/ports/wallet_revision_reader_port.dart';
 final class WalletReadSnapshot<T> {
   final T wallet;
   final WalletRevision revision;
+
+  /// The data may be behind: its sync failed, or the writer held the wallet.
   final bool stale;
 
-  const WalletReadSnapshot(this.wallet, this.revision, {this.stale = false});
+  /// Proven under the read admission to be the committed revision. False for
+  /// a cache served while the writer held the wallet, whatever [stale] says:
+  /// a failed sync is stale but admitted.
+  final bool admitted;
+
+  const WalletReadSnapshot(
+    this.wallet,
+    this.revision, {
+    this.stale = false,
+    this.admitted = false,
+  });
 }
 
 /// Hydrates existing stores only after the writer attests their current schema.
@@ -261,6 +273,7 @@ final class WalletSnapshotReader {
               current.wallet,
               current.revision,
               stale: next.syncFailed,
+              admitted: true,
             ),
           );
         }
@@ -283,6 +296,7 @@ final class WalletSnapshotReader {
           wallet,
           stamp,
           stale: next.syncFailed,
+          admitted: true,
         );
         _cache[key] = (
           snapshot: WalletReadSnapshot<Object>(wallet, stamp),

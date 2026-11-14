@@ -188,8 +188,9 @@ final class Wallet {
       _projections.load(key, generation);
 
   /// The exact ownership index at the latest committed revision: scripts and
-  /// outpoints, spent ones included. Busy when only an older revision is
-  /// available; unsupported for Liquid.
+  /// outpoints, spent ones included. Busy when only an older revision or a
+  /// cache is available, as while a writer holds the wallet; unsupported for
+  /// Liquid.
   @useResult
   Future<Result<OwnershipIndex, SyncFailure>> ownership() async =>
       switch (await _projections.exact(key, generation)) {
@@ -201,7 +202,7 @@ final class Wallet {
       };
 
   /// The unspent coins at the latest committed revision. Busy when only an
-  /// older revision is available.
+  /// older revision or a cache is available.
   @useResult
   Future<Result<CoinList, SyncFailure>> unspent() async =>
       switch (await _projections.exact(key, generation)) {

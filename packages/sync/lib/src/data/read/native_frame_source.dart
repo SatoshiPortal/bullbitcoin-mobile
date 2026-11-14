@@ -19,7 +19,7 @@ final class NativeFrameSource implements FrameSource {
   NativeFrameSource(this._reader, this._catalog);
 
   @override
-  Future<Result<WalletFrame, SyncFailure>> load(
+  Future<Result<LoadedFrame, SyncFailure>> load(
     WalletKey key,
     WalletFrame? current,
   ) async {
@@ -27,23 +27,30 @@ final class NativeFrameSource implements FrameSource {
       case Err(:final failure):
         return Err(failure);
       case Ok(value: final snapshot):
+        final admitted = snapshot.admitted;
         if (current != null &&
             current.revision == snapshot.revision &&
             current.stale == snapshot.stale) {
-          return Ok(current);
+          return Ok((frame: current, admitted: admitted));
         }
         try {
           return switch (snapshot.wallet) {
-            final bdk.Wallet wallet => Ok(
-              bitcoinFrame(wallet, snapshot.revision, stale: snapshot.stale),
-            ),
-            final lwk.Wallet wallet => Ok(
-              await liquidFrame(
+            final bdk.Wallet wallet => Ok((
+              frame: bitcoinFrame(
                 wallet,
                 snapshot.revision,
                 stale: snapshot.stale,
               ),
-            ),
+              admitted: admitted,
+            )),
+            final lwk.Wallet wallet => Ok((
+              frame: await liquidFrame(
+                wallet,
+                snapshot.revision,
+                stale: snapshot.stale,
+              ),
+              admitted: admitted,
+            )),
             _ => const Err(SyncInvalidCatalogFailure()),
           };
         } on Exception {

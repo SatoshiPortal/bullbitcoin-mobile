@@ -281,19 +281,20 @@ final class _Source implements FrameSource {
   WalletFrame? _lagged;
 
   @override
-  Future<Result<WalletFrame, SyncFailure>> load(
+  Future<Result<LoadedFrame, SyncFailure>> load(
     WalletKey key,
     WalletFrame? current,
   ) async {
     final failure = this.failure;
     if (failure != null) return Err(failure);
     final lagged = _lagged;
-    if (lagging && lagged != null) return Ok(lagged);
+    // A lagging reader serves its cache, which is never admitted.
+    if (lagging && lagged != null) return Ok((frame: lagged, admitted: false));
     final state = _states.state;
     if (current != null &&
         current.revision == state.stamp &&
         current.stale == state.syncFailed) {
-      return Ok(current);
+      return Ok((frame: current, admitted: true));
     }
     maps++;
     final frame = WalletFrame(
@@ -334,7 +335,7 @@ final class _Source implements FrameSource {
       ),
     );
     _lagged = frame;
-    return Ok(frame);
+    return Ok((frame: frame, admitted: true));
   }
 
   @override

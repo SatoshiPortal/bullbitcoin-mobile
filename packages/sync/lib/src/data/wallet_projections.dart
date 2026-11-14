@@ -34,11 +34,15 @@ final class WalletFrame {
   });
 }
 
+/// A loaded frame and whether the reader admitted it as the committed
+/// revision. A cache served while the writer held the wallet is not admitted.
+typedef LoadedFrame = ({WalletFrame frame, bool admitted});
+
 /// Hydrates and maps a wallet without network access. Implementations return
 /// [current] itself when its revision and staleness are unchanged, so a
 /// revision is mapped at most once.
 abstract interface class FrameSource {
-  Future<Result<WalletFrame, SyncFailure>> load(
+  Future<Result<LoadedFrame, SyncFailure>> load(
     WalletKey key,
     WalletFrame? current,
   );
@@ -95,6 +99,14 @@ final class WalletProjections {
   Future<Result<WalletRevision, SyncFailure>> load(
     WalletKey key,
     int generation,
+  ) async => switch (await _enqueue(key, generation)) {
+    Ok(:final value) => Ok(value.frame.revision),
+    Err(:final failure) => Err(failure),
+  };
+
+  Future<Result<({WalletFrame frame, bool exact}), SyncFailure>> _enqueue(
+    WalletKey key,
+    int generation,
   ) {
     if (_closed) return Future.value(const Err(SyncClosedFailure()));
     final slot = _slot(key);
@@ -103,7 +115,7 @@ final class WalletProjections {
     return run;
   }
 
-  Future<Result<WalletRevision, SyncFailure>> _load(
+  Future<Result<({WalletFrame frame, bool exact}), SyncFailure>> _load(
     WalletKey key,
     _Slot slot,
     int generation,
@@ -111,7 +123,6 @@ final class WalletProjections {
     if (_closed) return const Err(SyncClosedFailure());
     final state = await _revisions.read(key);
     if (_closed) return const Err(SyncClosedFailure());
-    final WalletRevisionState committed;
     switch (state) {
       case Err(:final failure):
         if (failure is SyncNotFoundFailure) _fail(slot, failure);
@@ -124,7 +135,6 @@ final class WalletProjections {
         if (value.stamp.generation != generation) {
           return const Err(SyncNotFoundFailure());
         }
-        committed = value;
     }
     final current = slot.frame;
     final result = await _source.load(
@@ -136,33 +146,37 @@ final class WalletProjections {
       case Err(:final failure):
         _fail(slot, failure);
         return Err(failure);
-      case Ok(value: final frame):
+      case Ok(value: (:final frame, :final admitted)):
+        // Exact only when the reader admitted this revision and it is still
+        // the committed one once the load is over: a witness read before the
+        // load would accept a cache the writer has since moved past.
+        final settled = await _revisions.read(key);
+        if (_closed) return const Err(SyncClosedFailure());
+        final exact =
+            admitted &&
+            settled is Ok<WalletRevisionState, SyncFailure> &&
+            settled.value.lifecycle == WalletLifecycle.active &&
+            settled.value.stamp == frame.revision;
         if (!identical(frame, slot.frame)) _publish(slot, frame);
-        slot.exact = frame.revision == committed.stamp;
         if (frame.revision.generation != generation) {
           return const Err(SyncNotFoundFailure());
         }
-        return Ok(frame.revision);
+        return Ok((frame: frame, exact: exact));
     }
   }
 
-  /// Loads, then returns the frame only if it is exactly the committed one.
+  /// Loads, then returns the frame only if the reader admitted it and it was
+  /// still the committed revision at the end of the load.
   Future<Result<WalletFrame, SyncFailure>> exact(
     WalletKey key,
     int generation,
-  ) async {
-    final loaded = await load(key, generation);
-    if (loaded case Err(:final failure)) return Err(failure);
-    final slot = _slot(key);
-    final frame = slot.frame;
-    if (frame == null || frame.revision.generation != generation) {
-      return const Err(SyncNotFoundFailure());
-    }
-    // A busy writer can make the reader serve an older revision: protocol
-    // decisions must not rely on it.
-    if (!slot.exact) return const Err(SyncBusyFailure());
-    return Ok(frame);
-  }
+  ) async => switch (await _enqueue(key, generation)) {
+    // A busy writer can make the reader serve an older revision, or only its
+    // cache: protocol decisions must not rely on either.
+    Ok(value: (:final frame, exact: true)) => Ok(frame),
+    Ok() => const Err(SyncBusyFailure()),
+    Err(:final failure) => Err(failure),
+  };
 
   void _publish(_Slot slot, WalletFrame frame) {
     if (slot.frame?.revision.generation != frame.revision.generation) {
@@ -176,7 +190,6 @@ final class WalletProjections {
 
   void _fail(_Slot slot, SyncFailure failure) {
     slot.frame = null;
-    slot.exact = false;
     slot.failure = failure;
     slot.derived.clear();
     slot.deriveFailures.clear();
@@ -291,7 +304,6 @@ final class WalletProjections {
 
 final class _Slot {
   WalletFrame? frame;
-  bool exact = false;
   SyncFailure? failure;
   Future<void> tail = Future.value();
   final derived = <(Keychain, int), DerivedAddress>{};
