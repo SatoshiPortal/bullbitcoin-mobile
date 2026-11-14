@@ -178,7 +178,7 @@ void _performDryScan(bdk.Wallet wallet, bdk.Persister disk) {
   wallet.persist(persister: disk);
   decoy.dispose();
 }
-""", path: 'lib/features/wallet/data/bdk_wallet_datasource.dart');
+""", path: 'packages/sync/lib/src/data/chain/bitcoin_prescan.dart');
       expect(violations, contains(contains('Wallet.persist')));
     },
   );
@@ -197,7 +197,7 @@ void _performDryScan(bdk.Descriptor descriptor, bdk.Persister diskStore) {
   decoy.dispose();
 }
 """,
-        path: 'lib/features/wallet/data/bdk_wallet_datasource.dart',
+        path: 'packages/sync/lib/src/data/chain/bitcoin_prescan.dart',
       );
       expect(violations, contains(contains('Wallet.load')));
     },
@@ -216,7 +216,7 @@ void update(Document doc) { doc.persist(); doc.applyUpdate(); }
   test(
     'dry scan allows final in-memory persister only in its exact function',
     () async {
-      const path = 'lib/features/wallet/data/bdk_wallet_datasource.dart';
+      const path = 'packages/sync/lib/src/data/chain/bitcoin_prescan.dart';
       const memory = '''
 import 'package:bull_sdk/bdk.dart' as bdk;
 void _performDryScan(bdk.Descriptor descriptor) {

@@ -88,4 +88,24 @@ void main() {
       isFalse,
     );
   });
+
+  test('an unreachable server fails the prescan as a connection', () async {
+    final result = await prescanBitcoinWallet(
+      externalDescriptor: "wpkh([73c5da0a/84'/0'/0']$_xpub/0/*)",
+      internalDescriptor: "wpkh([73c5da0a/84'/0'/0']$_xpub/1/*)",
+      network: BitcoinNetwork.mainnet,
+      connection: const WalletConnection(
+        url: 'tcp://127.0.0.1:1',
+        timeout: Duration(seconds: 1),
+        retry: 0,
+        stopGap: 20,
+        validateDomain: false,
+      ),
+    );
+    expect(
+      (result as Err<({BigInt confirmedSat, int transactions}), SyncFailure>)
+          .failure,
+      isA<SyncConnectionFailure>(),
+    );
+  });
 }
