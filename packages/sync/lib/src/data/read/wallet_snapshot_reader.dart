@@ -14,6 +14,7 @@ import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/wallet_key.dart';
 import '../native_store_paths.dart';
+import '../write/datasources/native_store_errors.dart';
 import '../../domain/wallet_revision.dart';
 import '../../domain/ports/read_admission_port.dart';
 import '../../domain/ports/wallet_revision_reader_port.dart';
@@ -90,16 +91,6 @@ final class WalletSnapshotReader {
         };
     }
   }
-
-  /// Bridge for legacy throwing datasource APIs; new consumers use [read].
-  Future<T> borrowedHandle<T extends Object>(
-    WalletKey key,
-    WalletCatalogPort catalog,
-  ) async => switch (await read(key, catalog)) {
-    Ok(:final value) when value.wallet is T => value.wallet as T,
-    Ok() => throw const WalletSnapshotException(SyncInvalidCatalogFailure()),
-    Err(:final failure) => throw WalletSnapshotException(failure),
-  };
 
   Future<Result<WalletReadSnapshot<bdk.Wallet>, SyncFailure>> bitcoin(
     BitcoinWalletDescriptor descriptor,
@@ -317,7 +308,13 @@ final class WalletSnapshotReader {
       if (e is Error) {
         rethrow;
       }
-      return const Err(SyncNeedsRepairFailure());
+      // Only LWK's status conflict calls for a repair; any other native
+      // failure is a storage one, which repair would not fix.
+      return Err(
+        isLiquidStatusConflict(e)
+            ? const SyncNeedsRepairFailure()
+            : const SyncStorageFailure(),
+      );
     } finally {
       try {
         final rejected = unpublished;
@@ -437,8 +434,8 @@ final class _ReadFailure implements Exception {
   const _ReadFailure(this.failure);
 }
 
-/// Transitional exception for legacy datasources whose APIs still throw.
-/// Result-based consumers should propagate the reader's failure directly.
+/// A [SyncFailure] thrown by the app's throwing datasource APIs. Result-based
+/// consumers propagate the failure directly.
 final class WalletSnapshotException implements Exception {
   final SyncFailure failure;
 

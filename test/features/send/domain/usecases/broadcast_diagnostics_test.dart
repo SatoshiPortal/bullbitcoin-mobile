@@ -11,6 +11,7 @@ import 'package:sync/sync.dart'
         SyncConnectionFailure,
         SyncFailure,
         SyncOutcomeUnknownFailure,
+        SyncSpendBlockedFailure,
         WalletConnection,
         WalletConnectionPort;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -67,8 +68,8 @@ void main() {
         settingsRepository: settings,
         wallet: WalletFacade(
           const Stream.empty(),
-          broadcastBitcoin: (_, _, _) async =>
-              const Err(WalletSpendBlockedFailure(BitcoinSpendStatus.pending)),
+          broadcastSpend: (_, _, {built, owner, replacing}) async =>
+              const Err(SyncSpendBlockedFailure(BitcoinSpendStatus.pending)),
         ),
       );
       await expectLater(
@@ -92,8 +93,9 @@ void main() {
       settingsRepository: _Settings(),
       wallet: WalletFacade(
         const Stream.empty(),
-        broadcastBitcoin: (_, _, _) async =>
-            const Ok(BitcoinBroadcastReceipt('accepted-txid', durable: false)),
+        broadcastSpend: (_, _, {built, owner, replacing}) async => const Ok(
+          SpendReceipt('accepted-txid', durable: false, guarded: true),
+        ),
       ),
     );
     expect(
@@ -133,11 +135,12 @@ void main() {
             );
             // What sync reports once every server failed; the native causes and
             // their text never leave sync.
-            final connections = _Failing(switch (category) {
+            final SyncFailure failure = switch (category) {
               'rejected' => const SyncBroadcastRejectedFailure(),
               'connection' => const SyncConnectionFailure(),
               _ => const SyncOutcomeUnknownFailure(),
-            });
+            };
+            final connections = _Failing(failure);
             final bitcoin = BitcoinBlockchainRepository(
               connections: connections,
             );
@@ -147,9 +150,10 @@ void main() {
             final btc = BroadcastBitcoinTransactionUsecase(
               wallet: WalletFacade(
                 const Stream.empty(),
-                broadcastBitcoin: (_, _, broadcast) async => Ok(
-                  BitcoinBroadcastReceipt(await broadcast(), durable: true),
-                ),
+                // Sync broadcasts a wallet's spend and reports the same
+                // failure the servers gave.
+                broadcastSpend: (_, _, {built, owner, replacing}) async =>
+                    Err(failure),
               ),
               bitcoinBlockchainRepository: bitcoin,
               walletUtxoRepository: EmptyFrozenOutpoints(),
@@ -211,7 +215,9 @@ void main() {
                 '\tWARNING\t${feature}_payin_broadcast_failed chain=$chain category=$category\t',
               ),
             );
-            expect(connections.runs, 1);
+            // A wallet's Bitcoin spend is broadcast by sync, behind the
+            // facade; Liquid here goes through the app's servers.
+            expect(connections.runs, chain == 'liquid' ? 1 : 0);
             verifyZeroInteractions(reporter);
           },
         );

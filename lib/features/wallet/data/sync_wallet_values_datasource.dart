@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, Ok, Outpoint, Result;
-import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
 /// Loads a wallet's values at its latest committed revision, or throws

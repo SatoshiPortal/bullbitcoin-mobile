@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart';
 import 'package:sync/sync.dart';
 
 void main() {

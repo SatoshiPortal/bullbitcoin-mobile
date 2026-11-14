@@ -182,7 +182,7 @@ class _NativeSymbolVisitor extends RecursiveAstVisitor<void> {
 /// Reader modules may hydrate existing stores, never mutate them.
 const readerModules = 'packages/sync/lib/src/data/read/';
 const snapshotModule = '${readerModules}wallet_snapshot_reader.dart';
-const _dryScanFile = 'lib/features/wallet/data/bdk_wallet_datasource.dart';
+const _dryScanFile = 'packages/sync/lib/src/data/chain/bitcoin_prescan.dart';
 
 class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
   final String path;

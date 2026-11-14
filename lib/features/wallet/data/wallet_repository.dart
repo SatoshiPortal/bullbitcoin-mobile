@@ -5,9 +5,13 @@ import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
-import 'package:sync/read.dart';
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'
-    show SyncReason, SyncStorageFailure, SyncInvalidCatalogFailure;
+    show
+        SyncReason,
+        SyncStorageFailure,
+        SyncInvalidCatalogFailure,
+        isLiquidStatusConflict;
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
@@ -24,7 +28,6 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
@@ -455,7 +458,7 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
         _ => WalletSyncFailure('$operation: ${e.failure.logCode}'),
       };
     }
-    if ((e is lwk.LwkError && e.msg.contains('UpdateOnDifferentStatus')) ||
+    if (isLiquidStatusConflict(e) ||
         e.toString().contains('UpdateOnDifferentStatus')) {
       return WalletLwkStatusConflictFailure('$operation: lwk status conflict');
     }

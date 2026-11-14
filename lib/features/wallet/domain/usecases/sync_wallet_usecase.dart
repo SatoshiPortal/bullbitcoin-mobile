@@ -1,4 +1,4 @@
-import 'package:sync/read.dart';
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncReason;
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';

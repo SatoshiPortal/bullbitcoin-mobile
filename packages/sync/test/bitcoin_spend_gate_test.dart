@@ -6,6 +6,8 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sync/write.dart';
+
+import 'support/connections.dart';
 import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
@@ -60,6 +62,7 @@ void main() {
       reservedAddresses: _Reserved(),
       freezes: MemoryFreezeStore(),
       inputReservations: _NoInputReservations(),
+      connections: FixtureConnections(const []),
     );
     revisions = RevisionStoreDatasource.openExisting(
       revisionStorePath(dir.path),
@@ -293,6 +296,7 @@ void main() {
       reservedAddresses: _Reserved(),
       freezes: MemoryFreezeStore(),
       inputReservations: _NoInputReservations(),
+      connections: FixtureConnections(const []),
     );
     try {
       expect(

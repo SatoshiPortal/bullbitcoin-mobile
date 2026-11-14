@@ -773,6 +773,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           sender.id,
           () => _blockchain.broadcastPsbt(
             walletId: sender.walletId,
+            sessionId: sender.id,
             network: network,
             psbt: sender.originalPsbt,
           ),
@@ -2339,6 +2340,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       payjoinModel.id,
       () => _blockchain.broadcastPsbt(
         walletId: payjoinModel.walletId,
+        sessionId: payjoinModel.id,
         network: network,
         psbt: finalizedPsbt,
       ),

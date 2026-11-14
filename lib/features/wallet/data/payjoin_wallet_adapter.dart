@@ -1,7 +1,6 @@
-import '../public/wallet_facade.dart';
-
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
+    show SpendWallet;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -10,27 +9,29 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart' show BitcoinSpendStatus;
 
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final Secrets _secrets;
-  final BdkWalletDatasource _wallet;
+  final SpendWallet _wallet;
+  final Future<BitcoinSpendStatus> Function(String walletId) _spendStatus;
   final SyncWalletValuesDatasource _values;
   final WalletMetadataDatasource _metadata;
-  final WalletFacade _gate;
 
+  /// [_spendStatus] asks the guard through `wallet.spend.check`.
   const PayjoinWalletAdapter(
     this._secrets,
     this._wallet,
+    this._spendStatus,
     this._values,
     this._metadata,
-    this._gate,
   );
 
   /// Contention is transient and each check already waits for the wallet:
   /// a few attempts outlast a routine sync instead of pausing the proposal.
   Future<void> _requireSpend(String walletId) async {
     for (var attempt = 1; ; attempt++) {
-      final status = await _gate.spendStatus(walletId);
+      final status = await _spendStatus(walletId);
       if (status == BitcoinSpendStatus.ready) return;
       if (status != BitcoinSpendStatus.busy || attempt == 5) {
         throw PayjoinSpendBlockedException(
@@ -49,12 +50,14 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     await _requireSpend(walletId);
     final (secret, metadata) = await _loadSecret(walletId, network);
     // The receiver's own input in a payjoin proposal carries no derivation
-    // path, and the package signs only what it can derive: the watch-only
-    // view adds the paths first.
-    final annotated = await _wallet.addOwnDerivations(
-      psbt: psbt,
-      wallet: WalletModel.fromMetadata(metadata),
-    );
+    // path, and the package signs only what it can derive: sync adds the
+    // paths first, from the public descriptors.
+    final annotated = switch (await (await _wallet(
+      walletId,
+    )).spend.annotate(psbt)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw StateError('sync: ${failure.logCode}'),
+    };
     return _unwrap(
       await secret.sign.psbt(
         annotated,

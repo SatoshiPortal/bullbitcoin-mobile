@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'dart:math';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:sync/read.dart';
 import 'package:sync/sync.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 

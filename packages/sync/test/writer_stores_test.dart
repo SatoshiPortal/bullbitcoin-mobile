@@ -10,6 +10,8 @@ import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sync/write.dart';
 
+import 'support/connections.dart';
+
 final class _Catalog implements WalletCatalogPort {
   final List<PublicWalletDescriptor> wallets;
 
@@ -51,6 +53,7 @@ void main() {
     reservedAddresses: _Reserved(),
     freezes: MemoryFreezeStore(),
     inputReservations: _NoInputReservations(),
+    connections: FixtureConnections(const []),
   );
 
   int userVersion(String path) {

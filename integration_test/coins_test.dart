@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, Err, Ok, Result;
+import 'package:primitives/primitives.dart' as primitives show Network;
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -84,6 +85,7 @@ Future<void> main({bool isInitialized = false}) async {
         reservedAddresses: const _NoReserved(),
         freezes: FrozenUtxosFreezeStore(sqlite: db),
         inputReservations: _NoInputReservations(),
+        connections: const _NoConnections(),
       );
 
       final beforeDb = SqliteDatabase(NativeDatabase(dbFile));
@@ -359,6 +361,19 @@ final class _NoReserved implements sync.ReservedAddressPort {
     sync.WalletKey key,
     String address,
   ) async => const Ok(false);
+}
+
+/// The test broadcasts nothing.
+final class _NoConnections implements sync.WalletConnectionPort {
+  const _NoConnections();
+
+  @override
+  Future<Result<T, sync.SyncFailure>> run<T>({
+    required primitives.Network network,
+    required Future<Result<T, sync.SyncFailure>> Function(sync.WalletConnection)
+    operation,
+    required bool Function(sync.SyncFailure) mayRetry,
+  }) async => const Err(sync.SyncConnectionFailure());
 }
 
 final class _NoInputReservations implements sync.InputReservationPort {

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
 import 'dart:async';
-import 'package:sync/read.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';

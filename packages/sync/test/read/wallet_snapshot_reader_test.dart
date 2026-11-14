@@ -15,7 +15,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart';
+import 'package:sync/src/data/read/wallet_snapshot_reader.dart';
 import 'package:sync/sync.dart';
 
 void main() {
@@ -335,15 +335,19 @@ void main() {
     expect(await documents.list().toList(), isEmpty);
   });
 
-  test('corrupt store is neither repaired nor deleted', () async {
-    await File(
-      nativeWalletStoragePath(documents.path, descriptor.key),
-    ).writeAsString('not a wallet');
-    final before = await fingerprint(documents);
-    final result = await reader.bitcoin(descriptor);
-    expect((result as Err).failure, isA<SyncNeedsRepairFailure>());
-    expect(await fingerprint(documents), before);
-  });
+  test(
+    'corrupt store is a storage failure, neither repaired nor deleted',
+    () async {
+      await File(
+        nativeWalletStoragePath(documents.path, descriptor.key),
+      ).writeAsString('not a wallet');
+      final before = await fingerprint(documents);
+      final result = await reader.bitcoin(descriptor);
+      // Repair only answers LWK's status conflict: it cannot fix this store.
+      expect((result as Err).failure, isA<SyncStorageFailure>());
+      expect(await fingerprint(documents), before);
+    },
+  );
 
   test('uninitialized and old-schema stores are never opened', () async {
     create();

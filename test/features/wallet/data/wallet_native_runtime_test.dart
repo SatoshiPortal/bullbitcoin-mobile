@@ -4,16 +4,15 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart';
 import 'package:sync/write.dart';
 import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' as sync show Wallet;
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
@@ -58,6 +57,7 @@ void main() {
         ),
         documentsDirectory: () async => directory.path,
         freezes: MemoryFreezeStore(),
+        connections: _Offline(),
         onStoresOpened: (stores) {
           if (++attempts == 1) {
             abandoned = stores;
@@ -107,6 +107,7 @@ void main() {
           return directory.path;
         },
         freezes: MemoryFreezeStore(),
+        connections: _Offline(),
       );
       try {
         await runtime.initialize();
@@ -180,8 +181,18 @@ void main() {
         ),
         documentsDirectory: () async => directory.path,
         freezes: MemoryFreezeStore(),
+        connections: _Offline(),
       );
       var runtime = open();
+      // A loaded handle proves the wallet available, as builders used to
+      // prove it by borrowing the native one.
+      Future<sync.Wallet> loaded(WalletMetadataModel model) =>
+          runtime.loadWallet(
+            (WalletCatalogPortImpl.descriptorFromMetadata(model)
+                    as Ok<PublicWalletDescriptor, SyncFailure>)
+                .value
+                .key,
+          );
       try {
         final unfinished = row.copyWith(
           externalPublicDescriptor: 'wpkh(invalid)',
@@ -196,8 +207,8 @@ void main() {
         await runtime.create(row);
         await runtime.initialize();
         var address = await runtime.receive(row);
-        final wallet = await runtime.bitcoin(WalletModel.fromMetadata(row));
-        expect(wallet.balance().total.toSat(), 0);
+        final wallet = await loaded(row);
+        expect(wallet.balances.now.data?.totalSat, BigInt.zero);
         final revisions = <WalletRevisionState>[];
         final observation = runtime.changes.listen(revisions.add);
         final other = open();
@@ -260,9 +271,9 @@ void main() {
         final beforeReads = await runtime.readRevision(healthyKey) as Ok;
         clearInteractions(metadata);
         for (var i = 0; i < 5; i++) {
-          await runtime.bitcoin(WalletModel.fromMetadata(row));
+          await loaded(row);
           await expectLater(
-            runtime.bitcoin(WalletModel.fromMetadata(missing)),
+            loaded(missing),
             throwsA(isA<WalletSnapshotException>()),
           );
         }
@@ -282,13 +293,10 @@ void main() {
         await runtime.close();
         runtime = open();
         await runtime.initialize();
-        expect(
-          await runtime.bitcoin(WalletModel.fromMetadata(missing)),
-          isA<bdk.Wallet>(),
-        );
+        expect(await loaded(missing), isA<sync.Wallet>());
         rows.remove(missing.id);
-        final adopted = await runtime.bitcoin(WalletModel.fromMetadata(row));
-        expect(adopted.balance().total.toSat(), 0);
+        final adopted = await loaded(row);
+        expect(adopted.balances.now.data?.totalSat, BigInt.zero);
         expect(
           metadataFile.parent.listSync().where(
             (file) => file.path.contains('.corrupt-'),
@@ -296,10 +304,7 @@ void main() {
           isNotEmpty,
         );
         await runtime.delete(row);
-        await expectLater(
-          runtime.bitcoin(WalletModel.fromMetadata(row)),
-          throwsA(isA<WalletSnapshotException>()),
-        );
+        await expectLater(loaded(row), throwsA(isA<WalletSnapshotException>()));
         // Simulate crash after writer.delete and before catalog deletion.
         expect(rows, isNotEmpty);
         await runtime.close();
@@ -314,10 +319,7 @@ void main() {
         runtime = open();
         await runtime.initialize();
         expect(rows[row.id], row);
-        expect(
-          await runtime.bitcoin(WalletModel.fromMetadata(row)),
-          isA<bdk.Wallet>(),
-        );
+        expect(await loaded(row), isA<sync.Wallet>());
         // If corruption destroys a deletion tombstone before catalog removal,
         // the surviving row is indistinguishable from an interrupted import.
         await runtime.delete(row);
@@ -325,15 +327,12 @@ void main() {
         metadataFile.writeAsStringSync('corrupt deletion metadata');
         runtime = open();
         await runtime.initialize();
-        await expectLater(
-          runtime.bitcoin(WalletModel.fromMetadata(row)),
-          throwsA(isA<WalletSnapshotException>()),
-        );
+        await expectLater(loaded(row), throwsA(isA<WalletSnapshotException>()));
         expect(recoveryMarker.existsSync(), isFalse);
         await runtime.resumeProvisioning();
         expect(
-          await runtime.bitcoin(WalletModel.fromMetadata(row)),
-          isA<bdk.Wallet>(),
+          await loaded(row),
+          isA<sync.Wallet>(),
           reason:
               'documented residual: lost deletion metadata permits reappearance',
         );

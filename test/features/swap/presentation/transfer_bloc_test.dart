@@ -64,7 +64,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart'
     show MaterialApp, Builder, SizedBox, Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' as primitives;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
@@ -286,11 +285,10 @@ void main() {
         var broadcasts = 0;
         final wallet = WalletFacade(
           const Stream.empty(),
-          broadcastBitcoin: (id, network, broadcast) async {
+          broadcastSpend: (id, transaction, {built, owner, replacing}) async {
             expect(id, 'wallet-1');
-            expect(network, primitives.BitcoinNetwork.testnet);
             broadcasts++;
-            return Ok(BitcoinBroadcastReceipt('a' * 64, durable: true));
+            return Ok(SpendReceipt('a' * 64, durable: true, guarded: true));
           },
         );
         await bloc.close();

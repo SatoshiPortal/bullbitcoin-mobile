@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
 /// User freezes, read and changed through sync. Every call throws

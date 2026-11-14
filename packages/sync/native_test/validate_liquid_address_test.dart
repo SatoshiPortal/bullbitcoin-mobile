@@ -2,7 +2,6 @@ import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sync/read.dart';
 import 'package:sync/sync.dart';
 
 // Liquid address validation through the real LWK binding. Run with the pinned

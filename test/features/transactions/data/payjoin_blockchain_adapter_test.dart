@@ -7,6 +7,14 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network;
+import 'package:sync/sync.dart'
+    show
+        SyncBusyFailure,
+        SyncConnectionFailure,
+        SyncInvalidTransactionFailure,
+        SyncOutcomeUnknownFailure,
+        SyncProtectedInputsFailure,
+        SyncSpendBlockedFailure;
 
 final class _Servers implements ElectrumServersPort {
   int calls = 0;
@@ -27,61 +35,58 @@ void main() {
 
   setUp(() => servers = _Servers());
 
-  Future<void> broadcast({
-    required Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>>
-    Function(String, BitcoinNetwork, Future<String> Function())
-    gate,
-    String Function(String psbt)? transactionId,
-  }) =>
+  Future<void> broadcast(Result<SpendReceipt, SyncFailure> outcome) =>
       AppPayjoinBlockchainAdapter(
         const BdkBitcoinBlockchainDatasource(),
         servers,
-        WalletFacade(const Stream.empty(), broadcastBitcoin: gate),
-        transactionId: transactionId ?? (_) => 'txid',
+        WalletFacade(
+          const Stream.empty(),
+          broadcastSpend:
+              (walletId, transaction, {built, owner, replacing}) async {
+                expect(walletId, 'wallet-1');
+                expect((transaction as SignedPsbt).psbt, 'psbt');
+                // The session alone may spend the inputs it reserved.
+                expect(
+                  owner,
+                  SpendOwner(protocol: 'payjoin', session: 'session-1'),
+                );
+                return outcome;
+              },
+        ),
       ).broadcastPsbt(
         walletId: 'wallet-1',
+        sessionId: 'session-1',
         network: BitcoinNetwork.testnet,
         psbt: 'psbt',
       );
 
-  test('an unreadable payload is reported as never attempted', () async {
-    var gated = false;
-    await expectLater(
-      broadcast(
-        gate: (_, _, _) async {
-          gated = true;
-          throw StateError('unreachable');
-        },
-        transactionId: (_) => throw const FormatException('bad psbt'),
-      ),
-      throwsA(isA<PayjoinBroadcastNotAttemptedException>()),
-    );
-    expect(gated, isFalse);
-    expect(servers.calls, 0);
-  });
-
-  test('a wallet failure before the network callback is reported as never '
-      'attempted', () async {
-    await expectLater(
-      broadcast(
-        gate: (_, _, _) async => throw const WalletSpendBlockedException(
-          BitcoinSpendStatus.unavailable,
-        ),
-      ),
-      throwsA(isA<PayjoinBroadcastNotAttemptedException>()),
+  test('an accepted spend completes, durable or not', () async {
+    await broadcast(
+      const Ok(SpendReceipt('txid', durable: false, guarded: true)),
     );
     expect(servers.calls, 0);
   });
 
-  for (final (status, busy) in [
-    (BitcoinSpendStatus.unavailable, false),
-    (BitcoinSpendStatus.busy, true),
+  for (final failure in <SyncFailure>[
+    const SyncInvalidTransactionFailure(),
+    SyncProtectedInputsFailure(),
+    const SyncConnectionFailure(),
   ]) {
-    test('a ${status.name} spend refusal stays a spend refusal', () async {
+    test('${failure.logCode} is reported as never attempted', () async {
       await expectLater(
-        broadcast(
-          gate: (_, _, _) async => Err(WalletSpendBlockedFailure(status)),
-        ),
+        broadcast(Err(failure)),
+        throwsA(isA<PayjoinBroadcastNotAttemptedException>()),
+      );
+    });
+  }
+
+  for (final (failure, busy) in <(SyncFailure, bool)>[
+    (const SyncSpendBlockedFailure(BitcoinSpendStatus.pending), false),
+    (const SyncBusyFailure(), true),
+  ]) {
+    test('a ${failure.logCode} refusal stays a spend refusal', () async {
+      await expectLater(
+        broadcast(Err(failure)),
         throwsA(
           isA<PayjoinSpendBlockedException>().having(
             (refusal) => refusal.busy,
@@ -90,21 +95,13 @@ void main() {
           ),
         ),
       );
-      expect(servers.calls, 0);
     });
   }
 
-  test('a failure inside the network callback keeps its unknown '
-      'outcome', () async {
+  test('an unknown outcome is never reported as not attempted', () async {
     await expectLater(
-      broadcast(
-        gate: (_, _, send) async {
-          await send();
-          throw StateError('unreachable');
-        },
-      ),
+      broadcast(const Err(SyncOutcomeUnknownFailure())),
       throwsStateError,
     );
-    expect(servers.calls, 1);
   });
 }

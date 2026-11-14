@@ -63,27 +63,78 @@ final class BitcoinSpendGate {
       );
     }
     final lock = (acquired as Ok<WriterLock, SyncFailure>).value;
-    SpendGateStoreDatasource? store;
     try {
-      // Quarantined metadata: no spend until every wallet has been adopted.
-      if (File(recoveryMarkerPath(documentsDirectory)).existsSync()) {
-        throw const BitcoinSpendGateUnavailable();
+      final evaluated = await _evaluate(key, replacing: replacing);
+      final status = evaluated.status;
+      if (!handoff && status != null) {
+        evaluated.store.close();
+        lock.release();
+        return BitcoinSpendRefused(status);
       }
-      final record = revisions.record(key);
-      if (record == null ||
-          record.intent != null ||
-          record.needsSync ||
-          record.state.syncFailed ||
-          record.state.lifecycle != WalletLifecycle.active ||
-          record.state.initializedSchema != writerSchemaVersion) {
-        throw const BitcoinSpendGateUnavailable();
-      }
-      final found = await catalog.find(key);
-      if (found case Err()) throw const BitcoinSpendGateUnavailable();
-      final descriptor =
-          (found as Ok<PublicWalletDescriptor, SyncFailure>).value;
-      final path = spendGateStorePath(documentsDirectory);
-      store = SpendGateStoreDatasource.openExisting(path);
+      return BitcoinSpendAdmission._(
+        lock,
+        evaluated.store,
+        evaluated.descriptor,
+        evaluated.revision,
+        evaluated.pendingKey,
+      );
+    } on Exception {
+      lock.release();
+      return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
+    } catch (_) {
+      lock.release();
+      rethrow;
+    }
+  }
+
+  /// The guard's verdict for a caller that already holds [key]'s writer
+  /// lock, such as a spend build. Records nothing.
+  Future<BitcoinSpendStatus> statusUnderLock(
+    WalletKey key, {
+    String? replacing,
+  }) async {
+    if (key.network is! BitcoinNetwork) return BitcoinSpendStatus.unavailable;
+    try {
+      final evaluated = await _evaluate(key, replacing: replacing);
+      evaluated.store.close();
+      return evaluated.status ?? BitcoinSpendStatus.ready;
+    } on Exception {
+      return BitcoinSpendStatus.unavailable;
+    }
+  }
+
+  /// Under the writer lock: throws [BitcoinSpendGateUnavailable] when no spend
+  /// may be admitted; otherwise the open store and the refusal, if any. The
+  /// caller closes the store.
+  Future<
+    ({
+      SpendGateStoreDatasource store,
+      PublicWalletDescriptor descriptor,
+      WalletRevision revision,
+      (String, WalletKey) pendingKey,
+      BitcoinSpendStatus? status,
+    })
+  >
+  _evaluate(WalletKey key, {String? replacing}) async {
+    // Quarantined metadata: no spend until every wallet has been adopted.
+    if (File(recoveryMarkerPath(documentsDirectory)).existsSync()) {
+      throw const BitcoinSpendGateUnavailable();
+    }
+    final record = revisions.record(key);
+    if (record == null ||
+        record.intent != null ||
+        record.needsSync ||
+        record.state.syncFailed ||
+        record.state.lifecycle != WalletLifecycle.active ||
+        record.state.initializedSchema != writerSchemaVersion) {
+      throw const BitcoinSpendGateUnavailable();
+    }
+    final found = await catalog.find(key);
+    if (found case Err()) throw const BitcoinSpendGateUnavailable();
+    final descriptor = (found as Ok<PublicWalletDescriptor, SyncFailure>).value;
+    final path = spendGateStorePath(documentsDirectory);
+    final store = SpendGateStoreDatasource.openExisting(path);
+    try {
       final pendingKey = (path, key);
       final pending = _pending[pendingKey];
       if (pending != null) {
@@ -105,25 +156,15 @@ final class BitcoinSpendGate {
           : store.blocked(descriptor)
           ? BitcoinSpendStatus.pending
           : null;
-      if (!handoff && status != null) {
-        store.close();
-        lock.release();
-        return BitcoinSpendRefused(status);
-      }
-      return BitcoinSpendAdmission._(
-        lock,
-        store,
-        descriptor,
-        record.state.stamp,
-        pendingKey,
+      return (
+        store: store,
+        descriptor: descriptor,
+        revision: record.state.stamp,
+        pendingKey: pendingKey,
+        status: status,
       );
-    } on Exception {
-      store?.close();
-      lock.release();
-      return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
     } catch (_) {
-      store?.close();
-      lock.release();
+      store.close();
       rethrow;
     }
   }

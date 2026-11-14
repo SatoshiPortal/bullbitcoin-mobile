@@ -238,6 +238,7 @@ void main() {
       ),
       documentsDirectory: () async => directory.path,
       freezes: MemoryFreezeStore(),
+      connections: _Connections(),
     );
     when(() => native.create(any())).thenAnswer(
       (call) => runtime.create(

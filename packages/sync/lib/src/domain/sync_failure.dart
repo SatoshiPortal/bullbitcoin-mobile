@@ -1,4 +1,6 @@
 import 'package:primitives/primitives.dart';
+import 'bitcoin_spend.dart';
+import 'spend.dart';
 import 'wallet_revision.dart';
 
 /// Recoverable outcomes. No foreign exception, descriptor or endpoint is kept.
@@ -25,6 +27,14 @@ sealed class SyncFailure extends Failure {
     SyncAlreadyInChainFailure() => 'already_in_chain',
     SyncOutcomeUnknownFailure() => 'outcome_unknown',
     SyncUnrecognizedReplyFailure() => 'unrecognized_reply',
+    SyncSpendBlockedFailure() => 'spend_blocked',
+    SyncProtectedInputsFailure() => 'protected_inputs',
+    SyncInsufficientFundsFailure() => 'insufficient_funds',
+    SyncNoSpendableInputsFailure() => 'no_spendable_inputs',
+    SyncFeeRateTooLowFailure() => 'fee_rate_too_low',
+    SyncConsolidationRequiredFailure() => 'consolidation_required',
+    SyncOriginalSignaturesFailure() => 'original_signatures',
+    SyncSpendRefusedFailure() => 'spend_refused',
   };
 }
 
@@ -118,4 +128,65 @@ final class SyncOutcomeUnknownFailure extends SyncChainFailure {
 /// such as bitcoind without a transaction index.
 final class SyncUnrecognizedReplyFailure extends SyncChainFailure {
   const SyncUnrecognizedReplyFailure();
+}
+
+/// A failure of `wallet.spend`: the request was understood, and no
+/// transaction was handed out.
+sealed class SyncSpendFailure extends SyncFailure {
+  const SyncSpendFailure();
+}
+
+/// The Bitcoin guard refuses spends for now: an earlier broadcast awaits a
+/// sync ([BitcoinSpendStatus.pending]), the transaction to replace has not
+/// been observed ([BitcoinSpendStatus.replacementPending]), or the guard is
+/// unavailable. Contention is [SyncBusyFailure] instead.
+final class SyncSpendBlockedFailure extends SyncSpendFailure {
+  final BitcoinSpendStatus status;
+  const SyncSpendBlockedFailure(this.status);
+}
+
+/// The spend uses inputs the user froze, or that another session reserved.
+/// Nothing exempts a freeze.
+final class SyncProtectedInputsFailure extends SyncSpendFailure {
+  final Set<Outpoint> frozen;
+  final Set<Outpoint> reserved;
+
+  SyncProtectedInputsFailure({
+    Set<Outpoint> frozen = const {},
+    Set<Outpoint> reserved = const {},
+  }) : frozen = Set.unmodifiable(frozen),
+       reserved = Set.unmodifiable(reserved);
+}
+
+final class SyncInsufficientFundsFailure extends SyncSpendFailure {
+  const SyncInsufficientFundsFailure();
+}
+
+/// Every coin is excluded: frozen, reserved or excluded by the request.
+final class SyncNoSpendableInputsFailure extends SyncSpendFailure {
+  const SyncNoSpendableInputsFailure();
+}
+
+/// A replacement must pay a higher rate than the original.
+final class SyncFeeRateTooLowFailure extends SyncSpendFailure {
+  const SyncFeeRateTooLowFailure();
+}
+
+/// Liquid: more coins than one transaction may spend; consolidate first.
+final class SyncConsolidationRequiredFailure extends SyncSpendFailure {
+  const SyncConsolidationRequiredFailure();
+}
+
+/// The transaction to replace does not prove its own inputs' signatures:
+/// no replacement is built on it.
+final class SyncOriginalSignaturesFailure extends SyncSpendFailure {
+  final SignatureCheck check;
+  const SyncOriginalSignaturesFailure(this.check);
+}
+
+/// The builder refused the request, or the transaction it produced does not
+/// pay what was asked: an unknown or unreplaceable transaction, an output
+/// that is neither a recipient nor this wallet's.
+final class SyncSpendRefusedFailure extends SyncSpendFailure {
+  const SyncSpendRefusedFailure();
 }

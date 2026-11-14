@@ -10,7 +10,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
-import 'package:sync/read.dart';
+import 'package:sync/src/data/read/wallet_snapshot_reader.dart';
 
 import 'support/regtest_wallet.dart';
 import 'package:sync/src/domain/native_network_policy.dart';

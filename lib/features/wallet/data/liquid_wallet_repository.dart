@@ -1,6 +1,14 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:sync/read.dart' as sync_read show validateAddress;
-import 'package:sync/sync.dart' show SyncFailure;
+import 'package:sync/sync.dart' as sync_read show validateAddress;
+import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart'
+    show
+        SyncConsolidationRequiredFailure,
+        SyncFailure,
+        SyncInsufficientFundsFailure,
+        SyncInvalidAddressFailure,
+        SyncNoSpendableInputsFailure,
+        SyncProtectedInputsFailure;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -14,8 +22,6 @@ import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:bb_mobile/core/wallet/domain/liquid_send_port.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 
 class LiquidWalletRepository implements LiquidSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -43,6 +49,8 @@ class LiquidWalletRepository implements LiquidSendPort {
        _freezes = freezesDatasource,
        _validateAddress = validateAddress ?? sync_read.validateAddress;
 
+  /// Sync's writer builds once, excluding the freezes it reads itself and
+  /// refusing a selected frozen coin.
   @override
   @useResult
   Future<Result<String, WalletFailure>> buildPset({
@@ -65,43 +73,33 @@ class LiquidWalletRepository implements LiquidSendPort {
       if (await _validateAddress(address, metadata.network.shared) case Err()) {
         return const Err(WalletAddressNetworkMismatchFailure());
       }
-      final wallet = WalletModel.publicLwk(
-        combinedCtDescriptor: metadata.externalPublicDescriptor,
-        network: metadata.network,
-        id: metadata.id,
-      );
-      final frozen = await _frozenOutpoints();
-      Set<Outpoint>? inputs = selectedInputs;
-      if (selectedInputs != null || frozen.isNotEmpty) {
-        final available = {
-          for (final utxo in await _values.getExactUtxos(wallet: wallet))
-            if (!frozen.contains((txId: utxo.txId, vout: utxo.vout)))
-              (txId: utxo.txId, vout: utxo.vout),
-        };
-        if (selectedInputs != null &&
-            (selectedInputs.isEmpty ||
-                !available.containsAll(selectedInputs))) {
-          return const Err(WalletSelectedInputsUnavailableFailure());
-        }
-        inputs ??= available;
-        if (inputs.isEmpty) return const Err(WalletNoSpendableInputsFailure());
+      if (selectedInputs != null && selectedInputs.isEmpty) {
+        return const Err(WalletSelectedInputsUnavailableFailure());
       }
-      return Ok(
-        await _lwkWallet.buildPset(
-          wallet: wallet,
-          address: address,
-          amountSat: amountSat,
-          feeRate: feeRate,
-          drain: drain ?? false,
-          selectedInputs: inputs,
-        ),
+      final built = await _lwkWallet.buildPset(
+        wallet: WalletModel.fromMetadata(metadata),
+        address: address,
+        amountSat: amountSat,
+        feeRate: feeRate,
+        drain: drain ?? false,
+        selectedInputs: selectedInputs,
       );
-    } on InsufficientFundsException {
-      return const Err(WalletInsufficientFundsFailure());
-    } on ConsolidationRequiredException {
-      return const Err(WalletConsolidationRequiredFailure());
-    } on NoSpendableUtxoException {
-      return const Err(WalletNoSpendableInputsFailure());
+      return switch (built) {
+        Ok(:final value) => Ok(value.encoded),
+        Err(:final failure) => Err(switch (failure) {
+          SyncInsufficientFundsFailure() =>
+            const WalletInsufficientFundsFailure(),
+          SyncConsolidationRequiredFailure() =>
+            const WalletConsolidationRequiredFailure(),
+          SyncNoSpendableInputsFailure() || SyncProtectedInputsFailure() =>
+            selectedInputs != null
+                ? const WalletSelectedInputsUnavailableFailure()
+                : const WalletNoSpendableInputsFailure(),
+          SyncInvalidAddressFailure() =>
+            const WalletAddressNetworkMismatchFailure(),
+          _ => WalletTransactionBuildFailure(failure.logCode),
+        }),
+      };
     } on Exception {
       return const Err(WalletTransactionBuildFailure());
     }
@@ -128,6 +126,8 @@ class LiquidWalletRepository implements LiquidSendPort {
     return _values.getLbtcUtxoCount(wallet: wallet);
   }
 
+  /// The unsigned consolidation PSETs, built and checked by sync's writer.
+  /// Throws when it refuses them.
   Future<List<String>> consolidate({
     required String walletId,
     required RelativeFee feeRate,
@@ -141,18 +141,15 @@ class LiquidWalletRepository implements LiquidSendPort {
     if (!metadata.isLiquid) {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
-    final wallet = WalletModel.publicLwk(
-      combinedCtDescriptor: metadata.externalPublicDescriptor,
-      network: metadata.network,
-      id: metadata.id,
-    );
-    return _lwkWallet.consolidate(
-      wallet: wallet,
+    return switch (await _lwkWallet.consolidate(
+      wallet: WalletModel.fromMetadata(metadata),
       feeRate: feeRate,
       highUtxoThreshold: highUtxoThreshold,
       maximumInputs: maximumInputs,
-      unspendable: await _frozenOutpoints(),
-    );
+    )) {
+      Ok(:final value) => [for (final spend in value) spend.encoded],
+      Err(:final failure) => throw WalletSnapshotException(failure),
+    };
   }
 
   Future<String> signPset({
