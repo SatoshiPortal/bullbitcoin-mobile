@@ -67,5 +67,6 @@ export 'src/data/chain/electrum_chain.dart'
         broadcastLiquidTransaction,
         estimateBitcoinFees,
         probeBitcoinServer;
+export 'src/data/chain/bitcoin_prescan.dart' show prescanBitcoinWallet;
 export 'src/data/write/datasources/native_store_errors.dart'
     show isLiquidStatusConflict;

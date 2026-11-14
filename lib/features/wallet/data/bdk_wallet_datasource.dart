@@ -14,7 +14,9 @@ import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:sync/sync.dart' as sync;
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -422,32 +424,44 @@ class BdkWalletDatasource {
     };
   }
 
+  /// A full scan of a wallet not yet imported, in memory, through sync.
+  /// Throws [PrescanFailedException] for the server fallback to try the next.
   Future<({BigInt satoshis, int transactions})> dryScan({
     required String externalDescriptor,
     required String internalDescriptor,
     required Network network,
     required ElectrumConnection electrumServer,
-  }) {
-    final rootIsolateToken = ServicesBinding.rootIsolateToken;
-    if (rootIsolateToken == null) {
-      throw StateError('A dry scan must start from the root isolate');
-    }
-    return compute(
-      _performDryScan,
-      _DryScanParams(
-        externalDescriptor: externalDescriptor,
-        internalDescriptor: internalDescriptor,
-        network: network,
-        electrumUrl: electrumServer.url,
-        electrumSocks5: electrumServer.socks5,
-        electrumStopGap: electrumServer.stopGap,
-        electrumTimeout: electrumServer.effectiveTimeout,
-        electrumRetry: electrumServer.retry,
-        electrumValidateDomain: electrumServer.validateDomain,
-        rootIsolateToken: rootIsolateToken,
+  }) async {
+    final scanned = await sync.prescanBitcoinWallet(
+      externalDescriptor: externalDescriptor,
+      internalDescriptor: internalDescriptor,
+      network: network.bitcoin,
+      connection: sync.WalletConnection(
+        url: electrumServer.url,
+        socks5: electrumServer.socks5,
+        timeout: Duration(seconds: electrumServer.effectiveTimeout),
+        retry: electrumServer.retry,
+        stopGap: electrumServer.stopGap,
+        validateDomain: electrumServer.validateDomain,
       ),
     );
+    return switch (scanned) {
+      Ok(:final value) => (
+        satoshis: value.confirmedSat,
+        transactions: value.transactions,
+      ),
+      Err(:final failure) => throw PrescanFailedException(failure),
+    };
   }
+}
+
+/// The prescan failed on this server; the fallback may try the next.
+class PrescanFailedException implements Exception {
+  final sync.SyncFailure failure;
+  const PrescanFailedException(this.failure);
+
+  @override
+  String toString() => 'PrescanFailedException(${failure.logCode})';
 }
 
 class FailedToSignPsbtException extends BullException {
@@ -456,141 +470,4 @@ class FailedToSignPsbtException extends BullException {
 
 class UnsupportedBdkNetworkException extends BullException {
   UnsupportedBdkNetworkException(super.message);
-}
-
-class _DryScanParams {
-  final String externalDescriptor;
-  final String internalDescriptor;
-  final Network network;
-  final String electrumUrl;
-  final String? electrumSocks5;
-  final int electrumStopGap;
-  final int electrumTimeout;
-  final int electrumRetry;
-  final bool electrumValidateDomain;
-  final RootIsolateToken rootIsolateToken;
-
-  _DryScanParams({
-    required this.externalDescriptor,
-    required this.internalDescriptor,
-    required this.network,
-    required this.electrumUrl,
-    required this.electrumSocks5,
-    required this.electrumStopGap,
-    required this.electrumTimeout,
-    required this.electrumRetry,
-    required this.electrumValidateDomain,
-    required this.rootIsolateToken,
-  });
-}
-
-Future<({BigInt satoshis, int transactions})> _performDryScan(
-  _DryScanParams params,
-) async {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
-
-  final bdkNetwork = params.network.bdkNetwork;
-  final bdkNetworkKind = params.network.isMainnet
-      ? bdk.NetworkKind.main
-      : bdk.NetworkKind.test;
-
-  bdk.Descriptor? external;
-  bdk.Descriptor? internal;
-  try {
-    external = bdk.Descriptor(
-      descriptor: params.externalDescriptor,
-      networkKind: bdkNetworkKind,
-    );
-    internal = bdk.Descriptor(
-      descriptor: params.internalDescriptor,
-      networkKind: bdkNetworkKind,
-    );
-    final persister = bdk.Persister.newInMemory();
-    try {
-      final wallet = bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: bdkNetwork,
-        persister: persister,
-        lookahead: 0,
-      );
-      try {
-        final blockchain = _createElectrumClient(
-          url: params.electrumUrl,
-          socks5: params.electrumSocks5,
-          timeout: params.electrumTimeout,
-          retry: params.electrumRetry,
-          validateDomain: params.electrumValidateDomain,
-        );
-        try {
-          final requestBuilder = wallet.startFullScan();
-          try {
-            final request = requestBuilder.build();
-            try {
-              final update = blockchain.fullScan(
-                request: request,
-                stopGap: params.electrumStopGap,
-                batchSize: _batchSizeFor(params.electrumStopGap),
-                fetchPrevTxouts: false,
-              );
-              try {
-                wallet.applyUpdate(update: update);
-                final balance = wallet.balance();
-                return (
-                  satoshis: BigInt.from(balance.confirmed.toSat()),
-                  transactions: wallet.transactions().length,
-                );
-              } finally {
-                update.dispose();
-              }
-            } finally {
-              request.dispose();
-            }
-          } finally {
-            requestBuilder.dispose();
-          }
-        } finally {
-          blockchain.dispose();
-        }
-      } finally {
-        wallet.dispose();
-      }
-    } finally {
-      persister.dispose();
-    }
-  } finally {
-    internal?.dispose();
-    external?.dispose();
-  }
-}
-
-int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);
-
-/// Creates a [bdk.ElectrumClient], retrying once on the rustls CryptoProvider
-/// install race across concurrent isolates (full scan, dry scan, sync).
-/// electrum-client's install_default check+install is not atomic, so two
-/// isolates can both see "not installed" and the loser fails. On retry the
-/// provider is already installed and the check short-circuits.
-bdk.ElectrumClient _createElectrumClient({
-  required String url,
-  required String? socks5,
-  required int timeout,
-  required int retry,
-  required bool validateDomain,
-}) {
-  bdk.ElectrumClient build() => bdk.ElectrumClient(
-    url: url,
-    socks5: socks5?.isNotEmpty == true ? socks5 : null,
-    timeout: timeout.clamp(0, 255),
-    retry: retry.clamp(0, 255),
-    validateDomain: validateDomain,
-  );
-  try {
-    return build();
-  } on bdk.CouldNotCreateConnectionElectrumException catch (e) {
-    if (e.errorMessage.contains('Failed to install CryptoProvider')) {
-      return build();
-    }
-    rethrow;
-  }
 }
