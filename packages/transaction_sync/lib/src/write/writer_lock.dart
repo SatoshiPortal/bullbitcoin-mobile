@@ -1,16 +1,21 @@
 import 'lease_diagnostics.dart';
+
+import 'dart:ffi' show Pointer;
 import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
+
 import '../../transaction_sync.dart';
 
 /// Only package:sqlite3 may open these files. Never unlink them, including on
 /// wallet deletion. Acquire in the isolate awaiting the actual native work.
-/// sqlite3 2.9.4 uses a Dart Finalizer: killing the holder leaks the connection
-/// until process exit. Upgrading sqlite3 requires repeating the teardown tests.
+/// A Dart finalizer owns the connection: killing the holder keeps it open until
+/// process exit, so a native operation outliving its isolate keeps its lease.
 final class WriterLock {
+  static final _databaseFinalizer = Finalizer<Pointer<void>>(_closeHandle);
+
   // Measured holds: cache 10 ms, hydrate 131 ms, sync 266 ms; allow 1 s without blocking the UI isolate.
   static const writerWaitLimit = Duration(milliseconds: 1000);
   static const _retryStepsMs = [10, 20, 50, 100];
@@ -53,7 +58,7 @@ final class WriterLock {
       trace.acquire();
       return Ok(lock);
     } on SqliteException catch (error) {
-      db?.dispose();
+      if (db != null) _close(db);
       if (error.resultCode == 5) trace.busy(busySource);
       return Err(
         error.resultCode == 5
@@ -61,7 +66,7 @@ final class WriterLock {
             : const TransactionSyncStorageFailure(),
       );
     } on FileSystemException {
-      db?.dispose();
+      if (db != null) _close(db);
       return const Err(TransactionSyncStorageFailure());
     }
   }
@@ -114,7 +119,7 @@ final class WriterLock {
     } on FileSystemException {
       return const Err(TransactionSyncStorageFailure());
     } finally {
-      db?.dispose();
+      if (db != null) _close(db);
     }
   }
 
@@ -125,14 +130,30 @@ final class WriterLock {
       db.execute('PRAGMA busy_timeout = 0');
       // Refuse an unexpected journal configuration; no WAL lock semantics.
       if (db.select('PRAGMA journal_mode').single.values.single == 'delete') {
+        // These lease-only connections never install Dart hooks or functions.
+        // Detach native finalization before BEGIN can acquire the lease.
+        _databaseFinalizer.attach(db, db.leak(), detach: db);
         return db;
       }
     } on Object {
-      db.dispose();
+      db.close();
       rethrow;
     }
-    db.dispose();
+    db.close();
     return null;
+  }
+
+  static void _closeHandle(Pointer<void> handle) =>
+      sqlite3.fromPointer(handle).close();
+
+  static void _close(Database db) {
+    final handle = db.handle;
+    _databaseFinalizer.detach(db);
+    try {
+      db.close();
+    } finally {
+      _closeHandle(handle);
+    }
   }
 
   /// Call only after all native futures have settled. No timeout or cancellation
@@ -144,7 +165,7 @@ final class WriterLock {
     } finally {
       _released = true;
       try {
-        _db.dispose();
+        _close(_db);
       } finally {
         _diagnostics.release(_held.elapsedMilliseconds);
       }
