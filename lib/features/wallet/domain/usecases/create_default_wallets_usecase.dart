@@ -108,7 +108,7 @@ class CreateDefaultWalletsUsecase {
             ),
           );
         }
-      } on Exception catch (e) {
+      } on Object catch (e) {
         log.warning('Default wallet creation failed: ${e.runtimeType}');
         for (final wallet in created) {
           try {
@@ -137,7 +137,7 @@ class CreateDefaultWalletsUsecase {
       }
 
       return Ok([...existing, ...created]);
-    } on Exception catch (e) {
+    } on Object catch (e) {
       log.warning('Default wallet setup failed: ${e.runtimeType}');
       return const Err(DefaultWalletUnexpectedFailure());
     }
