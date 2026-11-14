@@ -3209,12 +3209,14 @@ class SendCubit extends Cubit<SendState>
               // disjoint inputs (the persisted session's inputs are reserved
               // out of coin selection, so the two transactions cannot
               // conflict). When the row exists, adopt the session and proceed
-              // exactly as a successful start; only a start that left nothing
-              // behind may fall through to the error path.
+              // exactly as a successful start. A start that left nothing
+              // behind, or found only a terminal row (settled, aborted or
+              // expired, which the session stream never replays), falls
+              // through to the error path.
               final persisted = await _getPayjoinUsecase.execute(
                 paymentRequest.uri,
               );
-              if (persisted is! PayjoinSenderSession) {
+              if (persisted is! PayjoinSenderSession || !persisted.isOngoing) {
                 emit(
                   state.copyWith(failure: failure, signingTransaction: false),
                 );

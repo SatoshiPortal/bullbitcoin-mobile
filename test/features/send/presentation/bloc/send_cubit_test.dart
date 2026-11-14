@@ -4764,7 +4764,7 @@ void main() {
       when(
         () => sendWithPayjoinUsecase.execute(
           walletId: any(named: 'walletId'),
-          isTestnet: any(named: 'isTestnet'),
+          network: any(named: 'network'),
           bip21: any(named: 'bip21'),
           unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
           amountSat: any(named: 'amountSat'),
@@ -4794,9 +4794,63 @@ void main() {
         () => broadcastBitcoinTxUsecase.execute(
           any(),
           isPsbt: any(named: 'isPsbt'),
+          network: any(named: 'network'),
         ),
       );
     });
+
+    // The session stream never replays a terminal row, so adopting one would
+    // leave the flow on `sending` forever. Those rows surface the start
+    // failure and re-arm Confirm, as before the adoption existed.
+    for (final status in [
+      PayjoinStatus.expired,
+      PayjoinStatus.completed,
+      PayjoinStatus.aborted,
+    ]) {
+      test('a failed payjoin start that only finds a ${status.name} session '
+          're-arms Confirm instead of adopting it', () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: any(named: 'walletId'),
+            network: any(named: 'network'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err<PayjoinSenderSession, SendFailure>(
+            SendTransactionConfirmationFailure(
+              logMessage: 'A Payjoin session already exists for this payment',
+            ),
+          ),
+        );
+        when(
+          () => getPayjoinUsecase.execute(_payjoinBip21().uri),
+        ).thenAnswer((_) async => _sender(status: status, txId: 'settled'));
+        cubit.setStateForTest(
+          payjoinReadyState().copyWith(
+            signedBitcoinPsbt: 'signed-regular-psbt',
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.step, SendStep.confirm);
+        expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+        expect(cubit.state.payjoinSender, isNull);
+        expect(cubit.state.txId, isNull);
+        verifyNever(
+          () => broadcastBitcoinTxUsecase.execute(
+            any(),
+            isPsbt: any(named: 'isPsbt'),
+            network: any(named: 'network'),
+          ),
+        );
+      });
+    }
 
     test('a completed PayjoinSender (real payjoin, txId set) resolves the flow '
         'to success with the payjoin txid, syncs the wallet and stores the '
