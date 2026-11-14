@@ -1,10 +1,16 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/view_models/electrum_server_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 ElectrumServerViewModel _server(String url, ElectrumServerStatus status) =>
-    ElectrumServerViewModel(url: url, status: status, priority: 0);
+    ElectrumServerViewModel(
+      network: ElectrumServerNetwork.bitcoinMainnet,
+      url: url,
+      status: status,
+      priority: 0,
+    );
 
 void main() {
   test('clearnet failures do not report an onion route failure', () {

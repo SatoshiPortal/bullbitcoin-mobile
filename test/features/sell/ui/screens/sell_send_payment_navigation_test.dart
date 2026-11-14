@@ -1,4 +1,6 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bull_payjoin/bull_payjoin.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Sats;
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -34,6 +36,7 @@ void main() {
     WidgetTester tester, {
     required bool broadcast,
     required bool late,
+    bool paused = false,
   }) async {
     final bloc = _MockSellBloc();
     final order = SellOrder(
@@ -63,7 +66,21 @@ void main() {
       sellOrder: order,
       payinBroadcastTxid: broadcast ? 'paid-transaction' : null,
       isPayinPastDeadline: late,
-      isConfirmingPayment: broadcast && !late,
+      isConfirmingPayment: paused || (broadcast && !late),
+      pausedPayjoinSession: paused
+          ? PayjoinSenderSession(
+              status: PayjoinStatus.proposed,
+              uri: 'bitcoin:fixture?pj=https://example.com',
+              network: BitcoinNetwork.testnet,
+              walletId: 'wallet',
+              createdAt: DateTime.now(),
+              expiresAt: DateTime.now().add(const Duration(minutes: 5)),
+              amount: Sats.fromInt(1000),
+              originalTransactionId: 'original',
+              hasProposal: true,
+              spendFailure: const PayjoinSpendBlockedFailure(),
+            )
+          : null,
     );
     when(() => bloc.state).thenReturn(state);
     when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
@@ -103,6 +120,34 @@ void main() {
     await tester.pump(const Duration(milliseconds: 350));
     return (router: router, bloc: bloc);
   }
+
+  testWidgets(
+    'paused proposal shows guidance and same-session retry without progress',
+    (tester) async {
+      final screen = await pump(
+        tester,
+        broadcast: false,
+        late: false,
+        paused: true,
+      );
+      expect(
+        find.textContaining('Its inputs remain reserved.'),
+        findsOneWidget,
+      );
+      expect(find.text('Sending payment…'), findsNothing);
+      await tester.tap(find.text('Retry'));
+      verify(
+        () => screen.bloc.add(const SellEvent.payjoinProposalRetryRequested()),
+      ).called(1);
+      await tester.binding.handlePopRoute();
+      await tester.pump();
+      expect(
+        screen.router.routerDelegate.currentConfiguration.uri.path,
+        '/flow/payment',
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   for (final systemBack in [false, true]) {
     testWidgets(

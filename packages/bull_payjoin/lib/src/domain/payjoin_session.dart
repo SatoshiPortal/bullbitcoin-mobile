@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 
+import 'payjoin_failure.dart';
+
 enum PayjoinStatus { started, requested, proposed, completed, aborted, expired }
 
 enum PayjoinParty { sender, recipient }
@@ -126,7 +128,11 @@ final class PayjoinReceiverSession extends PayjoinSession {
 }
 
 final class PayjoinSenderSession extends PayjoinSession {
+  /// Local admission refused; the same persisted proposal remains reserved.
+  final PayjoinSpendBlockedFailure? spendFailure;
+
   PayjoinSenderSession({
+    this.spendFailure,
     required super.status,
     required String uri,
     required super.network,
@@ -139,6 +145,9 @@ final class PayjoinSenderSession extends PayjoinSession {
     super.hasProposal,
     super.ownership,
   }) : super(id: uri);
+
+  bool get canRetryProposal =>
+      spendFailure != null && isOngoing && DateTime.now().isBefore(expiresAt);
 
   String get uri => id;
 

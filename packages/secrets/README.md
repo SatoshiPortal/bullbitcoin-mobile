@@ -2,6 +2,8 @@
 
 User secret material — BIP39 mnemonics and raw seeds — behind a custody boundary. `Secrets` manages creation, storage and recovery. A `Secret` is a handle for operations on one stored secret; neither object holds mnemonic words or a seed.
 
+Custody owners implement the public `SeedReferencePort`; the application registers every owner before exposing deletion and refuses deletion if any inventory fails or is incomplete.
+
 ## Public API
 
 <!-- secrets-api:start -->
@@ -19,6 +21,7 @@ Secrets
 |-- trash(id) -> void
 |-- exists(id) -> bool
 |-- contains(words:, [language: Language.english], [passphrase:]) -> bool
+|-- find(words:, [language: Language.english], [passphrase:]) -> Secret?
 |-- preview
 |   `-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |-- recoverbull

@@ -4,7 +4,7 @@ import 'package:bb_mobile/app.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/init.dart';
-import 'package:bb_mobile/startup_wizard.dart';
+import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
 import 'package:flutter/material.dart';

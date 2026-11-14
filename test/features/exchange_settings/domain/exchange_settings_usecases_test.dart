@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_stats_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/document_picker_port.dart';
 import 'package:bb_mobile/features/exchange_settings/domain/entities/account_info.dart';

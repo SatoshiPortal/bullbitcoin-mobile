@@ -108,3 +108,7 @@ final class AutoswapTargetBalanceFailure extends AutoswapFailure {
 final class AutoswapAmountOutOfBoundsFailure extends AutoswapFailure {
   const AutoswapAmountOutOfBoundsFailure();
 }
+
+final class AutoswapUnsupportedNetworkFailure extends AutoswapFailure {
+  const AutoswapUnsupportedNetworkFailure();
+}

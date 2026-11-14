@@ -45,6 +45,7 @@ export 'package:flutter/widgets.dart'
         FontWeight,
         FractionallySizedBox,
         GestureDetector,
+        GlobalKey,
         HitTestBehavior,
         IconData,
         IntrinsicHeight,
@@ -93,7 +94,12 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:flutter/material.dart'
-    show DropdownMenuItem, FormFieldValidator, RefreshCallback, TextTheme;
+    show
+        DropdownMenuItem,
+        FormFieldValidator,
+        RefreshCallback,
+        RefreshIndicatorState,
+        TextTheme;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 

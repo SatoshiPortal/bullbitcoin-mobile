@@ -53,7 +53,7 @@ void main() {
   setUpAll(() async {
     registerFallbackValue(await spSecret());
     TestWidgetsFlutterBinding.ensureInitialized();
-    registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(spBackendConfig());
   });
 
@@ -149,7 +149,7 @@ void main() {
     when(
       () => repository.coins(),
     ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
-    when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.regtest));
+    when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.testnet));
     when(() => repository.chainTip()).thenReturn(0);
     when(() => repository.minBirthdayHeight()).thenReturn(const Ok(0));
 
@@ -164,6 +164,7 @@ void main() {
     ).thenAnswer((_) async => const Ok(null));
 
     ensureSpSessionUsecase = EnsureSpSessionUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -174,6 +175,7 @@ void main() {
       ensureSpSessionUsecase: ensureSpSessionUsecase,
     );
     recreateSpWalletUsecase = RecreateSpWalletUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
@@ -233,7 +235,7 @@ void main() {
     // self-heal) then creates the new session. The self-heal must not slip a
     // second createFromSecret through while teardown is in progress.
     final result = await recreateSpWalletUsecase.execute(
-      network: BitcoinNetwork.regtest,
+      network: BitcoinNetwork.testnet,
       blindbitUrl: 'http://blindbit.new',
       electrumUrl: 'tcp://electrum.new:50001',
     );
@@ -257,7 +259,7 @@ void main() {
     });
 
     final recreate = recreateSpWalletUsecase.execute(
-      network: BitcoinNetwork.regtest,
+      network: BitcoinNetwork.testnet,
       blindbitUrl: 'http://blindbit.new',
       electrumUrl: 'tcp://electrum.new:50001',
     );

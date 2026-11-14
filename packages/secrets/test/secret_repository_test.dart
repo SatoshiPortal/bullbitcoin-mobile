@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:bull_logger/bull_logger.dart';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -123,6 +125,12 @@ void main() {
         // passphrase field was null and vanished when it was set, because only
         // the passphrase branch derived anything. Now the checksum is checked
         // for every entry — cheaply, no seed — and both are skipped alike.
+        final directory = await Directory.systemTemp.createTemp('seed-log-');
+        log = Logger.replace(directory: directory);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
         final storage = FakeSecureStoragePlatform(
           entries: {
             'seed_deadbeef': entry(underivable),
@@ -134,6 +142,10 @@ void main() {
         final all = ok(await repoWith(storage).describeAll()).secrets;
 
         expect(all.map((i) => i.id.hex), [plainFingerprint]);
+        expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+          'Stored mnemonic invalid reason=validation',
+          'Stored mnemonic invalid reason=validation',
+        ]);
       },
     );
 

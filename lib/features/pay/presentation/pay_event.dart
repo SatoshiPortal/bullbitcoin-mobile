@@ -27,6 +27,8 @@ sealed class PayEvent with _$PayEvent {
   // back, so a second copy on the event could only ever disagree (#2521).
   const factory PayEvent.sendPaymentConfirmed() = PaySendPaymentConfirmed;
   const factory PayEvent.pollOrderStatus() = PayPollOrderStatus;
+  const factory PayEvent.payjoinProposalRetryRequested() =
+      PayPayjoinProposalRetryRequested;
   const factory PayEvent.payjoinToggled(bool enabled) = PayPayjoinToggled;
   const factory PayEvent.payjoinSessionUpdated(PayjoinSession session) =
       PayPayjoinSessionUpdated;

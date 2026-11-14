@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 
 class ValidateCoinControlPaymentRequestUsecase {
@@ -9,14 +9,19 @@ class ValidateCoinControlPaymentRequestUsecase {
     required PaymentRequest paymentRequest,
     bool isSweep = true,
   }) {
-    final isMatchingDestination =
-        (wallet.isBitcoin && paymentRequest is BitcoinPaymentRequest) ||
-        (wallet.isLiquid && paymentRequest is LiquidPaymentRequest) ||
-        (paymentRequest is Bip21PaymentRequest &&
-            paymentRequest.network == wallet.network &&
-            (!isSweep || paymentRequest.amountSat == null));
-    if (!isMatchingDestination ||
-        wallet.isTestnet != paymentRequest.isTestnet) {
+    final isMatchingDestination = switch (paymentRequest) {
+      // A BIP21 request carries its concrete network: compare it directly.
+      // Its isTestnet getter refuses regtest, which detection produces.
+      Bip21PaymentRequest(:final network, :final amountSat) =>
+        network == wallet.network && (!isSweep || amountSat == null),
+      // Legacy address requests only know testnet or not.
+      BitcoinPaymentRequest(:final isTestnet) =>
+        wallet.isBitcoin && !wallet.network.isMainnet == isTestnet,
+      LiquidPaymentRequest(:final isTestnet) =>
+        wallet.isLiquid && !wallet.network.isMainnet == isTestnet,
+      _ => false,
+    };
+    if (!isMatchingDestination) {
       return const Err(SendInvalidPaymentRequestFailure());
     }
     return const Ok(null);

@@ -31,6 +31,7 @@ void main() {
     configRepository = _MockSpBackendConfigRepository();
     getSpSecretUsecase = MockGetSpSecretUsecase();
     usecase = EnsureSpSessionUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       repository: repository,
       files: repository,
       configRepository: configRepository,

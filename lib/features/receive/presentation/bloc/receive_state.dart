@@ -7,6 +7,9 @@ abstract class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
     ReceiveType? type,
     Wallet? wallet,
+    // Admission belongs to the current route, independently of form errors.
+    @Default(false) bool walletAdmitted,
+    ReceiveFailure? admissionFailure,
     @Default([]) List<Wallet> wallets,
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
@@ -15,6 +18,8 @@ abstract class ReceiveState with _$ReceiveState {
     @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
     int? confirmedAmountSat,
+    // Set only after address preparation has durably revealed the address.
+    int? revealedAddressGeneration,
     WalletAddress? bitcoinAddress,
     LnReceiveSwap? lightningSwap,
     OrderSwapRecord? orderSwap,
@@ -51,6 +56,9 @@ abstract class ReceiveState with _$ReceiveState {
     @Default(false) bool creatingSwap,
   }) = _ReceiveState;
   const ReceiveState._();
+
+  bool get canConfirmAmount =>
+      walletAdmitted && wallet != null && admissionFailure == null;
 
   /// True while the entered amount itself is invalid, so continuing cannot
   /// possibly succeed. Distinct from any other [failure] — a failed swap
@@ -345,8 +353,13 @@ abstract class ReceiveState with _$ReceiveState {
   /// turned on, instead of silently doing nothing.
   bool get isPayjoinAwaitingFunds {
     if (type != ReceiveType.bitcoin) return false;
-    return wallet != null &&
-        wallet!.signsLocally &&
+    final selectedWallet = wallet;
+    return selectedWallet != null &&
+        NetworkCapabilities.supports(
+          selectedWallet.network.shared,
+          NetworkCapability.payjoin,
+        ) &&
+        selectedWallet.signsLocally &&
         payjoinGloballyEnabled == true &&
         !hasUtxos &&
         payjoin == null;
@@ -370,11 +383,17 @@ abstract class ReceiveState with _$ReceiveState {
   /// funded wallet (the only case where flipping the setting actually changes
   /// anything — a watch-only or empty wallet can never payjoin regardless).
   /// The toggle reflects/controls the GLOBAL [payjoinGloballyEnabled] setting.
-  bool get isPayjoinToggleable =>
-      type == ReceiveType.bitcoin &&
-      wallet != null &&
-      wallet!.signsLocally &&
-      hasUtxos;
+  bool get isPayjoinToggleable {
+    final currentWallet = wallet;
+    return type == ReceiveType.bitcoin &&
+        currentWallet != null &&
+        NetworkCapabilities.supports(
+          currentWallet.network.shared,
+          NetworkCapability.payjoin,
+        ) &&
+        currentWallet.signsLocally &&
+        hasUtxos;
+  }
 
   /// True when the user has entered a requested amount that is below the
   /// configured anti-probing minimum. The receiver would decline a payjoin

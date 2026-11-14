@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
-    show ScriptType;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show ScriptType;
 
 class _MockImportMnemonicCubit extends MockCubit<ImportMnemonicState>
     implements ImportMnemonicCubit {}

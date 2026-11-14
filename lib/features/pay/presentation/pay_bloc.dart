@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -8,7 +10,7 @@ import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart' show log;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
@@ -63,6 +65,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
     required this._getPayjoinUsecase,
+    required this._retryPayjoinProposalUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
   }) : super(PayRecipientSelectionState()) {
@@ -84,6 +87,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
     on<PayPollOrderStatus>(_onPollOrderStatus);
     on<PayPayjoinToggled>(_onPayjoinToggled);
     on<PayPayjoinSessionUpdated>(_onPayjoinSessionUpdated);
+    on<PayPayjoinProposalRetryRequested>(
+      _onPayjoinProposalRetryRequested,
+      transformer: droppable(),
+    );
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<PayUtxosSelected>(_onUtxosSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
@@ -115,6 +122,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetPayjoinUsecase _getPayjoinUsecase;
+  final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
   int _paymentPreparationGeneration = 0;
@@ -316,6 +324,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
     final FiatPaymentOrder createdPayOrder;
     switch (await _placePayOrderUsecase.execute(
+      walletId: event.wallet.id,
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
       network: event.wallet.isLiquid
@@ -420,6 +429,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
     emit(preparing);
 
     switch (await _placePayOrderUsecase.execute(
+      walletId: null,
       orderAmount: walletSelectionState.amount,
       recipientId: walletSelectionState.selectedRecipient.id,
       network: event.network,
@@ -518,6 +528,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
     PaySendPaymentConfirmed event,
     Emitter<PayState> emit,
   ) async {
+    // A retained proposal owns this payment, including its paused feedback.
+    if (_activePayjoinSessionId != null) return;
+
     // We should be on a PayPaymentState
     final payPaymentState = state.cleanPaymentState;
     if (payPaymentState == null) {
@@ -531,16 +544,6 @@ class PayBloc extends Bloc<PayEvent, PayState>
     if (payPaymentState.isPayinBroadcast) {
       emit(payPaymentState.copyWith(isConfirmingPayment: true));
       await _completeAfterBroadcast(emit);
-      return;
-    }
-
-    // Second half of the #2522 latch, for the payjoin path: the txid only
-    // lands once the session resolves, so until then the *session* is what
-    // says this order's payin is already committed. Its original transaction
-    // is in the receiver's hands and can be broadcast at any moment, so
-    // building a second one here would pay the order twice.
-    if (_activePayjoinSessionId != null) {
-      emit(payPaymentState.copyWith(isConfirmingPayment: true));
       return;
     }
 
@@ -630,7 +633,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
           _emitSendPaymentError(emit, const PayQuoteExpiredFailure());
           return;
         }
-        switch (await _broadcastPayPayinUsecase.liquid(signedPset)) {
+        switch (await _broadcastPayPayinUsecase.liquid(
+          signedPset,
+          walletId: wallet.id,
+        )) {
           case Err(:final failure):
             _emitSendPaymentError(emit, failure);
             return;
@@ -721,7 +727,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
           final PayjoinSenderSession payjoinSender;
           switch (await _sendWithPayjoinUsecase.execute(
             walletId: wallet.id,
-            isTestnet: wallet.network.isTestnet,
+            network: wallet.network.bitcoin,
             bip21: payjoinBip21,
             unsignedOriginalPsbt: preparedSend.unsignedPsbt,
             amountSat: payinAmountSat,
@@ -785,7 +791,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
           }
           switch (await _broadcastPayPayinUsecase.bitcoin(
             signedTx.signedPsbt,
+            walletId: wallet.id,
             isPsbt: true,
+            network: wallet.network,
           )) {
             case Err(:final failure):
               _emitSendPaymentError(emit, failure);
@@ -796,16 +804,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
         }
       }
       if (!waitingForPayjoin) await _completeAfterBroadcast(emit);
-    } catch (e, st) {
+    } catch (_) {
+      const code = 'pay_payin_confirmation_failed';
       log.severe(
-        message: 'Unexpected error while confirming the payment',
-        error: e,
-        trace: st,
+        message: '$code category=unexpected',
+        error: Exception(code),
+        trace: StackTrace.current,
       );
-      _emitSendPaymentError(
-        emit,
-        PayUnexpectedFailure('send payment threw: ${e.runtimeType}'),
-      );
+      _emitSendPaymentError(emit, PayUnexpectedFailure(code));
     } finally {
       final current = _currentPaymentState;
       if (current != null &&
@@ -839,12 +845,76 @@ class PayBloc extends Bloc<PayEvent, PayState>
     });
   }
 
+  Future<void> _onPayjoinProposalRetryRequested(
+    PayPayjoinProposalRetryRequested event,
+    Emitter<PayState> emit,
+  ) async {
+    final current = _currentPaymentState;
+    final paused = current?.pausedPayjoinSession;
+    if (current == null ||
+        paused == null ||
+        !paused.canRetryProposal ||
+        current.isRetryingPayjoinProposal ||
+        current.isPayinBroadcast ||
+        paused.id != _activePayjoinSessionId ||
+        current.payOrder.orderId != _activePayjoinOrderId) {
+      return;
+    }
+    final orderId = current.payOrder.orderId;
+    emit(current.copyWith(isRetryingPayjoinProposal: true));
+    final result = await _retryPayjoinProposalUsecase.execute(paused.id);
+    final latest = _currentPaymentState;
+    if (emit.isDone ||
+        latest == null ||
+        latest.isPayinBroadcast ||
+        _activePayjoinSessionId != paused.id ||
+        _activePayjoinOrderId != orderId ||
+        latest.payOrder.orderId != orderId) {
+      return;
+    }
+    // The subscription owns session transitions; a late retry response must
+    // never replace a newer observation or revive a completed payment.
+    emit(
+      latest.copyWith(
+        isRetryingPayjoinProposal: false,
+        error:
+            result is Err<PayjoinSession, PayFailure> &&
+                identical(latest.pausedPayjoinSession, paused)
+            ? result.failure
+            : latest.error,
+      ),
+    );
+  }
+
   Future<void> _onPayjoinSessionUpdated(
     PayPayjoinSessionUpdated event,
     Emitter<PayState> emit,
   ) async {
     final session = event.session;
-    if (session.id != _activePayjoinSessionId || session.isOngoing) return;
+    if (session.id != _activePayjoinSessionId) return;
+    if (session.isOngoing) {
+      final current = _currentPaymentState;
+      if (current == null ||
+          current.payOrder.orderId != _activePayjoinOrderId ||
+          current.isPayinBroadcast) {
+        return;
+      }
+      final paused =
+          session is PayjoinSenderSession && session.spendFailure != null
+          ? session
+          : null;
+      emit(
+        current.copyWith(
+          pausedPayjoinSession: paused,
+          error: paused != null
+              ? const PayPayjoinPausedFailure()
+              : current.error is PayPayjoinPausedFailure
+              ? null
+              : current.error,
+        ),
+      );
+      return;
+    }
     if (session.hasProposal) {
       log.fine(
         'Pay Payjoin session resolved: ${session.logRef}, '
@@ -882,7 +952,14 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
 
     if (session.isExpired) {
-      emit(current.copyWith(isConfirmingPayment: false, error: null));
+      emit(
+        current.copyWith(
+          isConfirmingPayment: false,
+          error: null,
+          pausedPayjoinSession: null,
+          isRetryingPayjoinProposal: false,
+        ),
+      );
       return;
     }
 
@@ -1230,6 +1307,8 @@ class PayBloc extends Bloc<PayEvent, PayState>
     emit(
       current.copyWith(
         payinBroadcastTxid: txid,
+        pausedPayjoinSession: null,
+        isRetryingPayjoinProposal: false,
         isConfirmingPayment: true,
         error: null,
       ),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/repositories/sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_scan_control_port.dart';
@@ -17,10 +18,12 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 /// the reconnect watcher and the header retry watcher can both react to the
 /// same drop, and one restart is enough.
 class ResyncSpListenerUsecase {
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpAccountRepository _repository;
   final SpScanControlPort _scanControl;
 
   ResyncSpListenerUsecase({
+    required this._getSpFeatureGateUsecase,
     required this._repository,
     required this._scanControl,
   });
@@ -31,6 +34,10 @@ class ResyncSpListenerUsecase {
       _inFlight ??= _run().whenComplete(() => _inFlight = null);
 
   Future<Result<void, SpFailure>> _run() async {
+    if (!await _getSpFeatureGateUsecase.execute()) {
+      return const Err(SpUnsupportedNetwork());
+    }
+
     if (!_repository.hasSession) return const Ok(null);
     if (_scanControl.isScanningCached) return const Ok(null);
     return _scanControl.restartElectrum();

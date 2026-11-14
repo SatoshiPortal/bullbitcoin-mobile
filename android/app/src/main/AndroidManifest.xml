@@ -46,6 +46,7 @@
             <data android:scheme="https" />
         </intent>
     </queries>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:requestLegacyExternalStorage="true"
         android:label="BULL"
