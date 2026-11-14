@@ -125,6 +125,9 @@ final class SpendWriter implements WalletSpender {
   final SpendTransport _send;
   final bool Function() _closed;
   final Map<WalletKey, _ReadinessCell> _readiness = {};
+
+  /// The guard requests in flight, awaited by [close].
+  final Set<Future<void>> _requests = {};
   late final StreamSubscription<WalletRevisionState> _changes;
 
   SpendWriter({
@@ -581,29 +584,30 @@ final class SpendWriter implements WalletSpender {
       return;
     }
     cell.refreshing = true;
-    unawaited(
-      Future.microtask(() async {
-        try {
-          do {
-            cell.again = false;
-            final published = cell.publications;
-            if (key.network is! BitcoinNetwork) {
-              cell.set(
-                const WalletValue<BitcoinSpendStatus>.unavailable(
-                  SyncUnsupportedNetworkFailure(),
-                ),
-              );
-              return;
-            }
-            final status = await _gate.check(key);
-            if (_closed() || cell.closed) return;
-            if (cell.publications == published) _publish(key, status);
-          } while (cell.again);
-        } finally {
-          cell.refreshing = false;
-        }
-      }),
-    );
+    late final Future<void> request;
+    request = Future.microtask(() async {
+      try {
+        do {
+          cell.again = false;
+          final published = cell.publications;
+          if (key.network is! BitcoinNetwork) {
+            cell.set(
+              const WalletValue<BitcoinSpendStatus>.unavailable(
+                SyncUnsupportedNetworkFailure(),
+              ),
+            );
+            return;
+          }
+          final status = await _gate.check(key);
+          if (_closed() || cell.closed) return;
+          if (cell.publications == published) _publish(key, status);
+        } while (cell.again);
+      } finally {
+        cell.refreshing = false;
+        _requests.remove(request);
+      }
+    });
+    _requests.add(request);
   }
 
   void _publish(WalletKey key, BitcoinSpendStatus status) {
@@ -755,11 +759,14 @@ final class SpendWriter implements WalletSpender {
     };
   }
 
-  void close() {
-    unawaited(_changes.cancel());
+  /// Closes every readiness value, then waits for the guard requests in
+  /// flight, so none reads a store closed under it.
+  Future<void> close() async {
     for (final cell in _readiness.values) {
       cell.close();
     }
+    await _changes.cancel();
+    await Future.wait(_requests.toList());
   }
 }
 

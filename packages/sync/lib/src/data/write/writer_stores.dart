@@ -92,7 +92,7 @@ final class ForegroundStores {
 
   Future<void> close() async {
     _closed = true;
-    spend.close();
+    await spend.close();
     try {
       await _revisions.close();
     } finally {
