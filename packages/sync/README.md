@@ -46,7 +46,7 @@ Each asynchronous `Future<Result<T, SyncFailure>>` is shown as `T`. Other return
 
 ```text
 Sync
-|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, freezes:, inputReservations:) -> Sync
+|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, freezes:, inputReservations:, connections:) -> Sync
 |-- static openExisting(documentsDirectory:, catalog:, connections:) -> HeadlessSync
 |-- wallet(key) -> Wallet
 |-- changes
@@ -65,6 +65,17 @@ Sync
 Wallet
 |-- key -> WalletKey
 |-- generation -> int
+|-- spend
+|   |-- build(request) -> UnsignedSpend
+|   |-- bumpFee(request) -> UnsignedSpend
+|   |-- consolidate(request) -> List<UnsignedSpend>
+|   |-- broadcast(spend) -> SpendReceipt
+|   |-- signed(transaction, [owner:], [replacing:]) -> SignedSpend
+|   |-- status -> Observed<WalletValue<BitcoinSpendStatus>>
+|   |-- check([replacing:]) -> BitcoinSpendStatus
+|   |-- originalSignatures(txid) -> SignatureCheck
+|   |-- annotate(psbt) -> String
+|   `-- liquidEffect(pset) -> LiquidPsetEffect
 |-- balances -> Observed<WalletValue<Balances>>
 |-- coins
 |   |-- now -> WalletCoins
