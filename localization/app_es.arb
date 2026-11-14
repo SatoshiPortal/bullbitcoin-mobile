@@ -4622,5 +4622,6 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
   "coreScreensOutputsExceedInputs": "Las salidas superan las entradas: esta transacción no es válida y la red la rechazará.",
   "passphraseShow": "Mostrar frase de contraseña",
-  "passphraseHide": "Ocultar frase de contraseña"
+  "passphraseHide": "Ocultar frase de contraseña",
+  "swapServerBusyError": "Termina tus swaps en curso antes de cambiar el servidor de swaps."
 }

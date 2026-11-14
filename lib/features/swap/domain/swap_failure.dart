@@ -93,6 +93,12 @@ final class SwapUnsupportedNetworkFailure extends SwapFailure {
   const SwapUnsupportedNetworkFailure();
 }
 
+/// The swap server cannot change while swaps on the current one are open:
+/// their status and resolution are served by the server that created them.
+final class SwapServerBusyFailure extends SwapInvalidStateFailure {
+  const SwapServerBusyFailure();
+}
+
 /// Spending is invalid in the source wallet's current admission state.
 final class SwapSpendBlockedFailure extends SwapInvalidStateFailure {
   final BitcoinSpendStatus status;

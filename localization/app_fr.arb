@@ -4748,5 +4748,6 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "La diffusion sur ce réseau n'est pas activée dans les réglages actuels.",
   "coreScreensOutputsExceedInputs": "Les sorties dépassent les entrées : cette transaction est invalide et le réseau la rejettera.",
   "passphraseShow": "Afficher la passphrase",
-  "passphraseHide": "Masquer la passphrase"
+  "passphraseHide": "Masquer la passphrase",
+  "swapServerBusyError": "Terminez vos swaps en cours avant de changer de serveur de swap."
 }

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/set_swap_server_usecase.dart';
+import 'package:boltz_swaps/boltz_swaps.dart' hide Environment;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -16,10 +17,13 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockSwapEngineSwitcher extends Mock implements SwapEngineSwitcher {}
 
+class _MockSwapRepository extends Mock implements SwapRepository {}
+
 void main() {
   late _MockSwapServerSettingRepository serverSettings;
   late _MockSettingsRepository settingsRepository;
   late _MockSwapEngineSwitcher switcher;
+  late _MockSwapRepository swaps;
   late SetSwapServerUsecase usecase;
 
   setUpAll(() => registerFallbackValue(SwapServer.mainnetDefault));
@@ -37,6 +41,8 @@ void main() {
     serverSettings = _MockSwapServerSettingRepository();
     settingsRepository = _MockSettingsRepository();
     switcher = _MockSwapEngineSwitcher();
+    swaps = _MockSwapRepository();
+    when(() => swaps.ongoing()).thenAnswer((_) async => []);
     when(
       () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
     ).thenAnswer((_) async {});
@@ -48,6 +54,7 @@ void main() {
       swapServerSettingRepository: serverSettings,
       settingsRepository: settingsRepository,
       swapEngineSwitcher: switcher,
+      swapRepository: swaps,
     );
   });
 
@@ -103,6 +110,31 @@ void main() {
     final result = await usecase.execute('http://10.0.2.2:9001/v2');
 
     expect(failureOf(result), isNull);
+  });
+
+  test('refuses a change while swaps on the current server are open', () async {
+    when(() => swaps.ongoing()).thenAnswer(
+      (_) async => [
+        Swap.lnReceive(
+          id: 'open-1',
+          keyIndex: 0,
+          type: SwapType.lightningToLiquid,
+          status: SwapStatus.pending,
+          environment: SwapEnvironment.mainnet,
+          creationTime: DateTime.utc(2026),
+          receiveWalletId: 'w',
+          invoice: 'lnbc1',
+        ),
+      ],
+    );
+
+    final result = await usecase.execute('boltz.example.com/v2');
+
+    expect(failureOf(result), isA<SwapServerBusyFailure>());
+    verifyNever(
+      () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
+    );
+    verifyNever(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')));
   });
 
   test('a failed write is a storage failure and leaves the engine', () async {

@@ -225,6 +225,7 @@ class SwapLocator {
         swapServerSettingRepository: locator<SwapServerSettingRepository>(),
         settingsRepository: locator<settings_domain.SettingsRepository>(),
         swapEngineSwitcher: locator<SwapEngineSwitcher>(),
+        swapRepository: locator<SwapRepository>(),
       ),
     );
     locator.registerFactory<SwapSettingsCubit>(

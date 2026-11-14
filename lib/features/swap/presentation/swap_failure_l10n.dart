@@ -12,6 +12,7 @@ extension SwapFailureL10n on SwapFailure {
           ? context.loc.walletSpendBusy
           : context.loc.walletSpendAwaitingObservation,
     SwapUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
+    SwapServerBusyFailure() => context.loc.swapServerBusyError,
     SwapAmountOutOfBoundsFailure(
       limitAmountSat: final limit?,
       isMinimum: true,

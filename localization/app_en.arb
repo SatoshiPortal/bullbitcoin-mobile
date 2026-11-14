@@ -15547,5 +15547,9 @@
   "passphraseHide": "Hide passphrase",
   "@passphraseHide": {
     "description": "Accessible name of the button that hides the typed passphrase"
+  },
+  "swapServerBusyError": "Finish your ongoing swaps before changing the swap server.",
+  "@swapServerBusyError": {
+    "description": "Error when the user changes the swap server while swaps on the current server are still in progress"
   }
 }
