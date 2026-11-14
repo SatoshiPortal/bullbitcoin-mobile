@@ -20,13 +20,9 @@ int confirmationsFromTip({required int tip, required int? height}) {
 /// The lookahead the reader loads Bitcoin wallets with.
 const bitcoinLookahead = 25;
 
-/// Maps a hydrated Bitcoin reader handle into a frame. Reads only: nothing
-/// is revealed or persisted, and the handle stays the reader's.
-WalletFrame bitcoinFrame(
-  bdk.Wallet wallet,
-  WalletRevision revision, {
-  required bool stale,
-}) {
+/// Maps a hydrated Bitcoin reader handle into frame data. Reads only:
+/// nothing is revealed or persisted, and the handle stays the reader's.
+WalletFrameData bitcoinFrameData(bdk.Wallet wallet, WalletRevision revision) {
   final network = wallet.network();
   final balance = wallet.balance();
   final balances = Balances(
@@ -145,9 +141,8 @@ WalletFrame bitcoinFrame(
     }
   }
 
-  return WalletFrame(
+  return WalletFrameData(
     revision: revision,
-    stale: stale,
     balances: balances,
     coins: CoinList(coins),
     transactions: ChainTransactionList(transactions),
@@ -183,13 +178,12 @@ DerivedAddress bitcoinAddress(bdk.Wallet wallet, Keychain keychain, int index) {
   }
 }
 
-/// Maps a hydrated Liquid reader handle into a frame. L-BTC only: coins and
-/// balances of other assets are not published.
-Future<WalletFrame> liquidFrame(
+/// Maps a hydrated Liquid reader handle into frame data. L-BTC only: coins
+/// and balances of other assets are not published.
+Future<WalletFrameData> liquidFrameData(
   lwk.Wallet wallet,
-  WalletRevision revision, {
-  required bool stale,
-}) async {
+  WalletRevision revision,
+) async {
   final policy = await wallet.policyAsset();
   final total =
       (await wallet.balances())
@@ -251,9 +245,8 @@ Future<WalletFrame> liquidFrame(
     for (var index = 0; index <= last; index++)
       _liquidAddress(await wallet.address(index: index), index),
   ];
-  return WalletFrame(
+  return WalletFrameData(
     revision: revision,
-    stale: stale,
     balances: balances,
     coins: CoinList(coins),
     transactions: ChainTransactionList(transactions),

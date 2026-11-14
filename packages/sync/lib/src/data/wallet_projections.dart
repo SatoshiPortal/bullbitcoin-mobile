@@ -11,10 +11,10 @@ import '../domain/wallet_revision.dart';
 import '../domain/wallet_values.dart';
 
 /// Everything one revision of a wallet publishes, mapped once from the native
-/// handle. Never exported: consumers see projections of it.
-final class WalletFrame {
+/// handle and reused for every status that revision is later published with.
+/// Never exported: consumers see projections of it.
+final class WalletFrameData {
   final WalletRevision revision;
-  final bool stale;
   final Balances balances;
   final CoinList coins;
   final ChainTransactionList transactions;
@@ -23,9 +23,8 @@ final class WalletFrame {
   /// Null for Liquid, whose index LWK does not expose.
   final OwnershipIndex? ownership;
 
-  const WalletFrame({
+  const WalletFrameData({
     required this.revision,
-    required this.stale,
     required this.balances,
     required this.coins,
     required this.transactions,
@@ -34,13 +33,30 @@ final class WalletFrame {
   });
 }
 
+/// One publication: the mapped [data] of a revision and its status. A status
+/// change at the same revision keeps the same data.
+final class WalletFrame {
+  final WalletFrameData data;
+  final bool stale;
+
+  const WalletFrame(this.data, {required this.stale});
+
+  WalletRevision get revision => data.revision;
+  Balances get balances => data.balances;
+  CoinList get coins => data.coins;
+  ChainTransactionList get transactions => data.transactions;
+  AddressBook get addresses => data.addresses;
+  OwnershipIndex? get ownership => data.ownership;
+}
+
 /// A loaded frame and whether the reader admitted it as the committed
 /// revision. A cache served while the writer held the wallet is not admitted.
 typedef LoadedFrame = ({WalletFrame frame, bool admitted});
 
-/// Hydrates and maps a wallet without network access. Implementations return
-/// [current] itself when its revision and staleness are unchanged, so a
-/// revision is mapped at most once.
+/// Hydrates and maps a wallet without network access. Implementations reuse
+/// [current]'s data when its revision is unchanged, so a revision is mapped
+/// at most once; they return [current] itself when its staleness is
+/// unchanged too.
 abstract interface class FrameSource {
   Future<Result<LoadedFrame, SyncFailure>> load(
     WalletKey key,

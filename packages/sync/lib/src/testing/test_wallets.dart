@@ -29,33 +29,35 @@ Future<Wallet> testWallet({
   return _loaded(
     key,
     (_) async => WalletFrame(
-      revision: revision,
-      stale: stale,
-      balances:
-          balances ??
-          Balances(
-            confirmedSat: BigInt.zero,
-            immatureSat: BigInt.zero,
-            trustedPendingSat: BigInt.zero,
-            untrustedPendingSat: BigInt.zero,
-            spendableSat: BigInt.zero,
-            totalSat: BigInt.zero,
-          ),
-      coins: CoinList(coins),
-      transactions: ChainTransactionList(transactions),
-      addresses:
-          addresses ??
-          AddressBook(
-            receiveIndex: -1,
-            changeIndex: -1,
-            receive: const [],
-            change: const [],
-          ),
-      ownership: OwnershipIndex(
+      WalletFrameData(
         revision: revision,
-        scripts: ownedScripts,
-        outpoints: ownedOutpoints,
+        balances:
+            balances ??
+            Balances(
+              confirmedSat: BigInt.zero,
+              immatureSat: BigInt.zero,
+              trustedPendingSat: BigInt.zero,
+              untrustedPendingSat: BigInt.zero,
+              spendableSat: BigInt.zero,
+              totalSat: BigInt.zero,
+            ),
+        coins: CoinList(coins),
+        transactions: ChainTransactionList(transactions),
+        addresses:
+            addresses ??
+            AddressBook(
+              receiveIndex: -1,
+              changeIndex: -1,
+              receive: const [],
+              change: const [],
+            ),
+        ownership: OwnershipIndex(
+          revision: revision,
+          scripts: ownedScripts,
+          outpoints: ownedOutpoints,
+        ),
       ),
+      stale: stale,
     ),
   );
 }
@@ -65,15 +67,12 @@ Future<Wallet> testWallet({
 Future<Wallet> testWalletFromNative(Object native, {required WalletKey key}) {
   final revision = WalletRevision(key: key, generation: 0, revision: 0);
   return _loaded(key, (_) async {
-    return switch (native) {
-      final bdk.Wallet wallet => bitcoinFrame(wallet, revision, stale: false),
-      final lwk.Wallet wallet => await liquidFrame(
-        wallet,
-        revision,
-        stale: false,
-      ),
+    final data = switch (native) {
+      final bdk.Wallet wallet => bitcoinFrameData(wallet, revision),
+      final lwk.Wallet wallet => await liquidFrameData(wallet, revision),
       _ => throw ArgumentError('Not a native wallet: ${native.runtimeType}'),
     };
+    return WalletFrame(data, stale: false);
   }, derive: native);
 }
 

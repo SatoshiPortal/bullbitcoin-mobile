@@ -97,7 +97,10 @@ final class ScriptedSource implements FrameSource {
     final cached = _cached;
     if (busy) {
       if (cached == null) return const Err(SyncBusyFailure());
-      return Ok((frame: frame(cached.revision, stale: true), admitted: false));
+      return Ok((
+        frame: WalletFrame(cached.data, stale: true),
+        admitted: false,
+      ));
     }
     final state = revisions.state;
     if (!mappingEntered.isCompleted) mappingEntered.complete();
@@ -127,30 +130,32 @@ final class ScriptedSource implements FrameSource {
 
   static WalletFrame frame(WalletRevision revision, {required bool stale}) =>
       WalletFrame(
-        revision: revision,
-        stale: stale,
-        balances: Balances(
-          confirmedSat: BigInt.from(revision.revision),
-          immatureSat: BigInt.zero,
-          trustedPendingSat: BigInt.zero,
-          untrustedPendingSat: BigInt.zero,
-          spendableSat: BigInt.from(revision.revision),
-          totalSat: BigInt.from(revision.revision),
-        ),
-        coins: CoinList(const []),
-        transactions: ChainTransactionList(const []),
-        addresses: AddressBook(
-          receiveIndex: 0,
-          changeIndex: -1,
-          receive: [address(Keychain.external, 0)],
-          change: const [],
-        ),
-        ownership: OwnershipIndex(
+        WalletFrameData(
           revision: revision,
-          scripts: [
-            Uint8List.fromList([revision.revision]),
-          ],
-          outpoints: const [],
+          balances: Balances(
+            confirmedSat: BigInt.from(revision.revision),
+            immatureSat: BigInt.zero,
+            trustedPendingSat: BigInt.zero,
+            untrustedPendingSat: BigInt.zero,
+            spendableSat: BigInt.from(revision.revision),
+            totalSat: BigInt.from(revision.revision),
+          ),
+          coins: CoinList(const []),
+          transactions: ChainTransactionList(const []),
+          addresses: AddressBook(
+            receiveIndex: 0,
+            changeIndex: -1,
+            receive: [address(Keychain.external, 0)],
+            change: const [],
+          ),
+          ownership: OwnershipIndex(
+            revision: revision,
+            scripts: [
+              Uint8List.fromList([revision.revision]),
+            ],
+            outpoints: const [],
+          ),
         ),
+        stale: stale,
       );
 }

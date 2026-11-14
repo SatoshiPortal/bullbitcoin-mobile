@@ -206,15 +206,12 @@ void main() {
         });
         history.failConversion = failConversion;
         if (failConversion) {
-          expect(
-            () => bitcoinFrame(history, revision, stale: false),
-            throwsStateError,
-          );
+          expect(() => bitcoinFrameData(history, revision), throwsStateError);
           expect(history.ownedIds.every((id) => id.disposals == 1), isTrue);
           expect(history.disposals, 0);
           return;
         }
-        final frame = bitcoinFrame(history, revision, stale: false);
+        final frame = bitcoinFrameData(history, revision);
         final result = frame.transactions
             .whereType<BitcoinTransaction>()
             .toList();

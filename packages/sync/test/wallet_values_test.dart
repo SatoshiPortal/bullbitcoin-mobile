@@ -291,48 +291,53 @@ final class _Source implements FrameSource {
     // A lagging reader serves its cache, which is never admitted.
     if (lagging && lagged != null) return Ok((frame: lagged, admitted: false));
     final state = _states.state;
-    if (current != null &&
-        current.revision == state.stamp &&
-        current.stale == state.syncFailed) {
-      return Ok((frame: current, admitted: true));
+    if (current != null && current.revision == state.stamp) {
+      return Ok((
+        frame: current.stale == state.syncFailed
+            ? current
+            : WalletFrame(current.data, stale: state.syncFailed),
+        admitted: true,
+      ));
     }
     maps++;
     final frame = WalletFrame(
-      revision: state.stamp,
-      stale: state.syncFailed,
-      balances: Balances(
-        confirmedSat: BigInt.from(_states.balance),
-        immatureSat: BigInt.zero,
-        trustedPendingSat: BigInt.zero,
-        untrustedPendingSat: BigInt.zero,
-        spendableSat: BigInt.from(_states.balance),
-        totalSat: BigInt.from(_states.balance),
-      ),
-      coins: CoinList([
-        for (var i = 0; i < _states.coins; i++)
-          LiquidCoin(
-            outpoint: (txId: 'coin', vout: i),
-            amountSat: BigInt.one,
-            scriptPubkey: '00',
-            standardAddress: 's',
-            confidentialAddress: 'c',
-            blockHeight: null,
-          ),
-      ]),
-      transactions: ChainTransactionList(const []),
-      addresses: AddressBook(
-        receiveIndex: 0,
-        changeIndex: -1,
-        receive: [_address(Keychain.external, 0)],
-        change: const [],
-      ),
-      ownership: OwnershipIndex(
+      WalletFrameData(
         revision: state.stamp,
-        scripts: [
-          Uint8List.fromList([1, 2]),
-        ],
-        outpoints: [(txId: 'spent', vout: 0)],
+        balances: Balances(
+          confirmedSat: BigInt.from(_states.balance),
+          immatureSat: BigInt.zero,
+          trustedPendingSat: BigInt.zero,
+          untrustedPendingSat: BigInt.zero,
+          spendableSat: BigInt.from(_states.balance),
+          totalSat: BigInt.from(_states.balance),
+        ),
+        coins: CoinList([
+          for (var i = 0; i < _states.coins; i++)
+            LiquidCoin(
+              outpoint: (txId: 'coin', vout: i),
+              amountSat: BigInt.one,
+              scriptPubkey: '00',
+              standardAddress: 's',
+              confidentialAddress: 'c',
+              blockHeight: null,
+            ),
+        ]),
+        transactions: ChainTransactionList(const []),
+        addresses: AddressBook(
+          receiveIndex: 0,
+          changeIndex: -1,
+          receive: [_address(Keychain.external, 0)],
+          change: const [],
+        ),
+        ownership: OwnershipIndex(
+          revision: state.stamp,
+          scripts: [
+            Uint8List.fromList([1, 2]),
+          ],
+          outpoints: [(txId: 'spent', vout: 0)],
+        ),
       ),
+      stale: state.syncFailed,
     );
     _lagged = frame;
     return Ok((frame: frame, admitted: true));

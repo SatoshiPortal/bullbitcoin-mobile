@@ -11,7 +11,8 @@ import 'wallet_frame_mapper.dart';
 import 'wallet_snapshot_reader.dart';
 
 /// Frames from the shared reader: hydration under its brief admission, then
-/// mapping after the lease is released. A revision already mapped is reused.
+/// mapping after the lease is released. A revision already mapped is reused,
+/// whatever status it is published with.
 final class NativeFrameSource implements FrameSource {
   final WalletSnapshotReader _reader;
   final WalletCatalogPort _catalog;
@@ -28,31 +29,32 @@ final class NativeFrameSource implements FrameSource {
         return Err(failure);
       case Ok(value: final snapshot):
         final admitted = snapshot.admitted;
-        if (current != null &&
-            current.revision == snapshot.revision &&
-            current.stale == snapshot.stale) {
-          return Ok((frame: current, admitted: admitted));
+        if (current != null && current.revision == snapshot.revision) {
+          // Same revision: only the status may change, never the data.
+          return Ok((
+            frame: current.stale == snapshot.stale
+                ? current
+                : WalletFrame(current.data, stale: snapshot.stale),
+            admitted: admitted,
+          ));
         }
         try {
-          return switch (snapshot.wallet) {
-            final bdk.Wallet wallet => Ok((
-              frame: bitcoinFrame(
-                wallet,
-                snapshot.revision,
-                stale: snapshot.stale,
-              ),
-              admitted: admitted,
-            )),
-            final lwk.Wallet wallet => Ok((
-              frame: await liquidFrame(
-                wallet,
-                snapshot.revision,
-                stale: snapshot.stale,
-              ),
-              admitted: admitted,
-            )),
-            _ => const Err(SyncInvalidCatalogFailure()),
+          final data = switch (snapshot.wallet) {
+            final bdk.Wallet wallet => bitcoinFrameData(
+              wallet,
+              snapshot.revision,
+            ),
+            final lwk.Wallet wallet => await liquidFrameData(
+              wallet,
+              snapshot.revision,
+            ),
+            _ => null,
           };
+          if (data == null) return const Err(SyncInvalidCatalogFailure());
+          return Ok((
+            frame: WalletFrame(data, stale: snapshot.stale),
+            admitted: admitted,
+          ));
         } on Exception {
           return const Err(SyncNeedsRepairFailure());
         }

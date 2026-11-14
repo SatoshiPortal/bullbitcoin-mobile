@@ -54,7 +54,7 @@ void main() {
     final key = WalletKey(id: 'mapper', network: BitcoinNetwork.testnet);
     final revision = WalletRevision(key: key, generation: 0, revision: 3);
 
-    final frame = bitcoinFrame(wallet, revision, stale: false);
+    final frame = bitcoinFrameData(wallet, revision);
 
     expect(frame.revision, revision);
     expect(frame.balances.totalSat, BigInt.zero);
