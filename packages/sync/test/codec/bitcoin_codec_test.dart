@@ -1,0 +1,285 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart';
+
+// Synthetic one-input, one-output transaction paying 100000 sat to OP_TRUE.
+const _transactionHex =
+    '0100000001${'00000000000000000000000000000000'
+        '00000000000000000000000000000000'}'
+    'ffffffff020101ffffffff01a0860100000000000151'
+    '00000000';
+
+// Version 2, one input (txid 0x01..0x20 reversed, vout 0, sequence
+// 0xfffffffd) carrying a 100200 sat witness UTXO, one 100000 sat P2WPKH
+// output: a 200 sat fee.
+const _psbt =
+    'cHNidP8BAFICAAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gAAAAAAD9////'
+    'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
+    'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+
+List<int> _fromHex(String hex) => [
+  for (var i = 0; i < hex.length; i += 2)
+    int.parse(hex.substring(i, i + 2), radix: 16),
+];
+
+String _toHex(List<int> bytes) =>
+    bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+
+final _p2wpkh = Uint8List.fromList([0, 20, ...List.filled(20, 0x22)]);
+
+T _ok<T>(Result<T, SyncFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw TestFailure('Unexpected ${failure.logCode}'),
+};
+
+SyncFailure _err<T>(Result<T, SyncFailure> result) => switch (result) {
+  Ok() => throw TestFailure('Unexpected success'),
+  Err(:final failure) => failure,
+};
+
+/// [_psbt]'s unsigned transaction, with [lockTime] as little-endian hex.
+String _unsignedHex({String lockTime = '00000000'}) =>
+    '0200000001${_toHex(List.generate(32, (i) => i + 1))}00000000'
+    '00fdffffff01a086010000000000160014${'22' * 20}$lockTime';
+
+/// A PSBT of [_unsignedHex] whose input carries no amount.
+String _psbtWithoutInputAmount({String lockTime = '00000000'}) {
+  final transaction = bdk.Transaction(
+    transactionBytes: Uint8List.fromList(
+      _fromHex(_unsignedHex(lockTime: lockTime)),
+    ),
+  );
+  final psbt = bdk.Psbt.fromUnsignedTx(tx: transaction);
+  try {
+    return psbt.serialize();
+  } finally {
+    psbt.dispose();
+    transaction.dispose();
+  }
+}
+
+void main() {
+  group('decodeBitcoinTransaction', () {
+    test('reads every field of a serialized transaction', () {
+      final decoded = _ok(decodeBitcoinTransaction(_fromHex(_transactionHex)));
+      final native = bdk.Transaction(
+        transactionBytes: Uint8List.fromList(_fromHex(_transactionHex)),
+      );
+      addTearDown(native.dispose);
+
+      expect(decoded.txid, native.computeTxid().toString());
+      expect(decoded.version, 1);
+      expect(decoded.locktime, 0);
+      expect(decoded.size, _transactionHex.length ~/ 2);
+      expect(decoded.vsize, _transactionHex.length ~/ 2);
+      expect(decoded.inputs, hasLength(1));
+      expect(decoded.inputs.single.txid, '0' * 64);
+      expect(decoded.inputs.single.vout, 0xffffffff);
+      expect(decoded.inputs.single.sequence, 0xffffffff);
+      expect(decoded.inputs.single.scriptSig, [0x01, 0x01]);
+      expect(decoded.outputs.single.valueSat, 100000);
+      expect(decoded.outputs.single.script, [0x51]);
+      expect(_toHex(decoded.bytes), _transactionHex);
+    });
+
+    test('publishes immutable values', () {
+      final decoded = _ok(decodeBitcoinTransaction(_fromHex(_transactionHex)));
+      expect(() => decoded.bytes[0] = 2, throwsUnsupportedError);
+      expect(() => decoded.inputs.clear(), throwsUnsupportedError);
+      expect(
+        () => decoded.outputs.single.script[0] = 0,
+        throwsUnsupportedError,
+      );
+    });
+
+    for (final (name, bytes) in <(String, List<int>)>[
+      ('no bytes', const []),
+      ('a truncated transaction', _fromHex(_transactionHex.substring(0, 40))),
+      ('trailing bytes', [..._fromHex(_transactionHex), 0]),
+      ('random bytes', List.generate(64, (i) => i * 7 % 256)),
+      ('a PSBT', base64.decode(_psbt)),
+    ]) {
+      test('refuses $name', () {
+        expect(
+          _err(decodeBitcoinTransaction(bytes)),
+          isA<SyncInvalidTransactionFailure>(),
+        );
+      });
+    }
+
+    test('refuses more bytes than any valid transaction holds', () {
+      expect(
+        _err(
+          decodeBitcoinTransaction(Uint8List(maxBitcoinTransactionBytes + 1)),
+        ),
+        isA<SyncInvalidTransactionFailure>(),
+      );
+    });
+  });
+
+  group('decodeBitcoinPsbt', () {
+    test('reads the transaction the PSBT describes', () {
+      final decoded = _ok(decodeBitcoinPsbt(_psbt));
+      expect(decoded.version, 2);
+      expect(decoded.locktime, 0);
+      expect(
+        decoded.inputs.single.txid,
+        _toHex(List.generate(32, (i) => 32 - i)),
+      );
+      expect(decoded.inputs.single.vout, 0);
+      expect(decoded.inputs.single.sequence, 0xfffffffd);
+      expect(decoded.inputs.single.scriptSig, isEmpty);
+      expect(decoded.outputs.single.valueSat, 100000);
+      expect(decoded.outputs.single.script, _p2wpkh);
+    });
+
+    test('refuses a PSBT without its input amounts', () {
+      expect(
+        _err(decodeBitcoinPsbt(_psbtWithoutInputAmount())),
+        isA<SyncInvalidTransactionFailure>(),
+      );
+    });
+
+    for (final (name, input) in [
+      ('an empty string', ''),
+      ('text', 'not a psbt'),
+      ('a hex transaction', _transactionHex),
+      ('a truncated PSBT', _psbt.substring(0, 40)),
+      (
+        'a PSBT without its magic',
+        base64.encode(base64.decode(_psbt).skip(5).toList()),
+      ),
+      ('an oversized string', 'A' * (maxEncodedBitcoinPsbtLength + 1)),
+    ]) {
+      test('refuses $name', () {
+        expect(
+          _err(decodeBitcoinPsbt(input)),
+          isA<SyncInvalidTransactionFailure>(),
+        );
+      });
+    }
+  });
+
+  group('canonicalBitcoinPsbt', () {
+    test('returns a valid PSBT re-serialized', () {
+      expect(_ok(canonicalBitcoinPsbt(_psbt)), _psbt);
+    });
+
+    test('accepts a PSBT without input amounts: nothing is extracted', () {
+      final psbt = _psbtWithoutInputAmount();
+      expect(_ok(canonicalBitcoinPsbt(psbt)), psbt);
+    });
+
+    test('refuses what is not a PSBT', () {
+      expect(
+        _err(canonicalBitcoinPsbt(base64.encode(utf8.encode('psbt')))),
+        isA<SyncInvalidTransactionFailure>(),
+      );
+    });
+  });
+
+  group('finalizeBitcoinPsbts', () {
+    test('an unsigned PSBT cannot be finalized', () {
+      expect(
+        _err(finalizeBitcoinPsbts(unsignedBase64: _psbt, signedBase64: _psbt)),
+        isA<SyncNotFinalizableFailure>(),
+      );
+    });
+
+    test('a PSBT for another transaction is not combined', () {
+      expect(
+        _err(
+          finalizeBitcoinPsbts(
+            unsignedBase64: _psbt,
+            signedBase64: _psbtWithoutInputAmount(lockTime: '01000000'),
+          ),
+        ),
+        isA<SyncNotFinalizableFailure>(),
+      );
+    });
+
+    test('an unreadable signer reply is not a transaction', () {
+      expect(
+        _err(finalizeBitcoinPsbts(unsignedBase64: _psbt, signedBase64: 'x')),
+        isA<SyncInvalidTransactionFailure>(),
+      );
+    });
+  });
+
+  group('addresses', () {
+    const encodings = {
+      BitcoinNetwork.mainnet: 'bc1',
+      BitcoinNetwork.testnet: 'tb1',
+      BitcoinNetwork.regtest: 'bcrt1',
+    };
+
+    test('an output script reads as its address on each network', () {
+      for (final MapEntry(key: network, value: prefix) in encodings.entries) {
+        final address = _ok(bitcoinScriptAddress(_p2wpkh, network));
+        expect(address, startsWith(prefix));
+        expect(_ok(bitcoinAddressScript(address, network)), _p2wpkh);
+      }
+    });
+
+    test('a non-standard script has no address', () {
+      expect(
+        _err(bitcoinScriptAddress([0x6a, 0x01, 0x00], BitcoinNetwork.mainnet)),
+        isA<SyncInvalidAddressFailure>(),
+      );
+    });
+
+    test('signet is refused', () {
+      expect(
+        _err(bitcoinScriptAddress(_p2wpkh, BitcoinNetwork.signet)),
+        isA<SyncUnsupportedNetworkFailure>(),
+      );
+      expect(
+        _err(parseBitcoinAddress('tb1q', BitcoinNetwork.signet)),
+        isA<SyncUnsupportedNetworkFailure>(),
+      );
+    });
+
+    test('an address parses only on its own network', () {
+      final mainnet = _ok(
+        bitcoinScriptAddress(_p2wpkh, BitcoinNetwork.mainnet),
+      );
+      final testnet = _ok(
+        bitcoinScriptAddress(_p2wpkh, BitcoinNetwork.testnet),
+      );
+      expect(
+        _ok(parseBitcoinAddress(mainnet, BitcoinNetwork.mainnet)),
+        mainnet,
+      );
+      expect(
+        _ok(parseBitcoinAddress(testnet, BitcoinNetwork.testnet)),
+        testnet,
+      );
+      expect(
+        _err(parseBitcoinAddress(mainnet, BitcoinNetwork.testnet)),
+        isA<SyncInvalidAddressFailure>(),
+      );
+      expect(
+        _err(parseBitcoinAddress(testnet, BitcoinNetwork.mainnet)),
+        isA<SyncInvalidAddressFailure>(),
+      );
+      expect(
+        _err(parseBitcoinAddress('${mainnet}x', BitcoinNetwork.mainnet)),
+        isA<SyncInvalidAddressFailure>(),
+      );
+    });
+
+    test('an upper-case witness address reads canonically', () {
+      final mainnet = _ok(
+        bitcoinScriptAddress(_p2wpkh, BitcoinNetwork.mainnet),
+      );
+      expect(
+        _ok(parseBitcoinAddress(mainnet.toUpperCase(), BitcoinNetwork.mainnet)),
+        mainnet,
+      );
+    });
+  });
+}

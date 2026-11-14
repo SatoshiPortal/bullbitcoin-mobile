@@ -24,6 +24,9 @@ void main() {
       SyncRestartRequiredFailure(),
       SyncInitialScanRequiredFailure(),
       SyncInvalidAddressFailure(),
+      SyncClosedFailure(),
+      SyncInvalidTransactionFailure(),
+      SyncNotFinalizableFailure(),
     ];
     for (final failure in failures) {
       log.warning('Wallet sync unavailable category=${failure.logCode}');
@@ -45,6 +48,9 @@ void main() {
       'restart_required',
       'initial_scan_required',
       'invalid_address',
+      'closed',
+      'invalid_transaction',
+      'not_finalizable',
     });
     expect(lines.join(), isNot(contains('[REDACTED]')));
   });
