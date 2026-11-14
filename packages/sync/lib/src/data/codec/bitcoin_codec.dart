@@ -5,6 +5,7 @@ import 'package:primitives/primitives.dart';
 
 import '../bitcoin_transaction_decoder.dart';
 import '../../domain/sync_failure.dart';
+import '../../domain/wallet_values.dart' show Keychain;
 import 'native_bitcoin_transaction.dart';
 
 /// The PSBT re-serialized by the parser: a check that [psbtBase64] is a PSBT.
@@ -40,6 +41,66 @@ Result<DecodedBitcoinTransaction, SyncFailure> finalizeBitcoinPsbts({
     }
   }),
 );
+
+/// The fee a PSBT pays: its inputs' amounts less its outputs'. Refused when
+/// an input amount is missing.
+Result<int, SyncFailure> bitcoinPsbtFee(String psbtBase64) =>
+    _withPsbt(psbtBase64, (psbt) => Ok(psbt.fee()));
+
+/// The public output descriptor of [keychain] for the account key [xpub],
+/// with its key origin: BIP84, BIP49 or BIP44 by [scriptType]. Library
+/// function: no wallet is opened.
+Result<String, SyncFailure> bitcoinPublicDescriptor({
+  required String xpub,
+  required String fingerprint,
+  required ScriptType scriptType,
+  required Keychain keychain,
+  required BitcoinNetwork network,
+}) {
+  final kind = network == BitcoinNetwork.mainnet
+      ? bdk.NetworkKind.main
+      : bdk.NetworkKind.test;
+  final nativeKeychain = keychain == Keychain.internal
+      ? bdk.KeychainKind.internal
+      : bdk.KeychainKind.external_;
+  final bdk.DescriptorPublicKey key;
+  try {
+    key = bdk.DescriptorPublicKey.fromString(publicKey: xpub);
+  } on Exception {
+    return const Err(SyncInvalidCatalogFailure());
+  }
+  try {
+    final descriptor = switch (scriptType) {
+      ScriptType.bip84 => bdk.Descriptor.newBip84Public(
+        publicKey: key,
+        fingerprint: fingerprint,
+        keychainKind: nativeKeychain,
+        networkKind: kind,
+      ),
+      ScriptType.bip49 => bdk.Descriptor.newBip49Public(
+        publicKey: key,
+        fingerprint: fingerprint,
+        keychainKind: nativeKeychain,
+        networkKind: kind,
+      ),
+      ScriptType.bip44 => bdk.Descriptor.newBip44Public(
+        publicKey: key,
+        fingerprint: fingerprint,
+        keychainKind: nativeKeychain,
+        networkKind: kind,
+      ),
+    };
+    try {
+      return Ok(descriptor.toString());
+    } finally {
+      descriptor.dispose();
+    }
+  } on Exception {
+    return const Err(SyncInvalidCatalogFailure());
+  } finally {
+    key.dispose();
+  }
+}
 
 /// The address an output [script] pays to on [network], for display. A
 /// non-standard script has none.

@@ -41,6 +41,27 @@ Result<DecodedLiquidTransaction, SyncFailure> decodeLiquidPset(String pset) {
   }
 }
 
+/// A PSET's discounted virtual size and its explicit fee, in the policy
+/// asset, as fee estimation counts them.
+Future<Result<({int discountedVsize, int feeSat}), SyncFailure>> liquidPsetFees(
+  String pset,
+) async {
+  if (pset.isEmpty || pset.length > maxEncodedLiquidPsetLength) {
+    return const Err(SyncInvalidTransactionFailure());
+  }
+  try {
+    final decoded = await lwk.getSizeAndAbsoluteFees(pset: pset);
+    final fee = decoded.absoluteFees.firstOrNull;
+    if (fee == null) return const Err(SyncInvalidTransactionFailure());
+    return Ok((
+      discountedVsize: decoded.discountedVsize.toInt(),
+      feeSat: fee.value.toInt(),
+    ));
+  } on Exception {
+    return const Err(SyncInvalidTransactionFailure());
+  }
+}
+
 /// The Liquid network [address] belongs to.
 Future<Result<LiquidNetwork, SyncFailure>> liquidAddressNetwork(
   String address,

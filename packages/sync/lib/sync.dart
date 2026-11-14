@@ -45,6 +45,8 @@ export 'src/data/read/address_script.dart' show bitcoinAddressScript;
 export 'src/domain/decoded_transactions.dart';
 export 'src/data/codec/bitcoin_codec.dart'
     show
+        bitcoinPsbtFee,
+        bitcoinPublicDescriptor,
         bitcoinScriptAddress,
         canonicalBitcoinPsbt,
         finalizeBitcoinPsbts,
@@ -54,6 +56,7 @@ export 'src/data/codec/liquid_codec.dart'
         decodeLiquidPset,
         decodeLiquidTransaction,
         liquidAddressNetwork,
+        liquidPsetFees,
         maxEncodedLiquidPsetLength,
         maxLiquidTransactionBytes;
 export 'src/data/chain/electrum_chain.dart'
@@ -64,3 +67,5 @@ export 'src/data/chain/electrum_chain.dart'
         broadcastLiquidTransaction,
         estimateBitcoinFees,
         probeBitcoinServer;
+export 'src/data/write/datasources/native_store_errors.dart'
+    show isLiquidStatusConflict;
