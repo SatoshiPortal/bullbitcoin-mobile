@@ -17,13 +17,13 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockSwapEngineSwitcher extends Mock implements SwapEngineSwitcher {}
 
-class _MockSwapRepository extends Mock implements SwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
 
 void main() {
   late _MockSwapServerSettingRepository serverSettings;
   late _MockSettingsRepository settingsRepository;
   late _MockSwapEngineSwitcher switcher;
-  late _MockSwapRepository swaps;
+  late _MockSwapStore swaps;
   late SetSwapServerUsecase usecase;
 
   setUpAll(() => registerFallbackValue(SwapServer.mainnetDefault));
@@ -41,8 +41,8 @@ void main() {
     serverSettings = _MockSwapServerSettingRepository();
     settingsRepository = _MockSettingsRepository();
     switcher = _MockSwapEngineSwitcher();
-    swaps = _MockSwapRepository();
-    when(() => swaps.ongoing()).thenAnswer((_) async => []);
+    swaps = _MockSwapStore();
+    when(() => swaps.ongoing()).thenAnswer((_) async => const Ok([]));
     when(
       () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
     ).thenAnswer((_) async {});
@@ -54,7 +54,7 @@ void main() {
       swapServerSettingRepository: serverSettings,
       settingsRepository: settingsRepository,
       swapEngineSwitcher: switcher,
-      swapRepository: swaps,
+      swapStore: swaps,
     );
   });
 
@@ -114,7 +114,7 @@ void main() {
 
   test('refuses a change while swaps on the current server are open', () async {
     when(() => swaps.ongoing()).thenAnswer(
-      (_) async => [
+      (_) async => Ok([
         Swap.lnReceive(
           id: 'open-1',
           keyIndex: 0,
@@ -125,7 +125,7 @@ void main() {
           receiveWalletId: 'w',
           invoice: 'lnbc1',
         ),
-      ],
+      ]),
     );
 
     final result = await usecase.execute('boltz.example.com/v2');

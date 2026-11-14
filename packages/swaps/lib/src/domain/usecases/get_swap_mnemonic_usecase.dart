@@ -1,13 +1,14 @@
-import 'package:swaps/src/data/boltz_swap_repository.dart';
+import 'package:primitives/primitives.dart';
+import 'package:swaps/src/domain/boltz_swaps.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
 
-/// The swap mnemonic, read at the moment it is drawn. Deliberately not part
-/// of `SwapMasterKeyInfo`: the words must not sit in screen state for the
-/// life of a screen.
+/// The rescue key's words for a wallet, for display in the seed viewer.
 class GetSwapMnemonicUsecase {
-  final BoltzSwapRepository _swapRepository;
+  final BoltzSwaps _boltz;
 
-  GetSwapMnemonicUsecase({required this._swapRepository});
+  const GetSwapMnemonicUsecase(this._boltz);
 
-  Future<String?> execute({required String walletFingerprint}) =>
-      _swapRepository.getSwapMnemonic(walletFingerprint: walletFingerprint);
+  Future<Result<String?, SwapsFailure>> execute({
+    required String walletFingerprint,
+  }) => _boltz.masterKeyMnemonic(walletFingerprint: walletFingerprint);
 }

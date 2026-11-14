@@ -22,7 +22,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockGetSwapLimitsAndFees extends Mock
     implements GetSwapLimitsAndFeesUsecase {}
 
-class _MockCreateChainSwap extends Mock implements CreateChainSwapUsecase {}
+class _MockCreateLiquidToBitcoinSwap extends Mock
+    implements CreateLiquidToBitcoinSwapUsecase {}
 
 class _MockRecordSwapLockup extends Mock implements RecordSwapLockupUsecase {}
 
@@ -60,9 +61,12 @@ Wallet _wallet({required bool liquid}) => Wallet(
   balanceSat: BigInt.from(liquid ? 3_000_000 : 0),
 );
 
+Matcher _toWallet(String walletId) =>
+    isA<ToWallet>().having((d) => d.walletId, 'walletId', walletId);
+
 void main() {
   late _MockGetSwapLimitsAndFees getLimitsAndFees;
-  late _MockCreateChainSwap createChainSwap;
+  late _MockCreateLiquidToBitcoinSwap createLiquidToBitcoinSwap;
   late _MockRecordSwapLockup recordLockup;
   late _MockRecordPendingLockup recordPendingLockup;
   late _MockDropPendingLockup dropPendingLockup;
@@ -86,6 +90,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(const RelativeFee(25));
     registerFallbackValue(SwapType.liquidToBitcoin);
+    registerFallbackValue(const ToWallet(''));
     registerFallbackValue(
       NewLabel.tx(transactionId: '', origin: '', label: ''),
     );
@@ -93,7 +98,7 @@ void main() {
 
   setUp(() {
     getLimitsAndFees = _MockGetSwapLimitsAndFees();
-    createChainSwap = _MockCreateChainSwap();
+    createLiquidToBitcoinSwap = _MockCreateLiquidToBitcoinSwap();
     recordLockup = _MockRecordSwapLockup();
     recordPendingLockup = _MockRecordPendingLockup();
     dropPendingLockup = _MockDropPendingLockup();
@@ -128,7 +133,7 @@ void main() {
     labelsFacade = _MockLabelsFacade();
     provider = BoltzAutoswapProvider(
       getLimitsAndFees,
-      createChainSwap,
+      createLiquidToBitcoinSwap,
       recordLockup,
       recordPendingLockup,
       dropPendingLockup,
@@ -179,11 +184,13 @@ void main() {
       )),
     );
     when(
-      () => createChainSwap.execute(
+      () => createLiquidToBitcoinSwap.execute(
         sendWalletId: 'liquid-wallet',
         amountSat: 2_499_500,
-        fromLiquid: true,
-        receiveWalletId: 'bitcoin-wallet',
+        destination: any(
+          named: 'destination',
+          that: _toWallet('bitcoin-wallet'),
+        ),
       ),
     ).thenAnswer(
       (_) async => Ok(
@@ -290,11 +297,13 @@ void main() {
       expect(result, isA<Ok<String, AutoswapFailure>>());
       expect((result as Ok<String, AutoswapFailure>).value, 'swap-id');
       verify(
-        () => createChainSwap.execute(
+        () => createLiquidToBitcoinSwap.execute(
           sendWalletId: 'liquid-wallet',
           amountSat: 2_499_500,
-          fromLiquid: true,
-          receiveWalletId: 'bitcoin-wallet',
+          destination: any(
+            named: 'destination',
+            that: _toWallet('bitcoin-wallet'),
+          ),
         ),
       ).called(1);
       verify(
@@ -347,11 +356,10 @@ void main() {
 
     expect((result as Err).failure, isA<AutoswapBoltzUnavailableFailure>());
     verifyNever(
-      () => createChainSwap.execute(
+      () => createLiquidToBitcoinSwap.execute(
         sendWalletId: any(named: 'sendWalletId'),
         amountSat: any(named: 'amountSat'),
-        fromLiquid: any(named: 'fromLiquid'),
-        receiveWalletId: any(named: 'receiveWalletId'),
+        destination: any(named: 'destination'),
       ),
     );
   });
@@ -360,11 +368,10 @@ void main() {
     'a refused creation maps to the failures the route can fall back on',
     () async {
       when(
-        () => createChainSwap.execute(
+        () => createLiquidToBitcoinSwap.execute(
           sendWalletId: any(named: 'sendWalletId'),
           amountSat: any(named: 'amountSat'),
-          fromLiquid: any(named: 'fromLiquid'),
-          receiveWalletId: any(named: 'receiveWalletId'),
+          destination: any(named: 'destination'),
         ),
       ).thenAnswer(
         (_) async => const Err(

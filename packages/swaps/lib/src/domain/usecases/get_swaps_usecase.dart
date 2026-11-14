@@ -1,21 +1,13 @@
+import 'package:primitives/primitives.dart';
 import 'package:swaps/src/domain/entities/swap.dart';
-import 'package:swaps/src/domain/swap_repository.dart';
-import 'package:swaps/src/util.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
+import 'package:swaps/src/domain/swap_store.dart';
 
 class GetSwapsUsecase {
-  final SwapRepository _swapRepository;
+  final SwapStore _store;
 
-  GetSwapsUsecase({required this._swapRepository});
+  const GetSwapsUsecase(this._store);
 
-  Future<List<Swap>> execute({String? walletId}) async {
-    try {
-      return await _swapRepository.all(walletId: walletId);
-    } catch (e) {
-      throw GetSwapsException('$e');
-    }
-  }
-}
-
-class GetSwapsException extends SwapsException {
-  GetSwapsException(super.message);
+  Future<Result<List<Swap>, SwapsFailure>> execute({String? walletId}) =>
+      _store.all(walletId: walletId);
 }

@@ -10,13 +10,13 @@ import 'package:secrets/secrets.dart';
 
 class DeleteWalletUsecase {
   final WalletRepository _walletRepository;
-  final BoltzSwapRepository _swapRepository;
+  final SwapStore _swapStore;
   final Secrets _secrets;
   final SeedReferences _seedReferences;
 
   DeleteWalletUsecase({
     required this._walletRepository,
-    required this._swapRepository,
+    required this._swapStore,
     required this._secrets,
     required this._seedReferences,
   });
@@ -37,22 +37,15 @@ class DeleteWalletUsecase {
       return const Err(WalletCannotDeleteDefaultFailure());
     }
 
-    try {
-      final ongoingSwaps = await _swapRepository.getOngoingSwaps(
-        walletId: walletId,
-      );
-      if (ongoingSwaps.isNotEmpty) {
+    switch (await _swapStore.ongoing(walletId: walletId)) {
+      case Ok(value: final ongoingSwaps) when ongoingSwaps.isNotEmpty:
         return const Err(WalletCannotDeleteWithOngoingSwapsFailure());
-      }
-    } catch (e, st) {
-      log.severe(
-        message: 'Wallet delete failed stage=swap reason=storage',
-        error: 'storage',
-        trace: st,
-      );
-      return Err(
-        WalletUnexpectedFailure('ongoing swap check: ${e.runtimeType}'),
-      );
+      case Err(:final failure):
+        log.warning('Wallet delete failed stage=swap reason=storage');
+        return Err(
+          WalletUnexpectedFailure('ongoing swap check: ${failure.runtimeType}'),
+        );
+      case Ok():
     }
 
     switch (await _walletRepository.deleteWallet(walletId: walletId)) {

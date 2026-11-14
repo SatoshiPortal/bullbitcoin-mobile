@@ -77,7 +77,9 @@ void main() {
       () => getAllSecretsUsecase.execute(),
     ).thenAnswer((_) async => Ok([aSecret]));
     when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
-    when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
+    when(
+      () => getSwapMasterKeyUsecase.execute(),
+    ).thenAnswer((_) async => const Ok(null));
 
     cubit = AllSeedViewCubit(
       getAllSecretsUsecase: getAllSecretsUsecase,

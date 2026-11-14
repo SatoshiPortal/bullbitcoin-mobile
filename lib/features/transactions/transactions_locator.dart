@@ -109,7 +109,7 @@ class TransactionsLocator {
       () => GetTransactionsUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-        boltzSwapRepository: locator<SwapRepository>(),
+        swapStore: locator<SwapStore>(),
         payjoinSessions: locator<PayjoinSessions>(),
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
@@ -140,7 +140,7 @@ class TransactionsLocator {
       () => GetTransactionsByTxIdUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-        boltzSwapRepository: locator<SwapRepository>(),
+        swapStore: locator<SwapStore>(),
         payjoinSessions: locator<PayjoinSessions>(),
         mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',

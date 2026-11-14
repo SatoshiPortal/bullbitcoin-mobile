@@ -151,7 +151,11 @@ class _MockGetSwapRoute extends Mock implements GetSwapRouteUsecase {}
 class _MockGetLimitsAndFees extends Mock
     implements GetSwapLimitsAndFeesUsecase {}
 
-class _MockCreateChainSwap extends Mock implements CreateChainSwapUsecase {}
+class _MockCreateBitcoinToLiquidSwap extends Mock
+    implements CreateBitcoinToLiquidSwapUsecase {}
+
+class _MockCreateLiquidToBitcoinSwap extends Mock
+    implements CreateLiquidToBitcoinSwapUsecase {}
 
 class _MockRecordLockup extends Mock implements RecordSwapLockupUsecase {}
 
@@ -176,9 +180,16 @@ class _Blockchain extends Mock implements BitcoinBlockchainRepository {}
 
 class _SettingsRepository extends Mock implements SettingsRepository {}
 
+Matcher _toWallet(String walletId) =>
+    isA<ToWallet>().having((d) => d.walletId, 'walletId', walletId);
+
+Matcher _toAddress(String address) =>
+    isA<ToAddress>().having((d) => d.address, 'address', address);
+
 void main() {
   setUpAll(() {
     registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(const ToWallet(''));
     registerFallbackValue(const RelativeFee(250));
     registerFallbackValue(OrderSwapEnvironment.mainnet);
     registerFallbackValue(OrderSwapNetwork.bitcoin);
@@ -214,7 +225,8 @@ void main() {
   late _MockVerifyChain verifyChain;
   late _MockGetSwapRoute getSwapRoute;
   late _MockGetLimitsAndFees getLimitsAndFees;
-  late _MockCreateChainSwap createChainSwap;
+  late _MockCreateBitcoinToLiquidSwap createBitcoinToLiquid;
+  late _MockCreateLiquidToBitcoinSwap createLiquidToBitcoin;
   late _MockRecordLockup recordLockup;
   late _MockRecordPendingLockup recordPendingLockup;
   late _MockDropPendingLockup dropPendingLockup;
@@ -261,7 +273,8 @@ void main() {
     checkLiquidConsolidationUsecase: _MockCheckConsolidation(),
     getSwapRouteUsecase: getSwapRoute,
     getSwapLimitsAndFeesUsecase: getLimitsAndFees,
-    createChainSwapUsecase: createChainSwap,
+    createBitcoinToLiquidSwapUsecase: createBitcoinToLiquid,
+    createLiquidToBitcoinSwapUsecase: createLiquidToBitcoin,
     recordSwapLockupUsecase: recordLockup,
     recordPendingSwapLockupUsecase: recordPendingLockup,
     dropPendingSwapLockupUsecase: dropPendingLockup,
@@ -303,7 +316,8 @@ void main() {
     verifyChain = _MockVerifyChain();
     getSwapRoute = _MockGetSwapRoute();
     getLimitsAndFees = _MockGetLimitsAndFees();
-    createChainSwap = _MockCreateChainSwap();
+    createBitcoinToLiquid = _MockCreateBitcoinToLiquidSwap();
+    createLiquidToBitcoin = _MockCreateLiquidToBitcoinSwap();
     recordLockup = _MockRecordLockup();
     recordPendingLockup = _MockRecordPendingLockup();
     dropPendingLockup = _MockDropPendingLockup();
@@ -2233,11 +2247,10 @@ void main() {
         );
 
     void stubCreateChain(Result<ChainSwap, SwapsFailure> result) => when(
-      () => createChainSwap.execute(
+      () => createBitcoinToLiquid.execute(
         sendWalletId: 'wallet-1',
         amountSat: any(named: 'amountSat'),
-        fromLiquid: false,
-        receiveWalletId: 'wallet-2',
+        destination: any(named: 'destination', that: _toWallet('wallet-2')),
       ),
     ).thenAnswer((_) async => result);
 
@@ -2338,23 +2351,27 @@ void main() {
         expect(bloc.state.consolidationRequired, isTrue);
         expect(bloc.state.swap, isNull);
         verifyNever(
-          () => createChainSwap.execute(
+          () => createBitcoinToLiquid.execute(
             sendWalletId: any(named: 'sendWalletId'),
             amountSat: any(named: 'amountSat'),
-            fromLiquid: any(named: 'fromLiquid'),
-            receiveWalletId: any(named: 'receiveWalletId'),
-            externalRecipientAddress: any(named: 'externalRecipientAddress'),
+            destination: any(named: 'destination'),
+          ),
+        );
+        verifyNever(
+          () => createLiquidToBitcoin.execute(
+            sendWalletId: any(named: 'sendWalletId'),
+            amountSat: any(named: 'amountSat'),
+            destination: any(named: 'destination'),
           ),
         );
       });
 
       test('a lockup build that needs consolidation says so', () async {
         when(
-          () => createChainSwap.execute(
+          () => createLiquidToBitcoin.execute(
             sendWalletId: any(named: 'sendWalletId'),
             amountSat: any(named: 'amountSat'),
-            fromLiquid: true,
-            receiveWalletId: any(named: 'receiveWalletId'),
+            destination: any(named: 'destination'),
           ),
         ).thenAnswer((_) async => Ok(_swap()));
         when(
@@ -2389,15 +2406,22 @@ void main() {
         () => detectBitcoin.execute(data: 'destination'),
       ).thenAnswer((_) async => request);
 
-      void verifyNoSwap() => verifyNever(
-        () => createChainSwap.execute(
-          sendWalletId: any(named: 'sendWalletId'),
-          amountSat: any(named: 'amountSat'),
-          fromLiquid: any(named: 'fromLiquid'),
-          receiveWalletId: any(named: 'receiveWalletId'),
-          externalRecipientAddress: any(named: 'externalRecipientAddress'),
-        ),
-      );
+      void verifyNoSwap() {
+        verifyNever(
+          () => createBitcoinToLiquid.execute(
+            sendWalletId: any(named: 'sendWalletId'),
+            amountSat: any(named: 'amountSat'),
+            destination: any(named: 'destination'),
+          ),
+        );
+        verifyNever(
+          () => createLiquidToBitcoin.execute(
+            sendWalletId: any(named: 'sendWalletId'),
+            amountSat: any(named: 'amountSat'),
+            destination: any(named: 'destination'),
+          ),
+        );
+      }
 
       setUp(() {
         when(
@@ -2449,11 +2473,13 @@ void main() {
           const PaymentRequest.liquid(address: 'destination', isTestnet: true),
         );
         when(
-          () => createChainSwap.execute(
+          () => createBitcoinToLiquid.execute(
             sendWalletId: 'wallet-1',
             amountSat: any(named: 'amountSat'),
-            fromLiquid: false,
-            externalRecipientAddress: 'destination',
+            destination: any(
+              named: 'destination',
+              that: _toAddress('destination'),
+            ),
           ),
         ).thenAnswer((_) async => const Err(SwapsBoltzRejectedFailure('x')));
         bloc.emit(external());
@@ -2462,11 +2488,13 @@ void main() {
         await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
 
         verify(
-          () => createChainSwap.execute(
+          () => createBitcoinToLiquid.execute(
             sendWalletId: 'wallet-1',
             amountSat: any(named: 'amountSat'),
-            fromLiquid: false,
-            externalRecipientAddress: 'destination',
+            destination: any(
+              named: 'destination',
+              that: _toAddress('destination'),
+            ),
           ),
         ).called(1);
       });
@@ -2579,11 +2607,13 @@ void main() {
 
       final paid =
           verify(
-                () => createChainSwap.execute(
+                () => createBitcoinToLiquid.execute(
                   sendWalletId: 'wallet-1',
                   amountSat: captureAny(named: 'amountSat'),
-                  fromLiquid: false,
-                  receiveWalletId: 'wallet-2',
+                  destination: any(
+                    named: 'destination',
+                    that: _toWallet('wallet-2'),
+                  ),
                 ),
               ).captured.single
               as int;
@@ -2625,11 +2655,13 @@ void main() {
 
       final paid =
           verify(
-                () => createChainSwap.execute(
+                () => createBitcoinToLiquid.execute(
                   sendWalletId: 'wallet-1',
                   amountSat: captureAny(named: 'amountSat'),
-                  fromLiquid: false,
-                  receiveWalletId: 'wallet-2',
+                  destination: any(
+                    named: 'destination',
+                    that: _toWallet('wallet-2'),
+                  ),
                 ),
               ).captured.single
               as int;

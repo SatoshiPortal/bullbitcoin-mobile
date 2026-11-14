@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:swaps/swaps.dart' show SwapRepository;
+import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:meta/meta.dart';
 
 /// Stores the Boltz backend typed by the user for the network the app is on
@@ -16,13 +16,13 @@ class SetSwapServerUsecase {
   final SwapServerSettingRepository _swapServerSettingRepository;
   final SettingsRepository _settingsRepository;
   final SwapEngineSwitcher _swapEngineSwitcher;
-  final SwapRepository _swapRepository;
+  final SwapStore _swapStore;
 
   const SetSwapServerUsecase({
     required this._swapServerSettingRepository,
     required this._settingsRepository,
     required this._swapEngineSwitcher,
-    required this._swapRepository,
+    required this._swapStore,
   });
 
   @useResult
@@ -44,8 +44,12 @@ class SetSwapServerUsecase {
           ),
         );
       }
-      if ((await _swapRepository.ongoing()).isNotEmpty) {
-        return const Err(SwapServerBusyFailure());
+      switch (await _swapStore.ongoing()) {
+        case Ok(value: final open) when open.isNotEmpty:
+          return const Err(SwapServerBusyFailure());
+        case Err():
+          return const Err(SwapStorageFailure());
+        case Ok():
       }
       await _swapServerSettingRepository.save(server, isTestnet: isTestnet);
       await _swapEngineSwitcher.rebuild(isTestnet: isTestnet);

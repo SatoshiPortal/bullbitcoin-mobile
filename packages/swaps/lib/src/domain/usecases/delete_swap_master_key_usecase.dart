@@ -1,15 +1,12 @@
-import 'package:swaps/src/data/boltz_swap_repository.dart';
+import 'package:primitives/primitives.dart';
+import 'package:swaps/src/domain/boltz_swaps.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
 
-/// Deletes the derived swap master key (and its index counter) for the
-/// default bitcoin wallet. The next swap or restore re-derives it.
+/// Deletes the default Bitcoin wallet's rescue key.
 class DeleteSwapMasterKeyUsecase {
-  final BoltzSwapRepository _swapRepository;
+  final BoltzSwaps _boltz;
 
-  DeleteSwapMasterKeyUsecase({required this._swapRepository});
+  const DeleteSwapMasterKeyUsecase(this._boltz);
 
-  Future<void> execute() async {
-    final fingerprint = await _swapRepository.defaultBitcoinFingerprint();
-    if (fingerprint == null || fingerprint.isEmpty) return;
-    await _swapRepository.deleteSwapMasterKey(walletFingerprint: fingerprint);
-  }
+  Future<Result<void, SwapsFailure>> execute() => _boltz.deleteMasterKey();
 }

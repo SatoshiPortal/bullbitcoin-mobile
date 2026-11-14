@@ -24,6 +24,7 @@ sealed class SwapModel with _$SwapModel {
     int? lockupFees,
     int? claimFees,
     @Default(false) bool recovered,
+    @Default('boltz') String provider,
   }) = LnReceiveSwapModel;
 
   // Lightning Send Swap (submarine swap)
@@ -50,6 +51,7 @@ sealed class SwapModel with _$SwapModel {
     int? claimFees,
     int? refundFees,
     @Default(false) bool recovered,
+    @Default('boltz') String provider,
   }) = LnSendSwapModel;
 
   // Chain Swap (between BTC and L-BTC)
@@ -78,6 +80,7 @@ sealed class SwapModel with _$SwapModel {
     int? refundFees,
     int? serverNetworkFees,
     @Default(false) bool recovered,
+    @Default('boltz') String provider,
   }) = ChainSwapModel;
 
   const SwapModel._();
@@ -99,6 +102,7 @@ sealed class SwapModel with _$SwapModel {
         fees: final fees,
         completionTime: final completionTime,
         recovered: final recovered,
+        provider: final provider,
       ) =>
         SwapModel.lnReceive(
           id: id,
@@ -117,6 +121,7 @@ sealed class SwapModel with _$SwapModel {
           lockupFees: fees?.lockupFee,
           claimFees: fees?.claimFee,
           recovered: recovered,
+          provider: provider.name,
         ),
       LnSendSwap(
         id: final id,
@@ -138,6 +143,7 @@ sealed class SwapModel with _$SwapModel {
         fees: final fees,
         completionTime: final completionTime,
         recovered: final recovered,
+        provider: final provider,
       ) =>
         SwapModel.lnSend(
           id: id,
@@ -162,6 +168,7 @@ sealed class SwapModel with _$SwapModel {
           claimFees: fees?.claimFee,
           refundFees: fees?.refundFee,
           recovered: recovered,
+          provider: provider.name,
         ),
       ChainSwap(
         id: final id,
@@ -184,6 +191,7 @@ sealed class SwapModel with _$SwapModel {
         fees: final fees,
         completionTime: final completionTime,
         recovered: final recovered,
+        provider: final provider,
       ) =>
         SwapModel.chain(
           id: id,
@@ -210,6 +218,7 @@ sealed class SwapModel with _$SwapModel {
           refundFees: fees?.refundFee,
           serverNetworkFees: fees?.serverNetworkFees,
           recovered: recovered,
+          provider: provider.name,
         ),
     };
   }
@@ -234,6 +243,7 @@ sealed class SwapModel with _$SwapModel {
         :final claimFees,
         :final completionTime,
         :final recovered,
+        :final provider,
       ) =>
         Swap.lnReceive(
           id: id,
@@ -256,6 +266,7 @@ sealed class SwapModel with _$SwapModel {
               ? DateTime.fromMillisecondsSinceEpoch(completionTime)
               : null,
           recovered: recovered,
+          provider: SwapProvider.values.byName(provider),
         ),
       LnSendSwapModel(
         :final id,
@@ -276,6 +287,7 @@ sealed class SwapModel with _$SwapModel {
         :final refundFees,
         :final completionTime,
         :final recovered,
+        :final provider,
       ) =>
         Swap.lnSend(
           id: id,
@@ -304,6 +316,7 @@ sealed class SwapModel with _$SwapModel {
               ? DateTime.fromMillisecondsSinceEpoch(completionTime)
               : null,
           recovered: recovered,
+          provider: SwapProvider.values.byName(provider),
         ),
       ChainSwapModel(
         :final id,
@@ -326,6 +339,7 @@ sealed class SwapModel with _$SwapModel {
         :final serverNetworkFees,
         :final completionTime,
         :final recovered,
+        :final provider,
       ) =>
         Swap.chain(
           id: id,
@@ -356,6 +370,7 @@ sealed class SwapModel with _$SwapModel {
               ? DateTime.fromMillisecondsSinceEpoch(completionTime)
               : null,
           recovered: recovered,
+          provider: SwapProvider.values.byName(provider),
         ),
     };
   }

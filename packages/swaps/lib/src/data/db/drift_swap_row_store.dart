@@ -110,6 +110,7 @@ class SwapRowMapper {
           claimFees: swap.claimFees,
           invoice: swap.invoice!,
           recovered: swap.recovered,
+          provider: swap.provider,
         );
       case SwapRowDirection.send:
         return SwapModel.lnSend(
@@ -135,6 +136,7 @@ class SwapRowMapper {
           claimFees: swap.claimFees,
           refundFees: swap.refundFees,
           recovered: swap.recovered,
+          provider: swap.provider,
         );
       case SwapRowDirection.onchain:
         return SwapModel.chain(
@@ -162,6 +164,7 @@ class SwapRowMapper {
           refundFees: swap.refundFees,
           serverNetworkFees: swap.serverNetworkFees,
           recovered: swap.recovered,
+          provider: swap.provider,
         );
     }
   }
@@ -189,6 +192,7 @@ extension SwapModelToSqliteX on SwapModel {
           lockupFees: swap.lockupFees,
           claimFees: swap.claimFees,
           recovered: swap.recovered,
+          provider: swap.provider,
         );
       case final LnSendSwapModel swap:
         return SwapRow(
@@ -216,6 +220,7 @@ extension SwapModelToSqliteX on SwapModel {
           refundFees: swap.refundFees,
           wasDirectPayment: false,
           recovered: swap.recovered,
+          provider: swap.provider,
         );
       case final ChainSwapModel swap:
         return SwapRow(
@@ -245,6 +250,7 @@ extension SwapModelToSqliteX on SwapModel {
           serverNetworkFees: swap.serverNetworkFees,
           wasDirectPayment: false,
           recovered: swap.recovered,
+          provider: swap.provider,
         );
     }
   }

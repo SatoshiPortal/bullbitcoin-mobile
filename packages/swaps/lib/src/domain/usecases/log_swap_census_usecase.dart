@@ -1,19 +1,23 @@
 import 'package:swaps/src/log.dart';
 import 'package:swaps/src/domain/entities/swap.dart';
-import 'package:swaps/src/domain/swap_repository.dart';
+import 'package:primitives/primitives.dart';
+import 'package:swaps/src/domain/swap_store.dart';
 
 /// One log line enumerating every stored swap, so a single user log export
 /// shows exactly which local state a stuck swap carries. Full detail only
 /// for unresolved swaps; settled swaps contribute a count (address/txid
 /// linkage stays out of routine exports).
 class LogSwapCensusUsecase {
-  final SwapRepository _swapRepository;
+  final SwapStore _store;
 
-  LogSwapCensusUsecase({required this._swapRepository});
+  const LogSwapCensusUsecase(this._store);
 
   Future<void> execute() async {
     try {
-      final swaps = await _swapRepository.all();
+      final swaps = switch (await _store.all()) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw SwapsCensusException('$failure'),
+      };
       final unresolved = [
         for (final s in swaps)
           if (!s.status.isTerminal ||
@@ -35,8 +39,8 @@ class LogSwapCensusUsecase {
         '${unresolved.length} unresolved$detail',
       );
       await swapsLog.flush();
-    } catch (e) {
-      swapsLog.warning('[SwapCensus] failed: $e');
+    } on SwapsCensusException catch (e) {
+      swapsLog.warning('[SwapCensus] failed: ${e.reason}');
     }
   }
 
@@ -60,4 +64,10 @@ class LogSwapCensusUsecase {
         ' keyIndex=${s.keyIndex}'
         ' send=${send ?? '-'} recv=${recv ?? '-'} refund=${refund ?? '-'}';
   }
+}
+
+class SwapsCensusException implements Exception {
+  final String reason;
+
+  const SwapsCensusException(this.reason);
 }

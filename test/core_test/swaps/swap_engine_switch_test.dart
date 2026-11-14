@@ -4,31 +4,32 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
     as settings;
 import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
-import 'package:bb_mobile/core/swaps/switchable_swap_repository.dart';
+import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
+import 'package:primitives/primitives.dart';
 import 'package:swaps/swaps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockRepository extends Mock implements BoltzSwapRepository {}
+class _MockStore extends Mock implements SwapStore {}
 
-class _MockDatasource extends Mock implements BoltzDatasource {}
+class _MockBoltz extends Mock implements BoltzSwapRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 class _MockSwapWatcher extends Mock implements SwapWatcher {}
 
 class _Engine {
-  final repository = _MockRepository();
-  final datasource = _MockDatasource();
+  final store = _MockStore();
+  final boltz = _MockBoltz();
   final updates = StreamController<Swap>.broadcast();
 
   _Engine({required bool isTestnet}) {
-    when(() => repository.isTestnet).thenReturn(isTestnet);
-    when(() => repository.updates).thenAnswer((_) => updates.stream);
-    when(() => repository.ongoing()).thenAnswer((_) async => []);
+    when(() => boltz.isTestnet).thenReturn(isTestnet);
+    when(() => boltz.updates).thenAnswer((_) => updates.stream);
+    when(() => store.ongoing()).thenAnswer((_) async => const Ok([]));
   }
 
-  SwapEngineParts get parts => (repository: repository, datasource: datasource);
+  SwapEngineParts get parts => (store: store, boltz: boltz);
 }
 
 Swap _swap(String id) => Swap.lnReceive(
@@ -43,11 +44,11 @@ Swap _swap(String id) => Swap.lnReceive(
 );
 
 void main() {
-  group('SwitchableSwapRepository', () {
+  group('SwitchableSwapEngine', () {
     test('forwards to the current engine and moves on replace', () async {
       final mainnet = _Engine(isTestnet: false);
       final testnet = _Engine(isTestnet: true);
-      final repository = SwitchableSwapRepository(mainnet.parts);
+      final repository = SwitchableSwapEngine(mainnet.parts);
       final seen = <String>[];
       final sub = repository.updates.listen((swap) => seen.add(swap.id));
       addTearDown(sub.cancel);
@@ -64,17 +65,17 @@ void main() {
 
       expect(repository.isTestnet, isTrue);
       expect(seen, ['main-1', 'test-1']);
-      verify(() => mainnet.repository.ongoing()).called(1);
-      verify(() => testnet.repository.ongoing()).called(1);
-      verify(() => mainnet.datasource.dispose()).called(1);
-      verifyNever(() => testnet.datasource.dispose());
+      verify(() => mainnet.store.ongoing()).called(1);
+      verify(() => testnet.store.ongoing()).called(1);
+      verify(() => mainnet.boltz.dispose()).called(1);
+      verifyNever(() => testnet.boltz.dispose());
     });
   });
 
   group('SwapEngineSwitcher', () {
     late _Engine mainnet;
     late _Engine testnet;
-    late SwitchableSwapRepository repository;
+    late SwitchableSwapEngine repository;
     late _MockSettingsRepository settingsRepository;
     late _MockSwapWatcher watcher;
     late StreamController<settings.Environment> environments;
@@ -84,7 +85,7 @@ void main() {
     setUp(() {
       mainnet = _Engine(isTestnet: false);
       testnet = _Engine(isTestnet: true);
-      repository = SwitchableSwapRepository(mainnet.parts);
+      repository = SwitchableSwapEngine(mainnet.parts);
       settingsRepository = _MockSettingsRepository();
       watcher = _MockSwapWatcher();
       environments = StreamController<settings.Environment>.broadcast();
@@ -96,7 +97,7 @@ void main() {
       when(() => watcher.start()).thenAnswer((_) async {});
       switcher = SwapEngineSwitcher(
         settingsRepository: settingsRepository,
-        swapRepository: repository,
+        engine: repository,
         swapWatcher: watcher,
         build: ({required isTestnet}) async {
           builds.add(isTestnet);
@@ -143,7 +144,7 @@ void main() {
       () async {
         final failing = SwapEngineSwitcher(
           settingsRepository: settingsRepository,
-          swapRepository: repository,
+          engine: repository,
           swapWatcher: watcher,
           build: ({required isTestnet}) async => throw Exception('boom'),
         );

@@ -17,7 +17,8 @@ import 'package:bb_mobile/features/send/domain/usecases/create_boltz_send_swap_u
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usecase.dart';
 import 'package:swaps/swaps.dart'
     show
-        CreateChainSwapUsecase,
+        CreateBitcoinToLiquidSwapUsecase,
+        CreateLiquidToBitcoinSwapUsecase,
         GetSwapLimitsAndFeesUsecase,
         DropPendingSwapLockupUsecase,
         RecordPendingSwapLockupUsecase,
@@ -128,8 +129,11 @@ class _MockCreateSendSwapUsecase extends Mock
 class _MockGetSwapLimitsAndFeesUsecase extends Mock
     implements GetSwapLimitsAndFeesUsecase {}
 
-class _MockCreateChainSwapUsecase extends Mock
-    implements CreateChainSwapUsecase {}
+class _MockCreateBitcoinToLiquidSwapUsecase extends Mock
+    implements CreateBitcoinToLiquidSwapUsecase {}
+
+class _MockCreateLiquidToBitcoinSwapUsecase extends Mock
+    implements CreateLiquidToBitcoinSwapUsecase {}
 
 class _MockGetSendSwapQuoteUsecase extends Mock
     implements GetSendSwapQuoteUsecase {}
@@ -280,7 +284,8 @@ class _TestSendCubit extends SendCubit {
     required super.dropPendingSwapLockupUsecase,
     required super.watchSwapUsecase,
     required super.getSwapLimitsAndFeesUsecase,
-    required super.createChainSwapUsecase,
+    required super.createBitcoinToLiquidSwapUsecase,
+    required super.createLiquidToBitcoinSwapUsecase,
   });
 
   void seed(SendState state) => emit(state);
@@ -398,7 +403,8 @@ void main() {
       dropPendingSwapLockupUsecase: _MockDropPendingSwapLockupUsecase(),
       watchSwapUsecase: _MockWatchSwapUsecase(),
       getSwapLimitsAndFeesUsecase: _MockGetSwapLimitsAndFeesUsecase(),
-      createChainSwapUsecase: _MockCreateChainSwapUsecase(),
+      createBitcoinToLiquidSwapUsecase: _MockCreateBitcoinToLiquidSwapUsecase(),
+      createLiquidToBitcoinSwapUsecase: _MockCreateLiquidToBitcoinSwapUsecase(),
     );
   });
 

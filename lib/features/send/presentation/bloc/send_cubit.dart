@@ -85,7 +85,9 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_route_usec
 import 'package:swaps/swaps.dart'
     show
         ChainSwap,
-        CreateChainSwapUsecase,
+        CreateBitcoinToLiquidSwapUsecase,
+        CreateLiquidToBitcoinSwapUsecase,
+        ToAddress,
         DropPendingSwapLockupUsecase,
         GetSwapLimitsAndFeesUsecase,
         LnReceiveSwap,
@@ -137,7 +139,8 @@ class SendCubit extends Cubit<SendState>
     required this._updateSendSwapPayinUsecase,
     required this._watchSendSwapUsecase,
     required this._getSwapLimitsAndFeesUsecase,
-    required this._createChainSwapUsecase,
+    required this._createBitcoinToLiquidSwapUsecase,
+    required this._createLiquidToBitcoinSwapUsecase,
     required this._watchFinishedWalletSyncsUsecase,
     required this._signBitcoinTxUsecase,
     required this._signLiquidTxUsecase,
@@ -230,7 +233,8 @@ class SendCubit extends Cubit<SendState>
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFeesUsecase;
-  final CreateChainSwapUsecase _createChainSwapUsecase;
+  final CreateBitcoinToLiquidSwapUsecase _createBitcoinToLiquidSwapUsecase;
+  final CreateLiquidToBitcoinSwapUsecase _createLiquidToBitcoinSwapUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
 
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
@@ -1635,14 +1639,21 @@ class SendCubit extends Cubit<SendState>
       case Err(:final failure):
         created = Err(failure);
       case Ok(value: (_, final fees)):
-        created = await _createChainSwapUsecase.execute(
-          sendWalletId: wallet.id,
-          amountSat: fees.calculateSwapAmountFromReceivableAmount(
-            receivableSat,
-          ),
-          fromLiquid: fromLiquid,
-          externalRecipientAddress: destinationAddress,
+        final amountSat = fees.calculateSwapAmountFromReceivableAmount(
+          receivableSat,
         );
+        final destination = ToAddress(destinationAddress);
+        created = fromLiquid
+            ? await _createLiquidToBitcoinSwapUsecase.execute(
+                sendWalletId: wallet.id,
+                amountSat: amountSat,
+                destination: destination,
+              )
+            : await _createBitcoinToLiquidSwapUsecase.execute(
+                sendWalletId: wallet.id,
+                amountSat: amountSat,
+                destination: destination,
+              );
         if (inputGeneration != _paymentRequestInputGeneration) {
           return _BoltzChainSendOutcome.stopped;
         }

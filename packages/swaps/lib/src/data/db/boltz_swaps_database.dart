@@ -39,6 +39,7 @@ class Swaps extends Table {
   BoolColumn get recovered => boolean().withDefault(const Constant(false))();
   TextColumn get pendingLockupTx => text().nullable()();
   TextColumn get pendingLockupTxid => text().nullable()();
+  TextColumn get provider => text().withDefault(const Constant('boltz'))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -84,6 +85,9 @@ class BoltzSwapsDatabase extends _$BoltzSwapsDatabase {
         }
         if (!existing.contains('pending_lockup_txid')) {
           await migrator.addColumn(swaps, swaps.pendingLockupTxid);
+        }
+        if (!existing.contains('provider')) {
+          await migrator.addColumn(swaps, swaps.provider);
         }
       }
     },

@@ -133,8 +133,10 @@ class SendLocator {
       () => GetSendSwapRouteUsecase(locator<SwapFacade>()),
     );
     locator.registerFactory<CreateBoltzSendSwapUsecase>(
-      () =>
-          CreateBoltzSendSwapUsecase(locator<CreateLightningSendSwapUsecase>()),
+      () => CreateBoltzSendSwapUsecase(
+        locator<BoltzSwaps>(),
+        locator<SwapWatcher>(),
+      ),
     );
     locator.registerFactory<CreateSendCrossChainSwapUsecase>(
       () => CreateSendCrossChainSwapUsecase(
@@ -327,7 +329,10 @@ class SendLocator {
             locator<RecordPendingSwapLockupUsecase>(),
         dropPendingSwapLockupUsecase: locator<DropPendingSwapLockupUsecase>(),
         getSwapLimitsAndFeesUsecase: locator<GetSwapLimitsAndFeesUsecase>(),
-        createChainSwapUsecase: locator<CreateChainSwapUsecase>(),
+        createBitcoinToLiquidSwapUsecase:
+            locator<CreateBitcoinToLiquidSwapUsecase>(),
+        createLiquidToBitcoinSwapUsecase:
+            locator<CreateLiquidToBitcoinSwapUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
       ),
     );

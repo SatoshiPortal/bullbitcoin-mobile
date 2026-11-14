@@ -43,7 +43,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements SwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -87,7 +87,7 @@ WalletTransaction _walletTransaction({
 void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
-  late _MockBoltzSwapRepository boltzSwapRepository;
+  late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
   late _MockExchangeOrderRepository orderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
@@ -101,7 +101,7 @@ void main() {
   setUp(() {
     settingsRepository = _MockSettingsRepository();
     walletTransactionRepository = _MockWalletTransactionRepository();
-    boltzSwapRepository = _MockBoltzSwapRepository();
+    swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
     orderRepository = _MockExchangeOrderRepository();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
@@ -118,8 +118,8 @@ void main() {
       () => payjoinSessions.list(any()),
     ).thenAnswer((_) async => const Ok([]));
     when(
-      () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => <Swap>[]);
+      () => swapStore.all(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => const Ok(<Swap>[]));
     when(
       () => orderRepository.getOrders(),
     ).thenAnswer((_) async => const Ok(<Order>[]));
@@ -135,7 +135,7 @@ void main() {
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
       walletTransactionRepository: walletTransactionRepository,
-      boltzSwapRepository: boltzSwapRepository,
+      swapStore: swapStore,
       payjoinSessions: payjoinSessions,
       mainnetExchangeOrderRepository: orderRepository,
       testnetExchangeOrderRepository: _MockExchangeOrderRepository(),
@@ -215,10 +215,8 @@ void main() {
           environment: any(named: 'environment'),
         ),
       ).thenAnswer((_) async => [tx]);
-      when(
-        () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => [
+      when(() => swapStore.all(walletId: any(named: 'walletId'))).thenAnswer(
+        (_) async => Ok([
           Swap.lnSend(
             id: 'swap-1',
             keyIndex: 0,
@@ -233,7 +231,7 @@ void main() {
             paymentAmount: 900000,
             sendTxid: 'wallet-txid',
           ),
-        ],
+        ]),
       );
 
       final transactions = _transactionsOf(await usecase.execute());

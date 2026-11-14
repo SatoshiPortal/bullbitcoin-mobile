@@ -5,21 +5,30 @@ import 'package:swaps/swaps.dart';
 import 'package:meta/meta.dart';
 
 /// Creates (or reuses the pending) Boltz submarine swap that pays [invoice]
-/// from [wallet]. Returns the engine's failure untranslated so the caller can
-/// decide on the exchange fallback before mapping it for display.
+/// from [wallet], on the pair of the wallet's chain. Returns the engine's
+/// failure untranslated so the caller can decide on the exchange fallback
+/// before mapping it for display.
 class CreateBoltzSendSwapUsecase {
-  final CreateLightningSendSwapUsecase _createLightningSendSwapUsecase;
+  final BoltzSwaps _boltz;
+  final SwapWatcher _swapWatcher;
 
-  const CreateBoltzSendSwapUsecase(this._createLightningSendSwapUsecase);
+  const CreateBoltzSendSwapUsecase(this._boltz, this._swapWatcher);
 
   @useResult
   Future<Result<LnSendSwap, SwapsFailure>> execute({
     required Wallet wallet,
     required Bolt11PaymentRequest invoice,
-  }) => _createLightningSendSwapUsecase.execute(
-    walletId: wallet.id,
-    invoice: invoice.invoice,
-    invoiceAmountSat: invoice.amountSat,
-    fromLiquid: wallet.network.isLiquid,
-  );
+  }) async {
+    final created = wallet.network.isLiquid
+        ? await _boltz.createLiquidToLightningSwap(
+            walletId: wallet.id,
+            invoice: invoice.invoice,
+          )
+        : await _boltz.createBitcoinToLightningSwap(
+            walletId: wallet.id,
+            invoice: invoice.invoice,
+          );
+    if (created case Ok()) _swapWatcher.ensureRunning();
+    return created;
+  }
 }

@@ -43,6 +43,10 @@ extension SwapTypeX on SwapType {
       this == SwapType.bitcoinToLiquid || this == SwapType.liquidToBitcoin;
 }
 
+/// Who runs the swap's other side. Each provider brings its own
+/// [SwapResolver]; the watcher routes every swap to its provider's.
+enum SwapProvider { boltz }
+
 /// The resolution a swap's funds are waiting on. See [Swap.nextAction].
 enum SwapAction { none, claim, refund, coopSign }
 
@@ -197,6 +201,7 @@ sealed class Swap with _$Swap {
     // TODO: recover the uncertain fields accurately later — e.g. query Boltz
     // for the historical swap, and read the original lockup tx fee on-chain.
     @Default(false) bool recovered,
+    @Default(SwapProvider.boltz) SwapProvider provider,
   }) = LnReceiveSwap;
 
   const factory Swap.lnSend({
@@ -223,6 +228,7 @@ sealed class Swap with _$Swap {
     SwapFees? fees,
     DateTime? completionTime,
     @Default(false) bool recovered,
+    @Default(SwapProvider.boltz) SwapProvider provider,
   }) = LnSendSwap;
 
   const factory Swap.chain({
@@ -250,6 +256,7 @@ sealed class Swap with _$Swap {
     SwapFees? fees,
     DateTime? completionTime,
     @Default(false) bool recovered,
+    @Default(SwapProvider.boltz) SwapProvider provider,
   }) = ChainSwap;
 
   const Swap._();
@@ -257,6 +264,37 @@ sealed class Swap with _$Swap {
   bool get isLnReceiveSwap => this is LnReceiveSwap;
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
+
+  /// Whether this stored swap records a resolution we can trust: a
+  /// terminal status alone is not enough when funds were locked — a proving
+  /// txid (or a direct payment) must be behind it. [onChainRecoverable] is
+  /// the provider's restore verdict that a lockup exists and is unresolved:
+  /// it beats "no lockup recorded means nothing moved", which is false when
+  /// the app died between broadcast and store.
+  bool isLocallySettled({required bool onChainRecoverable}) => switch (status) {
+    SwapStatus.completed => switch (this) {
+      LnReceiveSwap(:final receiveTxid, :final wasDirectPayment) =>
+        receiveTxid != null || wasDirectPayment,
+      ChainSwap(:final receiveTxid, :final refundTxid) =>
+        receiveTxid != null || refundTxid != null,
+      // A submarine swap's proof is the paid invoice, not a txid of ours.
+      LnSendSwap() => true,
+    },
+    SwapStatus.refunded => true,
+    SwapStatus.expired || SwapStatus.failed => switch (this) {
+      LnSendSwap(:final refundTxid, :final sendTxid) ||
+      ChainSwap(
+        :final refundTxid,
+        :final sendTxid,
+      ) => refundTxid != null || (sendTxid == null && !onChainRecoverable),
+      LnReceiveSwap() => true,
+    },
+    SwapStatus.pending ||
+    SwapStatus.paid ||
+    SwapStatus.claimable ||
+    SwapStatus.refundable ||
+    SwapStatus.canCoop => false,
+  };
 
   /// Our signed lockup is stored but its broadcast is not yet confirmed.
   bool get hasPendingLockup => switch (this) {

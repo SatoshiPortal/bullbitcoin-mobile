@@ -1,17 +1,14 @@
-import 'package:swaps/src/data/boltz_swap_repository.dart';
+import 'package:primitives/primitives.dart';
+import 'package:swaps/src/domain/boltz_swaps.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
 import 'package:swaps/src/domain/entities/swap_master_key_info.dart';
 
-/// Reads the swap master key (the "swap mnemonic") for the default bitcoin
-/// wallet, for display in the seed viewer. Null when no default bitcoin
-/// wallet exists or no swap key has been derived yet.
+/// The rescue key of the default Bitcoin wallet, for the seed viewer.
 class GetSwapMasterKeyUsecase {
-  final BoltzSwapRepository _swapRepository;
+  final BoltzSwaps _boltz;
 
-  GetSwapMasterKeyUsecase({required this._swapRepository});
+  const GetSwapMasterKeyUsecase(this._boltz);
 
-  Future<SwapMasterKeyInfo?> execute() async {
-    final fingerprint = await _swapRepository.defaultBitcoinFingerprint();
-    if (fingerprint == null || fingerprint.isEmpty) return null;
-    return _swapRepository.getSwapMasterKeyInfo(walletFingerprint: fingerprint);
-  }
+  Future<Result<SwapMasterKeyInfo?, SwapsFailure>> execute() =>
+      _boltz.masterKeyInfo();
 }

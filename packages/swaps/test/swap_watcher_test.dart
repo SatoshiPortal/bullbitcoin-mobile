@@ -1,20 +1,26 @@
 import 'dart:async';
 
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart';
 import 'package:swaps/src/domain/entities/swap.dart';
-import 'package:swaps/src/domain/swap_repository.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
+import 'package:swaps/src/domain/swap_resolver.dart';
+import 'package:swaps/src/domain/swap_store.dart';
 import 'package:swaps/src/domain/swap_watcher.dart';
 import 'package:test/test.dart';
 
-class _MockSwapRepository extends Mock implements SwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
+
+class _MockSwapResolver extends Mock implements SwapResolver {}
 
 void main() {
-  late _MockSwapRepository repo;
+  late _MockSwapStore store;
+  late _MockSwapResolver resolver;
   late SwapWatcher watcher;
   late StreamController<Swap> updates;
 
-  Swap chainSwap(SwapStatus status, {String? refundTxid}) => Swap.chain(
-    id: 'swap-${status.name}',
+  Swap chainSwap(SwapStatus status, {String id = 'swap'}) => Swap.chain(
+    id: id,
     keyIndex: 0,
     type: SwapType.liquidToBitcoin,
     status: status,
@@ -24,37 +30,34 @@ void main() {
     paymentAddress: 'lq1lockup',
     paymentAmount: 100000,
     sendTxid: 'lockup-txid',
-    refundTxid: refundTxid,
   );
+
+  Future<Result<Swap, SwapsFailure>> resolved(Invocation inv) async =>
+      Ok(inv.positionalArguments[0] as Swap);
 
   setUpAll(() {
     registerFallbackValue(chainSwap(SwapStatus.refundable));
   });
 
   setUp(() {
-    repo = _MockSwapRepository();
+    store = _MockSwapStore();
+    resolver = _MockSwapResolver();
     updates = StreamController<Swap>.broadcast();
-    when(() => repo.updates).thenAnswer((_) => updates.stream);
+    when(() => resolver.updates).thenAnswer((_) => updates.stream);
+    when(() => store.ongoing()).thenAnswer((_) async => const Ok([]));
     when(
-      () => repo.ongoing(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => []);
-    when(() => repo.ongoing()).thenAnswer((_) async => []);
-    when(() => repo.verifyCompletions()).thenAnswer((_) async {});
-    when(() => repo.listen(any())).thenAnswer((_) {});
-    when(() => repo.reconcile(any())).thenAnswer((_) async {});
-    when(() => repo.claim(any())).thenAnswer((_) async => 'claim-txid');
-    when(() => repo.refund(any())).thenAnswer((_) async => 'refund-txid');
-    when(() => repo.coopSign(any())).thenAnswer((_) async {});
-    // Backfill is a no-op passthrough here; the swap already carries its
-    // sendTxid in these fixtures. Its own behaviour is covered in the
-    // repository test.
+      () => resolver.verifyCompletions(),
+    ).thenAnswer((_) async => const Ok(null));
+    when(() => resolver.listen(any())).thenAnswer((_) {});
     when(
-      () => repo.reconcileLockupTxid(any()),
-    ).thenAnswer((inv) async => inv.positionalArguments[0] as Swap);
-    when(
-      () => repo.resolvePendingLockup(any()),
-    ).thenAnswer((inv) async => inv.positionalArguments[0] as Swap);
-    watcher = SwapWatcher(repo: repo);
+      () => resolver.reconcile(any()),
+    ).thenAnswer((_) async => const Ok(null));
+    when(() => resolver.resolve(any())).thenAnswer(resolved);
+    when(() => resolver.resolveScriptPath(any())).thenAnswer(resolved);
+    watcher = SwapWatcher(
+      store: store,
+      resolvers: {SwapProvider.boltz: resolver},
+    );
   });
 
   tearDown(() async {
@@ -62,109 +65,68 @@ void main() {
     await updates.close();
   });
 
-  test('start verifies completions, then drives every ongoing swap', () async {
-    when(() => repo.ongoing()).thenAnswer(
-      (_) async => [
-        chainSwap(SwapStatus.refundable),
-        chainSwap(SwapStatus.claimable),
-      ],
-    );
+  test(
+    'start verifies completions, then resolves every ongoing swap',
+    () async {
+      when(() => store.ongoing()).thenAnswer(
+        (_) async => Ok([
+          chainSwap(SwapStatus.refundable, id: 'a'),
+          chainSwap(SwapStatus.claimable, id: 'b'),
+        ]),
+      );
+
+      await watcher.start();
+
+      verify(() => resolver.verifyCompletions()).called(1);
+      verify(() => resolver.listen(['a', 'b'])).called(1);
+      verify(() => resolver.reconcile(['a', 'b'])).called(1);
+      verify(() => resolver.resolve(any())).called(2);
+    },
+  );
+
+  test('an unreadable store drives nothing', () async {
+    when(
+      () => store.ongoing(),
+    ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('db')));
 
     await watcher.start();
 
-    verify(() => repo.verifyCompletions()).called(1);
-    verify(() => repo.refund(any())).called(1);
-    verify(() => repo.claim(any())).called(1);
-    verify(() => repo.reconcile(any())).called(1);
+    verifyNever(() => resolver.reconcile(any()));
+    verifyNever(() => resolver.resolve(any()));
   });
 
-  test('acts per status: canCoop coop-signs submarine, claims chain, '
-      'a refunded swap with a recorded refund does nothing', () async {
-    await watcher.processSwap(
-      Swap.lnSend(
-        id: 'submarine-cancoop',
-        keyIndex: 0,
-        type: SwapType.liquidToLightning,
-        status: SwapStatus.canCoop,
-        environment: Environment.mainnet,
-        creationTime: DateTime(2026, 7),
-        sendWalletId: 'w-liquid',
-        invoice: 'lnbc1',
-        paymentAddress: 'lq1lockup',
-        paymentAmount: 100000,
-      ),
-    );
-    verify(() => repo.coopSign(any())).called(1);
-    verifyNever(() => repo.claim(any()));
-
-    // A chain swap parked at canCoop (restore maps claim.pending there) has
-    // OUR claim pending — coopSign would no-op and strand it.
-    await watcher.processSwap(chainSwap(SwapStatus.canCoop));
-    verify(() => repo.claim(any())).called(1);
-
-    await watcher.processSwap(
-      chainSwap(SwapStatus.refunded, refundTxid: 'refund-done'),
-    );
-    verifyNever(() => repo.claim(any()));
-    verifyNever(() => repo.refund(any()));
-  });
-
-  test('refunds our lockup after Boltz refunded its own', () async {
-    await watcher.processSwap(chainSwap(SwapStatus.refunded));
-    verify(() => repo.refund(any())).called(1);
-  });
-
-  test('drives the refund of failed/expired swaps with locked funds', () async {
-    await watcher.processSwap(chainSwap(SwapStatus.failed));
-    await watcher.processSwap(chainSwap(SwapStatus.expired));
-    verify(() => repo.refund(any())).called(2);
-
-    // Already refunded: nothing left to drive.
-    await watcher.processSwap(
-      chainSwap(SwapStatus.failed, refundTxid: 'refund-done'),
-    );
-    verifyNever(() => repo.refund(any()));
-  });
-
-  test('re-claims a completed swap without a recorded claim', () async {
-    await watcher.processSwap(chainSwap(SwapStatus.completed));
-    verify(() => repo.claim(any())).called(1);
-
-    await watcher.processSwap(
-      chainSwap(SwapStatus.completed, refundTxid: 'refund-done'),
-    );
-    verifyNever(() => repo.refund(any()));
-  });
-
-  test('a failed action backs off instead of hot-looping', () async {
-    when(() => repo.refund(any())).thenThrow(Exception('electrum down'));
+  test('a failed resolution backs off instead of hot-looping', () async {
+    when(
+      () => resolver.resolve(any()),
+    ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('electrum')));
     final swap = chainSwap(SwapStatus.refundable);
 
     await watcher.processSwap(swap);
     await watcher.processSwap(swap);
 
-    verify(() => repo.refund(any())).called(1);
+    verify(() => resolver.resolve(any())).called(1);
   });
 
   test(
-    'heartbeat retries actions even when the Boltz backend is down',
+    'heartbeat retries resolution even when the Boltz backend is down',
     () async {
-      when(() => repo.reconcile(any())).thenThrow(Exception('boltz down'));
       when(
-        () => repo.ongoing(),
-      ).thenAnswer((_) async => [chainSwap(SwapStatus.refundable)]);
+        () => resolver.reconcile(any()),
+      ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('boltz')));
+      when(
+        () => store.ongoing(),
+      ).thenAnswer((_) async => Ok([chainSwap(SwapStatus.refundable)]));
       watcher = SwapWatcher(
-        repo: repo,
+        store: store,
+        resolvers: {SwapProvider.boltz: resolver},
         heartbeat: const Duration(milliseconds: 40),
       );
 
       await watcher.start();
       await Future<void>.delayed(const Duration(milliseconds: 110));
 
-      // Start sweep + at least one heartbeat sweep — refund must not depend
-      // on reconcile succeeding or the backend re-emitting the swap.
       expect(
-        verify(() => repo.refund(any())).callCount,
+        verify(() => resolver.resolve(any())).callCount,
         greaterThanOrEqualTo(2),
       );
     },
@@ -174,13 +136,14 @@ void main() {
     await watcher.start();
     updates.add(chainSwap(SwapStatus.refundable));
     await Future<void>.delayed(const Duration(milliseconds: 20));
-    verify(() => repo.refund(any())).called(1);
+    verify(() => resolver.resolve(any())).called(1);
   });
 
   test('stop waits for an action already running', () async {
-    final claim = Completer<String>();
-    when(() => repo.claim(any())).thenAnswer((_) => claim.future);
-    unawaited(watcher.processSwap(chainSwap(SwapStatus.claimable)));
+    final resolution = Completer<Result<Swap, SwapsFailure>>();
+    when(() => resolver.resolve(any())).thenAnswer((_) => resolution.future);
+    final swap = chainSwap(SwapStatus.claimable);
+    unawaited(watcher.processSwap(swap));
     await Future<void>.delayed(Duration.zero);
 
     var stopped = false;
@@ -188,7 +151,7 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(stopped, isFalse);
 
-    claim.complete('claim-txid');
+    resolution.complete(Ok(swap));
     await stopping;
     expect(stopped, isTrue);
   });
@@ -197,10 +160,53 @@ void main() {
     await watcher.stop();
 
     await watcher.processSwap(chainSwap(SwapStatus.claimable));
-    verifyNever(() => repo.claim(any()));
+    verifyNever(() => resolver.resolve(any()));
 
     watcher.ensureRunning();
     await watcher.processSwap(chainSwap(SwapStatus.claimable));
-    verify(() => repo.claim(any())).called(1);
+    verify(() => resolver.resolve(any())).called(1);
+  });
+
+  group('retry', () {
+    test('goes to the script path, not the cooperative resolution', () async {
+      final swap = chainSwap(SwapStatus.refundable);
+
+      final result = await watcher.retry(swap);
+
+      expect(result, isA<Ok<Swap, SwapsFailure>>());
+      verify(() => resolver.resolveScriptPath(swap)).called(1);
+      verifyNever(() => resolver.resolve(any()));
+    });
+
+    test('waits for an action already in flight for the swap', () async {
+      final resolution = Completer<Result<Swap, SwapsFailure>>();
+      when(() => resolver.resolve(any())).thenAnswer((_) => resolution.future);
+      final swap = chainSwap(SwapStatus.refundable);
+      unawaited(watcher.processSwap(swap));
+      await Future<void>.delayed(Duration.zero);
+
+      var retried = false;
+      final retrying = watcher.retry(swap).then((_) => retried = true);
+      await Future<void>.delayed(Duration.zero);
+      expect(retried, isFalse);
+      verifyNever(() => resolver.resolveScriptPath(any()));
+
+      resolution.complete(Ok(swap));
+      await retrying;
+      verify(() => resolver.resolveScriptPath(swap)).called(1);
+    });
+
+    test('a successful retry clears the backoff', () async {
+      when(
+        () => resolver.resolve(any()),
+      ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('electrum')));
+      final swap = chainSwap(SwapStatus.refundable);
+      await watcher.processSwap(swap);
+
+      await watcher.retry(swap);
+      await watcher.processSwap(swap);
+
+      verify(() => resolver.resolve(any())).called(2);
+    });
   });
 }

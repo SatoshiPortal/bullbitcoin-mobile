@@ -106,7 +106,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     required this._checkLiquidConsolidationUsecase,
     required this._getSwapRouteUsecase,
     required this._getSwapLimitsAndFeesUsecase,
-    required this._createChainSwapUsecase,
+    required this._createBitcoinToLiquidSwapUsecase,
+    required this._createLiquidToBitcoinSwapUsecase,
     required this._recordSwapLockupUsecase,
     required this._recordPendingSwapLockupUsecase,
     required this._dropPendingSwapLockupUsecase,
@@ -172,7 +173,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   final CheckLiquidConsolidationUsecase _checkLiquidConsolidationUsecase;
   final GetSwapRouteUsecase _getSwapRouteUsecase;
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFeesUsecase;
-  final CreateChainSwapUsecase _createChainSwapUsecase;
+  final CreateBitcoinToLiquidSwapUsecase _createBitcoinToLiquidSwapUsecase;
+  final CreateLiquidToBitcoinSwapUsecase _createLiquidToBitcoinSwapUsecase;
   final RecordSwapLockupUsecase _recordSwapLockupUsecase;
   final RecordPendingSwapLockupUsecase _recordPendingSwapLockupUsecase;
   final DropPendingSwapLockupUsecase _dropPendingSwapLockupUsecase;
@@ -841,13 +843,25 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       }
     }
 
-    final created = await _createChainSwapUsecase.execute(
-      sendWalletId: fromWallet.id,
-      amountSat: paymentAmountSat,
-      fromLiquid: fromWallet.isLiquid,
-      receiveWalletId: destinationWallet?.id,
-      externalRecipientAddress: externalRecipient,
-    );
+    final ChainSwapDestination destination;
+    if (externalRecipient != null) {
+      destination = ToAddress(externalRecipient);
+    } else if (destinationWallet != null) {
+      destination = ToWallet(destinationWallet.id);
+    } else {
+      throw SwapCreationException('destination_wallet_required');
+    }
+    final created = fromWallet.isLiquid
+        ? await _createLiquidToBitcoinSwapUsecase.execute(
+            sendWalletId: fromWallet.id,
+            amountSat: paymentAmountSat,
+            destination: destination,
+          )
+        : await _createBitcoinToLiquidSwapUsecase.execute(
+            sendWalletId: fromWallet.id,
+            amountSat: paymentAmountSat,
+            destination: destination,
+          );
     if (generation != _transactionGeneration) return null;
     final ChainSwap swap;
     switch (created) {

@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 
 class BoltzAutoswapProvider implements AutoswapProviderPort {
   final GetSwapLimitsAndFeesUsecase _getSwapLimitsAndFees;
-  final CreateChainSwapUsecase _createChainSwap;
+  final CreateLiquidToBitcoinSwapUsecase _createLiquidToBitcoinSwap;
   final RecordSwapLockupUsecase _recordSwapLockup;
   final RecordPendingSwapLockupUsecase _recordPendingLockup;
   final DropPendingSwapLockupUsecase _dropPendingLockup;
@@ -30,7 +30,7 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
 
   const BoltzAutoswapProvider(
     this._getSwapLimitsAndFees,
-    this._createChainSwap,
+    this._createLiquidToBitcoinSwap,
     this._recordSwapLockup,
     this._recordPendingLockup,
     this._dropPendingLockup,
@@ -127,11 +127,10 @@ class BoltzAutoswapProvider implements AutoswapProviderPort {
       }
 
       final ChainSwap swap;
-      switch (await _createChainSwap.execute(
+      switch (await _createLiquidToBitcoinSwap.execute(
         sendWalletId: liquidWallet.id,
         amountSat: amountSat,
-        fromLiquid: true,
-        receiveWalletId: recipientWallet.id,
+        destination: ToWallet(recipientWallet.id),
       )) {
         case Ok(:final value):
           swap = value;

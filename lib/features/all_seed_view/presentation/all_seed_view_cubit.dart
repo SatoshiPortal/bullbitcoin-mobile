@@ -84,12 +84,10 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
 
     // Best-effort: the swap mnemonic is a separate secret from the wallet
     // seeds; a failure to read it must not hide the wallet seeds.
-    SwapMasterKeyInfo? swapMasterKey;
-    try {
-      swapMasterKey = await _getSwapMasterKeyUsecase.execute();
-    } catch (_) {
-      swapMasterKey = null;
-    }
+    final swapMasterKey = switch (await _getSwapMasterKeyUsecase.execute()) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
 
     emit(
       state.copyWith(
@@ -112,9 +110,12 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
   Future<String?> loadSwapMnemonic() async {
     final walletFingerprint = state.swapMasterKey?.walletFingerprint;
     if (walletFingerprint == null) return null;
-    return _getSwapMnemonicUsecase.execute(
+    return switch (await _getSwapMnemonicUsecase.execute(
       walletFingerprint: walletFingerprint,
-    );
+    )) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
   }
 
   void showSeeds() => emit(state.copyWith(seedsVisible: true));

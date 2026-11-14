@@ -11,8 +11,9 @@ import 'package:swaps/swaps.dart' as boltz;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockCreateLightningSendSwapUsecase extends Mock
-    implements boltz.CreateLightningSendSwapUsecase {}
+class _MockBoltzSwaps extends Mock implements boltz.BoltzSwaps {}
+
+class _MockSwapWatcher extends Mock implements boltz.SwapWatcher {}
 
 class _MockSwapFacade extends Mock implements SwapFacade {}
 
@@ -42,23 +43,30 @@ const _invoice =
         as Bolt11PaymentRequest;
 
 void main() {
-  test('creates the swap from the wallet chain and invoice amount', () async {
-    final create = _MockCreateLightningSendSwapUsecase();
+  test('creates the swap on the pair of the wallet chain', () async {
+    final boltzSwaps = _MockBoltzSwaps();
+    final watcher = _MockSwapWatcher();
     final swap = _MockLnSendSwap();
     when(
-      () => create.execute(
+      () => boltzSwaps.createLiquidToLightningSwap(
         walletId: 'w-liquid',
         invoice: 'lnbc1-invoice',
-        invoiceAmountSat: 50000,
-        fromLiquid: true,
       ),
     ).thenAnswer((_) async => Ok(swap));
 
     final result = await CreateBoltzSendSwapUsecase(
-      create,
+      boltzSwaps,
+      watcher,
     ).execute(wallet: _liquidWallet(), invoice: _invoice);
 
     expect((result as Ok).value, same(swap));
+    verifyNever(
+      () => boltzSwaps.createBitcoinToLightningSwap(
+        walletId: any(named: 'walletId'),
+        invoice: any(named: 'invoice'),
+      ),
+    );
+    verify(() => watcher.ensureRunning()).called(1);
   });
 
   test('reads the swap route from the swap feature', () async {

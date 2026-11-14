@@ -199,6 +199,22 @@ class SwapsException implements Exception {
   String toString() => message;
 }
 
+/// The amount is outside the provider's current limits.
+class SwapsAmountOutOfLimitsException implements Exception {
+  final int minSat;
+  final int maxSat;
+
+  const SwapsAmountOutOfLimitsException({
+    required this.minSat,
+    required this.maxSat,
+  });
+}
+
+/// A swap for the same payment already holds or is confirming a lockup.
+class SwapInProgressException implements Exception {
+  const SwapInProgressException();
+}
+
 /// A call to the Boltz backend failed. [kind] is boltz-client's error
 /// variant name; [statusCode] is set only when Boltz answered with a non-2xx
 /// status, so a null code with an `HTTP`/`IO` kind means no answer at all.

@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settin
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:swaps/swaps.dart'
     show
-        CreateChainSwapUsecase,
+        CreateLiquidToBitcoinSwapUsecase,
         DropPendingSwapLockupUsecase,
         GetSwapLimitsAndFeesUsecase,
         RecordPendingSwapLockupUsecase,
@@ -37,7 +37,7 @@ class AutoSwapLocator {
     locator.registerLazySingleton<BoltzAutoswapProvider>(
       () => BoltzAutoswapProvider(
         locator<GetSwapLimitsAndFeesUsecase>(),
-        locator<CreateChainSwapUsecase>(),
+        locator<CreateLiquidToBitcoinSwapUsecase>(),
         locator<RecordSwapLockupUsecase>(),
         locator<RecordPendingSwapLockupUsecase>(),
         locator<DropPendingSwapLockupUsecase>(),

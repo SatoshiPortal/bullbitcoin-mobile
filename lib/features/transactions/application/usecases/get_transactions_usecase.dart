@@ -19,7 +19,7 @@ import 'package:primitives/primitives.dart';
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final SwapRepository _boltzSwapRepository;
+  final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
@@ -29,7 +29,7 @@ class GetTransactionsUsecase {
   GetTransactionsUsecase({
     required this._settingsRepository,
     required this._walletTransactionRepository,
-    required this._boltzSwapRepository,
+    required this._swapStore,
     required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
@@ -78,7 +78,7 @@ class GetTransactionsUsecase {
       final (
         walletTransactions,
         payjoinResult,
-        swaps,
+        swapResult,
         loadedOrderSwaps,
       ) = await (
         _walletTransactionRepository.getWalletTransactions(
@@ -94,12 +94,22 @@ class GetTransactionsUsecase {
                 : BitcoinNetwork.mainnet,
           ),
         ),
-        _boltzSwapRepository.all(walletId: walletId),
+        _swapStore.all(walletId: walletId),
         _getTransactionOrderSwapsUsecase.execute(walletId: walletId),
       ).wait;
       final payjoins = switch (payjoinResult) {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
+      };
+      final swaps = switch (swapResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => () {
+          log.warning(
+            'Swaps unavailable; listing without them: '
+            '${failure.runtimeType}',
+          );
+          return <Swap>[];
+        }(),
       };
       // A failed swap load degrades the list rather than failing it: wallet
       // transactions are still worth showing. Logged, so a broken swap store

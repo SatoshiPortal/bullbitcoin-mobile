@@ -29,7 +29,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements SwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -80,7 +80,7 @@ List<Transaction> unwrap(bb.Result<List<Transaction>, TransactionFailure> r) =>
 void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
-  late _MockBoltzSwapRepository boltzSwapRepository;
+  late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
   late _MockExchangeOrderRepository mainnetOrderRepository;
   late _MockExchangeOrderRepository testnetOrderRepository;
@@ -108,7 +108,7 @@ void main() {
   setUp(() {
     settingsRepository = _MockSettingsRepository();
     walletTransactionRepository = _MockWalletTransactionRepository();
-    boltzSwapRepository = _MockBoltzSwapRepository();
+    swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
     mainnetOrderRepository = _MockExchangeOrderRepository();
     testnetOrderRepository = _MockExchangeOrderRepository();
@@ -131,8 +131,8 @@ void main() {
       ),
     ).thenAnswer((_) async => []);
     when(
-      () => boltzSwapRepository.all(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => []);
+      () => swapStore.all(walletId: any(named: 'walletId')),
+    ).thenAnswer((_) async => const bb.Ok([]));
     when(
       () => mainnetOrderRepository.getOrders(),
     ).thenAnswer((_) async => Ok(orders));
@@ -148,7 +148,7 @@ void main() {
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
       walletTransactionRepository: walletTransactionRepository,
-      boltzSwapRepository: boltzSwapRepository,
+      swapStore: swapStore,
       payjoinSessions: payjoinSessions,
       mainnetExchangeOrderRepository: mainnetOrderRepository,
       testnetExchangeOrderRepository: testnetOrderRepository,
@@ -183,7 +183,7 @@ void main() {
     verifyZeroInteractions(mainnetOrderRepository);
     verifyZeroInteractions(testnetOrderRepository);
     verifyZeroInteractions(payjoinSessions);
-    verifyZeroInteractions(boltzSwapRepository);
+    verifyZeroInteractions(swapStore);
     verifyZeroInteractions(getOrderSwaps);
   });
 

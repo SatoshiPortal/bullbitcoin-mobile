@@ -22,7 +22,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockSwapRepository extends Mock implements SwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -44,7 +44,7 @@ List<Transaction> unwrap(bb.Result<List<Transaction>, TransactionFailure> r) =>
 void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
-  late _MockSwapRepository swapHistoryRepository;
+  late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
   late _MockExchangeOrderRepository mainnetOrderRepository;
   late _MockExchangeOrderRepository testnetOrderRepository;
@@ -54,7 +54,7 @@ void main() {
   setUp(() {
     settingsRepository = _MockSettingsRepository();
     walletTransactionRepository = _MockWalletTransactionRepository();
-    swapHistoryRepository = _MockSwapRepository();
+    swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
     mainnetOrderRepository = _MockExchangeOrderRepository();
     testnetOrderRepository = _MockExchangeOrderRepository();
@@ -62,7 +62,7 @@ void main() {
     usecase = GetTransactionsByTxIdUsecase(
       settingsRepository: settingsRepository,
       walletTransactionRepository: walletTransactionRepository,
-      boltzSwapRepository: swapHistoryRepository,
+      swapStore: swapStore,
       payjoinSessions: payjoinSessions,
       mainnetExchangeOrderRepository: mainnetOrderRepository,
       testnetExchangeOrderRepository: testnetOrderRepository,
@@ -76,9 +76,7 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => []);
-    when(
-      () => swapHistoryRepository.byTxId(any()),
-    ).thenAnswer((_) async => null);
+    when(() => swapStore.byTxId(any())).thenAnswer((_) async => const Ok(null));
     when(() => getTransactionOrderSwapsUsecase.execute()).thenAnswer(
       (_) async => const bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
     );
@@ -110,7 +108,7 @@ void main() {
       verifyZeroInteractions(mainnetOrderRepository);
       verifyZeroInteractions(testnetOrderRepository);
       verifyZeroInteractions(payjoinSessions);
-      verifyZeroInteractions(swapHistoryRepository);
+      verifyZeroInteractions(swapStore);
       verifyZeroInteractions(getTransactionOrderSwapsUsecase);
     },
   );

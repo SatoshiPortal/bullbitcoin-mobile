@@ -151,8 +151,11 @@ class _MockOrderSwapRecord extends Mock implements OrderSwapRecord {}
 class _MockGetSwapLimitsAndFeesUsecase extends Mock
     implements boltz.GetSwapLimitsAndFeesUsecase {}
 
-class _MockCreateChainSwapUsecase extends Mock
-    implements boltz.CreateChainSwapUsecase {}
+class _MockCreateBitcoinToLiquidSwapUsecase extends Mock
+    implements boltz.CreateBitcoinToLiquidSwapUsecase {}
+
+class _MockCreateLiquidToBitcoinSwapUsecase extends Mock
+    implements boltz.CreateLiquidToBitcoinSwapUsecase {}
 
 class _MockOrderSwap extends Mock implements OrderSwap {}
 
@@ -313,7 +316,8 @@ class _TestableSendCubit extends SendCubit {
     required super.dropPendingSwapLockupUsecase,
     required super.watchSwapUsecase,
     required super.getSwapLimitsAndFeesUsecase,
-    required super.createChainSwapUsecase,
+    required super.createBitcoinToLiquidSwapUsecase,
+    required super.createLiquidToBitcoinSwapUsecase,
     super.parsePaymentRequest,
   });
 
@@ -450,6 +454,9 @@ Matcher _paysTo(String address, {int? amountSat}) =>
               (amountSat == null ? null : Sats.fromInt(amountSat)),
     );
 
+Matcher _toAddress(String address) =>
+    isA<boltz.ToAddress>().having((d) => d.address, 'address', address);
+
 void main() {
   late _MockRetryPayjoinProposalUsecase retryPayjoinProposalUsecase;
   late _MockLabelsFacade labelsFacade;
@@ -475,7 +482,8 @@ void main() {
   late _MockUpdateSendSwapPayinUsecase updateSendSwapPayinUsecase;
   late _MockWatchSendSwapUsecase watchSendSwapUsecase;
   late _MockGetSwapLimitsAndFeesUsecase getSwapLimitsAndFeesUsecase;
-  late _MockCreateChainSwapUsecase createChainSwapUsecase;
+  late _MockCreateBitcoinToLiquidSwapUsecase createBitcoinToLiquidSwapUsecase;
+  late _MockCreateLiquidToBitcoinSwapUsecase createLiquidToBitcoinSwapUsecase;
   late _MockWatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase;
   late _MockSignBitcoinTxUsecase signBitcoinTxUsecase;
   late _MockSignLiquidTxUsecase signLiquidTxUsecase;
@@ -586,7 +594,8 @@ void main() {
     dropPendingSwapLockupUsecase: dropPendingLockup,
     watchSwapUsecase: watchSwapUsecase,
     getSwapLimitsAndFeesUsecase: getSwapLimitsAndFeesUsecase,
-    createChainSwapUsecase: createChainSwapUsecase,
+    createBitcoinToLiquidSwapUsecase: createBitcoinToLiquidSwapUsecase,
+    createLiquidToBitcoinSwapUsecase: createLiquidToBitcoinSwapUsecase,
     parsePaymentRequest: parsePaymentRequest,
   );
 
@@ -611,6 +620,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(BitcoinNetwork.mainnet);
+    registerFallbackValue(const boltz.ToWallet(''));
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(_FakeNewLabel());
     registerFallbackValue(_bitcoinLocalWallet());
@@ -689,7 +699,8 @@ void main() {
     updateSendSwapPayinUsecase = _MockUpdateSendSwapPayinUsecase();
     watchSendSwapUsecase = _MockWatchSendSwapUsecase();
     getSwapLimitsAndFeesUsecase = _MockGetSwapLimitsAndFeesUsecase();
-    createChainSwapUsecase = _MockCreateChainSwapUsecase();
+    createBitcoinToLiquidSwapUsecase = _MockCreateBitcoinToLiquidSwapUsecase();
+    createLiquidToBitcoinSwapUsecase = _MockCreateLiquidToBitcoinSwapUsecase();
     watchFinishedWalletSyncsUsecase = _MockWatchFinishedWalletSyncsUsecase();
     signBitcoinTxUsecase = _MockSignBitcoinTxUsecase();
     signLiquidTxUsecase = _MockSignLiquidTxUsecase();
@@ -7435,11 +7446,13 @@ void main() {
 
     void stubCreateChain(Result<boltz.ChainSwap, boltz.SwapsFailure> result) =>
         when(
-          () => createChainSwapUsecase.execute(
+          () => createBitcoinToLiquidSwapUsecase.execute(
             sendWalletId: 'w1',
             amountSat: any(named: 'amountSat'),
-            fromLiquid: false,
-            externalRecipientAddress: 'lq1recipient',
+            destination: any(
+              named: 'destination',
+              that: _toAddress('lq1recipient'),
+            ),
           ),
         ).thenAnswer((_) async => result);
 
@@ -7477,11 +7490,13 @@ void main() {
         expect(cubit.state.confirmedAmountSat, 50000);
         final paid =
             verify(
-                  () => createChainSwapUsecase.execute(
+                  () => createBitcoinToLiquidSwapUsecase.execute(
                     sendWalletId: 'w1',
                     amountSat: captureAny(named: 'amountSat'),
-                    fromLiquid: false,
-                    externalRecipientAddress: 'lq1recipient',
+                    destination: any(
+                      named: 'destination',
+                      that: _toAddress('lq1recipient'),
+                    ),
                   ),
                 ).captured.single
                 as int;
@@ -7596,11 +7611,17 @@ void main() {
         ),
       ).called(1);
       verifyNever(
-        () => createChainSwapUsecase.execute(
+        () => createBitcoinToLiquidSwapUsecase.execute(
           sendWalletId: any(named: 'sendWalletId'),
           amountSat: any(named: 'amountSat'),
-          fromLiquid: any(named: 'fromLiquid'),
-          externalRecipientAddress: any(named: 'externalRecipientAddress'),
+          destination: any(named: 'destination'),
+        ),
+      );
+      verifyNever(
+        () => createLiquidToBitcoinSwapUsecase.execute(
+          sendWalletId: any(named: 'sendWalletId'),
+          amountSat: any(named: 'amountSat'),
+          destination: any(named: 'destination'),
         ),
       );
       expect(cubit.state.chainSwap, isNull);

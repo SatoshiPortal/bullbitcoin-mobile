@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:swaps/src/util.dart';
 import 'package:swaps/src/data/boltz_api.dart';
-import 'package:swaps/src/domain/swap_repository.dart';
+import 'package:swaps/src/data/swap_storage.dart';
+import 'package:swaps/src/domain/boltz_swaps.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
+import 'package:swaps/src/domain/swap_resolver.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:swaps/src/data/models/swap_model.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:swaps/src/domain/entities/restored_swap.dart';
@@ -48,7 +52,7 @@ typedef WalletsList =
 typedef SwapMasterKeySource =
     Future<DerivedSwapMasterKey?> Function({required bool isTestnet});
 
-class BoltzSwapRepository implements SwapRepository {
+class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   final BoltzDatasource _boltz;
   final bool _isTestnet;
   final ElectrumRunner _electrum;
@@ -77,6 +81,35 @@ class BoltzSwapRepository implements SwapRepository {
     required this._lockupChain,
   });
 
+  /// The Boltz provider on the backend at [url], over the shared [storage].
+  factory BoltzSwapRepository.connect({
+    required String url,
+    required SwapStorage storage,
+    required bool isTestnet,
+    required ElectrumRunner electrum,
+    required LockupChain lockupChain,
+    required NewAddressFor newAddressFor,
+    required WalletTxLookup walletTx,
+    required WalletTxsLookup walletTxs,
+    required FastestFee fastestFee,
+    required WalletsList wallets,
+    required SwapMasterKeySource swapMasterKeySource,
+  }) => BoltzSwapRepository(
+    boltz: BoltzDatasource(url: url, boltzStore: storage),
+    isTestnet: isTestnet,
+    electrum: electrum,
+    lockupChain: lockupChain,
+    newAddressFor: newAddressFor,
+    walletTx: walletTx,
+    walletTxs: walletTxs,
+    fastestFee: fastestFee,
+    wallets: wallets,
+    swapMasterKeySource: swapMasterKeySource,
+  );
+
+  /// Closes the backend connection; the provider is unusable afterwards.
+  void dispose() => _boltz.dispose();
+
   Future<T> _withCreationLock<T>(Future<T> Function() action) {
     final completer = Completer<void>();
     final previous = _creationLock;
@@ -92,7 +125,7 @@ class BoltzSwapRepository implements SwapRepository {
 
   /// RECEIVE LN TO BTC
 
-  Future<LnReceiveSwap> createLightningToBitcoinSwap({
+  Future<LnReceiveSwap> _boltzCreateLightningToBitcoinSwap({
     required String walletId,
     required int amountSat,
     required String electrumUrl,
@@ -139,7 +172,7 @@ class BoltzSwapRepository implements SwapRepository {
 
   /// RECEIVE LN TO LBTC
 
-  Future<LnReceiveSwap> createLightningToLiquidSwap({
+  Future<LnReceiveSwap> _boltzCreateLightningToLiquidSwap({
     required String walletId,
     required int amountSat,
     required String electrumUrl,
@@ -187,7 +220,7 @@ class BoltzSwapRepository implements SwapRepository {
 
   /// SEND BTC TO LN
 
-  Future<LnSendSwap> createBitcoinToLightningSwap({
+  Future<LnSendSwap> _boltzCreateBitcoinToLightningSwap({
     required String walletId,
     required String invoice,
     required String electrumUrl,
@@ -237,7 +270,7 @@ class BoltzSwapRepository implements SwapRepository {
 
   /// SEND LBTC TO LN
 
-  Future<LnSendSwap> createLiquidToLightningSwap({
+  Future<LnSendSwap> _boltzCreateLiquidToLightningSwap({
     required String walletId,
     required String invoice,
     required String electrumUrl,
@@ -285,7 +318,7 @@ class BoltzSwapRepository implements SwapRepository {
     );
   }
 
-  Future<ChainSwap> createBitcoinToLiquidSwap({
+  Future<ChainSwap> _boltzCreateBitcoinToLiquidSwap({
     required String sendWalletId,
     required int amountSat,
     required String btcElectrumUrl,
@@ -310,7 +343,7 @@ class BoltzSwapRepository implements SwapRepository {
     });
   }
 
-  Future<ChainSwap> createLiquidToBitcoinSwap({
+  Future<ChainSwap> _boltzCreateLiquidToBitcoinSwap({
     required String sendWalletId,
     required int amountSat,
     required String btcElectrumUrl,
@@ -442,7 +475,6 @@ class BoltzSwapRepository implements SwapRepository {
   Stream<Swap> watchSwap({required String swapId}) =>
       _boltz.storage.watchSwap(swapId).map((model) => model.toEntity());
 
-  @override
   Future<Swap> reconcileLockupTxid(Swap swap) async {
     // Only a chain swap missing its lockup txid needs this. Submarine
     // lockups are recorded at broadcast the same way; a reverse swap has no
@@ -525,8 +557,7 @@ class BoltzSwapRepository implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   });
 
-  @override
-  Future<Swap> recordPendingLockup({
+  Future<Swap> _recordPendingLockup({
     required String swapId,
     required String signedTx,
   }) => _boltz.storage.mutate(swapId, () async {
@@ -573,8 +604,7 @@ class BoltzSwapRepository implements SwapRepository {
     return updated;
   });
 
-  @override
-  Future<void> dropPendingLockup(String swapId) =>
+  Future<void> _dropPendingLockup(String swapId) =>
       _boltz.storage.mutate(swapId, () async {
         final model = await _boltz.storage.fetch(swapId);
         if (model == null) return;
@@ -600,7 +630,6 @@ class BoltzSwapRepository implements SwapRepository {
   /// lookup, it is rebroadcast anyway — either it was out already, or the
   /// refund returns it. Boltz's own status events record the lockup too (see
   /// [SwapStatusMapper]).
-  @override
   Future<Swap> resolvePendingLockup(Swap swap) async {
     final (pendingTx, pendingTxid, lockupTxid, isLiquid) = switch (swap) {
       LnSendSwap(
@@ -643,7 +672,7 @@ class BoltzSwapRepository implements SwapRepository {
       }
 
       Future<Swap> drop(String reason) async {
-        await dropPendingLockup(swap.id);
+        await _dropPendingLockup(swap.id);
         swapsLog.fine('SWAPS: ${swap.id} pending lockup dropped ($reason)');
         return getSwap(swapId: swap.id);
       }
@@ -1341,7 +1370,6 @@ class BoltzSwapRepository implements SwapRepository {
     }
   }
 
-  @override
   Future<Swap?> byTxId(String txId) async {
     final swapModel = await _boltz.storage.fetchByTxId(txId);
     if (swapModel == null) {
@@ -1379,17 +1407,11 @@ class BoltzSwapRepository implements SwapRepository {
     }
   }
 
-  @override
   Future<SwapLimits> limits(SwapType type) async {
     final (limits, _) = await getSwapLimitsAndFees(type);
     return limits;
   }
 
-  @override
-  Future<(SwapLimits, SwapFees)> limitsAndFees(SwapType type) =>
-      getSwapLimitsAndFees(type);
-
-  @override
   Future<void> markLockupBroadcast({
     required String swapId,
     required String txid,
@@ -1603,8 +1625,22 @@ class BoltzSwapRepository implements SwapRepository {
   }
 
   // ---------------------------------------------------------------------
-  // SwapRepository interface
+  // SwapResolver and BoltzSwaps
   // ---------------------------------------------------------------------
+
+  /// Runs [action] and reduces a failure to a [SwapsFailure]. Programmer
+  /// errors (`Error`) are not failures and propagate.
+  Future<Result<T, SwapsFailure>> _guard<T>(
+    Future<T> Function() action, {
+    SwapsFailure Function(Object error) classify = classifySwapsFailure,
+  }) async {
+    try {
+      return Ok(await action());
+    } catch (e) {
+      if (e is Error) rethrow;
+      return Err(classify(e));
+    }
+  }
 
   @override
   bool get isTestnet => _isTestnet;
@@ -1613,23 +1649,90 @@ class BoltzSwapRepository implements SwapRepository {
   Stream<Swap> get updates => swapUpdatesStream;
 
   @override
-  Future<Swap> get(String swapId) => getSwap(swapId: swapId);
-
-  @override
-  Stream<Swap> watch(String swapId) => watchSwap(swapId: swapId);
-
-  @override
-  Future<List<Swap>> all({String? walletId}) => getAllSwaps(walletId: walletId);
-
-  @override
-  Future<List<Swap>> ongoing({String? walletId}) =>
-      getOngoingSwaps(walletId: walletId);
-
-  @override
   void listen(List<String> swapIds) => subscribeToSwaps(swapIds);
 
   @override
-  Future<void> reconcile(List<String> swapIds) => reconcileSwaps(swapIds);
+  Future<Result<void, SwapsFailure>> reconcile(List<String> swapIds) =>
+      _guard(() => reconcileSwaps(swapIds));
+
+  @override
+  Future<Result<Swap, SwapsFailure>> resolve(Swap swap) => _guard(() async {
+    var current = await getSwap(swapId: swap.id);
+    current = await resolvePendingLockup(current);
+    current = await reconcileLockupTxid(current);
+    switch (current.nextAction) {
+      case SwapAction.claim:
+        await claim(current);
+      case SwapAction.refund:
+        await refund(current);
+      case SwapAction.coopSign:
+        await coopSign(current);
+      case SwapAction.none:
+        return current;
+    }
+    return getSwap(swapId: current.id);
+  });
+
+  @override
+  Future<Result<Swap, SwapsFailure>> resolveScriptPath(Swap swap) =>
+      _guard(() async {
+        final current = await getSwap(swapId: swap.id);
+        switch (current.nextAction) {
+          case SwapAction.claim:
+            await claim(current, scriptPathOnly: true);
+          case SwapAction.refund:
+            await refund(current, scriptPathOnly: true);
+          case SwapAction.coopSign || SwapAction.none:
+            return current;
+        }
+        return getSwap(swapId: current.id);
+      });
+
+  @override
+  Future<Result<void, SwapsFailure>> verifyCompletions() =>
+      _guard(_verifyCompletions);
+
+  @override
+  Future<Result<Swap, SwapsFailure>> recordPendingLockup({
+    required String swapId,
+    required String signedTx,
+  }) => _guard(() => _recordPendingLockup(swapId: swapId, signedTx: signedTx));
+
+  @override
+  Future<Result<void, SwapsFailure>> dropPendingLockup(String swapId) =>
+      _guard(() => _dropPendingLockup(swapId));
+
+  @override
+  Future<Result<Swap, SwapsFailure>> recordLockup({
+    required String swapId,
+    required String txid,
+    int? lockupFeeSat,
+  }) => _guard(() async {
+    await updatePaidSendSwap(
+      swapId: swapId,
+      txid: txid,
+      absoluteFees: lockupFeeSat,
+    );
+    return getSwap(swapId: swapId);
+  });
+
+  @override
+  Future<Result<List<RestoredSwap>, SwapsFailure>> restore() =>
+      _guard(_restore);
+
+  @override
+  Future<Result<Swap, SwapsFailure>> rescue(
+    RestoredSwap restored, {
+    required String walletId,
+  }) => _guard(() => _rescue(restored, walletId: walletId));
+
+  @override
+  Future<Result<(SwapLimits, SwapFees), SwapsFailure>> limitsAndFees(
+    SwapType type,
+  ) => _guard(
+    () => getSwapLimitsAndFees(type),
+    classify: classifySwapCreationFailure,
+  );
 
   Future<String> _electrumUrl({required bool isLiquid}) => _electrum.run(
     isLiquid: isLiquid,
@@ -1637,78 +1740,188 @@ class BoltzSwapRepository implements SwapRepository {
     operation: (connection) async => connection.url,
   );
 
+  /// Refuses a wallet that is unknown or not on [isLiquid]'s chain, before
+  /// anything is created.
+  Future<void> _requireWallet(String walletId, {required bool isLiquid}) async {
+    final wallets = await _wallets(isTestnet: _isTestnet);
+    final wallet = wallets.where((w) => w.id == walletId).firstOrNull;
+    if (wallet == null || wallet.isLiquid != isLiquid) {
+      throw SwapsException(
+        'wallet is not a ${isLiquid ? 'Liquid' : 'Bitcoin'} wallet here',
+      );
+    }
+  }
+
+  Future<void> _requireWithinLimits(SwapType type, int amountSat) async {
+    final (limits, _) = await getSwapLimitsAndFees(type);
+    if (!limits.accepts(amountSat)) {
+      throw SwapsAmountOutOfLimitsException(
+        minSat: limits.min,
+        maxSat: limits.max,
+      );
+    }
+  }
+
   @override
-  Future<LnReceiveSwap> createLightningReceive({
+  Future<Result<LnReceiveSwap, SwapsFailure>> createLightningToBitcoinSwap({
     required String walletId,
     required int amountSat,
-    required bool toLiquid,
     String? description,
-  }) async {
+  }) => _createLightningReceive(
+    type: SwapType.lightningToBitcoin,
+    walletId: walletId,
+    amountSat: amountSat,
+    description: description,
+  );
+
+  @override
+  Future<Result<LnReceiveSwap, SwapsFailure>> createLightningToLiquidSwap({
+    required String walletId,
+    required int amountSat,
+    String? description,
+  }) => _createLightningReceive(
+    type: SwapType.lightningToLiquid,
+    walletId: walletId,
+    amountSat: amountSat,
+    description: description,
+  );
+
+  Future<Result<LnReceiveSwap, SwapsFailure>> _createLightningReceive({
+    required SwapType type,
+    required String walletId,
+    required int amountSat,
+    String? description,
+  }) => _guard(() async {
+    final toLiquid = type == SwapType.lightningToLiquid;
+    await _requireWallet(walletId, isLiquid: toLiquid);
+    await _requireWithinLimits(type, amountSat);
     await _ensureMasterKey();
     final electrumUrl = await _electrumUrl(isLiquid: toLiquid);
     final claimAddress = await _newAddressFor(walletId);
     return toLiquid
-        ? createLightningToLiquidSwap(
+        ? _boltzCreateLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
             electrumUrl: electrumUrl,
             claimAddress: claimAddress,
             description: description,
           )
-        : createLightningToBitcoinSwap(
+        : _boltzCreateLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
             electrumUrl: electrumUrl,
             claimAddress: claimAddress,
             description: description,
           );
-  }
+  }, classify: classifySwapCreationFailure);
 
   @override
-  Future<LnSendSwap?> pendingLightningSend({
-    required String invoice,
+  Future<Result<LnSendSwap, SwapsFailure>> createBitcoinToLightningSwap({
     required String walletId,
-    required bool fromLiquid,
-  }) => getSendSwapByInvoice(
-    invoice: invoice,
+    required String invoice,
+  }) => _createLightningSend(
+    type: SwapType.bitcoinToLightning,
     walletId: walletId,
-    type: fromLiquid ? SwapType.liquidToLightning : SwapType.bitcoinToLightning,
+    invoice: invoice,
   );
 
   @override
-  Future<LnSendSwap> createLightningSend({
+  Future<Result<LnSendSwap, SwapsFailure>> createLiquidToLightningSwap({
     required String walletId,
     required String invoice,
-    required bool fromLiquid,
-  }) async {
+  }) => _createLightningSend(
+    type: SwapType.liquidToLightning,
+    walletId: walletId,
+    invoice: invoice,
+  );
+
+  Future<Result<LnSendSwap, SwapsFailure>> _createLightningSend({
+    required SwapType type,
+    required String walletId,
+    required String invoice,
+  }) => _guard(() async {
+    final fromLiquid = type == SwapType.liquidToLightning;
+    await _requireWallet(walletId, isLiquid: fromLiquid);
+    // Boltz refuses a second swap for the same invoice: reuse ours while
+    // nothing was locked into it, and refuse while one is in progress.
+    final pending = await getSendSwapByInvoice(
+      invoice: invoice,
+      walletId: walletId,
+      type: type,
+    );
+    if (pending != null) {
+      await reconcileSwaps([pending.id]);
+      final current = await getSwap(swapId: pending.id);
+      if (current is LnSendSwap &&
+          current.status == SwapStatus.pending &&
+          current.sendTxid == null &&
+          !current.hasPendingLockup) {
+        return current;
+      }
+      throw const SwapInProgressException();
+    }
+    final decoded = await decodeInvoice(invoice: invoice);
+    await _requireWithinLimits(type, decoded.sats);
     await _ensureMasterKey();
     final electrumUrl = await _electrumUrl(isLiquid: fromLiquid);
     return fromLiquid
-        ? createLiquidToLightningSwap(
+        ? _boltzCreateLiquidToLightningSwap(
             walletId: walletId,
             invoice: invoice,
             electrumUrl: electrumUrl,
           )
-        : createBitcoinToLightningSwap(
+        : _boltzCreateBitcoinToLightningSwap(
             walletId: walletId,
             invoice: invoice,
             electrumUrl: electrumUrl,
           );
-  }
+  }, classify: classifySwapCreationFailure);
 
   @override
-  Future<ChainSwap> createChain({
+  Future<Result<ChainSwap, SwapsFailure>> createBitcoinToLiquidSwap({
     required String sendWalletId,
     required int amountSat,
-    required bool fromLiquid,
-    String? receiveWalletId,
-    String? externalRecipientAddress,
-  }) async {
+    required ChainSwapDestination destination,
+  }) => _createChain(
+    type: SwapType.bitcoinToLiquid,
+    sendWalletId: sendWalletId,
+    amountSat: amountSat,
+    destination: destination,
+  );
+
+  @override
+  Future<Result<ChainSwap, SwapsFailure>> createLiquidToBitcoinSwap({
+    required String sendWalletId,
+    required int amountSat,
+    required ChainSwapDestination destination,
+  }) => _createChain(
+    type: SwapType.liquidToBitcoin,
+    sendWalletId: sendWalletId,
+    amountSat: amountSat,
+    destination: destination,
+  );
+
+  Future<Result<ChainSwap, SwapsFailure>> _createChain({
+    required SwapType type,
+    required String sendWalletId,
+    required int amountSat,
+    required ChainSwapDestination destination,
+  }) => _guard(() async {
+    final fromLiquid = type == SwapType.liquidToBitcoin;
+    await _requireWallet(sendWalletId, isLiquid: fromLiquid);
+    if (destination case ToWallet(:final walletId)) {
+      await _requireWallet(walletId, isLiquid: !fromLiquid);
+    }
+    await _requireWithinLimits(type, amountSat);
     await _ensureMasterKey();
     final btcElectrumUrl = await _electrumUrl(isLiquid: false);
     final lbtcElectrumUrl = await _electrumUrl(isLiquid: true);
+    final (receiveWalletId, externalRecipientAddress) = switch (destination) {
+      ToWallet(:final walletId) => (walletId, null),
+      ToAddress(:final address) => (null, address),
+    };
     return fromLiquid
-        ? createLiquidToBitcoinSwap(
+        ? _boltzCreateLiquidToBitcoinSwap(
             sendWalletId: sendWalletId,
             amountSat: amountSat,
             btcElectrumUrl: btcElectrumUrl,
@@ -1716,7 +1929,7 @@ class BoltzSwapRepository implements SwapRepository {
             receiveWalletId: receiveWalletId,
             externalRecipientAddress: externalRecipientAddress,
           )
-        : createBitcoinToLiquidSwap(
+        : _boltzCreateBitcoinToLiquidSwap(
             sendWalletId: sendWalletId,
             amountSat: amountSat,
             btcElectrumUrl: btcElectrumUrl,
@@ -1724,14 +1937,33 @@ class BoltzSwapRepository implements SwapRepository {
             receiveWalletId: receiveWalletId,
             externalRecipientAddress: externalRecipientAddress,
           );
-  }
+  }, classify: classifySwapCreationFailure);
+
+  @override
+  Future<Result<SwapMasterKeyInfo?, SwapsFailure>> masterKeyInfo() =>
+      _guard(() async {
+        final fingerprint = await defaultBitcoinFingerprint();
+        if (fingerprint == null) return null;
+        return getSwapMasterKeyInfo(walletFingerprint: fingerprint);
+      });
+
+  @override
+  Future<Result<String?, SwapsFailure>> masterKeyMnemonic({
+    required String walletFingerprint,
+  }) => _guard(() => getSwapMnemonic(walletFingerprint: walletFingerprint));
+
+  @override
+  Future<Result<void, SwapsFailure>> deleteMasterKey() => _guard(() async {
+    final fingerprint = await defaultBitcoinFingerprint();
+    if (fingerprint == null) return;
+    await deleteSwapMasterKey(walletFingerprint: fingerprint);
+  });
 
   // RESOLVE OPERATIONS — the watcher's verbs. Each resolves its own
   // address, estimates fees (floored at relay minimum, capped at half the
   // swap amount), tries the cooperative path first and falls back to the
   // script path, walks the app's electrum servers, and records the outcome.
 
-  @override
   Future<String> claim(Swap swap, {bool scriptPathOnly = false}) async {
     final existing = switch (swap) {
       LnReceiveSwap() => swap.receiveTxid,
@@ -1893,7 +2125,6 @@ class BoltzSwapRepository implements SwapRepository {
     }
   }
 
-  @override
   Future<String> refund(Swap swap, {bool scriptPathOnly = false}) async {
     final existing = switch (swap) {
       ChainSwap() => swap.refundTxid,
@@ -1970,29 +2201,6 @@ class BoltzSwapRepository implements SwapRepository {
     }
   }
 
-  @override
-  Future<String> resolveScriptPath(Swap swap) {
-    // Pick claim vs refund by swap kind and leg, then drive the Boltz-free
-    // script path (no cooperative close, no Boltz fee quote, no outspend
-    // lookup — see [claim]/[refund] scriptPathOnly). Reverse swaps are claimed;
-    // submarine swaps are refunded; chain swaps claim the receive leg unless
-    // the sending leg needs a refund.
-    switch (swap) {
-      case LnReceiveSwap():
-        return claim(swap, scriptPathOnly: true);
-      case LnSendSwap():
-        return refund(swap, scriptPathOnly: true);
-      case ChainSwap():
-        return switch (swap.status) {
-          SwapStatus.refundable ||
-          SwapStatus.expired ||
-          SwapStatus.failed => refund(swap, scriptPathOnly: true),
-          _ => claim(swap, scriptPathOnly: true),
-        };
-    }
-  }
-
-  @override
   Future<void> coopSign(Swap swap) async {
     if (swap is! LnSendSwap) return;
     try {
@@ -2446,14 +2654,15 @@ class BoltzSwapRepository implements SwapRepository {
     );
   }
 
-  @override
-  Future<List<RestoredSwap>> restore() async {
+  Future<List<RestoredSwap>> _restore() async {
     await _ensureMasterKey();
     return restoreSwaps(isTestnet: _isTestnet);
   }
 
-  @override
-  Future<Swap> rescue(RestoredSwap restored, {required String walletId}) async {
+  Future<Swap> _rescue(
+    RestoredSwap restored, {
+    required String walletId,
+  }) async {
     final wallets = await _wallets(isTestnet: _isTestnet);
     final selected = wallets.where((w) => w.id == walletId).firstOrNull;
     if (selected == null || selected.isLiquid != restored.actsOnLiquid) {
@@ -2516,8 +2725,7 @@ class BoltzSwapRepository implements SwapRepository {
   /// Cache-first: the wallet is only force-synced when the recorded txid is
   /// MISSING from the cached view, so the common all-good launch does no
   /// network work per swap.
-  @override
-  Future<void> verifyCompletions() async {
+  Future<void> _verifyCompletions() async {
     try {
       final swaps = await getAllSwaps();
       for (final swap in swaps) {

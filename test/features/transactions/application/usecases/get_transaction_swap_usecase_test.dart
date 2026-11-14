@@ -47,14 +47,16 @@ void main() {
       final swap = _swap();
       when(
         () => getSwap.execute(swapId: 'swap-1'),
-      ).thenAnswer((_) async => swap);
+      ).thenAnswer((_) async => Ok(swap));
 
       expect(_valueOf(await usecase.execute('swap-1')), swap);
     });
 
-    test('sanitizes a thrown Boltz reason', () async {
-      when(() => getSwap.execute(swapId: 'swap-1')).thenThrow(
-        GetSwapException('boltz: swap not found for preimage abc123'),
+    test('sanitizes a Boltz reason', () async {
+      when(() => getSwap.execute(swapId: 'swap-1')).thenAnswer(
+        (_) async => const Err(
+          SwapsUnexpectedFailure('boltz: swap not found for preimage abc123'),
+        ),
       );
 
       final result = await usecase.execute('swap-1');

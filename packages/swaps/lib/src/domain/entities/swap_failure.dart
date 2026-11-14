@@ -94,6 +94,17 @@ SwapsFailure classifySwapsFailure(Object error) {
 /// their transport/status meaning; anything else goes through
 /// [classifySwapsFailure].
 SwapsFailure classifySwapCreationFailure(Object error) {
+  if (error is SwapsAmountOutOfLimitsException) {
+    return SwapsAmountOutOfLimitsFailure(
+      minSat: error.minSat,
+      maxSat: error.maxSat,
+    );
+  }
+  if (error is SwapInProgressException) {
+    return const SwapsBoltzRejectedFailure(
+      'a swap for this payment is in progress',
+    );
+  }
   if (error is BoltzApiException) {
     return error.isUnreachable
         ? SwapsBoltzUnavailableFailure(error.message)

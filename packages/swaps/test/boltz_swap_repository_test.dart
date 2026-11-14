@@ -1,11 +1,14 @@
 import 'package:bull_sdk/boltz.dart' as frb;
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:swaps/src/data/boltz_api.dart';
 import 'package:swaps/src/data/models/swap_master_key_model.dart';
 import 'package:swaps/src/data/boltz_swap_repository.dart';
+import 'package:swaps/src/domain/boltz_swaps.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:swaps/src/domain/entities/restored_swap.dart';
 import 'package:swaps/src/domain/entities/swap.dart';
+import 'package:swaps/src/domain/entities/swap_failure.dart';
 import 'package:swaps/src/data/models/swap_model.dart';
 import 'package:swaps/src/data/swap_storage.dart';
 import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
@@ -220,18 +223,20 @@ void main() {
     ];
 
     test('refuses a wallet on the other side of the swap', () async {
-      await expectLater(
-        repo(wallets: wallets).rescue(claimToLiquid, walletId: 'w-btc'),
-        throwsA(isA<SwapsException>()),
-      );
+      final result = await repo(
+        wallets: wallets,
+      ).rescue(claimToLiquid, walletId: 'w-btc');
+
+      expect(result, isA<Err<Swap, SwapsFailure>>());
       verifyNever(() => storage.store(any()));
     });
 
     test('refuses a wallet it does not know', () async {
-      await expectLater(
-        repo(wallets: wallets).rescue(claimToLiquid, walletId: 'w-gone'),
-        throwsA(isA<SwapsException>()),
-      );
+      final result = await repo(
+        wallets: wallets,
+      ).rescue(claimToLiquid, walletId: 'w-gone');
+
+      expect(result, isA<Err<Swap, SwapsFailure>>());
       verifyNever(() => storage.store(any()));
     });
   });
@@ -343,19 +348,25 @@ void main() {
     test('a swap that records a lockup refuses another', () async {
       when(() => storage.fetch(any())).thenAnswer((_) async => chainModel());
 
-      await expectLater(
-        repo().recordPendingLockup(swapId: 'D5gdAL9UI29W', signedTx: 'other'),
-        throwsA(isA<SwapsException>()),
+      final result = await repo().recordPendingLockup(
+        swapId: 'D5gdAL9UI29W',
+        signedTx: 'other',
       );
+
+      expect(result, isA<Err<Swap, SwapsFailure>>());
+      verifyNever(() => storage.store(any()));
     });
 
     test('a lockup being confirmed refuses a different one', () async {
       when(() => storage.fetch(any())).thenAnswer((_) async => pending());
 
-      await expectLater(
-        repo().recordPendingLockup(swapId: 'D5gdAL9UI29W', signedTx: 'other'),
-        throwsA(isA<SwapsException>()),
+      final result = await repo().recordPendingLockup(
+        swapId: 'D5gdAL9UI29W',
+        signedTx: 'other',
       );
+
+      expect(result, isA<Err<Swap, SwapsFailure>>());
+      verifyNever(() => storage.store(any()));
     });
 
     test('the first recorded lockup is never replaced', () async {
@@ -677,9 +688,17 @@ void main() {
         ),
       ).thenAnswer((_) async => 'refund-txid');
 
-      final txid = await repo().resolveScriptPath(chainSwap());
+      final result = await repo().resolveScriptPath(chainSwap());
 
-      expect(txid, 'refund-txid');
+      expect(result, isA<Ok<Swap, SwapsFailure>>());
+      expect(
+        stores.last.toEntity(),
+        isA<ChainSwap>().having(
+          (s) => s.refundTxid,
+          'refundTxid',
+          'refund-txid',
+        ),
+      );
       final tryCooperate = verify(
         () => boltz.refundLbtcToBtcChainSwap(
           swapId: any(named: 'swapId'),
@@ -717,10 +736,9 @@ void main() {
         ),
       ).thenThrow(Exception('broadcast failed'));
 
-      await expectLater(
-        repo().resolveScriptPath(chainSwap()),
-        throwsA(isA<SwapsException>()),
-      );
+      final result = await repo().resolveScriptPath(chainSwap());
+
+      expect(result, isA<Err<Swap, SwapsFailure>>());
       verifyNever(
         () => boltz.checkLockupOutspends(
           swapId: any(named: 'swapId'),
@@ -1127,6 +1145,11 @@ void main() {
       fingerprint: 'f00dbabe',
     );
 
+    const chainWallets = [
+      SwapWalletInfo(id: 'w-btc', isLiquid: false, isDefault: true),
+      SwapWalletInfo(id: 'w-liquid', isLiquid: true, isDefault: true),
+    ];
+
     SwapModel storedChain({required int keyIndex}) => SwapModel.chain(
       id: 'stored-$keyIndex',
       type: SwapType.bitcoinToLiquid.name,
@@ -1159,6 +1182,18 @@ void main() {
             boltz.restoreSwapIndex(swapMasterKey: any(named: 'swapMasterKey')),
       ).thenAnswer((_) async => -1);
       when(
+        () => boltz.swapMasterKeyReady(
+          walletFingerprint: any(named: 'walletFingerprint'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => boltz.getBtcToLbtcChainSwapLimits(),
+      ).thenAnswer((_) async => (25000, 1000000));
+      when(
+        () => boltz.getSwapFees(SwapType.bitcoinToLiquid),
+      ).thenAnswer((_) async => const SwapFees());
+      when(
         () => boltz.createBtcToLbtcChainSwap(
           sendWalletId: any(named: 'sendWalletId'),
           index: any(named: 'index'),
@@ -1173,12 +1208,13 @@ void main() {
     }
 
     Future<int> createAndCaptureIndex() async {
-      await repo().createBitcoinToLiquidSwap(
-        sendWalletId: 'w-btc',
-        amountSat: 30000,
-        btcElectrumUrl: 'btc:50001',
-        lbtcElectrumUrl: 'lbtc:50001',
-      );
+      final created = await repo(wallets: chainWallets)
+          .createBitcoinToLiquidSwap(
+            sendWalletId: 'w-btc',
+            amountSat: 30000,
+            destination: const ToWallet('w-liquid'),
+          );
+      expect(created, isA<Ok<ChainSwap, SwapsFailure>>());
       return verify(
             () => boltz.createBtcToLbtcChainSwap(
               sendWalletId: any(named: 'sendWalletId'),
@@ -1254,7 +1290,11 @@ void main() {
     );
   });
 
-  group('pendingLightningSend', () {
+  group('lightning send creation', () {
+    const btcWallets = [
+      SwapWalletInfo(id: 'w-btc', isLiquid: false, isDefault: true),
+    ];
+
     SwapModel lnSend(String id, {String status = 'pending', String? type}) =>
         SwapModel.lnSend(
           id: id,
@@ -1268,7 +1308,7 @@ void main() {
           invoice: 'LNBC1INVOICE',
         );
 
-    test('returns only the pending swap of the same direction', () async {
+    test('finds only the pending swap of the same direction', () async {
       when(() => storage.fetchAll(walletId: 'w-btc')).thenAnswer(
         (_) async => [
           lnSend('paidSwap0001', status: 'paid'),
@@ -1277,27 +1317,103 @@ void main() {
         ],
       );
 
-      final found = await repo().pendingLightningSend(
+      final found = await repo().getSendSwapByInvoice(
         invoice: 'lnbc1invoice',
         walletId: 'w-btc',
-        fromLiquid: false,
+        type: SwapType.bitcoinToLightning,
       );
 
       expect(found?.id, 'pendingSwap1');
     });
 
-    test('finds nothing once the swap moved past pending', () async {
+    test('reuses the pending swap for the same invoice', () async {
+      final pending = lnSend('pendingSwap1');
       when(
         () => storage.fetchAll(walletId: 'w-btc'),
-      ).thenAnswer((_) async => [lnSend('paidSwap0001', status: 'paid')]);
+      ).thenAnswer((_) async => [pending]);
+      when(
+        () => boltz.reconcileSwaps(['pendingSwap1']),
+      ).thenAnswer((_) async {});
+      when(
+        () => storage.fetch('pendingSwap1'),
+      ).thenAnswer((_) async => pending);
 
-      final found = await repo().pendingLightningSend(
-        invoice: 'lnbc1invoice',
-        walletId: 'w-btc',
-        fromLiquid: false,
+      final created = await repo(wallets: btcWallets)
+          .createBitcoinToLightningSwap(
+            walletId: 'w-btc',
+            invoice: 'lnbc1invoice',
+          );
+
+      expect(
+        created,
+        isA<Ok<LnSendSwap, SwapsFailure>>().having(
+          (ok) => ok.value.id,
+          'id',
+          'pendingSwap1',
+        ),
       );
+      verify(() => boltz.reconcileSwaps(['pendingSwap1'])).called(1);
+      verifyNever(() => boltz.decodeInvoice(any()));
+    });
 
-      expect(found, isNull);
+    test('refuses while the invoice\'s swap turns out funded', () async {
+      when(
+        () => storage.fetchAll(walletId: 'w-btc'),
+      ).thenAnswer((_) async => [lnSend('pendingSwap1')]);
+      when(
+        () => boltz.reconcileSwaps(['pendingSwap1']),
+      ).thenAnswer((_) async {});
+      when(
+        () => storage.fetch('pendingSwap1'),
+      ).thenAnswer((_) async => lnSend('pendingSwap1', status: 'paid'));
+
+      final created = await repo(wallets: btcWallets)
+          .createBitcoinToLightningSwap(
+            walletId: 'w-btc',
+            invoice: 'lnbc1invoice',
+          );
+
+      expect(created, isA<Err<LnSendSwap, SwapsFailure>>());
+      verifyNever(() => boltz.decodeInvoice(any()));
+    });
+
+    test('refuses an invoice outside the submarine limits', () async {
+      when(
+        () => storage.fetchAll(walletId: 'w-btc'),
+      ).thenAnswer((_) async => []);
+      when(
+        () => boltz.decodeInvoice('lnbc1invoice'),
+      ).thenAnswer((_) async => (2000000, false, null, null));
+      when(
+        () => boltz.getBtcSubmarineSwapLimits(),
+      ).thenAnswer((_) async => (25000, 1000000));
+      when(
+        () => boltz.getSwapFees(SwapType.bitcoinToLightning),
+      ).thenAnswer((_) async => const SwapFees());
+
+      final created = await repo(wallets: btcWallets)
+          .createBitcoinToLightningSwap(
+            walletId: 'w-btc',
+            invoice: 'lnbc1invoice',
+          );
+
+      expect(
+        created,
+        isA<Err<LnSendSwap, SwapsFailure>>().having(
+          (err) => err.failure,
+          'failure',
+          isA<SwapsAmountOutOfLimitsFailure>(),
+        ),
+      );
+    });
+
+    test('refuses a wallet on the other chain', () async {
+      final created = await repo(
+        wallets: btcWallets,
+      ).createLiquidToLightningSwap(walletId: 'w-btc', invoice: 'lnbc1invoice');
+
+      expect(created, isA<Err<LnSendSwap, SwapsFailure>>());
+      verifyNever(() => storage.fetchAll(walletId: any(named: 'walletId')));
     });
   });
 }

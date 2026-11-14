@@ -1,10 +1,10 @@
 import 'package:swaps/src/domain/entities/swap.dart';
-import 'package:swaps/src/domain/swap_repository.dart';
+import 'package:swaps/src/domain/swap_store.dart';
 
 class WatchSwapUsecase {
-  final SwapRepository _swapRepository;
+  final SwapStore _store;
 
-  WatchSwapUsecase({required this._swapRepository});
+  const WatchSwapUsecase(this._store);
 
-  Stream<Swap> execute(String swapId) => _swapRepository.watch(swapId);
+  Stream<Swap> execute(String swapId) => _store.watch(swapId);
 }

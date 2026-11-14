@@ -225,7 +225,7 @@ class SwapLocator {
         swapServerSettingRepository: locator<SwapServerSettingRepository>(),
         settingsRepository: locator<settings_domain.SettingsRepository>(),
         swapEngineSwitcher: locator<SwapEngineSwitcher>(),
-        swapRepository: locator<SwapRepository>(),
+        swapStore: locator<SwapStore>(),
       ),
     );
     locator.registerFactory<SwapSettingsCubit>(
@@ -384,7 +384,10 @@ class SwapLocator {
             locator<CheckLiquidConsolidationUsecase>(),
         getSwapRouteUsecase: locator<GetSwapRouteUsecase>(),
         getSwapLimitsAndFeesUsecase: locator<GetSwapLimitsAndFeesUsecase>(),
-        createChainSwapUsecase: locator<CreateChainSwapUsecase>(),
+        createBitcoinToLiquidSwapUsecase:
+            locator<CreateBitcoinToLiquidSwapUsecase>(),
+        createLiquidToBitcoinSwapUsecase:
+            locator<CreateLiquidToBitcoinSwapUsecase>(),
         recordSwapLockupUsecase: locator<RecordSwapLockupUsecase>(),
         recordPendingSwapLockupUsecase:
             locator<RecordPendingSwapLockupUsecase>(),

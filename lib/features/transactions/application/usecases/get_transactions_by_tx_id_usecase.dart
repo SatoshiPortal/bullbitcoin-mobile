@@ -23,7 +23,7 @@ import 'package:primitives/primitives.dart';
 class GetTransactionsByTxIdUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final SwapRepository _boltzSwapRepository;
+  final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
@@ -32,7 +32,7 @@ class GetTransactionsByTxIdUsecase {
   GetTransactionsByTxIdUsecase({
     required this._settingsRepository,
     required this._walletTransactionRepository,
-    required this._boltzSwapRepository,
+    required this._swapStore,
     required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
@@ -62,7 +62,7 @@ class GetTransactionsByTxIdUsecase {
       // Fetch wallet transactions, swap and payjoins by txId
       final (
         walletTransactions,
-        swap,
+        swapResult,
         payjoinResult,
         orderResult,
         orderSwaps,
@@ -71,7 +71,7 @@ class GetTransactionsByTxIdUsecase {
           txId: txId,
           environment: environment,
         ),
-        _boltzSwapRepository.byTxId(txId),
+        _swapStore.byTxId(txId),
         _payjoinSessions.byTransactionId(txId),
         orderRepository.getOrderByTxId(txId),
         _getTransactionOrderSwapsUsecase.execute(),
@@ -88,6 +88,16 @@ class GetTransactionsByTxIdUsecase {
       final payjoins = switch (payjoinResult) {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
+      };
+      final swap = switch (swapResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => () {
+          log.warning(
+            'Swap unavailable; continuing without it: '
+            '${failure.runtimeType}',
+          );
+          return null;
+        }(),
       };
       // Degrade to "no order swap" rather than fail the lookup, but say so,
       // so a broken swap store stays diagnosable.

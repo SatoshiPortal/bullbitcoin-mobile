@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/switchable_swap_repository.dart';
+import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:swaps/swaps.dart' show SwapWatcher;
 import 'package:bull_logger/bull_logger.dart';
 
@@ -11,7 +11,7 @@ import 'package:bull_logger/bull_logger.dart';
 /// watcher is stopped across the swap and restarted on the new engine.
 class SwapEngineSwitcher {
   final SettingsRepository _settingsRepository;
-  final SwitchableSwapRepository _swapRepository;
+  final SwitchableSwapEngine _engine;
   final SwapWatcher _swapWatcher;
   final Future<SwapEngineParts> Function({required bool isTestnet}) _build;
 
@@ -20,7 +20,7 @@ class SwapEngineSwitcher {
 
   SwapEngineSwitcher({
     required this._settingsRepository,
-    required this._swapRepository,
+    required this._engine,
     required this._swapWatcher,
     required this._build,
   });
@@ -30,7 +30,7 @@ class SwapEngineSwitcher {
       environment,
     ) {
       final isTestnet = !environment.isMainnet;
-      if (isTestnet == _swapRepository.isTestnet) return;
+      if (isTestnet == _engine.isTestnet) return;
       unawaited(rebuild(isTestnet: isTestnet));
     });
   }
@@ -39,7 +39,7 @@ class SwapEngineSwitcher {
   /// null. Rebuilds run one after another.
   Future<void> rebuild({bool? isTestnet}) {
     final next = _pending.then(
-      (_) => _rebuild(isTestnet: isTestnet ?? _swapRepository.isTestnet),
+      (_) => _rebuild(isTestnet: isTestnet ?? _engine.isTestnet),
     );
     _pending = next;
     return next;
@@ -48,7 +48,7 @@ class SwapEngineSwitcher {
   Future<void> _rebuild({required bool isTestnet}) async {
     try {
       await _swapWatcher.stop();
-      await _swapRepository.replace(await _build(isTestnet: isTestnet));
+      await _engine.replace(await _build(isTestnet: isTestnet));
       log.config('[Swaps] engine rebuilt (isTestnet=$isTestnet)');
     } catch (e) {
       log.warning('[Swaps] engine rebuild failed (${e.runtimeType})');
