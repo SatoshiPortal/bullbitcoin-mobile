@@ -55,6 +55,7 @@ export 'src/data/chain/electrum_chain.dart'
     show
         bitcoinTransactionKnown,
         broadcastBitcoinTransaction,
+        broadcastBitcoinTransactionTo,
         broadcastLiquidTransaction,
         estimateBitcoinFees,
         probeBitcoinServer;

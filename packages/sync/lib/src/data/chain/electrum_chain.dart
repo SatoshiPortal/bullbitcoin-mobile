@@ -34,34 +34,55 @@ Future<Result<String, SyncFailure>> broadcastBitcoinTransaction(
   return _broadcast(
     network: network,
     connections: connections,
-    // The FFI call blocks for a full network round trip: keep it off the
-    // caller's isolate.
-    send: (connection) => Isolate.run<Result<String, SyncFailure>>(() {
-      final bdk.ElectrumClient client;
-      try {
-        client = _connect(connection);
-      } on Exception {
-        // The client connects when it is built: nothing was sent.
-        return const Err(SyncConnectionFailure());
-      }
-      try {
-        try {
-          final native = bdk.Transaction(transactionBytes: bytes);
-          try {
-            client.transactionBroadcast(tx: native).dispose();
-          } finally {
-            native.dispose();
-          }
-        } finally {
-          client.dispose();
-        }
-        return Ok(txid);
-      } on Exception catch (error) {
-        return Err(bitcoinBroadcastFailure(error));
-      }
-    }),
+    send: (connection) => _send(connection, bytes, txid),
   );
 }
+
+/// Sends a signed Bitcoin transaction to the one server behind [connection],
+/// for a caller that runs its own fallback. Prefer
+/// [broadcastBitcoinTransaction], which combines the servers' verdicts.
+Future<Result<String, SyncFailure>> broadcastBitcoinTransactionTo(
+  WalletConnection connection,
+  List<int> transaction,
+) async => switch (decodeBitcoinTransaction(transaction)) {
+  Ok(:final value) => await _send(
+    connection,
+    Uint8List.fromList(transaction),
+    value.txid,
+  ),
+  Err(:final failure) => Err(failure),
+};
+
+// The FFI call blocks for a full network round trip: keep it off the caller's
+// isolate.
+Future<Result<String, SyncFailure>> _send(
+  WalletConnection connection,
+  Uint8List bytes,
+  String txid,
+) => Isolate.run<Result<String, SyncFailure>>(() {
+  final bdk.ElectrumClient client;
+  try {
+    client = _connect(connection);
+  } on Exception {
+    // The client connects when it is built: nothing was sent.
+    return const Err(SyncConnectionFailure());
+  }
+  try {
+    try {
+      final native = bdk.Transaction(transactionBytes: bytes);
+      try {
+        client.transactionBroadcast(tx: native).dispose();
+      } finally {
+        native.dispose();
+      }
+    } finally {
+      client.dispose();
+    }
+    return Ok(txid);
+  } on Exception catch (error) {
+    return Err(bitcoinBroadcastFailure(error));
+  }
+});
 
 /// Sends a signed PSET through the servers [connections] selects. Liquid has
 /// no spend gate: nothing here protects a concurrent spend of its inputs.
