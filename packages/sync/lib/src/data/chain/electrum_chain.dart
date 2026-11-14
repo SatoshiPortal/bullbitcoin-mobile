@@ -34,9 +34,17 @@ Future<Result<String, SyncFailure>> broadcastBitcoinTransaction(
   return _broadcast(
     network: network,
     connections: connections,
-    send: (connection) async {
+    // The FFI call blocks for a full network round trip: keep it off the
+    // caller's isolate.
+    send: (connection) => Isolate.run<Result<String, SyncFailure>>(() {
+      final bdk.ElectrumClient client;
       try {
-        final client = _connect(connection);
+        client = _connect(connection);
+      } on Exception {
+        // The client connects when it is built: nothing was sent.
+        return const Err(SyncConnectionFailure());
+      }
+      try {
         try {
           final native = bdk.Transaction(transactionBytes: bytes);
           try {
@@ -51,7 +59,7 @@ Future<Result<String, SyncFailure>> broadcastBitcoinTransaction(
       } on Exception catch (error) {
         return Err(bitcoinBroadcastFailure(error));
       }
-    },
+    }),
   );
 }
 
