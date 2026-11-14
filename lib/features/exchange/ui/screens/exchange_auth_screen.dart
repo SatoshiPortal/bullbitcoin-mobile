@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -32,7 +31,7 @@ class ExchangeAuthScreen extends StatefulWidget {
 
 class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   late final WebViewController _controller = WebViewController();
-  late final WebviewCookieManager _cookieManager = WebviewCookieManager();
+  late final WebViewCookieManager _cookieManager = WebViewCookieManager();
   late final String _bbAuthUrl;
   late final CompleteExchangeAuthenticationUsecase _authentication;
   String? _basicAuthUsername;
@@ -169,10 +168,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             }
 
             // Check if the URL contains the bb_session cookie
-            final bbSessionCookie = await _tryGetBBSessionCookie(url);
+            final hasSession = await _hasBBSessionCookie(url);
             // If no bb_session cookie is found, do nothing as the user is not
             //  logged in yet.
-            if (bbSessionCookie == null) return;
+            if (!hasSession) return;
 
             if (!mounted || _isClosing || _isGeneratingApiKey) return;
             var retry = false;
@@ -280,16 +279,10 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     );
   }
 
-  Future<String?> _tryGetBBSessionCookie(String url) async {
-    final cookies = await _cookieManager.getCookies(url);
-    String? bbSessionCookie;
-    for (final cookie in cookies) {
-      if (cookie.name == 'bb_session') {
-        bbSessionCookie = cookie.value;
-        break;
-      }
-    }
-    return bbSessionCookie;
+  Future<bool> _hasBBSessionCookie(String url) async {
+    final cookies = await _cookieManager.getCookies(domain: Uri.parse(url));
+    // Authentication runs in the WebView; only session presence is needed here.
+    return cookies.any((cookie) => cookie.name == 'bb_session');
   }
 
   /// OK returns to the same web session; Retry reloads it.

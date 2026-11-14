@@ -108,11 +108,7 @@ dependencies:
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0
   flutter_zxing: ^2.2.1
-  webview_cookie_manager:
-    git:
-      url: https://github.com/fryette/webview_cookie_manager.git
-      ref: e03954491a6952e04d7fceeae4c4d074392c0fe2
-  webview_flutter: ^4.13.0
+  webview_flutter: ^4.14.1
   webview_flutter_android: ^4.10.10
   webview_flutter_wkwebview: ^3.23.4
   async: ^2.11.0

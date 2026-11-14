@@ -2388,15 +2388,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  webview_cookie_manager:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: e03954491a6952e04d7fceeae4c4d074392c0fe2
-      resolved-ref: e03954491a6952e04d7fceeae4c4d074392c0fe2
-      url: "https://github.com/fryette/webview_cookie_manager.git"
-    source: git
-    version: "2.0.7"
   webview_flutter:
     dependency: "direct main"
     description:

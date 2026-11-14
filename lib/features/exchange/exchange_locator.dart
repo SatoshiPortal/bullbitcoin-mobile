@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notif
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:get_it/get_it.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeLocator {
   static void setup(GetIt locator) {
@@ -101,7 +101,9 @@ class ExchangeLocator {
       () => ClearExchangeSessionUsecase(
         exchangeApiKeyRepository: locator<ExchangeApiKeyRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        clearCookies: () => WebviewCookieManager().clearCookies(),
+        clearCookies: () async {
+          await WebViewCookieManager().clearCookies();
+        },
       ),
     );
 
