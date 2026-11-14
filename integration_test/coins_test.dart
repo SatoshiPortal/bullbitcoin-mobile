@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/wallet/data/frozen_utxos_freeze_store.dart';
 import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -16,6 +18,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_u
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:drift/drift.dart' show driftRuntimeOptions;
+import 'package:drift/native.dart';
 import 'package:sync/sync.dart' as sync;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,7 +29,7 @@ import 'developer_network.dart';
 //
 // Covers the §7.1 acceptance criteria:
 //   1. Freeze persists across restart — freeze an outpoint, re-init the
-//      freeze store, the outpoint is still frozen. Funds-free: this
+//      locator/SqliteDatabase, the outpoint is still frozen. Funds-free: this
 //      is the load-bearing persistence guarantee and runs anywhere.
 //   2. A frozen coin is never spent — freeze a real wallet outpoint, have
 //      PrepareBitcoinSendUsecase build a PSBT, assert the frozen outpoint is
@@ -58,26 +62,41 @@ Future<void> main({bool isInitialized = false}) async {
     tearDown(clear);
 
     test('freeze is durable across a restart', () async {
-      // A dedicated documents directory, isolated from the app's own Sync:
-      // freeze through one Sync, close it, then reopen a second one on the
-      // same files, which only sees what was committed to disk.
+      // A dedicated documents directory and database file, isolated from the
+      // app's own Sync and SqliteDatabase: freeze through one pair, close
+      // both, then reopen a second pair on the same files, which only sees
+      // what was committed to disk. Drift's "multiple databases" warning
+      // targets instances sharing a QueryExecutor; these use separate
+      // executors and never overlap, so it is silenced for this test only.
+      final previousWarnFlag =
+          driftRuntimeOptions.dontWarnAboutMultipleDatabases;
+      driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+      addTearDown(
+        () => driftRuntimeOptions.dontWarnAboutMultipleDatabases =
+            previousWarnFlag,
+      );
       final dir = await Directory.systemTemp.createTemp('coins_restart');
       addTearDown(() => dir.delete(recursive: true));
-      sync.Sync open() => sync.Sync.openForeground(
+      final dbFile = File('${dir.path}/restart.sqlite');
+      sync.Sync open(SqliteDatabase db) => sync.Sync.openForeground(
         documentsDirectory: dir.path,
         catalog: const _NoCatalog(),
         reservedAddresses: const _NoReserved(),
-        legacyFreezes: const _NoLegacyFreezes(),
+        freezes: FrozenUtxosFreezeStore(sqlite: db),
         inputReservations: _NoInputReservations(),
       );
 
-      final before = open();
+      final beforeDb = SqliteDatabase(NativeDatabase(dbFile));
+      final before = open(beforeDb);
       await SyncFreezesDatasource(
         sync: () async => before,
       ).freezeAttributed([sync.FrozenOutpoint(outpoint, origin: walletId)]);
       await before.close();
+      await beforeDb.close();
 
-      final after = open();
+      final afterDb = SqliteDatabase(NativeDatabase(dbFile));
+      addTearDown(afterDb.close);
+      final after = open(afterDb);
       addTearDown(after.close);
       final afterRestart = await SyncFreezesDatasource(
         sync: () async => after,
@@ -317,14 +336,6 @@ Future<void> main({bool isInitialized = false}) async {
         ? false
         : 'requires funded testnet wallet (set TEST_ALICE_MNEMONIC)',
   );
-}
-
-final class _NoLegacyFreezes implements sync.LegacyFreezeSourcePort {
-  const _NoLegacyFreezes();
-
-  @override
-  Future<Result<List<sync.FrozenOutpoint>, sync.SyncFailure>> readAll() async =>
-      const Ok([]);
 }
 
 final class _NoCatalog implements sync.WalletCatalogPort {

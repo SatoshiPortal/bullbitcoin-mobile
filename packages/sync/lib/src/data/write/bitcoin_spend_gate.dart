@@ -20,10 +20,6 @@ final class BitcoinSpendGate {
   final RevisionStoreDatasource revisions;
   final String documentsDirectory;
   final WalletCatalogPort catalog;
-
-  /// The freeze import must be witnessed before any spend: until then a
-  /// frozen coin is not known to be frozen.
-  final Future<Result<void, SyncFailure>> Function() freezesReady;
   static final _pending =
       <(String, WalletKey), (PublicWalletDescriptor, int, String)>{};
 
@@ -31,7 +27,6 @@ final class BitcoinSpendGate {
     required this.revisions,
     required this.documentsDirectory,
     required this.catalog,
-    required this.freezesReady,
   });
 
   Future<BitcoinSpendStatus> check(WalletKey key, {String? replacing}) async {
@@ -49,11 +44,6 @@ final class BitcoinSpendGate {
     bool handoff = false,
   }) async {
     if (key.network is! BitcoinNetwork) {
-      return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
-    }
-    // A hand-off records a spend already made elsewhere; it protects, so it
-    // does not wait for the freezes.
-    if (!handoff && await freezesReady() is Err) {
       return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
     }
     final acquired = await WriterLock.acquireWriter(

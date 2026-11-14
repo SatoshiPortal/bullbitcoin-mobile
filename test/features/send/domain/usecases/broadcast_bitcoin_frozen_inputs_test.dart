@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:sync/sync.dart' show FrozenOutpoint, Sync;
 
-import '../../../wallet/data/no_legacy_freezes.dart';
+import '../../../wallet/data/freezes_only_sync.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

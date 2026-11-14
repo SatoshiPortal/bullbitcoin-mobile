@@ -20,19 +20,11 @@ import 'package:sync/read.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 import 'package:sync/testing.dart';
 
-import 'no_legacy_freezes.dart';
+import 'freezes_only_sync.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Labels extends Mock implements LabelsFacade {}
-
-final class _BrokenLegacyFreezes implements sync.LegacyFreezeSourcePort {
-  const _BrokenLegacyFreezes();
-
-  @override
-  Future<Result<List<sync.FrozenOutpoint>, sync.SyncFailure>> readAll() async =>
-      const Err(sync.SyncStorageFailure());
-}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -112,12 +104,9 @@ void main() {
   });
 
   test('an unreadable freeze store fails; it is never empty', () async {
-    final broken = sync.Sync.openForeground(
-      documentsDirectory: '${dir.path}/broken',
-      catalog: const NoCatalog(),
-      reservedAddresses: const NoReservedAddresses(),
-      legacyFreezes: const _BrokenLegacyFreezes(),
-      inputReservations: NoInputReservations(),
+    final broken = freezesOnlySync(
+      '${dir.path}/broken',
+      freezes: MemoryFreezeStore()..failure = const sync.SyncStorageFailure(),
     );
     addTearDown(broken.close);
     final freezes = SyncFreezesDatasource(sync: () async => broken);
@@ -128,7 +117,7 @@ void main() {
         isA<WalletSnapshotException>().having(
           (e) => e.failure,
           'failure',
-          isA<sync.SyncFreezeImportRequiredFailure>(),
+          isA<sync.SyncStorageFailure>(),
         ),
       ),
     );

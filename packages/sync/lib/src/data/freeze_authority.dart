@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:primitives/primitives.dart';
 
 import '../domain/coin_freezes.dart';
-import '../domain/ports/legacy_freeze_source_port.dart';
+import '../domain/ports/freeze_store_port.dart';
 import '../domain/sync_failure.dart';
-import 'datasources/freeze_store_datasource.dart';
 
 /// The freezes this isolate last committed or read, for the projections.
 final class FreezeSnapshot {
@@ -16,11 +15,10 @@ final class FreezeSnapshot {
     : outpoints = Set.unmodifiable(outpoints);
 }
 
-/// What wallets and projections use of the freezes. [FreezeAuthority] in
-/// production; package tests and `testing.dart` supply their own.
+/// What wallets and projections use of the freezes: [FreezeAuthority].
 abstract interface class FreezePolicy {
-  /// The last committed or read freezes of this isolate; null until the
-  /// import is complete and the store has been read.
+  /// The last committed or read freezes of this isolate; null until a read
+  /// succeeded, or after a change whose result could not be read back.
   FreezeSnapshot? get snapshot;
 
   /// Why [snapshot] is null, once known.
@@ -29,7 +27,7 @@ abstract interface class FreezePolicy {
   /// Emits after every change of [snapshot] or [failure].
   Stream<void> get changes;
 
-  /// Schedules the import and a first read, never inline.
+  /// Schedules a read while [snapshot] is null, never inline.
   void demand();
 
   /// Every freeze with its attribution, read from the store.
@@ -44,32 +42,24 @@ abstract interface class FreezePolicy {
   Future<Result<PolicyRevision, SyncFailure>> unfreeze(
     List<Outpoint> outpoints,
   );
-
-  /// Checks the store, its marker and the witness together again.
-  Future<Result<void, SyncFailure>> recover();
 }
 
-/// Foreground owner of the freeze store: the one-time import, every freeze
-/// change and the exact reads spend admission relies on.
+/// Foreground owner of the freezes the app keeps behind [FreezeStorePort].
 ///
-/// Operations run one after the other in this isolate. Store transactions
-/// are `BEGIN IMMEDIATE`, so a second connection waits or fails busy, never
-/// interleaves. Until the import is witnessed, every operation fails with
-/// [SyncFreezeImportRequiredFailure] and is retried on the next call; once
-/// the store is found lost, with [SyncFreezeStoreLostFailure] until
-/// [recover] finds it whole again.
+/// Every read and change goes to the store; this only remembers the outpoints
+/// last read, numbered by a [PolicyRevision] of this isolate, so coins are
+/// republished without reloading a wallet. Reads and changes run one after
+/// the other here; [guard] holds the store itself.
 final class FreezeAuthority implements FreezePolicy {
-  final String _path;
-  final LegacyFreezeSourcePort _legacy;
+  final FreezeStorePort _store;
   final _changes = StreamController<void>.broadcast(sync: true);
   Future<void> _tail = Future.value();
-  FreezeStoreDatasource? _store;
-  bool _lost = false;
   bool _closed = false;
+  int _revision = 0;
   FreezeSnapshot? _snapshot;
   SyncFailure? _failure;
 
-  FreezeAuthority({required this._path, required this._legacy});
+  FreezeAuthority(this._store);
 
   @override
   FreezeSnapshot? get snapshot => _snapshot;
@@ -85,15 +75,24 @@ final class FreezeAuthority implements FreezePolicy {
     if (_snapshot == null && !_closed) unawaited(read());
   }
 
-  /// Imports if needed, then succeeds once the store is witnessed whole.
-  Future<Result<void, SyncFailure>> ready() =>
-      _run((_) => const Ok<void, SyncFailure>(null));
-
   @override
-  Future<Result<List<FrozenOutpoint>, SyncFailure>> read() => _run((store) {
-    final read = store.read();
-    _publish(FreezeSnapshot(read.revision, read.rows.map((r) => r.outpoint)));
-    return Ok(read.rows);
+  Future<Result<List<FrozenOutpoint>, SyncFailure>> read() => _serial(() async {
+    final read = await _store.readAll();
+    switch (read) {
+      case Ok(:final value):
+        final outpoints = {for (final row in value) row.outpoint};
+        final known = _snapshot?.outpoints;
+        if (known == null ||
+            known.length != outpoints.length ||
+            !known.containsAll(outpoints)) {
+          _publish(PolicyRevision(++_revision), outpoints);
+        }
+      case Err(:final failure):
+        // A failed read does not unfreeze what was read before; with nothing
+        // read yet, coins say why they are unavailable.
+        if (_snapshot == null) _fail(failure);
+    }
+    return read;
   });
 
   @override
@@ -103,49 +102,48 @@ final class FreezeAuthority implements FreezePolicy {
         Err(:final failure) => Err(failure),
       };
 
-  /// Runs [body] with the forbidden inputs while no freeze change can commit,
-  /// in this isolate or another: the check and its effect see one policy.
+  /// Runs [body] with the forbidden inputs while no freeze change can commit:
+  /// the check and its effect see one policy.
   Future<Result<T, SyncFailure>> guard<T>(
     FutureOr<T> Function(Set<Outpoint> forbidden) body,
-  ) => _runAsync(
-    (store) async => Ok(
-      await store.guarded(
-        (rows) => body({for (final row in rows) row.outpoint}),
-      ),
-    ),
-  );
+  ) async {
+    if (_closed) return const Err(SyncClosedFailure());
+    return _store.guard(
+      (rows) async => body({for (final row in rows) row.outpoint}),
+    );
+  }
 
   @override
   Future<Result<PolicyRevision, SyncFailure>> freeze(
     List<FrozenOutpoint> rows,
-  ) => _run((store) => Ok(_after(store, store.freeze(rows))));
+  ) => _change(() => _store.freeze(rows));
 
   @override
   Future<Result<PolicyRevision, SyncFailure>> unfreeze(
     List<Outpoint> outpoints,
-  ) => _run((store) => Ok(_after(store, store.unfreeze(outpoints))));
+  ) => _change(() => _store.unfreeze(outpoints));
 
-  /// Explicit recovery after [SyncFreezeStoreLostFailure]: checks the store,
-  /// its marker and the witness together again. Never recreates the store,
-  /// never imports the legacy table again, never removes the witness.
-  @override
-  Future<Result<void, SyncFailure>> recover() {
-    _lost = false;
-    return ready();
-  }
+  /// Commits [write], then republishes what the store holds after it.
+  Future<Result<PolicyRevision, SyncFailure>> _change(
+    Future<Result<void, SyncFailure>> Function() write,
+  ) => _serial(() async {
+    if (await write() case Err(:final failure)) return Err(failure);
+    final revision = PolicyRevision(++_revision);
+    switch (await _store.readAll()) {
+      case Ok(:final value):
+        _publish(revision, value.map((row) => row.outpoint));
+      case Err(:final failure):
+        // The change committed but cannot be read back: what was read before
+        // is out of date, and coins must not show it.
+        _fail(failure);
+    }
+    return Ok(revision);
+  });
 
-  PolicyRevision _after(FreezeStoreDatasource store, PolicyRevision revision) {
-    final read = store.read();
-    _publish(FreezeSnapshot(read.revision, read.rows.map((r) => r.outpoint)));
-    return revision;
-  }
-
-  void _publish(FreezeSnapshot snapshot) {
-    final changed =
-        _failure != null || _snapshot?.revision != snapshot.revision;
-    _snapshot = snapshot;
+  void _publish(PolicyRevision revision, Iterable<Outpoint> outpoints) {
+    _snapshot = FreezeSnapshot(revision, outpoints);
     _failure = null;
-    if (changed && !_closed) _changes.add(null);
+    if (!_closed) _changes.add(null);
   }
 
   void _fail(SyncFailure failure) {
@@ -156,83 +154,21 @@ final class FreezeAuthority implements FreezePolicy {
     if (changed && !_closed) _changes.add(null);
   }
 
-  Future<Result<T, SyncFailure>> _run<T>(
-    Result<T, SyncFailure> Function(FreezeStoreDatasource store) body,
-  ) => _runAsync((store) async => body(store));
-
-  Future<Result<T, SyncFailure>> _runAsync<T>(
-    Future<Result<T, SyncFailure>> Function(FreezeStoreDatasource store) body,
+  Future<Result<T, SyncFailure>> _serial<T>(
+    Future<Result<T, SyncFailure>> Function() body,
   ) {
     final run = _tail.then((_) async {
       if (_closed) return Err<T, SyncFailure>(const SyncClosedFailure());
-      final opened = await _open();
-      if (opened case Err(:final failure)) {
-        _fail(failure);
-        return Err<T, SyncFailure>(failure);
-      }
-      final store = (opened as Ok<FreezeStoreDatasource, SyncFailure>).value;
-      try {
-        return await body(store);
-      } on FreezeStoreLost {
-        return Err<T, SyncFailure>(_lose());
-      } on Exception {
-        // A busy or failing store is not a lost one: the next call retries.
-        _forget();
-        return Err<T, SyncFailure>(const SyncStorageFailure());
-      }
+      return body();
     });
     _tail = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     return run;
-  }
-
-  /// The store, importing first when no witness exists yet.
-  Future<Result<FreezeStoreDatasource, SyncFailure>> _open() async {
-    final open = _store;
-    if (open != null) return Ok(open);
-    if (_lost) return const Err(SyncFreezeStoreLostFailure());
-    try {
-      if (FreezeStoreDatasource.witnessed(_path)) {
-        return Ok(_store = FreezeStoreDatasource.openWitnessed(_path));
-      }
-    } on FreezeStoreLost {
-      return Err(_lose());
-    } on FreezeStoreUnavailable {
-      // An unreadable witness is not an absent one: nothing is imported.
-      return const Err(SyncStorageFailure());
-    }
-    // Not witnessed: the legacy table is the only truth, and nothing has
-    // been admitted since it was written.
-    final legacy = await _legacy.readAll();
-    if (legacy case Err()) return const Err(SyncFreezeImportRequiredFailure());
-    final rows = (legacy as Ok<List<FrozenOutpoint>, SyncFailure>).value;
-    FreezeStoreDatasource? store;
-    try {
-      store = FreezeStoreDatasource.openForImport(_path);
-      store.importOnce(rows);
-      FreezeStoreDatasource.writeWitness(_path);
-      return Ok(_store = store);
-    } on Exception {
-      store?.close();
-      return const Err(SyncFreezeImportRequiredFailure());
-    }
-  }
-
-  SyncFailure _lose() {
-    _forget();
-    _lost = true;
-    return const SyncFreezeStoreLostFailure();
-  }
-
-  void _forget() {
-    _store?.close();
-    _store = null;
   }
 
   Future<void> close() async {
     if (_closed) return;
     await _tail;
     _closed = true;
-    _forget();
     await _changes.close();
   }
 }

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'data/legacy_frozen_utxos_source.dart';
+import 'data/frozen_utxos_freeze_store.dart';
 import 'data/broadcast_observation_follow_up.dart';
 import 'data/catalog_wallet_secret_references_repository.dart';
 import 'domain/repositories/wallet_secret_references_repository.dart';
@@ -147,9 +147,7 @@ class WalletLocator {
         sync: locator<ElectrumSync>(),
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
-        legacyFreezes: LegacyFrozenUtxosSource(
-          sqlite: locator<SqliteDatabase>(),
-        ),
+        freezes: FrozenUtxosFreezeStore(sqlite: locator<SqliteDatabase>()),
       ),
     );
     locator.registerLazySingleton<BdkWalletDatasource>(

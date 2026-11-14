@@ -9,6 +9,7 @@ import '../data/freeze_authority.dart';
 import '../data/read/wallet_frame_mapper.dart';
 import '../data/wallet_projections.dart';
 import '../domain/coin_freezes.dart';
+import '../domain/ports/freeze_store_port.dart';
 import '../domain/ports/wallet_revision_reader_port.dart';
 import '../domain/sync_failure.dart';
 import '../domain/wallet_key.dart';
@@ -17,7 +18,7 @@ import '../domain/wallet_values.dart';
 import '../public/sync.dart';
 
 /// A loaded wallet publishing the given values at revision 0. [frozen]
-/// starts an in-memory freeze store its coin commands change.
+/// starts a [MemoryFreezeStore] its coin commands change.
 Future<Wallet> testWallet({
   required WalletKey key,
   Balances? balances,
@@ -91,8 +92,8 @@ Future<Wallet> _loaded(
     revisions: _Revisions(key),
     changes: const Stream.empty(),
     source: _Source(frame, derive),
-    freezes: MemoryFreezes(
-      frozen.map((o) => FrozenOutpoint(o, origin: key.id)),
+    freezes: FreezeAuthority(
+      MemoryFreezeStore(frozen.map((o) => FrozenOutpoint(o, origin: key.id))),
     ),
   );
   final wallet = walletOver(projections, key, 0);
@@ -146,59 +147,55 @@ final class _Source implements FrameSource {
   };
 }
 
-/// An in-memory freeze store, always imported. For tests only.
-final class MemoryFreezes implements FreezePolicy {
+/// An in-memory [FreezeStorePort]. For tests only.
+///
+/// [failure], while set, fails every operation, as an unreadable store does.
+/// [guard] holds back [freeze] and [unfreeze] until its body returns.
+final class MemoryFreezeStore implements FreezeStorePort {
   final _rows = <FrozenOutpoint>{};
-  final _changes = StreamController<void>.broadcast(sync: true);
-  var _revision = const PolicyRevision(0);
+  Future<void> _held = Future.value();
+  SyncFailure? failure;
 
-  MemoryFreezes([Iterable<FrozenOutpoint> rows = const []]) {
+  MemoryFreezeStore([Iterable<FrozenOutpoint> rows = const []]) {
     _rows.addAll(rows);
   }
 
-  @override
-  FreezeSnapshot get snapshot =>
-      FreezeSnapshot(_revision, _rows.map((row) => row.outpoint));
+  /// What the store holds, for assertions.
+  Set<FrozenOutpoint> get rows => Set.unmodifiable(_rows);
 
   @override
-  SyncFailure? get failure => null;
+  Future<Result<List<FrozenOutpoint>, SyncFailure>> readAll() async =>
+      _answer(() => _rows.toList());
 
   @override
-  Stream<void> get changes => _changes.stream;
+  Future<Result<void, SyncFailure>> freeze(List<FrozenOutpoint> rows) =>
+      _after(() => _answer(() => _rows.addAll(rows)));
 
   @override
-  void demand() {}
+  Future<Result<void, SyncFailure>> unfreeze(List<Outpoint> outpoints) =>
+      _after(
+        () => _answer(
+          () => _rows.removeWhere((row) => outpoints.contains(row.outpoint)),
+        ),
+      );
 
   @override
-  Future<Result<List<FrozenOutpoint>, SyncFailure>> read() async =>
-      Ok(_rows.toList());
+  Future<Result<T, SyncFailure>> guard<T>(
+    Future<T> Function(List<FrozenOutpoint> rows) body,
+  ) => _after(() async {
+    final failure = this.failure;
+    if (failure != null) return Err(failure);
+    return Ok(await body(_rows.toList()));
+  });
 
-  @override
-  Future<Result<Set<Outpoint>, SyncFailure>> forbiddenInputs() async =>
-      Ok({for (final row in _rows) row.outpoint});
-
-  @override
-  Future<Result<PolicyRevision, SyncFailure>> freeze(
-    List<FrozenOutpoint> rows,
-  ) async {
-    _rows.addAll(rows);
-    return Ok(_bump());
+  Future<R> _after<R>(Future<R> Function() body) async {
+    final run = _held.then((_) => body());
+    _held = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return run;
   }
 
-  @override
-  Future<Result<PolicyRevision, SyncFailure>> unfreeze(
-    List<Outpoint> outpoints,
-  ) async {
-    _rows.removeWhere((row) => outpoints.contains(row.outpoint));
-    return Ok(_bump());
-  }
-
-  @override
-  Future<Result<void, SyncFailure>> recover() async => const Ok(null);
-
-  PolicyRevision _bump() {
-    _revision = PolicyRevision(_revision.value + 1);
-    _changes.add(null);
-    return _revision;
+  Future<Result<T, SyncFailure>> _answer<T>(T Function() body) async {
+    final failure = this.failure;
+    return failure == null ? Ok(body()) : Err(failure);
   }
 }

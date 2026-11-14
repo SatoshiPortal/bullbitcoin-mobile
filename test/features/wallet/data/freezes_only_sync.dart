@@ -1,14 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
-
-/// A fresh install: the app's freeze table exists and is empty.
-final class NoLegacyFreezes implements LegacyFreezeSourcePort {
-  const NoLegacyFreezes();
-
-  @override
-  Future<Result<List<FrozenOutpoint>, SyncFailure>> readAll() async =>
-      const Ok([]);
-}
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 /// A catalog without wallets, for a [Sync] used only for its freezes.
 final class NoCatalog implements WalletCatalogPort {
@@ -34,15 +26,16 @@ final class NoReservedAddresses implements ReservedAddressPort {
   ) async => const Ok(false);
 }
 
-/// A foreground [Sync] in [documentsDirectory] whose freeze import is an
-/// empty app table.
-Sync freezesOnlySync(String documentsDirectory) => Sync.openForeground(
-  documentsDirectory: documentsDirectory,
-  catalog: const NoCatalog(),
-  reservedAddresses: const NoReservedAddresses(),
-  legacyFreezes: const NoLegacyFreezes(),
-  inputReservations: NoInputReservations(),
-);
+/// A foreground [Sync] in [documentsDirectory] over [freezes], an empty
+/// in-memory store by default.
+Sync freezesOnlySync(String documentsDirectory, {FreezeStorePort? freezes}) =>
+    Sync.openForeground(
+      documentsDirectory: documentsDirectory,
+      catalog: const NoCatalog(),
+      reservedAddresses: const NoReservedAddresses(),
+      freezes: freezes ?? MemoryFreezeStore(),
+      inputReservations: NoInputReservations(),
+    );
 
 /// No reservation held: every input is free of external sessions.
 final class NoInputReservations implements InputReservationPort {

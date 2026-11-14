@@ -47,7 +47,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<void>? _initialization;
   Type? _initializationFailure;
   final void Function(ForegroundStores)? _onStoresOpened;
-  final LegacyFreezeSourcePort _legacyFreezes;
+  final FreezeStorePort _freezes;
 
   WalletNativeRuntime({
     required this._catalog,
@@ -56,7 +56,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     required this._metadata,
     required this._sync,
     required this._documentsDirectory,
-    required this._legacyFreezes,
+    required this._freezes,
     @visibleForTesting this._onStoresOpened,
   });
 
@@ -77,7 +77,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       documentsDirectory: await _documentsDirectory(),
       catalog: _catalog,
       reservedAddresses: _reserved,
-      legacyFreezes: _legacyFreezes,
+      freezes: _freezes,
       inputReservations: _inputReservations,
     );
     StreamSubscription<WalletRevisionState>? subscription;

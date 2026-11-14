@@ -6,7 +6,8 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/src/data/wallet_projections.dart';
 import 'package:sync/src/public/sync.dart' show walletOver;
 import 'package:sync/sync.dart';
-import 'package:sync/src/testing/test_wallets.dart' show MemoryFreezes;
+import 'package:sync/testing.dart' show MemoryFreezeStore;
+import 'package:sync/src/data/freeze_authority.dart';
 
 void main() {
   final key = WalletKey(id: 'values', network: BitcoinNetwork.testnet);
@@ -18,7 +19,7 @@ void main() {
     revisions = _Revisions(key);
     source = _Source()..revisions = revisions;
     projections = WalletProjections(
-      freezes: MemoryFreezes(),
+      freezes: FreezeAuthority(MemoryFreezeStore()),
       revisions: revisions,
       changes: revisions.changes.stream,
       source: source,

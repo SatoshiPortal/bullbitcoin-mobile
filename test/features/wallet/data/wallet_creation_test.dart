@@ -35,7 +35,7 @@ import 'package:sync/write.dart' show ElectrumSync;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'package:secrets/testing.dart';
-import 'no_legacy_freezes.dart';
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
@@ -237,7 +237,7 @@ void main() {
         readRevision: (_) async => const Err(SyncNotFoundFailure()),
       ),
       documentsDirectory: () async => directory.path,
-      legacyFreezes: const NoLegacyFreezes(),
+      freezes: MemoryFreezeStore(),
     );
     when(() => native.create(any())).thenAnswer(
       (call) => runtime.create(

@@ -2,9 +2,9 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/read.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
-/// User freezes, owned by sync. Every call throws [WalletSnapshotException]
-/// with the failure: a freeze store that cannot answer is never read as
-/// "nothing frozen".
+/// User freezes, read and changed through sync. Every call throws
+/// [WalletSnapshotException] with the failure: a freeze store that cannot
+/// answer is never read as "nothing frozen".
 class SyncFreezesDatasource {
   final Future<sync.Sync> Function() _sync;
 

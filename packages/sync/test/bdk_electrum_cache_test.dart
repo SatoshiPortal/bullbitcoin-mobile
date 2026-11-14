@@ -23,7 +23,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import 'support/electrum_fixture.dart';
-import 'support/freezes.dart';
 
 const _testMnemonic =
     'abandon abandon abandon abandon abandon abandon abandon abandon '
@@ -775,7 +774,6 @@ void main() {
           documentsDirectory: dir.path,
           revisions: revisions,
           catalog: SingleWalletCatalog(descriptor),
-          freezesReady: freezesReady,
         );
         final admitted = await gate.acquire(descriptor.key);
         expect(admitted, isA<BitcoinSpendAdmission>());
@@ -811,7 +809,6 @@ void main() {
             documentsDirectory: dir.path,
             revisions: restartedRevisions,
             catalog: SingleWalletCatalog(descriptor),
-            freezesReady: freezesReady,
           );
           expect(
             await restarted.check(descriptor.key),
@@ -1049,7 +1046,6 @@ void main() {
           documentsDirectory: dir.path,
           revisions: revisions,
           catalog: SingleWalletCatalog(descriptor),
-          freezesReady: freezesReady,
         );
         final admission =
             await gate.acquire(descriptor.key) as BitcoinSpendAdmission;

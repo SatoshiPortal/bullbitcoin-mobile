@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/legacy_frozen_utxos_source.dart';
+import 'package:bb_mobile/features/wallet/data/frozen_utxos_freeze_store.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -15,7 +15,7 @@ void main() {
 
   setUp(() {
     db = SqliteDatabase(NativeDatabase.memory());
-    dir = Directory.systemTemp.createTempSync('legacy-freezes-');
+    dir = Directory.systemTemp.createTempSync('frozen-utxos-');
   });
   tearDown(() async {
     await db.close();
@@ -28,7 +28,7 @@ void main() {
         FrozenUtxosCompanion.insert(walletId: walletId, txId: txId, vout: vout),
       );
 
-  test('sync imports every published row through the app table', () async {
+  test('sync lists every row of the app table', () async {
     final a = 'a' * 64;
     final b = 'b' * 64;
     await insert('wpkh([0f36572d/84h/1h/0h])', a, 0);
@@ -38,7 +38,7 @@ void main() {
       documentsDirectory: dir.path,
       catalog: const _NoCatalog(),
       reservedAddresses: const _NoReserved(),
-      legacyFreezes: LegacyFrozenUtxosSource(sqlite: db),
+      freezes: FrozenUtxosFreezeStore(sqlite: db),
       inputReservations: _NoInputReservations(),
     );
     try {
@@ -54,8 +54,6 @@ void main() {
         FrozenOutpoint((txId: a, vout: 0), origin: 'tr([0f36572d/86h/1h/0h])'),
         FrozenOutpoint((txId: b, vout: 1), origin: ''),
       });
-      // The published table stays intact.
-      expect(await db.select(db.frozenUtxos).get(), hasLength(3));
     } finally {
       await sync.close();
     }
@@ -66,7 +64,7 @@ void main() {
       ..writeAsStringSync('not a database ' * 100);
     final corrupt = SqliteDatabase(NativeDatabase(file));
     try {
-      final result = await LegacyFrozenUtxosSource(sqlite: corrupt).readAll();
+      final result = await FrozenUtxosFreezeStore(sqlite: corrupt).readAll();
       expect(result, isA<Err<List<FrozenOutpoint>, SyncFailure>>());
     } finally {
       await corrupt.close();

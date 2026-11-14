@@ -4,13 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sync/sync.dart';
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sync/write.dart';
 import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/write/writer_lock.dart';
-import 'package:sync/src/data/freeze_authority.dart';
-import 'support/freezes.dart';
 
 final class _Reserved implements ReservedAddressPort {
   @override
@@ -59,7 +58,7 @@ void main() {
       documentsDirectory: dir.path,
       catalog: _Catalog([wallet, other]),
       reservedAddresses: _Reserved(),
-      legacyFreezes: LegacyFreezes(),
+      freezes: MemoryFreezeStore(),
       inputReservations: _NoInputReservations(),
     );
     revisions = RevisionStoreDatasource.openExisting(
@@ -99,7 +98,6 @@ void main() {
           revisions: restarted,
           documentsDirectory: dir.path,
           catalog: _Catalog([wallet, other]),
-          freezesReady: freezesReady,
         );
         expect(await restored.check(wallet.key), BitcoinSpendStatus.pending);
       } finally {
@@ -107,32 +105,6 @@ void main() {
       }
     },
   );
-
-  test('no spend is admitted before the freeze import is witnessed', () async {
-    final legacy = LegacyFreezes()..failure = const SyncStorageFailure();
-    final freezes = FreezeAuthority(
-      path: freezeStorePath(dir.path),
-      legacy: legacy,
-    );
-    try {
-      final blocked = BitcoinSpendGate(
-        revisions: revisions,
-        documentsDirectory: dir.path,
-        catalog: _Catalog([wallet, other]),
-        freezesReady: freezes.ready,
-      );
-      expect(await blocked.check(wallet.key), BitcoinSpendStatus.unavailable);
-      // A hand-off records a spend made elsewhere: it is still protected.
-      final handoff = await blocked.acquire(wallet.key, handoff: true);
-      expect(handoff, isA<BitcoinSpendAdmission>());
-      (handoff as BitcoinSpendAdmission).close();
-
-      legacy.failure = null;
-      expect(await blocked.check(wallet.key), BitcoinSpendStatus.ready);
-    } finally {
-      await freezes.close();
-    }
-  });
 
   test(
     'observed predecessor admits RBF and revalidation cannot be cleared by revision recovery',
@@ -319,7 +291,7 @@ void main() {
       documentsDirectory: dir.path,
       catalog: _Catalog([wallet, other]),
       reservedAddresses: _Reserved(),
-      legacyFreezes: LegacyFreezes(),
+      freezes: MemoryFreezeStore(),
       inputReservations: _NoInputReservations(),
     );
     try {

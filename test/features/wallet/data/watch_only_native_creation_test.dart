@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' as p;
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
-import 'no_legacy_freezes.dart';
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 // Published BIP84 test account, shared with wallet_identity_pins_test.dart.
 const _vpub =
@@ -67,7 +67,7 @@ void main() {
             documentsDirectory: directory.path,
             catalog: catalog,
             reservedAddresses: _Reserved(),
-            legacyFreezes: const NoLegacyFreezes(),
+            freezes: MemoryFreezeStore(),
             inputReservations: _NoInputReservations(),
           );
           final writer = opened.writer;

@@ -5,4 +5,5 @@
 /// Import this in `test/` only. It is not exported by `package:sync/sync.dart`.
 library;
 
-export 'src/testing/test_wallets.dart' show testWallet, testWalletFromNative;
+export 'src/testing/test_wallets.dart'
+    show MemoryFreezeStore, testWallet, testWalletFromNative;
