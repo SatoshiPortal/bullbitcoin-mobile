@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
-import 'domain/local_notification.dart';
+import 'domain/observation.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 /// Names a wallet's payment topic and its events. The background task and
@@ -19,18 +19,9 @@ final class WalletPaymentNotificationIdentity {
     '$_prefix|${key.id}|${_chain(key.network)}|${key.network.env.name}|$txid',
   );
 
-  /// An observed payment, carrying no user-facing text: only the aggregate
-  /// built at reconciliation is ever shown.
-  static LocalNotification event(
-    WalletKey key,
-    String txid, {
-    required DateTime observedAt,
-  }) => LocalNotification(
-    eventId: eventId(key, txid),
-    title: '',
-    body: '',
-    createdAt: observedAt,
-  );
+  /// The observed payments of one wallet, carrying no user-facing text.
+  static Observation observation(WalletKey key, Iterable<String> txids) =>
+      Observation(topicId(key), txids.map((txid) => eventId(key, txid)));
 
   static String _chain(Network network) => switch (network) {
     BitcoinNetwork() => 'bitcoin',

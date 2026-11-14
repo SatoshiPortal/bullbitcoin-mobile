@@ -1,5 +1,4 @@
 import 'package:meta/meta.dart';
-import 'domain/local_notification.dart';
 import 'domain/notifications_failure.dart';
 import 'notifications_facade.dart';
 import 'wallet_payment_notification_identity.dart';
@@ -17,18 +16,11 @@ final class WalletPaymentObservationAdapter {
     WalletSyncCompletion completion,
   ) async {
     if (!completion.completedInForeground) return const Ok(null);
-    final key = completion.revision.key;
-    LocalNotification event(String txid) =>
-        WalletPaymentNotificationIdentity.event(
-          key,
-          txid,
-          observedAt: completion.completedAt,
-        );
-    return notifications.recordObserved(
-      WalletPaymentNotificationIdentity.topicId(key),
-      completion.incomingTxids.map(event).toList(),
-      onlyNew: true,
-      baselineEvents: completion.incomingTxids.map(event).toList(),
+    return notifications.recordForeground(
+      WalletPaymentNotificationIdentity.observation(
+        completion.revision.key,
+        completion.incomingTxids,
+      ),
     );
   }
 }

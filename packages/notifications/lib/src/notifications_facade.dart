@@ -3,13 +3,13 @@ import 'package:primitives/primitives.dart';
 
 import 'domain/local_notification.dart';
 import 'domain/local_notification_gateway.dart';
-import 'domain/notification_outbox_port.dart';
 import 'domain/notifications_failure.dart';
-import 'domain/notification_reconcile_result.dart';
+import 'domain/observation.dart';
+import 'domain/repositories/notification_store_repository.dart';
 
 final class NotificationsFacade {
   final LocalNotificationGateway gateway;
-  final NotificationOutboxPort outbox;
+  final NotificationStoreRepository outbox;
   bool? _allowed;
 
   NotificationsFacade({required this.gateway, required this.outbox});
@@ -17,35 +17,21 @@ final class NotificationsFacade {
   Future<Result<void, NotificationsFailure>> initialize() =>
       gateway.initialize();
 
-  /// Records discoveries from a sync completed in foreground, never a read.
-  /// On first completion, baselineEvents initializes history without marking
-  /// it seen. An existing baseline ignores baselineEvents.
-  Future<Result<void, NotificationsFailure>> recordObserved(
-    String topicId,
-    List<LocalNotification> observedEvents, {
-    List<LocalNotification> baselineEvents = const [],
-    bool onlyNew = false,
-  }) => outbox.recordObserved(
-    topicId,
-    List.unmodifiable(observedEvents),
-    baselineEvents: List.unmodifiable(baselineEvents),
-    onlyNew: onlyNew,
-  );
+  /// The complete history of a sync completed in the foreground, never a
+  /// snapshot reload. What it holds is never announced.
+  Future<Result<void, NotificationsFailure>> recordForeground(
+    Observation observation,
+  ) => outbox.recordForeground(observation);
 
-  Future<Result<NotificationReconcileResult, NotificationsFailure>>
-  reconcileTopicsAndEnqueue(
-    List<NotificationTopicObservation> observations,
-    LocalNotification Function(List<LocalNotification> newEvents)
-    aggregateEvent,
+  /// The complete history of a background sync: events stored for the first
+  /// time become one pending aggregate, built by [aggregate].
+  Future<Result<BackgroundObservation, NotificationsFailure>> recordBackground(
+    Observation observation,
+    LocalNotification Function(List<String> newEventIds) aggregate,
   ) async {
-    final result = await outbox.reconcileTopicsAndEnqueue(
-      List.unmodifiable(observations),
-      aggregateEvent,
-    );
+    final result = await outbox.recordBackground(observation, aggregate);
     if (result case Ok(:final value)) {
-      log.fine(
-        'Notifications reconciled pending=${value.pendingCount} skipped_topics=${value.skippedTopicCount}',
-      );
+      log.fine('Notifications observed outcome=${value.name}');
     }
     return result;
   }
@@ -71,65 +57,40 @@ final class NotificationsFacade {
     }
   }
 
+  /// One aggregate at a time: a failure leaves the others pending, unclaimed.
   Future<Result<void, NotificationsFailure>> _settlePending({
     required bool show,
   }) async {
-    var shownCount = 0;
-    var seenCount = 0;
-    var deniedCount = 0;
-    final claimed = await outbox.claimPending();
-    switch (claimed) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        for (final claimed in value) {
-          final event = claimed.notification;
-          // Claimed before the app showed these payments: settle silently.
-          final bool alreadySeen;
-          switch (await outbox.isSeen(event.eventId)) {
-            case Ok(:final value):
-              alreadySeen = value;
-            case Err(:final failure):
-              final released = await outbox.release(
-                event.eventId,
-                claimed.claimToken,
-              );
-              if (released case Err(:final failure)) return Err(failure);
-              return Err(failure);
-          }
-          if (show && !alreadySeen) {
-            final shown = await gateway.show(
-              event,
-              platformId: claimed.platformId,
+    var count = 0;
+    while (true) {
+      final ClaimedNotification claim;
+      switch (await outbox.claimNext()) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(value: null):
+          if (count > 0) {
+            log.fine(
+              'Notifications settled shown=${show ? count : 0} denied=${show ? 0 : count}',
             );
-            if (shown case Err(:final failure)) {
-              final released = await outbox.release(
-                event.eventId,
-                claimed.claimToken,
-              );
-              if (released case Err(:final failure)) return Err(failure);
-              return Err(failure);
-            }
           }
-          final marked = await outbox.markDelivered(
-            event.eventId,
-            claimed.claimToken,
-          );
-          if (marked case Err(:final failure)) return Err(failure);
-          if (alreadySeen) {
-            seenCount++;
-          } else if (show) {
-            shownCount++;
-          } else {
-            deniedCount++;
-          }
+          return const Ok(null);
+        case Ok(:final value?):
+          claim = value;
+      }
+      if (show) {
+        final shown = await gateway.show(
+          claim.notification,
+          platformId: claim.platformId,
+        );
+        if (shown case Err(:final failure)) {
+          final released = await outbox.release(claim);
+          if (released case Err(:final failure)) return Err(failure);
+          return Err(failure);
         }
-        if (value.isNotEmpty) {
-          log.fine(
-            'Notifications settled shown=$shownCount seen=$seenCount denied=$deniedCount',
-          );
-        }
+      }
+      final settled = await outbox.settle(claim);
+      if (settled case Err(:final failure)) return Err(failure);
+      count++;
     }
-    return const Ok(null);
   }
 }

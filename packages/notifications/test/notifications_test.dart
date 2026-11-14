@@ -4,7 +4,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sqlite3/sqlite3.dart';
 
 final class FakeGateway implements LocalNotificationGateway {
   final List<int> shownIds = [];
@@ -43,263 +42,41 @@ final class FakeGateway implements LocalNotificationGateway {
   }
 }
 
-LocalNotification event(String id) => LocalNotification(
-  eventId: id,
+LocalNotification aggregate(List<String> ids) => LocalNotification(
+  eventId: 'aggregate-${ids.join(',')}',
   title: 'Title',
   body: 'Body',
   createdAt: DateTime.utc(2026, 9, 2),
 );
 
-Future<Result<NotificationReconcileResult, NotificationsFailure>> reconcile(
-  NotificationOutboxPort outbox,
-  String topic,
-  List<LocalNotification> events,
-) => outbox.reconcileTopicsAndEnqueue([
-  NotificationTopicObservation(topic, events),
-], (fresh) => event('aggregate-${fresh.map((e) => e.eventId).join(',')}'));
-
-Future<void> pending(NotificationOutboxPort outbox, String id) async {
-  expect(await outbox.recordObserved('delivery', []), isA<Ok>());
+Future<void> pending(NotificationStoreRepository outbox, String id) async {
+  expect(await outbox.recordForeground(Observation('delivery', [])), isA<Ok>());
   expect(
-    await outbox.reconcileTopicsAndEnqueue([
-      NotificationTopicObservation('delivery', [event('member-$id')]),
-    ], (_) => event(id)),
+    await outbox.recordBackground(Observation('delivery', [id]), aggregate),
     isA<Ok>(),
   );
 }
 
 void main() {
   late Directory directory;
-  late SqliteNotificationOutbox outbox;
+  late SqliteNotificationStoreRepository outbox;
 
   setUp(() {
     directory = Directory.systemTemp.createTempSync('notifications_test_');
     log = Logger.replace(directory: directory);
-    outbox = SqliteNotificationOutbox(
-      databasePath: '${directory.path}/notifications.sqlite',
-    );
+    outbox =
+        (SqliteNotificationStoreRepository.openForeground(
+                  '${directory.path}/notifications.sqlite',
+                )
+                as Ok<SqliteNotificationStoreRepository, NotificationsFailure>)
+            .value;
   });
 
   tearDown(() async {
     await log.flush();
-    outbox.dispose();
+    await outbox.close();
     directory.deleteSync(recursive: true);
   });
-
-  test(
-    'an unobserved topic is skipped until the foreground records it',
-    () async {
-      final facade = NotificationsFacade(
-        gateway: FakeGateway(),
-        outbox: outbox,
-      );
-      final skipped =
-          await reconcile(outbox, 'transactions', [event('old')]) as Ok;
-      expect(skipped.value.pendingCount, 0);
-      expect(skipped.value.skippedTopicCount, 1);
-      expect((await outbox.claimPending() as Ok).value, isEmpty);
-
-      // Still not observed: the same old payment stays unknown, never a
-      // silent baseline taken behind the user's back.
-      final again = await reconcile(outbox, 'transactions', [event('old')]);
-      expect((again as Ok).value.skippedTopicCount, 1);
-
-      expect(
-        await facade.recordObserved('transactions', [event('old')]),
-        isA<Ok>(),
-      );
-
-      final later = await reconcile(outbox, 'transactions', [
-        event('old'),
-        event('new'),
-      ]);
-      expect((later as Ok).value.pendingCount, 1);
-      final pending = (await outbox.claimPending() as Ok).value;
-      expect(pending.single.notification.eventId, 'aggregate-new');
-    },
-  );
-
-  test('a payment seen in the foreground is never notified later', () async {
-    final facade = NotificationsFacade(gateway: FakeGateway(), outbox: outbox);
-    await facade.recordObserved('transactions', []);
-
-    await facade.recordObserved('transactions', [event('seen-in-app')]);
-    final later = await reconcile(outbox, 'transactions', [
-      event('seen-in-app'),
-    ]);
-
-    expect((later as Ok).value.pendingCount, 0);
-    expect((await outbox.claimPending() as Ok).value, isEmpty);
-  });
-
-  test(
-    'a pending aggregate is dropped once all its payments were seen',
-    () async {
-      final facade = NotificationsFacade(
-        gateway: FakeGateway(),
-        outbox: outbox,
-      );
-      await facade.recordObserved('a', []);
-      await facade.recordObserved('b', []);
-      LocalNotification aggregate(List<LocalNotification> events) =>
-          event('aggregate-${events.length}');
-      expect(
-        ((await facade.reconcileTopicsAndEnqueue([
-                  NotificationTopicObservation('a', [event('a1')]),
-                  NotificationTopicObservation('b', [event('b1')]),
-                ], aggregate)
-                as Ok)
-            .value
-            .pendingCount),
-        1,
-      );
-
-      // The user opened wallet a: its payment is seen, b's is not.
-      await facade.recordObserved('a', [event('a1')]);
-      final stillPending = (await outbox.claimPending() as Ok).value;
-      expect(stillPending, hasLength(1));
-      await outbox.release('aggregate-2', stillPending.single.claimToken);
-
-      await facade.recordObserved('b', [event('b1')]);
-      expect((await outbox.claimPending() as Ok).value, isEmpty);
-    },
-  );
-
-  test(
-    'a claimed aggregate is not shown once its payments were seen',
-    () async {
-      outbox.dispose();
-      outbox = SqliteNotificationOutbox(
-        databasePath: '${directory.path}/notifications.sqlite',
-        claimLease: Duration.zero,
-      );
-      final gateway = FakeGateway();
-      final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
-      await facade.recordObserved('a', []);
-      await facade.reconcileTopicsAndEnqueue([
-        NotificationTopicObservation('a', [event('a1')]),
-      ], (events) => event('aggregate'));
-      // A background run claims it, then the app shows the payment.
-      expect((await outbox.claimPending() as Ok).value, hasLength(1));
-      await facade.recordObserved('a', [event('a1')]);
-
-      expect(await facade.deliverPending(), isA<Ok>());
-      expect(gateway.shownIds, isEmpty);
-    },
-  );
-
-  test('reconciliation is idempotent and pending survives reopen', () async {
-    await outbox.recordObserved('topic', [event('stable')]);
-    final repeated = await reconcile(outbox, 'topic', [event('stable')]);
-    expect((repeated as Ok).value.pendingCount, 0);
-    await reconcile(outbox, 'topic', [event('stable'), event('pending')]);
-    outbox.dispose();
-    outbox = SqliteNotificationOutbox(
-      databasePath: '${directory.path}/notifications.sqlite',
-    );
-    final pending = (await outbox.claimPending() as Ok).value;
-    expect(pending.single.notification.eventId, 'aggregate-pending');
-  });
-
-  test(
-    'aggregate callback programming errors are not storage failures',
-    () async {
-      expect(await outbox.recordObserved('topic', []), isA<Ok>());
-      await expectLater(
-        outbox.reconcileTopicsAndEnqueue([
-          NotificationTopicObservation('topic', [event('new')]),
-        ], (_) => throw StateError('programming error')),
-        throwsStateError,
-      );
-    },
-  );
-
-  test('refuses a future schema without rewriting it', () {
-    final path = '${directory.path}/future.sqlite';
-    final database = sqlite3.open(path);
-    addTearDown(database.dispose);
-    database.execute('PRAGMA user_version = 2');
-    expect(
-      () => SqliteNotificationOutbox(databasePath: path),
-      throwsStateError,
-    );
-    expect(database.select('PRAGMA user_version').single['user_version'], 2);
-  });
-
-  test(
-    'atomically reconciles topics and enqueues one aggregate event',
-    () async {
-      final aggregate = <List<LocalNotification>>[];
-      await outbox.recordObserved('one', [event('one')]);
-      await outbox.recordObserved('two', [event('two')]);
-      final result = await outbox.reconcileTopicsAndEnqueue(
-        [
-          NotificationTopicObservation('one', [event('one')]),
-          NotificationTopicObservation('two', [event('two')]),
-        ],
-        (newEvents) {
-          aggregate.add(newEvents);
-          return event(
-            newEvents.map((notification) => notification.eventId).join(','),
-          );
-        },
-      );
-      expect(result, isA<Ok>());
-      expect(aggregate, isEmpty);
-      expect((await outbox.claimPending() as Ok).value, isEmpty);
-
-      final later = await outbox.reconcileTopicsAndEnqueue(
-        [
-          NotificationTopicObservation('one', [event('one'), event('new-one')]),
-          NotificationTopicObservation('two', [event('two'), event('new-two')]),
-        ],
-        (newEvents) {
-          aggregate.add(newEvents);
-          return event(
-            newEvents.map((notification) => notification.eventId).join(','),
-          );
-        },
-      );
-      expect(later, isA<Ok>());
-      expect(aggregate.single.map((notification) => notification.eventId), [
-        'new-one',
-        'new-two',
-      ]);
-      expect(
-        () => aggregate.single.add(event('mutation')),
-        throwsUnsupportedError,
-      );
-      final pending = (await outbox.claimPending() as Ok).value.single;
-      expect(pending.notification.eventId, 'new-one,new-two');
-      expect(pending.notification.body, 'Body');
-      await outbox.reconcileTopicsAndEnqueue([
-        NotificationTopicObservation('one', [event('one'), event('new-one')]),
-        NotificationTopicObservation('two', [event('two'), event('new-two')]),
-      ], (newEvents) => event('aggregate-${newEvents.length}'));
-      expect((await outbox.claimPending() as Ok).value, isEmpty);
-    },
-  );
-
-  test(
-    'two open outboxes cannot claim the same event simultaneously',
-    () async {
-      final second = SqliteNotificationOutbox(
-        databasePath: '${directory.path}/notifications.sqlite',
-      );
-      addTearDown(second.dispose);
-      await pending(outbox, 'exclusive');
-
-      final firstClaim = await outbox.claimPending(
-        now: DateTime.utc(2026, 9, 2, 12),
-      );
-      final secondClaim = await second.claimPending(
-        now: DateTime.utc(2026, 9, 2, 12),
-      );
-
-      expect((firstClaim as Ok).value, hasLength(1));
-      expect((secondClaim as Ok).value, isEmpty);
-    },
-  );
 
   test(
     'permission request delegates success and refusal to the gateway',
@@ -330,68 +107,19 @@ void main() {
     expect(gateway.permissionRequestCount, 0);
   });
 
-  test(
-    'colliding hash candidates receive durable distinct platform IDs',
-    () async {
-      await pending(outbox, 'collision-55045');
-      await pending(outbox, 'collision-70885');
-      final claims = (await outbox.claimPending() as Ok).value;
-      expect(claims.map((claim) => claim.platformId).toSet(), hasLength(2));
-      outbox.dispose();
-      outbox = SqliteNotificationOutbox(
-        databasePath: '${directory.path}/notifications.sqlite',
-      );
-      final retryClaims =
-          (await outbox.claimPending(
-                    now: DateTime.now().add(const Duration(minutes: 6)),
-                  )
-                  as Ok)
-              .value;
-      expect(
-        retryClaims.map((claim) => claim.platformId).toSet(),
-        hasLength(2),
-      );
-    },
-  );
+  test('each aggregate is shown once, then deleted', () async {
+    final gateway = FakeGateway();
+    final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
+    await pending(outbox, 'first');
+    await pending(outbox, 'second');
 
-  test('obsolete claim tokens are rejected after lease reclaim', () async {
-    await pending(outbox, 'lease');
-    final first =
-        (await outbox.claimPending(now: DateTime.utc(2026, 9, 2, 12)) as Ok)
-            .value
-            .single;
-    final second =
-        (await outbox.claimPending(now: DateTime.utc(2026, 9, 2, 12, 6)) as Ok)
-            .value
-            .single;
-    expect(await outbox.markDelivered('lease', first.claimToken), isA<Err>());
-    expect(await outbox.markDelivered('lease', second.claimToken), isA<Ok>());
+    expect(await facade.deliverPending(), isA<Ok>());
+    expect(await facade.deliverPending(), isA<Ok>());
+
+    expect(gateway.shownIds, hasLength(2));
+    expect(gateway.shownIds.toSet(), hasLength(2));
+    expect((await outbox.claimNext() as Ok).value, isNull);
   });
-
-  test(
-    'successful delivery marks delivered and retry uses the same ID',
-    () async {
-      final gateway = FakeGateway();
-      final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
-      await pending(outbox, 'retryable');
-      expect(await facade.deliverPending(), isA<Ok>());
-      expect(await facade.deliverPending(), isA<Ok>());
-      expect(gateway.shownIds, hasLength(1));
-
-      await pending(outbox, 'crash-window');
-      final claimed = await outbox.claimPending(
-        now: DateTime.utc(2026, 9, 2, 12),
-      );
-      final recovered = await outbox.claimPending(
-        now: DateTime.utc(2026, 9, 2, 12, 6),
-      );
-      expect((claimed as Ok).value.single.notification.eventId, 'crash-window');
-      expect(
-        (recovered as Ok).value.single.platformId,
-        (claimed as Ok).value.single.platformId,
-      );
-    },
-  );
 
   test('notifications hidden by the OS are dropped, not replayed', () async {
     final gateway = FakeGateway()..enabled = false;
@@ -415,9 +143,9 @@ void main() {
     expect(gateway.shownIds, hasLength(1));
     expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
       'Notification permission changed allowed=false',
-      'Notifications settled shown=0 seen=0 denied=1',
+      'Notifications settled shown=0 denied=1',
       'Notification permission changed allowed=true',
-      'Notifications settled shown=1 seen=0 denied=0',
+      'Notifications settled shown=1 denied=0',
     ]);
   });
 
@@ -434,13 +162,18 @@ void main() {
     expect(gateway.settingsOpenCount, 1);
   });
 
-  test('gateway failure returns typed failure and remains retryable', () async {
-    final gateway = FakeGateway()..fail = true;
-    final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
-    await pending(outbox, 'failure');
-    final result = await facade.deliverPending();
-    expect(result, isA<Err>());
-    gateway.fail = false;
-    expect(await facade.deliverPending(), isA<Ok>());
-  });
+  test(
+    'a failed show keeps the aggregate pending with its platform ID',
+    () async {
+      final gateway = FakeGateway()..fail = true;
+      final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
+      await pending(outbox, 'failure');
+      final result = await facade.deliverPending();
+      expect(result, isA<Err>());
+      gateway.fail = false;
+      expect(await facade.deliverPending(), isA<Ok>());
+      expect(gateway.shownIds, hasLength(2));
+      expect(gateway.shownIds.first, gateway.shownIds.last);
+    },
+  );
 }

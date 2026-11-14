@@ -244,7 +244,7 @@ void main() {
     final database = sqlite3.open('${directory.path}/outbox');
     addTearDown(database.dispose);
     database.execute(
-      "CREATE TRIGGER reject_observation BEFORE INSERT ON notification_outbox BEGIN SELECT RAISE(ABORT, 'injected'); END",
+      "CREATE TRIGGER reject_observation BEFORE INSERT ON observed_events BEGIN SELECT RAISE(ABORT, 'injected'); END",
     );
     writer.operation = () async => Ok(outcome());
     expect((await task().executeAll()).shouldRetry, isFalse);

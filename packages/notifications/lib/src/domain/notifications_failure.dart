@@ -21,3 +21,20 @@ final class NotificationsPermissionDeniedFailure extends NotificationsFailure {
 final class NotificationsClaimLostFailure extends NotificationsFailure {
   const NotificationsClaimLostFailure();
 }
+
+/// The store does not exist, or cannot be opened.
+final class NotificationsStoreUnavailableFailure extends NotificationsFailure {
+  const NotificationsStoreUnavailableFailure();
+}
+
+/// The store has another schema version; nothing migrates it.
+final class NotificationsStoreVersionFailure extends NotificationsFailure {
+  final int version;
+  const NotificationsStoreVersionFailure(this.version);
+}
+
+/// Every platform notification ID was allocated once already.
+final class NotificationsPlatformIdsExhaustedFailure
+    extends NotificationsFailure {
+  const NotificationsPlatformIdsExhaustedFailure();
+}

@@ -247,26 +247,16 @@ final class WalletTransactionSyncBackgroundTask {
             // Observations are best effort after native commit; later history
             // replays an interrupted handoff without degrading the sync result.
             try {
-              final reconciled = await notifications.reconcileTopicsAndEnqueue(
-                [
-                  NotificationTopicObservation(
-                    WalletPaymentNotificationIdentity.topicId(claim.key),
-                    [
-                      for (final txid in incoming)
-                        WalletPaymentNotificationIdentity.event(
-                          claim.key,
-                          txid,
-                          observedAt: value.completedAt,
-                        ),
-                    ],
-                  ),
-                ],
-                (events) {
-                  final ids = events.map((e) => e.eventId).toList()..sort();
-                  final text = copy(events.length, chain);
+              final reconciled = await notifications.recordBackground(
+                WalletPaymentNotificationIdentity.observation(
+                  claim.key,
+                  incoming,
+                ),
+                (ids) {
+                  final text = copy(ids.length, chain);
                   return LocalNotification(
                     eventId: sha256
-                        .convert(utf8.encode(ids.join('|')))
+                        .convert(utf8.encode((ids.toList()..sort()).join('|')))
                         .toString(),
                     title: text.title,
                     body: text.body,

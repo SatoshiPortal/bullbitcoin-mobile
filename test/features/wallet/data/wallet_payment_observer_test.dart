@@ -50,9 +50,8 @@ void main() {
       outbox: outbox,
     );
     expect(
-      await notifications.recordObserved(
-        WalletPaymentNotificationIdentity.topicId(key),
-        [],
+      await notifications.recordForeground(
+        WalletPaymentNotificationIdentity.observation(key, []),
       ),
       isA<Ok>(),
     );
@@ -70,19 +69,13 @@ void main() {
     visible = false;
     ready.complete(notifications);
     expect(await recording, isA<Ok>());
-    final event = WalletPaymentNotificationIdentity.event(
-      key,
-      'new',
-      observedAt: DateTime.now(),
-    );
     final database = sqlite3.open('${directory.path}/outbox.sqlite');
     try {
       expect(
-        database.select(
-          'SELECT seen_at FROM notification_outbox WHERE event_id=?',
-          [event.eventId],
-        ).single['seen_at'],
-        isNotNull,
+        database.select('SELECT 1 FROM observed_events WHERE event_id=?', [
+          WalletPaymentNotificationIdentity.eventId(key, 'new'),
+        ]),
+        hasLength(1),
       );
     } finally {
       database.dispose();

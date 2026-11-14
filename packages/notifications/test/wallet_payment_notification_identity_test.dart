@@ -23,15 +23,16 @@ void main() {
   test('reconstructing a key preserves identity without raw ids', () {
     WalletKey key() =>
         WalletKey(id: 'private-wallet', network: BitcoinNetwork.testnet);
-    final event = WalletPaymentNotificationIdentity.event(
-      key(),
+    final observation = WalletPaymentNotificationIdentity.observation(key(), [
       'private-txid',
-      observedAt: DateTime.utc(2026),
-    );
+    ]);
     expect(
-      event.eventId,
-      WalletPaymentNotificationIdentity.eventId(key(), 'private-txid'),
+      observation.topicId,
+      WalletPaymentNotificationIdentity.topicId(key()),
     );
-    expect(event.eventId, matches(RegExp(r'^[a-f0-9]{64}$')));
+    expect(observation.eventIds, {
+      WalletPaymentNotificationIdentity.eventId(key(), 'private-txid'),
+    });
+    expect(observation.eventIds.single, matches(RegExp(r'^[a-f0-9]{64}$')));
   });
 }
