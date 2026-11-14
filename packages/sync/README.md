@@ -4,10 +4,75 @@ The single writer of the native BDK and LWK wallet stores: revisions, a cross-is
 
 ## Public surface
 
-- `sync.dart` is neutral: domain values (`WalletKey`, revisions, `SyncCompletion`, `BitcoinSpendStatus`, `BitcoinBroadcastReceipt`, failures), the transaction id helpers, the `WalletWriterRepository` contract and the `*Port` interfaces the app implements.
-- `write.dart` builds everything. The foreground calls `openForeground()`, which creates the revision store and the spend gate before any pass, and gets the writer repository, the revision reader, the snapshot reader, the spend gate, `recoveredMetadata` and `completeRecovery()`. Background code calls `openExisting()`, which never creates or migrates a store. It also exports `ElectrumSync`, the sync engine. No datasource is exported.
-- `read.dart` publishes `WalletSnapshotReader`, which lends native handles: `WalletReadSnapshot.wallet` and `borrowedHandle` return the shared `bdk.Wallet` or `lwk.Wallet` itself. Callers must not mutate, persist or dispose it. It also publishes `validateAddress`.
-- `diagnostics.dart` publishes the identifier-free lease diagnostic context.
+`sync.dart` is the entry point. `Sync.openForeground` returns `Sync`, which owns the stores and the published values of this isolate; `Sync.openExisting` returns `HeadlessSync`, which only refreshes an existing wallet and closes. `sync.wallet(key)` returns a `Wallet`: a key and the generation it was obtained for, never a native object. A handle obtained before a delete or a re-import never follows it; its values then read unavailable with `SyncNotFoundFailure`.
+
+Reads are `Observed<T>` values. `now` returns the last value published in this isolate, synchronously, with no IO, native call or mapping. `watch()` emits that value, then each distinct change; a newer revision with identical data is not a change, staleness and generation changes always are. Every value carries its status (`notLoaded`, `ready`, `stale`, `unavailable`, `closed`), its revision and, when relevant, a `SyncFailure`: an unavailable wallet never reads as a zero balance or an empty list.
+
+```dart
+final wallet = switch (await sync.wallet(key)) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw StateError(failure.logCode),
+};
+await wallet.load(); // local stores only, latest committed revision
+final balances = wallet.balances.now; // same frame as the coins below
+final coins = wallet.coins.now;
+wallet.transactions.watch().listen(render);
+```
+
+Values are mapped from the native wallet once per revision, built into one immutable frame, then published by a single pointer assignment before any notification: several `now` reads without an `await` between them see the same revision. Who republishes after a commit made elsewhere: the revision reader emits a change whenever a read finds a new state, and the foreground reads after every worker outcome (`WalletNativeRuntime.refresh`); a change for a wallet that has values or subscribers schedules a reload.
+
+⚠️ A protocol decision never reads `now`. `wallet.ownership()` (scripts the index derives, revealed plus lookahead, and every output held, spent ones included) and `wallet.unspent()` load the exact committed revision and return `SyncBusyFailure` when the reader can only serve an older one, for instance while the writer holds the store. Payjoin's ownership checks and spendable coins and the Liquid build's coin filter use them. Liquid has no ownership index: LWK does not expose it.
+
+`bitcoinAddressScript` and `validateAddress` are library functions: no wallet is opened.
+
+Still transitional, removed in phase 2: `write.dart` builds the writer, the spend gate and the Electrum engine, and its `SyncForegroundStores` extension hands the app the writer and the borrowed reader; `read.dart` publishes `WalletSnapshotReader`, which lends the shared `bdk.Wallet` or `lwk.Wallet` to the transaction builders only. Callers must not mutate, persist or dispose it. `diagnostics.dart` publishes the identifier-free lease diagnostic context. `testing.dart` builds real `Wallet`s for consumers' tests.
+
+<!-- sync-api:start -->
+
+Generated from `lib/sync.dart`; update with `make sync-api-docs`.
+
+Each asynchronous `Future<Result<T, SyncFailure>>` is shown as `T`. Other returns are unchanged. `name:` denotes a required named argument; brackets denote optional arguments and show explicit defaults. Constructors, static members other than the entry points marked `static`, Object methods and internal members are omitted. Synchronous capability groups are expanded; data and widget values remain leaves.
+
+```text
+Sync
+|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:) -> Sync
+|-- static openExisting(documentsDirectory:, catalog:, connections:) -> HeadlessSync
+|-- wallet(key) -> Wallet
+|-- changes
+|   `-- watch() -> Stream<WalletRevisionState>
+|-- recovery
+|   |-- pending -> Observed<bool>
+|   `-- complete() -> Result<void, SyncFailure>
+`-- close() -> Future<void>
+```
+
+```text
+Wallet
+|-- key -> WalletKey
+|-- generation -> int
+|-- balances -> Observed<WalletValue<Balances>>
+|-- coins -> Observed<WalletValue<CoinList>>
+|-- transactions -> Observed<WalletValue<ChainTransactionList>>
+|-- addresses
+|   |-- current -> Observed<WalletValue<AddressBook>>
+|   |-- at(index, [keychain: Keychain.external]) -> Observed<WalletValue<DerivedAddress>>
+|   `-- owns
+|       |-- script(script) -> Observed<WalletValue<Ownership>>
+|       `-- outpoint(outpoint) -> Observed<WalletValue<Ownership>>
+|-- load() -> WalletRevision
+|-- ownership() -> OwnershipIndex
+`-- unspent() -> CoinList
+```
+
+```text
+HeadlessSync
+|-- refresh(key, [collectIncoming: false]) -> SyncCompletion
+`-- close() -> Future<void>
+```
+
+<!-- sync-api:end -->
+
+These trees are generated from the exports of `lib/sync.dart`; `make sync-api-docs-check` detects stale trees in `make checks`.
 
 ## Layout
 
@@ -18,10 +83,12 @@ lib/src/data/datasources/  SQLite revision store and spend gate, shared by read 
 lib/src/data/write/        every native store mutation: writer session, lock, spend gate
 lib/src/data/write/datasources/  BDK wallet store, LWK wallet store, BDK Electrum client, parents cache
 lib/src/data/write/sync/   Electrum engine and its Bitcoin and Liquid passes
-lib/src/data/read/         reader: hydration under admission, never a mutation
+lib/src/data/read/         reader: hydration under admission, frame mapping, never a mutation
+lib/src/data/wallet_projections.dart  published frames, Observed values, exact queries
+lib/src/public/            Sync, Wallet, HeadlessSync and their groups
 ```
 
-Shared code never imports `data/write`, and `data/read` never does. `make native-write-check` enforces the boundary on symbols: native store mutations only under `lib/src/data/write/`, hydration only under `lib/src/data/read/`.
+Shared code never imports `data/write`, and `data/read` never does. `make native-write-check` enforces the boundary on symbols: native store mutations only under `lib/src/data/write/`, hydration only under `lib/src/data/read/`. It also enforces native import ownership: outside this package, only the files in `tool/native_import_allowlist.dart` may use BDK or LWK, and a listed file that stops must leave the list, so the list only shrinks.
 
 ## Stores
 

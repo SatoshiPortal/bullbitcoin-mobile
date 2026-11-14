@@ -42,28 +42,35 @@ Future<void> main(List<String> arguments) async {
 }
 
 /// Returns whether the file was already current; check mode never writes it.
-bool updateApiReadme(File readme, String trees, {required bool check}) {
+bool updateApiReadme(
+  File readme,
+  String trees, {
+  required bool check,
+  String marker = 'secrets-api',
+}) {
   final before = readme.readAsStringSync();
-  final after = replaceApiTrees(before, trees);
+  final after = replaceApiTrees(before, trees, marker: marker);
   if (before == after) return true;
   if (!check) readme.writeAsStringSync(after);
   return false;
 }
 
-String replaceApiTrees(String markdown, String trees) {
-  final start = markdown.indexOf(apiDocsStart);
-  final end = markdown.indexOf(apiDocsEnd);
+String replaceApiTrees(
+  String markdown,
+  String trees, {
+  String marker = 'secrets-api',
+}) {
+  final open = '<!-- $marker:start -->';
+  final close = '<!-- $marker:end -->';
+  final start = markdown.indexOf(open);
+  final end = markdown.indexOf(close);
   if (start < 0 ||
       end < start ||
-      markdown.indexOf(apiDocsStart, start + apiDocsStart.length) >= 0 ||
-      markdown.indexOf(apiDocsEnd, end + apiDocsEnd.length) >= 0) {
+      markdown.indexOf(open, start + open.length) >= 0 ||
+      markdown.indexOf(close, end + close.length) >= 0) {
     throw StateError('README must contain one ordered pair of API markers.');
   }
-  return markdown.replaceRange(
-    start + apiDocsStart.length,
-    end,
-    '\n\n$trees\n\n',
-  );
+  return markdown.replaceRange(start + open.length, end, '\n\n$trees\n\n');
 }
 
 /// [failure] is the failure type whose `Future<Result<T, failure>>` reads as

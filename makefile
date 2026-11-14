@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -84,7 +84,13 @@ secrets-api-docs:
 secrets-api-docs-check:
 	@fvm dart packages/secrets/tool/api_docs.dart --check
 
-checks: analyze bull-ui-check native-write-check custody-check secrets-api-docs-check fix-check format-check unit-test
+sync-api-docs:
+	@fvm dart packages/sync/tool/api_docs.dart
+
+sync-api-docs-check:
+	@fvm dart packages/sync/tool/api_docs.dart --check
+
+checks: analyze bull-ui-check native-write-check custody-check secrets-api-docs-check sync-api-docs-check fix-check format-check unit-test
 
 # Supply-chain regression gate: every external GitHub Actions `uses:` reference
 # must stay pinned to a full commit SHA (mutable tags can be repointed).
