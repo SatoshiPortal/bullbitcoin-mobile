@@ -1,6 +1,8 @@
 import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:sync/src/data/read/persisted_wallet_readiness.dart';
 import 'package:sync/src/data/native_store_paths.dart';
+import 'package:sync/src/data/read/native_frame_source.dart';
+import 'package:sync/src/data/wallet_projections.dart';
 import 'package:sync/src/data/write/native_wallet_writer_repository.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
@@ -414,6 +416,41 @@ void main() {
     // A failed sync is stale, yet still the committed revision.
     expect(next.value.admitted, isTrue);
   });
+
+  test(
+    'red-green: a revision is mapped once, whatever its staleness',
+    () async {
+      create();
+      final source = NativeFrameSource(reader, _Catalog(descriptor));
+      WalletFrame frame(Result<LoadedFrame, SyncFailure> result) =>
+          (result as Ok<LoadedFrame, SyncFailure>).value.frame;
+      final fresh = frame(await source.load(descriptor.key, null));
+      expect(fresh.stale, isFalse);
+      // A writer holds the wallet: the reader serves its cache, stale.
+      revisions.state = WalletRevisionState(
+        stamp: revisions.state.stamp,
+        lifecycle: WalletLifecycle.pendingWrite,
+        initializedSchema: 1,
+      );
+      final busy = frame(await source.load(descriptor.key, fresh));
+      revisions.state = WalletRevisionState(
+        stamp: revisions.state.stamp,
+        lifecycle: WalletLifecycle.active,
+        initializedSchema: 1,
+      );
+      final back = frame(await source.load(descriptor.key, busy));
+      expect([busy.stale, back.stale], [isTrue, isFalse]);
+      for (final next in [busy, back]) {
+        expect(next.revision, fresh.revision);
+        // Only the status changed: the mapped values are the same objects.
+        expect(next.balances, same(fresh.balances));
+        expect(next.coins, same(fresh.coins));
+        expect(next.transactions, same(fresh.transactions));
+        expect(next.addresses, same(fresh.addresses));
+        expect(next.ownership, same(fresh.ownership));
+      }
+    },
+  );
 
   test('lease releases even when unpublished native disposal throws', () async {
     create();
