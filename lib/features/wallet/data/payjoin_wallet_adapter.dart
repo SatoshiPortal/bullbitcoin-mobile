@@ -18,7 +18,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final SyncWalletValuesDatasource _values;
   final WalletMetadataDatasource _metadata;
 
-  /// [_spendStatus] asks the guard through `wallet.spend.check`.
+  /// [_spendStatus] asks the guard through `wallet.tx.check`.
   const PayjoinWalletAdapter(
     this._secrets,
     this._wallet,
@@ -54,7 +54,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     // paths first, from the public descriptors.
     final annotated = switch (await (await _wallet(
       walletId,
-    )).spend.annotate(psbt)) {
+    )).tx.annotate(psbt)) {
       Ok(:final value) => value,
       Err(:final failure) => throw StateError('sync: ${failure.logCode}'),
     };

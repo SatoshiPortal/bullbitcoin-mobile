@@ -66,7 +66,7 @@ final class WalletFacade {
       _spendStatus?.call(walletId, replacing: replacing) ??
       BitcoinSpendStatus.unavailable;
 
-  /// Broadcasts a signed transaction of [walletId] through `wallet.spend`,
+  /// Broadcasts a signed transaction of [walletId] through `wallet.tx`,
   /// which checks its generation and inputs again under the guard. [built]
   /// carries the generation it was built at.
   Future<Result<SpendReceipt, SyncFailure>> broadcastSpend(

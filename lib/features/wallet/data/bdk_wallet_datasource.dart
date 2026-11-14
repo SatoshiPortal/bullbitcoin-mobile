@@ -15,7 +15,7 @@ import 'package:sync/sync.dart' as sync;
 /// [walletId]'s sync handle on its current generation.
 typedef SpendWallet = Future<sync.Wallet> Function(String walletId);
 
-/// Bitcoin spends through `wallet.spend`, and the PSBT facts the app reads
+/// Bitcoin spends through `wallet.tx`, and the PSBT facts the app reads
 /// without a wallet. No native handle is held here.
 class BdkWalletDatasource {
   final SpendWallet _wallet;
@@ -39,7 +39,7 @@ class BdkWalletDatasource {
   Future<String> addOwnDerivations({
     required String psbt,
     required WalletModel wallet,
-  }) async => _value(await (await _wallet(wallet.id)).spend.annotate(psbt));
+  }) async => _value(await (await _wallet(wallet.id)).tx.annotate(psbt));
 
   /// One build by the writer, which also excludes the freezes and the
   /// reservations of other sessions and refuses a selected protected coin.
@@ -78,7 +78,7 @@ class BdkWalletDatasource {
       // a zero amount or fee rate.
       return const Err(sync.SyncSpendRefusedFailure());
     }
-    return (await _wallet(wallet.id)).spend.build(request);
+    return (await _wallet(wallet.id)).tx.build(request);
   }
 
   Future<int> decodeTxSize(String psbtString) async =>
@@ -159,7 +159,7 @@ class BdkWalletDatasource {
     required String txid,
     required RelativeFee feeRate,
     required WalletModel wallet,
-  }) async => (await _wallet(wallet.id)).spend.bumpFee(
+  }) async => (await _wallet(wallet.id)).tx.bump(
     sync.BumpFeeRequest(txid: txid, fee: sync.SpendFeeRate(feeRate.satPerKwu)),
   );
 
@@ -171,7 +171,7 @@ class BdkWalletDatasource {
     required String txid,
     required WalletModel wallet,
   }) async => switch (_value(
-    await (await _wallet(wallet.id)).spend.originalSignatures(txid),
+    await (await _wallet(wallet.id)).tx.originalSignatures(txid),
   )) {
     sync.SignatureCheck.valid => TransactionSignatureStatus.valid,
     sync.SignatureCheck.invalid => TransactionSignatureStatus.invalid,

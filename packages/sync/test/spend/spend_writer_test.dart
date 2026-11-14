@@ -514,11 +514,11 @@ void main() {
         (failure as SyncSpendBlockedFailure).status,
         BitcoinSpendStatus.pending,
       );
-      expect(stores.spend.status(key).now.data, BitcoinSpendStatus.pending);
+      expect(stores.spend.readiness(key).now.data, BitcoinSpendStatus.pending);
     });
   });
 
-  group('bumpFee', () {
+  group('bump', () {
     final txid = 'e' * 64;
 
     test('builds only on an original whose signatures verify', () async {
@@ -528,7 +528,7 @@ void main() {
         ..bumpInputs = [_a]
         ..signatures = SignatureCheck.invalid;
       final failure = err(
-        await stores.spend.bumpFee(
+        await stores.spend.bump(
           key,
           generation(key),
           BumpFeeRequest(txid: txid, fee: SpendFeeRate(2000)),
@@ -549,7 +549,7 @@ void main() {
       reservations.held = [reservation(_a, owner)];
       ok(await stores.freezes.freeze([FrozenOutpoint(_a, origin: 'x')]));
       final failure = err(
-        await stores.spend.bumpFee(
+        await stores.spend.bump(
           key,
           generation(key),
           BumpFeeRequest(txid: txid, fee: SpendFeeRate(2000), owner: owner),
@@ -565,7 +565,7 @@ void main() {
         ..bumpInputs = [_a];
       reservations.held = [reservation(_a, owner), reservation(_b, owner)];
       Future<Result<UnsignedSpend, SyncFailure>> bump({SpendOwner? by}) =>
-          stores.spend.bumpFee(
+          stores.spend.bump(
             key,
             generation(key),
             BumpFeeRequest(txid: txid, fee: SpendFeeRate(2000), owner: by),
@@ -782,12 +782,12 @@ void main() {
     );
   });
 
-  group('status', () {
+  group('readiness', () {
     Future<WalletValue<BitcoinSpendStatus>> published(
       WalletKey key,
       BitcoinSpendStatus status,
     ) => stores.spend
-        .status(key)
+        .readiness(key)
         .watch()
         .firstWhere((value) => value.data == status)
         .timeout(const Duration(seconds: 5));
@@ -796,7 +796,7 @@ void main() {
       final key = bitcoin.key;
       final value = await published(key, BitcoinSpendStatus.ready);
       expect(value.revision, revisions.record(key)?.state.stamp);
-      expect(stores.spend.status(key).now.data, BitcoinSpendStatus.ready);
+      expect(stores.spend.readiness(key).now.data, BitcoinSpendStatus.ready);
     });
 
     test('a sync that observes the pending spend republishes it ready, '
@@ -812,7 +812,7 @@ void main() {
           ),
         ),
       );
-      expect(stores.spend.status(key).now.data, BitcoinSpendStatus.pending);
+      expect(stores.spend.readiness(key).now.data, BitcoinSpendStatus.pending);
 
       // A worker pass observes the spend and commits a revision; the
       // foreground reads it on the worker's return.
@@ -829,7 +829,7 @@ void main() {
       final ready = published(key, BitcoinSpendStatus.ready);
       ok(await stores.revisions.read(key));
       expect((await ready).revision, revisions.record(key)?.state.stamp);
-      expect(stores.spend.status(key).now.data, BitcoinSpendStatus.ready);
+      expect(stores.spend.readiness(key).now.data, BitcoinSpendStatus.ready);
     });
   });
 }

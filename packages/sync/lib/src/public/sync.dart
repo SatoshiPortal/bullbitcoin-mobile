@@ -217,8 +217,9 @@ final class Wallet {
 
   Wallet._(this._projections, this._spender, this.key, this.generation);
 
-  /// Native spends: build, bump, consolidate, then broadcast once signed.
-  WalletSpendGroup get spend => WalletSpendGroup._(this);
+  /// Native transactions: build, bump, consolidate, then broadcast once
+  /// signed.
+  WalletTxGroup get tx => WalletTxGroup._(this);
 
   Observed<WalletBalances> get balances =>
       _projections.observe(key, generation, (frame) => frame.balances);
@@ -317,14 +318,14 @@ extension type const WalletCoinsGroup._(Wallet _wallet) {
   }
 }
 
-/// `wallet.spend`: commands of the single writer. Signing stays with the
+/// `wallet.tx`: commands of the single writer. Signing stays with the
 /// caller, through `secrets` or a hardware signer, between build and
 /// broadcast; no lock is held meanwhile.
 ///
 /// ⚠️ Bitcoin only is guarded from admission to the receipt. Liquid has no
 /// spend guard yet: its receipts say `guarded: false`, and only freezes are
 /// checked at its broadcast.
-extension type const WalletSpendGroup._(Wallet _wallet) {
+extension type const WalletTxGroup._(Wallet _wallet) {
   /// Builds once on a native wallet opened for this command, after the
   /// guard admits the spend, and persists the change it reveals before
   /// handing the transaction out. Refuses an input that is frozen or
@@ -336,8 +337,8 @@ extension type const WalletSpendGroup._(Wallet _wallet) {
   /// A BIP125 replacement, built only on an original whose own inputs'
   /// signatures verify. An input the builder adds faces every protection.
   @useResult
-  Future<Result<UnsignedSpend, SyncFailure>> bumpFee(BumpFeeRequest request) =>
-      _wallet._spender.bumpFee(_wallet.key, _wallet.generation, request);
+  Future<Result<UnsignedSpend, SyncFailure>> bump(BumpFeeRequest request) =>
+      _wallet._spender.bump(_wallet.key, _wallet.generation, request);
 
   /// Liquid consolidation batches, each checked; empty when the wallet holds
   /// no more coins than the threshold.
@@ -370,8 +371,8 @@ extension type const WalletSpendGroup._(Wallet _wallet) {
 
   /// The guard's last verdict, published by [check] and by the spend
   /// commands. Never a permission: [build] and [broadcast] check again.
-  Observed<WalletValue<BitcoinSpendStatus>> get status =>
-      _wallet._spender.status(_wallet.key);
+  Observed<WalletValue<BitcoinSpendStatus>> get readiness =>
+      _wallet._spender.readiness(_wallet.key);
 
   /// Asks the guard now, under the writer lock, and publishes its verdict.
   @useResult
@@ -538,7 +539,7 @@ final class _NoSpender implements WalletSpender {
   ) => _refused();
 
   @override
-  Future<Result<UnsignedSpend, SyncFailure>> bumpFee(
+  Future<Result<UnsignedSpend, SyncFailure>> bump(
     WalletKey key,
     int generation,
     BumpFeeRequest request,
@@ -563,7 +564,7 @@ final class _NoSpender implements WalletSpender {
   }) => _refused();
 
   @override
-  Observed<WalletValue<BitcoinSpendStatus>> status(WalletKey key) =>
+  Observed<WalletValue<BitcoinSpendStatus>> readiness(WalletKey key) =>
       _Cell(const WalletValue.unavailable(SyncUnsupportedNetworkFailure()));
 
   @override

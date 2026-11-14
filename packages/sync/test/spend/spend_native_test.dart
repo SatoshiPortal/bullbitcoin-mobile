@@ -300,7 +300,7 @@ void main() {
     final bumps = [
       for (var i = 0; i < 30; i++)
         ok(
-          await stores.spend.bumpFee(
+          await stores.spend.bump(
             key,
             await generation(),
             BumpFeeRequest(txid: receipt.txid, fee: SpendFeeRate(2000 + i)),

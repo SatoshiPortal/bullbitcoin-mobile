@@ -37,7 +37,7 @@ abstract interface class WalletSpender {
     int generation,
     SpendRequest request,
   );
-  Future<Result<UnsignedSpend, SyncFailure>> bumpFee(
+  Future<Result<UnsignedSpend, SyncFailure>> bump(
     WalletKey key,
     int generation,
     BumpFeeRequest request,
@@ -53,7 +53,7 @@ abstract interface class WalletSpender {
     int generation, {
     String? replacing,
   });
-  Observed<WalletValue<BitcoinSpendStatus>> status(WalletKey key);
+  Observed<WalletValue<BitcoinSpendStatus>> readiness(WalletKey key);
   Future<Result<SignatureCheck, SyncFailure>> originalSignatures(
     WalletKey key,
     int generation,
@@ -124,7 +124,7 @@ final class SpendWriter implements WalletSpender {
   final NativeSpendSessions _natives;
   final SpendTransport _send;
   final bool Function() _closed;
-  final Map<WalletKey, _StatusCell> _statuses = {};
+  final Map<WalletKey, _ReadinessCell> _readiness = {};
   late final StreamSubscription<WalletRevisionState> _changes;
 
   SpendWriter({
@@ -137,9 +137,9 @@ final class SpendWriter implements WalletSpender {
     required this._closed,
   }) {
     // A new revision may settle or create an obligation: ask the guard again
-    // for every wallet whose status was asked for.
+    // for every wallet whose readiness was asked for.
     _changes = _session.reader.changes.listen((state) {
-      final cell = _statuses[state.stamp.key];
+      final cell = _readiness[state.stamp.key];
       if (cell != null) _refresh(state.stamp.key, cell);
     });
   }
@@ -367,7 +367,7 @@ final class SpendWriter implements WalletSpender {
   }
 
   @override
-  Future<Result<UnsignedSpend, SyncFailure>> bumpFee(
+  Future<Result<UnsignedSpend, SyncFailure>> bump(
     WalletKey key,
     int generation,
     BumpFeeRequest request,
@@ -561,19 +561,20 @@ final class SpendWriter implements WalletSpender {
   }
 
   @override
-  Observed<WalletValue<BitcoinSpendStatus>> status(WalletKey key) => _cell(key);
+  Observed<WalletValue<BitcoinSpendStatus>> readiness(WalletKey key) =>
+      _cell(key);
 
   /// The first demand schedules the guard's verdict; `now` never asks it.
-  _StatusCell _cell(WalletKey key) => _statuses.putIfAbsent(key, () {
-    late final _StatusCell cell;
-    cell = _StatusCell(() => _refresh(key, cell));
+  _ReadinessCell _cell(WalletKey key) => _readiness.putIfAbsent(key, () {
+    late final _ReadinessCell cell;
+    cell = _ReadinessCell(() => _refresh(key, cell));
     _refresh(key, cell);
     return cell;
   });
 
   /// Asks the guard outside `now`, one request per wallet at a time, and
   /// publishes its verdict unless a command published a newer one meanwhile.
-  void _refresh(WalletKey key, _StatusCell cell) {
+  void _refresh(WalletKey key, _ReadinessCell cell) {
     if (_closed() || cell.closed) return;
     if (cell.refreshing) {
       cell.again = true;
@@ -756,14 +757,15 @@ final class SpendWriter implements WalletSpender {
 
   void close() {
     unawaited(_changes.cancel());
-    for (final cell in _statuses.values) {
+    for (final cell in _readiness.values) {
       cell.close();
     }
   }
 }
 
 /// The guard's last verdict for one wallet, published without IO.
-final class _StatusCell implements Observed<WalletValue<BitcoinSpendStatus>> {
+final class _ReadinessCell
+    implements Observed<WalletValue<BitcoinSpendStatus>> {
   WalletValue<BitcoinSpendStatus> _value = const WalletValue.notLoaded();
   final _changes = StreamController<WalletValue<BitcoinSpendStatus>>.broadcast(
     sync: true,
@@ -778,7 +780,7 @@ final class _StatusCell implements Observed<WalletValue<BitcoinSpendStatus>> {
   bool refreshing = false;
   bool again = false;
 
-  _StatusCell(this._demand);
+  _ReadinessCell(this._demand);
 
   bool get closed => _changes.isClosed;
 

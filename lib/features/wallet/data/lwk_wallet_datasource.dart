@@ -6,7 +6,7 @@ import 'package:primitives/primitives.dart' show Err, Ok, Outpoint, Result;
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' as sync;
 
-/// Liquid spends through `wallet.spend`, and the PSET facts the app reads.
+/// Liquid spends through `wallet.tx`, and the PSET facts the app reads.
 /// No native handle is held here.
 ///
 /// ⚠️ Liquid has no spend guard: its broadcast checks freezes only, and a
@@ -40,7 +40,7 @@ class LwkWalletDatasource {
     if (!drain && amountSat == null) {
       return const Err(sync.SyncSpendRefusedFailure());
     }
-    return (await _wallet(wallet.id)).spend.build(request);
+    return (await _wallet(wallet.id)).tx.build(request);
   }
 
   /// The unsigned consolidation batches, each checked by the writer; empty
@@ -65,7 +65,7 @@ class LwkWalletDatasource {
     } on ArgumentError {
       return const Err(sync.SyncSpendRefusedFailure());
     }
-    return (await _wallet(wallet.id)).spend.consolidate(request);
+    return (await _wallet(wallet.id)).tx.consolidate(request);
   }
 
   Set<Outpoint> getPsetInputs(String pset) => switch (sync.decodeLiquidPset(
@@ -89,9 +89,8 @@ class LwkWalletDatasource {
     String pset,
     String address, {
     required WalletModel wallet,
-  }) async =>
-      switch (await (await _wallet(wallet.id)).spend.liquidEffect(pset)) {
-        Ok(:final value) => value.policyBalanceSat.abs() - value.feeSat,
-        Err(:final failure) => throw WalletSnapshotException(failure),
-      };
+  }) async => switch (await (await _wallet(wallet.id)).tx.liquidEffect(pset)) {
+    Ok(:final value) => value.policyBalanceSat.abs() - value.feeSat,
+    Err(:final failure) => throw WalletSnapshotException(failure),
+  };
 }

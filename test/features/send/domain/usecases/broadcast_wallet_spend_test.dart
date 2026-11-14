@@ -18,7 +18,7 @@ import 'package:sync/sync.dart'
         WalletKey,
         WalletRevision;
 
-// A wallet's spend is broadcast through `wallet.spend`: the use cases keep
+// A wallet's spend is broadcast through `wallet.tx`: the use cases keep
 // the authorization rule and name sync's refusals.
 
 class _Bitcoin extends Mock implements BitcoinBlockchainRepository {}

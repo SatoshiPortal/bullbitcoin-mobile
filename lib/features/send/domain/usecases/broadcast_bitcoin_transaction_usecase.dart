@@ -33,7 +33,7 @@ class BroadcastBitcoinTransactionUsecase {
     isLiquid: false,
   );
 
-  /// Broadcasts [transaction]. With [walletId], `wallet.spend` checks the
+  /// Broadcasts [transaction]. With [walletId], `wallet.tx` checks the
   /// generation, the freezes and the reservations again under the guard, and
   /// keeps the guard until the receipt; [built] is the spend this
   /// transaction signs, when this run built it.

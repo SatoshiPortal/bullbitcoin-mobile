@@ -196,7 +196,7 @@ final class UnsignedSpend {
 
   WalletKey get key => revision.key;
 
-  /// This spend once signed, ready for `wallet.spend.broadcast`.
+  /// This spend once signed, ready for `wallet.tx.broadcast`.
   SignedSpend signed(SignedTransaction transaction) => SignedSpend._(
     key: key,
     generation: revision.generation,
@@ -232,7 +232,7 @@ final class SignedPset extends SignedTransaction {
 }
 
 /// A signed transaction to broadcast for a wallet generation. Built from an
-/// [UnsignedSpend], or by `wallet.spend.signed` for a transaction signed in
+/// [UnsignedSpend], or by `wallet.tx.signed` for a transaction signed in
 /// an earlier run, such as a Payjoin proposal or a saved payment.
 final class SignedSpend {
   final WalletKey key;

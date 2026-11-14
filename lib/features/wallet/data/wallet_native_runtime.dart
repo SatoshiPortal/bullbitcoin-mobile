@@ -315,7 +315,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     try {
       return switch (await (await wallet(
         walletId,
-      )).spend.check(replacing: replacing)) {
+      )).tx.check(replacing: replacing)) {
         Ok(:final value) => value,
         Err(failure: SyncBusyFailure()) => BitcoinSpendStatus.busy,
         Err() => BitcoinSpendStatus.unavailable,
@@ -325,7 +325,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
   }
 
-  /// Broadcasts [transaction] for [walletId] through `wallet.spend`, which
+  /// Broadcasts [transaction] for [walletId] through `wallet.tx`, which
   /// checks its generation and inputs again under the guard. [built] carries
   /// the generation it was built at; without it, the current one is used.
   Future<Result<SpendReceipt, SyncFailure>> broadcast(
@@ -344,9 +344,9 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     if (built != null && built.key != handle.key) {
       return const Err(SyncNotFoundFailure());
     }
-    return handle.spend.broadcast(
+    return handle.tx.broadcast(
       built?.signed(transaction) ??
-          handle.spend.signed(transaction, owner: owner, replacing: replacing),
+          handle.tx.signed(transaction, owner: owner, replacing: replacing),
     );
   }
 

@@ -20,7 +20,7 @@ class BroadcastLiquidTransactionUsecase {
     this._wallet,
   }) : _liquidBlockchain = liquidBlockchainRepository;
 
-  /// Broadcasts [signedPset]. With [walletId], `wallet.spend` checks its
+  /// Broadcasts [signedPset]. With [walletId], `wallet.tx` checks its
   /// generation and the freezes first.
   ///
   /// ⚠️ Liquid has no spend guard: nothing prevents a concurrent spend of

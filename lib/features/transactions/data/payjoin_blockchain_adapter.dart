@@ -38,7 +38,7 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
         _blockchain.broadcastTransaction(transaction, connection: connection),
   );
 
-  /// Through `wallet.spend.broadcast`, as session [sessionId]: the only one
+  /// Through `wallet.tx.broadcast`, as session [sessionId]: the only one
   /// that may spend the inputs it reserved. The guard is held until the
   /// receipt.
   @override

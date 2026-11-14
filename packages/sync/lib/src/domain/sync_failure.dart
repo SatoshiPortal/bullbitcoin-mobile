@@ -130,7 +130,7 @@ final class SyncUnrecognizedReplyFailure extends SyncChainFailure {
   const SyncUnrecognizedReplyFailure();
 }
 
-/// A failure of `wallet.spend`: the request was understood, and no
+/// A failure of `wallet.tx`: the request was understood, and no
 /// transaction was handed out.
 sealed class SyncSpendFailure extends SyncFailure {
   const SyncSpendFailure();

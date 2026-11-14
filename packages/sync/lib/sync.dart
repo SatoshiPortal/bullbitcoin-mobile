@@ -18,7 +18,7 @@ export 'src/public/sync.dart'
         WalletAddressGroup,
         WalletCoinsGroup,
         WalletOwnsGroup,
-        WalletSpendGroup;
+        WalletTxGroup;
 export 'src/domain/observed.dart';
 export 'src/domain/wallet_values.dart';
 
