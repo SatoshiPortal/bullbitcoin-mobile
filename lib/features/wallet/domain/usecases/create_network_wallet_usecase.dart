@@ -63,18 +63,19 @@ final class CreateNetworkWalletUsecase {
           return Err(NetworkWalletSetupSecretFailure(refusal));
         }
       }
-      await _createDefaults.execute(secret: secret, expectedNetwork: network);
+      switch (await _createDefaults.execute(
+        secret: secret,
+        expectedNetwork: network,
+      )) {
+        case Err():
+          return const Err(NetworkWalletSetupUnavailableFailure());
+        case Ok():
+          break;
+      }
       log.fine(
         'Network wallet setup completed network=${network.name} reused=${reuse != null}',
       );
       return const Ok(null);
-    } on CreateDefaultWalletsException catch (error) {
-      final refusal = error.secretRefusal;
-      return Err(
-        refusal == null
-            ? const NetworkWalletSetupUnavailableFailure()
-            : NetworkWalletSetupSecretFailure(refusal),
-      );
     } on Exception {
       log.warning('Network wallet setup unavailable category=provisioning');
       return const Err(NetworkWalletSetupUnavailableFailure());

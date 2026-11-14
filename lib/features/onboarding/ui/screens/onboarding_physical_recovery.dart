@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -21,11 +23,106 @@ class OnboardingPhysicalRecovery extends StatefulWidget {
 }
 
 class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
-    with PrivacyScreen {
+    with PrivacyScreen, WidgetsBindingObserver {
   late final Future<void> _privacyFuture = enableScreenPrivacy();
+  bool _scanning = false;
+  bool _dialogOpen = false;
+  int _attempt = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      _attempt++;
+      if (_scanning) setState(() => _scanning = false);
+      if (_dialogOpen) {
+        _dialogOpen = false;
+        Navigator.of(context, rootNavigator: true).pop(false);
+      }
+    }
+  }
+
+  Future<void> _submit(Mnemonic mnemonic) async {
+    if (_scanning) return;
+    if (mnemonic.passphrase.isEmpty) {
+      context.read<OnboardingBloc>().add(
+        OnboardingRecoverWalletClicked(mnemonic: mnemonic),
+      );
+      return;
+    }
+    final attempt = ++_attempt;
+    while (true) {
+      setState(() => _scanning = true);
+      final scan = await context.read<OnboardingBloc>().scanWallet(
+        words: mnemonic.words,
+        passphrase: mnemonic.passphrase,
+      );
+      if (!mounted || attempt != _attempt) return;
+      setState(() => _scanning = false);
+      if (scan is Err) {
+        _dialogOpen = true;
+        final proceed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(context.loc.onboardingScanUnavailableTitle),
+            content: Text(context.loc.onboardingScanUnavailableMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.loc.retry),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(context.loc.onboardingContinueWithoutChecking),
+              ),
+            ],
+          ),
+        );
+        _dialogOpen = false;
+        if (!mounted || attempt != _attempt || proceed == null) return;
+        if (proceed) break;
+        continue;
+      }
+      final hasHistory = (scan as Ok<bool, OnboardingFailure>).value;
+      if (!hasHistory) {
+        _dialogOpen = true;
+        final proceed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(context.loc.emptyWalletTitle),
+            content: Text(
+              '${context.loc.emptyWalletMessage}\n\n${context.loc.emptyWalletBitcoinOnly}',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.loc.correct),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(context.loc.continueButton),
+              ),
+            ],
+          ),
+        );
+        _dialogOpen = false;
+        if (!mounted || attempt != _attempt || proceed != true) return;
+      }
+      break;
+    }
+    context.read<OnboardingBloc>().add(
+      OnboardingRecoverWalletClicked(mnemonic: mnemonic),
+    );
+  }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(disableScreenPrivacy());
     super.dispose();
   }
@@ -53,8 +150,9 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                   children: [
                     BullFadingLinearProgress(
                       trigger:
+                          _scanning ||
                           state.onboardingStepStatus ==
-                          OnboardingStepStatus.loading,
+                              OnboardingStepStatus.loading,
                       backgroundColor: Theme.of(context).colorScheme.surface,
                       foregroundColor: Theme.of(context).colorScheme.primary,
                       height: 2.0,
@@ -65,12 +163,14 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                         // in-app keyboard at the bottom, so it fills the space.
                         child: IgnorePointer(
                           ignoring:
+                              _scanning ||
                               state.onboardingStepStatus ==
-                              OnboardingStepStatus.loading,
+                                  OnboardingStepStatus.loading,
                           child: Opacity(
                             opacity:
-                                state.onboardingStepStatus ==
-                                    OnboardingStepStatus.loading
+                                _scanning ||
+                                    state.onboardingStepStatus ==
+                                        OnboardingStepStatus.loading
                                 ? 0.5
                                 : 1.0,
                             child: MnemonicWidget(
@@ -78,15 +178,10 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                               initialLength: bip39.MnemonicLength.words12,
                               allowMultipleMnemonicLength: true,
                               allowLabel: false,
-                              allowPassphrase: false,
+                              allowPassphrase: true,
                               submitLabel: context.loc.onboardingRecover,
-                              onSubmit: (mnemonic) {
-                                context.read<OnboardingBloc>().add(
-                                  OnboardingRecoverWalletClicked(
-                                    mnemonic: mnemonic,
-                                  ),
-                                );
-                              },
+                              onSubmit: (mnemonic) =>
+                                  unawaited(_submit(mnemonic)),
                             ),
                           ),
                         ),

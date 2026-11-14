@@ -7330,10 +7330,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "Вашето резервно копие не е защитено с парола за защита. По-късно добавете парола към резервното копие, като създадете нов портфейл.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "ID за размяна",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -7460,10 +7456,6 @@
   "payCustomFee": "Персонализирана такса",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "Вашето резервно копие не е защитено с парола за защита. По-късно добавете парола към резервното копие, като създадете нов портфейл.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "Потвърдете експресното теглене",
   "@buyConfirmExpress": {

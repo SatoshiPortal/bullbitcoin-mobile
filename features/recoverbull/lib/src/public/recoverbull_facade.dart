@@ -72,18 +72,28 @@ final class RecoverBullFacade {
   Future<Result<VaultCompletion, RecoverBullFailure>> recoverFromServer({
     required EncryptedVault vault,
     required String password,
+    String passphrase = '',
+    bool allowUnverified = false,
   }) =>
-      _recoverServer?.execute(vault: vault, password: password) ??
+      _recoverServer?.execute(
+        vault: vault,
+        password: password,
+        passphrase: passphrase,
+        allowUnverified: allowUnverified,
+      ) ??
       Future.value(const Err(RecoverBullJournalFailure()));
 
   @visibleForTesting
-  Future<Result<VaultBackup, RecoverBullFailure>> create() => _create.execute();
+  Future<Result<VaultBackup, RecoverBullFailure>> create({
+    bool passphraseWarningAccepted = false,
+  }) => _create.execute(passphraseWarningAccepted: passphraseWarningAccepted);
 
   @visibleForTesting
   Future<Result<VaultContext, RecoverBullFailure>> test({
     required EncryptedVault vault,
     required VaultKey key,
-  }) => _test.execute(vault: vault, key: key);
+    String passphrase = '',
+  }) => _test.execute(vault: vault, key: key, passphrase: passphrase);
 
   @visibleForTesting
   Future<Result<VaultRecovery, RecoverBullFailure>> restore({
@@ -91,10 +101,14 @@ final class RecoverBullFacade {
     required VaultKey key,
     required BitcoinNetwork network,
     required bool Function() cancelled,
+    String passphrase = '',
+    bool allowUnverified = false,
   }) => _restore.execute(
     vault: vault,
     key: key,
     network: network,
     cancelled: cancelled,
+    passphrase: passphrase,
+    allowUnverified: allowUnverified,
   );
 }

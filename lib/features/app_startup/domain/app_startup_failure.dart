@@ -28,8 +28,13 @@ final class AppStartupMissingDefaultSecretFailure extends AppStartupFailure {
   /// The wallet whose seed is gone. A fingerprint, never material.
   final String masterFingerprint;
 
-  const AppStartupMissingDefaultSecretFailure(this.masterFingerprint)
-    : super(masterFingerprint);
+  /// Bitcoin default selected in the active environment, when known.
+  final String? walletId;
+
+  const AppStartupMissingDefaultSecretFailure(
+    this.masterFingerprint, {
+    this.walletId,
+  }) : super(masterFingerprint);
 }
 
 /// The recovery phrase entered to restore a missing default secret belongs to

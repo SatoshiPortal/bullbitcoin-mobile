@@ -209,6 +209,8 @@ const _unresolvedSensitiveMembers = {
   'signedPsetWithExtraDetailsWithSeed',
   'signTxWithSeed',
   'createFromSeed',
+  'createFromSeedWithScanRuntime',
+  'deriveSpAddressFromSeed',
 };
 
 const _bridgeLibrary = 'package:bull_sdk/src/rust/frb_generated.dart';
@@ -277,8 +279,10 @@ String? materialSymbol(Element element) {
             'mnemonic',
           }.contains(member),
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/dart_bwk/') =>
-      owner == 'SpAccount' &&
-          (member?.startsWith('createFromMnemonic') ?? false),
+      (owner == 'SpAccount' &&
+              ((member?.startsWith('createFromMnemonic') ?? false) ||
+                  (member?.startsWith('createFromSeed') ?? false))) ||
+          member == 'deriveSpAddressFromSeed',
     _bridgeLibrary => symbol == 'BullSdk.initMock',
     _ when uri.startsWith('package:recoverbull/') =>
       symbol == 'RecoverBull.restoreBackup' ||

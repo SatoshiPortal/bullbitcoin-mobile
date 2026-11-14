@@ -60,6 +60,8 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
+
 class WalletLocator {
   static void setup(GetIt locator) {
     locator.registerFactory<WalletSecretReferencesRepository>(
@@ -223,6 +225,9 @@ class WalletLocator {
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         synchronize: locator<ForegroundWalletSync>().synchronize,
       ),
+    );
+    locator.registerFactory<DefaultWalletsFacade>(
+      () => DefaultWalletsFacade(locator<CreateDefaultWalletsUsecase>()),
     );
     locator.registerFactory<CheckBackupNeededUsecase>(
       () => CheckBackupNeededUsecase(

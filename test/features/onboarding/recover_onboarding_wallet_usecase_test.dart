@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
@@ -25,7 +26,7 @@ void main() {
     completePhysicalBackupVerificationUsecase =
         _MockCompletePhysicalBackupVerificationUsecase();
     usecase = RecoverOnboardingWalletUsecase(
-      createDefaultWalletsUsecase: createDefaultWalletsUsecase,
+      defaultWallets: DefaultWalletsFacade(createDefaultWalletsUsecase),
       completePhysicalBackupVerificationUsecase:
           completePhysicalBackupVerificationUsecase,
     );
@@ -41,8 +42,9 @@ void main() {
         when(
           () => createDefaultWalletsUsecase.execute(
             mnemonicWords: any(named: 'mnemonicWords'),
+            passphrase: '',
           ),
-        ).thenThrow(Exception('BDK: invalid mnemonic checksum'));
+        ).thenAnswer((_) async => const Err(DefaultWalletCreationFailure()));
 
         final result = await usecase.execute(mnemonicWords: mnemonicWords);
 
@@ -61,8 +63,9 @@ void main() {
         when(
           () => createDefaultWalletsUsecase.execute(
             mnemonicWords: any(named: 'mnemonicWords'),
+            passphrase: '',
           ),
-        ).thenAnswer((_) async => []);
+        ).thenAnswer((_) async => const Ok([]));
         when(
           () => completePhysicalBackupVerificationUsecase.execute(),
         ).thenThrow(Exception('No default wallet found'));
@@ -76,12 +79,38 @@ void main() {
       },
     );
 
+    test('forwards the passphrase without changing spaces or case', () async {
+      const passphrase = ' Mixed Case ';
+      when(
+        () => createDefaultWalletsUsecase.execute(
+          mnemonicWords: mnemonicWords,
+          passphrase: passphrase,
+        ),
+      ).thenAnswer((_) async => const Ok([]));
+      when(
+        () => completePhysicalBackupVerificationUsecase.execute(),
+      ).thenAnswer((_) async {});
+      expect(
+        await usecase.execute(
+          mnemonicWords: mnemonicWords,
+          passphrase: passphrase,
+        ),
+        isA<Ok<void, OnboardingFailure>>(),
+      );
+      verify(
+        () => createDefaultWalletsUsecase.execute(
+          mnemonicWords: mnemonicWords,
+          passphrase: passphrase,
+        ),
+      ).called(1);
+    });
+
     test('returns Ok on success', () async {
       when(
         () => createDefaultWalletsUsecase.execute(
           mnemonicWords: any(named: 'mnemonicWords'),
         ),
-      ).thenAnswer((_) async => []);
+      ).thenAnswer((_) async => const Ok([]));
       when(
         () => completePhysicalBackupVerificationUsecase.execute(),
       ).thenAnswer((_) async {});

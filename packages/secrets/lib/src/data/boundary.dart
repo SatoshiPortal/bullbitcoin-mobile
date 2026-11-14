@@ -1,8 +1,7 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicException;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/src/crypto/crypto.dart'
-    show InvalidVault, PassphraseUnsupported, LanguageUnsupported;
+import 'package:secrets/src/crypto/crypto.dart' show InvalidVault;
 import 'package:secrets/src/data/exceptions.dart';
 import 'package:secrets/src/domain/domain.dart';
 
@@ -33,12 +32,10 @@ Future<Result<T, SecretFailure>> boundary<T>(
     return Err(DatabaseKeyCorruptFailure(e.message));
   } on FingerprintMismatchException catch (e) {
     return Err(FingerprintMismatchFailure(e.message));
+  } on VaultIdentityMismatchException {
+    return const Err(VaultIdentityMismatchFailure());
   } on FingerprintConflictException catch (e) {
     return Err(StoreSecretFailure(e.message));
-  } on LanguageUnsupported catch (e) {
-    return Err(LanguageUnsupportedFailure(e.message));
-  } on PassphraseUnsupported catch (e) {
-    return Err(PassphraseUnsupportedFailure(e.message));
   } on InvalidVault catch (e) {
     return Err(InvalidVaultFailure(e.message));
   } on MnemonicException catch (e) {

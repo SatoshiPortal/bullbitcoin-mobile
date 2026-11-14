@@ -3,19 +3,15 @@ import 'package:primitives/primitives.dart' show Failure;
 /// Closed set of every failure the onboarding flow (create/recover default
 /// wallets) surfaces to the user.
 ///
-/// [CreateDefaultWalletsUsecase] (core/wallet) and the shared
-/// `CompletePhysicalBackupVerificationUsecase` still throw — they are caught
-/// at the boundary onboarding owns (its own use-cases in `domain/usecases/`)
-/// and mapped here; the raw reason stays in the logs. `sealed` keeps this
-/// closed (exhaustive switches; no foreign variants). Pure Dart — the
-/// user-facing message lives in `presentation/onboarding_failure_l10n.dart`.
+/// Default-wallet failures are translated here; backup verification still
+/// throws and is caught by the recovery use case. Presentation owns messages.
 sealed class OnboardingFailure extends Failure {
   const OnboardingFailure([super.logMessage]);
 }
 
 /// The wallet-setup step (creating or recovering the default wallets)
 /// failed — used by both the create and the recover flow, since both wrap
-/// the same core [CreateDefaultWalletsUsecase].
+/// the same [CreateDefaultWalletsUsecase].
 final class OnboardingWalletSetupFailure extends OnboardingFailure {
   const OnboardingWalletSetupFailure();
 }
@@ -26,4 +22,9 @@ final class OnboardingWalletSetupFailure extends OnboardingFailure {
 /// when it didn't.
 final class OnboardingBackupVerificationFailure extends OnboardingFailure {
   const OnboardingBackupVerificationFailure();
+}
+
+/// The pre-recovery Bitcoin history scan failed.
+final class OnboardingWalletScanFailure extends OnboardingFailure {
+  const OnboardingWalletScanFailure();
 }

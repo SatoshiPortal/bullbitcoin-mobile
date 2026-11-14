@@ -2910,10 +2910,6 @@
   "@backupInstruction4": {
     "description": "Fourth backup instruction about not making digital copies"
   },
-  "backupInstruction5": "Aapka backup passphrase se surakshit nahi hai. Baad mein naya wallet banakar apne backup mein passphrase jod sakte ho.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
-  },
   "backupButton": "Backup",
   "@backupButton": {
     "description": "Button label to start backup process"
@@ -6014,10 +6010,6 @@
   "backupWalletInstructionNoDigitalCopies": "Backup ki digital copy mat banao. Kaagaz pe likh lo, ya dhaatu mein khodao.",
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
-  },
-  "backupWalletInstructionNoPassphrase": "Aapki backup passphrase se protected nahi hai. Baad mein naya wallet bana ke passphrase add kar sakte ho.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
   },
   "backupWalletBackupButton": "Backup",
   "@backupWalletBackupButton": {

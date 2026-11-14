@@ -11,13 +11,18 @@ final class CreateVaultUsecase {
 
   const CreateVaultUsecase(this._vaults, this._wallets);
 
-  Future<Result<VaultBackup, RecoverBullFailure>> execute() async {
+  Future<Result<VaultBackup, RecoverBullFailure>> execute({
+    bool passphraseWarningAccepted = false,
+  }) async {
     switch (await _wallets.currentDefault()) {
       case Err(:final failure):
         return Err(failure);
       case Ok(value: null):
         return const Err(VaultWalletMissingFailure());
       case Ok(value: final context?):
+        if (context.hasPassphrase && !passphraseWarningAccepted) {
+          return const Err(VaultPassphraseAcknowledgementFailure());
+        }
         return _vaults.create(context);
     }
   }

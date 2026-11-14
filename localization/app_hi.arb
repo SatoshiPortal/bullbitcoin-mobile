@@ -9658,10 +9658,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "आपका बैकअप पासफ्रेज़ द्वारा संरक्षित नहीं है। बाद में एक नया वॉलेट बनाकर अपने बैकअप में एक पासफ्रेज़ जोड़ें।।",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "Swap ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9816,10 +9812,6 @@
   "payCustomFee": "कस्टम शुल्क",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "आपका बैकअप पासफ्रेज़ द्वारा संरक्षित नहीं है। बाद में एक नया वॉलेट बनाकर अपने बैकअप में एक पासफ्रेज़ जोड़ें।।",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "एक्सप्रेस पुष्टि करें",
   "@buyConfirmExpress": {

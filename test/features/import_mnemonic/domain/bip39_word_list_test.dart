@@ -4,6 +4,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';
 
 void main() {
+  for (final language in [
+    bip39.Language.simplifiedChinese,
+    bip39.Language.traditionalChinese,
+  ]) {
+    test('${language.name} contains 2048 single BMP scalar words', () {
+      expect(language.list, hasLength(2048));
+      for (final entry in language.list) {
+        final normalized = nfkd(entry);
+        expect(normalized.runes.length, 1);
+        expect(normalized.length, 1);
+      }
+    });
+  }
+
+  test('all wordlist characters fit a single UTF-16 code unit', () {
+    for (final language in bip39.Language.values) {
+      for (final entry in language.list) {
+        final normalized = nfkd(entry);
+        expect(normalized.length, normalized.runes.length);
+      }
+    }
+  });
+
   group('Unicode prefixes', () {
     for (final (language, composed) in [
       (bip39.Language.spanish, 'ábaco'),

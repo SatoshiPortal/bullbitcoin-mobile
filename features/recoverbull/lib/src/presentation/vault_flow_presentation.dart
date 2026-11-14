@@ -7,7 +7,13 @@ final class VaultFlowPresentation {
   final VaultFlowCubit cubit;
   final Result<BitcoinNetwork, RecoverBullFailure> network;
   final BackupMonitoringCubit? monitoring;
-  const VaultFlowPresentation(this.cubit, this.network, this.monitoring);
+  final bool defaultHasPassphrase;
+  const VaultFlowPresentation(
+    this.cubit,
+    this.network,
+    this.monitoring, {
+    this.defaultHasPassphrase = false,
+  });
 
   Future<void> close() async {
     await cubit.close();

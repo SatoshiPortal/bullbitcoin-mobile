@@ -225,6 +225,10 @@ final class RecoverBullRuntime {
               WatchBackupMonitoringUsecase(monitoring),
               AcknowledgeBackupAlertsUsecase(monitoring),
             ),
+      defaultHasPassphrase: switch (captured.wallet) {
+        Ok(value: final context?) => context.hasPassphrase,
+        _ => false,
+      },
     );
   }
 

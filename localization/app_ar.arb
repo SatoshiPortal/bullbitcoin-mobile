@@ -8974,10 +8974,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "دعمك ليس محمية من خلال التمرين أضف مرارة إلى دعمك لاحقاً عن طريق إنشاء محفظة جديدة.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "بطاقة الهوية",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9132,10 +9128,6 @@
   "payCustomFee": "الرسوم الجمركية",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "دعمك ليس محمية من خلال التمرين أضف مرارة إلى دعمك لاحقاً عن طريق إنشاء محفظة جديدة.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "تأكيد",
   "@buyConfirmExpress": {

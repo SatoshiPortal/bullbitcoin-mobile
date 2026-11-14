@@ -122,14 +122,14 @@ void main() {
       );
     });
 
-    test('forwards a passphrase refusal and never creates', () async {
+    test('forwards a secret lookup failure and never creates', () async {
       when(
         () => getSpSecretUsecase.execute(any()),
-      ).thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
+      ).thenAnswer((_) async => const Err(SpUnexpected()));
 
       final result = await usecase.execute();
 
-      expect((result as Err).failure, isA<SpPassphraseUnsupported>());
+      expect((result as Err).failure, isA<SpUnexpected>());
       verifyNever(
         () => repository.createFromSecret(
           network: any(named: 'network'),

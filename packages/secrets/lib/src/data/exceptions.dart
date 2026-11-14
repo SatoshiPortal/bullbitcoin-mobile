@@ -8,6 +8,12 @@ library;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Fingerprint;
 
+/// The candidate secret did not reproduce the supplied vault key.
+class VaultIdentityMismatchException implements Exception {
+  @internal
+  const VaultIdentityMismatchException();
+}
+
 /// The same secret is already stored; an import must create a new entry.
 class SecretAlreadyExistsException implements Exception {
   final Fingerprint id;

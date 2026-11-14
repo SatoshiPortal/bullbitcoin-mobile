@@ -20,13 +20,16 @@ abstract interface class VaultRepository {
   @useResult
   Future<Result<Fingerprint, RecoverBullFailure>> fingerprint(
     EncryptedVault vault,
-    VaultKey key,
-  );
+    VaultKey key, {
+    String passphrase = '',
+  });
 
   /// Imports inside Secrets and returns only the stored public identity.
   @useResult
   Future<Result<Fingerprint, RecoverBullFailure>> restore(
     EncryptedVault vault,
-    VaultKey key,
-  );
+    VaultKey key, {
+    String passphrase = '',
+    bool allowUnverified = false,
+  });
 }

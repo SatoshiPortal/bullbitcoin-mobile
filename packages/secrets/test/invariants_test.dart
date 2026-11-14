@@ -316,9 +316,10 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'FetchSecretFailure',
       'StoreSecretFailure', 'TrashSecretFailure', 'KeystoreLockedFailure',
       'DatabaseKeyCorruptFailure', 'MnemonicRequiredFailure',
-      'InvalidMnemonicFailure', 'InvalidVaultFailure',
+      'InvalidMnemonicFailure',
+      'InvalidVaultFailure',
+      'VaultIdentityMismatchFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
-      'PassphraseUnsupportedFailure', 'LanguageUnsupportedFailure',
       'UseSecretFailure',
     };
 
@@ -390,6 +391,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'signPsbt': 'derived',
       'signPset': 'derived',
       'verifyWords': 'derived',
+      'verifyPassphrase': 'derived',
       'verifySeed': 'derived',
       // material by design: children this feature was asked to create, for use elsewhere
       'bip85Hex': 'material',
@@ -398,7 +400,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       // material: the stored secret itself, and `@internal` — only the
       // package's own sealed widgets may call it
       'revealMnemonic': 'material',
-      // a bwk account that scans and signs; bwk holds the words while it lives
+      // a bwk account that scans and signs; bwk holds signing capability while it lives
       'silentPaymentsAccount': 'capability',
       // ciphertext plus the key that opens it
       'backupRecoverbull': 'ciphertext',

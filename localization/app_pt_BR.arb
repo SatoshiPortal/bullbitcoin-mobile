@@ -8477,10 +8477,6 @@
   "@exchangeAccountInfoUserNumberLabel": {
     "description": "Label for user number field in account information"
   },
-  "backupInstruction5": "Seu backup não é protegido por senha. Adicione uma senha ao seu backup mais tarde, criando uma nova carteira.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
-  },
   "payPriority": "Prioridade",
   "@payPriority": {
     "description": "Label for transaction priority/fee level"
@@ -9439,10 +9435,6 @@
   "torSettingsDescConnected": "Tor proxy está em execução e pronto",
   "@torSettingsDescConnected": {
     "description": "Description when Tor is connected"
-  },
-  "backupWalletInstructionNoPassphrase": "Seu backup não é protegido por senha. Adicione uma senha ao seu backup mais tarde, criando uma nova carteira.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
   },
   "bitboxScreenPairingCodeSubtext": "Verifique se este código corresponde à sua tela BitBox02 e, em seguida, confirme no dispositivo.",
   "@bitboxScreenPairingCodeSubtext": {

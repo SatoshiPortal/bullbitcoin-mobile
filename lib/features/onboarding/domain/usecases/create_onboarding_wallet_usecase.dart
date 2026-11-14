@@ -1,27 +1,18 @@
-import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:meta/meta.dart';
 
 class CreateOnboardingWalletUsecase {
-  final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
+  final DefaultWalletsFacade _defaultWallets;
 
-  CreateOnboardingWalletUsecase({required this._createDefaultWalletsUsecase});
+  CreateOnboardingWalletUsecase({required this._defaultWallets});
 
   @useResult
   Future<Result<List<Wallet>, OnboardingFailure>> execute() async {
-    try {
-      final wallets = await _createDefaultWalletsUsecase.execute();
-      return Ok(wallets);
-    } catch (e, st) {
-      log.severe(
-        message: 'Onboarding: default wallet creation failed',
-        error: e,
-        trace: st,
-      );
-      return const Err(OnboardingWalletSetupFailure());
-    }
+    return switch (await _defaultWallets.create()) {
+      Ok(:final value) => Ok(value),
+      Err() => const Err(OnboardingWalletSetupFailure()),
+    };
   }
 }

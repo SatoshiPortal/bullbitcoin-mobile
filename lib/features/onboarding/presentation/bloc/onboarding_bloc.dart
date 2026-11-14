@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
+import 'package:bb_mobile/features/onboarding/domain/usecases/scan_onboarding_wallet_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -16,6 +17,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
     required this._createOnboardingWalletUsecase,
     required this._recoverOnboardingWalletUsecase,
+    this._scanOnboardingWalletUsecase,
   }) : super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
@@ -27,6 +29,19 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   final CreateOnboardingWalletUsecase _createOnboardingWalletUsecase;
   final RecoverOnboardingWalletUsecase _recoverOnboardingWalletUsecase;
+  final ScanOnboardingWalletUsecase? _scanOnboardingWalletUsecase;
+
+  /// Forwards transient recovery input without putting it in bloc state.
+  Future<Result<bool, OnboardingFailure>> scanWallet({
+    required List<String> words,
+    required String passphrase,
+  }) {
+    final scanner = _scanOnboardingWalletUsecase;
+    if (scanner == null) {
+      return Future.value(const Err(OnboardingWalletScanFailure()));
+    }
+    return scanner.execute(words: words, passphrase: passphrase);
+  }
 
   Future<void> _onCreateNewWallet(
     OnboardingCreateNewWallet event,
@@ -74,6 +89,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     );
     switch (await _recoverOnboardingWalletUsecase.execute(
       mnemonicWords: event.mnemonic.words,
+      passphrase: event.mnemonic.passphrase,
     )) {
       case Ok():
         emit(

@@ -32,14 +32,57 @@ class AllSeedViewScreen extends StatefulWidget {
 }
 
 class _AllSeedViewScreenState extends State<AllSeedViewScreen>
-    with PrivacyScreen {
+    with PrivacyScreen, WidgetsBindingObserver {
   /// Awaited before anything draws, like the show/verify screens: an
   /// un-awaited call leaves no guaranteed order between the first frame
   /// and the OS flag (Codex, 2026-09-17).
   late Future<bool> _privacyFuture = enableScreenPrivacy();
+  final Set<String> _shownPassphrases = {};
+  int _revealGeneration = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      _revealGeneration++;
+      if (_shownPassphrases.isNotEmpty) setState(_shownPassphrases.clear);
+    }
+  }
+
+  Future<void> _togglePassphrase(Secret seed) async {
+    final id = seed.id.hex;
+    if (_shownPassphrases.contains(id)) {
+      setState(() => _shownPassphrases.remove(id));
+      return;
+    }
+    final generation = ++_revealGeneration;
+    final accepted = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (gateContext) =>
+            widget.appUnlockFacade.buildReauthenticationGate(
+              canPop: true,
+              onSuccess: (_) => Navigator.of(gateContext).pop(true),
+            ),
+      ),
+    );
+    if (!mounted || accepted != true || generation != _revealGeneration) return;
+    final state = context.read<AllSeedViewCubit>().state;
+    if (!state.isUnlocked ||
+        !state.seedsVisible ||
+        !state.allSeeds.any((current) => current.id == seed.id)) {
+      return;
+    }
+    setState(() => _shownPassphrases.add(id));
+  }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(disableScreenPrivacy());
     super.dispose();
   }
@@ -474,36 +517,53 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
               children: [
                 Expanded(
                   // Sealed: the words are read and rendered inside the package's widget and never reach this screen or the cubit's state.
-                  child: seed.widgets.mnemonicView(
-                    // Keyed by identity so a reordered list never hands one secret's state to another's card.
-                    key: ValueKey(seed.id.hex),
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.onSurface,
-                    ),
-                    passphraseLabel: context.loc.allSeedViewPassphraseLabel,
-                    passphraseLabelStyle: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.onSurface,
-                    ),
-                    failureBuilder: (context, failure, retry) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        BullText(
-                          AllSeedViewFetchFailure(
-                            failure.logMessage,
-                          ).toTranslated(context),
-                          style: context.font.bodyMedium,
-                          color: context.appColors.error,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      seed.widgets.mnemonicView(
+                        showPassphrase: _shownPassphrases.contains(seed.id.hex),
+                        // Keyed by identity so a reordered list never hands one secret's state to another's card.
+                        key: ValueKey(seed.id.hex),
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.appColors.onSurface,
                         ),
-                        const Gap(16),
-                        BullButton.small(
-                          label: context.loc.retry,
-                          onPressed: retry,
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
+                        passphraseLabel: context.loc.allSeedViewPassphraseLabel,
+                        passphraseLabelStyle: context.font.bodyLarge?.copyWith(
+                          color: context.appColors.onSurface,
+                        ),
+                        failureBuilder: (context, failure, retry) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            BullText(
+                              AllSeedViewFetchFailure(
+                                failure.logMessage,
+                              ).toTranslated(context),
+                              style: context.font.bodyMedium,
+                              color: context.appColors.error,
+                            ),
+                            const Gap(16),
+                            BullButton.small(
+                              label: context.loc.retry,
+                              onPressed: retry,
+                              bgColor: context.appColors.secondary,
+                              textColor: context.appColors.onSecondary,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (seed.info.hasPassphrase) ...[
+                        Text(context.loc.passphraseWordsIncompleteWarning),
+                        TextButton(
+                          onPressed: () => _togglePassphrase(seed),
+                          child: Text(
+                            _shownPassphrases.contains(seed.id.hex)
+                                ? context.loc.passphraseHide
+                                : context.loc.passphraseShow,
+                          ),
                         ),
                       ],
-                    ),
+                    ],
                   ),
                 ),
                 if (isOldWallet) ...[

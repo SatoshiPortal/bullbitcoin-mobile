@@ -131,6 +131,13 @@ void main() {
       'runtimeType': 'mnemonic',
     });
 
+    test('passphrase verification applies BIP39 NFKD', () async {
+      final secrets = secretsWith(FakeSecureStoragePlatform());
+      final secret = ok(await secrets.import(words: words, passphrase: 'é'));
+      expect(ok(await secret.verify.passphrase('e\u0301')), isTrue);
+      expect(ok(await secret.verify.passphrase(' e\u0301')), isFalse);
+    });
+
     test('restoring with the passphrase restores the wallet', () async {
       // The caller supplies the passphrase separately at restore time; the vault itself carries only the words.
       final source = secretsWith(
@@ -139,16 +146,58 @@ void main() {
         ),
       );
       final secret = ok(await source.fetch(Fingerprint(passphraseFingerprint)));
+      expect(ok(await secret.verify.passphrase('TREZOR')), isTrue);
+      expect(ok(await secret.verify.passphrase('trezor')), isFalse);
       final vault = ok(await secret.backup.recoverbull());
 
-      final without = secretsWith(FakeSecureStoragePlatform());
-      final bare = ok(
-        await without.recoverbull.restore(vault: vault.vault, key: vault.key),
+      final storage = FakeSecureStoragePlatform();
+      final without = secretsWith(storage);
+      final bare = await without.recoverbull.restore(
+        vault: vault.vault,
+        key: vault.key,
       );
+      expect(bare, isA<Err>());
+      expect(storage.entries, isEmpty);
+      expect(err(bare), isA<VaultIdentityMismatchFailure>());
       expect(
-        bare.secret.id.hex,
-        plainFingerprint,
-        reason: 'the file alone gives the passphrase-less sibling',
+        err(
+          await without.recoverbull.fingerprint(
+            vault: vault.vault,
+            key: vault.key,
+            passphrase: 'incorrect',
+          ),
+        ),
+        isA<VaultIdentityMismatchFailure>(),
+      );
+      expect(storage.entries, isEmpty);
+      expect(
+        ok(
+          await without.recoverbull.fingerprint(
+            vault: vault.vault,
+            key: vault.key,
+            passphrase: 'TREZOR',
+          ),
+        ).hex,
+        passphraseFingerprint,
+      );
+      final sibling = ok(
+        await without.recoverbull.restore(
+          vault: vault.vault,
+          key: vault.key,
+          allowUnverified: true,
+        ),
+      );
+      expect(sibling.secret.id.hex, plainFingerprint);
+      expect(
+        err(
+          await without.recoverbull.restore(
+            vault: vault.vault,
+            key: vault.key,
+            passphrase: 'incorrect',
+            allowUnverified: true,
+          ),
+        ),
+        isA<VaultIdentityMismatchFailure>(),
       );
 
       final with_ = secretsWith(FakeSecureStoragePlatform());
@@ -164,6 +213,45 @@ void main() {
   });
 
   group('restoring a vault', () {
+    test('a missing derivation path is not imported', () async {
+      final source = secretsWith(
+        FakeSecureStoragePlatform(
+          entries: {'seed_$plainFingerprint': mnemonicEntry},
+        ),
+      );
+      final backup = ok(await (await secretIn(source)).backup.recoverbull());
+      final document = jsonDecode(backup.vault.json) as Map<String, dynamic>
+        ..remove('path');
+      final storage = FakeSecureStoragePlatform();
+      final result = await secretsWith(storage).recoverbull.restore(
+        vault: EncryptedVault(json: jsonEncode(document)),
+        key: backup.key,
+      );
+      expect(result, isA<Err>());
+      expect(err(result), isA<InvalidVaultFailure>());
+      expect(storage.entries, isEmpty);
+    });
+
+    test('a changed derivation path cannot import a sibling', () async {
+      final source = secretsWith(
+        FakeSecureStoragePlatform(
+          entries: {'seed_$plainFingerprint': mnemonicEntry},
+        ),
+      );
+      final backup = ok(await (await secretIn(source)).backup.recoverbull());
+      final document = jsonDecode(backup.vault.json) as Map<String, dynamic>;
+      document['path'] = document['path'] == "1608'/0'/0'"
+          ? "1608'/0'/1'"
+          : "1608'/0'/0'";
+      final storage = FakeSecureStoragePlatform();
+      final result = await secretsWith(storage).recoverbull.restore(
+        vault: EncryptedVault(json: jsonEncode(document)),
+        key: backup.key,
+      );
+      expect(result, isA<Err>());
+      expect(storage.entries, isEmpty);
+    });
+
     test(
       'repeated restoration keeps the existing secret byte for byte',
       () async {
@@ -350,16 +438,29 @@ void main() {
     test(
       'derives the fingerprint from words and ignores forged metadata',
       () async {
+        final source = secretsWith(
+          FakeSecureStoragePlatform(
+            entries: {'seed_$plainFingerprint': mnemonicEntry},
+          ),
+        );
+        final backup = ok(
+          await (await secretIn(source)).backup.recoverbull(
+            metadata: const {
+              'fingerprint': 'deadbeef',
+              'masterFingerprint': 'deadbeef',
+            },
+          ),
+        );
         final storage = _UntouchedStorage();
         final secrets = secretsWith(storage);
-        final vault = sealed({
-          'mnemonic': words,
-          'fingerprint': 'deadbeef',
-          'masterFingerprint': 'deadbeef',
-        });
 
         expect(
-          ok(await secrets.recoverbull.fingerprint(vault: vault, key: key)),
+          ok(
+            await secrets.recoverbull.fingerprint(
+              vault: backup.vault,
+              key: backup.key,
+            ),
+          ),
           Fingerprint(plainFingerprint),
         );
         expect(storage.calls, 0);
@@ -410,6 +511,33 @@ void main() {
   });
 
   group('vaults already in users hands still open', () {
+    test('an old non-hardened path derives its recorded key', () async {
+      final secrets = secretsWith(FakeSecureStoragePlatform());
+      final repository = SecretRepository();
+      final info = ok(await repository.store(words: words));
+      final material = ok(await repository.use(info, (m) => m));
+      const path = "m/1608'/0'/7";
+      final key = VaultKey(
+        Backup.recoverbull.backupKey(
+          masterXprv: Deriver.bip85.root(material),
+          path: path,
+        ),
+      );
+      final vault = EncryptedVault(
+        json: Backup.recoverbull.seal(
+          words: words,
+          language: Language.english,
+          metadata: const {},
+          backupKey: key.hex,
+          derivationPath: path,
+        ),
+      );
+      expect(
+        ok(await secrets.recoverbull.fingerprint(vault: vault, key: key)),
+        Fingerprint(plainFingerprint),
+      );
+    });
+
     // Two real vault files, taken from the app's own integration fixtures: one written by the pre-package path, one by the current one. They are the reason the format is frozen — a change here orphans a wallet whose only copy is that file.
     //
     // Their mnemonic is the public BIP39 vector for entropy ffffffff…ffff, not a user's.

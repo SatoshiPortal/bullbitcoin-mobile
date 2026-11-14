@@ -18,6 +18,8 @@ export 'src/domain/recoverbull_failure.dart'
         KeyServerFailure,
         KeyServerFailureKind,
         VaultInvalidFailure,
+        VaultPassphraseRequiredFailure,
+        VaultPassphraseAcknowledgementFailure,
         VaultSecretMissingFailure,
         VaultKeystoreLockedFailure,
         VaultStorageFailure,

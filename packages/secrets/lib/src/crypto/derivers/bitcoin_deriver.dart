@@ -96,6 +96,36 @@ final class BitcoinDeriver {
     }
   }
 
+  /// Compares complete public descriptors after BDK parses and canonicalizes
+  /// them, including the origin and each keychain. A malformed descriptor or
+  /// checksum fails closed. No private material is needed for this comparison.
+  bool matchesPublicDescriptors({
+    required Descriptors actual,
+    required Descriptors expected,
+    required BitcoinNetwork network,
+  }) {
+    String canonical(String value) {
+      final descriptor = bdk.Descriptor(
+        descriptor: value,
+        networkKind: network.isMainnet
+            ? bdk.NetworkKind.main
+            : bdk.NetworkKind.test,
+      );
+      try {
+        return descriptor.toString();
+      } finally {
+        descriptor.dispose();
+      }
+    }
+
+    try {
+      return canonical(actual.external) == canonical(expected.external) &&
+          canonical(actual.internal) == canonical(expected.internal);
+    } on Object {
+      return false;
+    }
+  }
+
   /// Builds the same account path for public derivation and signing.
   ///
   /// BDK's BIP44/49/84 templates hardcode account zero. Parsing an explicit

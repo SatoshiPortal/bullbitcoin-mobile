@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/default_wallet_secret_policy.dart';
+import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_secret_references_repository.dart';
@@ -60,7 +60,7 @@ void main() {
         secret: any(named: 'secret'),
         expectedNetwork: NetworkEnv.regtest,
       ),
-    ).thenAnswer((_) async => []);
+    ).thenAnswer((_) async => const Ok([]));
   });
 
   for (final environment in [Environment.regtest, Environment.testnet]) {
@@ -116,56 +116,54 @@ void main() {
     );
   });
 
-  test(
-    'setup offers French seeds for reuse and excludes passphrase seeds',
-    () async {
-      final frenchWords = bip39.Mnemonic(
-        List.filled(16, 0),
-        bip39.Language.french,
-      ).sentence.split(' ');
-      final french =
-          (await secrets.import(
-                    words: frenchWords,
-                    language: bip39.Language.french,
-                  )
-                  as Ok<Secret, SecretFailure>)
-              .value;
-      final passphrase =
-          (await secrets.import(words: words, passphrase: 'TREZOR')
-                  as Ok<Secret, SecretFailure>)
-              .value;
-      when(
-        () => references.list(),
-      ).thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));
-      final result = await LoadNetworkWalletSetupUsecase(
-        settings,
-        references,
-        secrets,
-      ).execute();
-      expect((result as Ok).value.reusable, [secret.id, french.id]);
-      final refusal = await CreateNetworkWalletUsecase(
-        settings,
-        references,
-        secrets,
-        create,
-      ).execute(network: NetworkEnv.regtest, reuse: passphrase.id);
-      expect(refusal, isA<Err>());
-      expect(
-        (refusal as Err).failure,
-        isA<NetworkWalletSetupSecretFailure>().having(
-          (f) => f.reason,
-          'reason',
-          DefaultWalletSecretRefusal.passphrase,
-        ),
-      );
-      verifyNever(
-        () => create.execute(
-          secret: any(named: 'secret'),
-          expectedNetwork: NetworkEnv.regtest,
-        ),
-      );
-    },
-  );
+  test('setup offers French and protected mnemonic seeds for reuse', () async {
+    final frenchWords = bip39.Mnemonic(
+      List.filled(16, 0),
+      bip39.Language.french,
+    ).sentence.split(' ');
+    final french =
+        (await secrets.import(
+                  words: frenchWords,
+                  language: bip39.Language.french,
+                )
+                as Ok<Secret, SecretFailure>)
+            .value;
+    final passphrase =
+        (await secrets.import(words: words, passphrase: 'TREZOR')
+                as Ok<Secret, SecretFailure>)
+            .value;
+    when(
+      () => references.list(),
+    ).thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));
+    final result = await LoadNetworkWalletSetupUsecase(
+      settings,
+      references,
+      secrets,
+    ).execute();
+    expect((result as Ok).value.reusable, [
+      secret.id,
+      french.id,
+      passphrase.id,
+    ]);
+    final resultReuse = await CreateNetworkWalletUsecase(
+      settings,
+      references,
+      secrets,
+      create,
+    ).execute(network: NetworkEnv.regtest, reuse: passphrase.id);
+    expect(resultReuse, isA<Ok>());
+    final forwarded =
+        verify(
+              () => create.execute(
+                secret: captureAny(named: 'secret'),
+                expectedNetwork: NetworkEnv.regtest,
+              ),
+            ).captured.single
+            as Secret;
+    expect(forwarded.id, passphrase.id);
+    expect(forwarded.info.hasPassphrase, isTrue);
+    expect((await forwarded.verify.passphrase('TREZOR') as Ok).value, isTrue);
+  });
 
   test(
     'empty mainnet keeps onboarding without enumerating references',
@@ -241,7 +239,7 @@ void main() {
           secret: any(named: 'secret'),
           expectedNetwork: NetworkEnv.regtest,
         ),
-      ).thenThrow(CreateDefaultWalletsException('unavailable'));
+      ).thenAnswer((_) async => const Err(DefaultWalletCreationFailure()));
       expect(
         await usecase.execute(network: NetworkEnv.regtest, reuse: secret.id),
         isA<Err>(),
@@ -269,39 +267,22 @@ void main() {
     },
   );
 
-  test(
-    'stale selection and passphrase secrets are refused before provision',
-    () async {
-      final usecase = CreateNetworkWalletUsecase(
-        settings,
-        references,
-        secrets,
-        create,
-      );
-      expect(
-        await usecase.execute(network: NetworkEnv.testnet, reuse: secret.id),
-        isA<Err>(),
-      );
-      final passphrase =
-          (await secrets.import(words: words, passphrase: 'TREZOR')
-                  as Ok<Secret, SecretFailure>)
-              .value;
-      when(
-        () => references.list(),
-      ).thenAnswer((_) async => Ok([passphrase.id]));
-      expect(
-        await usecase.execute(
-          network: NetworkEnv.regtest,
-          reuse: passphrase.id,
-        ),
-        isA<Err>(),
-      );
-      verifyNever(
-        () => create.execute(
-          secret: any(named: 'secret'),
-          expectedNetwork: NetworkEnv.regtest,
-        ),
-      );
-    },
-  );
+  test('stale network selection is refused before provision', () async {
+    final usecase = CreateNetworkWalletUsecase(
+      settings,
+      references,
+      secrets,
+      create,
+    );
+    expect(
+      await usecase.execute(network: NetworkEnv.testnet, reuse: secret.id),
+      isA<Err>(),
+    );
+    verifyNever(
+      () => create.execute(
+        secret: any(named: 'secret'),
+        expectedNetwork: NetworkEnv.regtest,
+      ),
+    );
+  });
 }

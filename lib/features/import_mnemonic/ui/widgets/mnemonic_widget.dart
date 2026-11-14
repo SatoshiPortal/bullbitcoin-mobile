@@ -28,12 +28,11 @@ typedef Mnemonic = ({
 
 /// What the suggestion chips are currently answering: the focused field and
 /// the prefix it holds.
-/// [revision] only exists to force a notification: records compare
-/// structurally, so an unchanged index and prefix would be swallowed even when
-/// the candidate pool behind them has changed.
+/// [revision] invalidates callbacks when focus, language, controllers, or any
+/// word changes, including when the focused prefix itself stays unchanged.
 typedef _HintQuery = ({int index, String prefix, int revision});
 
-// Non-Latin wordlists stay hidden until a dedicated keyboard is available.
+// All BIP39 wordlists use the protected in-app keyboard.
 const _entryLanguages = [
   bip39.Language.english,
   bip39.Language.spanish,
@@ -41,6 +40,10 @@ const _entryLanguages = [
   bip39.Language.italian,
   bip39.Language.czech,
   bip39.Language.portuguese,
+  bip39.Language.japanese,
+  bip39.Language.korean,
+  bip39.Language.simplifiedChinese,
+  bip39.Language.traditionalChinese,
 ];
 
 class MnemonicWidget extends StatefulWidget {
@@ -85,7 +88,8 @@ class MnemonicWidget extends StatefulWidget {
 /// updates itself, and only the widgets actually listening to that controller
 /// rebuild. This state rebuilds on the rare events only — length change and
 /// submit error.
-class _MnemonicWidgetState extends State<MnemonicWidget> {
+class _MnemonicWidgetState extends State<MnemonicWidget>
+    with WidgetsBindingObserver {
   MnemonicEntryFailure? _failure;
   late bip39.MnemonicLength length;
   late bip39.Language _language;
@@ -102,6 +106,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   /// count as an edit. References to the controllers' own strings, no copy.
   List<String> _seenTexts = [];
   String passphrase = '';
+  bool _showPassphrase = false;
+  bool _passphraseCleared = false;
+  int _passphraseGeneration = 0;
   String label = '';
 
   List<String> get _words => _controllers
@@ -111,6 +118,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     length = widget.initialLength;
     _language = widget.englishOnly ? bip39.Language.english : widget.language;
     _controllers = _newControllers(length.words);
@@ -143,6 +151,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 
   void onSubmit() {
+    if (_passphraseCleared && passphrase.isEmpty) return;
     setState(() {
       _failure = null;
       _needsLanguageChoice = false;
@@ -233,7 +242,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 
   // No setState: the inputs keep their own text, and nothing else displays it.
-  void updatePassphrase(String value) => passphrase = value;
+  void updatePassphrase(String value) => setState(() => passphrase = value);
 
   void updateLabel(String value) => label = value;
 
@@ -362,7 +371,19 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed && passphrase.isNotEmpty) {
+      setState(() {
+        passphrase = '';
+        _passphraseCleared = true;
+        _passphraseGeneration++;
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     for (final controller in _controllers) {
       controller.dispose();
     }
@@ -430,14 +451,41 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
 
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
-                    // Key material typed on the system keyboard: request IME privacy, disable copying and omit the value from the Flutter semantics tree.
-                    BullSecretTextInput(
-                      label: context.loc.passphraseLabel,
-                      hint: context.loc.optionalPassphraseHint,
-                      onChanged: updatePassphrase,
-                      showLabel: context.loc.passphraseShow,
-                      hideLabel: context.loc.passphraseHide,
-                    ),
+                    if (!_showPassphrase)
+                      TextButton(
+                        onPressed: () => setState(() => _showPassphrase = true),
+                        child: Text(context.loc.passphraseOption),
+                      ),
+                    if (_showPassphrase) ...[
+                      BullText(
+                        context.loc.passphraseOptionHelp,
+                        style: context.font.bodyMedium,
+                      ),
+                      BullSecretTextInput(
+                        key: ValueKey(_passphraseGeneration),
+                        label: context.loc.passphraseLabel,
+                        hint: context.loc.optionalPassphraseHint,
+                        onChanged: updatePassphrase,
+                        showLabel: context.loc.passphraseShow,
+                        hideLabel: context.loc.passphraseHide,
+                      ),
+                      if (_passphraseCleared && passphrase.isEmpty) ...[
+                        BullText(
+                          context.loc.passphraseClearedNotice,
+                          style: context.font.bodyMedium,
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              setState(() => _passphraseCleared = false),
+                          child: Text(context.loc.continueWithoutPassphrase),
+                        ),
+                      ],
+                      if (passphrase != passphrase.trim())
+                        BullText(
+                          context.loc.passphraseWhitespaceWarning,
+                          style: context.font.bodyMedium,
+                        ),
+                    ],
                   ],
 
                   if (widget.allowLabel) ...[
@@ -698,6 +746,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   void didUpdateWidget(MnemonicSentenceWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.language != widget.language) {
+      _revision++;
       _candidatesKey = null;
       _shuffledHintsFor = null;
       _shuffledHintsOrder = null;
@@ -708,6 +757,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       });
     }
     if (!identical(oldWidget.controllers, widget.controllers)) {
+      _revision++;
       final retiredNodes = _focusNodes;
       _detach(oldWidget.controllers);
       _attach();
@@ -773,6 +823,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   /// (rather than the node that fired) is robust to the brief moment during a
   /// field-to-field move when the losing node reports first.
   void _onFocusChanged() {
+    _revision++;
     final index = _focusNodes.indexWhere((node) => node.hasFocus);
     if (index >= 0) {
       _activeField.value = index;
@@ -810,6 +861,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   }
 
   void _onTextChanged(int index) {
+    _revision++;
     // The pool is derived from every word but the last; the cached answer is
     // a new instance only when it actually changed.
     final pool = _lastWordCandidates();
@@ -817,14 +869,8 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       _candidatePool.value = pool;
     }
     final hinted = _hint.value.index;
-    if (hinted == index) {
-      _refreshHint(index);
-    } else if (hinted == widget.controllers.length - 1) {
-      // The candidate pool of the last field is derived from every other word,
-      // so a change anywhere invalidates it - typically the clear button, which
-      // edits a field without moving focus.
-      _refreshHint(hinted, force: true);
-    }
+    // Any edit invalidates callbacks captured for the previous phrase.
+    _refreshHint(hinted);
     _maybeAutoFill(index);
   }
 
@@ -1038,6 +1084,11 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
         if (_paranoid.value && widget.language != bip39.Language.english) {
           layout.shuffle(_random);
         }
+        if (query.index >= widget.controllers.length) {
+          return const SizedBox.shrink();
+        }
+        final language = widget.language;
+        final controller = widget.controllers[query.index];
         return MnemonicKeyboard(
           scrollable: widget.language != bip39.Language.english,
           layout: widget.language == bip39.Language.english
@@ -1046,9 +1097,17 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
           enabledLetters: layout.toSet(),
           canBackspace: prefix.isNotEmpty,
           canAdvance: _canLeaveField(prefix),
-          onLetter: _onKeyLetter,
-          onBackspace: _onKeyBackspace,
-          onEnter: _onKeyEnter,
+          onLetter: (letter) {
+            if (_isCurrentQuery(query, language, controller)) {
+              _onKeyLetter(letter);
+            }
+          },
+          onBackspace: () {
+            if (_isCurrentQuery(query, language, controller)) _onKeyBackspace();
+          },
+          onEnter: () {
+            if (_isCurrentQuery(query, language, controller)) _onKeyEnter();
+          },
           shuffleActive: _paranoid.value,
           onToggleShuffle: _toggleParanoid,
           shuffleHint: context.loc.mnemonicShuffleKeyboardHint,
@@ -1093,7 +1152,35 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     }
   }
 
-  void _onHintTap(int index, String word) {
+  bool _isCurrentQuery(
+    _HintQuery query,
+    bip39.Language language,
+    TextEditingController controller,
+  ) {
+    final index = query.index;
+    return mounted &&
+        widget.language == language &&
+        _revision == query.revision &&
+        _activeField.value == index &&
+        index >= 0 &&
+        index < widget.controllers.length &&
+        identical(widget.controllers[index], controller) &&
+        Bip39WordList.normalize(controller.text) == query.prefix;
+  }
+
+  void _onHintTap(
+    _HintQuery query,
+    bip39.Language language,
+    TextEditingController controller,
+    String word,
+  ) {
+    final normalized = Bip39WordList.normalize(word);
+    if (!_isCurrentQuery(query, language, controller) ||
+        !language.isValid(normalized) ||
+        !normalized.startsWith(query.prefix)) {
+      return;
+    }
+    final index = query.index;
     _setWord(index, word);
     // Like the auto fill, a tapped chip completes the sentence on the last
     // field: the same natural moment to dismiss the keyboard.
@@ -1109,6 +1196,11 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     return ValueListenableBuilder<_HintQuery>(
       valueListenable: _hint,
       builder: (context, query, _) {
+        if (query.index >= widget.controllers.length) {
+          return const SizedBox.shrink();
+        }
+        final language = widget.language;
+        final controller = widget.controllers[query.index];
         final isLastWord = query.index == widget.controllers.length - 1;
         // Null means the question does not apply - an earlier word is missing
         // or unknown - which is exactly the signal for falling back.
@@ -1169,7 +1261,12 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
                       separatorBuilder: (_, _) => const SizedBox(width: 8),
                       itemBuilder: (context, index) => _HintChip(
                         word: hints[index],
-                        onTap: () => _onHintTap(query.index, hints[index]),
+                        onTap: () => _onHintTap(
+                          query,
+                          language,
+                          controller,
+                          hints[index],
+                        ),
                       ),
                     ),
             ),

@@ -182,6 +182,34 @@ final class Secrets {
     scriptTypes: scriptTypes,
   );
 
+  /// Compares both full public descriptors after BDK canonicalization. Invalid
+  /// expected descriptors or checksums do not match. No keystore is accessed.
+  @internal
+  @useResult
+  Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required Descriptors expected,
+  }) async =>
+      (await previewBitcoinDescriptors(
+        words: words,
+        language: language,
+        passphrase: passphrase,
+        network: network,
+        scriptTypes: {scriptType},
+      )).map((descriptors) {
+        final actual = descriptors[scriptType];
+        return actual != null &&
+            Deriver.bitcoin.matchesPublicDescriptors(
+              actual: actual,
+              expected: expected,
+              network: network,
+            );
+      });
+
   // ----------------------------------------------------------------- restore
 
   /// RecoverBull vault restoration and stateless backup verification.
@@ -191,18 +219,20 @@ final class Secrets {
   ///
   /// Decryption and import stay inside the package. An invalid vault or wrong key returns [InvalidVaultFailure] without storing a secret.
   ///
-  /// The vault contains no passphrase. Supply [passphrase] separately to restore a passphrase-protected Bitcoin wallet. The vault cannot verify that passphrase; the app's default wallets always restore without one.
+  /// The vault contains no passphrase. Supply it separately. The candidate must reproduce the vault key at its recorded path before any write. [allowUnverified] permits only the empty-passphrase sibling after an explicit user decision; it does not certify the backup.
   @internal
   @useResult
   Future<Result<RestoredVault, SecretFailure>> restoreRecoverbull({
     required EncryptedVault vault,
     required VaultKey key,
     String? passphrase,
+    bool allowUnverified = false,
   }) async =>
       (await _repository.restore(
         file: vault.json,
         key: key.hex,
         passphrase: passphrase,
+        allowUnverified: allowUnverified,
       )).map((restored) {
         log.fine('secret.backup.restored');
         return (secret: _handle(restored.info), metadata: restored.metadata);
@@ -210,13 +240,18 @@ final class Secrets {
 
   /// Opens a vault and derives the fingerprint of its words without reading or writing the keystore.
   ///
-  /// The fingerprint is computed with no passphrase and never trusted from the vault's metadata. Use this to check a backup without importing or replacing any stored secret.
+  /// The candidate must reproduce the vault key; metadata never supplies the fingerprint. No secret is imported or replaced.
   @internal
   @useResult
   Future<Result<Fingerprint, SecretFailure>> inspectRecoverbull({
     required EncryptedVault vault,
     required VaultKey key,
-  }) => _repository.inspect(file: vault.json, key: key.hex);
+    String? passphrase,
+  }) => _repository.inspect(
+    file: vault.json,
+    key: key.hex,
+    passphrase: passphrase,
+  );
 
   // ----------------------------------------------------------- database keys
 
@@ -242,24 +277,31 @@ typedef RestoredVault = ({Secret secret, Map<String, dynamic> metadata});
 /// Vault operations that do not require an existing stored secret.
 extension type const Recoverbull._(Secrets _secrets) {
   /// Decrypts a vault and stores its words. Repeated restoration is idempotent.
-  /// The vault has no passphrase; supply one separately if the original wallet used it.
+  /// The vault has no passphrase; supply one separately if the original wallet used it. An unverified empty-passphrase sibling requires explicit opt-in.
   @useResult
   Future<Result<RestoredVault, SecretFailure>> restore({
     required EncryptedVault vault,
     required VaultKey key,
     String? passphrase,
+    bool allowUnverified = false,
   }) => _secrets.restoreRecoverbull(
     vault: vault,
     key: key,
     passphrase: passphrase,
+    allowUnverified: allowUnverified,
   );
 
-  /// Derives the words-only fingerprint without reading or writing the keystore.
+  /// Verifies the supplied passphrase against the vault key without accessing the keystore.
   @useResult
   Future<Result<Fingerprint, SecretFailure>> fingerprint({
     required EncryptedVault vault,
     required VaultKey key,
-  }) => _secrets.inspectRecoverbull(vault: vault, key: key);
+    String? passphrase,
+  }) => _secrets.inspectRecoverbull(
+    vault: vault,
+    key: key,
+    passphrase: passphrase,
+  );
 }
 
 /// Public derivations from words that are not stored. Nothing is written and no material is returned.
@@ -279,6 +321,24 @@ extension type const SecretPreview._(Secrets _secrets) {
     passphrase: passphrase,
     network: network,
     scriptTypes: scriptTypes,
+  );
+
+  /// Compares full public descriptors without accessing the keystore.
+  @useResult
+  Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
+    required List<String> words,
+    Language language = Language.english,
+    String? passphrase,
+    required BitcoinNetwork network,
+    required ScriptType scriptType,
+    required Descriptors expected,
+  }) => _secrets.matchesBitcoinDescriptors(
+    words: words,
+    language: language,
+    passphrase: passphrase,
+    network: network,
+    scriptType: scriptType,
+    expected: expected,
   );
 }
 

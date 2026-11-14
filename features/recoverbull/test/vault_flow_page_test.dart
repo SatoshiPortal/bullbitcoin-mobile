@@ -32,7 +32,10 @@ Widget app(Widget child) => MaterialApp(
   home: child,
 );
 
-VaultFlowPresentation flow() => VaultFlowPresentation(
+VaultFlowPresentation flow({
+  VaultRepository? vaults,
+  RecoverBullWalletPort? wallets,
+}) => VaultFlowPresentation(
   VaultFlowCubit(
     const ManageBackupSettingsUsecase(null, RecoverBullStorageFullFailure()),
     (
@@ -44,8 +47,8 @@ VaultFlowPresentation flow() => VaultFlowPresentation(
     ),
     null,
     CompleteVaultUsecase(
-      TestVaultUsecase(_Vaults(), _Wallets()),
-      RestoreVaultUsecase(_Vaults(), _Wallets()),
+      TestVaultUsecase(vaults ?? _Vaults(), wallets ?? _Wallets()),
+      RestoreVaultUsecase(vaults ?? _Vaults(), wallets ?? _Wallets()),
       null,
       null,
     ),
@@ -162,6 +165,96 @@ void main() {
     await tester.pump();
     expect(presentation.cubit.isClosed, isTrue);
   });
+
+  testWidgets('invalid manual vault key is reported without an exception', (
+    tester,
+  ) async {
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (_) async => true,
+    );
+    await tester.pumpWidget(
+      app(
+        VaultFlowPage(
+          flow: RecoverBullFlow.recoverVault,
+          presentation: () async => flow(),
+          copiedMessage: 'Copied',
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Enter a vault key instead'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'not-a-key');
+    await tester.ensureVisible(find.text('Continue'));
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Wrong password for this backup file'), findsOneWidget);
+  });
+
+  for (final proceedWithout in [false, true]) {
+    testWidgets(
+      'passphrase retry and explicit sibling choice: $proceedWithout',
+      (tester) async {
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          _channel,
+          (_) async => true,
+        );
+        final vaults = _PassphraseVaults();
+        final wallets = _RecoveryWallets();
+        final presentation = flow(vaults: vaults, wallets: wallets);
+        await tester.pumpWidget(
+          app(
+            VaultFlowPage(
+              flow: RecoverBullFlow.recoverVault,
+              presentation: () async => presentation,
+              copiedMessage: 'Copied',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Enter a vault key instead'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), '33' * 32);
+        await tester.ensureVisible(find.text('Continue'));
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+        expect(find.text('Passphrase required'), findsWidgets);
+        expect(vaults.imported, 0);
+        await tester.enterText(find.byType(TextField), 'incorrect');
+        await tester.ensureVisible(find.text('Verify'));
+        await tester.tap(find.text('Verify'));
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('does not match your backup'),
+          findsOneWidget,
+        );
+        expect(vaults.imported, 0);
+        if (proceedWithout) {
+          await tester.ensureVisible(find.text('Continue without'));
+          await tester.tap(find.text('Continue without'));
+          await tester.pumpAndSettle();
+          expect(find.textContaining('probably empty'), findsOneWidget);
+          expect(vaults.imported, 0);
+          await tester.ensureVisible(find.text('Confirm'));
+          await tester.tap(find.text('Confirm'));
+        } else {
+          await tester.enterText(find.byType(TextField), 'correct');
+          await tester.ensureVisible(find.text('Verify'));
+          await tester.tap(find.text('Verify'));
+        }
+        await tester.pumpAndSettle();
+        expect(vaults.imported, 1);
+        expect(wallets.restores, 1);
+        expect(vaults.lastUnverified, proceedWithout);
+        expect(
+          presentation.cubit.state.completion?.verifiedContext != null,
+          !proceedWithout,
+        );
+      },
+    );
+  }
 }
 
 final class _Files extends Fake implements VaultFileRepository {}
@@ -171,3 +264,34 @@ final class _Drive extends Fake implements GoogleDriveRepository {}
 final class _Vaults extends Fake implements VaultRepository {}
 
 final class _Wallets extends Fake implements RecoverBullWalletPort {}
+
+final class _PassphraseVaults extends Fake implements VaultRepository {
+  int imported = 0;
+  bool lastUnverified = false;
+
+  @override
+  Future<Result<Fingerprint, RecoverBullFailure>> restore(
+    EncryptedVault vault,
+    VaultKey key, {
+    String passphrase = '',
+    bool allowUnverified = false,
+  }) async {
+    if (passphrase != 'correct' && !allowUnverified) {
+      return const Err(VaultPassphraseRequiredFailure());
+    }
+    imported++;
+    lastUnverified = allowUnverified;
+    return Ok(Fingerprint('73c5da0a'));
+  }
+}
+
+final class _RecoveryWallets extends Fake implements RecoverBullWalletPort {
+  int restores = 0;
+  @override
+  Future<Result<VaultContext, RecoverBullFailure>> restoreDefaults(
+    VaultContext requested,
+  ) async {
+    restores++;
+    return Ok(requested);
+  }
+}

@@ -19,11 +19,18 @@ final class RestoreVaultUsecase {
     required VaultKey key,
     required BitcoinNetwork network,
     required bool Function() cancelled,
+    String passphrase = '',
+    bool allowUnverified = false,
   }) async {
     if (cancelled()) return const Err(VaultCancelledFailure());
     // Once this call begins, cancellation cannot undo a keystore import.
     // Finish accounting for it; the presenter suppresses late callbacks.
-    switch (await _vaults.restore(vault, key)) {
+    switch (await _vaults.restore(
+      vault,
+      key,
+      passphrase: passphrase,
+      allowUnverified: allowUnverified,
+    )) {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
