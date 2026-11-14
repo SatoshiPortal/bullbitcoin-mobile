@@ -72,7 +72,18 @@ final class WriterSession {
     WalletKey key, {
     required int expectedGeneration,
     bool existingOnly = false,
-  }) => run(key, expectedGeneration, WriteIntent.create, () async {
+  }) => run(
+    key,
+    expectedGeneration,
+    WriteIntent.create,
+    () => _create(key, expectedGeneration, existingOnly: existingOnly),
+  );
+
+  Future<WriterOutcome> _create(
+    WalletKey key,
+    int expectedGeneration, {
+    required bool existingOnly,
+  }) async {
     final old = revisions.record(key);
     expectGeneration(old, expectedGeneration);
     final descriptor = await this.descriptor(key);
@@ -141,15 +152,23 @@ final class WriterSession {
     } finally {
       session.close();
     }
-  });
+  }
 
+  /// With [adopt], first adopts the existing native store as
+  /// `create(existingOnly: true)` would, under the same lock acquisition.
   Future<Result<WriterOutcome, TransactionSyncFailure>> sync(
     WalletKey key, {
     required int expectedGeneration,
     required WriterSyncOperation operation,
     bool reconcile = true,
+    bool adopt = false,
     Future<Result<void, TransactionSyncFailure>> Function()? preflight,
   }) => run(key, expectedGeneration, WriteIntent.sync, () async {
+    if (adopt) {
+      // Adoption may mutate the native store: invalidate first, as create does.
+      _invalidateSpendGate(key);
+      await _create(key, expectedGeneration, existingOnly: true);
+    }
     final record = active(key, expectedGeneration);
     final descriptor = await this.descriptor(key);
     if (preflight != null) value(await preflight());
@@ -261,11 +280,6 @@ final class WriterSession {
     final lock = (acquisition as Ok<WriterLock, TransactionSyncFailure>).value;
     final watch = Stopwatch()..start();
     try {
-      if (key.network is BitcoinNetwork &&
-          intent != WriteIntent.receive &&
-          intent != WriteIntent.sync) {
-        _invalidateSpendGate(key);
-      }
       final admitted = revisions.record(key);
       expectGeneration(admitted, expectedGeneration);
       if (!reconcile &&
@@ -281,6 +295,13 @@ final class WriterSession {
               : LeaseBusySource.lifecycleGate,
         );
         throw const WriterRefusal(TransactionSyncBusyFailure());
+      }
+      // Only an admitted request invalidates the gate: a stale one is refused
+      // above without touching obligations.
+      if (key.network is BitcoinNetwork &&
+          intent != WriteIntent.receive &&
+          intent != WriteIntent.sync) {
+        _invalidateSpendGate(key);
       }
       // Delete must remain possible for damaged stores: it supersedes an
       // unfinished write, but completes an existing tombstone without another
@@ -301,7 +322,7 @@ final class WriterSession {
             : 'committed'} network=${key.network} generation=${stamp?.generation} revision=${stamp?.revision} duration_ms=${watch.elapsedMilliseconds}',
       );
       return Ok(value);
-    } on Object catch (error) {
+    } on Exception catch (error) {
       if (error is SqliteException && error.resultCode == 5) {
         trace.busy(LeaseBusySource.revisionRead);
       }
@@ -563,9 +584,9 @@ final class WriterSession {
         Err(:final failure) => throw WriterRefusal(failure),
       };
 
-  /// Programmer [Error]s propagate; everything else becomes a typed failure.
-  static TransactionSyncFailure mapFailure(Object error) {
-    if (error is Error) throw error;
+  /// Only an [Exception] becomes a typed failure. Callers let anything else
+  /// thrown, a programmer [Error] above all, propagate with its trace.
+  static TransactionSyncFailure mapFailure(Exception error) {
     if (error is WriterRefusal) return error.failure;
     if (error is NativeStoreMissing) {
       return const TransactionSyncNotFoundFailure();

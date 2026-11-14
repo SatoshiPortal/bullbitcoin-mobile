@@ -33,6 +33,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/write.dart';
 
 class _Swaps extends Mock implements BoltzSwapRepository {}
 

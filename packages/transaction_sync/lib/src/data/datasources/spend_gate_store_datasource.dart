@@ -39,9 +39,11 @@ final class SpendGateStoreDatasource {
     if (marker.existsSync() && !File(path).existsSync()) {
       throw const BitcoinSpendGateUnavailable();
     }
-    File(path).parent.createSync(recursive: true);
-    final db = sqlite3.open(path);
+    Database? db;
     try {
+      // An unopenable store refuses Bitcoin only; Liquid and reads go on.
+      File(path).parent.createSync(recursive: true);
+      db = sqlite3.open(path);
       // The first Bitcoin paths of two isolates may provision concurrently.
       db.execute('PRAGMA busy_timeout = 1000');
       if (db.userVersion == 0) {
@@ -62,7 +64,7 @@ final class SpendGateStoreDatasource {
     } on Exception {
       throw const BitcoinSpendGateUnavailable();
     } finally {
-      db.dispose();
+      db?.dispose();
     }
   }
 

@@ -3,19 +3,30 @@ import 'dart:io';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
+import 'package:transaction_sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:transaction_sync/src/data/native_store_paths.dart';
 import 'package:transaction_sync/src/data/write/writer_lock.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 import 'package:transaction_sync/write.dart';
 
 final class _Catalog implements WalletCatalogPort {
+  final List<PublicWalletDescriptor> wallets;
+
+  _Catalog([this.wallets = const []]);
+
   @override
   Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
     WalletKey key,
-  ) async => const Err(TransactionSyncNotFoundFailure());
+  ) async {
+    for (final wallet in wallets) {
+      if (wallet.key == key) return Ok(wallet);
+    }
+    return const Err(TransactionSyncNotFoundFailure());
+  }
+
   @override
   Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => const Ok([]);
+  list() async => Ok(wallets);
 }
 
 final class _Reserved implements ReservedAddressPort {
@@ -31,9 +42,11 @@ void main() {
   setUp(() => dir = Directory.systemTemp.createTempSync('writer-stores-'));
   tearDown(() => dir.deleteSync(recursive: true));
 
-  ForegroundStores foreground() => openForeground(
+  ForegroundStores foreground([
+    List<PublicWalletDescriptor> wallets = const [],
+  ]) => openForeground(
     documentsDirectory: dir.path,
-    catalog: _Catalog(),
+    catalog: _Catalog(wallets),
     reservedAddresses: _Reserved(),
   );
 
@@ -115,6 +128,89 @@ void main() {
         stores.completeRecovery();
         expect(stores.recoveredMetadata, isFalse);
         expect(File(recoveryMarkerPath(dir.path)).existsSync(), isFalse);
+      } finally {
+        await stores.close();
+      }
+    },
+  );
+
+  test(
+    'a develop store without user_version is quarantined, not fatal',
+    () async {
+      // The exact layout written by 48d7ecf01, which never set user_version.
+      final path = revisionStorePath(dir.path);
+      File(path).parent.createSync(recursive: true);
+      final db = sqlite3.open(path);
+      db.execute('''CREATE TABLE revisions (
+        wallet TEXT NOT NULL, network TEXT NOT NULL,
+        generation INTEGER NOT NULL, revision INTEGER NOT NULL,
+        lifecycle TEXT NOT NULL, intent TEXT, candidate INTEGER,
+        issued INTEGER, needs_sync INTEGER NOT NULL DEFAULT 0,
+        initialized_schema INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY(wallet, network))''');
+      db.execute('ALTER TABLE revisions ADD COLUMN descriptor_hash TEXT');
+      db.execute('ALTER TABLE revisions ADD COLUMN liquid_cache_path TEXT');
+      db.execute(
+        'ALTER TABLE revisions ADD COLUMN sync_failed INTEGER NOT NULL DEFAULT 0',
+      );
+      db.dispose();
+
+      final stores = foreground();
+      try {
+        expect(stores.recoveredMetadata, isTrue);
+        expect(File(recoveryMarkerPath(dir.path)).existsSync(), isTrue);
+        expect(userVersion(path), 1);
+        final key = WalletKey(id: 'w', network: BitcoinNetwork.testnet);
+        expect(
+          await stores.spendGate.check(key),
+          BitcoinSpendStatus.unavailable,
+        );
+      } finally {
+        await stores.close();
+      }
+    },
+  );
+
+  test(
+    'a spend gate that cannot open refuses Bitcoin and keeps the rest',
+    () async {
+      final bitcoin = BitcoinWalletDescriptor(
+        key: WalletKey(id: 'btc', network: BitcoinNetwork.testnet),
+        scriptType: ScriptType.bip84,
+        origin: 'public-fixture',
+        externalDescriptor: 'wpkh(public/btc/0)',
+        internalDescriptor: 'wpkh(public/btc/1)',
+      );
+      final liquid = WalletKey(id: 'lbtc', network: LiquidNetwork.testnet);
+      await foreground([bitcoin]).close();
+      final seed = RevisionStoreDatasource.openExisting(
+        revisionStorePath(dir.path),
+      );
+      for (final key in [bitcoin.key, liquid]) {
+        seed.begin(key, WriteIntent.create);
+        seed.finish(key);
+      }
+      seed.close();
+      // A directory where the gate's database should be cannot be opened.
+      final gate = spendGateStorePath(dir.path);
+      File(gate).deleteSync();
+      File('$gate.provisioned').deleteSync();
+      Directory(gate).createSync();
+
+      final stores = foreground([bitcoin]);
+      try {
+        expect(
+          await stores.spendGate.check(bitcoin.key),
+          BitcoinSpendStatus.unavailable,
+        );
+        final read = await stores.revisions.read(liquid);
+        expect(
+          (read as Ok<WalletRevisionState, TransactionSyncFailure>)
+              .value
+              .lifecycle,
+          WalletLifecycle.active,
+        );
+        expect(stores.recoveredMetadata, isFalse);
       } finally {
         await stores.close();
       }

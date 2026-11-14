@@ -1,6 +1,7 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
+import 'package:transaction_sync/write.dart';
 
 final class BackgroundWalletSyncImpl implements BackgroundWalletSyncPort {
   final WalletCatalogPort _catalog;

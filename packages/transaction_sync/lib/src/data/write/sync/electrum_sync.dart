@@ -347,11 +347,13 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
         retryable: false,
       );
     }
-    if (current is Err ||
+    final adopt =
+        current is Err ||
         (current as Ok<WalletRevisionState, TransactionSyncFailure>)
                 .value
                 .initializedSchema !=
-            writerSchemaVersion) {
+            writerSchemaVersion;
+    if (adopt) {
       if (params.headless) {
         LeaseDiagnostics(
           role: LeaseRole.writer,
@@ -370,24 +372,15 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
           retryable: false,
         );
       }
-      final initialized = await writer.create(
-        params.descriptor.key,
-        expectedGeneration: params.generation,
-        existingOnly: true,
-      );
-      if (initialized case Err(:final failure)) {
-        return SyncPassOutcome(
-          Err<SyncCompletion, TransactionSyncFailure>(failure),
-          retryable: false,
-        );
-      }
     }
     final operation = _NativeSyncOperation(params);
+    // The foreground adopts, then syncs, under one writer lock acquisition.
     final result = await writer.sync(
       params.descriptor.key,
       expectedGeneration: params.generation,
       operation: operation,
       reconcile: !params.headless,
+      adopt: adopt,
       preflight: params.allowInitialScan
           ? null
           : () => checkInitialScan(params),

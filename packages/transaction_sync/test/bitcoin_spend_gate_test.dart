@@ -179,6 +179,29 @@ void main() {
     }
   });
 
+  test('a stale create or delete leaves an observed spend ready', () async {
+    await accepted();
+    final store = SpendGateStoreDatasource.openExisting(
+      spendGateStorePath(dir.path),
+    );
+    try {
+      store.observed(wallet, 1, {txid});
+    } finally {
+      store.close();
+    }
+    expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
+    for (final stale in [
+      () => stores.writer.create(wallet.key, expectedGeneration: 0),
+      () => stores.writer.delete(wallet.key, expectedGeneration: 0),
+    ]) {
+      expect(
+        (await stale() as Err<WriterOutcome, TransactionSyncFailure>).failure,
+        isA<TransactionSyncNotFoundFailure>(),
+      );
+      expect(await gate.check(wallet.key), BitcoinSpendStatus.ready);
+    }
+  });
+
   test('writer contention is busy, not an unobserved payment', () async {
     final held =
         WriterLock.acquire(dir.path, wallet.key)
