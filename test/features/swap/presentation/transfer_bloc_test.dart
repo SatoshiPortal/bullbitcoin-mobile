@@ -2288,6 +2288,74 @@ void main() {
       );
     });
 
+    group('from a Liquid wallet that must consolidate', () {
+      TransferState fromLiquid({bool consolidationRequired = false}) =>
+          TransferState(
+            fromWallet: _liquidWallet().copyWith(
+              balanceSat: BigInt.from(100000),
+            ),
+            toWallet: _wallet().copyWith(origin: 'wallet-2'),
+            bitcoinUnit: BitcoinUnit.sats,
+            liquidNetworkFees: _feeOptions(),
+            receiveExactAmount: false,
+            consolidationRequired: consolidationRequired,
+          );
+
+      setUp(() {
+        when(
+          () => getSwapRoute.execute(),
+        ).thenAnswer((_) async => SwapRoute.boltz);
+      });
+
+      test('a known consolidation need creates no swap', () async {
+        bloc.emit(fromLiquid(consolidationRequired: true));
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        expect(bloc.state.consolidationRequired, isTrue);
+        expect(bloc.state.swap, isNull);
+        verifyNever(
+          () => createChainSwap.execute(
+            sendWalletId: any(named: 'sendWalletId'),
+            amountSat: any(named: 'amountSat'),
+            fromLiquid: any(named: 'fromLiquid'),
+            receiveWalletId: any(named: 'receiveWalletId'),
+            externalRecipientAddress: any(named: 'externalRecipientAddress'),
+          ),
+        );
+      });
+
+      test('a lockup build that needs consolidation says so', () async {
+        when(
+          () => createChainSwap.execute(
+            sendWalletId: any(named: 'sendWalletId'),
+            amountSat: any(named: 'amountSat'),
+            fromLiquid: true,
+            receiveWalletId: any(named: 'receiveWalletId'),
+          ),
+        ).thenAnswer((_) async => Ok(_swap()));
+        when(
+          () => prepareLiquid.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            amountSat: any(named: 'amountSat'),
+            feeRate: any(named: 'feeRate'),
+            drain: any(named: 'drain'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err(SendConsolidationRequiredFailure()),
+        );
+        bloc.emit(fromLiquid());
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        expect(bloc.state.consolidationRequired, isTrue);
+        expect(bloc.state.signedPsbt, isEmpty);
+      });
+    });
+
     group('to an external address', () {
       TransferState external({String? error}) => crossChain().copyWith(
         sendToExternal: true,

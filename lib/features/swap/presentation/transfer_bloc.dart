@@ -770,6 +770,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (fromWallet.isHardwareWallet) {
       throw SwapCreationException('hardware_wallet_swap_unavailable');
     }
+    if (fromWallet.isLiquid && state.consolidationRequired) {
+      throw ConsolidationRequiredException('liquid_consolidation_required');
+    }
     final destinationWallet = state.sendToExternal ? null : state.toWallet;
     if (!state.sendToExternal && destinationWallet == null) {
       throw SwapCreationException('destination_wallet_required');
@@ -872,10 +875,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         case Ok(:final value):
           unsignedPset = value;
         case Err(:final failure):
-          throw failure is SendInsufficientBalanceFailure ||
-                  failure is SendInsufficientFundsForFeesFailure
-              ? InsufficientFundsSwapException()
-              : BuildTransactionException('liquid_transaction_build_failed');
+          throw switch (failure) {
+            SendConsolidationRequiredFailure() =>
+              ConsolidationRequiredException('liquid_consolidation_required'),
+            SendInsufficientBalanceFailure() ||
+            SendInsufficientFundsForFeesFailure() =>
+              InsufficientFundsSwapException(),
+            _ => BuildTransactionException('liquid_transaction_build_failed'),
+          };
       }
       await _verifyChainSwapAmountSendUsecase.execute(
         psbtOrPset: unsignedPset,
