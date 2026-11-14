@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:test/test.dart';
+import '../tool/native_import_allowlist.dart';
 import '../tool/native_write_gate.dart';
 
 void main() {
@@ -364,5 +365,75 @@ class BitcoinSigner {
       ),
       isNotEmpty,
     );
+  });
+
+  Future<List<String>> inspectImports(
+    String name,
+    String source,
+    String path,
+  ) async {
+    final file = File('${fixture.path}/$name.dart')..writeAsStringSync(source);
+    final result = await collection
+        .contextFor(file.path)
+        .currentSession
+        .getResolvedUnit(file.path);
+    return checkNativeImports((result as ResolvedUnitResult).unit, path);
+  }
+
+  group('native import ratchet', () {
+    const direct = "import 'package:bull_sdk/bdk.dart' as bdk; bdk.Network? n;";
+    const bridged = "import 'bridge.dart' as sdk; sdk.Network? n;";
+
+    test('rejects BDK or LWK outside sync, even through a bridge', () async {
+      for (final (name, source) in [
+        ('import_direct', direct),
+        ('import_bridge', bridged),
+        (
+          'import_lwk',
+          "import 'package:bull_sdk/lwk.dart' as lwk; lwk.Wallet? w;",
+        ),
+      ]) {
+        expect(
+          await inspectImports(name, source, 'lib/features/x/data/y.dart'),
+          contains(contains('native import ratchet')),
+          reason: name,
+        );
+      }
+    });
+
+    test('allows sync by directory and listed files only', () async {
+      expect(
+        await inspectImports(
+          'import_owner',
+          direct,
+          'packages/sync/lib/src/x.dart',
+        ),
+        isEmpty,
+      );
+      expect(
+        await inspectImports(
+          'import_listed',
+          direct,
+          nativeImportAllowlist.first,
+        ),
+        isEmpty,
+      );
+      expect(
+        await inspectImports(
+          'import_none',
+          "import 'dart:io'; File? f;",
+          'lib/features/x/data/y.dart',
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a listed file that stopped using BDK must leave the list', () {
+      final listed = nativeImportAllowlist.first;
+      expect(staleNativeImportEntries(nativeImportAllowlist.skip(1).toSet()), [
+        contains(listed),
+      ]);
+      expect(staleNativeImportEntries(nativeImportAllowlist), isEmpty);
+    });
   });
 }

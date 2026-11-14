@@ -7,6 +7,8 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 
+import 'native_import_allowlist.dart';
+
 /// Symbol-resolved native-write boundary. This is not whole-program path/taint
 /// analysis: dynamic IO helpers and new native APIs require policy review.
 /// Analysis errors and unresolved sensitive native members fail closed.
@@ -38,6 +40,7 @@ Future<NativeWriteReport> checkNativeWrites(String rootPath) async {
   );
   final files = productionDartFiles(root);
   final violations = <String>[];
+  final importers = <String>{};
   for (final path in files) {
     final relative = path.substring(root.length + 1);
     final result = await collection
@@ -54,8 +57,14 @@ Future<NativeWriteReport> checkNativeWrites(String rootPath) async {
       }
     }
     violations.addAll(checkUnit(result.unit, relative));
+    final imports = checkNativeImports(result.unit, relative);
+    violations.addAll(imports);
+    if (imports.isEmpty && usesNativeWallets(result.unit)) {
+      importers.add(relative);
+    }
   }
   await collection.dispose();
+  violations.addAll(staleNativeImportEntries(importers));
   return NativeWriteReport(files.length, violations.toSet().toList()..sort());
 }
 
@@ -100,6 +109,68 @@ List<String> checkUnit(CompilationUnit unit, String relativePath) {
 }
 
 const writerModules = 'packages/sync/lib/src/data/write/';
+
+/// The package that owns native wallet state may use BDK and LWK anywhere.
+const nativeOwner = 'packages/sync/';
+
+/// Directive URIs that bring BDK or LWK wallet bindings into a library.
+bool isNativeWalletUri(String uri) =>
+    uri == 'package:bull_sdk/bdk.dart' ||
+    uri == 'package:bull_sdk/lwk.dart' ||
+    uri.startsWith('package:bdk_dart/') ||
+    uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/') ||
+    uri == 'package:bull_sdk/src/lwk_consolidate.dart';
+
+/// Whether [unit] imports, exports or references a BDK or LWK symbol. The
+/// symbol check catches a re-export bridge that never names the SDK.
+bool usesNativeWallets(CompilationUnit unit) {
+  final directives = unit.directives.whereType<NamespaceDirective>().any(
+    (directive) => isNativeWalletUri(directive.uri.stringValue ?? ''),
+  );
+  if (directives) return true;
+  final visitor = _NativeSymbolVisitor();
+  unit.accept(visitor);
+  return visitor.found;
+}
+
+/// Ratchet: outside [nativeOwner], only the files listed in
+/// [nativeImportAllowlist] may touch BDK or LWK. The list only shrinks.
+List<String> checkNativeImports(CompilationUnit unit, String relativePath) {
+  if (relativePath.startsWith(nativeOwner)) return const [];
+  if (nativeImportAllowlist.contains(relativePath)) return const [];
+  return usesNativeWallets(unit)
+      ? ['$relativePath: BDK/LWK outside sync (native import ratchet)']
+      : const [];
+}
+
+/// An allowlisted file that no longer uses BDK or LWK must leave the list,
+/// so the exception cannot be reused by a later change.
+List<String> staleNativeImportEntries(Set<String> importers) => [
+  for (final entry in nativeImportAllowlist)
+    if (!importers.contains(entry))
+      '$entry: stale native import allowlist entry, remove it',
+];
+
+class _NativeSymbolVisitor extends RecursiveAstVisitor<void> {
+  bool found = false;
+
+  void _check(Element? element) {
+    final uri = element?.library?.uri.toString();
+    if (uri != null && isNativeWalletUri(uri)) found = true;
+  }
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    _check(node.element);
+    super.visitSimpleIdentifier(node);
+  }
+
+  @override
+  void visitNamedType(NamedType node) {
+    _check(node.element);
+    super.visitNamedType(node);
+  }
+}
 
 /// Reader modules may hydrate existing stores, never mutate them.
 const readerModules = 'packages/sync/lib/src/data/read/';
