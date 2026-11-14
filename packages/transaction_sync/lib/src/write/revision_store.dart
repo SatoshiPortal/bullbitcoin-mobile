@@ -84,10 +84,12 @@ final class RevisionStore {
     Database? db;
     try {
       db = sqlite3.open(path, mode: OpenMode.readWrite);
-      _configure(db);
+      db.execute('PRAGMA busy_timeout = 5000');
+      // Check before configuring: switching the journal mode writes the file.
       if (db.userVersion != revisionStoreVersion) {
         throw const RevisionStoreUnavailable();
       }
+      _configure(db);
       return RevisionStore._(db);
     } on SqliteException {
       db?.dispose();
