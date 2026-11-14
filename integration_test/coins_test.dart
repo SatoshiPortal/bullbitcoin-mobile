@@ -68,6 +68,7 @@ Future<void> main({bool isInitialized = false}) async {
         catalog: const _NoCatalog(),
         reservedAddresses: const _NoReserved(),
         legacyFreezes: const _NoLegacyFreezes(),
+        inputReservations: _NoInputReservations(),
       );
 
       final before = open();
@@ -347,4 +348,10 @@ final class _NoReserved implements sync.ReservedAddressPort {
     sync.WalletKey key,
     String address,
   ) async => const Ok(false);
+}
+
+final class _NoInputReservations implements sync.InputReservationPort {
+  @override
+  Future<Result<List<sync.InputReservation>, sync.SyncFailure>>
+  reservations() async => const Ok([]);
 }

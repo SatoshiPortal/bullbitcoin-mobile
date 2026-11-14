@@ -39,6 +39,7 @@ void main() {
       catalog: const _NoCatalog(),
       reservedAddresses: const _NoReserved(),
       legacyFreezes: LegacyFrozenUtxosSource(sqlite: db),
+      inputReservations: _NoInputReservations(),
     );
     try {
       final listed = switch (await sync.coins.listFrozen()) {
@@ -94,4 +95,10 @@ final class _NoReserved implements ReservedAddressPort {
     WalletKey key,
     String address,
   ) async => const Ok(false);
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

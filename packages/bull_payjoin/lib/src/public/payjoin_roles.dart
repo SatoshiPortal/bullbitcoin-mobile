@@ -59,6 +59,12 @@ abstract interface class PayjoinSessions {
 
   @useResult
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints();
+
+  /// Every input an unfinished session holds, with its owning session. A
+  /// failed read is an error, never an empty list.
+  @useResult
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations();
 }
 
 abstract interface class PayjoinPolicyAccess {

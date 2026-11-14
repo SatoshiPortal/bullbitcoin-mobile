@@ -37,6 +37,7 @@ abstract interface class WalletNativeLifecycle {
 final class WalletNativeRuntime implements WalletNativeLifecycle {
   final WalletCatalogPort _catalog;
   final ReservedAddressPort _reserved;
+  final InputReservationPort _inputReservations;
   final WalletMetadataDatasource _metadata;
   final ElectrumSync _sync;
   final Future<String> Function() _documentsDirectory;
@@ -51,6 +52,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   WalletNativeRuntime({
     required this._catalog,
     required this._reserved,
+    required this._inputReservations,
     required this._metadata,
     required this._sync,
     required this._documentsDirectory,
@@ -76,6 +78,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       catalog: _catalog,
       reservedAddresses: _reserved,
       legacyFreezes: _legacyFreezes,
+      inputReservations: _inputReservations,
     );
     StreamSubscription<WalletRevisionState>? subscription;
     try {

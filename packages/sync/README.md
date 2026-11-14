@@ -33,6 +33,10 @@ The freeze store replaces the app's published `frozen_utxos` table (schema v15),
 
 `bitcoinAddressScript` and `validateAddress` are library functions: no wallet is opened.
 
+`decodeBitcoinTransaction` and `decodeBitcoinPsbt` are library functions too, synchronous for Payjoin's session mapping: they return a transaction's id, spent outpoints and outputs, and a malformed input is a `FormatException`.
+
+`Sync.openForeground` requires an `InputReservationPort`. Payjoin owns its input reservations and serves each with its session, wallet, network and state; sync reads them to check the inputs of a spend. A failed read is an `Err`, never an empty list.
+
 Still transitional, removed in phase 2: `write.dart` builds the writer, the spend gate and the Electrum engine, and its `SyncForegroundStores` extension hands the app the writer and the borrowed reader; `read.dart` publishes `WalletSnapshotReader`, which lends the shared `bdk.Wallet` or `lwk.Wallet` to the transaction builders only. Callers must not mutate, persist or dispose it. `diagnostics.dart` publishes the identifier-free lease diagnostic context. `testing.dart` builds real `Wallet`s for consumers' tests.
 
 <!-- sync-api:start -->
@@ -43,7 +47,7 @@ Each asynchronous `Future<Result<T, SyncFailure>>` is shown as `T`. Other return
 
 ```text
 Sync
-|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, legacyFreezes:) -> Sync
+|-- static openForeground(documentsDirectory:, catalog:, reservedAddresses:, legacyFreezes:, inputReservations:) -> Sync
 |-- static openExisting(documentsDirectory:, catalog:, connections:) -> HeadlessSync
 |-- wallet(key) -> Wallet
 |-- changes

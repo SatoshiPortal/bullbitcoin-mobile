@@ -41,4 +41,12 @@ Sync freezesOnlySync(String documentsDirectory) => Sync.openForeground(
   catalog: const NoCatalog(),
   reservedAddresses: const NoReservedAddresses(),
   legacyFreezes: const NoLegacyFreezes(),
+  inputReservations: NoInputReservations(),
 );
+
+/// No reservation held: every input is free of external sessions.
+final class NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
+}

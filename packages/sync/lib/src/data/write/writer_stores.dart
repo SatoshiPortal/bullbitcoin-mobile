@@ -4,6 +4,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../../domain/ports/legacy_freeze_source_port.dart';
+import '../../domain/ports/input_reservation_port.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/ports/wallet_revision_reader_port.dart';
@@ -30,6 +31,9 @@ final class ForegroundStores {
 
   /// The freeze store. Spend construction reads its forbidden inputs.
   final FreezeAuthority freezes;
+
+  /// Payjoin's reservations, read to check the inputs of every spend.
+  final InputReservationPort inputReservations;
   final RevisionStoreDatasource _store;
   bool _recovering;
 
@@ -40,6 +44,7 @@ final class ForegroundStores {
     this.reader,
     this.spendGate,
     this.freezes,
+    this.inputReservations,
     this._store,
     this._recovering,
   );
@@ -108,6 +113,7 @@ ForegroundStores openForeground({
   required WalletCatalogPort catalog,
   required ReservedAddressPort reservedAddresses,
   required LegacyFreezeSourcePort legacyFreezes,
+  required InputReservationPort inputReservations,
 }) {
   final store = _openOrQuarantine(documentsDirectory);
   try {
@@ -149,6 +155,7 @@ ForegroundStores openForeground({
         freezesReady: freezes.ready,
       ),
       freezes,
+      inputReservations,
       store,
       File(recoveryMarkerPath(documentsDirectory)).existsSync(),
     );

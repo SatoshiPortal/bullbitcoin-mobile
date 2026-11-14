@@ -332,6 +332,7 @@ void main() {
       catalog: const _NoCatalog(),
       reservedAddresses: const _NoReserved(),
       legacyFreezes: LegacyFreezes(),
+      inputReservations: _NoInputReservations(),
     );
     await foreground.close();
 
@@ -536,4 +537,10 @@ final class _NoReserved implements ReservedAddressPort {
     WalletKey key,
     String address,
   ) async => const Ok(false);
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

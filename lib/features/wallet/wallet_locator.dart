@@ -142,6 +142,7 @@ class WalletLocator {
       () => WalletNativeRuntime(
         catalog: locator<WalletCatalogPort>(),
         reserved: locator<ReservedAddressPort>(),
+        inputReservations: locator<InputReservationPort>(),
         metadata: locator<WalletMetadataDatasource>(),
         sync: locator<ElectrumSync>(),
         documentsDirectory: () async =>

@@ -49,6 +49,7 @@ void main() {
       final runtime = WalletNativeRuntime(
         catalog: WalletCatalogPortImpl(metadata),
         reserved: _Reserved(),
+        inputReservations: _NoInputReservations(),
         metadata: metadata,
         sync: ElectrumSync(
           connections: _Offline(),
@@ -94,6 +95,7 @@ void main() {
       final runtime = WalletNativeRuntime(
         catalog: WalletCatalogPortImpl(metadata),
         reserved: _Reserved(),
+        inputReservations: _NoInputReservations(),
         metadata: metadata,
         sync: ElectrumSync(
           connections: _Offline(),
@@ -169,6 +171,7 @@ void main() {
       WalletNativeRuntime open() => WalletNativeRuntime(
         catalog: WalletCatalogPortImpl(metadata),
         reserved: _Reserved(),
+        inputReservations: _NoInputReservations(),
         metadata: metadata,
         sync: ElectrumSync(
           connections: _Offline(),
@@ -340,4 +343,10 @@ void main() {
       }
     },
   );
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

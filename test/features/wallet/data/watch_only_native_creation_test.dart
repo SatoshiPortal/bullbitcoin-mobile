@@ -68,6 +68,7 @@ void main() {
             catalog: catalog,
             reservedAddresses: _Reserved(),
             legacyFreezes: const NoLegacyFreezes(),
+            inputReservations: _NoInputReservations(),
           );
           final writer = opened.writer;
           if (interrupted) {
@@ -110,4 +111,10 @@ void main() {
       },
     );
   }
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<p.Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const p.Ok([]);
 }

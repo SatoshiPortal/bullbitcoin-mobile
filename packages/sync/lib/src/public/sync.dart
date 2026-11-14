@@ -18,6 +18,7 @@ import '../data/write/writer_stores.dart' show ExistingStores, ForegroundStores;
 import '../domain/coin_freezes.dart';
 import '../domain/observed.dart';
 import '../domain/ports/legacy_freeze_source_port.dart';
+import '../domain/ports/input_reservation_port.dart';
 import '../domain/ports/reserved_address_port.dart';
 import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/ports/wallet_connection_port.dart';
@@ -48,17 +49,20 @@ final class Sync {
   /// Then starts the one-time import of [legacyFreezes] into the freeze
   /// store. Until it is witnessed, freeze changes and spends are refused and
   /// coins read unavailable; each later use retries it.
+  /// [inputReservations] is mandatory: spends check their inputs against it.
   static Sync openForeground({
     required String documentsDirectory,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
     required LegacyFreezeSourcePort legacyFreezes,
+    required InputReservationPort inputReservations,
   }) {
     final stores = stores_.openForeground(
       documentsDirectory: documentsDirectory,
       catalog: catalog,
       reservedAddresses: reservedAddresses,
       legacyFreezes: legacyFreezes,
+      inputReservations: inputReservations,
     );
     stores.freezes.demand();
     return Sync._(

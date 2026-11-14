@@ -21,10 +21,13 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:sync/sync.dart'
     show
+        InputReservation,
+        InputReservationPort,
         ReservedAddressPort,
+        SyncFailure,
         SyncReason,
         SyncNotFoundFailure,
         WalletConnectionPort;
@@ -226,6 +229,7 @@ void main() {
     final runtime = WalletNativeRuntime(
       catalog: WalletCatalogPortImpl(metadata),
       reserved: _Reserved(),
+      inputReservations: _NoInputReservations(),
       metadata: metadata,
       sync: ElectrumSync(
         connections: _Connections(),
@@ -336,4 +340,10 @@ void _configure(Database db) {
   db.execute('PRAGMA busy_timeout = 2000');
   db.execute('PRAGMA journal_mode = WAL');
   db.execute('PRAGMA synchronous = FULL');
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

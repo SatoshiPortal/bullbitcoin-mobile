@@ -50,6 +50,7 @@ void main() {
     catalog: _Catalog(wallets),
     reservedAddresses: _Reserved(),
     legacyFreezes: LegacyFreezes(),
+    inputReservations: _NoInputReservations(),
   );
 
   int userVersion(String path) {
@@ -253,4 +254,10 @@ void main() {
     );
     expect(dir.listSync(), isEmpty);
   });
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

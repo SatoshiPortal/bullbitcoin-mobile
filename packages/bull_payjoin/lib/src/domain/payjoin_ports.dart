@@ -10,12 +10,24 @@ abstract interface class PayjoinWalletPort {
     required String psbt,
   });
 
-  Future<bool Function(Uint8List script)> createOwnershipChecker({
+  /// One exact capture of what this wallet owns, at a single committed state:
+  /// both answers of a proposal come from the same view.
+  Future<PayjoinWalletOwnership> captureOwnership({
     required String walletId,
     required BitcoinNetwork network,
   });
 
-  /// Answers whether an outpoint belongs to this wallet.
+  Future<List<PayjoinUtxo>> spendableUtxos({
+    required String walletId,
+    required BitcoinNetwork network,
+  });
+}
+
+final class PayjoinWalletOwnership {
+  /// Whether an output script belongs to this wallet: the receiver's own output.
+  final bool Function(Uint8List script) ownsScript;
+
+  /// Whether an outpoint belongs to this wallet.
   ///
   /// Deliberately keyed on the outpoint and never on the previous output's
   /// scriptPubKey: in a payjoin proposal that script comes from the sender's
@@ -25,15 +37,49 @@ abstract interface class PayjoinWalletPort {
   ///
   /// Must answer for every output the wallet has ever owned, spent included, so
   /// the receiver's guard has no gap to reason about.
-  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  });
+  final bool Function(Outpoint outpoint) ownsOutpoint;
 
-  Future<List<PayjoinUtxo>> spendableUtxos({
-    required String walletId,
-    required BitcoinNetwork network,
+  const PayjoinWalletOwnership({
+    required this.ownsScript,
+    required this.ownsOutpoint,
   });
+}
+
+/// Decodes Bitcoin data for the protocol, so the package links no wallet library.
+/// Synchronous on purpose: sessions are mapped inside synchronous stream transforms.
+abstract interface class PayjoinCodecPort {
+  /// Throws [FormatException] when [bytes] is not a transaction.
+  PayjoinTransaction decodeTransaction(Uint8List bytes);
+
+  /// The transaction a base64 PSBT carries. Throws [FormatException] when [psbt] is not a PSBT.
+  PayjoinTransaction decodePsbt(String psbt);
+
+  /// The output script [address] pays to, or null when it is not an address of [network].
+  Uint8List? addressScript(String address, BitcoinNetwork network);
+}
+
+/// A decoded transaction: its id, the outpoints it spends and its outputs in order.
+final class PayjoinTransaction {
+  final String txid;
+  final List<Outpoint> inputs;
+  final List<PayjoinTransactionOutput> outputs;
+
+  PayjoinTransaction({
+    required this.txid,
+    required List<Outpoint> inputs,
+    required List<PayjoinTransactionOutput> outputs,
+  }) : inputs = List.unmodifiable(inputs),
+       outputs = List.unmodifiable(outputs);
+}
+
+final class PayjoinTransactionOutput {
+  final Sats value;
+  final Uint8List scriptPubkey;
+
+  PayjoinTransactionOutput({
+    required this.value,
+    required Uint8List scriptPubkey,
+  }) : scriptPubkey = Uint8List.fromList(scriptPubkey).asUnmodifiableView();
 }
 
 abstract interface class PayjoinBlockchainPort {

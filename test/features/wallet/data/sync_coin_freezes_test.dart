@@ -117,6 +117,7 @@ void main() {
       catalog: const NoCatalog(),
       reservedAddresses: const NoReservedAddresses(),
       legacyFreezes: const _BrokenLegacyFreezes(),
+      inputReservations: NoInputReservations(),
     );
     addTearDown(broken.close);
     final freezes = SyncFreezesDatasource(sync: () async => broken);
