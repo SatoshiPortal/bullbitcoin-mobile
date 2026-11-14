@@ -1,7 +1,7 @@
-/// The single owner of native wallet state. [Sync.openForeground] returns
+/// The single owner of native wallet state. [Sync.foreground] returns
 /// [Sync], whose [Wallet] handles publish balances, coins, transactions and
 /// addresses as [Observed] values and build, check and broadcast spends;
-/// [Sync.openExisting] returns the narrow [HeadlessSync] for background
+/// [Sync.background] returns the narrow [BackgroundSync] for background
 /// refreshes. Nothing here holds or lends a native handle: outside this
 /// package, only `secrets` uses BDK and LWK. The codec and chain functions
 /// work without a wallet.
@@ -9,7 +9,7 @@ library;
 
 export 'src/public/sync.dart'
     show
-        HeadlessSync,
+        BackgroundSync,
         Sync,
         SyncChanges,
         SyncCoins,

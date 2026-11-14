@@ -54,7 +54,7 @@ final class Sync {
   /// while it cannot answer. [inputReservations] is mandatory: spends check
   /// their inputs against both. Spends are broadcast through the servers
   /// [connections] selects.
-  static Sync openForeground({
+  static Sync foreground({
     required String documentsDirectory,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
@@ -86,7 +86,7 @@ final class Sync {
   /// [RevisionStoreUnavailable] when the foreground has not created the
   /// stores at the current version, or while quarantined metadata awaits
   /// adoption. Never creates, migrates or adopts.
-  static HeadlessSync openExisting({
+  static BackgroundSync background({
     required String documentsDirectory,
     required WalletCatalogPort catalog,
     required WalletConnectionPort connections,
@@ -95,7 +95,7 @@ final class Sync {
       throw const RevisionStoreUnavailable();
     }
     final stores = stores_.openExisting(documentsDirectory);
-    return HeadlessSync._(
+    return BackgroundSync._(
       stores,
       catalog,
       ElectrumSync(
@@ -438,13 +438,13 @@ extension type const WalletOwnsGroup._(Wallet _wallet) {
 }
 
 /// What background code may do: refresh an existing wallet, then close.
-final class HeadlessSync {
+final class BackgroundSync {
   final ExistingStores _stores;
   final WalletCatalogPort _catalog;
   final ElectrumSync _engine;
   bool _closed = false;
 
-  HeadlessSync._(this._stores, this._catalog, this._engine);
+  BackgroundSync._(this._stores, this._catalog, this._engine);
 
   /// Synchronizes an existing store in a worker. Never creates, adopts or
   /// repairs: those wait for the foreground. Incoming payment ids are

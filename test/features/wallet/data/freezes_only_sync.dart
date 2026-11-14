@@ -29,7 +29,7 @@ final class NoReservedAddresses implements ReservedAddressPort {
 /// A foreground [Sync] in [documentsDirectory] over [freezes], an empty
 /// in-memory store by default.
 Sync freezesOnlySync(String documentsDirectory, {FreezeStorePort? freezes}) =>
-    Sync.openForeground(
+    Sync.foreground(
       documentsDirectory: documentsDirectory,
       catalog: const NoCatalog(),
       reservedAddresses: const NoReservedAddresses(),

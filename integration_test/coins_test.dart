@@ -79,7 +79,7 @@ Future<void> main({bool isInitialized = false}) async {
       final dir = await Directory.systemTemp.createTemp('coins_restart');
       addTearDown(() => dir.delete(recursive: true));
       final dbFile = File('${dir.path}/restart.sqlite');
-      sync.Sync open(SqliteDatabase db) => sync.Sync.openForeground(
+      sync.Sync open(SqliteDatabase db) => sync.Sync.foreground(
         documentsDirectory: dir.path,
         catalog: const _NoCatalog(),
         reservedAddresses: const _NoReserved(),

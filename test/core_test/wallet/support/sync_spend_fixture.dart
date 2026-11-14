@@ -41,7 +41,7 @@ final class SyncSpendFixture {
       internalDescriptor: model.internalDescriptor,
     );
     final freezes = MemoryFreezeStore();
-    final sync = Sync.openForeground(
+    final sync = Sync.foreground(
       documentsDirectory: documentsDirectory,
       catalog: _Catalog(descriptor),
       reservedAddresses: const NoReservedAddresses(),

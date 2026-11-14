@@ -19,7 +19,7 @@ Future<void> main(List<String> arguments) async {
   final trees = await generateApiTrees(
     libraryPath: '${package.path}/lib/sync.dart',
     sdkPath: dartSdkPath(package.path),
-    roots: const ['Sync', 'Wallet', 'HeadlessSync'],
+    roots: const ['Sync', 'Wallet', 'BackgroundSync'],
     failure: 'SyncFailure',
     target: 'sync-api-docs',
     statics: const {'Sync'},

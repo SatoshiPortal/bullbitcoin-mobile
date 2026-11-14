@@ -71,7 +71,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       });
 
   Future<_NativeServices> _open() async {
-    final sync = Sync.openForeground(
+    final sync = Sync.foreground(
       documentsDirectory: await _documentsDirectory(),
       catalog: _catalog,
       reservedAddresses: _reserved,
