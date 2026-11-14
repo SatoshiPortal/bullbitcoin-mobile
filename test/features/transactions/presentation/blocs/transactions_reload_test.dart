@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 class _Read extends Mock implements GetTransactionsUsecase {}
 

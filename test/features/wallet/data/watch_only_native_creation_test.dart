@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' as p;
-import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/write.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 
 // Published BIP84 test account, shared with wallet_identity_pins_test.dart.
 const _vpub =

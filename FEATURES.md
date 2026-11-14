@@ -11,23 +11,23 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
-    TRANSACTION_SYNC[Transaction Sync Package<br/>Electrum sync, contracts and owner ports]
+    SYNC[Sync Package<br/>Electrum sync, contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
-    BG_TASKS --> TRANSACTION_SYNC
+    BG_TASKS --> SYNC
     BG_TASKS --> NOTIFICATIONS
     WALLETS --> NOTIFICATIONS
     WALLETS --> BG_TASKS
-    NOTIFICATIONS --> TRANSACTION_SYNC
+    NOTIFICATIONS --> SYNC
     NOTIFICATIONS --> PRIMITIVES
     BG_TASKS --> PRIMITIVES
     BG_TASKS --> BULL_LOGGER
     SETTINGS --> BG_TASKS
     SETTINGS --> NOTIFICATIONS
-    TRANSACTION_SYNC --> PRIMITIVES
-    TRANSACTION_SYNC --> BULL_LOGGER
-    ELECTRUM_SETTINGS --> TRANSACTION_SYNC
-    LABELS --> TRANSACTION_SYNC
-    WALLETS --> TRANSACTION_SYNC
+    SYNC --> PRIMITIVES
+    SYNC --> BULL_LOGGER
+    ELECTRUM_SETTINGS --> SYNC
+    LABELS --> SYNC
+    WALLETS --> SYNC
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER

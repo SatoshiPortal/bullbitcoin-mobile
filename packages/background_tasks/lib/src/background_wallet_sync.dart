@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Consumer contract. Integration binds this to the single native writer.
 /// Implementations never release native ownership on a scheduling timeout.

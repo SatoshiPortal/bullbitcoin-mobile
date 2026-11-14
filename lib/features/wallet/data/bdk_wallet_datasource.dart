@@ -1,4 +1,4 @@
-import 'package:transaction_sync/diagnostics.dart';
+import 'package:sync/diagnostics.dart';
 import 'dart:async';
 import 'dart:math' hide log;
 import 'package:bull_logger/bull_logger.dart' show log;

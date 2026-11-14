@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exceptio
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Reuses the existing privacy policy, fallback loop and scoped Tor lifetime.
 final class WalletConnectionPolicyImpl implements WalletConnectionPort {

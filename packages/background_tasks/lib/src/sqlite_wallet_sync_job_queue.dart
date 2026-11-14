@@ -5,7 +5,7 @@ import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 import 'background_task_logger.dart';
 

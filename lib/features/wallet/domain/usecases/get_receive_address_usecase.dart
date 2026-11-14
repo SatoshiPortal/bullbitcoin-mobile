@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:transaction_sync/read.dart';
+import 'package:sync/read.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';

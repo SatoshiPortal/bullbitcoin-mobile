@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/electrum_settings/data/wallet_connection_policy_impl.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 WalletConnectionPort createBackgroundWalletConnections(
   SqliteDatabase sqlite,

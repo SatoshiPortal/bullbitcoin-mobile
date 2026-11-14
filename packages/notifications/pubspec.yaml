@@ -14,7 +14,7 @@ dependencies:
   meta: ^1.17.0
   bull_logger:
   primitives:
-  transaction_sync:
+  sync:
   crypto: ^3.0.7
   sqlite3: ^2.9.4
   flutter_local_notifications: ^22.3.0

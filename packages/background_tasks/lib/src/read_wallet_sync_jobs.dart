@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Catalog membership is independent of whether a wallet is ready to sync.
 final class WalletSyncJobSelection extends IterableBase<WalletRevision> {

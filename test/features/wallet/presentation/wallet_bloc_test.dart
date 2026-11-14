@@ -1,13 +1,12 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart'
-    show TransactionSyncBusyFailure;
+import 'package:sync/read.dart';
+import 'package:sync/sync.dart' show TransactionSyncBusyFailure;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
+import 'package:sync/sync.dart' show SyncReason;
 import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';

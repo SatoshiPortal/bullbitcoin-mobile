@@ -11,9 +11,9 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/write.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/read.dart';
+import 'package:sync/write.dart';
+import 'package:sync/sync.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 

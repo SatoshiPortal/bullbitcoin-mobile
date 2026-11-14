@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:clock/clock.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart'
+import 'package:sync/sync.dart'
     show BitcoinBroadcastReceipt, BitcoinSpendStatus;
 
 import '../domain/wallet_spend_failure.dart';

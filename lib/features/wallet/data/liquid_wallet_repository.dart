@@ -1,6 +1,5 @@
-import 'package:transaction_sync/read.dart' as sync_read show validateAddress;
-import 'package:transaction_sync/transaction_sync.dart'
-    show TransactionSyncFailure;
+import 'package:sync/read.dart' as sync_read show validateAddress;
+import 'package:sync/sync.dart' show TransactionSyncFailure;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';

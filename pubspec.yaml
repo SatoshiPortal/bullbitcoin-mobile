@@ -18,7 +18,7 @@ workspace:
   - packages/primitives
   - packages/background_tasks
   - packages/notifications
-  - packages/transaction_sync
+  - packages/sync
   - packages/bull_tor
   - packages/screen_privacy
   - packages/bull_reporting
@@ -39,7 +39,7 @@ dependencies:
   background_tasks:
   notifications:
   flutter_local_notifications: ^22.3.0
-  transaction_sync:
+  sync:
   bull_tor:
   screen_privacy:
   bull_reporting:

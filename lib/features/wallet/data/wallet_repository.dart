@@ -1,12 +1,12 @@
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_reader_repository.dart';
-import 'package:transaction_sync/diagnostics.dart';
+import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'dart:async';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart'
+import 'package:sync/read.dart';
+import 'package:sync/sync.dart'
     show
         SyncReason,
         TransactionSyncStorageFailure,

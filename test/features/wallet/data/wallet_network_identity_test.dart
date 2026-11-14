@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 WalletMetadataModel _row(String id, String code) => WalletMetadataModel(
   id: id,
