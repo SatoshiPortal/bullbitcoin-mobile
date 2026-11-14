@@ -52,7 +52,7 @@ class _Bdk extends Mock implements BdkWalletDatasource {}
 
 class _Lwk extends Mock implements LwkWalletDatasource {}
 
-final class _Policy implements WalletConnectionPolicy {
+final class _Policy implements WalletConnectionPort {
   TransactionSyncFailure? failure;
   int calls = 0;
   Future<void>? gate;
@@ -677,7 +677,7 @@ void main() {
   );
 }
 
-final class _ThrowingPolicy implements WalletConnectionPolicy {
+final class _ThrowingPolicy implements WalletConnectionPort {
   @override
   Future<Result<T, TransactionSyncFailure>> run<T>({
     required Network network,

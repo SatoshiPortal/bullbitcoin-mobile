@@ -1,31 +1,14 @@
 import 'package:primitives/primitives.dart';
+import '../domain/bitcoin_spend.dart';
 import '../domain/transaction_sync_failure.dart';
-import '../domain/wallet_catalog_port.dart';
+import '../domain/public_wallet_descriptor.dart';
+import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
 import 'bitcoin_spend_gate_store.dart';
 import 'revision_store.dart';
 import 'writer_lock.dart';
 import 'lease_diagnostics.dart';
-
-/// No timeout, absence or recovery operation grants spend permission.
-enum BitcoinSpendStatus {
-  ready,
-  pending,
-  unavailable,
-
-  /// Another operation, usually a sync, holds the wallet: retry shortly.
-  busy,
-
-  /// The tracked transaction to replace has not been observed by a sync yet.
-  replacementPending,
-}
-
-final class BitcoinBroadcastReceipt {
-  final String txid;
-  final bool durable;
-  const BitcoinBroadcastReceipt(this.txid, {required this.durable});
-}
 
 /// Foreground spend admission shares the single writer's cross-isolate lease.
 /// Only durable receipts survive restart; a post-accept storage failure blocks

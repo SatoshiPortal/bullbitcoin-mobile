@@ -16,7 +16,7 @@ void main() {
       TransactionSyncBusyFailure(),
       TransactionSyncNotFoundFailure(),
       TransactionSyncUnsupportedNetworkFailure(),
-      TransactionSyncUnsupportedNetworkFailure(authorization: true),
+      TransactionSyncUnauthorizedNetworkFailure(),
       TransactionSyncInvalidCatalogFailure(),
       TransactionSyncStorageFailure(),
       TransactionSyncConnectionFailure(),

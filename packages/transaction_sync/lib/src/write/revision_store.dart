@@ -7,9 +7,10 @@ import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
 import '../domain/transaction_sync_failure.dart';
-import '../domain/wallet_catalog_port.dart';
+import '../domain/public_wallet_descriptor.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
+import '../domain/ports/wallet_revision_reader_port.dart';
 
 /// Bump whenever the pinned native SDK or native store layout changes.
 /// Version 1: bull_sdk f4ee00bf61a810d034a397a41a2e40cd7903aa51, legacy BDK/LWK paths.
@@ -42,7 +43,7 @@ final class RevisionRecord {
 /// All mutations require the wallet lease. Transactions contain only synchronous
 /// SQLite calls, never native IO or an await. Share this instance with readers
 /// for in-isolate notifications; read again on resume for cross-isolate writes.
-final class RevisionStore implements WalletRevisionReader {
+final class RevisionStore implements WalletRevisionReaderPort {
   final Database _db;
   final String _path;
   final bool _existingOnly;

@@ -1,8 +1,8 @@
 import 'package:primitives/primitives.dart';
 
-import '../domain/transaction_sync_failure.dart';
-import '../domain/wallet_catalog_port.dart';
-import '../domain/wallet_revision.dart';
+import '../transaction_sync_failure.dart';
+import '../public_wallet_descriptor.dart';
+import '../wallet_revision.dart';
 
 /// Writer-persisted proof for the exact generation/revision and SDK schema.
 /// Liquid's path is relative to nativeWalletStoragePath, recorded by the writer
@@ -24,7 +24,7 @@ final class WalletReadReady {
 /// Success requires an active exact revision and attests that the catalog
 /// supplied descriptor matches the initialized store; reject a mismatch.
 /// No production fallback is provided. Liquid calls this while holding its lease.
-abstract interface class WalletReadReadiness {
+abstract interface class WalletReadReadinessPort {
   Future<Result<WalletReadReady, TransactionSyncFailure>> check(
     PublicWalletDescriptor descriptor,
     WalletRevision expected,

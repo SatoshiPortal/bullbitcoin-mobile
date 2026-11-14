@@ -9,8 +9,8 @@ sealed class TransactionSyncFailure extends Failure {
   String get logCode => switch (this) {
     TransactionSyncBusyFailure() => 'busy',
     TransactionSyncNotFoundFailure() => 'not_found',
-    TransactionSyncUnsupportedNetworkFailure(:final authorization) =>
-      authorization ? 'authorization' : 'unsupported_network',
+    TransactionSyncUnsupportedNetworkFailure() => 'unsupported_network',
+    TransactionSyncUnauthorizedNetworkFailure() => 'authorization',
     TransactionSyncInvalidCatalogFailure() => 'invalid_catalog',
     TransactionSyncStorageFailure() => 'storage',
     TransactionSyncConnectionFailure() => 'connection',
@@ -31,8 +31,13 @@ final class TransactionSyncNotFoundFailure extends TransactionSyncFailure {
 
 final class TransactionSyncUnsupportedNetworkFailure
     extends TransactionSyncFailure {
-  final bool authorization;
-  const TransactionSyncUnsupportedNetworkFailure({this.authorization = false});
+  const TransactionSyncUnsupportedNetworkFailure();
+}
+
+/// The network is supported, but its use currently lacks authorization.
+final class TransactionSyncUnauthorizedNetworkFailure
+    extends TransactionSyncFailure {
+  const TransactionSyncUnauthorizedNetworkFailure();
 }
 
 final class TransactionSyncInvalidCatalogFailure

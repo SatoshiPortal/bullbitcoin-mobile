@@ -17,60 +17,21 @@ import '../write/revision_store.dart';
 import '../write/writer_paths.dart';
 import '../write/writer_sync_operation.dart';
 import '../domain/native_network_policy.dart';
+import '../domain/sync_completion.dart';
 import '../domain/sync_reason.dart';
 import '../domain/wallet_revision.dart';
-import '../domain/reserved_address_port.dart';
+import '../domain/ports/reserved_address_port.dart';
 import '../domain/transaction_sync_failure.dart';
-import '../domain/wallet_catalog_port.dart';
-import '../domain/wallet_connection_policy.dart';
+import '../domain/public_wallet_descriptor.dart';
+import '../domain/ports/wallet_catalog_port.dart';
+import '../domain/ports/wallet_connection_port.dart';
 import '../domain/wallet_key.dart';
 import 'bdk_electrum_cache.dart';
 import 'payment_observation.dart';
 
-/// The completed native mode, with observations captured under writer ownership.
-enum SyncMode { initialScan, revealedScripts, discovery, liquid }
-
-final class SyncCompletion {
-  final SyncMode mode;
-  final Duration elapsed;
-  final String? _cacheDiagnostics;
-  final WalletRevision? revision;
-  final Set<String>? incomingTxids;
-
-  const SyncCompletion(
-    this.mode,
-    this.elapsed, {
-    this.revision,
-    this.incomingTxids,
-  }) : _cacheDiagnostics = null;
-
-  const SyncCompletion._withCache(
-    this.mode,
-    this.elapsed,
-    this._cacheDiagnostics,
-    this.incomingTxids, [
-    this.revision,
-  ]);
-
-  SyncCompletion committed(WalletRevision stamp) => SyncCompletion._withCache(
-    mode,
-    elapsed,
-    _cacheDiagnostics,
-    incomingTxids,
-    stamp,
-  );
-}
-
-final class SyncFinished {
-  final WalletKey key;
-  final Result<SyncCompletion, TransactionSyncFailure> result;
-
-  const SyncFinished(this.key, this.result);
-}
-
 /// One Electrum operation inside the writer lease. Headless callers cannot provision or reconcile.
 final class ElectrumSync {
-  final WalletConnectionPolicy _connections;
+  final WalletConnectionPort _connections;
   final Future<Result<WalletRevisionState, TransactionSyncFailure>> Function(
     WalletKey,
   )?
@@ -129,6 +90,7 @@ final class ElectrumSync {
         log.fine('Electrum sync started $context discovery=$discover');
         _started.add(key);
         var connectionSummary = 'route=unselected';
+        var cacheSummary = '';
         final result = await _run(
           descriptor,
           runId: runId,
@@ -136,6 +98,7 @@ final class ElectrumSync {
           headless: headless,
           allowInitialScan: allowInitialScan,
           onCompletion: onCompletion ?? _onCompletion,
+          onCache: (summary) => cacheSummary = summary,
           onConnection: (connection) {
             connectionSummary =
                 'route=${descriptor is LiquidWalletDescriptor || connection.socks5?.isNotEmpty != true ? 'direct' : 'proxy'} stop_gap=${connection.stopGap}';
@@ -145,7 +108,7 @@ final class ElectrumSync {
           case Ok(:final value):
             final recovered = _failures.remove(key) != null;
             log.fine(
-              'Electrum sync finished $context mode=${value.mode.name} recovered=$recovered revision=${value.revision?.revision ?? 'unknown'} incoming=${value.incomingTxids?.length ?? 'unknown'} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary ${value._cacheDiagnostics ?? ''}',
+              'Electrum sync finished $context mode=${value.mode.name} recovered=$recovered revision=${value.revision?.revision ?? 'unknown'} incoming=${value.incomingTxids?.length ?? 'unknown'} elapsed_ms=${watch.elapsedMilliseconds} $connectionSummary $cacheSummary',
             );
           case Err(:final failure):
             final previousFailure = _failures[key];
@@ -200,6 +163,7 @@ final class ElectrumSync {
     )?
     onCompletion,
     required void Function(WalletConnection) onConnection,
+    required void Function(String) onCache,
   }) async {
     final String root;
     try {
@@ -275,6 +239,7 @@ final class ElectrumSync {
             ),
           );
           retryable = attempt.retryable;
+          if (attempt.cacheDiagnostics case final summary?) onCache(summary);
           // Capture foreground visibility immediately on native completion,
           // before Tor teardown or diagnostic flushing can yield to lifecycle changes.
           if (attempt.result case Ok(:final value) when onCompletion != null) {
@@ -322,17 +287,22 @@ final class _SyncParams {
       diagnostics.send((WriterLogLevel.warning, message));
 }
 
-typedef _Attempt = ({
-  Result<SyncCompletion, TransactionSyncFailure> result,
-  bool retryable,
-});
+final class _Attempt {
+  final Result<SyncCompletion, TransactionSyncFailure> result;
+  final bool retryable;
+
+  /// Cache counts for the sync log line; never part of the public completion.
+  final String? cacheDiagnostics;
+
+  const _Attempt(this.result, {required this.retryable, this.cacheDiagnostics});
+}
 
 Future<_Attempt> _performSync(_SyncParams params) async {
   final key = params.descriptor.key;
   final failure = nativeDescriptorFailure(params.descriptor);
   if (failure != null) {
-    return (
-      result: Err<SyncCompletion, TransactionSyncFailure>(failure),
+    return _Attempt(
+      Err<SyncCompletion, TransactionSyncFailure>(failure),
       retryable: false,
     );
   }
@@ -343,8 +313,8 @@ Future<_Attempt> _performSync(_SyncParams params) async {
       ? Directory(path).existsSync()
       : File(path).existsSync();
   if (!exists) {
-    return (
-      result: const Err<SyncCompletion, TransactionSyncFailure>(
+    return _Attempt(
+      const Err<SyncCompletion, TransactionSyncFailure>(
         TransactionSyncNotFoundFailure(),
       ),
       retryable: false,
@@ -358,8 +328,8 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     );
     probe.ping();
   } on Exception {
-    return (
-      result: const Err<SyncCompletion, TransactionSyncFailure>(
+    return _Attempt(
+      const Err<SyncCompletion, TransactionSyncFailure>(
         TransactionSyncConnectionFailure(),
       ),
       retryable: true,
@@ -392,8 +362,8 @@ Future<_Attempt> _performSync(_SyncParams params) async {
     if (current case Ok(
       value: final state,
     ) when state.lifecycle == WalletLifecycle.deleted) {
-      return (
-        result: const Err<SyncCompletion, TransactionSyncFailure>(
+      return _Attempt(
+        const Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncNotFoundFailure(),
         ),
         retryable: false,
@@ -415,8 +385,8 @@ Future<_Attempt> _performSync(_SyncParams params) async {
             LeaseBusySource.revisionRead,
           _ => LeaseBusySource.schemaGate,
         });
-        return (
-          result: const Err<SyncCompletion, TransactionSyncFailure>(
+        return _Attempt(
+          const Err<SyncCompletion, TransactionSyncFailure>(
             TransactionSyncBusyFailure(),
           ),
           retryable: false,
@@ -428,8 +398,8 @@ Future<_Attempt> _performSync(_SyncParams params) async {
         existingOnly: true,
       );
       if (initialized case Err(:final failure)) {
-        return (
-          result: Err<SyncCompletion, TransactionSyncFailure>(failure),
+        return _Attempt(
+          Err<SyncCompletion, TransactionSyncFailure>(failure),
           retryable: false,
         );
       }
@@ -445,19 +415,19 @@ Future<_Attempt> _performSync(_SyncParams params) async {
           : () => _checkInitialScan(params),
     );
     return switch (result) {
-      Err(:final failure) => (
-        result: Err<SyncCompletion, TransactionSyncFailure>(failure),
+      Err(:final failure) => _Attempt(
+        Err<SyncCompletion, TransactionSyncFailure>(failure),
         retryable: false,
       ),
-      Ok(:final value) => (
-        result:
-            operation.result?.map(
+      Ok(:final value) => _Attempt(
+        operation.result?.map(
               (completion) => completion.committed(value.revision),
             ) ??
             const Err<SyncCompletion, TransactionSyncFailure>(
               TransactionSyncStorageFailure(),
             ),
         retryable: false,
+        cacheDiagnostics: operation.cacheDiagnostics,
       ),
     };
   } finally {
@@ -493,6 +463,7 @@ final class _NativeSyncOperation
   bool hasChanges = true;
   final _SyncParams params;
   Result<SyncCompletion, TransactionSyncFailure>? result;
+  String? cacheDiagnostics;
   _NativeSyncOperation(this.params);
   @override
   Future<Result<void, TransactionSyncFailure>> execute(
@@ -512,6 +483,7 @@ final class _NativeSyncOperation
       },
     );
     result = attempt.result;
+    cacheDiagnostics = attempt.cacheDiagnostics;
     return switch (attempt.result) {
       Ok() => const Ok(null),
       Err(:final failure) => Err(failure),
@@ -555,8 +527,8 @@ Future<_Attempt> _performNativeSync(
   final path = nativeWalletStoragePath(params.root, descriptor.key);
   if (descriptor is LiquidWalletDescriptor) {
     if (!Directory(path).existsSync()) {
-      return (
-        result: const Err<SyncCompletion, TransactionSyncFailure>(
+      return _Attempt(
+        const Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncNotFoundFailure(),
         ),
         retryable: false,
@@ -569,8 +541,8 @@ Future<_Attempt> _performNativeSync(
       _ => null,
     };
     if (network == null) {
-      return (
-        result: const Err<SyncCompletion, TransactionSyncFailure>(
+      return _Attempt(
+        const Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncUnsupportedNetworkFailure(),
         ),
         retryable: false,
@@ -605,8 +577,8 @@ Future<_Attempt> _performNativeSync(
               warning: params.observationWarning,
             )
           : null;
-      return (
-        result: Ok<SyncCompletion, TransactionSyncFailure>(
+      return _Attempt(
+        Ok<SyncCompletion, TransactionSyncFailure>(
           SyncCompletion(
             SyncMode.liquid,
             watch.elapsed,
@@ -616,8 +588,8 @@ Future<_Attempt> _performNativeSync(
         retryable: false,
       );
     } on lwk.LwkError catch (error) {
-      return (
-        result: Err<SyncCompletion, TransactionSyncFailure>(
+      return _Attempt(
+        Err<SyncCompletion, TransactionSyncFailure>(
           error.msg.contains('UpdateOnDifferentStatus')
               ? const TransactionSyncNeedsRepairFailure()
               : failure,
@@ -625,8 +597,8 @@ Future<_Attempt> _performNativeSync(
         retryable: false,
       );
     } on Exception {
-      return (
-        result: Err<SyncCompletion, TransactionSyncFailure>(failure),
+      return _Attempt(
+        Err<SyncCompletion, TransactionSyncFailure>(failure),
         retryable: false,
       );
     } finally {
@@ -634,8 +606,8 @@ Future<_Attempt> _performNativeSync(
     }
   }
   if (descriptor is! BitcoinWalletDescriptor) {
-    return (
-      result: const Err<SyncCompletion, TransactionSyncFailure>(
+    return _Attempt(
+      const Err<SyncCompletion, TransactionSyncFailure>(
         TransactionSyncInvalidCatalogFailure(),
       ),
       retryable: false,
@@ -647,16 +619,16 @@ Future<_Attempt> _performNativeSync(
     _ => null,
   };
   if (kind == null) {
-    return (
-      result: const Err<SyncCompletion, TransactionSyncFailure>(
+    return _Attempt(
+      const Err<SyncCompletion, TransactionSyncFailure>(
         TransactionSyncUnsupportedNetworkFailure(),
       ),
       retryable: false,
     );
   }
   if (!File(path).existsSync()) {
-    return (
-      result: const Err<SyncCompletion, TransactionSyncFailure>(
+    return _Attempt(
+      const Err<SyncCompletion, TransactionSyncFailure>(
         TransactionSyncNotFoundFailure(),
       ),
       retryable: false,
@@ -697,8 +669,8 @@ Future<_Attempt> _performNativeSync(
       _ => null,
     };
     if (wallet.network() != expected) {
-      return (
-        result: const Err<SyncCompletion, TransactionSyncFailure>(
+      return _Attempt(
+        const Err<SyncCompletion, TransactionSyncFailure>(
           TransactionSyncInvalidCatalogFailure(),
         ),
         retryable: false,
@@ -759,25 +731,19 @@ Future<_Attempt> _performNativeSync(
             warning: params.observationWarning,
           )
         : null;
-    return (
-      result: Ok<SyncCompletion, TransactionSyncFailure>(
-        SyncCompletion._withCache(
-          mode,
-          watch.elapsed,
-          BdkElectrumCache.describe(
-            opened: cache != null,
-            rebuilt: cache?.rebuilt ?? false,
-            prefill: prefill,
-            parents: parents,
-          ),
-          incoming,
-        ),
-      ),
+    return _Attempt(
+      Ok(SyncCompletion(mode, watch.elapsed, incomingTxids: incoming)),
       retryable: false,
+      cacheDiagnostics: BdkElectrumCache.describe(
+        opened: cache != null,
+        rebuilt: cache?.rebuilt ?? false,
+        prefill: prefill,
+        parents: parents,
+      ),
     );
   } on Exception {
-    return (
-      result: Err<SyncCompletion, TransactionSyncFailure>(failure),
+    return _Attempt(
+      Err<SyncCompletion, TransactionSyncFailure>(failure),
       retryable: retryable,
     );
   } finally {

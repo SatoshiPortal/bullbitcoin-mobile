@@ -21,7 +21,7 @@ final class WalletSyncJobSelection extends IterableBase<WalletRevision> {
 Future<Result<WalletSyncJobSelection, TransactionSyncFailure>>
 readWalletSyncJobs(
   Iterable<WalletKey> keys,
-  WalletRevisionReader revisions,
+  WalletRevisionReaderPort revisions,
 ) async {
   final jobs = <WalletRevision>[];
   final unavailable = <WalletKey>[];

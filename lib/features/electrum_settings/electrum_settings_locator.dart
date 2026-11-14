@@ -15,7 +15,7 @@ import 'package:get_it/get_it.dart';
 
 class ElectrumSettingsLocator {
   static void setup(GetIt locator) {
-    locator.registerLazySingleton<WalletConnectionPolicy>(
+    locator.registerLazySingleton<WalletConnectionPort>(
       () => WalletConnectionPolicyImpl(locator<ElectrumServersPort>()),
     );
     locator.registerFactory<HasActiveCustomBitcoinOnionServerUsecase>(

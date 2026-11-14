@@ -232,13 +232,13 @@ void main() {
   );
 }
 
-final class FakeAdmission implements LiquidReadAdmission {
+final class FakeAdmission implements ReadAdmissionPort {
   final FakeRevisions revisions;
   int acquired = 0;
   int released = 0;
   FakeAdmission(this.revisions);
   @override
-  Future<Result<LiquidReadLease, TransactionSyncFailure>> acquire(
+  Future<Result<ReadLease, TransactionSyncFailure>> acquire(
     WalletKey key,
   ) async {
     acquired++;
@@ -250,7 +250,7 @@ final class FakeAdmission implements LiquidReadAdmission {
   }
 }
 
-final class FakeLease implements LiquidReadLease {
+final class FakeLease implements ReadLease {
   @override
   final WalletRevision revision;
   final void Function() onRelease;

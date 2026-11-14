@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:sqlite3/sqlite3.dart';
-import '../domain/wallet_catalog_port.dart';
+import '../domain/public_wallet_descriptor.dart';
 import '../domain/wallet_key.dart';
 import 'store_identity.dart';
 

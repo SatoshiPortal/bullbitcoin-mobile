@@ -50,8 +50,13 @@ final class BackgroundSyncConnectionFailure extends BackgroundSyncFailure {
 
 final class BackgroundSyncUnsupportedNetworkFailure
     extends BackgroundSyncFailure {
-  final bool authorization;
-  const BackgroundSyncUnsupportedNetworkFailure({this.authorization = false});
+  const BackgroundSyncUnsupportedNetworkFailure();
+}
+
+/// The network is supported, but its use currently lacks authorization.
+final class BackgroundSyncUnauthorizedNetworkFailure
+    extends BackgroundSyncFailure {
+  const BackgroundSyncUnauthorizedNetworkFailure();
 }
 
 final class BackgroundSyncInitialScanRequiredFailure

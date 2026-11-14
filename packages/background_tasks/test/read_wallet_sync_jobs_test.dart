@@ -69,7 +69,7 @@ void main() {
   );
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   final key = WalletKey(id: 'wallet', network: BitcoinNetwork.testnet);
   var generation = 1;
   var revision = 1;

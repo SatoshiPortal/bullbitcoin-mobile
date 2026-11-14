@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/electrum_settings/data/wallet_connection_poli
 import 'package:bull_tor/tor.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-WalletConnectionPolicy createBackgroundWalletConnections(
+WalletConnectionPort createBackgroundWalletConnections(
   SqliteDatabase sqlite,
   SettingsRepository settings,
   Tor tor,

@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
-final class FixtureConnections implements WalletConnectionPolicy {
+final class FixtureConnections implements WalletConnectionPort {
   final List<String> urls;
   final String? socks5;
   int attempts = 0;

@@ -1,7 +1,3 @@
-import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart';
-
-import 'transaction_sync_failure.dart';
 import 'wallet_key.dart';
 
 /// Revisions are comparable only within one key and lifecycle generation.
@@ -47,32 +43,6 @@ final class WalletRevisionState {
     this.issuedReceiveIndex,
     this.syncFailed = false,
   });
-}
-
-/// D implements persistence and reconciliation. Subscribe before reading;
-/// re-read on resume/open since the stream covers only the current isolate.
-abstract interface class WalletRevisionReader {
-  @useResult
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  );
-  Stream<WalletRevisionState> watch(WalletKey key);
-}
-
-/// D owns brief hydration admission for both Bitcoin and Liquid (the historical
-/// name is retained for compatibility). Hold it only through existence checks,
-/// open and load; release before reads or PSBT construction. Busy serves the
-/// previous stale snapshot. Admission never permits native-store writes.
-abstract interface class LiquidReadLease {
-  WalletRevision get revision;
-  Future<void> release();
-}
-
-abstract interface class LiquidReadAdmission {
-  @useResult
-  Future<Result<LiquidReadLease, TransactionSyncFailure>> acquire(
-    WalletKey key,
-  );
 }
 
 /// A committed writer outcome includes the exact durable version to publish.

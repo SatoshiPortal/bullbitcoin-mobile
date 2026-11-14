@@ -1,7 +1,5 @@
-import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'transaction_sync_failure.dart';
 import 'wallet_key.dart';
 
 /// Wallet information without spending keys, signer handles or app types.
@@ -113,13 +111,4 @@ final class LiquidWalletDescriptor extends PublicWalletDescriptor {
   @override
   int get hashCode =>
       Object.hash(key, scriptType, origin, combinedCtDescriptor);
-}
-
-abstract interface class WalletCatalogPort {
-  @useResult
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>> list();
-  @useResult
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
-    WalletKey key,
-  );
 }

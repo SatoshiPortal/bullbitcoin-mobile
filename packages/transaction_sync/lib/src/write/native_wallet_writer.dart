@@ -8,11 +8,13 @@ import 'bitcoin_spend_gate_store.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
-import '../domain/reserved_address_port.dart';
+import '../domain/ports/reserved_address_port.dart';
 import '../domain/transaction_sync_failure.dart';
-import '../domain/wallet_catalog_port.dart';
+import '../domain/public_wallet_descriptor.dart';
+import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
+import '../domain/ports/read_admission_port.dart';
 import '../domain/native_network_policy.dart';
 import 'native_write_session.dart';
 import 'revision_store.dart';
@@ -21,7 +23,7 @@ import 'writer_sync_operation.dart';
 
 /// Invoke inside the isolate doing native IO. The caller owns the shared
 /// RevisionStore and subscribes before reading. No method times out native work.
-final class NativeWalletWriter implements LiquidReadAdmission {
+final class NativeWalletWriter implements ReadAdmissionPort {
   final String lockDirectory;
   final RevisionStore revisions;
   final WalletCatalogPort _catalog;
@@ -332,7 +334,7 @@ final class NativeWalletWriter implements LiquidReadAdmission {
 
   @override
   @useResult
-  Future<Result<LiquidReadLease, TransactionSyncFailure>> acquire(
+  Future<Result<ReadLease, TransactionSyncFailure>> acquire(
     WalletKey key,
   ) async {
     final failure = nativeKeyFailure(key);
@@ -695,7 +697,7 @@ final class _WriterFailure implements Exception {
   const _WriterFailure(this.failure);
 }
 
-final class _ReadLease implements LiquidReadLease {
+final class _ReadLease implements ReadLease {
   final WriterLock _lock;
   @override
   final WalletRevision revision;

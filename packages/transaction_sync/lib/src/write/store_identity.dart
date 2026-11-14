@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import '../domain/wallet_catalog_port.dart';
+import '../domain/public_wallet_descriptor.dart';
 
 /// Only a digest is persisted: confidential descriptors include blinding keys.
 String descriptorDigest(PublicWalletDescriptor descriptor) => sha256

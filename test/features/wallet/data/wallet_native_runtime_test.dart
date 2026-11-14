@@ -25,7 +25,7 @@ class _Reserved implements ReservedAddressPort {
   ) async => const Ok(false);
 }
 
-class _Offline implements WalletConnectionPolicy {
+class _Offline implements WalletConnectionPort {
   @override
   Future<Result<T, TransactionSyncFailure>> run<T>({
     required Network network,

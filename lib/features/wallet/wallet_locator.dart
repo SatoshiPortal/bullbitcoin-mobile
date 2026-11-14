@@ -170,7 +170,7 @@ class WalletLocator {
     locator.registerLazySingleton<ElectrumSync>(
       () => ElectrumSync(
         readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
-        connections: locator<WalletConnectionPolicy>(),
+        connections: locator<WalletConnectionPort>(),
         onCompletion: backgroundSyncAvailable
             ? locator<WalletPaymentObserver>().record
             : null,

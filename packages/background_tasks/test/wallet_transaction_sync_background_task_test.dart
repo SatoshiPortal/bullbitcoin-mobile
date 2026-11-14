@@ -393,7 +393,7 @@ final class _Writer implements BackgroundWalletSync {
   }
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   int revision = 1;
   WalletKey? unavailable;
   bool pending = true;

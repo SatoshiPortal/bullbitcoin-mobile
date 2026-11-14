@@ -470,7 +470,7 @@ Future<Map<String, String>> fingerprint(Directory directory) async {
   return result;
 }
 
-final class FakeRevisions implements WalletRevisionReader {
+final class FakeRevisions implements WalletRevisionReaderPort {
   WalletRevisionState state;
   void Function()? beforeRead;
   FakeRevisions(WalletKey key)
@@ -491,13 +491,13 @@ final class FakeRevisions implements WalletRevisionReader {
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();
 }
 
-final class FakeAdmission implements LiquidReadAdmission {
+final class FakeAdmission implements ReadAdmissionPort {
   final FakeRevisions revisions;
   bool busy = false;
   bool active = false;
   FakeAdmission(this.revisions);
   @override
-  Future<Result<LiquidReadLease, TransactionSyncFailure>> acquire(
+  Future<Result<ReadLease, TransactionSyncFailure>> acquire(
     WalletKey key,
   ) async {
     if (busy) return const Err(TransactionSyncBusyFailure());
@@ -506,7 +506,7 @@ final class FakeAdmission implements LiquidReadAdmission {
   }
 }
 
-final class _FakeLease implements LiquidReadLease {
+final class _FakeLease implements ReadLease {
   @override
   final WalletRevision revision;
   final void Function() onRelease;
@@ -515,7 +515,7 @@ final class _FakeLease implements LiquidReadLease {
   Future<void> release() async => onRelease();
 }
 
-final class FakeReadiness implements WalletReadReadiness {
+final class FakeReadiness implements WalletReadReadinessPort {
   int? schemaVersion = 1;
   String? liquidCachePath;
   PublicWalletDescriptor? initializedDescriptor;

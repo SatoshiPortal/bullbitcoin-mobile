@@ -97,7 +97,7 @@ final class _Writer implements BackgroundWalletSync {
   }
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   @override
   Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
     WalletKey key,

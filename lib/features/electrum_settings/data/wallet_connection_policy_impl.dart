@@ -7,7 +7,7 @@ import 'package:primitives/primitives.dart';
 import 'package:transaction_sync/transaction_sync.dart';
 
 /// Reuses the existing privacy policy, fallback loop and scoped Tor lifetime.
-final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
+final class WalletConnectionPolicyImpl implements WalletConnectionPort {
   final ElectrumServersPort _servers;
 
   WalletConnectionPolicyImpl(this._servers);
@@ -58,9 +58,7 @@ final class WalletConnectionPolicyImpl implements WalletConnectionPolicy {
         },
       );
     } on ElectrumNetworkUnauthorizedException {
-      return const Err(
-        TransactionSyncUnsupportedNetworkFailure(authorization: true),
-      );
+      return const Err(TransactionSyncUnauthorizedNetworkFailure());
     } on AllElectrumServersFailedException {
       // Exhaustion wraps retryable callback failures; preserve the last one.
       return Err(lastFailure ?? const TransactionSyncConnectionFailure());

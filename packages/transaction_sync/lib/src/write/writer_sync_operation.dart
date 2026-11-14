@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import '../domain/transaction_sync_failure.dart';
-import '../domain/wallet_catalog_port.dart';
+import '../domain/public_wallet_descriptor.dart';
 
 /// Integration seam for lane A. Called in the isolate holding the lock, with
 /// a durable sync intent already recorded. Own/load fresh native sessions here;

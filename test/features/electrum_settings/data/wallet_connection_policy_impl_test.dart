@@ -68,7 +68,7 @@ void main() {
         isA<Err<int, TransactionSyncFailure>>().having(
           (result) => result.failure,
           'failure',
-          isA<TransactionSyncUnsupportedNetworkFailure>(),
+          isA<TransactionSyncUnauthorizedNetworkFailure>(),
         ),
       );
       expect(operations, 0);

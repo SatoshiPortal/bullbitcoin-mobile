@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 
 import 'transaction_sync_failure.dart';
-import 'wallet_catalog_port.dart';
+import 'public_wallet_descriptor.dart';
 import 'wallet_key.dart';
 
 /// No storage or transport side effects are permitted for an unsupported key.

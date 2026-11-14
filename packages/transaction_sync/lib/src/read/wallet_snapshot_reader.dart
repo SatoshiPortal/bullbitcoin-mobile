@@ -6,13 +6,16 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 
-import 'wallet_read_readiness.dart';
+import '../domain/ports/wallet_read_readiness_port.dart';
 
 import '../domain/transaction_sync_failure.dart';
 import '../domain/native_network_policy.dart';
-import '../domain/wallet_catalog_port.dart';
+import '../domain/public_wallet_descriptor.dart';
+import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
+import '../domain/ports/read_admission_port.dart';
+import '../domain/ports/wallet_revision_reader_port.dart';
 
 /// A borrowed native handle hydrated from a writer-initialized store.
 /// Consumers must not mutate, dispose or persist this shared reader handle.
@@ -29,12 +32,12 @@ final class WalletReadSnapshot<T> {
 /// Production activation requires D's real revision/readiness/admission ports.
 final class WalletSnapshotReader {
   final String documentsDirectory;
-  final WalletReadReadiness readiness;
+  final WalletReadReadinessPort readiness;
   final int requiredSchemaVersion;
   final void Function(Object) _disposeUnpublished;
   final Map<WalletKey, String> _diagnostics = {};
-  final WalletRevisionReader revisions;
-  final LiquidReadAdmission liquidAdmission;
+  final WalletRevisionReaderPort revisions;
+  final ReadAdmissionPort liquidAdmission;
   final Map<
     WalletKey,
     ({WalletReadSnapshot<Object> snapshot, Object descriptor})
@@ -210,7 +213,7 @@ final class WalletSnapshotReader {
       );
     }
 
-    LiquidReadLease? lease;
+    ReadLease? lease;
     T? unpublished;
     try {
       {

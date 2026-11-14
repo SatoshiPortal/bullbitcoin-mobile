@@ -238,7 +238,7 @@ void main() {
         () async {
           log = Logger.replace(directory: dir);
           final admitted = await writer.acquire(key) as Ok;
-          final reader = admitted.value as LiquidReadLease;
+          final reader = admitted.value as ReadLease;
           final released = Future<void>.delayed(
             Duration(milliseconds: holdMs),
             reader.release,
@@ -409,8 +409,7 @@ void main() {
       );
       final admission = await writer.acquire(key);
       expect(admission, isA<Ok>());
-      final lease =
-          (admission as Ok<LiquidReadLease, TransactionSyncFailure>).value;
+      final lease = (admission as Ok<ReadLease, TransactionSyncFailure>).value;
       try {
         expect(
           await writer.sync(
@@ -721,7 +720,7 @@ void main() {
       expect(store.record(key)?.intent, WriteIntent.receive);
       expect(await writer.create(key, expectedGeneration: 1), isA<Ok>());
       final lease = await writer.acquire(key) as Ok;
-      await (lease.value as LiquidReadLease).release();
+      await (lease.value as ReadLease).release();
       expect(store.record(key)?.intent, isNull);
       expect(store.record(key)?.issued, 0);
     } finally {
@@ -757,7 +756,7 @@ void main() {
       expect(store.record(key)?.intent, isNull);
       expect(sessions.revealed, [7]);
       expect(await writer.receive(key, expectedGeneration: 1), isA<Err>());
-      await (admission.value as LiquidReadLease).release();
+      await (admission.value as ReadLease).release();
       expect(await writer.receive(key, expectedGeneration: 1), isA<Ok>());
     },
   );
