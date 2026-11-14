@@ -14,7 +14,6 @@ dependencies:
   workmanager: ^0.10.10
   shared_preferences: ^2.3.0
   sync:
-  notifications:
   bull_logger:
   crypto: ^3.0.7
   meta: ^1.17.0

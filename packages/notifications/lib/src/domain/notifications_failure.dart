@@ -18,14 +18,30 @@ final class NotificationsPermissionDeniedFailure extends NotificationsFailure {
   const NotificationsPermissionDeniedFailure();
 }
 
+/// The OS did not say whether it shows the app's notifications: pending ones
+/// stay pending for a later attempt.
+final class NotificationsPermissionUndeterminedFailure
+    extends NotificationsFailure {
+  const NotificationsPermissionUndeterminedFailure();
+}
+
 final class NotificationsClaimLostFailure extends NotificationsFailure {
   const NotificationsClaimLostFailure();
 }
 
-final class UnknownNotificationDestinationFailure extends NotificationsFailure {
-  const UnknownNotificationDestinationFailure();
+/// The store does not exist, or cannot be opened.
+final class NotificationsStoreUnavailableFailure extends NotificationsFailure {
+  const NotificationsStoreUnavailableFailure();
 }
 
-final class InvalidNotificationPayloadFailure extends NotificationsFailure {
-  const InvalidNotificationPayloadFailure();
+/// The store has another schema version; nothing migrates it.
+final class NotificationsStoreVersionFailure extends NotificationsFailure {
+  final int version;
+  const NotificationsStoreVersionFailure(this.version);
+}
+
+/// Every platform notification ID was allocated once already.
+final class NotificationsPlatformIdsExhaustedFailure
+    extends NotificationsFailure {
+  const NotificationsPlatformIdsExhaustedFailure();
 }

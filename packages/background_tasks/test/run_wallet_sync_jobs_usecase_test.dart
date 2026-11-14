@@ -1,24 +1,21 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:sqlite3/sqlite3.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
+import 'package:background_tasks/src/data/sqlite_wallet_sync_job_queue_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory directory;
-  late SqliteNotificationOutbox outbox;
-  late SqliteWalletSyncJobQueue queue;
+  late WalletSyncJobQueueRepository queue;
   late _Writer writer;
   late _Revisions revisions;
-  late _Gateway gateway;
-  late NotificationsFacade notifications;
+  late _Announcements announcements;
   late _Logs logs;
   final key = WalletKey(id: 'wallet', network: BitcoinNetwork.testnet);
   final second = WalletKey(id: 'second', network: BitcoinNetwork.testnet);
@@ -31,45 +28,34 @@ void main() {
     incomingTxids: incoming,
     completedAt: DateTime.utc(2026),
   );
-  WalletTransactionSyncBackgroundTask task({
-    Duration? budget,
-    List<WalletKey>? keys,
-    NotificationCopyBuilder? copy,
-  }) => WalletTransactionSyncBackgroundTask(
-    writer: writer,
-    revisions: revisions,
-    keys: keys ?? [key],
-    queue: queue,
-    notifications: notifications,
-    copy: copy ?? (count, chain) => (title: 'Payments', body: '$count'),
-    runBudget: budget,
-    logSink: logs,
-  );
-  Future<Result<void, NotificationsFailure>> baseline() =>
-      WalletPaymentObservationAdapter(notifications).recordCompletion(
-        WalletSyncCompletion(
-          revision: stamp(1),
-          incomingTxids: ['old'],
-          completedAt: DateTime.utc(2026),
-          completedInForeground: true,
-        ),
+  RunWalletSyncJobsUsecase task({Duration? budget, List<WalletKey>? keys}) =>
+      RunWalletSyncJobsUsecase(
+        wallets: writer,
+        revisions: revisions,
+        keys: keys ?? [key],
+        queue: queue,
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+        announcements: announcements,
+        logger: logs,
+        runBudget: budget,
       );
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     directory = Directory.systemTemp.createTempSync('background-task-');
     log = Logger.replace(directory: directory);
-    outbox = SqliteNotificationOutbox(databasePath: '${directory.path}/outbox');
-    queue = SqliteWalletSyncJobQueue(databasePath: '${directory.path}/queue');
+    queue = _ok(
+      SqliteWalletSyncJobQueueRepository.openForeground(
+        '${directory.path}/queue',
+      ),
+    );
     writer = _Writer();
     logs = _Logs();
     revisions = _Revisions();
-    gateway = _Gateway();
-    notifications = NotificationsFacade(gateway: gateway, outbox: outbox);
+    announcements = _Announcements();
   });
   tearDown(() async {
     await log.flush();
     await queue.close();
-    outbox.dispose();
     directory.deleteSync(recursive: true);
   });
 
@@ -77,13 +63,13 @@ void main() {
     'persisted Off prevents a surviving callback from admitting work',
     () async {
       expect(
-        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+        await const SharedPreferencesBackgroundSyncIntervalRepository().write(
           BackgroundSyncInterval.off,
         ),
         isA<Ok>(),
       );
       writer.operation = () async => Ok(outcome());
-      expect((await task().executeAll()).shouldRetry, isFalse);
+      expect((await task().execute()).shouldRetry, isFalse);
       expect(writer.allowInitialScan, isEmpty);
       expect(
         logs.entries,
@@ -118,10 +104,10 @@ void main() {
       var finished = false;
       final run = task(
         keys: [key, second],
-      ).executeAll().then((_) => finished = true);
+      ).execute().then((_) => finished = true);
       await started.future;
       expect(
-        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+        await const SharedPreferencesBackgroundSyncIntervalRepository().write(
           BackgroundSyncInterval.off,
         ),
         isA<Ok>(),
@@ -144,10 +130,15 @@ void main() {
     test(
       'unavailable wallet does not block healthy wallet (pending=$pending)',
       () async {
-        final disabled = (await queue.reconcileAndClaim([
-          stamp(1),
-        ], chain: WalletSyncChain.bitcoin)).single;
-        await queue.completeFailure(disabled, permanent: true);
+        final disabled = (_ok(
+          await queue.reconcileAndClaim([
+            stamp(1),
+          ], chain: WalletSyncChain.bitcoin),
+        )).single;
+        expect(
+          await queue.completeFailure(disabled, permanent: true),
+          isA<Ok>(),
+        );
         revisions.unavailable = key;
         revisions.pending = pending;
         writer.operation = () async => Ok(
@@ -157,13 +148,15 @@ void main() {
             completedAt: DateTime.utc(2026),
           ),
         );
-        await task(keys: [key, second]).executeAll();
+        await task(keys: [key, second]).execute();
         expect(writer.allowInitialScan, [false]);
         revisions.unavailable = null;
         // A temporary read failure must not erase the permanent retry state.
-        final claims = await queue.reconcileAndClaim([
-          stamp(1),
-        ], chain: WalletSyncChain.bitcoin);
+        final claims = _ok(
+          await queue.reconcileAndClaim([
+            stamp(1),
+          ], chain: WalletSyncChain.bitcoin),
+        );
         expect(claims, isEmpty);
       },
     );
@@ -173,15 +166,17 @@ void main() {
     'unavailable unseen wallet cannot block a previously synced wallet',
     () async {
       final healthy = WalletRevision(key: second, generation: 1, revision: 1);
-      final claims = await queue.reconcileAndClaim([
-        stamp(1),
-        healthy,
-      ], chain: WalletSyncChain.bitcoin);
+      final claims = _ok(
+        await queue.reconcileAndClaim([
+          stamp(1),
+          healthy,
+        ], chain: WalletSyncChain.bitcoin),
+      );
       for (final claim in claims) {
         if (claim.key == key) {
-          await queue.release(claim);
+          expect(await queue.release(claim), isA<Ok>());
         } else {
-          await queue.completeSuccess(claim);
+          expect(await queue.completeSuccess(claim), isA<Ok>());
         }
       }
       revisions.unavailable = key;
@@ -192,7 +187,7 @@ void main() {
           completedAt: DateTime.utc(2026),
         ),
       );
-      await task(keys: [key, second]).executeAll();
+      await task(keys: [key, second]).execute();
       expect(writer.allowInitialScan, [false]);
     },
   );
@@ -200,21 +195,18 @@ void main() {
   test(
     'background run asks for revealed scripts but never an initial scan',
     () async {
-      await baseline();
       writer.operation = () async => Ok(outcome());
-      await task().executeAll();
+      await task().execute();
       expect(writer.discover, [false]);
       expect(writer.allowInitialScan, [false]);
     },
   );
 
   test(
-    'background commit replay announces payment with no new discovery',
+    'a committed sync is recorded, then announcements are delivered',
     () async {
-      await baseline();
-      // Simulates a prior native commit followed by interruption before outbox.
       writer.operation = () async => Ok(outcome());
-      expect((await task().executeAll()).shouldRetry, isFalse);
+      expect((await task().execute()).shouldRetry, isFalse);
       expect(writer.allowInitialScan, [false]);
       expect(
         logs.entries.any(
@@ -224,30 +216,23 @@ void main() {
         isTrue,
       );
       expect(logs.entries.any((e) => e.$2.contains(key.id)), isFalse);
-      expect(gateway.shown, hasLength(1));
-      await task().executeAll();
-      expect(gateway.shown, hasLength(1));
+      expect(announcements.recorded.single.incomingTxids, {'old', 'new'});
+      // After each chain.
+      expect(announcements.deliveries, WalletSyncChain.values.length);
     },
   );
 
-  test('notification observation programmer errors propagate', () async {
-    await baseline();
+  test('announcement programmer errors propagate', () async {
     writer.operation = () async => Ok(outcome());
-    await expectLater(
-      task(copy: (_, _) => throw StateError('private')).executeAll(),
-      throwsStateError,
-    );
+    announcements.recording = () => throw StateError('private');
+    await expectLater(task().execute(), throwsStateError);
   });
 
-  test('outbox failure cannot retry a committed sync', () async {
-    await baseline();
-    final database = sqlite3.open('${directory.path}/outbox');
-    addTearDown(database.dispose);
-    database.execute(
-      "CREATE TRIGGER reject_observation BEFORE INSERT ON notification_outbox BEGIN SELECT RAISE(ABORT, 'injected'); END",
-    );
+  test('a failed announcement record cannot retry a committed sync', () async {
     writer.operation = () async => Ok(outcome());
-    expect((await task().executeAll()).shouldRetry, isFalse);
+    announcements.recording = () =>
+        const Err(PaymentAnnouncementUnavailableFailure());
+    expect((await task().execute()).shouldRetry, isFalse);
     expect(
       logs.entries,
       contains((
@@ -259,8 +244,8 @@ void main() {
 
   test('missing observations still acknowledge the committed sync', () async {
     writer.operation = () async => Ok(outcome(incoming: null));
-    expect((await task().executeAll()).shouldRetry, isFalse);
-    expect(gateway.shown, isEmpty);
+    expect((await task().execute()).shouldRetry, isFalse);
+    expect(announcements.recorded.single.incomingTxids, isNull);
   });
 
   test(
@@ -272,12 +257,12 @@ void main() {
         revisions.revision = 2;
         return Err(BackgroundSyncNeedsRepairFailure(stamp(2)));
       };
-      await task().executeAll();
-      await task().executeAll();
+      await task().execute();
+      await task().execute();
       expect(writer.allowInitialScan, hasLength(1));
       revisions.revision = 3;
       writer.operation = () async => Ok(outcome());
-      await task().executeAll();
+      await task().execute();
       expect(writer.allowInitialScan, hasLength(2));
     },
   );
@@ -294,27 +279,47 @@ void main() {
           ),
         );
       }
-      final competing = SqliteWalletSyncJobQueue(
-        databasePath: '${directory.path}/queue',
-        clock: () => DateTime.now().toUtc().add(const Duration(hours: 1)),
+      final competing = _ok(
+        SqliteWalletSyncJobQueueRepository.openExisting(
+          '${directory.path}/queue',
+          clock: () => DateTime.now().toUtc().add(const Duration(hours: 1)),
+        ),
       );
       try {
-        final claims = await competing.reconcileAndClaim([
-          stamp(1),
-        ], chain: WalletSyncChain.bitcoin);
+        final claims = _ok(
+          await competing.reconcileAndClaim([
+            stamp(1),
+          ], chain: WalletSyncChain.bitcoin),
+        );
         expect(claims, hasLength(1));
       } finally {
         await competing.close();
       }
       return Ok(outcome());
     };
-    expect((await task(keys: [key, liquid]).executeAll()).shouldRetry, isTrue);
+    expect((await task(keys: [key, liquid]).execute()).shouldRetry, isTrue);
     expect(writer.allowInitialScan, [false]);
   });
 
+  for (final (failure, retried) in [
+    (const PaymentAnnouncementDeniedFailure(), false),
+    (const PaymentAnnouncementUnavailableFailure(), true),
+  ]) {
+    test('a ${failure.runtimeType} delivery retries=$retried', () async {
+      writer.operation = () async => Ok(outcome());
+      announcements.delivery = Err(failure);
+
+      final result = await task().execute();
+
+      expect(result.shouldRetry, retried);
+      // Recorded after the queue settled the committed sync.
+      expect(announcements.recorded.single.revision, stamp(2));
+    });
+  }
+
   test('operation exceptions log a fixed category and request retry', () async {
     writer.operation = () => throw Exception('private connection detail');
-    expect((await task().executeAll()).shouldRetry, isTrue);
+    expect((await task().execute()).shouldRetry, isTrue);
     expect(
       logs.entries.map((e) => e.$2),
       contains('Background job retry: category=operation_exception'),
@@ -323,7 +328,7 @@ void main() {
   });
 
   test('zero admission budget does not start a writer', () async {
-    await task(budget: Duration.zero).executeAll();
+    await task(budget: Duration.zero).execute();
     expect(writer.allowInitialScan, isEmpty);
     final messages = (await log.readLogs()).map((row) => row.split('\t')[2]);
     expect(
@@ -351,7 +356,7 @@ void main() {
           task(
             budget: const Duration(seconds: 10),
             keys: [key, second],
-          ).executeAll(clock: clock).then((value) {
+          ).execute(clock: clock).then((value) {
             finished = true;
             return value;
           });
@@ -364,6 +369,122 @@ void main() {
       expect(writer.allowInitialScan, [false]);
     },
   );
+
+  for (final (failure, optOut, category, retried) in [
+    (const BackgroundTasksStorageFailure(), false, 'queue_storage', true),
+    (const BackgroundTasksClaimLostFailure(), false, 'claim_lost', false),
+    // Opt-out still wins: the user stopped background work.
+    (const BackgroundTasksStorageFailure(), true, 'queue_storage', false),
+  ]) {
+    test(
+      'a ${failure.runtimeType} release after admission retries=$retried (optOut=$optOut)',
+      () async {
+        writer.operation = () async => Ok(outcome());
+        final clock = _Clock();
+        final failing = _FailingRelease(queue, failure, () async {
+          if (optOut) {
+            expect(
+              await const SharedPreferencesBackgroundSyncIntervalRepository()
+                  .write(BackgroundSyncInterval.off),
+              isA<Ok>(),
+            );
+          } else {
+            clock.elapsedValue = const Duration(seconds: 10);
+          }
+        });
+
+        final result = await RunWalletSyncJobsUsecase(
+          wallets: writer,
+          revisions: revisions,
+          keys: [key],
+          queue: failing,
+          intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+          announcements: announcements,
+          logger: logs,
+          runBudget: const Duration(seconds: 10),
+        ).execute(clock: clock);
+
+        expect(result.shouldRetry, retried);
+        expect(failing.released, 1);
+        expect(writer.allowInitialScan, isEmpty);
+        expect(
+          logs.entries,
+          contains((
+            BackgroundLogLevel.warning,
+            'Background claim release failed: category=$category',
+          )),
+        );
+      },
+    );
+  }
+}
+
+/// Delegates to the real queue, runs [_afterClaim] once a claim is granted,
+/// and fails every release with [_failure].
+final class _FailingRelease implements WalletSyncJobQueueRepository {
+  final WalletSyncJobQueueRepository _queue;
+  final BackgroundTasksFailure _failure;
+  final Future<void> Function() _afterClaim;
+  int released = 0;
+
+  _FailingRelease(this._queue, this._failure, this._afterClaim);
+
+  @override
+  Duration get leaseDuration => _queue.leaseDuration;
+
+  @override
+  Future<Result<List<WalletSyncJobClaim>, BackgroundTasksFailure>>
+  reconcileAndClaim(
+    Iterable<WalletRevision> jobs, {
+    required WalletSyncChain chain,
+    int maxJobs = 2,
+    Iterable<WalletKey> excluding = const [],
+    Iterable<WalletKey> unavailable = const [],
+  }) async {
+    final claimed = await _queue.reconcileAndClaim(
+      jobs,
+      chain: chain,
+      maxJobs: maxJobs,
+      excluding: excluding,
+      unavailable: unavailable,
+    );
+    if (claimed case Ok(:final value) when value.isNotEmpty) {
+      await _afterClaim();
+    }
+    return claimed;
+  }
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> release(
+    WalletSyncJobClaim claim,
+  ) async {
+    released++;
+    return Err(_failure);
+  }
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> renew(
+    WalletSyncJobClaim claim,
+  ) => _queue.renew(claim);
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> completeSuccess(
+    WalletSyncJobClaim claim,
+  ) => _queue.completeSuccess(claim);
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> completeFailure(
+    WalletSyncJobClaim claim, {
+    required bool permanent,
+    WalletRevision? failedRevision,
+  }) => _queue.completeFailure(
+    claim,
+    permanent: permanent,
+    failedRevision: failedRevision,
+  );
+
+  @override
+  Future<void> close() => _queue.close();
 }
 
 final class _Clock implements Stopwatch {
@@ -374,7 +495,7 @@ final class _Clock implements Stopwatch {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-final class _Writer implements BackgroundWalletSync {
+final class _Writer implements BackgroundWalletSyncPort {
   final List<bool> allowInitialScan = [];
   final List<bool> discover = [];
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> Function()?
@@ -414,32 +535,29 @@ final class _Revisions implements WalletRevisionReaderPort {
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();
 }
 
-final class _Gateway implements LocalNotificationGateway {
-  final List<LocalNotification> shown = [];
-  @override
-  Future<Result<void, NotificationsFailure>> initialize(
-    NotificationResponseCallback onResponse,
-  ) async => const Ok(null);
-  @override
-  Future<Result<bool, NotificationsFailure>> isEnabled() async =>
-      const Ok(true);
-  @override
-  Future<Result<bool, NotificationsFailure>> requestPermission() async =>
-      const Ok(true);
-  @override
-  Future<Result<void, NotificationsFailure>> openSystemSettings() async =>
+final class _Announcements implements PaymentAnnouncementPort {
+  final List<BackgroundSyncOutcome> recorded = [];
+  Result<void, PaymentAnnouncementFailure> Function() recording = () =>
       const Ok(null);
+  Result<void, PaymentAnnouncementFailure> delivery = const Ok(null);
+  int deliveries = 0;
+
   @override
-  Future<Result<void, NotificationsFailure>> show(
-    LocalNotification notification, {
-    required int platformId,
-  }) async {
-    shown.add(notification);
-    return const Ok(null);
+  Future<Result<void, PaymentAnnouncementFailure>> record(
+    BackgroundSyncOutcome outcome,
+  ) async {
+    recorded.add(outcome);
+    return recording();
+  }
+
+  @override
+  Future<Result<void, PaymentAnnouncementFailure>> deliverPending() async {
+    deliveries++;
+    return delivery;
   }
 }
 
-final class _Logs implements BackgroundTaskLogger {
+final class _Logs implements BackgroundTaskLoggerPort {
   final List<(BackgroundLogLevel, String)> entries = [];
 
   @override
@@ -450,3 +568,8 @@ final class _Logs implements BackgroundTaskLogger {
     LoggerBackgroundTaskLogger(log).write(level, message);
   }
 }
+
+T _ok<T>(Result<T, BackgroundTasksFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => fail('$failure'),
+};

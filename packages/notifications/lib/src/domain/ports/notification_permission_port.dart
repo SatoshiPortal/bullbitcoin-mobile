@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
-import 'notifications_failure.dart';
+import '../notifications_failure.dart';
 import 'package:primitives/primitives.dart';
 
 /// The OS permission to show the app's notifications.
-abstract interface class NotificationPermissionGateway {
+abstract interface class NotificationPermissionPort {
   /// Whether the OS currently shows the app's payment notifications.
   @useResult
   Future<Result<bool, NotificationsFailure>> isEnabled();

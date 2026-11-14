@@ -11,15 +11,16 @@ void main() {
     'persisted Off acknowledges wallet callback before building its graph',
     () async {
       expect(
-        await const SharedPreferencesBackgroundSyncIntervalStore().write(
+        await const SharedPreferencesBackgroundSyncIntervalRepository().write(
           BackgroundSyncInterval.off,
         ),
         isA<Ok>(),
       );
       final logger = _Logger();
-      final runner = await BackgroundTasksLocator.setup(
+      final runner = await BackgroundTaskRunner.forTask(
         task: BackgroundTask.walletsSync,
         logger: logger,
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         tasks: {
           BackgroundTask.walletsSync: (_) async =>
               fail('wallet graph opened after opt-out'),
@@ -55,9 +56,10 @@ void main() {
     final events = <String>[];
     final result = await mapBackgroundTaskResult(
       BackgroundTask.logsPrune.id,
-      (task) => BackgroundTasksLocator.setup(
+      (task) => BackgroundTaskRunner.forTask(
         task: task,
         logger: _Logger(),
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         tasks: {
           BackgroundTask.walletsSync: (_) async {
             fail('wallet graph opened for log pruning');
@@ -81,9 +83,10 @@ void main() {
     final events = <String>[];
     final startupFailure = Exception('startup');
     await expectLater(
-      BackgroundTasksLocator.setup(
+      BackgroundTaskRunner.forTask(
         task: BackgroundTask.walletsSync,
         logger: _Logger(),
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
         tasks: {
           BackgroundTask.walletsSync: (resources) async {
             resources.onClose(() => events.add('catalog'));
@@ -112,7 +115,7 @@ void main() {
   });
 }
 
-final class _Logger implements BackgroundTaskLogger {
+final class _Logger implements BackgroundTaskLoggerPort {
   final messages = <String>[];
   @override
   void write(BackgroundLogLevel level, String message) => messages.add(message);

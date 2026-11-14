@@ -1,39 +1,17 @@
-import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// How often the user asks the system to check for incoming payments. The
-/// system may delay or skip a check; [off] cancels background checks.
-enum BackgroundSyncInterval {
-  minutes15(Duration(minutes: 15)),
-  minutes30(Duration(minutes: 30)),
-  hour1(Duration(hours: 1)),
-  hours6(Duration(hours: 6)),
-  hours24(Duration(hours: 24)),
-  off(null);
-
-  final Duration? frequency;
-
-  const BackgroundSyncInterval(this.frequency);
-
-  static const fallback = hour1;
-}
-
-abstract interface class BackgroundSyncIntervalStore {
-  Future<BackgroundSyncInterval> read();
-  @useResult
-  Future<Result<void, BackgroundSyncIntervalFailure>> write(
-    BackgroundSyncInterval interval,
-  );
-}
+import '../domain/background_sync_interval.dart';
+import '../domain/background_tasks_failure.dart';
+import '../domain/repositories/background_sync_interval_repository.dart';
 
 /// Shared preferences, readable before the app database is opened and from
 /// the background engine.
-final class SharedPreferencesBackgroundSyncIntervalStore
-    implements BackgroundSyncIntervalStore {
+final class SharedPreferencesBackgroundSyncIntervalRepository
+    implements BackgroundSyncIntervalRepository {
   static const _key = 'background_sync_interval';
 
-  const SharedPreferencesBackgroundSyncIntervalStore();
+  const SharedPreferencesBackgroundSyncIntervalRepository();
 
   @override
   Future<BackgroundSyncInterval> read() async {
@@ -48,7 +26,7 @@ final class SharedPreferencesBackgroundSyncIntervalStore
   }
 
   @override
-  Future<Result<void, BackgroundSyncIntervalFailure>> write(
+  Future<Result<void, BackgroundTasksFailure>> write(
     BackgroundSyncInterval interval,
   ) async {
     try {
@@ -63,8 +41,4 @@ final class SharedPreferencesBackgroundSyncIntervalStore
       return const Err(BackgroundSyncIntervalFailure());
     }
   }
-}
-
-final class BackgroundSyncIntervalFailure extends Failure {
-  const BackgroundSyncIntervalFailure();
 }

@@ -49,48 +49,53 @@ void main() {
       },
     );
 
-    test('background stores use Documents without opening Payjoin or custody', () {
-      final source = [
-        'lib/background_bootstrap.dart',
-        'lib/features/wallet/background_setup.dart',
-        'lib/features/electrum_settings/background_setup.dart',
-      ].map((path) => File(path).readAsStringSync()).join('\n');
-      expect(source, contains('await getApplicationDocumentsDirectory()'));
-      expect(source, contains('openExisting(documents.path)'));
-      expect(
-        source,
-        matches(
-          RegExp(
-            r"p\.join\(\s*documents\.path,\s*'wallet_transaction_sync_queue.sqlite'",
+    test(
+      'background stores use Documents without opening Payjoin or custody',
+      () {
+        final source = [
+          'lib/background_bootstrap.dart',
+          'lib/features/wallet/background_setup.dart',
+          'lib/features/electrum_settings/background_setup.dart',
+        ].map((path) => File(path).readAsStringSync()).join('\n');
+        expect(source, contains('await getApplicationDocumentsDirectory()'));
+        expect(source, contains('openExisting(documents.path)'));
+        expect(
+          source,
+          contains("_queueFilename = 'wallet_transaction_sync_queue.sqlite'"),
+        );
+        expect(
+          source,
+          contains('openBackgroundWalletSyncQueue(documents.path)'),
+        );
+        expect(source, contains('p.join(documents, _queueFilename)'));
+        expect(
+          source,
+          matches(
+            RegExp(
+              r'PaymentNotifications\.initializeBackground\(\s*documents\.path,',
+            ),
           ),
-        ),
-      );
-      expect(
-        source,
-        matches(
-          RegExp(
-            r'PaymentNotifications\.initializeBackground\(\s*documents\.path,',
+        );
+        final notifications = File(
+          'lib/features/wallet/data/payment_notifications.dart',
+        ).readAsStringSync();
+        expect(
+          notifications,
+          contains(
+            'openExistingNotificationStore(p.join(documents, outboxFilename))',
           ),
-        ),
-      );
-      final notifications = File(
-        'lib/features/wallet/data/payment_notifications.dart',
-      ).readAsStringSync();
-      expect(notifications, contains('outbox = openOutbox(documents);'));
-      expect(
-        notifications,
-        contains('databasePath: p.join(documents, outboxFilename)'),
-      );
-      expect(source, isNot(contains('AppLocator.setup(')));
-      expect(source, isNot(contains('payjoinDatabaseFilename')));
-      expect(source, isNot(contains('package:secrets/')));
-      final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
-      expect(schemaGate, greaterThanOrEqualTo(0));
-      expect(
-        source.indexOf('final sqlite = SqliteDatabase();'),
-        greaterThan(schemaGate),
-      );
-    });
+        );
+        expect(source, isNot(contains('AppLocator.setup(')));
+        expect(source, isNot(contains('payjoinDatabaseFilename')));
+        expect(source, isNot(contains('package:secrets/')));
+        final schemaGate = source.indexOf('SqliteDatabase.isAtCurrentSchema()');
+        expect(schemaGate, greaterThanOrEqualTo(0));
+        expect(
+          source.indexOf('final sqlite = SqliteDatabase();'),
+          greaterThan(schemaGate),
+        );
+      },
+    );
 
     for (final (role, path) in [('foreground', 'lib/init.dart')]) {
       test('$role Payjoin storage uses the Documents directory', () {

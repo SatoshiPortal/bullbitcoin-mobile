@@ -29,14 +29,15 @@ void main() {
   test('a new interval replaces the one already scheduled', () async {
     // Creating the plugin first lets it pick its platform, which the fake
     // then replaces.
-    final adapter = BackgroundTaskWorkmanagerAdapter();
+    final scheduler = WorkmanagerScheduler();
     final platform = _Platform();
     WorkmanagerPlatform.instance = platform;
 
-    await adapter.registerPeriodicTask(
+    await scheduler.registerPeriodic(
       uniqueName: 'bitcoin',
       taskName: 'bitcoin-sync',
       frequency: const Duration(minutes: 30),
+      requiresNetwork: true,
     );
 
     // KEEP would leave installed work on its old interval.

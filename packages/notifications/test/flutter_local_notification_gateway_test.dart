@@ -2,10 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
+import 'package:notifications/src/data/flutter_local_notification_gateway.dart';
 import 'package:primitives/primitives.dart';
 
 class _Android extends AndroidFlutterLocalNotificationsPlugin {
-  bool appEnabled = true;
+  bool? appEnabled = true;
+  bool? granted = true;
   Object? failure;
   List<AndroidNotificationChannel>? channels = const [];
 
@@ -19,6 +21,9 @@ class _Android extends AndroidFlutterLocalNotificationsPlugin {
   @override
   Future<List<AndroidNotificationChannel>?> getNotificationChannels() async =>
       channels;
+
+  @override
+  Future<bool?> requestNotificationsPermission() async => granted;
 }
 
 Matcher _ok(bool value) => isA<Ok<bool, NotificationsFailure>>().having(
@@ -85,5 +90,18 @@ void main() {
     android.appEnabled = false;
 
     expect(await gateway.isEnabled(), _ok(false));
+  });
+
+  test('an undetermined status is a failure, never a permission', () async {
+    android.appEnabled = null;
+    android.granted = null;
+
+    final undetermined = isA<Err<bool, NotificationsFailure>>().having(
+      (r) => r.failure,
+      'failure',
+      isA<NotificationsPermissionUndeterminedFailure>(),
+    );
+    expect(await gateway.isEnabled(), undetermined);
+    expect(await gateway.requestPermission(), undetermined);
   });
 }
