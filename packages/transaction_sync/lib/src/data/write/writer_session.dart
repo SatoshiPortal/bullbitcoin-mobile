@@ -301,7 +301,7 @@ final class WriterSession {
             : 'committed'} network=${key.network} generation=${stamp?.generation} revision=${stamp?.revision} duration_ms=${watch.elapsedMilliseconds}',
       );
       return Ok(value);
-    } on Object catch (error) {
+    } on Exception catch (error) {
       if (error is SqliteException && error.resultCode == 5) {
         trace.busy(LeaseBusySource.revisionRead);
       }
@@ -563,9 +563,9 @@ final class WriterSession {
         Err(:final failure) => throw WriterRefusal(failure),
       };
 
-  /// Programmer [Error]s propagate; everything else becomes a typed failure.
-  static TransactionSyncFailure mapFailure(Object error) {
-    if (error is Error) throw error;
+  /// Only an [Exception] becomes a typed failure. Callers let anything else
+  /// thrown, a programmer [Error] above all, propagate with its trace.
+  static TransactionSyncFailure mapFailure(Exception error) {
     if (error is WriterRefusal) return error.failure;
     if (error is NativeStoreMissing) {
       return const TransactionSyncNotFoundFailure();

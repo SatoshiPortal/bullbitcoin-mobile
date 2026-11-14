@@ -254,6 +254,7 @@ final class NativeWalletWriterRepository
       return Ok(_ReadLease(lock, record.state.stamp));
     } on Object catch (error) {
       lock.release();
+      if (error is! Exception) rethrow;
       if (error is SqliteException && error.resultCode == 5) {
         trace.busy(LeaseBusySource.revisionRead);
       }
