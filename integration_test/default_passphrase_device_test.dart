@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
@@ -132,12 +133,18 @@ Future<void> _waitFor(WidgetTester tester, bool Function() done) async {
   expect(done(), isTrue);
 }
 
-void main() {
+Future<void> initializeDeviceTests({bool isInitialized = false}) async {
+  if (!isInitialized) await Bull.init();
+  final view = WidgetsBinding.instance.platformDispatcher.views.first;
+  Device.screen = view.physicalSize / view.devicePixelRatio;
+}
+
+void main({bool isInitialized = false}) {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   // Register every test synchronously; native initialization runs once before
   // either this file or the imported vector suite uses the platform plugins.
-  setUpAll(() async => Bull.init());
+  setUpAll(() => initializeDeviceTests(isInitialized: isInitialized));
   vectors.main(isInitialized: true);
 
   testWidgets('real custody restores a protected synthetic wallet', (
@@ -411,6 +418,11 @@ void main() {
     );
     await tester.pumpWidget(const SizedBox.shrink());
   });
+  registerPhysicalRecoveryTests();
+  registerReturnNavigationTest();
+}
+
+void registerPhysicalRecoveryTests() {
   testWidgets(
     'physical default recovery and backup passphrase on device',
     (tester) async {
@@ -585,6 +597,9 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 4)),
   );
+}
+
+void registerReturnNavigationTest() {
   testWidgets('reauthentication Back only closes the Navigator gate', (
     tester,
   ) async {

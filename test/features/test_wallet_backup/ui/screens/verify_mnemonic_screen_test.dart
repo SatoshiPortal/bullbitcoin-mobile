@@ -226,6 +226,26 @@ void main() {
 
   final spinner = find.byType(CircularProgressIndicator);
 
+  testWidgets('loads a wallet selected while screen protection is pending', (
+    tester,
+  ) async {
+    final protection = Completer<bool>();
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      _noScreenshotChannel,
+      (call) async => call.method == 'screenshotOff' ? protection.future : true,
+    );
+    stubSecret(_secretA);
+    await pumpScreen(tester);
+    await tester.pump();
+    bloc.seed(_selected(_walletA));
+    await tester.pump();
+    expect(find.byType(MnemonicChallenge), findsNothing);
+    protection.complete(true);
+    await flush(tester);
+    expect(find.byType(MnemonicChallenge), findsOneWidget);
+    expectChallengeFor(_walletA, findsOneWidget);
+  });
+
   testWidgets('asks for the passphrase before recording a backup', (
     tester,
   ) async {
