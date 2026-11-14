@@ -8,6 +8,7 @@ import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/write/writer_lock.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
+import 'support/freezes.dart';
 
 final class _Catalog implements WalletCatalogPort {
   final List<PublicWalletDescriptor> wallets;
@@ -48,6 +49,7 @@ void main() {
     documentsDirectory: dir.path,
     catalog: _Catalog(wallets),
     reservedAddresses: _Reserved(),
+    legacyFreezes: LegacyFreezes(),
   );
 
   int userVersion(String path) {

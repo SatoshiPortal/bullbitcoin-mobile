@@ -7,6 +7,7 @@ import 'package:sync/src/public/sync.dart' show walletOver;
 import 'package:sync/sync.dart';
 
 import 'support/projection_fakes.dart';
+import 'package:sync/src/testing/test_wallets.dart' show MemoryFreezes;
 
 /// Exact queries (ownership, unspent) decide protocol steps: they must answer
 /// with the committed revision proven at the end of the load, never with a
@@ -22,6 +23,7 @@ void main() {
     revisions = ScriptedRevisions(key);
     source = ScriptedSource(revisions);
     projections = WalletProjections(
+      freezes: MemoryFreezes(),
       revisions: revisions,
       changes: revisions.changes.stream,
       source: source,

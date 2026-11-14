@@ -9,6 +9,7 @@ import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/write/writer_lock.dart';
+import 'support/freezes.dart';
 
 final class _Reserved implements ReservedAddressPort {
   @override
@@ -57,6 +58,7 @@ void main() {
       documentsDirectory: dir.path,
       catalog: _Catalog([wallet, other]),
       reservedAddresses: _Reserved(),
+      legacyFreezes: LegacyFreezes(),
     );
     revisions = RevisionStoreDatasource.openExisting(
       revisionStorePath(dir.path),
@@ -95,6 +97,7 @@ void main() {
           revisions: restarted,
           documentsDirectory: dir.path,
           catalog: _Catalog([wallet, other]),
+          freezesReady: freezesReady,
         );
         expect(await restored.check(wallet.key), BitcoinSpendStatus.pending);
       } finally {
@@ -288,6 +291,7 @@ void main() {
       documentsDirectory: dir.path,
       catalog: _Catalog([wallet, other]),
       reservedAddresses: _Reserved(),
+      legacyFreezes: LegacyFreezes(),
     );
     try {
       expect(

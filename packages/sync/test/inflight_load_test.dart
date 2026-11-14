@@ -7,6 +7,7 @@ import 'package:sync/src/public/sync.dart' show walletOver;
 import 'package:sync/sync.dart';
 
 import 'support/projection_fakes.dart';
+import 'package:sync/src/testing/test_wallets.dart' show MemoryFreezes;
 
 /// A load whose mapping is suspended must not publish once a delete or a
 /// re-import invalidated the generation it was loading.
@@ -21,6 +22,7 @@ void main() {
     revisions = ScriptedRevisions(key);
     source = ScriptedSource(revisions);
     projections = WalletProjections(
+      freezes: MemoryFreezes(),
       revisions: revisions,
       changes: revisions.changes.stream,
       source: source,

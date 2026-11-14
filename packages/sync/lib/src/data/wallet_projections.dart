@@ -3,12 +3,14 @@ import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart';
 
+import '../domain/coin_freezes.dart';
 import '../domain/observed.dart';
 import '../domain/ports/wallet_revision_reader_port.dart';
 import '../domain/sync_failure.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
 import '../domain/wallet_values.dart';
+import 'freeze_authority.dart';
 
 /// Everything one revision of a wallet publishes, mapped once from the native
 /// handle and reused for every status that revision is later published with.
@@ -83,16 +85,26 @@ abstract interface class FrameSource {
 final class WalletProjections {
   final WalletRevisionReaderPort _revisions;
   final FrameSource _source;
+  final FreezePolicy freezes;
   final _slots = <WalletKey, _Slot>{};
   late final StreamSubscription<WalletRevisionState> _subscription;
+  late final StreamSubscription<void> _freezeSubscription;
   bool _closed = false;
 
   WalletProjections({
     required this._revisions,
     required Stream<WalletRevisionState> changes,
     required this._source,
+    required this.freezes,
   }) {
     _subscription = changes.listen(_changed);
+    // A freeze change republishes coins without reloading any wallet.
+    _freezeSubscription = freezes.changes.listen((_) {
+      if (_closed) return;
+      for (final slot in _slots.values.toList()) {
+        slot.notify();
+      }
+    });
   }
 
   bool get isClosed => _closed;
@@ -291,6 +303,18 @@ final class WalletProjections {
     return data == null ? Err(absent) : Ok(data);
   });
 
+  /// [key]'s coins with the freezes applied. Unavailable, never unfrozen,
+  /// while the freezes are not known.
+  Observed<WalletCoins> coins(WalletKey key, int generation) =>
+      _Projection<CoinList>(this, _slot(key), generation, (frame, slot) {
+        final snapshot = freezes.snapshot;
+        if (snapshot == null) {
+          final failure = freezes.failure;
+          return failure == null ? null : Err(failure);
+        }
+        return Ok(slot.frozenCoins(frame.data, snapshot));
+      }, onDemand: freezes.demand);
+
   Observed<WalletAddressAt> addressAt(
     WalletKey key,
     int generation,
@@ -342,6 +366,7 @@ final class WalletProjections {
     if (_closed) return;
     _closed = true;
     await _subscription.cancel();
+    await _freezeSubscription.cancel();
     for (final slot in _slots.values) {
       slot.closeAll();
     }
@@ -363,6 +388,20 @@ final class _Slot {
   /// published frame.
   final requested = <(int, Keychain, int)>{};
   final listeners = <_Listener>{};
+  (WalletFrameData, PolicyRevision, CoinList)? _frozen;
+
+  /// [data]'s coins with [snapshot] applied, built once per pair.
+  CoinList frozenCoins(WalletFrameData data, FreezeSnapshot snapshot) {
+    final memo = _frozen;
+    if (memo != null &&
+        identical(memo.$1, data) &&
+        memo.$2 == snapshot.revision) {
+      return memo.$3;
+    }
+    final coins = data.coins.withFrozen(snapshot.outpoints);
+    _frozen = (data, snapshot.revision, coins);
+    return coins;
+  }
 
   void notify() {
     for (final listener in listeners.toList()) {

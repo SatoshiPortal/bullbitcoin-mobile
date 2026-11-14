@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:sqlite3/sqlite3.dart';
 
+import '../../domain/ports/legacy_freeze_source_port.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/ports/wallet_revision_reader_port.dart';
@@ -16,6 +17,7 @@ import '../native_store_paths.dart';
 import 'native_wallet_writer_repository.dart';
 import '../datasources/revision_store_datasource.dart';
 import '../sqlite_wallet_revision_reader.dart';
+import '../freeze_authority.dart';
 
 /// What the foreground app uses. Only [openForeground] creates the package
 /// stores; it does so before any sync pass can run.
@@ -25,6 +27,9 @@ final class ForegroundStores {
   final SqliteWalletRevisionReader _revisions;
   final WalletSnapshotReader reader;
   final BitcoinSpendGate spendGate;
+
+  /// The freeze store. Spend construction reads its forbidden inputs.
+  final FreezeAuthority freezes;
   final RevisionStoreDatasource _store;
   bool _recovering;
 
@@ -34,6 +39,7 @@ final class ForegroundStores {
     this._revisions,
     this.reader,
     this.spendGate,
+    this.freezes,
     this._store,
     this._recovering,
   );
@@ -67,7 +73,11 @@ final class ForegroundStores {
     try {
       await _revisions.close();
     } finally {
-      _store.close();
+      try {
+        await freezes.close();
+      } finally {
+        _store.close();
+      }
     }
   }
 }
@@ -91,11 +101,13 @@ final class ExistingStores {
 }
 
 /// Opens or creates the revision store and the spend gate, quarantining
-/// unreadable revision metadata, and assembles the writer and reader.
+/// unreadable revision metadata, and assembles the writer and reader. The
+/// freeze store is imported from [legacyFreezes] on first use, never here.
 ForegroundStores openForeground({
   required String documentsDirectory,
   required WalletCatalogPort catalog,
   required ReservedAddressPort reservedAddresses,
+  required LegacyFreezeSourcePort legacyFreezes,
 }) {
   final store = _openOrQuarantine(documentsDirectory);
   try {
@@ -108,6 +120,10 @@ ForegroundStores openForeground({
       log.warning('Bitcoin spend gate unavailable category=storage');
     }
     final revisions = SqliteWalletRevisionReader(store);
+    final freezes = FreezeAuthority(
+      path: freezeStorePath(documentsDirectory),
+      legacy: legacyFreezes,
+    );
     final writer = NativeWalletWriterRepository(
       documentsDirectory: documentsDirectory,
       revisions: store,
@@ -130,7 +146,9 @@ ForegroundStores openForeground({
         revisions: store,
         documentsDirectory: documentsDirectory,
         catalog: catalog,
+        freezesReady: freezes.ready,
       ),
+      freezes,
       store,
       File(recoveryMarkerPath(documentsDirectory)).existsSync(),
     );

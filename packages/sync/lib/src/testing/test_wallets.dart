@@ -5,8 +5,10 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
+import '../data/freeze_authority.dart';
 import '../data/read/wallet_frame_mapper.dart';
 import '../data/wallet_projections.dart';
+import '../domain/coin_freezes.dart';
 import '../domain/ports/wallet_revision_reader_port.dart';
 import '../domain/sync_failure.dart';
 import '../domain/wallet_key.dart';
@@ -14,11 +16,13 @@ import '../domain/wallet_revision.dart';
 import '../domain/wallet_values.dart';
 import '../public/sync.dart';
 
-/// A loaded wallet publishing the given values at revision 0.
+/// A loaded wallet publishing the given values at revision 0. [frozen]
+/// starts an in-memory freeze store its coin commands change.
 Future<Wallet> testWallet({
   required WalletKey key,
   Balances? balances,
   List<Coin> coins = const [],
+  Set<Outpoint> frozen = const {},
   List<ChainTransaction> transactions = const [],
   AddressBook? addresses,
   List<Uint8List> ownedScripts = const [],
@@ -28,6 +32,7 @@ Future<Wallet> testWallet({
   final revision = WalletRevision(key: key, generation: 0, revision: 0);
   return _loaded(
     key,
+    frozen: frozen,
     (_) async => WalletFrame(
       WalletFrameData(
         revision: revision,
@@ -80,11 +85,15 @@ Future<Wallet> _loaded(
   WalletKey key,
   Future<WalletFrame> Function(WalletKey) frame, {
   Object? derive,
+  Set<Outpoint> frozen = const {},
 }) async {
   final projections = WalletProjections(
     revisions: _Revisions(key),
     changes: const Stream.empty(),
     source: _Source(frame, derive),
+    freezes: MemoryFreezes(
+      frozen.map((o) => FrozenOutpoint(o, origin: key.id)),
+    ),
   );
   final wallet = walletOver(projections, key, 0);
   switch (await wallet.load()) {
@@ -135,4 +144,61 @@ final class _Source implements FrameSource {
     final lwk.Wallet wallet => Ok(await liquidAddress(wallet, index)),
     _ => const Err(SyncNotFoundFailure()),
   };
+}
+
+/// An in-memory freeze store, always imported. For tests only.
+final class MemoryFreezes implements FreezePolicy {
+  final _rows = <FrozenOutpoint>{};
+  final _changes = StreamController<void>.broadcast(sync: true);
+  var _revision = const PolicyRevision(0);
+
+  MemoryFreezes([Iterable<FrozenOutpoint> rows = const []]) {
+    _rows.addAll(rows);
+  }
+
+  @override
+  FreezeSnapshot get snapshot =>
+      FreezeSnapshot(_revision, _rows.map((row) => row.outpoint));
+
+  @override
+  SyncFailure? get failure => null;
+
+  @override
+  Stream<void> get changes => _changes.stream;
+
+  @override
+  void demand() {}
+
+  @override
+  Future<Result<List<FrozenOutpoint>, SyncFailure>> read() async =>
+      Ok(_rows.toList());
+
+  @override
+  Future<Result<Set<Outpoint>, SyncFailure>> forbiddenInputs() async =>
+      Ok({for (final row in _rows) row.outpoint});
+
+  @override
+  Future<Result<PolicyRevision, SyncFailure>> freeze(
+    List<FrozenOutpoint> rows,
+  ) async {
+    _rows.addAll(rows);
+    return Ok(_bump());
+  }
+
+  @override
+  Future<Result<PolicyRevision, SyncFailure>> unfreeze(
+    List<Outpoint> outpoints,
+  ) async {
+    _rows.removeWhere((row) => outpoints.contains(row.outpoint));
+    return Ok(_bump());
+  }
+
+  @override
+  Future<Result<void, SyncFailure>> recover() async => const Ok(null);
+
+  PolicyRevision _bump() {
+    _revision = PolicyRevision(_revision.value + 1);
+    _changes.add(null);
+    return _revision;
+  }
 }

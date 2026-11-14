@@ -111,7 +111,14 @@ sealed class Coin {
   final Outpoint outpoint;
   final BigInt amountSat;
 
-  const Coin(this.outpoint, this.amountSat);
+  /// A user froze this outpoint: no spend may use it. Applied from the
+  /// freeze store at publication, never mapped from the native wallet.
+  final bool frozen;
+
+  const Coin(this.outpoint, this.amountSat, {this.frozen = false});
+
+  /// This coin with [frozen] set, sharing every other field.
+  Coin withFrozen(bool frozen);
 }
 
 final class BitcoinCoin extends Coin {
@@ -131,21 +138,35 @@ final class BitcoinCoin extends Coin {
     required this.address,
     required this.keychain,
     required this.confirmations,
+    super.frozen,
   }) : scriptPubkey = Uint8List.fromList(scriptPubkey).asUnmodifiableView(),
        super(outpoint, amountSat);
+
+  BitcoinCoin._shared(BitcoinCoin coin, {required bool frozen})
+    : scriptPubkey = coin.scriptPubkey,
+      address = coin.address,
+      keychain = coin.keychain,
+      confirmations = coin.confirmations,
+      super(coin.outpoint, coin.amountSat, frozen: frozen);
+
+  @override
+  BitcoinCoin withFrozen(bool frozen) =>
+      frozen == this.frozen ? this : BitcoinCoin._shared(this, frozen: frozen);
 
   @override
   bool operator ==(Object other) =>
       other is BitcoinCoin &&
       other.outpoint == outpoint &&
       other.amountSat == amountSat &&
+      other.frozen == frozen &&
       _bytesEqual(other.scriptPubkey, scriptPubkey) &&
       other.address == address &&
       other.keychain == keychain &&
       other.confirmations == confirmations;
 
   @override
-  int get hashCode => Object.hash(outpoint, amountSat, address, confirmations);
+  int get hashCode =>
+      Object.hash(outpoint, amountSat, address, confirmations, frozen);
 }
 
 final class LiquidCoin extends Coin {
@@ -162,25 +183,53 @@ final class LiquidCoin extends Coin {
     required this.standardAddress,
     required this.confidentialAddress,
     required this.blockHeight,
+    super.frozen,
   }) : super(outpoint, amountSat);
+
+  @override
+  LiquidCoin withFrozen(bool frozen) => frozen == this.frozen
+      ? this
+      : LiquidCoin(
+          outpoint: outpoint,
+          amountSat: amountSat,
+          scriptPubkey: scriptPubkey,
+          standardAddress: standardAddress,
+          confidentialAddress: confidentialAddress,
+          blockHeight: blockHeight,
+          frozen: frozen,
+        );
 
   @override
   bool operator ==(Object other) =>
       other is LiquidCoin &&
       other.outpoint == outpoint &&
       other.amountSat == amountSat &&
+      other.frozen == frozen &&
       other.scriptPubkey == scriptPubkey &&
       other.standardAddress == standardAddress &&
       other.confidentialAddress == confidentialAddress &&
       other.blockHeight == blockHeight;
 
   @override
-  int get hashCode => Object.hash(outpoint, amountSat, blockHeight);
+  int get hashCode => Object.hash(outpoint, amountSat, blockHeight, frozen);
 }
 
 /// Unmodifiable list with element-wise equality.
 final class CoinList extends _ValueList<Coin> {
   CoinList(super.items);
+
+  /// These coins with the freezes in [frozen] applied; this list itself
+  /// when nothing changes.
+  CoinList withFrozen(Set<Outpoint> frozen) {
+    final coins = [
+      for (final coin in this) coin.withFrozen(frozen.contains(coin.outpoint)),
+    ];
+    var changed = false;
+    for (var i = 0; i < coins.length; i++) {
+      changed = changed || !identical(coins[i], this[i]);
+    }
+    return changed ? CoinList(coins) : this;
+  }
 }
 
 final class ChainTransactionList extends _ValueList<ChainTransaction> {

@@ -19,6 +19,7 @@ import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
 import 'package:sync/src/data/write/writer_sync_operation.dart';
 import 'package:sync/src/data/writer_diagnostics.dart';
 import 'package:sync/src/data/write/writer_session.dart';
+import 'support/freezes.dart';
 
 final key = WalletKey(id: 'test', network: LiquidNetwork.testnet);
 final descriptor = LiquidWalletDescriptor(
@@ -890,6 +891,7 @@ void main() {
           revisions: revisions,
           documentsDirectory: dir.path,
           catalog: catalog,
+          freezesReady: freezesReady,
         );
     expect(
       await writing(store).create(bitcoin.key, expectedGeneration: 0),

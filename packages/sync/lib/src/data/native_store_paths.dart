@@ -46,6 +46,11 @@ String recoveryMarkerPath(String documentsDirectory) =>
 String spendGateStorePath(String documentsDirectory) =>
     '${_directory(documentsDirectory)}/spend_gate.sqlite';
 
+/// User freezes, imported once from the app's table. Its witness is
+/// `freezes.sqlite.provisioned`, next to it.
+String freezeStorePath(String documentsDirectory) =>
+    '${_directory(documentsDirectory)}/freezes.sqlite';
+
 /// The lock is named after the native store it protects, so two keys that
 /// resolve to the same store share one lock. An unsupported key is refused
 /// before any path is derived.

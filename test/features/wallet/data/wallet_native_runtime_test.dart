@@ -14,6 +14,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/read.dart';
 import 'package:sync/write.dart';
 import 'package:sync/sync.dart';
+import 'no_legacy_freezes.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
@@ -55,6 +56,7 @@ void main() {
           readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
+        legacyFreezes: const NoLegacyFreezes(),
         onStoresOpened: (stores) {
           if (++attempts == 1) {
             abandoned = stores;
@@ -102,6 +104,7 @@ void main() {
           if (++attempts == 1) throw const FileSystemException('unavailable');
           return directory.path;
         },
+        legacyFreezes: const NoLegacyFreezes(),
       );
       try {
         await runtime.initialize();
@@ -173,6 +176,7 @@ void main() {
           readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
+        legacyFreezes: const NoLegacyFreezes(),
       );
       var runtime = open();
       try {

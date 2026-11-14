@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../data/datasources/revision_store_datasource.dart';
+import '../data/freeze_authority.dart';
 import '../data/native_store_paths.dart';
 import '../data/read/native_frame_source.dart';
 import '../data/wallet_projections.dart';
@@ -14,7 +15,9 @@ import '../data/datasources/spend_gate_store_datasource.dart'
 import '../data/write/sync/electrum_sync.dart';
 import '../data/write/writer_stores.dart' as stores_;
 import '../data/write/writer_stores.dart' show ExistingStores, ForegroundStores;
+import '../domain/coin_freezes.dart';
 import '../domain/observed.dart';
+import '../domain/ports/legacy_freeze_source_port.dart';
 import '../domain/ports/reserved_address_port.dart';
 import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/ports/wallet_connection_port.dart';
@@ -41,22 +44,30 @@ final class Sync {
 
   /// Opens or creates the package stores, quarantining unreadable revision
   /// metadata, before any sync pass can run. Throws when storage is unusable.
+  ///
+  /// Then starts the one-time import of [legacyFreezes] into the freeze
+  /// store. Until it is witnessed, freeze changes and spends are refused and
+  /// coins read unavailable; each later use retries it.
   static Sync openForeground({
     required String documentsDirectory,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
+    required LegacyFreezeSourcePort legacyFreezes,
   }) {
     final stores = stores_.openForeground(
       documentsDirectory: documentsDirectory,
       catalog: catalog,
       reservedAddresses: reservedAddresses,
+      legacyFreezes: legacyFreezes,
     );
+    stores.freezes.demand();
     return Sync._(
       stores,
       WalletProjections(
         revisions: stores.revisions,
         changes: stores.changes,
         source: NativeFrameSource(stores.reader, catalog),
+        freezes: stores.freezes,
       ),
     );
   }
@@ -101,6 +112,10 @@ final class Sync {
 
   /// Adoption after quarantined revision metadata.
   SyncRecovery get recovery => SyncRecovery._(this);
+
+  /// Freezes by outpoint, for every wallet, including those of no known
+  /// wallet (BIP329). [Wallet.coins] changes the same store.
+  SyncCoins get coins => SyncCoins._(_projections.freezes);
 
   /// Publishes `closed` to every observer, then ends their streams.
   Future<void> close() async {
@@ -153,6 +168,34 @@ extension type const SyncRecovery._(Sync _sync) {
   Result<void, SyncFailure> complete() => _sync._completeRecovery();
 }
 
+/// `sync.coins`: the freeze store, without a wallet.
+extension type const SyncCoins._(FreezePolicy _freezes) {
+  /// Every freeze with its attribution, for BIP329 export.
+  @useResult
+  Future<Result<List<FrozenOutpoint>, SyncFailure>> listFrozen() =>
+      _freezes.read();
+
+  /// Freezes [outpoint] for every wallet, attributed to [origin] as given:
+  /// empty for an import without a known wallet. Wallets use
+  /// `wallet.coins.freeze`.
+  @useResult
+  Future<Result<PolicyRevision, SyncFailure>> freeze(
+    Outpoint outpoint, {
+    required String origin,
+  }) => _freezes.freeze([FrozenOutpoint(outpoint, origin: origin)]);
+
+  /// Removes every attribution of [outpoint].
+  @useResult
+  Future<Result<PolicyRevision, SyncFailure>> unfreeze(Outpoint outpoint) =>
+      _freezes.unfreeze([outpoint]);
+
+  /// After [SyncFreezeStoreLostFailure]: checks the store, its marker and its
+  /// witness again. Never recreates the store nor imports the app's table
+  /// again, so it succeeds only if the store is whole.
+  @useResult
+  Future<Result<void, SyncFailure>> recover() => _freezes.recover();
+}
+
 /// A wallet of one key and generation. Holds no native object.
 ///
 /// Reads are [Observed] values: `now` is the last published value of this
@@ -172,8 +215,8 @@ final class Wallet {
   Observed<WalletBalances> get balances =>
       _projections.observe(key, generation, (frame) => frame.balances);
 
-  Observed<WalletCoins> get coins =>
-      _projections.observe(key, generation, (frame) => frame.coins);
+  /// Coins with their frozen state; freeze and unfreeze them.
+  WalletCoinsGroup get coins => WalletCoinsGroup._(this);
 
   Observed<WalletTransactions> get transactions =>
       _projections.observe(key, generation, (frame) => frame.transactions);
@@ -201,14 +244,62 @@ final class Wallet {
         Err(:final failure) => Err(failure),
       };
 
-  /// The unspent coins at the latest committed revision. Busy when only an
-  /// older revision or a cache is available.
+  /// The unspent coins at the latest committed revision, with the freezes
+  /// read from the store. Busy when only an older revision or a cache is
+  /// available.
   @useResult
-  Future<Result<CoinList, SyncFailure>> unspent() async =>
-      switch (await _projections.exact(key, generation)) {
-        Ok(value: final frame) => Ok(frame.coins),
+  Future<Result<CoinList, SyncFailure>> unspent() async {
+    final exact = await _projections.exact(key, generation);
+    if (exact case Err(:final failure)) return Err(failure);
+    final frozen = await _projections.freezes.forbiddenInputs();
+    if (frozen case Err(:final failure)) return Err(failure);
+    return Ok(
+      (exact as Ok<WalletFrame, SyncFailure>).value.coins.withFrozen(
+        (frozen as Ok<Set<Outpoint>, SyncFailure>).value,
+      ),
+    );
+  }
+
+  /// Refuses a handle a delete or a re-import has ended.
+  Future<Result<void, SyncFailure>> _current() async =>
+      switch (await _projections.generation(key)) {
+        Ok(:final value) when value == generation => const Ok(null),
+        Ok() => const Err(SyncNotFoundFailure()),
         Err(:final failure) => Err(failure),
       };
+}
+
+/// `wallet.coins`: the coins [Observed] with their frozen state, and the
+/// freeze commands of this wallet.
+extension type const WalletCoinsGroup._(Wallet _wallet) {
+  Observed<WalletCoins> get _coins =>
+      _wallet._projections.coins(_wallet.key, _wallet.generation);
+
+  /// The last published coins. Unavailable while the freezes are unknown:
+  /// a coin never reads as unfrozen by default.
+  WalletCoins get now => _coins.now;
+
+  Stream<WalletCoins> watch() => _coins.watch();
+
+  /// Freezes [outpoint] for every wallet, attributed to this one. Returns
+  /// once committed; the coins are then republished.
+  @useResult
+  Future<Result<PolicyRevision, SyncFailure>> freeze(Outpoint outpoint) async {
+    if (await _wallet._current() case Err(:final failure)) return Err(failure);
+    return _wallet._projections.freezes.freeze([
+      FrozenOutpoint(outpoint, origin: _wallet.key.id),
+    ]);
+  }
+
+  /// Removes every attribution of [outpoint], whichever wallet or import
+  /// froze it. Returns once committed.
+  @useResult
+  Future<Result<PolicyRevision, SyncFailure>> unfreeze(
+    Outpoint outpoint,
+  ) async {
+    if (await _wallet._current() case Err(:final failure)) return Err(failure);
+    return _wallet._projections.freezes.unfreeze([outpoint]);
+  }
 }
 
 /// `wallet.addresses`.
