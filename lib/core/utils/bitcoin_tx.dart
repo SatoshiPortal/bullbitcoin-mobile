@@ -1,6 +1,5 @@
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:sync/sync.dart'
     show DecodedBitcoinTransaction, decodeBitcoinPsbt, decodeBitcoinTransaction;
 
@@ -31,17 +30,16 @@ class BitcoinTx {
 
   /// Throws [FormatException] when [bytes] are not a transaction.
   static Future<BitcoinTx> fromBytes(List<int> bytes) async =>
-      switch (decodeBitcoinTransaction(bytes)) {
-        Ok(:final value) => _fromDecoded(value),
-        Err() => throw const FormatException('Not a Bitcoin transaction'),
-      };
+      _fromDecoded(decodeBitcoinTransaction(bytes));
 
   static Future<BitcoinTx> fromPsbt(String psbtBase64) async {
     // BDK extraction needs input metadata to compute fees, so finalized
     // PSBTs stripped of it must fall back to the bitcoin_base path, which
     // does not require that metadata (issue #2654).
-    if (decodeBitcoinPsbt(psbtBase64) case Ok(:final value)) {
-      return _fromDecoded(value);
+    try {
+      return _fromDecoded(decodeBitcoinPsbt(psbtBase64));
+    } on FormatException {
+      // Fall through to bitcoin_base.
     }
     final psbt = Psbt.fromBase64(psbtBase64);
     final txBytes = PsbtBuilder.fromPsbt(psbt).finalizeAll().toBytes();
@@ -55,10 +53,10 @@ class BitcoinTx {
     vsize: BigInt.from(decoded.vsize),
     locktime: decoded.locktime,
     vin: [
-      for (final input in decoded.inputs)
+      for (final input in decoded.inputDetails)
         TxVin(
-          txid: input.txid,
-          vout: input.vout,
+          txid: input.outpoint.txId,
+          vout: input.outpoint.vout,
           sequence: input.sequence,
           scriptSig: TxScriptSig(bytes: input.scriptSig),
         ),
@@ -68,7 +66,7 @@ class BitcoinTx {
         TxVout(
           value: BigInt.from(output.valueSat),
           n: index,
-          scriptPubKey: TxScriptSig(bytes: output.script),
+          scriptPubKey: TxScriptSig(bytes: output.scriptPubkey),
         ),
     ],
   );

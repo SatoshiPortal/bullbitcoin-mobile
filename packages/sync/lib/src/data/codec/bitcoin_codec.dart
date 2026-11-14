@@ -3,44 +3,9 @@ import 'dart:typed_data';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart';
 
-import '../../domain/decoded_transactions.dart';
+import '../bitcoin_transaction_decoder.dart';
 import '../../domain/sync_failure.dart';
-
-/// A consensus-valid transaction never exceeds 4,000,000 weight units, so its
-/// serialization never exceeds this many bytes.
-const maxBitcoinTransactionBytes = 4000000;
-
-/// PSBTs carry previous transactions; the bound keeps hostile input from
-/// reaching the native parser, not from describing a valid PSBT.
-const maxEncodedBitcoinPsbtLength = 16 * 1024 * 1024;
-
-/// Decodes consensus bytes. Library function: no wallet is opened.
-Result<DecodedBitcoinTransaction, SyncFailure> decodeBitcoinTransaction(
-  List<int> bytes,
-) {
-  if (bytes.isEmpty || bytes.length > maxBitcoinTransactionBytes) {
-    return const Err(SyncInvalidTransactionFailure());
-  }
-  try {
-    final transaction = bdk.Transaction(
-      transactionBytes: Uint8List.fromList(bytes),
-    );
-    try {
-      return Ok(_decode(transaction));
-    } finally {
-      transaction.dispose();
-    }
-  } on Exception {
-    return const Err(SyncInvalidTransactionFailure());
-  }
-}
-
-/// Decodes the transaction a base64 PSBT describes, witnesses included only
-/// when its inputs are finalized. The extraction checks the fee rate, so a
-/// PSBT without its input amounts is refused.
-Result<DecodedBitcoinTransaction, SyncFailure> decodeBitcoinPsbt(
-  String psbtBase64,
-) => _withPsbt(psbtBase64, (psbt) => Ok(_extract(psbt)));
+import 'native_bitcoin_transaction.dart';
 
 /// The PSBT re-serialized by the parser: a check that [psbtBase64] is a PSBT.
 Result<String, SyncFailure> canonicalBitcoinPsbt(String psbtBase64) =>
@@ -66,7 +31,7 @@ Result<DecodedBitcoinTransaction, SyncFailure> finalizeBitcoinPsbts({
         if (!finalized.couldFinalize) {
           return const Err(SyncNotFinalizableFailure());
         }
-        return Ok(_extract(finalized.psbt));
+        return Ok(decodeNativePsbt(finalized.psbt));
       } finally {
         finalized.psbt.dispose();
       }
@@ -152,56 +117,5 @@ Result<T, SyncFailure> _withPsbt<T>(
     return const Err(SyncInvalidTransactionFailure());
   } finally {
     psbt.dispose();
-  }
-}
-
-DecodedBitcoinTransaction _extract(bdk.Psbt psbt) {
-  final transaction = psbt.extractTx();
-  try {
-    return _decode(transaction);
-  } finally {
-    transaction.dispose();
-  }
-}
-
-DecodedBitcoinTransaction _decode(bdk.Transaction transaction) {
-  final txid = transaction.computeTxid();
-  final inputs = transaction.input();
-  final outputs = transaction.output();
-  try {
-    return DecodedBitcoinTransaction(
-      txid: txid.toString(),
-      version: transaction.version(),
-      locktime: transaction.lockTime(),
-      size: transaction.totalSize(),
-      vsize: transaction.vsize(),
-      inputs: [
-        for (final input in inputs)
-          BitcoinTransactionInput(
-            txid: input.previousOutput.txid.toString(),
-            vout: input.previousOutput.vout,
-            sequence: input.sequence,
-            scriptSig: input.scriptSig.toBytes(),
-          ),
-      ],
-      outputs: [
-        for (final output in outputs)
-          BitcoinTransactionOutput(
-            valueSat: output.value.toSat(),
-            script: output.scriptPubkey.toBytes(),
-          ),
-      ],
-      bytes: transaction.serialize(),
-    );
-  } finally {
-    txid.dispose();
-    for (final input in inputs) {
-      input.previousOutput.txid.dispose();
-      input.scriptSig.dispose();
-    }
-    for (final output in outputs) {
-      output.value.dispose();
-      output.scriptPubkey.dispose();
-    }
   }
 }

@@ -3,7 +3,11 @@ import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
 import 'package:sync/sync.dart'
-    show WalletConnectionPort, broadcastBitcoinTransaction, decodeBitcoinPsbt;
+    show
+        SyncInvalidTransactionFailure,
+        WalletConnectionPort,
+        broadcastBitcoinTransaction,
+        decodeBitcoinPsbt;
 
 /// Broadcasts through sync, on the servers [WalletConnectionPort] selects: the
 /// privacy and fallback rule lives in that port alone.
@@ -16,15 +20,17 @@ class BitcoinBlockchainRepository {
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
     required Network network,
-  }) async => switch (decodeBitcoinPsbt(finalizedPsbt)) {
-    Ok(:final value) => await broadcastTransaction(
-      value.bytes,
-      network: network,
-    ),
-    Err(:final failure) => throw CategorizedBroadcastException(
-      broadcastFailureCategory(failure),
-    ),
-  };
+  }) {
+    final List<int> transaction;
+    try {
+      transaction = decodeBitcoinPsbt(finalizedPsbt).bytes;
+    } on FormatException {
+      throw CategorizedBroadcastException(
+        broadcastFailureCategory(const SyncInvalidTransactionFailure()),
+      );
+    }
+    return broadcastTransaction(transaction, network: network);
+  }
 
   /// Throws [CategorizedBroadcastException] when the broadcast fails.
   Future<String> broadcastTransaction(

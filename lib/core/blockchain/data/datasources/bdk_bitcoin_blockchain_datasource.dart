@@ -30,16 +30,14 @@ class BitcoinChainException implements Exception {
 class BdkBitcoinBlockchainDatasource {
   const BdkBitcoinBlockchainDatasource();
 
+  /// Throws [FormatException] when [finalizedPsbt] is not a PSBT.
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
     required ElectrumConnection connection,
-  }) async => switch (decodeBitcoinPsbt(finalizedPsbt)) {
-    Ok(:final value) => await broadcastTransaction(
-      value.bytes,
-      connection: connection,
-    ),
-    Err(:final failure) => throw BitcoinChainException(failure),
-  };
+  }) => broadcastTransaction(
+    decodeBitcoinPsbt(finalizedPsbt).bytes,
+    connection: connection,
+  );
 
   Future<String> broadcastTransaction(
     List<int> transaction, {

@@ -7,7 +7,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../domain/ports/wallet_connection_port.dart';
 import '../../domain/sync_failure.dart';
-import '../codec/bitcoin_codec.dart';
+import '../bitcoin_transaction_decoder.dart';
 import 'broadcast_replies.dart';
 
 /// Sends a signed Bitcoin transaction through the servers the owner's
@@ -23,13 +23,8 @@ Future<Result<String, SyncFailure>> broadcastBitcoinTransaction(
   required BitcoinNetwork network,
   required WalletConnectionPort connections,
 }) async {
-  final String txid;
-  switch (decodeBitcoinTransaction(transaction)) {
-    case Ok(:final value):
-      txid = value.txid;
-    case Err(:final failure):
-      return Err(failure);
-  }
+  final txid = _txid(transaction);
+  if (txid == null) return const Err(SyncInvalidTransactionFailure());
   final bytes = Uint8List.fromList(transaction);
   return _broadcast(
     network: network,
@@ -44,14 +39,19 @@ Future<Result<String, SyncFailure>> broadcastBitcoinTransaction(
 Future<Result<String, SyncFailure>> broadcastBitcoinTransactionTo(
   WalletConnection connection,
   List<int> transaction,
-) async => switch (decodeBitcoinTransaction(transaction)) {
-  Ok(:final value) => await _send(
-    connection,
-    Uint8List.fromList(transaction),
-    value.txid,
-  ),
-  Err(:final failure) => Err(failure),
+) async => switch (_txid(transaction)) {
+  final txid? => await _send(connection, Uint8List.fromList(transaction), txid),
+  null => const Err(SyncInvalidTransactionFailure()),
 };
+
+/// The txid of [transaction], or `null` when it does not decode.
+String? _txid(List<int> transaction) {
+  try {
+    return decodeBitcoinTransaction(transaction).txid;
+  } on FormatException {
+    return null;
+  }
+}
 
 // The FFI call blocks for a full network round trip: keep it off the caller's
 // isolate.
@@ -137,12 +137,9 @@ Future<Result<bool, SyncFailure>> bitcoinTransactionKnown(
       }
       // The reply settles payjoin sessions, so "no error" is not enough: the
       // bytes must deserialize and hash to the requested id.
-      return switch (decodeBitcoinTransaction(raw)) {
-        Ok(:final value) when value.txid == txid.toLowerCase() => const Ok(
-          true,
-        ),
-        _ => const Err(SyncInvalidTransactionFailure()),
-      };
+      return _txid(raw) == txid.toLowerCase()
+          ? const Ok(true)
+          : const Err(SyncInvalidTransactionFailure());
     } finally {
       client.dispose();
     }

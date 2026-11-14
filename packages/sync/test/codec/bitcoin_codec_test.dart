@@ -65,7 +65,7 @@ String _psbtWithoutInputAmount({String lockTime = '00000000'}) {
 void main() {
   group('decodeBitcoinTransaction', () {
     test('reads every field of a serialized transaction', () {
-      final decoded = _ok(decodeBitcoinTransaction(_fromHex(_transactionHex)));
+      final decoded = (decodeBitcoinTransaction(_fromHex(_transactionHex)));
       final native = bdk.Transaction(
         transactionBytes: Uint8List.fromList(_fromHex(_transactionHex)),
       );
@@ -77,21 +77,22 @@ void main() {
       expect(decoded.size, _transactionHex.length ~/ 2);
       expect(decoded.vsize, _transactionHex.length ~/ 2);
       expect(decoded.inputs, hasLength(1));
-      expect(decoded.inputs.single.txid, '0' * 64);
-      expect(decoded.inputs.single.vout, 0xffffffff);
-      expect(decoded.inputs.single.sequence, 0xffffffff);
-      expect(decoded.inputs.single.scriptSig, [0x01, 0x01]);
+      expect(decoded.inputs.single, (txId: '0' * 64, vout: 0xffffffff));
+      expect(decoded.inputDetails.single.outpoint, decoded.inputs.single);
+      expect(decoded.inputDetails.single.sequence, 0xffffffff);
+      expect(decoded.inputDetails.single.scriptSig, [0x01, 0x01]);
       expect(decoded.outputs.single.valueSat, 100000);
-      expect(decoded.outputs.single.script, [0x51]);
+      expect(decoded.outputs.single.scriptPubkey, [0x51]);
       expect(_toHex(decoded.bytes), _transactionHex);
     });
 
     test('publishes immutable values', () {
-      final decoded = _ok(decodeBitcoinTransaction(_fromHex(_transactionHex)));
+      final decoded = (decodeBitcoinTransaction(_fromHex(_transactionHex)));
       expect(() => decoded.bytes[0] = 2, throwsUnsupportedError);
       expect(() => decoded.inputs.clear(), throwsUnsupportedError);
+      expect(() => decoded.inputDetails.clear(), throwsUnsupportedError);
       expect(
-        () => decoded.outputs.single.script[0] = 0,
+        () => decoded.outputs.single.scriptPubkey[0] = 0,
         throwsUnsupportedError,
       );
     });
@@ -104,43 +105,38 @@ void main() {
       ('a PSBT', base64.decode(_psbt)),
     ]) {
       test('refuses $name', () {
-        expect(
-          _err(decodeBitcoinTransaction(bytes)),
-          isA<SyncInvalidTransactionFailure>(),
-        );
+        expect(() => decodeBitcoinTransaction(bytes), throwsFormatException);
       });
     }
 
     test('refuses more bytes than any valid transaction holds', () {
       expect(
-        _err(
-          decodeBitcoinTransaction(Uint8List(maxBitcoinTransactionBytes + 1)),
-        ),
-        isA<SyncInvalidTransactionFailure>(),
+        () =>
+            decodeBitcoinTransaction(Uint8List(maxBitcoinTransactionBytes + 1)),
+        throwsFormatException,
       );
     });
   });
 
   group('decodeBitcoinPsbt', () {
     test('reads the transaction the PSBT describes', () {
-      final decoded = _ok(decodeBitcoinPsbt(_psbt));
+      final decoded = (decodeBitcoinPsbt(_psbt));
       expect(decoded.version, 2);
       expect(decoded.locktime, 0);
-      expect(
-        decoded.inputs.single.txid,
-        _toHex(List.generate(32, (i) => 32 - i)),
-      );
-      expect(decoded.inputs.single.vout, 0);
-      expect(decoded.inputs.single.sequence, 0xfffffffd);
-      expect(decoded.inputs.single.scriptSig, isEmpty);
+      expect(decoded.inputs.single, (
+        txId: _toHex(List.generate(32, (i) => 32 - i)),
+        vout: 0,
+      ));
+      expect(decoded.inputDetails.single.sequence, 0xfffffffd);
+      expect(decoded.inputDetails.single.scriptSig, isEmpty);
       expect(decoded.outputs.single.valueSat, 100000);
-      expect(decoded.outputs.single.script, _p2wpkh);
+      expect(decoded.outputs.single.scriptPubkey, _p2wpkh);
     });
 
     test('refuses a PSBT without its input amounts', () {
       expect(
-        _err(decodeBitcoinPsbt(_psbtWithoutInputAmount())),
-        isA<SyncInvalidTransactionFailure>(),
+        () => decodeBitcoinPsbt(_psbtWithoutInputAmount()),
+        throwsFormatException,
       );
     });
 
@@ -156,10 +152,7 @@ void main() {
       ('an oversized string', 'A' * (maxEncodedBitcoinPsbtLength + 1)),
     ]) {
       test('refuses $name', () {
-        expect(
-          _err(decodeBitcoinPsbt(input)),
-          isA<SyncInvalidTransactionFailure>(),
-        );
+        expect(() => decodeBitcoinPsbt(input), throwsFormatException);
       });
     }
   });
@@ -207,15 +200,12 @@ void main() {
           signedBase64: combined.serialize(),
         ),
       );
-      final intended = _ok(decodeBitcoinPsbt(unsigned));
+      final intended = (decodeBitcoinPsbt(unsigned));
       expect(finalized.txid, intended.txid);
       expect(finalized.inputs, hasLength(3));
       // Witnesses were added: the finalized bytes are no longer the skeleton.
       expect(finalized.size, greaterThan(intended.size));
-      expect(
-        _ok(decodeBitcoinTransaction(finalized.bytes)).txid,
-        intended.txid,
-      );
+      expect((decodeBitcoinTransaction(finalized.bytes)).txid, intended.txid);
     });
 
     test('one signature of two is not enough', () {

@@ -22,6 +22,7 @@ export 'src/domain/sync_reason.dart';
 export 'src/domain/sync_completion.dart';
 export 'src/domain/bitcoin_spend.dart';
 export 'src/data/bitcoin_transaction_id.dart';
+export 'src/data/bitcoin_transaction_decoder.dart';
 export 'src/domain/sync_failure.dart';
 export 'src/domain/wallet_revision.dart';
 export 'src/domain/public_wallet_descriptor.dart';
@@ -38,11 +39,7 @@ export 'src/data/codec/bitcoin_codec.dart'
     show
         bitcoinScriptAddress,
         canonicalBitcoinPsbt,
-        decodeBitcoinPsbt,
-        decodeBitcoinTransaction,
         finalizeBitcoinPsbts,
-        maxBitcoinTransactionBytes,
-        maxEncodedBitcoinPsbtLength,
         parseBitcoinAddress;
 export 'src/data/codec/liquid_codec.dart'
     show

@@ -15,7 +15,6 @@ import 'package:ledger_bitcoin/src/psbt/map_extension.dart';
 // ignore: implementation_imports
 import 'package:ledger_bitcoin/src/utils/buffer_reader.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:sync/sync.dart' show decodeBitcoinPsbt;
 
 class LedgerDeviceDatasource {
@@ -319,10 +318,8 @@ extension PsbtSigner on PsbtV2 {
     }
     while (_readKeyPair(globalMap, bufferReader)) {}
 
-    final tx = switch (decodeBitcoinPsbt(base64.encode(psbt))) {
-      Ok(:final value) => value,
-      Err() => throw const FormatException('PSBT rejected by the decoder'),
-    };
+    // Throws a FormatException when the decoder refuses the PSBT.
+    final tx = decodeBitcoinPsbt(base64.encode(psbt));
 
     setGlobalInputCount(tx.inputs.length);
     setGlobalOutputCount(tx.outputs.length);
@@ -331,12 +328,14 @@ extension PsbtSigner on PsbtV2 {
     for (var i = 0; i < getGlobalInputCount(); i++) {
       inputMaps.insert(i, <String, Uint8List>{});
       while (_readKeyPair(inputMaps[i], bufferReader)) {}
-      final input = tx.inputs[i];
-      setInputOutputIndex(i, input.vout);
+      final input = tx.inputDetails[i];
+      setInputOutputIndex(i, input.outpoint.vout);
 
       setInputPreviousTxId(
         i,
-        Uint8List.fromList(convert.hex.decode(input.txid).reversed.toList()),
+        Uint8List.fromList(
+          convert.hex.decode(input.outpoint.txId).reversed.toList(),
+        ),
       );
 
       setInputSequence(i, input.sequence);
@@ -346,7 +345,7 @@ extension PsbtSigner on PsbtV2 {
       while (_readKeyPair(outputMaps[i], bufferReader)) {}
       final output = tx.outputs[i];
       setOutputAmount(i, output.valueSat);
-      setOutputScript(i, Uint8List.fromList(output.script));
+      setOutputScript(i, Uint8List.fromList(output.scriptPubkey));
     }
   }
 
