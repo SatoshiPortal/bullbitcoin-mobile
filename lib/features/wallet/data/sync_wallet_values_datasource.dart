@@ -173,7 +173,7 @@ class SyncWalletValuesDatasource {
   }) async {
     final handle = await _wallet(wallet);
     // Both values come from one frame: no await between the two reads.
-    final transactions = _data(handle.transactions.now);
+    final transactions = _data(handle.history.now);
     final book = _data(handle.addresses.book.now);
     final filter = toAddress != null && toAddress.isNotEmpty ? toAddress : null;
     final result = switch (wallet) {

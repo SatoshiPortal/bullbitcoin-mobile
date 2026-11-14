@@ -53,7 +53,7 @@ void main() {
       seen.add((
         handle.balances.now.revision,
         handle.coins.now.revision,
-        handle.transactions.now.revision,
+        handle.history.now.revision,
       ));
     });
     await pump();

@@ -226,7 +226,8 @@ final class Wallet {
   /// Coins with their frozen state; freeze and unfreeze them.
   WalletCoinsGroup get coins => WalletCoinsGroup._(this);
 
-  Observed<WalletTransactions> get transactions =>
+  /// The wallet's transaction history.
+  Observed<WalletTransactions> get history =>
       _projections.observe(key, generation, (frame) => frame.transactions);
 
   WalletAddressGroup get addresses => WalletAddressGroup._(this);

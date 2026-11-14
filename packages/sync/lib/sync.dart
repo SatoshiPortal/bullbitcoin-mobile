@@ -1,5 +1,5 @@
 /// The single owner of native wallet state. [Sync.foreground] returns
-/// [Sync], whose [Wallet] handles publish balances, coins, transactions and
+/// [Sync], whose [Wallet] handles publish balances, coins, history and
 /// addresses as [Observed] values and build, check and broadcast spends;
 /// [Sync.background] returns the narrow [BackgroundSync] for background
 /// refreshes. Nothing here holds or lends a native handle: outside this
