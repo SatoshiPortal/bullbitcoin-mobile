@@ -19,8 +19,6 @@ sealed class SyncFailure extends Failure {
     SyncInitialScanRequiredFailure() => 'initial_scan_required',
     SyncInvalidAddressFailure() => 'invalid_address',
     SyncClosedFailure() => 'closed',
-    SyncFreezeImportRequiredFailure() => 'freeze_import_required',
-    SyncFreezeStoreLostFailure() => 'freeze_store_lost',
   };
 }
 
@@ -73,18 +71,4 @@ final class SyncInvalidAddressFailure extends SyncFailure {
 /// The owning [Sync] was closed; its wallet handles refuse every operation.
 final class SyncClosedFailure extends SyncFailure {
   const SyncClosedFailure();
-}
-
-/// The one-time import of the app's freeze table has not completed: no
-/// freeze is known yet, so no freeze change and no spend is admitted. The
-/// foreground retries it; the background never runs it.
-final class SyncFreezeImportRequiredFailure extends SyncFailure {
-  const SyncFreezeImportRequiredFailure();
-}
-
-/// The import completed once, but the freeze store is now missing, unreadable
-/// or incomplete. Freezes may have been lost: nothing is admitted until an
-/// explicit recovery finds the store whole again. Never recreated empty.
-final class SyncFreezeStoreLostFailure extends SyncFailure {
-  const SyncFreezeStoreLostFailure();
 }

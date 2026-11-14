@@ -69,10 +69,7 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSyncPort {
     SyncNeedsRepairFailure(revision: final WalletRevision revision) =>
       BackgroundSyncNeedsRepairFailure(revision),
     SyncConnectionFailure() => const BackgroundSyncConnectionFailure(),
-    // Freezes are foreground-only; a background refresh never reports them.
-    SyncStorageFailure() ||
-    SyncFreezeImportRequiredFailure() ||
-    SyncFreezeStoreLostFailure() => const BackgroundSyncUnavailableFailure(
+    SyncStorageFailure() => const BackgroundSyncUnavailableFailure(
       BackgroundSyncUnavailableReason.storage,
     ),
     SyncInvalidCatalogFailure() => const BackgroundSyncUnavailableFailure(

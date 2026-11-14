@@ -31,7 +31,6 @@ export 'src/domain/public_wallet_descriptor.dart';
 export 'src/domain/repositories/wallet_writer_repository.dart';
 export 'src/domain/coin_freezes.dart';
 export 'src/domain/ports/freeze_store_port.dart';
-export 'src/domain/ports/legacy_freeze_source_port.dart';
 export 'src/domain/ports/input_reservation_port.dart';
 export 'src/domain/ports/read_admission_port.dart';
 export 'src/domain/ports/reserved_address_port.dart';
