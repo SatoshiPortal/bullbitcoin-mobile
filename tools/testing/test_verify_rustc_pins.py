@@ -10,7 +10,7 @@ SCRIPT = Path(__file__).resolve().parents[1] / "verify_rustc_pins.sh"
 SDK_RUST = "1.100.0"
 PAYJOIN_RUST = "1.85.1"
 LIBRARIES = {
-    "libonion.so": SDK_RUST,
+    "librust_lib_onion.so": SDK_RUST,
     "librust_lib_bull_sdk.so": SDK_RUST,
     "libbdk_dart_ffi.so": SDK_RUST,
     "libpayjoin_ffi_wrapper.so": PAYJOIN_RUST,
@@ -53,7 +53,7 @@ class VerifyRustcPinsTest(unittest.TestCase):
 
     def test_rejects_rust_library_in_extra_abi(self):
         result = self.check_apk(
-            changed={"lib/x86_64/libonion.so": b"rustc version 1.100.0\n"}
+            changed={"lib/x86_64/librust_lib_onion.so": b"rustc version 1.100.0\n"}
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("unexpected ABI", result.stderr)
@@ -70,7 +70,7 @@ class VerifyRustcPinsTest(unittest.TestCase):
         self.assertIn("Missing expected ABI", result.stderr)
 
     def test_rejects_missing_library(self):
-        result = self.check_apk(changed={"lib/arm64-v8a/libonion.so": None})
+        result = self.check_apk(changed={"lib/arm64-v8a/librust_lib_onion.so": None})
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Missing tracked Rust library", result.stderr)
 
@@ -89,13 +89,13 @@ class VerifyRustcPinsTest(unittest.TestCase):
         self.assertIn("Unexpected rustc markers", result.stderr)
 
     def test_rejects_missing_marker(self):
-        result = self.check_apk(changed={"lib/arm64-v8a/libonion.so": b"no version"})
+        result = self.check_apk(changed={"lib/arm64-v8a/librust_lib_onion.so": b"no version"})
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("No rustc version marker", result.stderr)
 
     def test_rejects_multiple_versions(self):
         result = self.check_apk(
-            changed={"lib/arm64-v8a/libonion.so": b"rustc version 1.100.0\nrustc version 1.97.1\n"}
+            changed={"lib/arm64-v8a/librust_lib_onion.so": b"rustc version 1.100.0\nrustc version 1.97.1\n"}
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Unexpected rustc markers", result.stderr)
