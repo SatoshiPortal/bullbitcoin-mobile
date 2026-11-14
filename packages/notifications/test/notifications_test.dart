@@ -9,6 +9,7 @@ final class FakeGateway implements LocalNotificationGateway {
   final List<int> shownIds = [];
   bool fail = false;
   bool enabled = true;
+  NotificationsFailure? enabledFailure;
   Result<bool, NotificationsFailure> permissionResult = const Ok(true);
   int permissionRequestCount = 0;
   int settingsOpenCount = 0;
@@ -20,7 +21,10 @@ final class FakeGateway implements LocalNotificationGateway {
   }
 
   @override
-  Future<Result<bool, NotificationsFailure>> isEnabled() async => Ok(enabled);
+  Future<Result<bool, NotificationsFailure>> isEnabled() async {
+    final failure = enabledFailure;
+    return failure == null ? Ok(enabled) : Err(failure);
+  }
 
   @override
   Future<Result<void, NotificationsFailure>> openSystemSettings() async {
@@ -176,4 +180,18 @@ void main() {
       expect(gateway.shownIds.first, gateway.shownIds.last);
     },
   );
+
+  test('an undetermined permission keeps notifications pending', () async {
+    final gateway = FakeGateway()
+      ..enabledFailure = const NotificationsGatewayFailure();
+    final facade = NotificationsFacade(gateway: gateway, outbox: outbox);
+    await pending(outbox, 'later');
+
+    expect(await facade.deliverPending(), isA<Err>());
+
+    expect(gateway.shownIds, isEmpty);
+    gateway.enabledFailure = null;
+    expect(await facade.deliverPending(), isA<Ok>());
+    expect(gateway.shownIds, hasLength(1));
+  });
 }
