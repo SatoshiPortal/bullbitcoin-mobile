@@ -234,37 +234,50 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     return await _pdkPayjoinDatasource.fetchDirectoryKeys() != null;
   }
 
-  // TODO: Remove this and use the general frozen utxo datasource
   @override
   Future<List<({String txId, int vout})>>
-  getUtxosFrozenByOngoingPayjoins() async {
+  getUtxosFrozenByOngoingPayjoins() async => [
+    for (final reservation in await getInputReservations())
+      (txId: reservation.outpoint.txId, vout: reservation.outpoint.vout),
+  ];
+
+  @override
+  Future<List<api.PayjoinInputReservation>> getInputReservations() async {
     final payjoins = await _localPayjoinDatasource.fetchAll(
       onlyUnfinished: true,
     );
-
-    final inputs = await Future.wait(
-      payjoins.map((payjoin) async {
-        final psbt = payjoin is PayjoinReceiverModel
-            ? payjoin.proposalPsbt
-            : (payjoin as PayjoinSenderModel).originalPsbt;
-
-        if (psbt == null) {
-          return null;
-        }
-
-        // Extract the spent utxos from the proposal psbt
-        final proposalTx = _codec.decodePsbt(psbt);
-        final spentUtxos = proposalTx.inputs
-            .map((input) => (txId: input.txId, vout: input.vout))
-            .toList();
-        return spentUtxos;
-      }),
-    );
-
-    return inputs
-        .whereType<List<({String txId, int vout})>>()
-        .expand((element) => element)
-        .toList();
+    final reservations = <api.PayjoinInputReservation>[];
+    for (final payjoin in payjoins) {
+      // A receiver holds the inputs of its proposal, a sender those of its
+      // original; a receiver with no proposal yet holds nothing.
+      final (psbt, role) = switch (payjoin) {
+        PayjoinReceiverModel(:final proposalPsbt) => (
+          proposalPsbt,
+          api.PayjoinParty.recipient,
+        ),
+        PayjoinSenderModel(:final originalPsbt) => (
+          originalPsbt,
+          api.PayjoinParty.sender,
+        ),
+      };
+      if (psbt == null) continue;
+      // An undecodable row throws: an unreadable reservation is never none.
+      for (final outpoint in _codec.decodePsbt(psbt).inputs) {
+        reservations.add(
+          api.PayjoinInputReservation(
+            outpoint: outpoint,
+            sessionId: payjoin.id,
+            role: role,
+            walletId: payjoin.walletId,
+            network: payjoin.isTestnet
+                ? primitives.BitcoinNetwork.testnet
+                : primitives.BitcoinNetwork.mainnet,
+            status: api.PayjoinStatus.values.byName(payjoin.status.name),
+          ),
+        );
+      }
+    }
+    return reservations;
   }
 
   @override

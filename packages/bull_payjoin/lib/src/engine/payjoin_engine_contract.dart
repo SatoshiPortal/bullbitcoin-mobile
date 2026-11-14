@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bull_payjoin/src/domain/payjoin_failure.dart';
 import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
+import 'package:bull_payjoin/src/domain/payjoin_session.dart'
+    show PayjoinInputReservation;
 import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:primitives/primitives.dart';
 
@@ -16,6 +18,9 @@ abstract class PayjoinRepository {
   Future<Payjoin?> getPayjoinById(String payjoinId);
   Future<List<Payjoin>> getPayjoinsByTxId(String txId);
   Future<List<({String txId, int vout})>> getUtxosFrozenByOngoingPayjoins();
+
+  /// The inputs of [getUtxosFrozenByOngoingPayjoins], each with its session.
+  Future<List<PayjoinInputReservation>> getInputReservations();
 
   /// [amountSat] pins the amount inside the generated BIP21 URI, for callers
   /// that know it upfront and cannot revise the URI later. Left null, the URI

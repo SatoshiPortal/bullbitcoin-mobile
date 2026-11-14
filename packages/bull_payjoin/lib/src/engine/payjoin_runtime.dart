@@ -218,6 +218,8 @@ abstract interface class _PayjoinRuntimeContract {
     Set<String>? sessionIds,
   });
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints();
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations();
   Future<Result<PayjoinPolicy, PayjoinFailure>> load();
   Stream<Result<PayjoinPolicy, PayjoinFailure>> watchPolicy();
   Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
@@ -491,6 +493,16 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   }
 
   @override
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations() async {
+    try {
+      return Ok(await _engine.getInputReservations());
+    } catch (_) {
+      return const Err(PayjoinStorageFailure('UTXO lookup failed'));
+    }
+  }
+
+  @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> load() async {
     try {
       return Ok(await _policy.load());
@@ -675,6 +687,10 @@ final class _SessionsRole implements PayjoinSessions {
   @override
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints() =>
       _runtime.reservedOutpoints();
+
+  @override
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations() => _runtime.inputReservations();
 }
 
 final class _PolicyRole implements PayjoinPolicyAccess {
