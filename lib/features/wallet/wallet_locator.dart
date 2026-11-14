@@ -25,6 +25,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
@@ -155,12 +156,16 @@ class WalletLocator {
         readWallet: locator<WalletNativeRuntime>().liquid,
       ),
     );
+    locator.registerLazySingleton<SyncWalletValuesDatasource>(
+      () => SyncWalletValuesDatasource(
+        load: locator<WalletNativeRuntime>().loadWallet,
+      ),
+    );
     locator.registerLazySingleton<WalletAddressRepository>(
       () => WalletAddressRepository(
         native: locator<WalletNativeRuntime>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );
@@ -210,6 +215,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: sync.synchronize,
         isSyncing: sync.isSyncing,
         syncStarted: sync.started,
@@ -221,8 +227,7 @@ class WalletLocator {
       () => WalletTransactionRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
-        bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: locator<ForegroundWalletSync>().synchronize,
       ),
     );

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 // Regression test for a bug where `BdkWalletDatasource.buildPsbt` silently
@@ -224,12 +226,14 @@ void main() {
 
   test('last revealed index read does not reveal an address', () async {
     final native = await BdkTestStore.createWallet(walletModel);
-    final datasource = BdkWalletDatasource(readWallet: (_) async => native);
+    final datasource = SyncWalletValuesDatasource(
+      load: (key) => testWalletFromNative(native, key: key),
+    );
     final before = native.nextDerivationIndex(
       keychain: bdk.KeychainKind.external_,
     );
     expect(
-      await datasource.getLastRevealedAddressIndex(wallet: walletModel),
+      await datasource.getLastAddressIndex(wallet: walletModel),
       before - 1,
     );
     expect(
@@ -252,8 +256,11 @@ void main() {
   });
 
   test('checks multiple addresses against one wallet', () async {
-    final datasource = BdkWalletDatasource(
-      readWallet: BdkTestStore.createWallet,
+    final datasource = SyncWalletValuesDatasource(
+      load: (key) async => testWalletFromNative(
+        await BdkTestStore.createWallet(walletModel),
+        key: key,
+      ),
     );
 
     expect(

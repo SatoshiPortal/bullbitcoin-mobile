@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'dart:io';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -24,6 +25,8 @@ class _MockMetadataDatasource extends Mock
 
 class _MockLwkDatasource extends Mock implements LwkWalletDatasource {}
 
+class _MockValues extends Mock implements SyncWalletValuesDatasource {}
+
 class _MockFrozenDatasource extends Mock
     implements FrozenWalletUtxoDatasource {}
 
@@ -33,6 +36,7 @@ void main() {
   const second = (txId: 'second', vout: 1);
   const fee = RelativeFee(25);
   late _MockLwkDatasource lwk;
+  late _MockValues values;
   late _MockFrozenDatasource frozen;
   late LiquidWalletRepository repository;
   late FakeSecureStoragePlatform store;
@@ -51,6 +55,7 @@ void main() {
   setUp(() {
     final metadata = _MockMetadataDatasource();
     lwk = _MockLwkDatasource();
+    values = _MockValues();
     frozen = _MockFrozenDatasource();
     store = FakeSecureStoragePlatform()..install();
     final scratch = Directory.systemTemp.createTempSync('ben-liquid-test-');
@@ -59,6 +64,7 @@ void main() {
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => scratch.path),
       lwkWalletDatasource: lwk,
+      walletValuesDatasource: values,
       frozenWalletUtxoDatasource: frozen,
       // The address check needs lwk's native library; these tests cover
       // selection, so they accept every address.
@@ -80,7 +86,7 @@ void main() {
       ),
     );
     when(() => frozen.getAllFrozen()).thenAnswer((_) async => []);
-    when(() => lwk.getUtxos(wallet: any(named: 'wallet'))).thenAnswer(
+    when(() => values.getExactUtxos(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => [
         for (final coin in [first, second])
           WalletUtxoModel.liquid(

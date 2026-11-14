@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/read.dart' as sync_read show validateAddress;
 import 'package:sync/sync.dart' show SyncFailure;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -20,6 +21,7 @@ class LiquidWalletRepository implements LiquidSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Secrets _secrets;
   final LwkWalletDatasource _lwkWallet;
+  final SyncWalletValuesDatasource _values;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   final Future<Result<void, SyncFailure>> Function(
@@ -32,10 +34,12 @@ class LiquidWalletRepository implements LiquidSendPort {
     required this._walletMetadataDatasource,
     required this._secrets,
     required LwkWalletDatasource lwkWalletDatasource,
+    required SyncWalletValuesDatasource walletValuesDatasource,
     required this._frozenWalletUtxoDatasource,
     Future<Result<void, SyncFailure>> Function(String address, Network network)?
     validateAddress,
   }) : _lwkWallet = lwkWalletDatasource,
+       _values = walletValuesDatasource,
        _validateAddress = validateAddress ?? sync_read.validateAddress;
 
   @override
@@ -69,7 +73,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       Set<Outpoint>? inputs = selectedInputs;
       if (selectedInputs != null || frozen.isNotEmpty) {
         final available = {
-          for (final utxo in await _lwkWallet.getUtxos(wallet: wallet))
+          for (final utxo in await _values.getExactUtxos(wallet: wallet))
             if (!frozen.contains((txId: utxo.txId, vout: utxo.vout)))
               (txId: utxo.txId, vout: utxo.vout),
         };
@@ -120,7 +124,7 @@ class LiquidWalletRepository implements LiquidSendPort {
       network: metadata.network,
       id: metadata.id,
     );
-    return _lwkWallet.getLbtcUtxoCount(wallet: wallet);
+    return _values.getLbtcUtxoCount(wallet: wallet);
   }
 
   Future<List<String>> consolidate({

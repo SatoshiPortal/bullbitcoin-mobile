@@ -191,7 +191,9 @@ final class ChainTransactionList extends _ValueList<ChainTransaction> {
 /// Presentation choices (direction, net amount) belong to the consumer.
 sealed class ChainTransaction {
   final String txid;
-  final int feeSat;
+
+  /// Null when the wallet does not know every previous output (Bitcoin).
+  final int? feeSat;
   final int vsize;
 
   /// Unix seconds of the confirming block; null while unconfirmed.

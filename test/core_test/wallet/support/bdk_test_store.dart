@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
     show NetworkX;
 import 'dart:io';
@@ -7,6 +9,13 @@ import 'package:path_provider/path_provider.dart';
 
 /// Native fixture construction belongs to tests, never production readers.
 abstract final class BdkTestStore {
+  /// Values published by sync from this fixture's store, read fresh per call.
+  static SyncWalletValuesDatasource values(WalletModel model) =>
+      SyncWalletValuesDatasource(
+        load: (key) async =>
+            testWalletFromNative(await createWallet(model), key: key),
+      );
+
   static Future<String> _path(String hexId) async =>
       '${(await getApplicationDocumentsDirectory()).path}/${hexId}_bdk_dart';
 

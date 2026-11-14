@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' show WalletRevision, WalletKey;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -50,6 +51,8 @@ class _MockWalletMetadataDatasource extends Mock
 
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
+class _MockValues extends Mock implements SyncWalletValuesDatasource {}
+
 class _MockFrozenWalletUtxoDatasource extends Mock
     implements FrozenWalletUtxoDatasource {}
 
@@ -83,6 +86,7 @@ String _destination([bdk.Network network = bdk.Network.testnet, int fill = 1]) {
 void main() {
   late _MockWalletMetadataDatasource metadataDatasource;
   late _MockBdkWalletDatasource bdkDatasource;
+  late _MockValues values;
   late _MockFrozenWalletUtxoDatasource frozenDatasource;
   late BitcoinWalletRepository repository;
 
@@ -111,6 +115,7 @@ void main() {
     FakeSecureStoragePlatform().install();
     metadataDatasource = _MockWalletMetadataDatasource();
     bdkDatasource = _MockBdkWalletDatasource();
+    values = _MockValues();
     frozenDatasource = _MockFrozenWalletUtxoDatasource();
     repository = BitcoinWalletRepository(
       requireSpend: (_, {replacing}) async => WalletRevision(
@@ -122,6 +127,7 @@ void main() {
       // `Secrets` is final: the seam is the keystore below it, installed in `setUp`. No secret is stored — these cases never reach one.
       secrets: Secrets(scratchDirectory: () async => '/tmp'),
       bdkWalletDatasource: bdkDatasource,
+      walletValuesDatasource: values,
       frozenWalletUtxoDatasource: frozenDatasource,
     );
 
@@ -405,7 +411,7 @@ void main() {
 
   test('checks all recipient addresses in one datasource call', () async {
     when(
-      () => bdkDatasource.areAddressesMine(any(), wallet: any(named: 'wallet')),
+      () => values.areAddressesMine(any(), wallet: any(named: 'wallet')),
     ).thenAnswer((_) async => true);
 
     expect(
@@ -418,7 +424,7 @@ void main() {
 
     verify(() => metadataDatasource.fetch(_walletId)).called(1);
     verify(
-      () => bdkDatasource.areAddressesMine(const [
+      () => values.areAddressesMine(const [
         'tb1qfirst',
         'tb1qsecond',
       ], wallet: any(named: 'wallet')),

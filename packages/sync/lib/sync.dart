@@ -32,3 +32,4 @@ export 'src/domain/ports/wallet_catalog_port.dart';
 export 'src/domain/ports/wallet_connection_port.dart';
 export 'src/domain/ports/wallet_read_readiness_port.dart';
 export 'src/domain/ports/wallet_revision_reader_port.dart';
+export 'src/data/read/address_script.dart' show bitcoinAddressScript;

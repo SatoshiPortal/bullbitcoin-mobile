@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
@@ -14,12 +15,14 @@ import 'package:primitives/primitives.dart';
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final Secrets _secrets;
   final BdkWalletDatasource _wallet;
+  final SyncWalletValuesDatasource _values;
   final WalletMetadataDatasource _metadata;
   final WalletFacade _gate;
 
   const PayjoinWalletAdapter(
     this._secrets,
     this._wallet,
+    this._values,
     this._metadata,
     this._gate,
   );
@@ -67,10 +70,10 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required String walletId,
     required BitcoinNetwork network,
   }) async {
-    // Ownership is answered from the public descriptors; no key is needed, and none is loaded. Same watch-only view as the outpoint checker below.
+    // No key is loaded: sync answers from the exact index at the latest committed revision, never from an older frame.
     final metadata = await _loadMetadata(walletId, network);
     final wallet = WalletModel.fromMetadata(metadata);
-    return _wallet.createIsMineChecker(wallet: wallet);
+    return (await _values.getOwnership(wallet: wallet)).ownsScript;
   }
 
   @override
@@ -78,11 +81,10 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required String walletId,
     required BitcoinNetwork network,
   }) async {
-    // A watch-only view is enough: ownership is answered from the local index,
-    // no key material involved.
+    // Same exact index; outputs already spent are included, so one we owned and spent still answers as ours.
     final metadata = await _loadMetadata(walletId, network);
     final wallet = WalletModel.fromMetadata(metadata);
-    return _wallet.createOutpointIsMineChecker(wallet: wallet);
+    return (await _values.getOwnership(wallet: wallet)).ownsOutpoint;
   }
 
   @override
@@ -93,7 +95,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     await _requireSpend(walletId);
     final metadata = await _loadMetadata(walletId, network);
     final wallet = WalletModel.fromMetadata(metadata);
-    final utxos = await _wallet.getUtxos(wallet: wallet);
+    final utxos = await _values.getExactUtxos(wallet: wallet);
     return utxos.whereType<BitcoinWalletUtxoModel>().map((utxo) {
       return PayjoinUtxo(
         outpoint: (txId: utxo.txId, vout: utxo.vout),

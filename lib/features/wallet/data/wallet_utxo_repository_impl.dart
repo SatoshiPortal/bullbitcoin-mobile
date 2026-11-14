@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -14,17 +13,15 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final LabelsFacade _labelsFacade;
-  final BdkWalletDatasource _bdkWalletDatasource;
-  final LwkWalletDatasource _lwkWalletDatasource;
+  final SyncWalletValuesDatasource _values;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   WalletUtxoRepositoryImpl({
     required this._walletMetadataDatasource,
     required this._labelsFacade,
-    required this._bdkWalletDatasource,
-    required this._lwkWalletDatasource,
+    required SyncWalletValuesDatasource walletValuesDatasource,
     required this._frozenWalletUtxoDatasource,
-  });
+  }) : _values = walletValuesDatasource;
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
@@ -47,9 +44,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
             id: metadata.id,
           );
 
-    final utxoModels = metadata.isBitcoin
-        ? await _bdkWalletDatasource.getUtxos(wallet: walletModel)
-        : await _lwkWalletDatasource.getUtxos(wallet: walletModel);
+    final utxoModels = await _values.getUtxos(wallet: walletModel);
     // `isFrozen` is matched by outpoint against the global frozen set (an
     // outpoint is globally unique, so it belongs to one wallet anyway). Frozen
     // rows for coins this wallet doesn't hold simply never match. Materialise

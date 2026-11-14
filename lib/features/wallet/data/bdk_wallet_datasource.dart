@@ -1,17 +1,10 @@
 import 'package:sync/diagnostics.dart';
 import 'dart:async';
-import 'dart:math' hide log;
-import 'package:bull_logger/bull_logger.dart' show log;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/generic_extensions.dart';
-import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -22,7 +15,6 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:primitives/primitives.dart' show Outpoint;
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -52,63 +44,6 @@ class BdkWalletDatasource {
   final Future<bdk.Wallet> Function(WalletModel) _readWallet;
 
   BdkWalletDatasource({required this._readWallet});
-
-  Future<BalanceModel> getBalance({required WalletModel wallet}) async {
-    final bdkWallet = await LeaseDiagnostics.from(
-      LeaseSource.balance,
-      () => _readWallet(wallet),
-    );
-    final balanceInfo = bdkWallet.balance();
-
-    final balance = BalanceModel(
-      confirmedSat: BigInt.from(balanceInfo.confirmed.toSat()),
-      immatureSat: BigInt.from(balanceInfo.immature.toSat()),
-      trustedPendingSat: BigInt.from(balanceInfo.trustedPending.toSat()),
-      untrustedPendingSat: BigInt.from(balanceInfo.untrustedPending.toSat()),
-      spendableSat: BigInt.from(balanceInfo.trustedSpendable.toSat()),
-      totalSat: BigInt.from(balanceInfo.total.toSat()),
-    );
-
-    return balance;
-  }
-
-  Future<bool> isMine(
-    Uint8List scriptBytes, {
-    required WalletModel wallet,
-    bdk.Wallet? bdkWallet,
-  }) async {
-    final w = bdkWallet ?? await _readWallet(wallet);
-    return w.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
-  }
-
-  /// Returns a synchronous `isMine` check bound to a pre-loaded bdk wallet.
-  Future<bool Function(Uint8List)> createIsMineChecker({
-    required WalletModel wallet,
-  }) async {
-    final bdkWallet = await _readWallet(wallet);
-    return (Uint8List scriptBytes) =>
-        bdkWallet.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
-  }
-
-  /// Returns a synchronous outpoint-ownership check bound to a pre-loaded bdk
-  /// wallet.
-  ///
-  /// Built from `listOutput()`, not `listUnspent()` or `getUtxo()`: those only
-  /// know the wallet's *unspent* outputs, so an output we owned and already
-  /// spent would answer "not mine". Answering over the full set leaves the
-  /// caller no gap to reason about. The set is a snapshot of the local index at
-  /// creation time — cheap, no network — so bind it per operation rather than
-  /// caching it across syncs.
-  Future<bool Function(Outpoint)> createOutpointIsMineChecker({
-    required WalletModel wallet,
-  }) async {
-    final bdkWallet = await _readWallet(wallet);
-    final owned = <Outpoint>{
-      for (final output in bdkWallet.listOutput())
-        (txId: output.outpoint.txid.toString(), vout: output.outpoint.vout),
-    };
-    return owned.contains;
-  }
 
   /// Returns [psbt] with this wallet's BIP32 derivations added to every input
   /// and output it owns, from its local index. Signs nothing: the wallet is
@@ -141,19 +76,6 @@ class BdkWalletDatasource {
     signWithTapInternalKey: false,
     allowGrinding: true,
   );
-
-  Future<bool> areAddressesMine(
-    List<String> addresses, {
-    required WalletModel wallet,
-  }) async {
-    final bdkWallet = await _readWallet(wallet);
-    final network = wallet.network.bdkNetwork;
-    for (final address in addresses) {
-      final bdkAddress = bdk.Address(address: address, network: network);
-      if (!bdkWallet.isMine(script: bdkAddress.scriptPubkey())) return false;
-    }
-    return true;
-  }
 
   Future<String> buildPsbt({
     required List<BitcoinTransactionRecipientModel> recipients,
@@ -412,350 +334,8 @@ class BdkWalletDatasource {
     return totalSentToScript - fixedToSameScript;
   }
 
-  // 25000 - 988
-
-  Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
-    final bdkWallet = await LeaseDiagnostics.from(
-      LeaseSource.utxos,
-      () => _readWallet(wallet),
-    );
-    final unspent = bdkWallet.listUnspent();
-    // Chain tip read once from the already-synced wallet (no extra network
-    // calls); reused for every utxo's confirmation count.
-    final tip = bdkWallet.latestCheckpoint().height;
-    final utxos = await Future.wait(
-      unspent.map((unspent) async {
-        final address =
-            await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-              unspent.txout.scriptPubkey.toBytes(),
-              network: wallet.network,
-            );
-        // Confirmation count from the utxo's chain position (mirrors the
-        // handling in getTransactions); unconfirmed utxos report 0.
-        final chainPosition = unspent.chainPosition;
-        final confirmedHeight = chainPosition is bdk.ConfirmedChainPosition
-            ? chainPosition.confirmationBlockTime.blockId.height
-            : null;
-        final confirmations = confirmationsFromTip(
-          tip: tip,
-          height: confirmedHeight,
-        );
-        return WalletUtxoModel.bitcoin(
-          txId: unspent.outpoint.txid.toString(),
-          vout: unspent.outpoint.vout,
-          amountSat: BigInt.from(unspent.txout.value.toSat()),
-          scriptPubkey: unspent.txout.scriptPubkey.toBytes(),
-          // Since it's a BDK utxo, the address should not be null
-          // but we return an empty string in case it is for some reason
-          address: address ?? '',
-          isExternalKeyChain: unspent.keychain == bdk.KeychainKind.external_,
-          confirmations: confirmations,
-        );
-      }),
-    );
-    return utxos;
-  }
-
-  Future<List<WalletTransactionModel>> getTransactions({
-    required WalletModel wallet,
-    String? toAddress,
-  }) async {
-    final bdkWallet = await LeaseDiagnostics.from(
-      LeaseSource.transactions,
-      () => _readWallet(wallet),
-    );
-
-    // Both mapping passes reuse these strings after releasing their owned temporary native handles.
-    final transactions = bdkWallet.transactions().map((tx) {
-      return (tx, _consumeTxid(tx.transaction.computeTxid()));
-    }).toList();
-
-    final allTransactionOutputs = await _getAllOutputsOfTransactions(
-      transactions,
-      wallet: wallet,
-      bdkWallet: bdkWallet,
-    );
-
-    // Map the transactions to WalletTransactionModel
-    final List<WalletTransactionModel?> walletTxs = await Future.wait(
-      transactions.map((entry) async {
-        final (tx, txId) = entry;
-        final outputs = tx.transaction.output();
-
-        if (toAddress != null && toAddress.isNotEmpty) {
-          // Filter transactions by address by returning null for non-matching transactions
-          // and then removing null values from the list with whereType at the end of the method
-          final matches = (await Future.wait(
-            outputs.map((output) async {
-              final address =
-                  await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-                    output.scriptPubkey.toBytes(),
-                    network: wallet.network,
-                  );
-              if (address == null) return false;
-              return address == toAddress;
-            }),
-          )).any((matches) => matches);
-
-          if (!matches) return null;
-        }
-
-        // Map inputs and outputs to their respective models
-        final inputModels = tx.transaction.input().asMap().entries.map((entry) {
-          final input = entry.value;
-          final vin = entry.key;
-          final previousOutput = input.previousOutput;
-          final previousTxId = _consumeTxid(previousOutput.txid);
-          final output = allTransactionOutputs.firstWhereOrNull(
-            (output) =>
-                output.txId == previousTxId &&
-                output.vout == previousOutput.vout,
-          );
-
-          return TransactionInputModel.bitcoin(
-            txId: txId,
-            vin: vin,
-            isOwn: output?.isOwn ?? false,
-            scriptSig: input.scriptSig.toBytes(),
-            previousTxId: previousTxId,
-            previousTxVout: previousOutput.vout,
-          );
-        }).toList();
-        final outputModels = allTransactionOutputs
-            .where((output) => output.txId == txId)
-            .toList();
-
-        // Check if all inputs and outputs are owned by the wallet itself
-        final isToSelf =
-            inputModels.every((input) => input.isOwn) &&
-            outputModels.every((output) => output.isOwn);
-
-        final sentAndReceived = bdkWallet.sentAndReceived(tx: tx.transaction);
-        final received = sentAndReceived.received.toSat();
-        final sent = sentAndReceived.sent.toSat();
-        final fee = bdkWallet.calculateFee(tx: tx.transaction).toSat();
-        final chainPosition = tx.chainPosition;
-        int? confirmationTime;
-        if (chainPosition is bdk.ConfirmedChainPosition) {
-          final blockTime = chainPosition.confirmationBlockTime;
-
-          confirmationTime = blockTime.confirmationTime;
-        }
-
-        final isIncoming = received > sent;
-        final netAmountSat = _netAmountSatOf(
-          isToSelf: isToSelf,
-          isIncoming: isIncoming,
-          outputs: outputModels,
-          sent: sent,
-          received: received,
-          fee: fee,
-        );
-
-        return WalletTransactionModel(
-          txId: txId,
-          isIncoming: isIncoming,
-          amountSat: netAmountSat.toInt(),
-          feeSat: fee.toInt(),
-          vsize: tx.transaction.vsize().toInt(),
-          confirmationTimestamp: confirmationTime,
-          isToSelf: isToSelf,
-          inputs: inputModels,
-          outputs: outputModels,
-          network: wallet.network,
-          isRbf: tx.transaction.isExplicitlyRbf(),
-        );
-      }),
-    );
-
-    return walletTxs.whereType<WalletTransactionModel>().toList();
-  }
-
   // This can return -1 if no address has been revealed yet.
   // This should be handled accordingly by the caller.
-  Future<int> getLastRevealedAddressIndex({
-    required WalletModel wallet,
-    bool isChange = false,
-  }) async {
-    final bdkWallet = await LeaseDiagnostics.from(
-      LeaseSource.addressList,
-      () => _readWallet(wallet),
-    );
-    return bdkWallet.nextDerivationIndex(
-          keychain: isChange
-              ? bdk.KeychainKind.internal
-              : bdk.KeychainKind.external_,
-        ) -
-        1;
-  }
-
-  Future<String> getAddressByIndex(
-    int index, {
-    required WalletModel wallet,
-    isChange = false,
-  }) async {
-    final bdkWallet = await LeaseDiagnostics.from(
-      LeaseSource.addressList,
-      () => _readWallet(wallet),
-    );
-    final addressInfo = bdkWallet.peekAddress(
-      keychain: isChange
-          ? bdk.KeychainKind.internal
-          : bdk.KeychainKind.external_,
-      index: index,
-    );
-
-    final address = addressInfo.address.toString();
-
-    return address;
-  }
-
-  Future<bool> isAddressUsed(
-    String address, {
-    required WalletModel wallet,
-  }) async {
-    final bdkWallet = await LeaseDiagnostics.from(
-      LeaseSource.addressList,
-      () => _readWallet(wallet),
-    );
-    final transactions = bdkWallet.transactions();
-
-    // TODO: Use future.wait to parallelize the loop and improve performance
-    for (final tx in transactions) {
-      final txOutputs = tx.transaction.output();
-
-      for (final output in txOutputs) {
-        final generatedAddress =
-            await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-              output.scriptPubkey.toBytes(),
-              network: wallet.network,
-            );
-        if (generatedAddress == null) continue;
-        if (generatedAddress == address) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  Future<Map<String, BigInt>> getAddressBalancesSat({
-    required WalletModel wallet,
-  }) async {
-    final bdkWallet = await LeaseDiagnostics.from(
-      LeaseSource.addressList,
-      () => _readWallet(wallet),
-    );
-    final utxos = bdkWallet.listUnspent();
-    final addressBalances = <String, BigInt>{};
-
-    for (final utxo in utxos) {
-      final utxoAddress =
-          await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-            utxo.txout.scriptPubkey.toBytes(),
-            network: wallet.network,
-          );
-      if (utxoAddress == null) continue;
-
-      addressBalances[utxoAddress] =
-          (addressBalances[utxoAddress] ?? BigInt.zero) +
-          BigInt.from(utxo.txout.value.toSat());
-    }
-
-    return addressBalances;
-  }
-
-  /// The amount to show for a transaction, from this wallet's point of view.
-  static int _netAmountSatOf({
-    required bool isToSelf,
-    required bool isIncoming,
-    required List<BitcoinTransactionOutputModel> outputs,
-    required int sent,
-    required int received,
-    required int fee,
-  }) {
-    if (isToSelf) {
-      // `sent` is the whole utxo we spent, not what we paid: coin selection
-      // spends whole utxos and hands the rest back as change.
-      final toDestination = outputs
-          .where((output) => !output.isChange)
-          .fold(0, (sum, output) => sum + (output.value?.toInt() ?? 0));
-      // Nothing paid out — a consolidation. The fee is the only balance change.
-      return toDestination > 0 ? toDestination : fee;
-    }
-
-    // The sender paid the fee, so it never left this balance.
-    if (isIncoming) return received - sent;
-
-    // We paid the fee, so take it off to leave what reached the recipient.
-    return sent - received - fee;
-  }
-
-  /// Consumes only a freshly acquired txid, never a shared wallet handle.
-  static String _consumeTxid(bdk.Txid txid) {
-    try {
-      return txid.toString();
-    } finally {
-      txid.dispose();
-    }
-  }
-
-  Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
-    List<(bdk.CanonicalTx, String)> transactions, {
-    required WalletModel wallet,
-    required bdk.Wallet bdkWallet,
-  }) async {
-    // Our own change outputs, by outpoint. In a send-to-self every output is
-    // ours, so only the keychain separates the recipient from the change.
-    // `listOutput()` covers spent outputs too, and hits no network.
-    final changeOutpoints = <Outpoint>{
-      for (final output in bdkWallet.listOutput())
-        if (output.keychain == bdk.KeychainKind.internal)
-          (
-            txId: _consumeTxid(output.outpoint.txid),
-            vout: output.outpoint.vout,
-          ),
-    };
-
-    final listOfOutputs = await Future.wait(
-      transactions.map((entry) async {
-        final (tx, txId) = entry;
-        final outputs = tx.transaction.output();
-        final models = await Future.wait(
-          outputs.asMap().entries.map((outputEntry) async {
-            final vout = outputEntry.key;
-            final output = outputEntry.value;
-            final scriptPubkeyBytes = output.scriptPubkey.toBytes();
-            final address =
-                await _AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-                  output.scriptPubkey.toBytes(),
-                  network: wallet.network,
-                );
-
-            return TransactionOutputModel.bitcoin(
-              txId: txId,
-              vout: vout,
-              isOwn: await isMine(
-                scriptPubkeyBytes,
-                wallet: wallet,
-                bdkWallet: bdkWallet,
-              ),
-              value: BigInt.from(output.value.toSat()),
-              scriptPubkey: scriptPubkeyBytes,
-              address: address,
-              isChange: changeOutpoints.contains((txId: txId, vout: vout)),
-            );
-          }),
-        );
-        return models;
-      }),
-    );
-
-    final allOutputs = listOfOutputs.expand((i) => i).toList();
-    return allOutputs.whereType<BitcoinTransactionOutputModel>().toList();
-  }
-
   Future<String> createUnsignedReplaceByFeePsbt({
     required String txid,
     required RelativeFee feeRate,
@@ -876,14 +456,6 @@ class FailedToSignPsbtException extends BullException {
 
 class UnsupportedBdkNetworkException extends BullException {
   UnsupportedBdkNetworkException(super.message);
-}
-
-/// Confirmation count for an output confirmed at [height], given the current
-/// chain [tip]. A `null` height (unconfirmed) returns 0; the result is clamped
-/// to 0 to guard a reorg / mid-sync window where `tip < height` (D2).
-int confirmationsFromTip({required int tip, required int? height}) {
-  if (height == null) return 0;
-  return max(0, tip - height + 1);
 }
 
 class _DryScanParams {
@@ -1020,31 +592,5 @@ bdk.ElectrumClient _createElectrumClient({
       return build();
     }
     rethrow;
-  }
-}
-
-class _AddressScriptConversions {
-  static Future<String?> bitcoinAddressFromScriptPubkey(
-    Uint8List scriptPubkey, {
-    required Network network,
-  }) async {
-    try {
-      final address = bdk.Address.fromScript(
-        script: bdk.Script(rawOutputScript: scriptPubkey),
-        network: network.bdkNetwork,
-      );
-
-      return address.toString();
-    } catch (e) {
-      // This is expected for non-address scripts (e.g. OP_RETURN) and
-      // not really a bug so using fine instead of severe or warning to avoid
-      // flooding the logger with it.
-      log.fine(
-        'error converting scriptPubkey to address',
-        error: e,
-        trace: StackTrace.current,
-      );
-      return null;
-    }
   }
 }

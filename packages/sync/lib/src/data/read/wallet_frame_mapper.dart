@@ -9,6 +9,14 @@ import '../../domain/wallet_revision.dart';
 import '../../domain/wallet_values.dart';
 import '../wallet_projections.dart';
 
+/// Confirmation count for an output confirmed at [height], given the wallet's
+/// [tip]. Null (unconfirmed) is 0; clamped to 0 when a reorg or mid-sync
+/// window puts the tip below the height.
+int confirmationsFromTip({required int tip, required int? height}) {
+  if (height == null) return 0;
+  return max(0, tip - height + 1);
+}
+
 /// The lookahead the reader loads Bitcoin wallets with.
 const bitcoinLookahead = 25;
 
@@ -58,13 +66,14 @@ WalletFrame bitcoinFrame(
         keychain: unspent.keychain == bdk.KeychainKind.internal
             ? Keychain.internal
             : Keychain.external,
-        confirmations: switch (unspent.chainPosition) {
-          final bdk.ConfirmedChainPosition position => max(
-            0,
-            tip - position.confirmationBlockTime.blockId.height + 1,
-          ),
-          _ => 0,
-        },
+        confirmations: confirmationsFromTip(
+          tip: tip,
+          height: switch (unspent.chainPosition) {
+            final bdk.ConfirmedChainPosition position =>
+              position.confirmationBlockTime.blockId.height,
+            _ => null,
+          },
+        ),
       ),
   ];
 
@@ -78,7 +87,7 @@ WalletFrame bitcoinFrame(
     transactions.add(
       BitcoinTransaction(
         txid: txid,
-        feeSat: wallet.calculateFee(tx: tx).toSat(),
+        feeSat: _fee(wallet, tx),
         vsize: tx.vsize(),
         confirmationTime: position is bdk.ConfirmedChainPosition
             ? position.confirmationBlockTime.confirmationTime
@@ -275,6 +284,16 @@ final class LiquidMappingException implements Exception {
 
   @override
   String toString() => 'LiquidMappingException($field)';
+}
+
+/// Null when an input's previous output is unknown to the wallet: one such
+/// transaction must not keep the balances and coins from being published.
+int? _fee(bdk.Wallet wallet, bdk.Transaction tx) {
+  try {
+    return wallet.calculateFee(tx: tx).toSat();
+  } on bdk.CalculateFeeException {
+    return null;
+  }
 }
 
 /// Consumes a freshly acquired txid, never a shared wallet handle.

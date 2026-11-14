@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -39,6 +40,8 @@ class _Reporter extends Mock implements LoggerReporter {}
 class _Bitcoin extends Mock implements BdkWalletDatasource {}
 
 class _Liquid extends Mock implements LwkWalletDatasource {}
+
+class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 class _Connections extends Mock implements WalletConnectionPort {}
 
@@ -87,7 +90,8 @@ void main() {
     native = _Native();
     when(() => native.prepareCreate(any())).thenAnswer((_) async {});
     final bitcoin = _Bitcoin();
-    when(() => bitcoin.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
+    final values = _Values();
+    when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => BalanceModel(
         confirmedSat: BigInt.zero,
         immatureSat: BigInt.zero,
@@ -102,6 +106,7 @@ void main() {
       walletMetadataDatasource: metadata,
       bdkWalletDatasource: bitcoin,
       lwkWalletDatasource: _Liquid(),
+      walletValuesDatasource: values,
       synchronize:
           (
             _, {

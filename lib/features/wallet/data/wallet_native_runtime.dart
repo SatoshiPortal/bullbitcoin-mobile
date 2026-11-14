@@ -11,7 +11,8 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 import 'package:sync/read.dart';
-import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' hide Wallet;
+import 'package:sync/sync.dart' as sync show Wallet;
 import 'package:sync/write.dart';
 
 import 'wallet_catalog_port_impl.dart';
@@ -68,22 +69,22 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       });
 
   Future<_NativeServices> _open() async {
-    final stores = openForeground(
+    final sync = Sync.openForeground(
       documentsDirectory: await _documentsDirectory(),
       catalog: _catalog,
       reservedAddresses: _reserved,
     );
     StreamSubscription<WalletRevisionState>? subscription;
     try {
-      subscription = stores.changes.listen(_changes.add);
+      subscription = sync.changes.watch().listen(_changes.add);
       // Inject a failure after acquiring resources to verify cleanup in tests.
-      _onStoresOpened?.call(stores);
-      return _NativeServices(stores, subscription);
+      _onStoresOpened?.call(sync.stores);
+      return _NativeServices(sync, subscription);
     } catch (_) {
       try {
         await subscription?.cancel();
       } finally {
-        await stores.close();
+        await sync.close();
       }
       rethrow;
     }
@@ -376,6 +377,18 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
   }
 
+  /// A wallet whose values are loaded at its latest committed revision, from
+  /// local stores only. Throws [WalletSnapshotException] with the failure.
+  Future<sync.Wallet> loadWallet(WalletKey key) async {
+    await initialize();
+    final failure = _unavailable[key];
+    if (failure != null) throw WalletSnapshotException(failure);
+    final wallet = _value(await (await _services).sync.wallet(key));
+    _value(await wallet.load());
+    return wallet;
+  }
+
+  /// Builders only, until spends move into sync.
   Future<bdk.Wallet> bitcoin(WalletModel model) async =>
       _borrow<bdk.Wallet>(model);
   Future<lwk.Wallet> liquid(WalletModel model) async =>
@@ -436,7 +449,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       try {
         await services.subscription.cancel();
       } finally {
-        await services.stores.close();
+        await services.sync.close();
       }
     }
     await _changes.close();
@@ -449,9 +462,11 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 }
 
 final class _NativeServices {
-  final ForegroundStores stores;
+  final Sync sync;
   final StreamSubscription<WalletRevisionState> subscription;
-  _NativeServices(this.stores, this.subscription);
+  _NativeServices(this.sync, this.subscription);
+
+  ForegroundStores get stores => sync.stores;
 
   WalletWriterRepository get writer => stores.writer;
 }

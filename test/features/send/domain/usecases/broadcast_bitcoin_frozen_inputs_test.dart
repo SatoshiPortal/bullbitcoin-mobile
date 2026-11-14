@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'dart:io';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
@@ -7,9 +8,7 @@ import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -33,9 +32,7 @@ class _MockWalletMetadataDatasource extends Mock
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
-class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
-
-class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -70,8 +67,7 @@ void main() {
         WalletUtxoRepositoryImpl(
           walletMetadataDatasource: _MockWalletMetadataDatasource(),
           labelsFacade: _MockLabelsFacade(),
-          bdkWalletDatasource: _MockBdkWalletDatasource(),
-          lwkWalletDatasource: _MockLwkWalletDatasource(),
+          walletValuesDatasource: _MockValues(),
           frozenWalletUtxoDatasource: frozenStore,
         ),
   );

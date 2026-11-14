@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -33,6 +34,7 @@ abstract final class PayjoinSetup {
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
           locator<BdkWalletDatasource>(),
+          locator<SyncWalletValuesDatasource>(),
           locator<WalletMetadataDatasource>(),
           locator<WalletFacade>(),
         ),

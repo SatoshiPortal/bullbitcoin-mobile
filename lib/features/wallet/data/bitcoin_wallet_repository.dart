@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' show BitcoinSpendStatus, WalletRevision;
 import '../domain/wallet_spend_failure.dart';
 import 'package:sync/read.dart' show validateAddress;
@@ -35,6 +36,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   final Future<WalletRevision> Function(String, {String? replacing})
   _requireSpend;
   final BdkWalletDatasource _bdkWallet;
+  final SyncWalletValuesDatasource _values;
   final FrozenWalletUtxoDatasource _frozenUtxos;
 
   BitcoinWalletRepository({
@@ -42,8 +44,10 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     required this._secrets,
     required this._requireSpend,
     required BdkWalletDatasource bdkWalletDatasource,
+    required SyncWalletValuesDatasource walletValuesDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
   }) : _bdkWallet = bdkWalletDatasource,
+       _values = walletValuesDatasource,
        _frozenUtxos = frozenWalletUtxoDatasource;
 
   @override
@@ -239,7 +243,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
+    final isFromWallet = await _values.isMine(script, wallet: wallet);
 
     return isFromWallet;
   }
@@ -268,7 +272,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.areAddressesMine(
+    final isFromWallet = await _values.areAddressesMine(
       addresses,
       wallet: wallet,
     );

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
 import 'dart:async';
 import 'package:sync/read.dart';
@@ -53,6 +54,8 @@ class _Bdk extends Mock implements BdkWalletDatasource {}
 
 class _Lwk extends Mock implements LwkWalletDatasource {}
 
+class _Values extends Mock implements SyncWalletValuesDatasource {}
+
 final class _Policy implements WalletConnectionPort {
   SyncFailure? failure;
   int calls = 0;
@@ -95,6 +98,7 @@ void main() {
   late _Policy policy;
   late _Metadata metadata;
   late _Bdk bdk;
+  late _Values values;
   late WalletRepository repository;
   late ForegroundWalletSync bridge;
 
@@ -103,10 +107,11 @@ void main() {
     policy = _Policy();
     metadata = _Metadata();
     bdk = _Bdk();
+    values = _Values();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
     when(() => metadata.store(any())).thenAnswer((_) async {});
     when(() => metadata.insert(any())).thenAnswer((_) async {});
-    when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
+    when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => BalanceModel(
         confirmedSat: BigInt.zero,
         immatureSat: BigInt.zero,
@@ -127,6 +132,7 @@ void main() {
       walletMetadataDatasource: metadata,
       bdkWalletDatasource: bdk,
       lwkWalletDatasource: _Lwk(),
+      walletValuesDatasource: values,
       synchronize: bridge.synchronize,
       isSyncing: bridge.isSyncing,
       syncStarted: bridge.started,
@@ -199,6 +205,7 @@ void main() {
           walletMetadataDatasource: metadata,
           bdkWalletDatasource: bdk,
           lwkWalletDatasource: _Lwk(),
+          walletValuesDatasource: values,
           synchronize: bridge.synchronize,
           isSyncing: bridge.isSyncing,
           syncStarted: bridge.started,
@@ -251,7 +258,7 @@ void main() {
       final result = await repository.getCustodyFingerprints();
       expect(result, isA<Ok>());
       expect((result as Ok).value, {Fingerprint('aabbccdd')});
-      verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
+      verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
     },
   );
 
@@ -285,7 +292,7 @@ void main() {
     () async {
       final other = row.copyWith(id: 'wpkh([11223344/84h/1h/0h])');
       when(() => metadata.fetchAll()).thenAnswer((_) async => [row, other]);
-      when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
+      when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
         invocation,
       ) async {
         final model = invocation.namedArguments[#wallet] as WalletModel;
@@ -331,7 +338,7 @@ void main() {
   test('sync start emits without admitting a balance reader', () async {
     final wallet =
         (await repository.getWallet(id) as Ok<Wallet, WalletFailure>).value;
-    clearInteractions(bdk);
+    clearInteractions(values);
     final gate = Completer<void>();
     policy.gate = gate.future;
     final started = repository.walletSyncStartedStream.first;
@@ -340,7 +347,7 @@ void main() {
     ).execute(wallet);
     try {
       await started;
-      verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
+      verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
     } finally {
       gate.complete();
       await syncing;
@@ -455,6 +462,7 @@ void main() {
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
+        walletValuesDatasource: values,
         synchronize:
             (
               metadata, {
@@ -547,13 +555,13 @@ void main() {
 
   test('transaction reads delegate sync to the same operation', () async {
     when(
-      () => bdk.getTransactions(wallet: any(named: 'wallet'), toAddress: null),
+      () =>
+          values.getTransactions(wallet: any(named: 'wallet'), toAddress: null),
     ).thenAnswer((_) async => []);
     final transactions = WalletTransactionRepositoryImpl(
       walletMetadataDatasource: metadata,
       labelsFacade: _Labels(),
-      bdkWalletTransactionDatasource: bdk,
-      lwkWalletTransactionDatasource: _Lwk(),
+      walletValuesDatasource: values,
       synchronize: bridge.synchronize,
     );
     expect(
@@ -562,7 +570,8 @@ void main() {
     );
     expect(policy.calls, 1);
     verify(
-      () => bdk.getTransactions(wallet: any(named: 'wallet'), toAddress: null),
+      () =>
+          values.getTransactions(wallet: any(named: 'wallet'), toAddress: null),
     ).called(1);
   });
 
@@ -601,7 +610,7 @@ void main() {
       (await log.readLogs()).join('\n'),
       isNot(contains('Wallet read failed')),
     );
-    verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
+    verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
   });
   test(
     'descriptor import persists catalog then creates offline before sync',
@@ -630,25 +639,26 @@ void main() {
       });
       when(() => native.create(any())).thenAnswer((_) async {
         verify(() => metadata.insert(any())).called(1);
-        verifyNever(() => bdk.getBalance(wallet: any(named: 'wallet')));
+        verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
         provisioned = true;
       });
       var synchronized = false;
-      final originalBalance = await bdk.getBalance(
+      final originalBalance = await values.getBalance(
         wallet: WalletModel.fromMetadata(row),
       );
-      when(() => bdk.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
+      when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer((
         _,
       ) async {
         expect(provisioned, isTrue);
         return originalBalance;
       });
-      clearInteractions(bdk);
+      clearInteractions(values);
       final importing = WalletRepository(
         native: native,
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
+        walletValuesDatasource: values,
         synchronize:
             (
               value, {
@@ -674,7 +684,7 @@ void main() {
       );
       expect(synchronized, isTrue);
       expect(wallet.id, id);
-      verify(() => bdk.getBalance(wallet: any(named: 'wallet'))).called(1);
+      verify(() => values.getBalance(wallet: any(named: 'wallet'))).called(1);
     },
   );
 }

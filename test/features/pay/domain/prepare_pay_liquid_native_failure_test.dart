@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -82,6 +83,10 @@ void main() {
           dbpath: Directory.systemTemp.path,
           descriptor: const lwk.Descriptor(ctDescriptor: 'descriptor'),
         ),
+      ),
+      // No coin is read: nothing is frozen and no input is selected.
+      walletValuesDatasource: SyncWalletValuesDatasource(
+        load: (_) async => throw StateError('no value read expected'),
       ),
       frozenWalletUtxoDatasource: frozen,
     );

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -10,6 +11,8 @@ import 'package:secrets/secrets.dart';
 
 class _Wallet extends Mock implements BdkWalletDatasource {}
 
+class _Values extends Mock implements SyncWalletValuesDatasource {}
+
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 void main() {
@@ -20,6 +23,7 @@ void main() {
       PayjoinWalletAdapter(
         Secrets(scratchDirectory: () async => '/tmp'),
         _Wallet(),
+        _Values(),
         metadata,
         WalletFacade(
           const Stream.empty(),

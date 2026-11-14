@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -21,6 +23,7 @@ void main() {
   const fee = RelativeFee(25);
   late _MockLwkWallet lwkWallet;
   late LwkWalletDatasource datasource;
+  late SyncWalletValuesDatasource values;
 
   lwk.TxOut coin(
     String txid, {
@@ -48,6 +51,28 @@ void main() {
   setUp(() {
     lwkWallet = _MockLwkWallet();
     datasource = LwkWalletDatasource(readWallet: (_) async => lwkWallet);
+    values = SyncWalletValuesDatasource(
+      load: (key) => testWalletFromNative(lwkWallet, key: key),
+    );
+    // The frame reads every value; tests override what they exercise.
+    when(() => lwkWallet.balances()).thenAnswer(
+      (_) async => [
+        lwk.WalletBalance(
+          assetId: AssetConstants.lbtcTestnet,
+          value: BigInt.zero,
+        ),
+      ],
+    );
+    when(() => lwkWallet.utxos()).thenAnswer((_) async => []);
+    when(() => lwkWallet.txs()).thenAnswer((_) async => []);
+    when(() => lwkWallet.addressLastUnused()).thenAnswer(
+      (_) async =>
+          const lwk.Address(standard: 's', confidential: 'c', index: 0),
+    );
+    when(() => lwkWallet.address(index: any(named: 'index'))).thenAnswer(
+      (_) async =>
+          const lwk.Address(standard: 's', confidential: 'c', index: 0),
+    );
     when(
       () => lwkWallet.policyAsset(),
     ).thenAnswer((_) async => AssetConstants.lbtcTestnet);
@@ -244,7 +269,7 @@ void main() {
       (_) async => [coin('lbtc'), coin('other-asset', asset: 'other')],
     );
 
-    final coins = await datasource.getUtxos(wallet: wallet);
+    final coins = await values.getUtxos(wallet: wallet);
 
     expect(coins.map((coin) => coin.txId), ['lbtc']);
     expect((coins.single as LiquidWalletUtxoModel).blockHeight, 100);
@@ -338,7 +363,7 @@ void main() {
 
     Future<int> amountOf(lwk.Tx tx) async {
       when(() => lwkWallet.txs()).thenAnswer((_) async => [tx]);
-      final txs = await datasource.getTransactions(wallet: wallet);
+      final txs = await values.getTransactions(wallet: wallet);
       return txs.single.amountSat;
     }
 

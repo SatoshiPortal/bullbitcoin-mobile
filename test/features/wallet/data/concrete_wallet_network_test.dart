@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' show SyncReason;
 import 'package:primitives/primitives.dart' show Fingerprint, Ok;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -17,6 +18,8 @@ class _Metadata extends Mock implements WalletMetadataDatasource {}
 class _Bdk extends Mock implements BdkWalletDatasource {}
 
 class _Lwk extends Mock implements LwkWalletDatasource {}
+
+class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 WalletMetadataModel _row(Network network) {
   final origin = 'wpkh([73c5da0a/84h/${network.coinType}h/0h])';
@@ -41,6 +44,7 @@ void main() {
     () async {
       final metadata = _Metadata();
       final bdk = _Bdk();
+      final values = _Values();
       final rows = [
         for (final network in [
           Network.bitcoinMainnet,
@@ -52,12 +56,13 @@ void main() {
       when(metadata.fetchAll).thenAnswer((_) async => rows);
       registerFallbackValue(WalletModel.fromMetadata(rows.first));
       when(
-        () => bdk.getBalance(wallet: any(named: 'wallet')),
+        () => values.getBalance(wallet: any(named: 'wallet')),
       ).thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
         walletMetadataDatasource: metadata,
         bdkWalletDatasource: bdk,
         lwkWalletDatasource: _Lwk(),
+        walletValuesDatasource: values,
         synchronize:
             (
               _, {
@@ -92,12 +97,14 @@ void main() {
         final metadata = _Metadata();
         final bdk = _Bdk();
         final lwk = _Lwk();
+        final values = _Values();
         final row = _row(Network.bitcoinRegtest).copyWith(networkCode: code);
         when(metadata.fetchAll).thenAnswer((_) async => [row]);
         final repository = WalletRepository(
           walletMetadataDatasource: metadata,
           bdkWalletDatasource: bdk,
           lwkWalletDatasource: lwk,
+          walletValuesDatasource: values,
           synchronize:
               (
                 _, {
@@ -123,6 +130,7 @@ void main() {
         expect(watchOnly.fold((value) => value, (_) => true), false);
         verifyZeroInteractions(bdk);
         verifyZeroInteractions(lwk);
+        verifyZeroInteractions(values);
       },
     );
   }
