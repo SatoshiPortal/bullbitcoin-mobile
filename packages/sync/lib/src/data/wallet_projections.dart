@@ -337,29 +337,32 @@ final class _Projection<D extends Object> implements Observed<WalletValue<D>> {
 
   @override
   WalletValue<D> get now {
-    if (_owner.isClosed) return const WalletValue.closed();
+    if (_owner.isClosed) return WalletValue<D>.closed();
     final frame = _slot.frame;
     if (frame == null) {
       final failure = _slot.failure;
       return failure == null
-          ? const WalletValue.notLoaded()
-          : WalletValue.unavailable(failure);
+          ? WalletValue<D>.notLoaded()
+          : WalletValue<D>.unavailable(failure);
     }
     if (frame.revision.generation != _generation) {
       // A handle never follows a delete or a re-import.
-      return WalletValue.unavailable(
+      return WalletValue<D>.unavailable(
         const SyncNotFoundFailure(),
         frame.revision,
       );
     }
     return switch (_select(frame, _slot)) {
-      null => const WalletValue.notLoaded(),
-      Err(:final failure) => WalletValue.unavailable(failure, frame.revision),
-      Ok(:final value) when frame.stale => WalletValue.stale(
+      null => WalletValue<D>.notLoaded(),
+      Err(:final failure) => WalletValue<D>.unavailable(
+        failure,
+        frame.revision,
+      ),
+      Ok(:final value) when frame.stale => WalletValue<D>.stale(
         value,
         frame.revision,
       ),
-      Ok(:final value) => WalletValue.ready(value, frame.revision),
+      Ok(:final value) => WalletValue<D>.ready(value, frame.revision),
     };
   }
 
@@ -405,7 +408,7 @@ final class _Subscriber<D extends Object> implements _Listener {
   @override
   void close() {
     _projection._slot.listeners.remove(this);
-    emit(const WalletValue.closed());
+    emit(WalletValue<D>.closed());
     unawaited(_controller.close());
   }
 }
