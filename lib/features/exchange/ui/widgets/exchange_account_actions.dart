@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
@@ -56,7 +55,7 @@ class ExchangeAccountActions extends StatelessWidget {
             LogoutConfirmationBottomSheet.show(
               context,
               onConfirm: () async {
-                final result = await locator<ExchangeFacade>().logout();
+                final result = await context.read<ExchangeCubit>().logout();
                 final failure = switch (result) {
                   Err(:final failure) => failure,
                   Ok() => null,

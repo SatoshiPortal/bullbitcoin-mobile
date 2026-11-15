@@ -9,6 +9,7 @@ import '../domain/usecases/complete_exchange_authentication_usecase.dart';
 import '../domain/usecases/delete_exchange_account_usecase.dart';
 import '../domain/usecases/enable_exchange_usecase.dart';
 import '../domain/usecases/resolve_exchange_access_usecase.dart';
+import '../domain/usecases/sign_out_exchange_usecase.dart';
 import '../domain/usecases/watch_exchange_access_usecase.dart';
 import '../domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'exchange_state.dart';
@@ -28,6 +29,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required this._deleteAccount,
     required this._enableAccess,
     required this._resolveAccess,
+    required this._signOut,
     required WatchExchangeAccessUsecase watchAccess,
     required WatchExchangeNotificationsUsecase
     watchExchangeNotificationsUsecase,
@@ -62,6 +64,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final DeleteExchangeAccountUsecase _deleteAccount;
   final EnableExchangeUsecase _enableAccess;
   final ResolveExchangeAccessUsecase _resolveAccess;
+  final SignOutExchangeUsecase _signOut;
   final WatchExchangeNotificationsUsecase _watchNotifications;
   StreamSubscription<Object?>? _notifications;
   StreamSubscription<ExchangeAccess>? _access;
@@ -128,6 +131,9 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   /// Support may prepare access even where trading is restricted.
   Future<Result<void, ExchangeFailure>> enableForSupport() =>
       _enableAccess.execute(forSupport: true);
+
+  /// Explicit sign-out; access stays off until the user enables it again.
+  Future<Result<void, ExchangeFailure>> logout() => _signOut.execute();
 
   Future<void> retryAccess() async {
     final _ = await _resolveAccess.execute();

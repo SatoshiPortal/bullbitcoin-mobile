@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
-import 'package:bb_mobile/locator.dart';
 
 import 'dart:io';
 
@@ -202,7 +201,8 @@ class ExchangeSettingsScreen extends StatelessWidget {
                         LogoutConfirmationBottomSheet.show(
                           context,
                           onConfirm: () async {
-                            final result = await locator<ExchangeFacade>()
+                            final result = await context
+                                .read<ExchangeCubit>()
                                 .logout();
                             if (!context.mounted ||
                                 result is Ok<void, ExchangeFailure>) {

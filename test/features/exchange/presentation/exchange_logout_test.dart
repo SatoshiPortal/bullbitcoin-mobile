@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_au
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
@@ -30,6 +31,8 @@ class _WatchAccess extends Mock implements WatchExchangeAccessUsecase {}
 class _Enable extends Mock implements EnableExchangeUsecase {}
 
 class _Resolve extends Mock implements ResolveExchangeAccessUsecase {}
+
+class _SignOut extends Mock implements SignOutExchangeUsecase {}
 
 class _Authentication extends Mock
     implements CompleteExchangeAuthenticationUsecase {}
@@ -55,6 +58,7 @@ void main() {
   late _WatchAccess watchAccess;
   late _Enable enable;
   late _Resolve resolve;
+  late _SignOut signOut;
   late _Notifications notifications;
   late StreamController<ExchangeAccess> changes;
 
@@ -70,6 +74,7 @@ void main() {
     deleteAccount: deletion,
     enableAccess: enable,
     resolveAccess: resolve,
+    signOut: signOut,
     watchAccess: watchAccess,
     watchExchangeNotificationsUsecase: notifications,
   );
@@ -82,6 +87,7 @@ void main() {
     watchAccess = _WatchAccess();
     enable = _Enable();
     resolve = _Resolve();
+    signOut = _SignOut();
     when(() => watchAccess.current).thenReturn(const ExchangeAccessDisabled());
     notifications = _Notifications();
     changes = StreamController<ExchangeAccess>.broadcast(sync: true);

@@ -198,6 +198,7 @@ class ExchangeLocator {
         deleteAccount: locator<DeleteExchangeAccountUsecase>(),
         enableAccess: locator<EnableExchangeUsecase>(),
         resolveAccess: locator<ResolveExchangeAccessUsecase>(),
+        signOut: locator<SignOutExchangeUsecase>(),
         watchAccess: locator<WatchExchangeAccessUsecase>(),
         watchExchangeNotificationsUsecase:
             locator<WatchExchangeNotificationsUsecase>(),
