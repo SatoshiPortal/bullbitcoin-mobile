@@ -44,6 +44,7 @@ import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBitcoinAmountInput,
@@ -54,6 +55,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullInfoCard,
         BullInputText,
+        BullPickerItem,
+        BullPickerMenu,
         BullSegmented,
         BullShapesX,
         BullSnackBar,
@@ -598,41 +601,31 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             (code) =>
                                                 code != 'BTC' && code != 'sats',
                                           ))
-                                            IconButton(
+                                            BullPickerMenu<String>(
+                                              value: inputCurrency,
                                               tooltip: context
                                                   .loc
                                                   .settingsCurrencyTitle,
-                                              icon: const Icon(
-                                                Icons.arrow_drop_down,
+                                              items: [
+                                                for (final code
+                                                    in availableInputCurrencies)
+                                                  if (code != 'BTC' &&
+                                                      code != 'sats')
+                                                    BullPickerItem(
+                                                      value: code,
+                                                      label:
+                                                          '${SupportedCurrency.tryFromCode(code)?.flag ?? ''} $code',
+                                                    ),
+                                              ],
+                                              onChanged: context
+                                                  .read<SendCubit>()
+                                                  .onCurrencyChanged,
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(8),
+                                                child: Icon(
+                                                  Icons.arrow_drop_down,
+                                                ),
                                               ),
-                                              onPressed: () async {
-                                                final cubit = context
-                                                    .read<SendCubit>();
-                                                final selected =
-                                                    await BullBottomSheet.show<
-                                                      String?
-                                                    >(
-                                                      context: context,
-                                                      child: CurrencyBottomSheet(
-                                                        availableCurrencies:
-                                                            availableInputCurrencies
-                                                                .where(
-                                                                  (code) =>
-                                                                      code !=
-                                                                          'BTC' &&
-                                                                      code != 'sats',
-                                                                )
-                                                                .toList(),
-                                                        selectedValue:
-                                                            inputCurrency,
-                                                      ),
-                                                    );
-                                                if (selected != null) {
-                                                  cubit.onCurrencyChanged(
-                                                    selected,
-                                                  );
-                                                }
-                                              },
                                             ),
                                         ] else
                                           PriceInput(

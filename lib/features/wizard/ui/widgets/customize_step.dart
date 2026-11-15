@@ -3,12 +3,17 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullPickerSheet, BullSettingsEntryItem, BullText;
+    show
+        BullBottomSheet,
+        BullPickerItem,
+        BullPickerMenu,
+        BullPickerSheet,
+        BullSettingsEntryItem,
+        BullText;
 
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
@@ -68,21 +73,22 @@ class CustomizeStep extends StatelessWidget {
             },
           ),
           Divider(height: 1, color: context.appColors.border),
-          BullSettingsEntryItem(
-            icon: Icons.attach_money,
-            title: loc.wizardCustomizeDefaultCurrency,
-            trailing: _TrailingValue(text: defaultCurrency),
-            contentPadding: EdgeInsets.zero,
-            onTap: () async {
-              final picked = await BullBottomSheet.show<String>(
-                context: context,
-                child: CurrencyBottomSheet(
-                  availableCurrencies: SupportedCurrency.codes,
-                  selectedValue: defaultCurrency,
+          BullPickerMenu<String>(
+            value: defaultCurrency,
+            items: [
+              for (final currency in SupportedCurrency.values)
+                BullPickerItem(
+                  value: currency.code,
+                  label: '${currency.flag} ${currency.code}',
                 ),
-              );
-              if (picked != null) onCurrencyPicked(picked);
-            },
+            ],
+            onChanged: onCurrencyPicked,
+            child: BullSettingsEntryItem(
+              icon: Icons.attach_money,
+              title: loc.wizardCustomizeDefaultCurrency,
+              trailing: _TrailingValue(text: defaultCurrency),
+              contentPadding: EdgeInsets.zero,
+            ),
           ),
         ],
       ),

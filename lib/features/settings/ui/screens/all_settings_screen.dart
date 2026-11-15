@@ -1,19 +1,16 @@
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSupportButton, Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AllSettingsScreen extends StatefulWidget {
   const AllSettingsScreen({super.key});
@@ -83,7 +80,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        height: 150,
+        height: 72,
         padding: EdgeInsets.zero,
         color: context.appColors.transparent,
         child: SafeArea(
@@ -105,46 +102,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     Clipboard.setData(ClipboardData(text: appVersion));
                   },
                 ),
-              Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: Row(
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        final url = Uri.parse(
-                          SettingsConstants.githubSupportLink,
-                        );
-                        launchUrl(url, mode: LaunchMode.externalApplication);
-                      },
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/icons/github.svg',
-                            width: 24,
-                            height: 24,
-                            colorFilter: ColorFilter.mode(
-                              context.appColors.onSurface,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGithubLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    BullSupportButton.tile(
-                      label: context.loc.settingsGetHelpLabel,
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),

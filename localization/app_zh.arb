@@ -676,8 +676,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "获取帮助",
   "sellTransactionFee": "交易费",
   "coldcardStep5": "如果你遇到麻烦,就会:",
   "buyExpressWithdrawal": "提 出",
@@ -4381,7 +4379,6 @@
   "settingsSearchLabelsKeywords": "钱包标签|交易标签|BIP329|导入标签|导出标签",
   "settingsSearchTransactionHistoryKeywords": "导出交易|交易导出|CSV|钱包历史记录",
   "settingsSearchAppSettingsKeywords": "应用偏好设置|应用程序设置|通用设置",
-  "settingsSearchBtcMapKeywords": "BTC Map|比特币地图|商家地图|可使用比特币的地点",
   "settingsSearchTermsOfServiceKeywords": "条款与条件|法律信息|用户协议|TOS",
   "settingsSearchServicesStatusKeywords": "服务运行状况|系统状态|在线|服务中断",
   "settingsSearchImportWalletKeywords": "添加钱包|恢复钱包|导入助记词|只读钱包|硬件钱包",
@@ -4624,5 +4621,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "此交易已在区块链中，无需再次广播。",
   "broadcastSignedTxErrorRejected": "网络拒绝了此交易。它可能未完全签名、无效，或与另一笔付款冲突。",
   "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
-  "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。"
+  "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。",
+  "settingsDarkModeTitle": "深色模式",
+  "settingsSourceCodeTitle": "源代码"
 }

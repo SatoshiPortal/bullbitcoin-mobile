@@ -32,4 +32,10 @@ void main() {
     expect(() => SupportedCurrency.codes.add('GBP'), throwsUnsupportedError);
     expect(SupportedCurrency.codes.sort, throwsUnsupportedError);
   });
+
+  test('SupportedCurrency.flag is the flag of its region', () {
+    expect(SupportedCurrency.usd.flag, '🇺🇸');
+    expect(SupportedCurrency.eur.flag, '🇪🇺');
+    expect(SupportedCurrency.crc.flag, '🇨🇷');
+  });
 }

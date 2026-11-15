@@ -98,14 +98,22 @@ Future<void> semanticMove(
       await tester.scrollUntilVisible(row, 100);
       await tester.pumpAndSettle();
     }
-    final viewport = tester.getRect(find.byType(ReorderableListView));
+    final viewport = tester.getRect(
+      find.byKey(const ValueKey('quick-actions-list')),
+    );
     final bounds = tester.getRect(row);
     if (bounds.top < viewport.top || bounds.bottom > viewport.bottom) {
       await Scrollable.ensureVisible(tester.element(row), alignment: 0.5);
       await tester.pumpAndSettle();
     }
     final node = tester.getSemantics(
-      find.descendant(of: row, matching: find.byType(Semantics)).first,
+      find
+          .descendant(
+            of: row,
+            matching: find.byType(Semantics),
+            matchRoot: true,
+          )
+          .first,
     );
     final ids = node.getSemanticsData().customSemanticsActionIds ?? [];
     expect(
@@ -127,7 +135,7 @@ Future<void> semanticMove(
 
 void main() {
   stressEditorTests();
-  testWidgets('long press on the label reorders and saves at drop', (
+  testWidgets('long press on a Home tile reorders and saves at drop', (
     tester,
   ) async {
     final storage = _EditorStorage();
@@ -141,14 +149,12 @@ void main() {
     );
     final from = tester.getRect(find.byKey(const ValueKey('transfer')));
     final to = tester.getRect(find.byKey(const ValueKey('map')));
-    final gesture = await tester.startGesture(
-      Offset(from.left + 80, from.center.dy),
-    );
+    final gesture = await tester.startGesture(from.center);
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pump(const Duration(milliseconds: 300));
     expect(
-      find.byWidgetPredicate((w) => w is Material && w.elevation > 0),
-      findsWidgets,
+      find.byKey(const ValueKey('quick-action-drag-feedback')),
+      findsOneWidget,
     );
     expect(storage.writes, 0);
     await gesture.moveBy(const Offset(0, -20));
@@ -191,7 +197,10 @@ void main() {
           tester.view.physicalSize.height / tester.view.devicePixelRatio,
         ),
       );
-      expect(find.byType(BullQuickAction), findsNWidgets(4));
+      expect(
+        find.byType(BullQuickAction),
+        findsNWidgets(QuickAction.values.length + 1),
+      );
       await tester.scrollUntilVisible(find.text(l10n.inMore), 120);
       expect(find.text(l10n.inMore), findsOneWidget);
     });
@@ -215,13 +224,6 @@ void main() {
     final value = jsonDecode(storage.value ?? '{}') as Map;
     expect((value['more'] as List).first, 'history');
     expect(storage.writes, 1);
-    expect(
-      find.descendant(
-        of: find.byType(ReorderableListView),
-        matching: find.byType(IconButton),
-      ),
-      findsNothing,
-    );
   });
 
   testWidgets('moving between sections saves each operation immediately', (
@@ -264,7 +266,7 @@ void main() {
       await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pumpAndSettle();
       expect(homeValue(storage.value), '["map","transfer"]');
-      expect(find.text(l10n.map), findsNWidgets(2));
+      expect(find.text(l10n.map), findsOneWidget);
       expect(find.text(l10n.saveFailed), findsOneWidget);
       storage.failWrite = false;
       await semanticMove(tester, QuickAction.map, l10n.moveToMore);
@@ -378,7 +380,7 @@ void main() {
       await tester.tap(find.text(l10n.undo));
       await tester.pumpAndSettle();
       expect(storage.value, isNull);
-      expect(find.text(l10n.map), findsNWidgets(2));
+      expect(find.text(l10n.map), findsOneWidget);
       expect(find.text(l10n.saveFailed), findsOneWidget);
     } finally {
       await clearNotice(tester);
@@ -407,10 +409,10 @@ void main() {
       expect(homeValue(storage.value), '["map","transfer"]');
       expect(
         tester
-            .widgetList<ReorderableDelayedDragStartListener>(
-              find.byType(ReorderableDelayedDragStartListener),
+            .widgetList<LongPressDraggable<QuickAction>>(
+              find.byType(LongPressDraggable<QuickAction>),
             )
-            .every((row) => !row.enabled),
+            .every((tile) => tile.maxSimultaneousDrags == 0),
         isTrue,
       );
       expect(
@@ -553,7 +555,7 @@ void main() {
       await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pumpAndSettle();
       expect(homeValue(storage.value), '["buy","transfer"]');
-      expect(find.text(l10n.transfer), findsNWidgets(2));
+      expect(find.text(l10n.transfer), findsOneWidget);
     },
   );
 

@@ -30,11 +30,8 @@ void largeView(WidgetTester tester) {
 }
 
 Future<TestGesture> holdLabel(WidgetTester tester, QuickAction action) async {
-  final row = tester.getRect(find.byKey(ValueKey(action.id)));
-  // This is the label area, away from the handle at the right edge.
-  final gesture = await tester.startGesture(
-    Offset(row.left + 80, row.center.dy),
-  );
+  final tile = tester.getRect(find.byKey(ValueKey(action.id)));
+  final gesture = await tester.startGesture(tile.center);
   await tester.pump(const Duration(milliseconds: 600));
   await tester.pump(const Duration(milliseconds: 300));
   return gesture;
@@ -46,7 +43,7 @@ Future<void> dropAcrossDivider(
   required bool home,
 }) async {
   final target = find.byKey(ValueKey(home ? 'history' : 'buy'));
-  // These rows lie immediately above/below the fixed separator.
+  // These tiles lie immediately above/below the fixed separator.
   await gesture.moveTo(tester.getRect(target).center);
   await tester.pump(const Duration(milliseconds: 350));
   await gesture.up();
@@ -55,7 +52,7 @@ Future<void> dropAcrossDivider(
 
 void main() {
   testWidgets(
-    'whole-row long press gives haptic and elevation, then drops into More',
+    'tile long press gives haptic and a lifted tile, then drops into More',
     (tester) async {
       largeView(tester);
       final haptics = <Object?>[];
@@ -86,8 +83,8 @@ void main() {
       final gesture = await holdLabel(tester, QuickAction.history);
       expect(haptics, ['HapticFeedbackType.selectionClick']);
       expect(
-        find.byWidgetPredicate((w) => w is Material && w.elevation > 0),
-        findsWidgets,
+        find.byKey(const ValueKey('quick-action-drag-feedback')),
+        findsOneWidget,
       );
       expect(storage.writes, 0);
       await dropAcrossDivider(tester, gesture, home: false);
@@ -100,29 +97,28 @@ void main() {
     },
   );
 
-  testWidgets(
-    'dropping the fourth action before the divider ejects old third',
-    (tester) async {
-      largeView(tester);
-      final storage = _Storage();
-      await openEditor(
-        tester,
-        createQuickActionsCubit(
-          storage: storage,
-          warning: (_) {},
-          exchangeVisible: Stream.value(true),
-        ),
-      );
-      final gesture = await holdLabel(tester, QuickAction.buy);
-      await dropAcrossDivider(tester, gesture, home: true);
-      expect(homeValue(storage.value), '["map","transfer","buy"]');
-      expect(
-        ((jsonDecode(storage.value ?? '{}') as Map)['more'] as List).first,
-        'history',
-      );
-      expect(storage.writes, 1);
-    },
-  );
+  testWidgets('dropping a More tile on a full Home ejects the old third', (
+    tester,
+  ) async {
+    largeView(tester);
+    final storage = _Storage();
+    await openEditor(
+      tester,
+      createQuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      ),
+    );
+    final gesture = await holdLabel(tester, QuickAction.buy);
+    await dropAcrossDivider(tester, gesture, home: true);
+    expect(homeValue(storage.value), '["map","transfer","buy"]');
+    expect(
+      ((jsonDecode(storage.value ?? '{}') as Map)['more'] as List).first,
+      'history',
+    );
+    expect(storage.writes, 1);
+  });
 
   testWidgets(
     'failed physical drop restores both partitions and reports saveFailed',
@@ -145,7 +141,7 @@ void main() {
         final preview = tester.widgetList<BullQuickAction>(
           find.byType(BullQuickAction),
         );
-        expect(preview.map((w) => w.label), [
+        expect(preview.take(4).map((w) => w.label), [
           l10n.map,
           l10n.transfer,
           l10n.history,
@@ -157,9 +153,7 @@ void main() {
     },
   );
 
-  testWidgets('preview changes before a pending write completes', (
-    tester,
-  ) async {
+  testWidgets('grid changes before a pending write completes', (tester) async {
     largeView(tester);
     final gate = Completer<void>();
     final storage = _Storage()..pending = gate;
@@ -177,7 +171,11 @@ void main() {
     final preview = tester.widgetList<BullQuickAction>(
       find.byType(BullQuickAction),
     );
-    expect(preview.map((w) => w.label), [l10n.map, l10n.transfer, l10n.more]);
+    expect(preview.take(3).map((w) => w.label), [
+      l10n.map,
+      l10n.transfer,
+      l10n.more,
+    ]);
     gate.complete();
     await tester.pumpAndSettle();
     expect(homeValue(storage.value), '["map","transfer"]');
@@ -232,7 +230,7 @@ void main() {
       expect(
         find.ancestor(
           of: divider,
-          matching: find.byType(ReorderableDelayedDragStartListener),
+          matching: find.byType(LongPressDraggable<QuickAction>),
         ),
         findsNothing,
       );
@@ -276,12 +274,18 @@ void main() {
             findsOneWidget,
           );
           final node = tester.getSemantics(
-            find.descendant(of: price, matching: find.byType(Semantics)).first,
+            find
+                .descendant(
+                  of: price,
+                  matching: find.byType(Semantics),
+                  matchRoot: true,
+                )
+                .first,
           );
           expect(node.label, l10n.priceHistoryFull);
           expect(
             find.descendant(of: price, matching: find.byType(BullIcon)),
-            findsNWidgets(2),
+            findsOneWidget,
           );
         } finally {
           semantics.dispose();

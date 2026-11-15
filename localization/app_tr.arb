@@ -2091,11 +2091,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Yardım Al",
   "exchangeStatisticsOrderStats": "Order Statistics",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11037,7 +11032,6 @@
   "settingsSearchLabelsKeywords": "cüzdan etiketleri|işlem etiketleri|BIP329|etiketleri içe aktar|etiketleri dışa aktar",
   "settingsSearchTransactionHistoryKeywords": "işlemleri dışa aktar|işlem dışa aktarma|CSV|cüzdan geçmişi",
   "settingsSearchAppSettingsKeywords": "uygulama tercihleri|uygulama ayarları|genel ayarlar",
-  "settingsSearchBtcMapKeywords": "BTC Map|Bitcoin haritası|satıcı haritası|bitcoin harcanabilen yerler",
   "settingsSearchTermsOfServiceKeywords": "şartlar ve koşullar|yasal bilgiler|kullanıcı sözleşmesi|TOS",
   "settingsSearchServicesStatusKeywords": "hizmet durumu|sistem durumu|çevrimiçi|kesinti",
   "settingsSearchImportWalletKeywords": "cüzdan ekle|cüzdanı kurtar|anımsatıcı ifadeyi içe aktar|sadece izleme cüzdanı|donanım cüzdanı",
@@ -11280,5 +11274,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Bu işlem zaten blokzincirde. Yayınlanacak başka bir şey yok.",
   "broadcastSignedTxErrorRejected": "Ağ bu işlemi reddetti. İşlem eksik imzalanmış, geçersiz veya başka bir ödemeyle çakışıyor olabilir.",
   "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil.",
+  "settingsDarkModeTitle": "Karanlık mod",
+  "settingsSourceCodeTitle": "Kaynak kodu"
 }

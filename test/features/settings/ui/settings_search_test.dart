@@ -117,28 +117,36 @@ void main() {
         SettingsItemId.backup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
-        SettingsItemId.priceHistory,
-        SettingsItemId.quickActions,
-        SettingsItemId.btcMap,
         SettingsItemId.termsOfService,
         SettingsItemId.servicesStatus,
         SettingsItemId.logs,
+        SettingsItemId.sourceCode,
       ]);
       expect(rootItems.map((item) => item.title), [
         'App',
         'Backup',
         'Wallet',
-        'Manage access',
-        'Price history',
-        'Quick actions',
-        'Map',
+        'Exchange',
         'Terms of Service',
         'Service Status',
         'Logs',
+        'Source code',
       ]);
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Swap');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
       expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
+    });
+
+    test('lists quick actions and the dark mode switch in App Settings', () {
+      final items = _englishItems();
+
+      expect(
+        items.byId(SettingsItemId.quickActions).section,
+        SettingsItemSection.app,
+      );
+      final theme = items.byId(SettingsItemId.theme);
+      expect(theme.title, 'Dark mode');
+      expect(theme.isInlineControl, isTrue);
     });
 
     test('account settings is listed only when exchange is ready', () {
@@ -193,7 +201,6 @@ void main() {
         'CSV': SettingsItemId.transactionHistory,
         'network settings': SettingsItemId.walletSettings,
         'general settings': SettingsItemId.appSettings,
-        'merchant map': SettingsItemId.btcMap,
         'user agreement': SettingsItemId.termsOfService,
         'service health': SettingsItemId.servicesStatus,
         'watch-only wallet': SettingsItemId.importWallet,

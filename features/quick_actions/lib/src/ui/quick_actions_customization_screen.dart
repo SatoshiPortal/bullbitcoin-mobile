@@ -155,144 +155,208 @@ class _QuickActionsCustomizationScreenState
     );
   }
 
+  /// The editable grid is the preview: the same tiles as Home and More.
   Widget _editor(BuildContext context, QuickActionSelection current) {
     final l10n = QuickActionsLocalizations.of(context);
     final editor = QuickActionsEditorLayout(
       selection: current,
       available: widget.cubit.state.available,
     );
-    final items = editor.items;
-    return BullReorderableList(
+    return SingleChildScrollView(
       key: const ValueKey('quick-actions-list'),
       padding: const EdgeInsets.all(16),
-      itemCount: items.length,
-      header: _preview(context, current, editor),
-      onReorderStart: (_) => unawaited(HapticFeedback.selectionClick()),
-      onReorderItem: (from, to) {
-        if (!saving) _apply(editor.move(from, to));
-      },
-      itemBuilder: (context, index) {
-        final action = items[index];
-        if (action == null) {
-          return Semantics(
-            key: const ValueKey('quick-actions-divider'),
-            container: true,
-            header: true,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(height: 1, color: context.bull.border),
-                  const SizedBox(height: 12),
-                  BullText(l10n.inMore, style: null),
-                ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const spacing = 8.0;
+          final cell =
+              (constraints.maxWidth -
+                  spacing * (QuickActionsLayout.maximumCells - 1)) /
+              QuickActionsLayout.maximumCells;
+          Widget sized(Widget child) => SizedBox(width: cell, child: child);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BullText(l10n.dragHint, style: null),
+              const SizedBox(height: 16),
+              Semantics(
+                header: true,
+                child: BullText(l10n.onHome, style: null),
               ),
-            ),
-          );
-        }
-        final name = action.label(l10n);
-        final onHome = editor.home.contains(action);
-        return BullReorderHandle(
-          key: ValueKey(action.id),
-          index: index,
-          enabled: !saving,
-          child: Semantics(
-            container: true,
-            label: action.fullLabel(l10n),
-            customSemanticsActions: {
-              if (!saving && index > 0)
-                CustomSemanticsAction(label: l10n.moveUp): () =>
-                    _apply(editor.move(index, index - 1)),
-              if (!saving && index < items.length - 1)
-                CustomSemanticsAction(label: l10n.moveDown): () =>
-                    _apply(editor.move(index, index + 1)),
-              if (!saving && !onHome)
-                CustomSemanticsAction(label: l10n.moveToHome): () =>
-                    _apply(editor.moveToHome(action)),
-              if (!saving && onHome)
-                CustomSemanticsAction(label: l10n.moveToMore): () =>
-                    _apply(editor.moveToMore(action)),
-            },
-            child: ExcludeSemantics(
-              child: Container(
-                key: ValueKey('quick-action-tile-${action.id}'),
-                constraints: const BoxConstraints(minHeight: 56),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: context.bull.surface,
-                  borderRadius: BorderRadius.circular(
-                    context.bullShapes.button,
-                  ),
-                ),
+              const SizedBox(height: 8),
+              _zone(
+                editor,
+                onHome: true,
                 child: Row(
                   children: [
-                    BullIcon(action.icon),
-                    const SizedBox(width: 12),
-                    Expanded(child: BullText(name, style: null)),
-                    const SizedBox(width: 12),
-                    const BullIcon(BullIcons.dragHandle),
+                    for (
+                      var slot = 0;
+                      slot < QuickActionsLayout.maximumHomeActions;
+                      slot++
+                    ) ...[
+                      sized(
+                        slot < editor.home.length
+                            ? _tile(context, editor, editor.home[slot], cell)
+                            : _emptySlot(context),
+                      ),
+                      const SizedBox(width: spacing),
+                    ],
+                    sized(_moreTile(context, editor)),
                   ],
                 ),
               ),
-            ),
-          ),
-        );
-      },
+              if (editor.home.isEmpty) ...[
+                const SizedBox(height: 8),
+                BullText(l10n.emptyHint, style: null),
+              ],
+              Semantics(
+                key: const ValueKey('quick-actions-divider'),
+                container: true,
+                header: true,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(height: 1, color: context.bull.border),
+                      const SizedBox(height: 12),
+                      BullText(l10n.inMore, style: null),
+                    ],
+                  ),
+                ),
+              ),
+              _zone(
+                editor,
+                onHome: false,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: BullQuickAction.height,
+                  ),
+                  child: Wrap(
+                    spacing: spacing,
+                    runSpacing: spacing,
+                    children: [
+                      for (final action in editor.more)
+                        sized(_tile(context, editor, action, cell)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
-  Widget _preview(
+  /// Dropping on a zone outside any tile appends to that zone.
+  Widget _zone(
+    QuickActionsEditorLayout editor, {
+    required bool onHome,
+    required Widget child,
+  }) => DragTarget<QuickAction>(
+    onWillAcceptWithDetails: (_) => !saving,
+    onAcceptWithDetails: (details) =>
+        _apply(editor.dropAtEnd(details.data, onHome: onHome)),
+    builder: (context, _, _) => child,
+  );
+
+  Widget _tile(
     BuildContext context,
-    QuickActionSelection current,
     QuickActionsEditorLayout editor,
+    QuickAction action,
+    double width,
   ) {
     final l10n = QuickActionsLocalizations.of(context);
-    final layout = QuickActionsLayout.resolve(
-      available: widget.cubit.state.available,
-
-      selection: current,
-    );
-    final controls = <Widget>[
-      for (final action in layout.primary)
-        BullQuickAction(
-          label: action.label(l10n),
-          icon: action.icon,
-          onPressed: () {},
-        ),
-      if (layout.more.isNotEmpty)
-        BullQuickAction(
-          label: l10n.more,
-          icon: BullIcons.moreHoriz,
-          onPressed: () {},
-          outlined: true,
-        ),
-    ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        BullText(l10n.preview, style: null),
-        const SizedBox(height: 8),
-        IgnorePointer(
-          child: Row(
-            children: [
-              for (var index = 0; index < controls.length; index++) ...[
-                if (index > 0) const SizedBox(width: 8),
-                Expanded(child: controls[index]),
-              ],
-            ],
+    final items = editor.items;
+    final index = items.indexOf(action);
+    final onHome = editor.home.contains(action);
+    final face = _face(action.label(l10n), action.icon);
+    return Semantics(
+      key: ValueKey(action.id),
+      container: true,
+      label: action.fullLabel(l10n),
+      customSemanticsActions: {
+        if (!saving && index > 0)
+          CustomSemanticsAction(label: l10n.moveUp): () =>
+              _apply(editor.move(index, index - 1)),
+        if (!saving && index < items.length - 1)
+          CustomSemanticsAction(label: l10n.moveDown): () =>
+              _apply(editor.move(index, index + 1)),
+        if (!saving && !onHome)
+          CustomSemanticsAction(label: l10n.moveToHome): () =>
+              _apply(editor.moveToHome(action)),
+        if (!saving && onHome)
+          CustomSemanticsAction(label: l10n.moveToMore): () =>
+              _apply(editor.moveToMore(action)),
+      },
+      child: ExcludeSemantics(
+        child: DragTarget<QuickAction>(
+          onWillAcceptWithDetails: (_) => !saving,
+          onAcceptWithDetails: (details) =>
+              _apply(editor.dropOn(details.data, action)),
+          builder: (context, candidates, _) => LongPressDraggable<QuickAction>(
+            key: ValueKey('quick-action-tile-${action.id}'),
+            data: action,
+            maxSimultaneousDrags: saving ? 0 : 1,
+            feedback: SizedBox(
+              key: const ValueKey('quick-action-drag-feedback'),
+              width: width,
+              child: _highlighted(context, face),
+            ),
+            childWhenDragging: Opacity(opacity: 0.3, child: face),
+            child: candidates.any((candidate) => candidate != action)
+                ? _highlighted(context, face)
+                : face,
           ),
         ),
-        if (editor.home.isEmpty) BullText(l10n.emptyHint, style: null),
-        const SizedBox(height: 16),
-        BullText(l10n.dragHint, style: null),
-        const SizedBox(height: 16),
-        Semantics(header: true, child: BullText(l10n.onHome, style: null)),
-        const SizedBox(height: 8),
-      ],
+      ),
     );
   }
+
+  /// Home's fixed More cell: never draggable; a drop on it moves to More.
+  Widget _moreTile(BuildContext context, QuickActionsEditorLayout editor) {
+    final l10n = QuickActionsLocalizations.of(context);
+    final face = _face(l10n.more, BullIcons.moreHoriz, outlined: true);
+    return Semantics(
+      key: const ValueKey('quick-actions-more-tile'),
+      container: true,
+      label: l10n.more,
+      child: ExcludeSemantics(
+        child: DragTarget<QuickAction>(
+          onWillAcceptWithDetails: (_) => !saving,
+          onAcceptWithDetails: (details) =>
+              _apply(editor.moveToMore(details.data)),
+          builder: (context, candidates, _) =>
+              candidates.isEmpty ? face : _highlighted(context, face),
+        ),
+      ),
+    );
+  }
+
+  /// Taps are inert in the editor; only the long-press drag is live.
+  Widget _face(String label, IconData icon, {bool outlined = false}) =>
+      AbsorbPointer(
+        child: BullQuickAction(
+          label: label,
+          icon: icon,
+          outlined: outlined,
+          onPressed: () {},
+        ),
+      );
+
+  Widget _highlighted(BuildContext context, Widget child) => Container(
+    foregroundDecoration: BoxDecoration(
+      border: Border.all(color: context.bull.primary, width: 2),
+      borderRadius: BorderRadius.circular(context.bullShapes.button),
+    ),
+    child: child,
+  );
+
+  Widget _emptySlot(BuildContext context) => Container(
+    height: BullQuickAction.height,
+    decoration: BoxDecoration(
+      border: Border.all(color: context.bull.border),
+      borderRadius: BorderRadius.circular(context.bullShapes.button),
+    ),
+  );
 }

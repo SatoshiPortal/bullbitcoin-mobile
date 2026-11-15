@@ -662,8 +662,6 @@
       }
     }
   },
-  "settingsGithubLabel": "GitHub",
-  "settingsGetHelpLabel": "Hilfe erhalten",
   "sellTransactionFee": "Transaktionsgebühren",
   "buyExpressWithdrawal": "Express-Auszahlung",
   "payPaymentConfirmed": "Zahlung bestätigt",
@@ -4358,7 +4356,6 @@
   "settingsSearchLabelsKeywords": "Wallet-Labels|Transaktions-Labels|BIP329|Labels importieren|Labels exportieren",
   "settingsSearchTransactionHistoryKeywords": "Transaktionen exportieren|Transaktionsexport|CSV|Wallet-Verlauf",
   "settingsSearchAppSettingsKeywords": "App-Voreinstellungen|Anwendungseinstellungen|Allgemeine Einstellungen",
-  "settingsSearchBtcMapKeywords": "BTC Map|Bitcoin-Karte|Händlerkarte|Bitcoin ausgeben",
   "settingsSearchTermsOfServiceKeywords": "Allgemeine Geschäftsbedingungen|AGB|Rechtliches|Nutzungsvereinbarung",
   "settingsSearchServicesStatusKeywords": "Dienststatus|Systemstatus|Online|Störung",
   "settingsSearchImportWalletKeywords": "Wallet hinzufügen|Wallet wiederherstellen|Mnemonic importieren|Watch-only-Wallet|Hardware-Wallet",
@@ -4831,10 +4828,7 @@
   "allSeedViewSwapLinkedWallet": "Verknüpfte Wallet: {fingerprint}",
   "allSeedViewSwapMnemonicTitle": "Swap-Wiederherstellungsphrase",
   "allSeedViewDeleteSwapMnemonicTitle": "Swap-Wiederherstellungsphrase löschen?",
-  "themeDarkDescription": "Dunkle Darstellung verwenden",
-  "themeSystemDescription": "Systemeinstellung übernehmen",
   "allSeedViewSwapFingerprint": "Fingerabdruck: {fingerprint} ({network})",
-  "themeLightDescription": "Helle Darstellung verwenden",
   "comingSoonTitle": "Funktion demnächst verfügbar",
   "allSeedViewDeleteSwapMnemonicMessage": "Dadurch wird der Swap-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Swaps bleiben davon unberührt.",
   "spFailurePassphraseUnsupported": "Silent Payments ist für eine Wallet mit Passphrase nicht verfügbar.",
@@ -4848,5 +4842,7 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Das Senden in diesem Netzwerk ist in den aktuellen Einstellungen nicht aktiviert.",
   "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt.",
   "passphraseShow": "Passphrase anzeigen",
-  "passphraseHide": "Passphrase verbergen"
+  "passphraseHide": "Passphrase verbergen",
+  "settingsDarkModeTitle": "Dunkelmodus",
+  "settingsSourceCodeTitle": "Quellcode"
 }

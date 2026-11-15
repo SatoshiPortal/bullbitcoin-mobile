@@ -674,8 +674,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Получить помощь",
   "sellTransactionFee": "Плата за операции",
   "coldcardStep5": "Если у вас есть проблемы с сканированием:",
   "buyExpressWithdrawal": "Экспресс-вывод",
@@ -4387,7 +4385,6 @@
   "settingsSearchLabelsKeywords": "метки кошелька|метки транзакций|BIP329|импорт меток|экспорт меток",
   "settingsSearchTransactionHistoryKeywords": "экспорт транзакций|выгрузить транзакции|CSV|история кошелька",
   "settingsSearchAppSettingsKeywords": "параметры приложения|настройки приложения|общие настройки",
-  "settingsSearchBtcMapKeywords": "BTC Map|карта Bitcoin|карта продавцов|места оплаты биткойном",
   "settingsSearchTermsOfServiceKeywords": "условия использования|юридическая информация|пользовательское соглашение|TOS",
   "settingsSearchServicesStatusKeywords": "состояние сервисов|состояние системы|онлайн|сбой",
   "settingsSearchImportWalletKeywords": "добавить кошелёк|восстановить кошелёк|импорт мнемонической фразы|кошелёк только для просмотра|аппаратный кошелёк",
@@ -4630,5 +4627,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Эта транзакция уже в блокчейне. Транслировать больше нечего.",
   "broadcastSignedTxErrorRejected": "Сеть отклонила эту транзакцию. Возможно, она подписана не полностью, недействительна или конфликтует с другим платежом.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не удалось подтвердить, что транзакция была транслирована. Проверьте её в обозревателе блоков, прежде чем повторить попытку.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках.",
+  "settingsDarkModeTitle": "Тёмная тема",
+  "settingsSourceCodeTitle": "Исходный код"
 }
