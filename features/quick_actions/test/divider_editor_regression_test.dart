@@ -6,7 +6,7 @@ import 'customization_test.dart' show openEditor;
 import 'quick_actions_test.dart' show MemoryStorage;
 
 void main() {
-  testWidgets('every available action has a full-row delayed drag target', (
+  testWidgets('every available action tile has a long-press drag', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(800, 1600);
@@ -22,12 +22,12 @@ void main() {
       ),
     );
     expect(
-      find.byType(ReorderableDelayedDragStartListener, skipOffstage: false),
+      find.byType(LongPressDraggable<QuickAction>, skipOffstage: false),
       findsNWidgets(QuickAction.values.length),
     );
     expect(
       find.descendant(
-        of: find.byType(ReorderableListView),
+        of: find.byKey(const ValueKey('quick-actions-list')),
         matching: find.byType(IconButton),
       ),
       findsNothing,
