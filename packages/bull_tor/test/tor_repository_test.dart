@@ -242,6 +242,80 @@ void main() {
       expect(state.route.transport, TorTransport.snowflake);
     });
 
+    group('attempt budgets', () {
+      final t0 = DateTime.utc(2026, 11, 15, 12);
+
+      Future<TorRepository> withBudgets({
+        Duration direct = const Duration(minutes: 2),
+        Duration snowflake = const Duration(minutes: 15),
+        TorTransportMode mode = TorTransportMode.automatic,
+      }) async {
+        await repository.close();
+        embedded = _FakeEmbeddedTor();
+        return repository = TorRepositoryImpl(
+          embedded,
+          initialMode: mode,
+          directBudget: direct,
+          snowflakeBudget: snowflake,
+          now: () => t0,
+        );
+      }
+
+      test('each attempt announces when it will give up', () async {
+        final repo = await withBudgets();
+        final states = <TorConnectionState>[];
+        final subscription = repo.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        unawaited(repo.ensureReady());
+        await Future<void>.delayed(Duration.zero);
+
+        final connecting = states.whereType<TorConnecting>().last;
+        expect(connecting.deadline, t0.add(const Duration(minutes: 2)));
+      });
+
+      test('an expired direct budget falls back to Snowflake', () async {
+        final repo = await withBudgets(
+          direct: const Duration(milliseconds: 20),
+          snowflake: const Duration(hours: 1),
+        );
+        final states = <TorConnectionState>[];
+        final subscription = repo.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        unawaited(repo.ensureReady());
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+
+        expect(embedded.stopCalls, 1);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+        ]);
+        final snowflake = states.whereType<TorConnecting>().last;
+        expect(snowflake.circumvention, isTrue);
+        expect(snowflake.deadline, t0.add(const Duration(hours: 1)));
+      });
+
+      test(
+        'an expired Snowflake budget stops Tor and fails as a timeout',
+        () async {
+          final repo = await withBudgets(
+            snowflake: const Duration(milliseconds: 20),
+            mode: TorTransportMode.snowflake,
+          );
+          final result = await repo.ensureReady();
+
+          expect(embedded.stopCalls, 1);
+          expect(
+            result,
+            isA<TorUnavailable>().having(
+              (state) => state.failure,
+              'failure',
+              isA<TorBootstrapTimeoutFailure>(),
+            ),
+          );
+        },
+      );
+    });
+
     group('on a network that blocks Tor relays', () {
       late _FakeNetwork network;
 
