@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/mempool/domain/errors/mempool_failure.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -130,9 +130,8 @@ void main() {
         proxyEndpoint: null,
       ),
     ).thenAnswer((_) async => _fees);
-    when(
-      () => appSettingsRepository.fetch(),
-    ).thenAnswer((_) async => _appSettings());
+    when(() => appSettingsRepository.fetch())
+        .thenAnswer((_) async => _appSettings());
     when(() => tor.embedded).thenReturn(embeddedTor);
     when(() => tor.external).thenReturn(externalTor);
     when(() => embeddedTor.sessions).thenReturn(torSessions);
@@ -229,9 +228,8 @@ void main() {
   });
 
   test('propagates settings selection failure without calling HTTP', () async {
-    when(
-      () => mempoolSettingsRepository.fetchByNetwork(network),
-    ).thenAnswer((_) async => const Err(MempoolLoadFailure()));
+    when(() => mempoolSettingsRepository.fetchByNetwork(network))
+        .thenAnswer((_) async => const Err(MempoolLoadFailure()));
 
     await expectLater(
       repository.getNetworkFees(network: Network.bitcoinMainnet),
@@ -387,9 +385,8 @@ void main() {
           MempoolSettings.existing(network: network, useForFeeEstimation: true),
         ),
       );
-      when(
-        () => serverRepository.fetchCustomServer(network),
-      ).thenAnswer((_) async => Ok(onion));
+      when(() => serverRepository.fetchCustomServer(network))
+          .thenAnswer((_) async => Ok(onion));
       when(() => torSessions.open()).thenAnswer(
         (_) async => TorSession(
           endpoint,

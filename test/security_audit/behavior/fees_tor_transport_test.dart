@@ -199,9 +199,8 @@ void main() {
         MempoolSettings.existing(network: network, useForFeeEstimation: true),
       ),
     );
-    when(
-      () => mempoolServers.fetchCustomServer(network),
-    ).thenAnswer((_) async => Ok(server));
+    when(() => mempoolServers.fetchCustomServer(network))
+        .thenAnswer((_) async => Ok(server));
 
     return FeesRepositoryImpl(
       feesDatasource: FeesDatasource(

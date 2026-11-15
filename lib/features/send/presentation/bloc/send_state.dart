@@ -141,10 +141,7 @@ abstract class SendState with _$SendState {
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
 
-    /// True when the fee API was unreachable and [bitcoinFeesList] /
-    /// [liquidFeesList] hold stale or relay-floor fallback rates instead of
-    /// live ones. The UI must warn the user and keep the custom-fee field
-    /// editable — never present these as current market rates.
+    /// Whether [bitcoinFeesList] holds previously fetched or fallback rates.
     @Default(false) bool usingFallbackFees,
     NetworkFee? customFee,
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,

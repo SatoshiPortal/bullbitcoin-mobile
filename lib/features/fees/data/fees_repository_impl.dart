@@ -134,9 +134,10 @@ class FeesRepositoryImpl implements FeesRepository {
     }
   }
 
-  bool _isOnion(String baseUrl) => Uri.parse(
-    baseUrl.contains('://') ? baseUrl : 'https://$baseUrl',
-  ).host.toLowerCase().endsWith('.onion');
+  bool _isOnion(String baseUrl) =>
+      Uri.parse(baseUrl.contains('://') ? baseUrl : 'https://$baseUrl').host
+          .toLowerCase()
+          .endsWith('.onion');
 
   Future<String> _resolveBitcoinMempoolUrl({required bool isTestnet}) async {
     final network = MempoolServerNetwork.fromEnvironment(

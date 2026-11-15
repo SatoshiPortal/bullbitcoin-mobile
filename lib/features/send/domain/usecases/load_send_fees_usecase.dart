@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 
@@ -23,50 +23,37 @@ class LoadSendFeesUsecase {
     FeeOptions? previousBitcoinFees,
     FeeOptions? previousLiquidFees,
   }) async {
-    if (network == Network.bitcoinRegtest) {
+    FeeOptions? liquidFees;
+    if (network != Network.bitcoinRegtest) {
       try {
-        final bitcoinFees = await _getNetworkFeesUsecase.execute(
-          isLiquid: false,
-          network: network,
-        );
-        return Ok((
-          bitcoin: bitcoinFees,
-          liquid: null,
-          usingFallbackBitcoinFees: false,
-        ));
-      } on GetNetworkFeesException catch (error) {
-        return Err(SendFeesUnavailableFailure(error.toString()));
-      }
-    }
-
-    FeeOptions liquidFees;
-    try {
-      liquidFees = await _getNetworkFeesUsecase.execute(
-        isLiquid: true,
-        network: Network.fromEnvironment(
-          environment: network.environment,
+        liquidFees = await _getNetworkFeesUsecase.execute(
           isLiquid: true,
-        ),
-      );
-    } on GetNetworkFeesException catch (error, stackTrace) {
-      if (previousLiquidFees == null) {
-        return Err(SendFeesUnavailableFailure(error.toString()));
+          network: Network.fromEnvironment(
+            environment: network.environment,
+            isLiquid: true,
+          ),
+        );
+      } on GetNetworkFeesException catch (error, stackTrace) {
+        if (previousLiquidFees == null) {
+          return Err(SendFeesUnavailableFailure(error.toString()));
+        }
+        log.warning(
+          'Using previously loaded Liquid fee rates',
+          error: error,
+          trace: stackTrace,
+        );
+        liquidFees = previousLiquidFees;
       }
-      log.warning(
-        'Using previously loaded Liquid fee rates',
-        error: error,
-        trace: stackTrace,
-      );
-      liquidFees = previousLiquidFees;
     }
 
+    final bitcoinNetwork = Network.fromEnvironment(
+      environment: network.environment,
+      isLiquid: false,
+    );
     try {
       final bitcoinFees = await _getNetworkFeesUsecase.execute(
         isLiquid: false,
-        network: Network.fromEnvironment(
-          environment: network.environment,
-          isLiquid: false,
-        ),
+        network: bitcoinNetwork,
       );
       return Ok((
         bitcoin: bitcoinFees,
@@ -74,6 +61,9 @@ class LoadSendFeesUsecase {
         usingFallbackBitcoinFees: false,
       ));
     } on GetNetworkFeesException catch (error, stackTrace) {
+      if (bitcoinNetwork == Network.bitcoinRegtest) {
+        return Err(SendFeesUnavailableFailure(error.toString()));
+      }
       log.warning(
         'Using fallback Bitcoin fee rates',
         error: error,
