@@ -273,14 +273,6 @@ jobs:
         with:
           cargo-cache: 'true'
 
-      # Compiler cache for the FRB Rust crates (the dominant cost of the app
-      # build), backed by the GitHub Actions cache. Pinned to a commit SHA:
-      # third-party action on a runner that holds PR test secrets.
-      # Native Assets filters RUSTC_WRAPPER and SCCACHE_* from hook environments;
-      # remote cache use by the new Rust hooks still needs validation.
-      - name: Setup sccache
-        uses: Mozilla-Actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
-
       - name: Install Linux desktop for integration tests
         run: |
           sudo apt-get update
@@ -313,13 +305,6 @@ jobs:
           # Same gate for the RecoverBull restore test, which depends on the
           # production key server being reachable over Tor.
           RUN_LIVE_KEYSERVER_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
-          SCCACHE_GHA_ENABLED: "true"
-          RUSTC_WRAPPER: sccache
-          # sccache cannot cache incremental compilation artifacts; disabling
-          # incremental makes every rustc invocation cacheable (and is the
-          # standard sccache-in-CI pairing — CI never reuses incremental state
-          # anyway).
-          CARGO_INCREMENTAL: "0"
         run: |
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
