@@ -207,6 +207,17 @@ class _Body extends StatelessWidget {
     };
   }
 
+  /// Time left before the current Tor attempt gives up, counted down.
+  Duration? get _remaining => switch (_tor) {
+    tor.TorConnecting(:final deadline?) => _nonNegative(
+      deadline.difference(DateTime.now()),
+    ),
+    _ => null,
+  };
+
+  static Duration _nonNegative(Duration value) =>
+      value.isNegative ? Duration.zero : value;
+
   bool get _snowflake => switch (_tor) {
     tor.TorConnecting(transport: tor.TorTransport.snowflake) ||
     tor.TorConnecting(circumvention: true) => true,
@@ -435,13 +446,13 @@ class _Body extends StatelessWidget {
           caption: _torPhase == _PhaseState.active
               ? context.loc.recoverbullPhaseNetworkInfo
               : null,
-          elapsed: _torPhase == _PhaseState.active ? elapsed : null,
+          time: _torPhase == _PhaseState.active ? _remaining ?? elapsed : null,
         ),
         const Gap(8),
         _PhaseCard(
           label: context.loc.recoverbullRecoverBullServer,
           phase: _serverPhase,
-          elapsed: _serverPhase == _PhaseState.active ? elapsed : null,
+          time: _serverPhase == _PhaseState.active ? elapsed : null,
         ),
         const Gap(24),
         if (_showFailurePanel)
@@ -465,7 +476,9 @@ class _Body extends StatelessWidget {
           )
         else
           BullText(
-            elapsed >= _reassureAfter
+            _snowflake
+                ? context.loc.recoverbullSnowflakeSlow
+                : elapsed >= _reassureAfter
                 ? context.loc.recoverbullLongestStep
                 : context.loc.recoverbullPleaseWait,
             textAlign: .center,
@@ -483,7 +496,9 @@ class _PhaseCard extends StatelessWidget {
   final String label;
   final _PhaseState phase;
   final String? caption;
-  final Duration? elapsed;
+
+  /// Countdown to the attempt's deadline, or elapsed time when it has none.
+  final Duration? time;
   final String? activeLabel;
   final String? doneLabel;
 
@@ -493,7 +508,7 @@ class _PhaseCard extends StatelessWidget {
     this.activeLabel,
     this.doneLabel,
     this.caption,
-    this.elapsed,
+    this.time,
   });
 
   Color _color(BuildContext context) => switch (phase) {
@@ -542,7 +557,7 @@ class _PhaseCard extends StatelessWidget {
               ),
             ],
           ),
-          if (caption != null || elapsed != null) ...[
+          if (caption != null || time != null) ...[
             const Gap(8),
             Padding(
               padding: const EdgeInsets.only(left: 32),
@@ -557,11 +572,11 @@ class _PhaseCard extends StatelessWidget {
                       ),
                       maxLines: 2,
                     ),
-                  if (elapsed case final elapsed?) ...[
+                  if (time case final time?) ...[
                     const Gap(6),
                     BullText(
                       // A bare timer, deliberately unlocalised.
-                      _formatElapsed(elapsed),
+                      _formatElapsed(time),
                       style: context.bullText.bodySmall?.copyWith(
                         color: context.bull.textMuted,
                       ),

@@ -347,5 +347,6 @@
   "backupWalletHowToDecide": "Comment décider ?",
   "backupWalletHowToDecideBackupModalTitle": "Comment décider",
   "backupSettingsSecurityWarning": "Avertissement de sécurité",
-  "torSettingsTitle": "Paramètres Tor"
+  "torSettingsTitle": "Paramètres Tor",
+  "recoverbullSnowflakeSlow": "Snowflake peut prendre plusieurs minutes sur un réseau filtré. Gardez l'application ouverte."
 }

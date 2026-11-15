@@ -923,5 +923,9 @@
   "torSettingsTitle": "Tor Settings",
   "@torSettingsTitle": {
     "description": "AppBar title for the Tor settings screen"
+  },
+  "recoverbullSnowflakeSlow": "Snowflake can take several minutes on a filtered network. Keep the app open.",
+  "@recoverbullSnowflakeSlow": {
+    "description": "Shown on the RecoverBull connection screen while Snowflake bootstraps, which can take minutes."
   }
 }
