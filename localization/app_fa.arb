@@ -2647,11 +2647,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "دریافت کمک",
   "exchangeStatisticsOrderStats": "آمار سفارش",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11280,5 +11275,6 @@
   "broadcastSignedTxErrorRejected": "شبکه این تراکنش را رد کرد. ممکن است به‌طور کامل امضا نشده، نامعتبر یا در تعارض با پرداخت دیگری باشد.",
   "broadcastSignedTxErrorOutcomeUnknown": "نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.",
   "broadcastSignedTxErrorNetworkNotEnabled": "انتشار در این شبکه در تنظیمات فعلی فعال نیست.",
-  "settingsDarkModeTitle": "حالت تیره"
+  "settingsDarkModeTitle": "حالت تیره",
+  "settingsSourceCodeTitle": "کد منبع"
 }

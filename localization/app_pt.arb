@@ -674,8 +674,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Obter ajuda",
   "sellTransactionFee": "Taxa de transação",
   "coldcardStep5": "Se você tiver problemas de digitalização:",
   "buyExpressWithdrawal": "Retirada expressa",
@@ -4660,5 +4658,6 @@
   "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que a sua transação foi transmitida. Verifique num explorador de blocos antes de tentar novamente.",
   "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas definições atuais.",
-  "settingsDarkModeTitle": "Modo escuro"
+  "settingsDarkModeTitle": "Modo escuro",
+  "settingsSourceCodeTitle": "Código-fonte"
 }

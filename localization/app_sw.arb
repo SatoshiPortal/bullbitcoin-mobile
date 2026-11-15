@@ -62,7 +62,6 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
-  "settingsGetHelpLabel": "Pata Msaada",
   "exchangeSupportLoginChatRequired": "Ili kupata msaada wa binadamu, lazima kwanza uingie kwenye akaunti yako ya Bull Bitcoin. Ni bure kabisa na hakuna KYC inayohitajika, anwani ya barua pepe tu.",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -653,7 +652,6 @@
   "settingsAppSettingsTitle": "Mipangilio ya Programu",
   "settingsTermsOfServiceTitle": "Masharti ya Huduma",
   "settingsAppVersionLabel": "Toleo la programu: ",
-  "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "Hali ya Huduma",
   "settingsThemeTitle": "Mandhari",
   "settingsDevModeWarningTitle": "Hali ya Msanidi",
@@ -3527,5 +3525,6 @@
   "broadcastSignedTxErrorRejected": "Mtandao umekataa muamala huu. Huenda haujasainiwa kikamilifu, si halali, au unakinzana na malipo mengine.",
   "broadcastSignedTxErrorOutcomeUnknown": "Hatukuweza kuthibitisha kwamba muamala wako ulitangazwa. Angalia kwenye kichunguzi cha bloku kabla ya kujaribu tena.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Kutangaza kwenye mtandao huu hakujawezeshwa katika mipangilio ya sasa.",
-  "settingsDarkModeTitle": "Hali ya giza"
+  "settingsDarkModeTitle": "Hali ya giza",
+  "settingsSourceCodeTitle": "Msimbo chanzo"
 }

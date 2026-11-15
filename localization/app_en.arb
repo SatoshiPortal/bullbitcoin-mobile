@@ -427,14 +427,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Get Help",
-  "@settingsGetHelpLabel": {
-    "description": "Label for the Get Help support chat link in settings"
-  },
   "settingsServiceStatusTitle": "Service Status",
   "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
@@ -15451,5 +15443,9 @@
   "settingsDarkModeTitle": "Dark mode",
   "@settingsDarkModeTitle": {
     "description": "App settings switch: on uses the dark theme, off the light theme."
+  },
+  "settingsSourceCodeTitle": "Source code",
+  "@settingsSourceCodeTitle": {
+    "description": "Settings entry opening the app's public source code repository."
   }
 }

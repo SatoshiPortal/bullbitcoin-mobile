@@ -2099,11 +2099,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "सहायता प्राप्त करें",
   "exchangeStatisticsOrderStats": "आदेश सांख्यिकी",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11467,5 +11462,6 @@
   "broadcastSignedTxErrorRejected": "नेटवर्क ने इस लेनदेन को अस्वीकार कर दिया। यह अधूरा हस्ताक्षरित, अमान्य, या किसी अन्य भुगतान से टकराव में हो सकता है।",
   "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
   "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।",
-  "settingsDarkModeTitle": "डार्क मोड"
+  "settingsDarkModeTitle": "डार्क मोड",
+  "settingsSourceCodeTitle": "सोर्स कोड"
 }

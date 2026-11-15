@@ -19,7 +19,10 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
@@ -52,6 +55,7 @@ enum SettingsItemId {
   currency,
   securityPin,
   logs,
+  sourceCode,
   tor,
   screenPrivacy,
   devMode,
@@ -86,6 +90,9 @@ class SettingsItem {
   final List<String> keywords;
   final bool isSuperuser;
   final bool isInlineControl;
+
+  /// SVG asset drawn instead of [icon], for a glyph no icon font has.
+  final String? iconAsset;
   final OpenSettingsItem _open;
 
   const SettingsItem({
@@ -98,6 +105,7 @@ class SettingsItem {
     this.keywords = const [],
     this.isSuperuser = false,
     this.isInlineControl = false,
+    this.iconAsset,
   }) : _open = open; // ignore: prefer_initializing_formals
 
   String location(TextDirection textDirection) =>
@@ -111,8 +119,20 @@ class SettingsItem {
     Color? iconColor,
     Color? textColor,
   }) {
+    final asset = iconAsset;
     return BullSettingsEntryItem(
       icon: icon,
+      leading: asset == null
+          ? null
+          : SvgPicture.asset(
+              asset,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                iconColor ?? context.appColors.onSurface,
+                BlendMode.srcIn,
+              ),
+            ),
       iconColor: iconColor,
       textColor: textColor,
       title: title,
@@ -377,6 +397,26 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchLogsKeywords,
         [english.logSettingsLogsTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.sourceCode,
+      section: SettingsItemSection.root,
+      title: localization.settingsSourceCodeTitle,
+      path: path(
+        SettingsItemSection.root,
+        localization.settingsSourceCodeTitle,
+      ),
+      icon: Icons.code,
+      iconAsset: Assets.icons.github,
+      open: (_) => launchUrl(
+        Uri.parse(SettingsConstants.githubSupportLink),
+        mode: LaunchMode.externalApplication,
+      ),
+      keywords: [
+        localization.settingsSourceCodeTitle,
+        english.settingsSourceCodeTitle,
+        'GitHub',
+      ],
     ),
     SettingsItem(
       id: SettingsItemId.importWallet,

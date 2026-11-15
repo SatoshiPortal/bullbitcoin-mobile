@@ -131,8 +131,6 @@
   "settingsAppSettingsTitle": "Налаштування додатків",
   "settingsTermsOfServiceTitle": "Умови надання послуг",
   "settingsAppVersionLabel": "Версія додатка: ",
-  "settingsGithubLabel": "Гитуб",
-  "settingsGetHelpLabel": "Отримати допомогу",
   "settingsServiceStatusTitle": "Статус на сервери",
   "settingsLanguageTitle": "Українська",
   "settingsDevModeWarningTitle": "Режим Dev",
@@ -4621,5 +4619,6 @@
   "broadcastSignedTxErrorRejected": "Мережа відхилила цю транзакцію. Можливо, її підписано не повністю, вона недійсна або конфліктує з іншим платежем.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не вдалося підтвердити, що транзакцію було трансльовано. Перевірте її в оглядачі блоків, перш ніж повторити спробу.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляцію в цій мережі не ввімкнено в поточних налаштуваннях.",
-  "settingsDarkModeTitle": "Темний режим"
+  "settingsDarkModeTitle": "Темний режим",
+  "settingsSourceCodeTitle": "Вихідний код"
 }

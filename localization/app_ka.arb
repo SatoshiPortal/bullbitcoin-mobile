@@ -210,7 +210,6 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
-  "settingsGetHelpLabel": "დახმარების მიღება",
   "exchangeSupportLoginChatRequired": "ადამიანური მხარდაჭერის მისაღებად, ჯერ უნდა შეხვიდეთ თქვენს Bull Bitcoin ანგარიშში. სავსებით უფასოა და KYC არ არის საჭირო, საჭიროა მხოლოდ ელექტრონული ფოსტის მისამართი.",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -799,7 +798,6 @@
   "settingsAppSettingsTitle": "აპლიკაციის პარამეტრები",
   "settingsTermsOfServiceTitle": "მომსახურების პირობები",
   "settingsAppVersionLabel": "აპლიკაციის ვერსია: ",
-  "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "სერვისების სტატუსი",
   "settingsLanguageTitle": "ენა",
   "settingsThemeTitle": "თემა",
@@ -3638,5 +3636,6 @@
   "broadcastSignedTxErrorRejected": "ქსელმა ეს ტრანზაქცია უარყო. შესაძლოა ის ბოლომდე არ არის ხელმოწერილი, არასწორია ან სხვა გადახდასთან კონფლიქტშია.",
   "broadcastSignedTxErrorOutcomeUnknown": "ვერ დავადასტურეთ, რომ თქვენი ტრანზაქცია გავრცელდა. ხელახლა ცდამდე შეამოწმეთ ბლოკების მიმოხილველში.",
   "broadcastSignedTxErrorNetworkNotEnabled": "ამ ქსელში გავრცელება მიმდინარე პარამეტრებში ჩართული არ არის.",
-  "settingsDarkModeTitle": "მუქი რეჟიმი"
+  "settingsDarkModeTitle": "მუქი რეჟიმი",
+  "settingsSourceCodeTitle": "საწყისი კოდი"
 }

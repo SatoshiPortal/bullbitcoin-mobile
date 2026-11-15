@@ -46,7 +46,6 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
-  "settingsGetHelpLabel": "Nhận trợ giúp",
   "exchangeSupportLoginChatRequired": "Để nhận hỗ trợ từ nhân viên, bạn cần đăng nhập vào tài khoản Bull Bitcoin của mình trước. Hoàn toàn miễn phí và không yêu cầu KYC, chỉ cần một địa chỉ email.",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -639,7 +638,6 @@
   "settingsAppSettingsTitle": "Cài đặt ứng dụng",
   "settingsTermsOfServiceTitle": "Điều khoản dịch vụ",
   "settingsAppVersionLabel": "Phiên bản ứng dụng: ",
-  "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "Trạng thái dịch vụ",
   "settingsLanguageTitle": "Ngôn ngữ",
   "settingsThemeTitle": "Giao diện",
@@ -3515,5 +3513,6 @@
   "broadcastSignedTxErrorRejected": "Mạng đã từ chối giao dịch này. Giao dịch có thể chưa được ký đầy đủ, không hợp lệ hoặc xung đột với một khoản thanh toán khác.",
   "broadcastSignedTxErrorOutcomeUnknown": "Không thể xác nhận giao dịch của bạn đã được phát sóng. Hãy kiểm tra trên trình khám phá khối trước khi thử lại.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Phát sóng trên mạng này chưa được bật trong cài đặt hiện tại.",
-  "settingsDarkModeTitle": "Chế độ tối"
+  "settingsDarkModeTitle": "Chế độ tối",
+  "settingsSourceCodeTitle": "Mã nguồn"
 }

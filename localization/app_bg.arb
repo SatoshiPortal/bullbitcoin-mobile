@@ -1754,11 +1754,6 @@
       }
     }
   },
-  "settingsGithubLabel": "GitHub",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Получете помощ",
   "exchangeStatisticsOrderStats": "Статистика за поръчки",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -9399,5 +9394,6 @@
   "broadcastSignedTxErrorRejected": "Мрежата отхвърли тази транзакция. Възможно е да не е напълно подписана, да е невалидна или да е в конфликт с друго плащане.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки.",
-  "settingsDarkModeTitle": "Тъмен режим"
+  "settingsDarkModeTitle": "Тъмен режим",
+  "settingsSourceCodeTitle": "Изходен код"
 }

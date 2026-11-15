@@ -676,8 +676,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Ottieni aiuto",
   "sellTransactionFee": "Commissioni di rete",
   "coldcardStep5": "Se hai problemi di scansione:",
   "buyExpressWithdrawal": "Invio rapido",
@@ -4777,5 +4775,6 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Non è stato possibile confermare che la transazione sia stata trasmessa. Controlla un block explorer prima di riprovare.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La trasmissione su questa rete non è abilitata nelle impostazioni attuali.",
   "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà.",
-  "settingsDarkModeTitle": "Modalità scura"
+  "settingsDarkModeTitle": "Modalità scura",
+  "settingsSourceCodeTitle": "Codice sorgente"
 }

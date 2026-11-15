@@ -1949,11 +1949,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "الحصول على مساعدة",
   "exchangeStatisticsOrderStats": "النظام الإحصائي",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11283,5 +11278,6 @@
   "broadcastSignedTxErrorRejected": "رفضت الشبكة هذه المعاملة. قد تكون غير مكتملة التوقيع أو غير صالحة أو متعارضة مع دفعة أخرى.",
   "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
   "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
-  "settingsDarkModeTitle": "الوضع الداكن"
+  "settingsDarkModeTitle": "الوضع الداكن",
+  "settingsSourceCodeTitle": "الشيفرة المصدرية"
 }

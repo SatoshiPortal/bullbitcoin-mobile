@@ -120,6 +120,7 @@ void main() {
         SettingsItemId.termsOfService,
         SettingsItemId.servicesStatus,
         SettingsItemId.logs,
+        SettingsItemId.sourceCode,
       ]);
       expect(rootItems.map((item) => item.title), [
         'App',
@@ -129,6 +130,7 @@ void main() {
         'Terms of Service',
         'Service Status',
         'Logs',
+        'Source code',
       ]);
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Swap');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');

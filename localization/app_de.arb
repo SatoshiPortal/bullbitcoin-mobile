@@ -662,8 +662,6 @@
       }
     }
   },
-  "settingsGithubLabel": "GitHub",
-  "settingsGetHelpLabel": "Hilfe erhalten",
   "sellTransactionFee": "Transaktionsgebühren",
   "buyExpressWithdrawal": "Express-Auszahlung",
   "payPaymentConfirmed": "Zahlung bestätigt",
@@ -4845,5 +4843,6 @@
   "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt.",
   "passphraseShow": "Passphrase anzeigen",
   "passphraseHide": "Passphrase verbergen",
-  "settingsDarkModeTitle": "Dunkelmodus"
+  "settingsDarkModeTitle": "Dunkelmodus",
+  "settingsSourceCodeTitle": "Quellcode"
 }

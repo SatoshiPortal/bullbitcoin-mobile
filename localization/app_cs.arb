@@ -221,11 +221,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsGithubLabel": "Čeština",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Získat pomoc",
   "settingsLanguageTitle": "Čeština",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
@@ -11280,5 +11275,6 @@
   "broadcastSignedTxErrorRejected": "Síť tuto transakci odmítla. Možná není úplně podepsaná, je neplatná nebo je v konfliktu s jinou platbou.",
   "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Vysílání v této síti není v aktuálním nastavení povoleno.",
-  "settingsDarkModeTitle": "Tmavý režim"
+  "settingsDarkModeTitle": "Tmavý režim",
+  "settingsSourceCodeTitle": "Zdrojový kód"
 }

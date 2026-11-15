@@ -2091,11 +2091,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Yardım Al",
   "exchangeStatisticsOrderStats": "Order Statistics",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11280,5 +11275,6 @@
   "broadcastSignedTxErrorRejected": "Ağ bu işlemi reddetti. İşlem eksik imzalanmış, geçersiz veya başka bir ödemeyle çakışıyor olabilir.",
   "broadcastSignedTxErrorOutcomeUnknown": "İşleminizin yayınlandığını doğrulayamadık. Tekrar denemeden önce bir blok gezgininde kontrol edin.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Bu ağda yayınlama mevcut ayarlarda etkin değil.",
-  "settingsDarkModeTitle": "Karanlık mod"
+  "settingsDarkModeTitle": "Karanlık mod",
+  "settingsSourceCodeTitle": "Kaynak kodu"
 }

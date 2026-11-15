@@ -1842,11 +1842,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Λήψη βοήθειας",
   "exchangeStatisticsOrderStats": "Στατιστική",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11280,5 +11275,6 @@
   "broadcastSignedTxErrorRejected": "Το δίκτυο απέρριψε αυτή τη συναλλαγή. Μπορεί να μην είναι πλήρως υπογεγραμμένη, να είναι άκυρη ή να συγκρούεται με άλλη πληρωμή.",
   "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις.",
-  "settingsDarkModeTitle": "Σκούρα λειτουργία"
+  "settingsDarkModeTitle": "Σκούρα λειτουργία",
+  "settingsSourceCodeTitle": "Πηγαίος κώδικας"
 }

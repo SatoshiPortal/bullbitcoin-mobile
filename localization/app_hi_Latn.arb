@@ -326,14 +326,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Madad Lo",
-  "@settingsGetHelpLabel": {
-    "description": "Label for the Get Help support chat link in settings"
-  },
   "settingsServiceStatusTitle": "Services Status",
   "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
@@ -11590,5 +11582,6 @@
   "broadcastSignedTxErrorRejected": "Network ne is transaction ko reject kar diya. Yeh adhoora signed, invalid, ya kisi doosre payment se conflict mein ho sakta hai.",
   "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai.",
-  "settingsDarkModeTitle": "Dark mode"
+  "settingsDarkModeTitle": "Dark mode",
+  "settingsSourceCodeTitle": "Source code"
 }

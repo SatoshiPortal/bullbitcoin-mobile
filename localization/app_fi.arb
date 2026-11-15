@@ -62,8 +62,6 @@
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
   "settingsAppVersionLabel": "Sovellusversio: ",
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Pyydä apua",
   "settingsServiceStatusTitle": "Palveluiden tila",
   "settingsLanguageTitle": "Kieli",
   "settingsThemeTitle": "Teema",
@@ -4612,5 +4610,6 @@
   "broadcastSignedTxErrorRejected": "Verkko hylkäsi tämän transaktion. Se voi olla puutteellisesti allekirjoitettu, virheellinen tai ristiriidassa toisen maksun kanssa.",
   "broadcastSignedTxErrorOutcomeUnknown": "Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa.",
-  "settingsDarkModeTitle": "Tumma tila"
+  "settingsDarkModeTitle": "Tumma tila",
+  "settingsSourceCodeTitle": "Lähdekoodi"
 }

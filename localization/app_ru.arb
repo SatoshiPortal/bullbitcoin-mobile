@@ -674,8 +674,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Получить помощь",
   "sellTransactionFee": "Плата за операции",
   "coldcardStep5": "Если у вас есть проблемы с сканированием:",
   "buyExpressWithdrawal": "Экспресс-вывод",
@@ -4630,5 +4628,6 @@
   "broadcastSignedTxErrorRejected": "Сеть отклонила эту транзакцию. Возможно, она подписана не полностью, недействительна или конфликтует с другим платежом.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не удалось подтвердить, что транзакция была транслирована. Проверьте её в обозревателе блоков, прежде чем повторить попытку.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках.",
-  "settingsDarkModeTitle": "Тёмная тема"
+  "settingsDarkModeTitle": "Тёмная тема",
+  "settingsSourceCodeTitle": "Исходный код"
 }

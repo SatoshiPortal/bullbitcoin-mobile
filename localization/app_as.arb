@@ -23,7 +23,6 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
-  "settingsGetHelpLabel": "সহায় লওক",
   "exchangeSupportLoginChatRequired": "মানৱ সহায়তা পাবলৈ, আপুনি প্ৰথমে আপোনাৰ Bull Bitcoin একাউণ্টত লগ ইন কৰিব লাগিব। ই সম্পূৰ্ণ বিনামূলীয়া আৰু কোনো KYC প্ৰয়োজন নাই, কেৱল এটা ইমেইল ঠিকনা।",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -250,7 +249,6 @@
   "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
   "settingsTermsOfServiceTitle": "সেৱাৰ চৰ্তসমূহ",
   "settingsAppVersionLabel": "এপ্প সংস্কৰণ: ",
-  "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "সেৱাৰ স্থিতি",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
@@ -8659,5 +8657,6 @@
   "broadcastSignedTxErrorRejected": "নেটৱৰ্কে এই লেনদেনটো নাকচ কৰিলে। ই হয়তো সম্পূৰ্ণভাৱে স্বাক্ষৰিত নহয়, অবৈধ, বা আন এটা পৰিশোধৰ সৈতে সংঘাতত আছে।",
   "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
   "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।",
-  "settingsDarkModeTitle": "আন্ধাৰ ম'ড"
+  "settingsDarkModeTitle": "আন্ধাৰ ম'ড",
+  "settingsSourceCodeTitle": "উৎস ক'ড"
 }
