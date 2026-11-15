@@ -4,8 +4,10 @@ import 'package:flutter/widgets.dart';
 ///
 /// [message] is an optional draft the support channel pre-fills; `null` means
 /// "no draft", and the app decides what that looks like.
-typedef BullContactSupport =
-    void Function(BuildContext context, {String? message});
+typedef BullContactSupport = void Function(
+  BuildContext context, {
+  String? message,
+});
 
 /// Injects the app's "contact support" action into the widget tree.
 ///

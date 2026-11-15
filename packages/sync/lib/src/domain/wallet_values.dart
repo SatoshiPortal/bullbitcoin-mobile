@@ -142,12 +142,12 @@ final class BitcoinCoin extends Coin {
   }) : scriptPubkey = Uint8List.fromList(scriptPubkey).asUnmodifiableView(),
        super(outpoint, amountSat);
 
-  BitcoinCoin._shared(BitcoinCoin coin, {required bool frozen})
+  BitcoinCoin._shared(BitcoinCoin coin, {required super.frozen})
     : scriptPubkey = coin.scriptPubkey,
       address = coin.address,
       keychain = coin.keychain,
       confirmations = coin.confirmations,
-      super(coin.outpoint, coin.amountSat, frozen: frozen);
+      super(coin.outpoint, coin.amountSat);
 
   @override
   BitcoinCoin withFrozen(bool frozen) =>

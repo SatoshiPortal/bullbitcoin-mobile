@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';
+
 import '../../domain/bitcoin_spend.dart';
 import '../../domain/sync_failure.dart';
 import '../../domain/public_wallet_descriptor.dart';

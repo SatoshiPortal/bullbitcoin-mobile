@@ -1,6 +1,8 @@
 import '../../domain/settings_failure.dart';
+
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../domain/usecases/background_preferences_usecase.dart';
 export '../../domain/usecases/background_preferences_usecase.dart'
     show BackgroundPreferencesState;

@@ -23,11 +23,10 @@ import 'native_spend.dart';
 
 /// Sends a signed transaction and returns its txid. Production uses the
 /// owner's connection port; tests substitute it.
-typedef SpendTransport =
-    Future<Result<String, SyncFailure>> Function(
-      SignedTransaction transaction,
-      Network network,
-    );
+typedef SpendTransport = Future<Result<String, SyncFailure>> Function(
+  SignedTransaction transaction,
+  Network network,
+);
 
 /// What a wallet handle may ask of the spend writer. Implemented by
 /// [SpendWriter]; a test wallet without native stores refuses everything.

@@ -13,6 +13,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
+
 // Unit tests for the repository boundary of
 // `BitcoinWalletRepository.buildPsbt`, over a mocked datasource:
 //
@@ -126,9 +127,8 @@ void main() {
       walletValuesDatasource: values,
     );
 
-    when(
-      () => metadataDatasource.fetch(_walletId),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(_walletId))
+        .thenAnswer((_) async => metadata);
     when(
       () => bdkDatasource.buildPsbt(
         wallet: any(named: 'wallet'),
@@ -301,9 +301,8 @@ void main() {
   });
 
   test('checks all recipient addresses in one datasource call', () async {
-    when(
-      () => values.areAddressesMine(any(), wallet: any(named: 'wallet')),
-    ).thenAnswer((_) async => true);
+    when(() => values.areAddressesMine(any(), wallet: any(named: 'wallet')))
+        .thenAnswer((_) async => true);
 
     expect(
       await repository.areAddressesOfWallet(const [

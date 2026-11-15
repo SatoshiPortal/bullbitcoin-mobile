@@ -14,17 +14,16 @@ void main() {
     'Payjoin transaction links open details and preserve ownership',
     () async {
       final activeServer = _MockActiveServerUsecase();
-      when(
-        () => activeServer.execute(isTestnet: false, isLiquid: false),
-      ).thenAnswer(
-        (_) async => Ok(
-          MempoolServer.existing(
-            url: 'mempool.bullbitcoin.com',
-            network: MempoolServerNetwork.bitcoinMainnet,
-            isCustom: false,
-          ),
-        ),
-      );
+      when(() => activeServer.execute(isTestnet: false, isLiquid: false))
+          .thenAnswer(
+            (_) async => Ok(
+              MempoolServer.existing(
+                url: 'mempool.bullbitcoin.com',
+                network: MempoolServerNetwork.bitcoinMainnet,
+                isCustom: false,
+              ),
+            ),
+          );
 
       final url = await MempoolUrlBuilder(
         getActiveMempoolServerUsecase: activeServer,

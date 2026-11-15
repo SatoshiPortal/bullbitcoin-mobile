@@ -1,0 +1,9 @@
+name: bull_app_icons
+description: Isolated launcher icon tooling for the BULL app.
+publish_to: none
+environment:
+  sdk: "3.14.0"
+dependencies:
+  flutter_launcher_icons: 0.14.4
+dev_dependencies:
+  lints: ^6.1.0

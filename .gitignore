@@ -39,6 +39,9 @@ lib/generated
 
 # l10n internationalization related
 localization*.dart
+# Hand-maintained standalone design delegates and their regression coverage.
+!lib/localizations.dart
+!test/localizations_test.dart
 untranslated-messages.txt
 
 # Dev preferences

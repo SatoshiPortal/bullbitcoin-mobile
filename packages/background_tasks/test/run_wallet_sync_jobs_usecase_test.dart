@@ -1,6 +1,9 @@
 import 'package:bull_logger/bull_logger.dart';
+
 import 'dart:async';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';
@@ -102,9 +105,9 @@ void main() {
         );
       };
       var finished = false;
-      final run = task(
-        keys: [key, second],
-      ).execute().then((_) => finished = true);
+      final run = task(keys: [key, second])
+          .execute()
+          .then((_) => finished = true);
       await started.future;
       expect(
         await const SharedPreferencesBackgroundSyncIntervalRepository().write(

@@ -31,14 +31,10 @@ void main() {
       derivation: satoshifier.Derivation.bip84,
       network: satoshifier.Network.bitcoinMainnet,
     );
-    entity =
-        WatchOnlyWalletEntity.xpub(
-              watchOnlyXpub: satoshifier.WatchOnlyXpub(
-                extendedPubkey: extendedPubkey,
-              ),
-              label: 'My xpub wallet',
-            )
-            as WatchOnlyXpubEntity;
+    entity = WatchOnlyWalletEntity.xpub(
+      watchOnlyXpub: satoshifier.WatchOnlyXpub(extendedPubkey: extendedPubkey),
+      label: 'My xpub wallet',
+    ) as WatchOnlyXpubEntity;
   });
 
   group('ImportWatchOnlyXpubUsecase', () {

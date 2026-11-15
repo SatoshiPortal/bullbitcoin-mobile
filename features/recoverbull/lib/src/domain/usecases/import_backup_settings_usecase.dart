@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import '../recoverbull_failure.dart';
 import '../recoverbull_legacy_settings_port.dart';
 import '../repositories/backup_metadata_repository.dart';

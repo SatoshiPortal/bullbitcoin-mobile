@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 export '../src/domain/logs_failure.dart';
+
 export 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:primitives/primitives.dart';
 

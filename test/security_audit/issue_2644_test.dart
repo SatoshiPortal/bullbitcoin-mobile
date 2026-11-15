@@ -13,9 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2644 secret lifetime', () {
     test('secret widget clears the clipboard on a timer after copy', () {
-      final widget = File(
-        'lib/core/widgets/bip85_derivation_widget.dart',
-      ).readAsStringSync();
+      final widget = File('lib/core/widgets/bip85_derivation_widget.dart')
+          .readAsStringSync();
 
       expect(widget, contains('Clipboard.setData'));
       // Flutter has no Clipboard.clear — the fix overwrites the clipboard

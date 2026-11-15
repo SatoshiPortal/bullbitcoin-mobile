@@ -153,9 +153,8 @@ final class RunWalletSyncJobsUsecase {
       if (stop) {
         final released = await _release(claim);
         // Opt-out keeps its policy; a claim still leased without a writer is retried.
-        if (released case Err(
-          failure: final failure,
-        ) when failure is! BackgroundTasksClaimLostFailure && !run.stopped) {
+        if (released case Err(failure: final failure)
+            when failure is! BackgroundTasksClaimLostFailure && !run.stopped) {
           run.stopped = true;
           return true;
         }
@@ -207,9 +206,8 @@ final class RunWalletSyncJobsUsecase {
     Future<void> renew() async {
       try {
         final renewed = await _queue.renew(claim);
-        if (renewed case Err(
-          failure: BackgroundTasksStorageFailure(),
-        ) when !leaseLost) {
+        if (renewed case Err(failure: BackgroundTasksStorageFailure())
+            when !leaseLost) {
           _log(
             BackgroundLogLevel.warning,
             'Background lease renewal failed reason=storage',

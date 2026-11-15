@@ -2,9 +2,13 @@ import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.da
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart' show SyncReason, SyncBusyFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
+
 import 'dart:async';
+
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
+
 import 'dart:collection';
+
 import 'package:primitives/primitives.dart' as network;
 
 import 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';

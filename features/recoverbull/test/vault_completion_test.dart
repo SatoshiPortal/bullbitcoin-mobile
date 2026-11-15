@@ -33,7 +33,7 @@ import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:drift/native.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show Failure;
@@ -172,8 +172,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(extensions: testBullExtensions),
-          localizationsDelegates:
-              RecoverBullLocalizations.localizationsDelegates,
+          localizationsDelegates: RecoverBullFeature.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,
           home: VaultFlowPage(
             flow: RecoverBullFlow.secureVault,

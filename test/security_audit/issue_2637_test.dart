@@ -9,9 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2637 UR scanner recovery', () {
     test('scanner catch path has no reader reset', () {
-      final source = File(
-        'lib/core/widgets/qr_scanner_widget.dart',
-      ).readAsStringSync();
+      final source = File('lib/core/widgets/qr_scanner_widget.dart')
+          .readAsStringSync();
       final catchStart = source.indexOf('} catch (e) {');
       final catchBody = source.substring(catchStart);
 
@@ -22,9 +21,8 @@ void main() {
 
     test('reader exposes reset but widget never calls it', () {
       final readerSource = File('lib/core/urqr/urqr.dart').readAsStringSync();
-      final widgetSource = File(
-        'lib/core/widgets/qr_scanner_widget.dart',
-      ).readAsStringSync();
+      final widgetSource = File('lib/core/widgets/qr_scanner_widget.dart')
+          .readAsStringSync();
 
       expect(readerSource, contains('void reset()'));
       expect(widgetSource, contains('_urReader.reset()'));

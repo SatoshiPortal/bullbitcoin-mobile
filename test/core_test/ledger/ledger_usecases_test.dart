@@ -81,9 +81,8 @@ void main() {
     test('forwards a repository failure unchanged (no raw leak)', () async {
       final usecase = buildUsecase();
       stubSettings();
-      when(
-        () => repository.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => const Err(LedgerDeviceLockedFailure()));
+      when(() => repository.getMasterFingerprint(any()))
+          .thenAnswer((_) async => const Err(LedgerDeviceLockedFailure()));
 
       final result = await usecase.execute(label: 'Ledger', device: device);
 
@@ -102,9 +101,8 @@ void main() {
     test('sanitizes a throwing settings fetch into an unexpected failure '
         'without touching the device', () async {
       final usecase = buildUsecase();
-      when(
-        () => settingsRepository.fetch(),
-      ).thenThrow(Exception('STORAGE UNAVAILABLE'));
+      when(() => settingsRepository.fetch())
+          .thenThrow(Exception('STORAGE UNAVAILABLE'));
 
       final result = await usecase.execute(label: 'Ledger', device: device);
 

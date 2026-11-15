@@ -49,25 +49,23 @@ void main() {
       sepaVirtualPayeeRepository: virtualPayees,
       getRecipientsEnvironmentUsecase: environment,
     );
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Ok(Environment.testnet));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Ok(Environment.testnet));
     // The API saves every SEPA recipient as a regular one.
-    when(
-      () => gateway.saveRecipient(any(), isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer(
-      (_) async => Ok(
-        Recipient.create(
-          recipientId: 'r-1',
-          userId: 'user-1',
-          userNbr: 1,
-          isArchived: false,
-          createdAt: DateTime(2026, 10),
-          updatedAt: DateTime(2026, 10),
-          details: _sepaForm(RecipientType.sepaEur).toDomain(),
-        ),
-      ),
-    );
+    when(() => gateway.saveRecipient(any(), isTestnet: any(named: 'isTestnet')))
+        .thenAnswer(
+          (_) async => Ok(
+            Recipient.create(
+              recipientId: 'r-1',
+              userId: 'user-1',
+              userNbr: 1,
+              isArchived: false,
+              createdAt: DateTime(2026, 10),
+              updatedAt: DateTime(2026, 10),
+              details: _sepaForm(RecipientType.sepaEur).toDomain(),
+            ),
+          ),
+        );
   });
 
   Future<Recipient> add(RecipientType type) async {
@@ -82,9 +80,8 @@ void main() {
   test(
     'a Confidential SEPA recipient is activated after it is saved',
     () async {
-      when(
-        () => virtualPayees.activate(recipientId: 'r-1', isTestnet: true),
-      ).thenAnswer((_) async => const Ok(SepaVirtualPayeeStatus.pending));
+      when(() => virtualPayees.activate(recipientId: 'r-1', isTestnet: true))
+          .thenAnswer((_) async => const Ok(SepaVirtualPayeeStatus.pending));
 
       final recipient = await add(RecipientType.confidentialSepaEur);
 
@@ -98,9 +95,8 @@ void main() {
               ).captured.single
               as SepaEurDetails;
       expect(saved.isConfidential, isTrue);
-      verify(
-        () => virtualPayees.activate(recipientId: 'r-1', isTestnet: true),
-      ).called(1);
+      verify(() => virtualPayees.activate(recipientId: 'r-1', isTestnet: true))
+          .called(1);
     },
   );
 

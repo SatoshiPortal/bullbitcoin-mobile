@@ -96,6 +96,8 @@ Future<Wallet> _loaded(
       MemoryFreezeStore(frozen.map((o) => FrozenOutpoint(o, origin: key.id))),
     ),
   );
+  // Test-support library (`package:sync/testing.dart`), imported from test/ only.
+  // ignore: invalid_use_of_visible_for_testing_member
   final wallet = walletOver(projections, key, 0);
   switch (await wallet.load()) {
     case Ok():

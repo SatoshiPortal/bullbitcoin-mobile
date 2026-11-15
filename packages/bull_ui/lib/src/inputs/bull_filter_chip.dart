@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A removable active-filter chip (label + ✕). **New.** Used in the sub-header
 /// to show which filters are applied; tapping the ✕ fires [onRemove].
@@ -42,10 +42,8 @@ class BullFilterChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: colors.primary,
-            ),
+            style: Theme.of(context).textTheme.labelLarge
+                ?.copyWith(fontWeight: FontWeight.w600, color: colors.primary),
           ),
           if (onSelected == null) ...[
             const SizedBox(width: 4),

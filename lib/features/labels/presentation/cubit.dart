@@ -14,13 +14,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
   final ExportLabelsUsecase _exportLabelsUsecase;
   final ImportLabelsFromFileUsecase _importLabelsFromFileUsecase;
-  final FilePicker _filePicker;
+  final FilePickerPlatform _filePicker;
 
   Bip329LabelsCubit({
     required this._exportLabelsUsecase,
     required this._importLabelsFromFileUsecase,
-    FilePicker? filePicker,
-  }) : _filePicker = filePicker ?? FilePicker.platform,
+    FilePickerPlatform? filePicker,
+  }) : _filePicker = filePicker ?? FilePickerPlatform.instance,
        super(const Bip329LabelsState.initial());
 
   Future<void> exportLabels(LabelFormat format) async {
@@ -44,12 +44,13 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
     final filename =
         'bull_labels_${DateTime.now().toIso8601WithoutMilliseconds()}'
         '.$extension';
-    final String? savedTo;
+    final Uri? savedTo;
     try {
       // The file picker is a platform channel and the only thing left here
       //  that throws; the use-case above owns its own boundary now.
       savedTo = await _filePicker.saveFile(
         bytes: utf8.encode(jsonl),
+        mimeType: 'application/octet-stream',
         fileName: filename,
       );
     } on Object catch (e, st) {
@@ -77,10 +78,10 @@ class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
       //  resolves to no document types and the picker refuses to open, and
       //  `.jsonl` has no system type to filter on either. A file that is not
       //  a labels file is rejected by the use-case with its own message.
-      final result = await _filePicker.pickFiles(type: FileType.any);
+      final result = await _filePicker.pickFile(type: FileType.any);
       // The user dismissed the picker. Not a failure.
-      if (result == null || result.files.isEmpty) return;
-      final pickedPath = result.files.first.path;
+      if (result == null) return;
+      final pickedPath = result.path;
       if (pickedPath == null) {
         emit(
           const Bip329LabelsState.error(

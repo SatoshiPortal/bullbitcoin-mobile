@@ -21,7 +21,7 @@ void main() {
         reader = RevisionStoreDatasource.openExisting(path);
         expect(reader, isNotNull);
       } finally {
-        writer.dispose();
+        writer.close();
         reader?.close();
         initial.close();
         directory.deleteSync(recursive: true);
@@ -60,14 +60,13 @@ void main() {
           2,
         );
         expect(
-          (await reader.read(key) as Ok<WalletRevisionState, SyncFailure>)
-              .value
-              .stamp
-              .revision,
+          (await reader.read(
+            key,
+          ) as Ok<WalletRevisionState, SyncFailure>).value.stamp.revision,
           2,
         );
       } finally {
-        observer.dispose();
+        observer.close();
         await reader.close();
         store.close();
         directory.deleteSync(recursive: true);
@@ -104,9 +103,9 @@ void main() {
               : writerSchemaVersion;
           expect(committed.initializedSchema, expected);
           expect(
-            (await reader.read(key) as Ok<WalletRevisionState, SyncFailure>)
-                .value
-                .initializedSchema,
+            (await reader.read(
+              key,
+            ) as Ok<WalletRevisionState, SyncFailure>).value.initializedSchema,
             expected,
           );
           expect(
@@ -117,7 +116,7 @@ void main() {
           );
         }
       } finally {
-        observer.dispose();
+        observer.close();
         await reader.close();
         store.close();
         directory.deleteSync(recursive: true);

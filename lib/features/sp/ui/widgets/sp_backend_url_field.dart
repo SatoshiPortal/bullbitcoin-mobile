@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart' show BullLabeledTextInput, Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A backend (blindbit/electrum) URL field with an inline "Test connection"
 /// button and a status line. The connection status doubles as the field's

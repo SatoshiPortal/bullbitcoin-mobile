@@ -284,8 +284,7 @@ void main() {
       'data': {
         'apiError': {
           'code': 'ERR_ORD_CSRCP400',
-          'message':
-              'Please activate virtual payment option for the SEPA recipient with IBAN: {iban}',
+          'message': 'Please activate virtual payment option for the SEPA recipient with IBAN: {iban}',
           'messageData': {'iban': 'FR7630006000011234567890189'},
         },
       },

@@ -42,9 +42,11 @@ void main() {
         store.begin(key, WriteIntent.create);
         final unproven = store.finish(key).stamp;
         expect(
-          (await readiness.check(descriptor, unproven, writerSchemaVersion)
-                  as Err)
-              .failure,
+          (await readiness.check(
+            descriptor,
+            unproven,
+            writerSchemaVersion,
+          ) as Err).failure,
           isA<SyncBusyFailure>(),
         );
         store.begin(key, WriteIntent.load);
@@ -56,41 +58,55 @@ void main() {
           isA<Ok>(),
         );
         expect(
-          (await readiness.check(other, stamp, writerSchemaVersion) as Err)
-              .failure,
+          (await readiness.check(
+            other,
+            stamp,
+            writerSchemaVersion,
+          ) as Err).failure,
           isA<SyncInvalidCatalogFailure>(),
         );
         expect(
-          (await readiness.check(descriptor, unproven, writerSchemaVersion)
-                  as Err)
-              .failure,
+          (await readiness.check(
+            descriptor,
+            unproven,
+            writerSchemaVersion,
+          ) as Err).failure,
           isA<SyncBusyFailure>(),
         );
         expect(
-          (await readiness.check(descriptor, stamp, writerSchemaVersion + 1)
-                  as Err)
-              .failure,
+          (await readiness.check(
+            descriptor,
+            stamp,
+            writerSchemaVersion + 1,
+          ) as Err).failure,
           isA<SyncBusyFailure>(),
         );
         store.begin(key, WriteIntent.sync);
         expect(
-          (await readiness.check(descriptor, stamp, writerSchemaVersion) as Err)
-              .failure,
+          (await readiness.check(
+            descriptor,
+            stamp,
+            writerSchemaVersion,
+          ) as Err).failure,
           isA<SyncBusyFailure>(),
         );
         final uncertain = store.finish(key, needsSync: true).stamp;
         expect(
-          (await readiness.check(descriptor, uncertain, writerSchemaVersion)
-                  as Err)
-              .failure,
+          (await readiness.check(
+            descriptor,
+            uncertain,
+            writerSchemaVersion,
+          ) as Err).failure,
           isA<SyncNeedsRepairFailure>(),
         );
         store.begin(key, WriteIntent.delete);
         final deleted = store.finish(key).stamp;
         expect(
-          (await readiness.check(descriptor, deleted, writerSchemaVersion)
-                  as Err)
-              .failure,
+          (await readiness.check(
+            descriptor,
+            deleted,
+            writerSchemaVersion,
+          ) as Err).failure,
           isA<SyncNotFoundFailure>(),
         );
         expect(store.record(key)?.descriptorHash, isNull);

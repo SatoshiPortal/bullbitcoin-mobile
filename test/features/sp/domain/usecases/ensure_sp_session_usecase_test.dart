@@ -40,20 +40,17 @@ void main() {
 
     when(() => repository.hasSession).thenReturn(false);
     when(() => repository.teardownInProgress).thenReturn(false);
-    when(
-      () => repository.adoptNewestBackup(),
-    ).thenAnswer((_) async => const Ok(false));
-    when(
-      () => repository.hasRevokedSentinel(),
-    ).thenAnswer((_) async => const Ok(false));
+    when(() => repository.adoptNewestBackup())
+        .thenAnswer((_) async => const Ok(false));
+    when(() => repository.hasRevokedSentinel())
+        .thenAnswer((_) async => const Ok(false));
     when(() => repository.dispose()).thenAnswer((_) async => const Ok(null));
     when(() => repository.snapshot()).thenReturn(Ok(spWallet()));
     when(() => configRepository.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );
-    when(
-      () => getSpSecretUsecase.execute(any()),
-    ).thenAnswer((_) async => Ok(secret));
+    when(() => getSpSecretUsecase.execute(any()))
+        .thenAnswer((_) async => Ok(secret));
     when(
       () => repository.createFromSecret(
         network: any(named: 'network'),
@@ -83,9 +80,8 @@ void main() {
     });
 
     test('returns null when a .revoked sentinel is present', () async {
-      when(
-        () => repository.hasRevokedSentinel(),
-      ).thenAnswer((_) async => const Ok(true));
+      when(() => repository.hasRevokedSentinel())
+          .thenAnswer((_) async => const Ok(true));
 
       final result = await usecase.execute();
 
@@ -94,9 +90,8 @@ void main() {
     });
 
     test('returns null when no backend config is stored', () async {
-      when(
-        () => configRepository.fetch(),
-      ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
+      when(() => configRepository.fetch())
+          .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
 
       final result = await usecase.execute();
 
@@ -105,9 +100,8 @@ void main() {
     });
 
     test('a secret read throw returns Err with no exception detail', () async {
-      when(
-        () => getSpSecretUsecase.execute(any()),
-      ).thenThrow(Exception('keystore locked'));
+      when(() => getSpSecretUsecase.execute(any()))
+          .thenThrow(Exception('keystore locked'));
 
       final result = await usecase.execute();
 
@@ -123,9 +117,8 @@ void main() {
     });
 
     test('forwards a passphrase refusal and never creates', () async {
-      when(
-        () => getSpSecretUsecase.execute(any()),
-      ).thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
+      when(() => getSpSecretUsecase.execute(any()))
+          .thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
 
       final result = await usecase.execute();
 
@@ -171,26 +164,23 @@ void main() {
       );
     });
 
-    test(
-      'allowDuringTeardown establishes while the teardown is still held',
-      () async {
-        // The one caller that owns the teardown it runs inside: a failed recreate
-        // rolling back has to bring the previous session back before releasing.
-        when(() => repository.teardownInProgress).thenReturn(true);
+    test('allowDuringTeardown establishes while the teardown is still held', () async {
+      // The one caller that owns the teardown it runs inside: a failed recreate
+      // rolling back has to bring the previous session back before releasing.
+      when(() => repository.teardownInProgress).thenReturn(true);
 
-        final result = await usecase.execute(allowDuringTeardown: true);
+      final result = await usecase.execute(allowDuringTeardown: true);
 
-        expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
-        verify(
-          () => repository.createFromSecret(
-            network: any(named: 'network'),
-            blindbitUrl: any(named: 'blindbitUrl'),
-            electrumUrl: any(named: 'electrumUrl'),
-            secret: any(named: 'secret'),
-          ),
-        ).called(1);
-      },
-    );
+      expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
+      verify(
+        () => repository.createFromSecret(
+          network: any(named: 'network'),
+          blindbitUrl: any(named: 'blindbitUrl'),
+          electrumUrl: any(named: 'electrumUrl'),
+          secret: any(named: 'secret'),
+        ),
+      ).called(1);
+    });
 
     test('a teardown that begins after the entry checks but before create '
         'aborts the create (TOCTOU)', () async {
@@ -223,9 +213,8 @@ void main() {
       // A revoke wrote the sentinel while a session was still live; ensure must
       // not keep serving it.
       when(() => repository.hasSession).thenReturn(true);
-      when(
-        () => repository.hasRevokedSentinel(),
-      ).thenAnswer((_) async => const Ok(true));
+      when(() => repository.hasRevokedSentinel())
+          .thenAnswer((_) async => const Ok(true));
 
       final result = await usecase.execute();
 

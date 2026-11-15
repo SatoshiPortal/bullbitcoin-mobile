@@ -43,9 +43,8 @@ void main() {
       final labels = _Labels();
       when(() => metadata.fetch(id)).thenAnswer((_) async => row);
       when(() => native.issuedReceiveIndex(row)).thenAnswer((_) async => 7);
-      when(
-        () => liquid.getLastAddressIndex(wallet: any(named: 'wallet')),
-      ).thenAnswer((_) async => 0);
+      when(() => liquid.getLastAddressIndex(wallet: any(named: 'wallet')))
+          .thenAnswer((_) async => 0);
       when(
         () => liquid.getAddressByIndex(
           any(),
@@ -56,12 +55,10 @@ void main() {
         final index = call.positionalArguments.first as int;
         return 'confidential$index';
       });
-      when(
-        () => liquid.getTransactions(wallet: any(named: 'wallet')),
-      ).thenAnswer((_) async => []);
-      when(
-        () => liquid.getAddressBalancesSat(wallet: any(named: 'wallet')),
-      ).thenAnswer((_) async => {});
+      when(() => liquid.getTransactions(wallet: any(named: 'wallet')))
+          .thenAnswer((_) async => []);
+      when(() => liquid.getAddressBalancesSat(wallet: any(named: 'wallet')))
+          .thenAnswer((_) async => {});
       when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
       final repository = WalletAddressRepository(
         native: native,

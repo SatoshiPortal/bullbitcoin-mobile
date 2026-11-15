@@ -71,9 +71,8 @@ void main() {
     });
 
     test('returns true for a liquid wallet', () async {
-      when(
-        () => getWallet.execute(any()),
-      ).thenAnswer((_) async => FakeWallet(isLiquid: true));
+      when(() => getWallet.execute(any()))
+          .thenAnswer((_) async => FakeWallet(isLiquid: true));
 
       final result = await usecase.execute(_sentinelWalletId);
 
@@ -82,9 +81,8 @@ void main() {
     });
 
     test('returns false for a bitcoin wallet', () async {
-      when(
-        () => getWallet.execute(any()),
-      ).thenAnswer((_) async => FakeWallet(isLiquid: false));
+      when(() => getWallet.execute(any()))
+          .thenAnswer((_) async => FakeWallet(isLiquid: false));
 
       final result = await usecase.execute(_sentinelWalletId);
 

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -62,9 +63,8 @@ void main() {
     configRepo = FakeSpBackendConfigRepository();
 
     when(() => settingsRepo.fetch()).thenAnswer((_) async => _settings());
-    when(
-      () => secretUsecase.execute(any()),
-    ).thenAnswer((_) async => Ok(secret));
+    when(() => secretUsecase.execute(any()))
+        .thenAnswer((_) async => Ok(secret));
     usecase = build();
   });
 
@@ -107,9 +107,8 @@ void main() {
     );
 
     test('refuses with SpRequiresSuperuser when superuser is off', () async {
-      when(
-        () => settingsRepo.fetch(),
-      ).thenAnswer((_) async => _settings(isSuperuser: false));
+      when(() => settingsRepo.fetch())
+          .thenAnswer((_) async => _settings(isSuperuser: false));
 
       final result = await run();
 
@@ -119,9 +118,8 @@ void main() {
     });
 
     test('refuses with SpRequiresDevMode when dev mode is off', () async {
-      when(
-        () => settingsRepo.fetch(),
-      ).thenAnswer((_) async => _settings(isDevModeEnabled: false));
+      when(() => settingsRepo.fetch())
+          .thenAnswer((_) async => _settings(isDevModeEnabled: false));
 
       final result = await run();
 
@@ -167,19 +165,16 @@ void main() {
       },
     );
 
-    test(
-      'a failed config read refuses rather than creating over a wallet',
-      () async {
-        // Folding the read failure to "no config" would defeat the guard above
-        // and let this create run over a live wallet, re-seeding its scan cursor.
-        configRepo.readShouldFail = true;
+    test('a failed config read refuses rather than creating over a wallet', () async {
+      // Folding the read failure to "no config" would defeat the guard above
+      // and let this create run over a live wallet, re-seeding its scan cursor.
+      configRepo.readShouldFail = true;
 
-        final result = await run();
+      final result = await run();
 
-        expect((result as Err).failure, isA<SpUnexpected>());
-        expect(accountRepo.createCount, 0);
-      },
-    );
+      expect((result as Err).failure, isA<SpUnexpected>());
+      expect(accountRepo.createCount, 0);
+    });
 
     test(
       'a corrupt stored config does not block setup (counts as absent)',
@@ -242,9 +237,8 @@ void main() {
     });
 
     test('forwards a passphrase refusal and never creates', () async {
-      when(
-        () => secretUsecase.execute(any()),
-      ).thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
+      when(() => secretUsecase.execute(any()))
+          .thenAnswer((_) async => const Err(SpPassphraseUnsupported()));
 
       final result = await run();
 
@@ -290,9 +284,8 @@ void main() {
     test(
       'a secret lookup throw returns Err (execute is total, does not throw)',
       () async {
-        when(
-          () => secretUsecase.execute(any()),
-        ).thenThrow(Exception('secret read failed'));
+        when(() => secretUsecase.execute(any()))
+            .thenThrow(Exception('secret read failed'));
 
         final result = await run();
 

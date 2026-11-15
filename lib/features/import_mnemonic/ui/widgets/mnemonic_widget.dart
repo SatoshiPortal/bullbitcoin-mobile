@@ -1,4 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
+
 import 'dart:math';
 
 import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure.dart';
@@ -17,7 +18,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullText,
         Gap;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 typedef Mnemonic = ({
   String label,

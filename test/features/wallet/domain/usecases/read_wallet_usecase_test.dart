@@ -13,9 +13,8 @@ void main() {
     () async {
       final repository = _Repository();
       const failure = WalletNotFoundFailure();
-      when(
-        () => repository.getWallet('A'),
-      ).thenAnswer((_) async => const Err(failure));
+      when(() => repository.getWallet('A'))
+          .thenAnswer((_) async => const Err(failure));
       final result = await ReadWalletUsecase(repository).execute('A');
       expect(switch (result) {
         Err(:final failure) => failure,

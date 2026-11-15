@@ -428,7 +428,7 @@ void main() {
       _registration(0),
     ], chain: WalletSyncChain.bitcoin)).single;
     final database = sqlite3.open(path);
-    addTearDown(database.dispose);
+    addTearDown(database.close);
     database.execute('DROP TABLE wallet_sync_jobs');
 
     expect(
@@ -484,7 +484,7 @@ void main() {
     for (final version in [0, 2]) {
       test('refuses version $version without changing it', () {
         final database = sqlite3.open(path);
-        addTearDown(database.dispose);
+        addTearDown(database.close);
         database.execute('PRAGMA user_version = $version');
         database.execute('CREATE TABLE unknown (id INTEGER)');
 

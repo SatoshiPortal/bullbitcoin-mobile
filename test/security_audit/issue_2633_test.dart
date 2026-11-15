@@ -8,9 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2633 duplicate watch-only import', () {
     test('duplicate checks include imported wallets and use typed error', () {
-      final source = File(
-        'lib/features/wallet/data/wallet_repository.dart',
-      ).readAsStringSync();
+      final source = File('lib/features/wallet/data/wallet_repository.dart')
+          .readAsStringSync();
       String method(String start, String end) => source.substring(
         source.indexOf(start),
         source.indexOf(end, source.indexOf(start)),

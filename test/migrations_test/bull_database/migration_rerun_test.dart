@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -182,7 +183,7 @@ void _seedUserData(File file) {
     db.execute('UPDATE mempool_servers SET enable_ssl = 0');
     db.execute('UPDATE recoverbull SET is_permission_granted = 1');
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -243,7 +244,7 @@ void _expectUserData(File file) {
       expect(row['is_permission_granted'], 1);
     }
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -275,7 +276,7 @@ Map<String, List<String>> _dump(File file) {
     }
     return dump;
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -287,7 +288,7 @@ List<String> _columns(File file, String table) {
         .map((row) => row['name'] as String)
         .toList();
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -296,7 +297,7 @@ int _userVersion(File file) {
   try {
     return db.userVersion;
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -305,7 +306,7 @@ void _setUserVersion(File file, int version) {
   try {
     db.userVersion = version;
   } finally {
-    db.dispose();
+    db.close();
   }
 }
 
@@ -314,6 +315,6 @@ void _execute(File file, String sql) {
   try {
     db.execute(sql);
   } finally {
-    db.dispose();
+    db.close();
   }
 }

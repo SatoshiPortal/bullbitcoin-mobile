@@ -1,7 +1,9 @@
 import 'package:meta/meta.dart';
+
 import '../local_notification.dart';
 import 'notification_permission_port.dart';
 import '../notifications_failure.dart';
+
 import 'package:primitives/primitives.dart';
 
 abstract interface class LocalNotificationPort

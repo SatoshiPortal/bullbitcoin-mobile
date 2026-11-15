@@ -73,9 +73,8 @@ void main() {
     serverRepo = _MockServerRepository();
     settingsRepo = _MockSettingsRepository();
     appSettingsRepository = _MockAppSettingsRepository();
-    when(
-      () => appSettingsRepository.fetch(),
-    ).thenAnswer((_) async => _appSettings());
+    when(() => appSettingsRepository.fetch())
+        .thenAnswer((_) async => _appSettings());
     torSessionPort = _MockTorSessionPort();
     when(
       () => torSessionPort.open(
@@ -99,12 +98,10 @@ void main() {
     ElectrumSettings? settings,
     SettingsEntity? appSettings,
   }) {
-    when(
-      () => serverRepo.fetchActiveServers(network: any(named: 'network')),
-    ).thenAnswer((_) async => Ok(servers));
-    when(
-      () => settingsRepo.fetchByNetwork(any()),
-    ).thenAnswer((_) async => Ok(settings ?? _settings()));
+    when(() => serverRepo.fetchActiveServers(network: any(named: 'network')))
+        .thenAnswer((_) async => Ok(servers));
+    when(() => settingsRepo.fetchByNetwork(any()))
+        .thenAnswer((_) async => Ok(settings ?? _settings()));
     final app = appSettings ?? _appSettings();
     when(() => appSettingsRepository.fetch()).thenAnswer((_) async => app);
   }
@@ -465,21 +462,19 @@ void main() {
     });
 
     test('does not apply the external proxy to Liquid Electrum', () async {
-      when(
-        () => serverRepo.fetchActiveServers(network: any(named: 'network')),
-      ).thenAnswer(
-        (_) async => Ok([
-          ElectrumServer.existing(
-            url: 'ssl://liquid.example:50002',
-            network: _liquidNetwork,
-            isCustom: false,
-            priority: 0,
-          ),
-        ]),
-      );
-      when(
-        () => settingsRepo.fetchByNetwork(any()),
-      ).thenAnswer((_) async => Ok(_settings(socks5: 'proxy.example:9999')));
+      when(() => serverRepo.fetchActiveServers(network: any(named: 'network')))
+          .thenAnswer(
+            (_) async => Ok([
+              ElectrumServer.existing(
+                url: 'ssl://liquid.example:50002',
+                network: _liquidNetwork,
+                isCustom: false,
+                priority: 0,
+              ),
+            ]),
+          );
+      when(() => settingsRepo.fetchByNetwork(any()))
+          .thenAnswer((_) async => Ok(_settings(socks5: 'proxy.example:9999')));
 
       late final String? socks5;
       await adapter.runWithFallback<void>(
@@ -510,9 +505,8 @@ void main() {
             ),
           ]),
         );
-        when(
-          () => settingsRepo.fetchByNetwork(any()),
-        ).thenAnswer((_) async => Ok(_settings()));
+        when(() => settingsRepo.fetchByNetwork(any()))
+            .thenAnswer((_) async => Ok(_settings()));
 
         var reached = false;
         await expectLater(
@@ -548,9 +542,8 @@ void main() {
             ),
           ]),
         );
-        when(
-          () => settingsRepo.fetchByNetwork(any()),
-        ).thenAnswer((_) async => Ok(_settings()));
+        when(() => settingsRepo.fetchByNetwork(any()))
+            .thenAnswer((_) async => Ok(_settings()));
 
         final reached = <String>[];
         await adapter.runWithFallback<void>(

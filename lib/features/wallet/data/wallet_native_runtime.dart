@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:meta/meta.dart';
 
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -313,9 +315,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     String? replacing,
   }) async {
     try {
-      return switch (await (await wallet(
-        walletId,
-      )).tx.check(replacing: replacing)) {
+      return switch (await (await wallet(walletId)).tx
+          .check(replacing: replacing)) {
         Ok(:final value) => value,
         Err(failure: SyncBusyFailure()) => BitcoinSpendStatus.busy,
         Err() => BitcoinSpendStatus.unavailable,
@@ -396,9 +397,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     if (state case Ok(:final value) when catalogChanged) {
       _changes.add(value);
     }
-    if (state case Ok(
-      value: final value,
-    ) when value.lifecycle == WalletLifecycle.active) {
+    if (state case Ok(value: final value)
+        when value.lifecycle == WalletLifecycle.active) {
       _unavailable.remove(key);
     }
   }

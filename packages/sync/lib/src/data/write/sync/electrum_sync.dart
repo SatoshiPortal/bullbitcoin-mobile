@@ -1,7 +1,9 @@
 import '../../lease_diagnostics.dart';
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+
 import '../../writer_diagnostics.dart';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -322,9 +324,8 @@ Future<SyncPassOutcome> _performSync(SyncParams params) async {
   );
   try {
     final current = await reader.read(params.descriptor.key);
-    if (current case Ok(
-      value: final state,
-    ) when state.lifecycle == WalletLifecycle.deleted) {
+    if (current case Ok(value: final state)
+        when state.lifecycle == WalletLifecycle.deleted) {
       return SyncPassOutcome(
         const Err<SyncCompletion, SyncFailure>(SyncNotFoundFailure()),
         retryable: false,

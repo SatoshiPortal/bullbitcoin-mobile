@@ -29,9 +29,8 @@ void main() {
           _Row(''),
         ],
       );
-      final result = await CatalogWalletSecretReferencesRepository(
-        metadata,
-      ).list();
+      final result = await CatalogWalletSecretReferencesRepository(metadata)
+          .list();
       expect((result as Ok<List<Fingerprint>, WalletFailure>).value, [
         Fingerprint('73c5da0a'),
         Fingerprint('deadbeef'),

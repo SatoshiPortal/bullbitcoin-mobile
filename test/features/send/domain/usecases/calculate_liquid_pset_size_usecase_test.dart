@@ -18,9 +18,8 @@ void main() {
   });
 
   test('returns the discounted vsize from the repository', () async {
-    when(
-      () => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-    ).thenAnswer((_) async => (1234, 250));
+    when(() => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
+        .thenAnswer((_) async => (1234, 250));
 
     final result = await usecase.execute(pset: 'dummy-pset');
 
@@ -30,9 +29,8 @@ void main() {
   });
 
   test('sanitizes any underlying error into a build failure', () async {
-    when(
-      () => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-    ).thenThrow(Exception('boom: bc1qsecretaddress'));
+    when(() => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
+        .thenThrow(Exception('boom: bc1qsecretaddress'));
 
     final result = await usecase.execute(pset: 'dummy-pset');
 

@@ -9,7 +9,7 @@ Bull Mobile Tor lifecycle and platform integration.
   s.license          = { :type => 'MIT' }
   s.author           = { 'Bull Bitcoin' => 'support@bullbitcoin.com' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files     = 'bull_tor/Sources/bull_tor/**/*.swift'
   s.dependency 'Flutter'
   s.platform         = :ios, '15.0'
   s.swift_version    = '5.0'

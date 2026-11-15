@@ -210,11 +210,13 @@ final class WriterSession {
       }
     }
     value(result);
-    if (operation case WriterSyncSpendObservation(
-      :final observedSpendTransactions,
-      :final spendTransactionInputs,
-      :final settledSpendTransactions,
-    ) when key.network is BitcoinNetwork) {
+    if (operation
+        case WriterSyncSpendObservation(
+          :final observedSpendTransactions,
+          :final spendTransactionInputs,
+          :final settledSpendTransactions,
+        )
+        when key.network is BitcoinNetwork) {
       final observed = openSpendGate();
       try {
         observed.observed(descriptor, expectedGeneration, {
@@ -225,9 +227,8 @@ final class WriterSession {
         observed.close();
       }
     }
-    if (operation case WriterSyncChanges(
-      hasChanges: false,
-    ) when !record.needsSync && !record.state.syncFailed) {
+    if (operation case WriterSyncChanges(hasChanges: false)
+        when !record.needsSync && !record.state.syncFailed) {
       cancelUnchanged(key, record, syncSucceeded: true);
       return WriterUnchanged(record.state.stamp);
     }

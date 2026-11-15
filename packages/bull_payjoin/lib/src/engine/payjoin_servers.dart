@@ -52,9 +52,9 @@ List<Uri> relaysOutsideDomainOf(Uri directory, {required List<Uri> servers}) {
 /// payjoin session uses; null when the URI is not a payjoin URI.
 Uri? payjoinDirectoryOf(String payjoinUri) {
   try {
-    final endpoint = pdk.Uri.parse(
-      uri: payjoinUri,
-    ).checkPjSupported().pjEndpoint();
+    final endpoint = pdk.Uri.parse(uri: payjoinUri)
+        .checkPjSupported()
+        .pjEndpoint();
     return Uri.parse(endpoint);
   } on Exception {
     return null;

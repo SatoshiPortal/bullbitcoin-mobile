@@ -88,9 +88,8 @@ void main() {
       final relabelled = _transaction(
         labels: [Label.tx(id: 1, transactionId: 'txid-1', label: 'rent')],
       );
-      when(
-        () => refreshTransactionLabelsUsecase.execute(any()),
-      ).thenAnswer((_) async => [relabelled]);
+      when(() => refreshTransactionLabelsUsecase.execute(any()))
+          .thenAnswer((_) async => [relabelled]);
 
       await cubit.refreshLabels();
 
@@ -130,9 +129,8 @@ void main() {
       );
       // Hold the label read open so the load can land underneath it.
       final labelRead = Completer<List<Transaction>>();
-      when(
-        () => refreshTransactionLabelsUsecase.execute(any()),
-      ).thenAnswer((_) => labelRead.future);
+      when(() => refreshTransactionLabelsUsecase.execute(any()))
+          .thenAnswer((_) => labelRead.future);
       when(
         () => getTransactionsUsecase.execute(
           walletId: any(named: 'walletId'),

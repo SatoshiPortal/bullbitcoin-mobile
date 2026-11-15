@@ -1,12 +1,14 @@
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+
 import 'support/test_codec.dart';
 
 base class _WalletPort implements PayjoinWalletPort {

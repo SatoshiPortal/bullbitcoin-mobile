@@ -80,9 +80,8 @@ void main() {
 
     test('builds in sync, signs, then broadcasts what was built', () async {
       bumpAnswers(Ok(unsigned));
-      when(
-        () => walletRepository.signPsbt('unsigned-psbt', walletId: 'w1'),
-      ).thenAnswer((_) async => 'signed-psbt');
+      when(() => walletRepository.signPsbt('unsigned-psbt', walletId: 'w1'))
+          .thenAnswer((_) async => 'signed-psbt');
       when(
         () => broadcastUsecase.execute(
           'signed-psbt',
@@ -141,25 +140,22 @@ void main() {
       });
     }
 
-    test(
-      'returns Err(ReplaceByFeeUnexpectedFailure) on unexpected exception — raw message in logMessage only',
-      () async {
-        when(
-          () => walletRepository.bumpFee(
-            walletId: any(named: 'walletId'),
-            txid: any(named: 'txid'),
-            newFeeRate: any(named: 'newFeeRate'),
-          ),
-        ).thenThrow(Exception('internal sync error'));
+    test('returns Err(ReplaceByFeeUnexpectedFailure) on unexpected exception — raw message in logMessage only', () async {
+      when(
+        () => walletRepository.bumpFee(
+          walletId: any(named: 'walletId'),
+          txid: any(named: 'txid'),
+          newFeeRate: any(named: 'newFeeRate'),
+        ),
+      ).thenThrow(Exception('internal sync error'));
 
-        final failure = (await bump() as Err).failure;
-        expect(failure, isA<ReplaceByFeeUnexpectedFailure>());
-        expect(
-          (failure as ReplaceByFeeUnexpectedFailure).logMessage,
-          contains('internal sync error'),
-        );
-      },
-    );
+      final failure = (await bump() as Err).failure;
+      expect(failure, isA<ReplaceByFeeUnexpectedFailure>());
+      expect(
+        (failure as ReplaceByFeeUnexpectedFailure).logMessage,
+        contains('internal sync error'),
+      );
+    });
   });
 
   group('verifyOriginalTransaction', () {
@@ -179,76 +175,67 @@ void main() {
       expect(result, isA<Ok<void, ReplaceByFeeFailure>>());
     });
 
-    test(
-      'returns Err(ReplaceByFeeManipulatedTransactionFailure) when verification fails',
-      () async {
-        when(
-          () => walletRepository.getTransactionSignatureStatus(
-            walletId: any(named: 'walletId'),
-            txid: any(named: 'txid'),
-          ),
-        ).thenAnswer((_) async => TransactionSignatureStatus.invalid);
+    test('returns Err(ReplaceByFeeManipulatedTransactionFailure) when verification fails', () async {
+      when(
+        () => walletRepository.getTransactionSignatureStatus(
+          walletId: any(named: 'walletId'),
+          txid: any(named: 'txid'),
+        ),
+      ).thenAnswer((_) async => TransactionSignatureStatus.invalid);
 
-        final result = await usecase.verifyOriginalTransaction(
-          walletId: 'w1',
-          txid: 'old-txid',
-        );
+      final result = await usecase.verifyOriginalTransaction(
+        walletId: 'w1',
+        txid: 'old-txid',
+      );
 
-        expect(result, isA<Err<void, ReplaceByFeeFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ReplaceByFeeManipulatedTransactionFailure>(),
-        );
-      },
-    );
+      expect(result, isA<Err<void, ReplaceByFeeFailure>>());
+      expect(
+        (result as Err).failure,
+        isA<ReplaceByFeeManipulatedTransactionFailure>(),
+      );
+    });
 
-    test(
-      'returns Err(ReplaceByFeeUnverifiableTransactionFailure) when verification cannot run',
-      () async {
-        when(
-          () => walletRepository.getTransactionSignatureStatus(
-            walletId: any(named: 'walletId'),
-            txid: any(named: 'txid'),
-          ),
-        ).thenAnswer((_) async => TransactionSignatureStatus.unverifiable);
+    test('returns Err(ReplaceByFeeUnverifiableTransactionFailure) when verification cannot run', () async {
+      when(
+        () => walletRepository.getTransactionSignatureStatus(
+          walletId: any(named: 'walletId'),
+          txid: any(named: 'txid'),
+        ),
+      ).thenAnswer((_) async => TransactionSignatureStatus.unverifiable);
 
-        final result = await usecase.verifyOriginalTransaction(
-          walletId: 'w1',
-          txid: 'old-txid',
-        );
+      final result = await usecase.verifyOriginalTransaction(
+        walletId: 'w1',
+        txid: 'old-txid',
+      );
 
-        expect(result, isA<Err<void, ReplaceByFeeFailure>>());
-        expect(
-          (result as Err).failure,
-          isA<ReplaceByFeeUnverifiableTransactionFailure>(),
-        );
-      },
-    );
+      expect(result, isA<Err<void, ReplaceByFeeFailure>>());
+      expect(
+        (result as Err).failure,
+        isA<ReplaceByFeeUnverifiableTransactionFailure>(),
+      );
+    });
 
-    test(
-      'returns Err(ReplaceByFeeUnexpectedFailure) when verification throws — raw message in logMessage only',
-      () async {
-        when(
-          () => walletRepository.getTransactionSignatureStatus(
-            walletId: any(named: 'walletId'),
-            txid: any(named: 'txid'),
-          ),
-        ).thenThrow(Exception('wallet metadata not found'));
+    test('returns Err(ReplaceByFeeUnexpectedFailure) when verification throws — raw message in logMessage only', () async {
+      when(
+        () => walletRepository.getTransactionSignatureStatus(
+          walletId: any(named: 'walletId'),
+          txid: any(named: 'txid'),
+        ),
+      ).thenThrow(Exception('wallet metadata not found'));
 
-        final result = await usecase.verifyOriginalTransaction(
-          walletId: 'w1',
-          txid: 'old-txid',
-        );
+      final result = await usecase.verifyOriginalTransaction(
+        walletId: 'w1',
+        txid: 'old-txid',
+      );
 
-        expect(result, isA<Err<void, ReplaceByFeeFailure>>());
-        final failure = (result as Err).failure;
-        expect(failure, isA<ReplaceByFeeUnexpectedFailure>());
-        expect(
-          (failure as ReplaceByFeeUnexpectedFailure).logMessage,
-          contains('wallet metadata not found'),
-        );
-      },
-    );
+      expect(result, isA<Err<void, ReplaceByFeeFailure>>());
+      final failure = (result as Err).failure;
+      expect(failure, isA<ReplaceByFeeUnexpectedFailure>());
+      expect(
+        (failure as ReplaceByFeeUnexpectedFailure).logMessage,
+        contains('wallet metadata not found'),
+      );
+    });
   });
 
   group('getNetworkFees', () {
@@ -259,9 +246,8 @@ void main() {
         slow: NetworkFee.relativeSatPerKwu(1),
         minRelay: RelativeFee(25),
       );
-      when(
-        () => getNetworkFeesUsecase.execute(isLiquid: false),
-      ).thenAnswer((_) async => feeOptions);
+      when(() => getNetworkFeesUsecase.execute(isLiquid: false))
+          .thenAnswer((_) async => feeOptions);
 
       final result = await usecase.getNetworkFees();
 
@@ -271,9 +257,8 @@ void main() {
     test(
       'returns Err(ReplaceByFeeNetworkFeesFailure) on exception — no raw leak',
       () async {
-        when(
-          () => getNetworkFeesUsecase.execute(isLiquid: false),
-        ).thenThrow(Exception('network unavailable'));
+        when(() => getNetworkFeesUsecase.execute(isLiquid: false))
+            .thenThrow(Exception('network unavailable'));
 
         final result = await usecase.getNetworkFees();
 

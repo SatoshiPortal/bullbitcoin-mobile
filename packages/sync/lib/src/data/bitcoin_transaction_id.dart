@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:bull_sdk/bdk.dart' as bdk;
 
 /// Freeze the finalized payload's identity before submitting it to an endpoint.

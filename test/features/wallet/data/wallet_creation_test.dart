@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -68,9 +69,8 @@ void main() {
     storage = FakeSecureStoragePlatform()..install();
     // Published BIP84 vector; the secret stays in the in-memory test keystore.
     final imported = await Secrets(scratchDirectory: () async => '/tmp').import(
-      words:
-          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
-              .split(' '),
+      words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+          .split(' '),
     );
     secret = (imported as Ok<Secret, SecretFailure>).value;
     row = await WalletMetadataService.deriveFromSecret(
@@ -81,9 +81,9 @@ void main() {
     );
     registerFallbackValue(row);
     registerFallbackValue(WalletModel.fromMetadata(row));
-    descriptor =
-        await WatchOnlyWalletEntity.parse(row.externalPublicDescriptor)
-            as WatchOnlyDescriptorEntity;
+    descriptor = await WatchOnlyWalletEntity.parse(
+      row.externalPublicDescriptor,
+    ) as WatchOnlyDescriptorEntity;
     directory = await Directory.systemTemp.createTemp('wallet-create-');
     reporter = _Reporter();
     await initializeLogging(directory: directory, reporter: reporter);
@@ -111,13 +111,12 @@ void main() {
       bdkWalletDatasource: bitcoin,
       lwkWalletDatasource: _Liquid(),
       walletValuesDatasource: values,
-      synchronize:
-          (
-            _, {
-            discover = false,
-            allowInitialScan = true,
-            reason = SyncReason.auto,
-          }) async {},
+      synchronize: (
+        _, {
+        discover = false,
+        allowInitialScan = true,
+        reason = SyncReason.auto,
+      }) async {},
       isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),
@@ -178,22 +177,19 @@ void main() {
     },
   );
 
-  test(
-    'regression: unrelated settings commit during prepare does not abort import',
-    () async {
-      final observer = await independent();
-      when(() => native.prepareCreate(any())).thenAnswer((_) async {
-        await observer.customStatement('UPDATE settings SET rowid = rowid');
-      });
-      when(() => native.create(any())).thenAnswer((_) async {});
-      try {
-        await create('secret');
-        verify(() => native.create(any())).called(1);
-      } finally {
-        await observer.close();
-      }
-    },
-  );
+  test('regression: unrelated settings commit during prepare does not abort import', () async {
+    final observer = await independent();
+    when(() => native.prepareCreate(any())).thenAnswer((_) async {
+      await observer.customStatement('UPDATE settings SET rowid = rowid');
+    });
+    when(() => native.create(any())).thenAnswer((_) async {});
+    try {
+      await create('secret');
+      verify(() => native.create(any())).called(1);
+    } finally {
+      await observer.close();
+    }
+  });
 
   for (final path in ['secret', 'descriptor', 'xpub']) {
     test('$path rolls back failed native creation and permits retry', () async {
@@ -275,9 +271,8 @@ void main() {
   test('existing metadata survives a rejected creation', () async {
     final existing = row.copyWith(label: 'original');
     await metadata.store(existing);
-    when(
-      () => native.create(any()),
-    ).thenThrow(const FileSystemException('injected'));
+    when(() => native.create(any()))
+        .thenThrow(const FileSystemException('injected'));
     await expectLater(
       create('secret'),
       throwsA(isA<WalletAlreadyExistsException>()),

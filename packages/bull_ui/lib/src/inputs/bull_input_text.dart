@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 /// The standard themed text field.
@@ -208,10 +208,8 @@ class _BullInputTextState extends State<BullInputText> {
       maxLines: effectiveMaxLines,
       style:
           widget.style ??
-          Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w400,
-            color: colors.onSurface,
-          ),
+          Theme.of(context).textTheme.headlineSmall
+              ?.copyWith(fontWeight: FontWeight.w400, color: colors.onSurface),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
       textAlign: TextAlign.left,

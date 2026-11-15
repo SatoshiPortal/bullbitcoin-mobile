@@ -228,9 +228,8 @@ void main() {
       (_) async =>
           const Ok<WalletTransaction?, WalletTransactionLookupFailure>(null),
     );
-    when(
-      () => watchPayjoin.execute(ids: any(named: 'ids')),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => watchPayjoin.execute(ids: any(named: 'ids')))
+        .thenAnswer((_) => const Stream.empty());
     // _loadDetailsByPayjoinId always arms a watcher for both payjoin.txId
     // (when set) and payjoin.originalTxId (always set on our fixtures) —
     // an unstubbed call here throws synchronously (mocktail returns null,
@@ -244,9 +243,8 @@ void main() {
         walletId: any(named: 'walletId'),
       ),
     ).thenAnswer((_) => const Stream.empty());
-    when(
-      () => watchTransactionOrderSwap.execute(any()),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => watchTransactionOrderSwap.execute(any()))
+        .thenAnswer((_) => const Stream.empty());
     // The aggregate lookup returns a Result, so "nothing found" is Ok([]) and
     // no longer an unstubbed throw the cubit used to swallow. Tests that care
     // about what it finds override this.
@@ -354,12 +352,10 @@ void main() {
       when(() => getTransactionOrderSwap.execute(orderSwap.localId)).thenAnswer(
         (_) async => Ok<OrderSwapRecord, TransactionFailure>(orderSwap),
       );
-      when(
-        () => getWallet.execute('source-wallet', sync: false),
-      ).thenAnswer((_) => sourceWallet.future);
-      when(
-        () => getWallet.execute('destination-wallet', sync: false),
-      ).thenAnswer((_) => destinationWallet.future);
+      when(() => getWallet.execute('source-wallet', sync: false))
+          .thenAnswer((_) => sourceWallet.future);
+      when(() => getWallet.execute('destination-wallet', sync: false))
+          .thenAnswer((_) => destinationWallet.future);
       when(
         () => getWalletTransaction.execute(
           txId: any(named: 'txId'),
@@ -374,9 +370,8 @@ void main() {
       await pumpEventQueue();
 
       verify(() => getWallet.execute('source-wallet', sync: false)).called(1);
-      verify(
-        () => getWallet.execute('destination-wallet', sync: false),
-      ).called(1);
+      verify(() => getWallet.execute('destination-wallet', sync: false))
+          .called(1);
       verify(
         () => getWalletTransaction.execute(
           txId: any(named: 'txId'),
@@ -421,9 +416,8 @@ void main() {
       (_) async =>
           const Ok<WalletTransaction?, WalletTransactionLookupFailure>(null),
     );
-    when(
-      () => watchTransactionOrderSwap.execute(initial.localId),
-    ).thenAnswer((_) => updates.stream);
+    when(() => watchTransactionOrderSwap.execute(initial.localId))
+        .thenAnswer((_) => updates.stream);
 
     final cubit = buildCubit();
     addTearDown(cubit.close);
@@ -697,16 +691,15 @@ void main() {
     final updates = StreamController<OrderSwapRecord>.broadcast();
     addTearDown(updates.close);
     var attempts = 0;
-    when(() => getTransactionOrderSwap.execute(orderSwap.localId)).thenAnswer((
-      _,
-    ) async {
-      if (attempts++ == 0) {
-        return const Err<OrderSwapRecord, TransactionFailure>(
-          TransactionNotFoundFailure(),
-        );
-      }
-      return Ok(orderSwap);
-    });
+    when(() => getTransactionOrderSwap.execute(orderSwap.localId))
+        .thenAnswer((_) async {
+          if (attempts++ == 0) {
+            return const Err<OrderSwapRecord, TransactionFailure>(
+              TransactionNotFoundFailure(),
+            );
+          }
+          return Ok(orderSwap);
+        });
     when(() => watchTransactionOrderSwap.execute(orderSwap.localId)).thenAnswer(
       (_) => updates.stream.map(Ok<OrderSwapRecord, TransactionFailure>.new),
     );
@@ -765,13 +758,12 @@ void main() {
     when(() => getTransactionOrderSwap.execute(orderSwap.localId)).thenAnswer(
       (_) async => Ok<OrderSwapRecord, TransactionFailure>(orderSwap),
     );
-    when(
-      () => getWallet.execute(orderSwap.canonicalWalletId!, sync: false),
-    ).thenAnswer(
-      (_) async => const Err<Wallet?, TransactionFailure>(
-        TransactionUnexpectedFailure('wallet unavailable'),
-      ),
-    );
+    when(() => getWallet.execute(orderSwap.canonicalWalletId!, sync: false))
+        .thenAnswer(
+          (_) async => const Err<Wallet?, TransactionFailure>(
+            TransactionUnexpectedFailure('wallet unavailable'),
+          ),
+        );
 
     final cubit = buildCubit();
     addTearDown(cubit.close);
@@ -896,12 +888,11 @@ void main() {
             broadcasted ? completed : payjoin,
           ),
         );
-        when(() => broadcastOriginalTransaction.execute(payjoin)).thenAnswer((
-          _,
-        ) async {
-          broadcasted = true;
-          return Ok<PayjoinSession, TransactionFailure>(completed);
-        });
+        when(() => broadcastOriginalTransaction.execute(payjoin))
+            .thenAnswer((_) async {
+              broadcasted = true;
+              return Ok<PayjoinSession, TransactionFailure>(completed);
+            });
         when(
           () => getWalletTransaction.execute(
             txId: completed.originalTxId,
@@ -1078,16 +1069,15 @@ void main() {
     test('refresh retries a failed init by Payjoin transaction id', () async {
       final payjoin = _sender(status: PayjoinStatus.requested);
       var attempts = 0;
-      when(() => getPayjoinByTxId.execute('payjoin-txid')).thenAnswer((
-        _,
-      ) async {
-        if (attempts++ == 0) {
-          return const Err<PayjoinSession, TransactionFailure>(
-            TransactionUnexpectedFailure('storage unavailable'),
-          );
-        }
-        return Ok(payjoin);
-      });
+      when(() => getPayjoinByTxId.execute('payjoin-txid'))
+          .thenAnswer((_) async {
+            if (attempts++ == 0) {
+              return const Err<PayjoinSession, TransactionFailure>(
+                TransactionUnexpectedFailure('storage unavailable'),
+              );
+            }
+            return Ok(payjoin);
+          });
       when(() => getPayjoinById.execute(payjoin.id)).thenAnswer(
         (_) async => Ok<PayjoinSession, TransactionFailure>(payjoin),
       );
@@ -1122,16 +1112,15 @@ void main() {
         when(() => getPayjoinById.execute(payjoin.uri)).thenAnswer(
           (_) async => Ok<PayjoinSession, TransactionFailure>(payjoin),
         );
-        when(
-          () => getTransactionsByTxId.execute('sender-orig-txid'),
-        ).thenAnswer(
-          (_) async => Ok<List<Transaction>, TransactionFailure>([
-            Transaction(
-              walletTransaction: _walletTx(txId: 'sender-orig-txid'),
-              payjoin: payjoin,
-            ),
-          ]),
-        );
+        when(() => getTransactionsByTxId.execute('sender-orig-txid'))
+            .thenAnswer(
+              (_) async => Ok<List<Transaction>, TransactionFailure>([
+                Transaction(
+                  walletTransaction: _walletTx(txId: 'sender-orig-txid'),
+                  payjoin: payjoin,
+                ),
+              ]),
+            );
 
         final cubit = buildCubit();
         addTearDown(cubit.close);
@@ -1203,26 +1192,24 @@ void main() {
           visible ? completed : payjoin,
         ),
       );
-      when(
-        () => getTransactionsByTxId.execute('receiver-payjoin-txid'),
-      ).thenAnswer(
-        (_) async => Ok<List<Transaction>, TransactionFailure>([
-          if (visible)
-            Transaction(
-              walletTransaction: _walletTx(txId: 'receiver-payjoin-txid'),
-              payjoin: payjoin,
-            )
-          else
-            Transaction(payjoin: payjoin),
-        ]),
-      );
-      when(
-        () => getTransactionsByTxId.execute('receiver-orig-txid'),
-      ).thenAnswer(
-        (_) async => Ok<List<Transaction>, TransactionFailure>([
-          Transaction(payjoin: payjoin),
-        ]),
-      );
+      when(() => getTransactionsByTxId.execute('receiver-payjoin-txid'))
+          .thenAnswer(
+            (_) async => Ok<List<Transaction>, TransactionFailure>([
+              if (visible)
+                Transaction(
+                  walletTransaction: _walletTx(txId: 'receiver-payjoin-txid'),
+                  payjoin: payjoin,
+                )
+              else
+                Transaction(payjoin: payjoin),
+            ]),
+          );
+      when(() => getTransactionsByTxId.execute('receiver-orig-txid'))
+          .thenAnswer(
+            (_) async => Ok<List<Transaction>, TransactionFailure>([
+              Transaction(payjoin: payjoin),
+            ]),
+          );
       when(
         () => getWalletTransaction.execute(
           txId: 'receiver-payjoin-txid',
@@ -1495,9 +1482,8 @@ void main() {
     // more than once per init. What matters is which txid was asked for, not
     // how often, hence capture over a call count.
     void expectResolvedTxIds(String txId) {
-      final resolved = verify(
-        () => getTransactionsByTxId.execute(captureAny()),
-      ).captured;
+      final resolved = verify(() => getTransactionsByTxId.execute(captureAny()))
+          .captured;
       expect(resolved, isNotEmpty);
       expect(resolved, everyElement(txId));
     }
@@ -1507,9 +1493,8 @@ void main() {
       // own payout txid. Without the fallback the screen stays on order-only
       // details, with no payjoin shown and no watcher armed.
       final order = _buyOrder(payjoinTxId: 'payjoin-txid');
-      when(
-        () => getOrder.execute('order-1'),
-      ).thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
+      when(() => getOrder.execute('order-1'))
+          .thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
       when(() => getTransactionsByTxId.execute(any())).thenAnswer(
         (_) async => Ok<List<Transaction>, TransactionFailure>([
           Transaction(payjoin: _receiver(), order: order),
@@ -1528,9 +1513,8 @@ void main() {
         bitcoinTransactionId: 'payout-txid',
         payjoinTxId: 'payjoin-txid',
       );
-      when(
-        () => getOrder.execute('order-1'),
-      ).thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
+      when(() => getOrder.execute('order-1'))
+          .thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
       when(() => getTransactionsByTxId.execute(any())).thenAnswer(
         (_) async => Ok<List<Transaction>, TransactionFailure>([
           Transaction(payjoin: _receiver(), order: order),
@@ -1548,9 +1532,8 @@ void main() {
       'shows an order with a txid before its wallet transaction exists',
       () async {
         final order = _buyOrder(bitcoinTransactionId: 'payout-txid');
-        when(
-          () => getOrder.execute('order-1'),
-        ).thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
+        when(() => getOrder.execute('order-1'))
+            .thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
         when(() => getTransactionsByTxId.execute('payout-txid')).thenAnswer(
           (_) async => Ok<List<Transaction>, TransactionFailure>([
             Transaction(order: order),
@@ -1575,9 +1558,8 @@ void main() {
 
     test('falls back to order-only details when no txid is known', () async {
       final order = _buyOrder();
-      when(
-        () => getOrder.execute('order-1'),
-      ).thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
+      when(() => getOrder.execute('order-1'))
+          .thenAnswer((_) async => Ok<Order, TransactionFailure>(order));
 
       final cubit = buildCubit();
       addTearDown(cubit.close);

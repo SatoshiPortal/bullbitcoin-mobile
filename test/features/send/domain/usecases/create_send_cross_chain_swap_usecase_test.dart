@@ -38,9 +38,8 @@ void main() {
   test(
     'regtest refuses before receive-address or provider side effects',
     () async {
-      when(
-        () => getWallet.execute('wallet-1'),
-      ).thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
+      when(() => getWallet.execute('wallet-1'))
+          .thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
       final result = await usecase.execute(
         walletId: 'wallet-1',
         amountSat: 1000,
@@ -63,12 +62,10 @@ void main() {
   );
 
   test('creates Liquid to Bitcoin with a Liquid fallback', () async {
-    when(
-      () => getWallet.execute('wallet-1'),
-    ).thenAnswer((_) async => _wallet(Network.liquidTestnet));
-    when(
-      () => getReceiveAddress.execute(walletId: 'wallet-1'),
-    ).thenAnswer((_) async => _address('tlq1-fallback'));
+    when(() => getWallet.execute('wallet-1'))
+        .thenAnswer((_) async => _wallet(Network.liquidTestnet));
+    when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
+        .thenAnswer((_) async => _address('tlq1-fallback'));
     when(
       () => swapFacade.createOrder(
         amountSat: BigInt.from(100000),
@@ -98,12 +95,10 @@ void main() {
   });
 
   test('creates Bitcoin to Liquid with a Bitcoin fallback', () async {
-    when(
-      () => getWallet.execute('wallet-1'),
-    ).thenAnswer((_) async => _wallet(Network.bitcoinTestnet));
-    when(
-      () => getReceiveAddress.execute(walletId: 'wallet-1'),
-    ).thenAnswer((_) async => _address('tb1-fallback'));
+    when(() => getWallet.execute('wallet-1'))
+        .thenAnswer((_) async => _wallet(Network.bitcoinTestnet));
+    when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
+        .thenAnswer((_) async => _address('tb1-fallback'));
     when(
       () => swapFacade.createOrder(
         amountSat: BigInt.from(100000),

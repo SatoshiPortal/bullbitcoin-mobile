@@ -226,9 +226,8 @@ RevisionStoreDatasource _openOrQuarantine(String documentsDirectory) {
   }
   // Persist the adoption-only policy before replacing damaged metadata.
   // A later restart must not treat an unadopted row as a fresh wallet.
-  File(
-    recoveryMarkerPath(documentsDirectory),
-  ).writeAsStringSync('existing-only\n', flush: true);
+  File(recoveryMarkerPath(documentsDirectory))
+      .writeAsStringSync('existing-only\n', flush: true);
   final suffix = '.corrupt-${DateTime.now().toUtc().microsecondsSinceEpoch}';
   for (final sidecar in ['', '-wal', '-shm']) {
     final file = File('$path$sidecar');

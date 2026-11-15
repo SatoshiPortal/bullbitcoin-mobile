@@ -57,9 +57,8 @@ void main() {
 
   test('a failed read becomes a typed failure carrying no reason: the reason '
       "quotes the user's own label text", () async {
-    when(
-      () => repository.fetchAll(),
-    ).thenThrow(Exception('drift: row "rent to Alice Smith"'));
+    when(() => repository.fetchAll())
+        .thenThrow(Exception('drift: row "rent to Alice Smith"'));
 
     final result = await usecase.call(LabelFormat.bip329);
 

@@ -1,4 +1,5 @@
 import 'mappers/encrypted_vault_mapper.dart';
+
 import 'dart:convert';
 
 import 'datasources/google_drive_datasource.dart';
@@ -6,6 +7,7 @@ import '../domain/entities/drive_file_metadata.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/recoverbull_failure.dart';
 import '../domain/repositories/google_drive_repository.dart';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 

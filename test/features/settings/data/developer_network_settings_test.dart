@@ -25,23 +25,20 @@ void main() {
 
   tearDown(() => database.close());
 
-  test(
-    'developer mode off commits mainnet in the same settings write',
-    () async {
-      await datasource.setIsDevMode(false);
-      final row = await database
-          .customSelect(
-            'SELECT environment, is_dev_mode_enabled FROM settings WHERE id = 1',
-          )
-          .getSingle();
-      expect(row.read<String>('environment'), 'mainnet');
-      expect(row.read<int>('is_dev_mode_enabled'), 0);
-      final writes = await database
-          .customSelect('SELECT COUNT(*) AS count FROM setting_writes')
-          .getSingle();
-      expect(writes.read<int>('count'), 1);
-    },
-  );
+  test('developer mode off commits mainnet in the same settings write', () async {
+    await datasource.setIsDevMode(false);
+    final row = await database
+        .customSelect(
+          'SELECT environment, is_dev_mode_enabled FROM settings WHERE id = 1',
+        )
+        .getSingle();
+    expect(row.read<String>('environment'), 'mainnet');
+    expect(row.read<int>('is_dev_mode_enabled'), 0);
+    final writes = await database
+        .customSelect('SELECT COUNT(*) AS count FROM setting_writes')
+        .getSingle();
+    expect(writes.read<int>('count'), 1);
+  });
 
   test('startup read repairs a persisted unauthorized network', () async {
     await database.customStatement(

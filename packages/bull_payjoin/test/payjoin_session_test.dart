@@ -4,6 +4,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_payjoin/src/engine/payjoin_ownership.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+
 import 'support/test_codec.dart';
 
 Outpoint _input(String txid, [int vout = 0]) => (txId: txid, vout: vout);

@@ -64,7 +64,9 @@ void main() {
 
   test('SQLite primary and extended codes map without exception text', () {
     expect(
-      recoverBullStorageFailure(SqliteException(13, 'private')),
+      recoverBullStorageFailure(
+        SqliteException(extendedResultCode: 13, message: 'private'),
+      ),
       isA<RecoverBullStorageFullFailure>(),
     );
     expect(
@@ -75,12 +77,16 @@ void main() {
     );
     for (final code in [11, 26, 267]) {
       expect(
-        recoverBullStorageFailure(SqliteException(code, 'private')),
+        recoverBullStorageFailure(
+          SqliteException(extendedResultCode: code, message: 'private'),
+        ),
         isA<RecoverBullStorageDamagedFailure>(),
       );
     }
     expect(
-      recoverBullStorageFailure(SqliteException(10, 'private')),
+      recoverBullStorageFailure(
+        SqliteException(extendedResultCode: 10, message: 'private'),
+      ),
       isA<RecoverBullJournalFailure>(),
     );
   });

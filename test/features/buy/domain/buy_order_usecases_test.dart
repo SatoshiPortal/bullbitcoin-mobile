@@ -98,9 +98,8 @@ void main() {
 
     test('returns the refreshed order', () async {
       final order = _MockBuyOrder();
-      when(
-        () => mainnet.refreshBuyOrder('order-1'),
-      ).thenAnswer((_) async => order);
+      when(() => mainnet.refreshBuyOrder('order-1'))
+          .thenAnswer((_) async => order);
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -120,9 +119,8 @@ void main() {
     });
 
     test('sanitizes a failure, keeping the reason for logs only', () async {
-      when(
-        () => mainnet.refreshBuyOrder('order-1'),
-      ).thenThrow(Exception(_rawReason));
+      when(() => mainnet.refreshBuyOrder('order-1'))
+          .thenThrow(Exception(_rawReason));
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -152,9 +150,8 @@ void main() {
       final settings = _MockSettings();
       when(() => settings.environment).thenReturn(Environment.testnet);
       when(settingsRepository.fetch).thenAnswer((_) async => settings);
-      when(
-        () => testnet.refreshBuyOrder('order-1'),
-      ).thenAnswer((_) async => _MockBuyOrder());
+      when(() => testnet.refreshBuyOrder('order-1'))
+          .thenAnswer((_) async => _MockBuyOrder());
 
       expect(
         await build().execute(orderId: 'order-1'),
@@ -176,17 +173,15 @@ void main() {
 
     setUp(() {
       labels = _MockLabelsFacade();
-      when(
-        () => labels.store(any()),
-      ).thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
+      when(() => labels.store(any()))
+          .thenAnswer((_) async => Ok<Label, LabelFailure>(_FakeLabel()));
     });
 
     test('confirms and labels the payout address', () async {
       final order = _MockBuyOrder();
       when(() => order.toAddress).thenReturn('bc1qpayoutaddress');
-      when(
-        () => mainnet.confirmBuyOrder('order-1'),
-      ).thenAnswer((_) async => order);
+      when(() => mainnet.confirmBuyOrder('order-1'))
+          .thenAnswer((_) async => order);
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -197,9 +192,8 @@ void main() {
     test('labels nothing when the order has no payout address', () async {
       final order = _MockBuyOrder();
       when(() => order.toAddress).thenReturn(null);
-      when(
-        () => mainnet.confirmBuyOrder('order-1'),
-      ).thenAnswer((_) async => order);
+      when(() => mainnet.confirmBuyOrder('order-1'))
+          .thenAnswer((_) async => order);
 
       expect(
         await build().execute(orderId: 'order-1'),
@@ -209,9 +203,8 @@ void main() {
     });
 
     test('sanitizes a failure', () async {
-      when(
-        () => mainnet.confirmBuyOrder('order-1'),
-      ).thenThrow(Exception(_rawReason));
+      when(() => mainnet.confirmBuyOrder('order-1'))
+          .thenThrow(Exception(_rawReason));
 
       final result = await build().execute(orderId: 'order-1');
 
@@ -233,9 +226,8 @@ void main() {
 
     test('returns the accelerated order', () async {
       final order = _MockBuyOrder();
-      when(
-        () => mainnet.accelerateBuyOrder('order-1'),
-      ).thenAnswer((_) async => order);
+      when(() => mainnet.accelerateBuyOrder('order-1'))
+          .thenAnswer((_) async => order);
 
       expect(
         (await build().execute('order-1') as Ok<BuyOrder, BuyFailure>).value,
@@ -244,9 +236,8 @@ void main() {
     });
 
     test('sanitizes a failure', () async {
-      when(
-        () => mainnet.accelerateBuyOrder('order-1'),
-      ).thenThrow(Exception(_rawReason));
+      when(() => mainnet.accelerateBuyOrder('order-1'))
+          .thenThrow(Exception(_rawReason));
 
       final result = await build().execute('order-1');
 

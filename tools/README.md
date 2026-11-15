@@ -66,3 +66,9 @@ the override classes from the manifest; `make translations` runs it, or run
 `dart run`, which would build the app's native hooks).
 
 > First run is slow (cold package build hooks); subsequent runs are sub-second.
+
+## Launcher icons
+
+Run `make app-icons` from the repository root to regenerate the configured Android and iOS launcher icons. Configuration remains in the root `pubspec.yaml`, and asset and output paths remain relative to the app root. `make app-icons ICON_ARGS=--help` prints the upstream CLI help. `make app-icons-check` resolves the tool lockfile, analyzes the tool and checks CLI loading without regenerating assets.
+
+The generator is isolated in `tools/app_icons` because its `cli_util ^0.4.1` conflicts with Melos 8. Its exact version and independent lockfile preserve reproducibility without overriding either tool's constraints; it is not a workspace member or an app dependency.

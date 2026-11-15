@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../sp_fakes.dart';
+
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 class _MockEnsureSpSessionUsecase extends Mock
@@ -44,15 +45,12 @@ void main() {
           ),
         ];
         const coins = <SpCoin>[];
-        when(
-          () => ensureSpSessionUsecase.execute(),
-        ).thenAnswer((_) async => Ok(wallet));
-        when(
-          () => repository.history(),
-        ).thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(history));
-        when(
-          () => repository.coins(),
-        ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>(coins));
+        when(() => ensureSpSessionUsecase.execute())
+            .thenAnswer((_) async => Ok(wallet));
+        when(() => repository.history())
+            .thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(history));
+        when(() => repository.coins())
+            .thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>(coins));
         when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.regtest));
         when(() => repository.chainTip()).thenReturn(101);
         when(() => repository.minBirthdayHeight()).thenReturn(const Ok(42));
@@ -68,16 +66,14 @@ void main() {
         expect(data.network, BitcoinNetwork.regtest);
         expect(data.chainTip, 101);
         expect(data.minBirthdayHeight, 42);
-        verify(
-          () => repository.notifyBalanceChanged(Sats.fromInt(700)),
-        ).called(1);
+        verify(() => repository.notifyBalanceChanged(Sats.fromInt(700)))
+            .called(1);
       },
     );
 
     test('returns SpNotSetUp when the session is unavailable', () async {
-      when(
-        () => ensureSpSessionUsecase.execute(),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => ensureSpSessionUsecase.execute())
+          .thenAnswer((_) async => const Ok(null));
 
       final result = await usecase.execute();
 
@@ -88,15 +84,13 @@ void main() {
 
     test('short-circuits with the history failure unchanged', () async {
       const failure = SpBackendUnreachable('blindbit down');
-      when(
-        () => ensureSpSessionUsecase.execute(),
-      ).thenAnswer((_) async => Ok(spWallet()));
+      when(() => ensureSpSessionUsecase.execute())
+          .thenAnswer((_) async => Ok(spWallet()));
       when(
         () => repository.history(),
       ).thenAnswer((_) async => const Err<List<SpPayment>, SpFailure>(failure));
-      when(
-        () => repository.coins(),
-      ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
+      when(() => repository.coins())
+          .thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
       when(() => repository.network()).thenReturn(const Ok(null));
       when(() => repository.minBirthdayHeight()).thenReturn(const Ok(0));
 
@@ -107,15 +101,12 @@ void main() {
 
     test('short-circuits with the coins failure unchanged', () async {
       const failure = SpConfigInvalid('corrupt coin store');
-      when(
-        () => ensureSpSessionUsecase.execute(),
-      ).thenAnswer((_) async => Ok(spWallet()));
-      when(
-        () => repository.history(),
-      ).thenAnswer((_) async => const Ok<List<SpPayment>, SpFailure>([]));
-      when(
-        () => repository.coins(),
-      ).thenAnswer((_) async => const Err<List<SpCoin>, SpFailure>(failure));
+      when(() => ensureSpSessionUsecase.execute())
+          .thenAnswer((_) async => Ok(spWallet()));
+      when(() => repository.history())
+          .thenAnswer((_) async => const Ok<List<SpPayment>, SpFailure>([]));
+      when(() => repository.coins())
+          .thenAnswer((_) async => const Err<List<SpCoin>, SpFailure>(failure));
       when(() => repository.network()).thenReturn(const Ok(null));
       when(() => repository.minBirthdayHeight()).thenReturn(const Ok(0));
 
@@ -126,19 +117,15 @@ void main() {
 
     test('short-circuits with the min birthday failure unchanged', () async {
       const failure = SpNotSetUp('no live session');
-      when(
-        () => ensureSpSessionUsecase.execute(),
-      ).thenAnswer((_) async => Ok(spWallet()));
-      when(
-        () => repository.history(),
-      ).thenAnswer((_) async => const Ok<List<SpPayment>, SpFailure>([]));
-      when(
-        () => repository.coins(),
-      ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
+      when(() => ensureSpSessionUsecase.execute())
+          .thenAnswer((_) async => Ok(spWallet()));
+      when(() => repository.history())
+          .thenAnswer((_) async => const Ok<List<SpPayment>, SpFailure>([]));
+      when(() => repository.coins())
+          .thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
       when(() => repository.network()).thenReturn(const Ok(null));
-      when(
-        () => repository.minBirthdayHeight(),
-      ).thenReturn(const Err<int, SpFailure>(failure));
+      when(() => repository.minBirthdayHeight())
+          .thenReturn(const Err<int, SpFailure>(failure));
 
       final result = await usecase.execute();
 
@@ -146,9 +133,8 @@ void main() {
     });
 
     test('maps an unexpected throw to SpUnexpected', () async {
-      when(
-        () => ensureSpSessionUsecase.execute(),
-      ).thenThrow(Exception('session boom'));
+      when(() => ensureSpSessionUsecase.execute())
+          .thenThrow(Exception('session boom'));
 
       final result = await usecase.execute();
 

@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+
 import 'dart:math' as math;
 
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -40,7 +41,7 @@ import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dar
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -378,11 +379,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
           Expanded(
             child: BBKeyboardActions(
               disableScroll: true,
-              focusNodes: [
-                _amountFocusNode,
-                for (final recipient in recipientDrafts)
-                  ?_recipientAmountFocusNodes[recipient.id],
-              ],
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>
                     previous.amount != current.amount &&
@@ -624,8 +620,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                                   (code) =>
                                                                       code !=
                                                                           'BTC' &&
-                                                                      code !=
-                                                                          'sats',
+                                                                      code != 'sats',
                                                                 )
                                                                 .toList(),
                                                         selectedValue:

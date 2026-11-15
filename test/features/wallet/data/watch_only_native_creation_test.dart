@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'freezes_only_sync.dart' show NoConnections;
+
 import 'package:primitives/primitives.dart' as p;
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
@@ -38,8 +39,7 @@ class _Reserved implements ReservedAddressPort {
 void main() {
   test('mainnet descriptor retains BIP32 mainnet key version', () async {
     final metadata = await WalletMetadataService.deriveFromXpub(
-      xpub:
-          'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
+      xpub: 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
     );
@@ -60,10 +60,9 @@ void main() {
             network: Network.bitcoinTestnet,
             scriptType: ScriptType.bip84,
           );
-          final descriptor =
-              (WalletCatalogPortImpl.descriptorFromMetadata(metadata)
-                      as p.Ok<PublicWalletDescriptor, SyncFailure>)
-                  .value;
+          final descriptor = (WalletCatalogPortImpl.descriptorFromMetadata(
+            metadata,
+          ) as p.Ok<PublicWalletDescriptor, SyncFailure>).value;
           final catalog = _Catalog(descriptor);
           final opened = stores = openForeground(
             documentsDirectory: directory.path,
