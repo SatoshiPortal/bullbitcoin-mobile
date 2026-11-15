@@ -29,8 +29,8 @@ import 'package:bull_recoverbull/src/domain/usecases/save_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
-import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
-import 'package:bull_ui/bull_ui.dart';
+import 'package:bull_recoverbull/src/ui/pages/vault_provider_selection_page.dart';
+import 'package:bull_recoverbull/src/ui/recoverbull_flow_navigator.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:drift/native.dart';
 import 'package:material_ui/material_ui.dart';
@@ -131,6 +131,9 @@ void main() {
     const VaultStorageFailure(),
   ]) {
     testWidgets('provider $failure offers save-only retry', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2340);
+      tester.view.devicePixelRatio = 2.75;
+      addTearDown(tester.view.reset);
       const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
       ScreenCaptureProtection.instance.enabledByUser = true;
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -174,10 +177,15 @@ void main() {
           theme: ThemeData(extensions: testBullExtensions),
           localizationsDelegates: RecoverBullFeature.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,
-          home: VaultFlowPage(
+          home: RecoverBullFlowHost(
             flow: RecoverBullFlow.secureVault,
-            presentation: () async => presentation,
+            presentation: presentation,
+            page: const VaultProviderSelectionPage(
+              password: 'public test password',
+            ),
             copiedMessage: 'Copied',
+            onTestVault: () {},
+            onFinished: () {},
           ),
         ),
       );
@@ -185,26 +193,16 @@ void main() {
         await cubit.settings();
       });
       await tester.pumpAndSettle();
-      expect(find.byType(BullInputText), findsNWidgets(2));
-      await tester.enterText(
-        find.byType(TextField).at(0),
-        'public test password',
-      );
-      await tester.enterText(
-        find.byType(TextField).at(1),
-        'public test password',
-      );
-      await tester.ensureVisible(find.text('Continue'));
+      expect(find.text('Custom location'), findsOneWidget);
       await tester.runAsync(() async {
-        await tester.tap(find.text('Continue'));
+        await tester.tap(find.text('Custom location'));
         await files.started.future;
         files.pending.complete(Err(failure));
         // Wait for the real flow result, not a fabricated cubit state.
         await cubit.stream.firstWhere((state) => !state.busy);
       });
       await tester.pumpAndSettle();
-      expect(find.byType(BullInputText), findsNothing);
-      expect(find.text('Continue'), findsNothing);
+      expect(find.text('Custom location'), findsNothing);
       expect(find.text('Retry saving backup'), findsOneWidget);
       expect(
         find.textContaining('password you already confirmed'),
@@ -245,6 +243,9 @@ void main() {
       expect(server.storedPassword, 'public test password');
       expect(server.stores, 1);
       expect(sessions.opens, 1);
+      // Let the snack bars dismiss themselves before the tree is torn down.
+      await tester.pump(const Duration(seconds: 10));
+      await tester.pumpAndSettle();
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.runAsync(presentation.close);
       expect(server.trashed, 0);

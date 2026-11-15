@@ -16,7 +16,8 @@ import 'package:bull_recoverbull/src/domain/usecases/restore_vault_usecase.dart'
 import 'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
-import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
+import 'package:bull_recoverbull/src/ui/pages/password_input_page.dart';
+import 'package:bull_recoverbull/src/ui/recoverbull_flow_navigator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
@@ -31,6 +32,25 @@ Widget app(Widget child) => MaterialApp(
   localizationsDelegates: RecoverBullFeature.localizationsDelegates,
   supportedLocales: RecoverBullLocalizations.supportedLocales,
   home: child,
+);
+
+/// Lays pages out on a phone-sized screen (Pixel 5), as on a device.
+void usePhoneScreen(WidgetTester tester) {
+  tester.view.physicalSize = const Size(1080, 2340);
+  tester.view.devicePixelRatio = 2.75;
+  addTearDown(tester.view.reset);
+}
+
+/// The recovery password screen of [presentation]'s flow.
+Widget recovery(VaultFlowPresentation presentation) => app(
+  RecoverBullFlowHost(
+    flow: RecoverBullFlow.recoverVault,
+    presentation: presentation,
+    page: const PasswordInputPage(),
+    copiedMessage: 'Copied',
+    onTestVault: () {},
+    onFinished: () {},
+  ),
 );
 
 VaultFlowPresentation flow({
@@ -76,6 +96,7 @@ void main() {
     testWidgets(
       'password and manual key input wait for effective protection: $mode',
       (tester) async {
+        usePhoneScreen(tester);
         final pending = Completer<bool>();
         tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
           _channel,
@@ -87,24 +108,15 @@ void main() {
           },
         );
         final presentation = flow();
-        await tester.pumpWidget(
-          app(
-            VaultFlowPage(
-              flow: RecoverBullFlow.recoverVault,
-              presentation: () async => presentation,
-              copiedMessage: 'Copied',
-            ),
-          ),
-        );
+        await tester.pumpWidget(recovery(presentation));
         await tester.pump();
         await tester.pump();
-        expect(find.byType(BullInputText), findsNothing);
-        expect(find.textContaining('phone storage is full'), findsOneWidget);
+        expect(find.byType(TextField), findsNothing);
         expect(find.text('Enter a vault key instead'), findsOneWidget);
         await tester.pumpWidget(app(const SizedBox.shrink()));
         if (!pending.isCompleted) pending.complete(true);
         await tester.pump();
-        expect(presentation.cubit.isClosed, isTrue);
+        await presentation.close();
       },
     );
   }
@@ -112,31 +124,23 @@ void main() {
   testWidgets(
     'privacy retry reveals inputs without hiding nonsecret controls',
     (tester) async {
+      usePhoneScreen(tester);
       var protected = false;
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
         _channel,
         (call) async => call.method != 'screenshotOff' || protected,
       );
-      await tester.pumpWidget(
-        app(
-          VaultFlowPage(
-            flow: RecoverBullFlow.recoverVault,
-            presentation: () async => flow(),
-            copiedMessage: 'Copied',
-          ),
-        ),
-      );
+      await tester.pumpWidget(recovery(flow()));
       await tester.pumpAndSettle();
-      expect(find.byType(BullInputText), findsNothing);
-      expect(find.textContaining('phone storage is full'), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
       expect(find.text('Enter a vault key instead'), findsOneWidget);
       expect(tester.takeException(), isNull);
 
       protected = true;
       await tester.tap(find.widgetWithText(BullButton, 'Retry'));
       await tester.pumpAndSettle();
-      expect(find.byType(BullInputText), findsOneWidget);
-      expect(find.textContaining('phone storage is full'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.text('Enter a vault key instead'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(app(const SizedBox.shrink()));
       await tester.pumpAndSettle();
@@ -146,6 +150,7 @@ void main() {
   testWidgets('late initialization after route close disposes the flow', (
     tester,
   ) async {
+    usePhoneScreen(tester);
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       _channel,
       (_) async => true,
@@ -154,10 +159,12 @@ void main() {
     final presentation = flow();
     await tester.pumpWidget(
       app(
-        VaultFlowPage(
+        RecoverBullFlowNavigator(
           flow: RecoverBullFlow.recoverVault,
           presentation: () => pending.future,
           copiedMessage: 'Copied',
+          onTestVault: () {},
+          onFinished: () {},
         ),
       ),
     );
@@ -170,21 +177,16 @@ void main() {
   testWidgets('invalid manual vault key is reported without an exception', (
     tester,
   ) async {
+    usePhoneScreen(tester);
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
       _channel,
       (_) async => true,
     );
-    await tester.pumpWidget(
-      app(
-        VaultFlowPage(
-          flow: RecoverBullFlow.recoverVault,
-          presentation: () async => flow(),
-          copiedMessage: 'Copied',
-        ),
-      ),
-    );
+    await tester.pumpWidget(recovery(flow()));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Enter a vault key instead'));
+    await tester.tap(
+      find.widgetWithText(BullButton, 'Enter a vault key instead'),
+    );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'not-a-key');
     await tester.ensureVisible(find.text('Continue'));
@@ -192,12 +194,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
     expect(find.text('Wrong password for this backup file'), findsOneWidget);
+    // Let the snack bar dismiss itself before the tree is torn down.
+    await tester.pump(const Duration(seconds: 10));
+    await tester.pumpAndSettle();
   });
 
   for (final proceedWithout in [false, true]) {
     testWidgets(
       'passphrase retry and explicit sibling choice: $proceedWithout',
       (tester) async {
+        usePhoneScreen(tester);
         tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
           _channel,
           (_) async => true,
@@ -205,17 +211,11 @@ void main() {
         final vaults = _PassphraseVaults();
         final wallets = _RecoveryWallets();
         final presentation = flow(vaults: vaults, wallets: wallets);
-        await tester.pumpWidget(
-          app(
-            VaultFlowPage(
-              flow: RecoverBullFlow.recoverVault,
-              presentation: () async => presentation,
-              copiedMessage: 'Copied',
-            ),
-          ),
-        );
+        await tester.pumpWidget(recovery(presentation));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Enter a vault key instead'));
+        await tester.tap(
+          find.widgetWithText(BullButton, 'Enter a vault key instead'),
+        );
         await tester.pumpAndSettle();
         await tester.enterText(find.byType(TextField), '33' * 32);
         await tester.ensureVisible(find.text('Continue'));
