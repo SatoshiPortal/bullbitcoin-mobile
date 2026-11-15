@@ -2099,11 +2099,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "ขอความช่วยเหลือ",
   "exchangeStatisticsOrderStats": "ข้อมูล",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11041,7 +11036,6 @@
   "settingsSearchLabelsKeywords": "ป้ายกำกับกระเป๋า|ป้ายกำกับธุรกรรม|BIP329|นำเข้าป้ายกำกับ|ส่งออกป้ายกำกับ",
   "settingsSearchTransactionHistoryKeywords": "ส่งออกธุรกรรม|ส่งออกประวัติธุรกรรม|CSV|ประวัติกระเป๋า",
   "settingsSearchAppSettingsKeywords": "การกำหนดค่าแอป|การตั้งค่าแอปพลิเคชัน|การตั้งค่าทั่วไป",
-  "settingsSearchBtcMapKeywords": "BTC Map|แผนที่บิตคอยน์|แผนที่ร้านค้า|สถานที่ใช้บิตคอยน์",
   "settingsSearchTermsOfServiceKeywords": "ข้อกำหนดและเงื่อนไข|ข้อมูลทางกฎหมาย|ข้อตกลงผู้ใช้|TOS",
   "settingsSearchServicesStatusKeywords": "สถานะบริการ|สถานะระบบ|ออนไลน์|บริการขัดข้อง",
   "settingsSearchImportWalletKeywords": "เพิ่มกระเป๋า|กู้คืนกระเป๋า|นำเข้าคำช่วยจำ|กระเป๋าดูอย่างเดียว|กระเป๋าฮาร์ดแวร์",
@@ -11284,5 +11278,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "ธุรกรรมนี้อยู่ในบล็อกเชนแล้ว ไม่มีอะไรต้องเผยแพร่อีก",
   "broadcastSignedTxErrorRejected": "เครือข่ายปฏิเสธธุรกรรมนี้ ธุรกรรมอาจลงนามไม่ครบ ไม่ถูกต้อง หรือขัดแย้งกับการชำระเงินอื่น",
   "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
-  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน"
+  "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
+  "settingsDarkModeTitle": "โหมดมืด",
+  "settingsSourceCodeTitle": "ซอร์สโค้ด"
 }

@@ -230,5 +230,7 @@
   "app__exchangePaymentSentPastDeadline_apple": "Zahlung gesendet. Bull Bitcoin meldet, dass die Zahlungsfrist für diese Bestellung abgelaufen ist. Bewahren Sie die Transaktions-ID unten auf und wenden Sie sich an den Support, falls die Bestellung nicht aktualisiert wird.",
   "app__allSeedViewSwapMnemonicTitle_apple": "Transfer-Wiederherstellungsphrase",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Transfer-Wiederherstellungsphrase löschen?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Dadurch wird der Transfer-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Transfers bleiben davon unberührt."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Dadurch wird der Transfer-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Transfers bleiben davon unberührt.",
+  "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "quick_actions__transfer_apple": "Transfer"
 }

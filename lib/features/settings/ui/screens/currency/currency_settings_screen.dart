@@ -1,9 +1,8 @@
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -24,22 +23,6 @@ class CurrencySettingsScreen extends StatelessWidget {
     final availableCurrencies = context.select(
       (BitcoinPriceBloc bloc) => bloc.state.availableCurrencies,
     );
-
-    Future<String?> openCurrencyBottomSheet({
-      required BuildContext context,
-      required List<String> availableCurrencies,
-      required String selected,
-    }) async {
-      final c = await BlurredBottomSheet.show<String?>(
-        context: context,
-        child: CurrencyBottomSheet(
-          availableCurrencies: availableCurrencies,
-          selectedValue: selected,
-        ),
-      );
-
-      return c;
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -86,30 +69,31 @@ class CurrencySettingsScreen extends StatelessWidget {
                       color: context.appColors.onSurface,
                     ),
                   ),
-                  onTap:
+                  trailing:
                       currency == null ||
                           availableCurrencies == null ||
                           availableCurrencies.isEmpty
                       ? null
-                      : () async {
-                          final selectedCurrency =
-                              await openCurrencyBottomSheet(
-                                context: context,
-                                availableCurrencies: availableCurrencies,
-                                selected: currency,
-                              );
-                          // If the user selected a different currency, update it
-                          // in the settings.
-                          if (selectedCurrency != null &&
-                              selectedCurrency != currency) {
-                            if (context.mounted) {
-                              await context
-                                  .read<SettingsCubit>()
-                                  .changeCurrency(selectedCurrency);
-                            }
-                          }
-                        },
-                  trailing: const Icon(Icons.keyboard_arrow_down),
+                      : BullPickerChip<String>(
+                          tooltip: context
+                              .loc
+                              .currencySettingsDefaultFiatCurrencyLabel,
+                          value: currency,
+                          items: [
+                            for (final code in availableCurrencies)
+                              BullPickerItem(
+                                value: code,
+                                label:
+                                    '${SupportedCurrency.tryFromCode(code)?.flag ?? ''} $code',
+                              ),
+                          ],
+                          onChanged: (picked) {
+                            if (picked == currency) return;
+                            context.read<SettingsCubit>().changeCurrency(
+                              picked,
+                            );
+                          },
+                        ),
                 ),
               ],
             ),

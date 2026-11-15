@@ -665,7 +665,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   Future<void> _loadDetailsByPayjoinId(String payjoinId) async {
-    final PayjoinSession payjoin;
+    // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+    PayjoinSession payjoin;
     switch (await _getPayjoinByIdUsecase.execute(payjoinId)) {
       case Ok(:final value):
         payjoin = value;

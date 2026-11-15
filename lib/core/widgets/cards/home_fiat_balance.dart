@@ -1,7 +1,5 @@
 import 'package:bull_pricer/bull_pricer.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -22,34 +20,6 @@ class HomeFiatBalance extends StatelessWidget {
   /// When true (e.g. wallet list still loading), avoids showing fiat from 0 sats.
   final bool showBalanceLoading;
 
-  Future<void> _openCurrencyBottomSheet(BuildContext context) async {
-    final blocCurrencies = context
-        .read<BitcoinPriceBloc>()
-        .state
-        .availableCurrencies;
-    final availableCurrencies =
-        blocCurrencies != null && blocCurrencies.isNotEmpty
-        ? blocCurrencies
-        : SupportedCurrency.codes;
-
-    final currentCurrency =
-        context.read<SettingsCubit>().state.currencyCode ?? 'CAD';
-
-    final selectedCurrency = await BlurredBottomSheet.show<String?>(
-      context: context,
-      child: CurrencyBottomSheet(
-        availableCurrencies: availableCurrencies,
-        selectedValue: currentCurrency,
-      ),
-    );
-
-    if (selectedCurrency != null &&
-        selectedCurrency != currentCurrency &&
-        context.mounted) {
-      await context.read<SettingsCubit>().changeCurrency(selectedCurrency);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final priceState = context.select((BitcoinPriceBloc b) => b.state);
@@ -60,18 +30,34 @@ class HomeFiatBalance extends StatelessWidget {
     // [startupFailed], or a successful currency change still shows skeleton.
     final showSkeleton = showBalanceLoading || loadingPrice || !hasValid;
 
-    if (showSkeleton) {
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => _openCurrencyBottomSheet(context),
-        child: const _HomeFiatBalanceSkeleton(),
-      );
-    }
+    final blocCurrencies = priceState.availableCurrencies;
+    final currencies = blocCurrencies != null && blocCurrencies.isNotEmpty
+        ? blocCurrencies
+        : SupportedCurrency.codes;
+    final currentCurrency = context.select(
+      (SettingsCubit cubit) => cubit.state.currencyCode ?? 'CAD',
+    );
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => _openCurrencyBottomSheet(context),
-      child: Container(
+    Widget picker(Widget child) => BullPickerMenu<String>(
+      value: currentCurrency,
+      items: [
+        for (final code in currencies)
+          BullPickerItem(
+            value: code,
+            label: '${SupportedCurrency.tryFromCode(code)?.flag ?? ''} $code',
+          ),
+      ],
+      onChanged: (picked) {
+        if (picked == currentCurrency) return;
+        context.read<SettingsCubit>().changeCurrency(picked);
+      },
+      child: child,
+    );
+
+    if (showSkeleton) return picker(const _HomeFiatBalanceSkeleton());
+
+    return picker(
+      Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(context.bullShapes.button),

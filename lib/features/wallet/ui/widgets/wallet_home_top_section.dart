@@ -27,41 +27,43 @@ class WalletHomeTopSection extends StatelessWidget {
   /// Distance from the top of the dark area down to the balance.
   static const double _balanceTopSpacing = 96;
 
+  /// How far the quick actions hang below the background: the rest of the row
+  /// straddles its bottom edge, while the balance above is never covered.
+  static const double _actionsOverhang = 56;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: _balanceAreaHeight),
-          child: const _UI(),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: _actionsOverhang,
+          child: Image.asset(Assets.backgrounds.bgRed.path, fit: BoxFit.fill),
         ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 13.0),
-          child: actions,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: _balanceAreaHeight),
+              child: const _UI(),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 13.0),
+              child: actions,
+            ),
+          ],
         ),
       ],
     );
   }
 }
 
-class _UI extends StatefulWidget {
+class _UI extends StatelessWidget {
   const _UI();
-
-  @override
-  State<_UI> createState() => _UIState();
-}
-
-class _UIState extends State<_UI> {
-  late Image image;
-
-  @override
-  void initState() {
-    image = Image.asset(Assets.backgrounds.bgRed.path, fit: BoxFit.fill);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,39 +71,27 @@ class _UIState extends State<_UI> {
       (PriceChartCubit cubit) => cubit.state.showChart,
     );
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            color: Colors.transparent,
-            child: image,
-          ),
-        ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, animation) {
-            return SlideTransition(
-              position:
-                  Tween<Offset>(
-                    begin: const Offset(1.0, 0.0),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(parent: animation, curve: Curves.easeInOut),
-                  ),
-              child: child,
-            );
-          },
-          child: showChart
-              ? const SizedBox(
-                  key: ValueKey('chart'),
-                  height: WalletHomeTopSection._balanceAreaHeight,
-                  child: _ChartView(),
-                )
-              : const _Amounts(key: ValueKey('amounts')),
-        ),
-      ],
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (child, animation) {
+        return SlideTransition(
+          position:
+              Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+              ),
+          child: child,
+        );
+      },
+      child: showChart
+          ? const SizedBox(
+              key: ValueKey('chart'),
+              height: WalletHomeTopSection._balanceAreaHeight,
+              child: _ChartView(),
+            )
+          : const _Amounts(key: ValueKey('amounts')),
     );
   }
 }

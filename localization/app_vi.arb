@@ -46,7 +46,6 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
-  "settingsGetHelpLabel": "Nhận trợ giúp",
   "exchangeSupportLoginChatRequired": "Để nhận hỗ trợ từ nhân viên, bạn cần đăng nhập vào tài khoản Bull Bitcoin của mình trước. Hoàn toàn miễn phí và không yêu cầu KYC, chỉ cần một địa chỉ email.",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -639,7 +638,6 @@
   "settingsAppSettingsTitle": "Cài đặt ứng dụng",
   "settingsTermsOfServiceTitle": "Điều khoản dịch vụ",
   "settingsAppVersionLabel": "Phiên bản ứng dụng: ",
-  "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "Trạng thái dịch vụ",
   "settingsLanguageTitle": "Ngôn ngữ",
   "settingsThemeTitle": "Giao diện",
@@ -3272,7 +3270,6 @@
   "settingsSearchLabelsKeywords": "nhãn ví|nhãn giao dịch|BIP329|nhập nhãn|xuất nhãn",
   "settingsSearchTransactionHistoryKeywords": "xuất giao dịch|xuất lịch sử giao dịch|CSV|lịch sử ví",
   "settingsSearchAppSettingsKeywords": "tùy chọn ứng dụng|cài đặt ứng dụng|cài đặt chung",
-  "settingsSearchBtcMapKeywords": "BTC Map|bản đồ bitcoin|bản đồ cửa hàng|nơi chi tiêu bitcoin",
   "settingsSearchTermsOfServiceKeywords": "điều khoản và điều kiện|pháp lý|thỏa thuận người dùng|TOS",
   "settingsSearchServicesStatusKeywords": "tình trạng dịch vụ|trạng thái hệ thống|trực tuyến|gián đoạn dịch vụ",
   "settingsSearchImportWalletKeywords": "thêm ví|khôi phục ví|nhập cụm từ ghi nhớ|ví chỉ xem|ví phần cứng",
@@ -3515,5 +3512,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Giao dịch này đã có trên blockchain. Không còn gì để phát sóng.",
   "broadcastSignedTxErrorRejected": "Mạng đã từ chối giao dịch này. Giao dịch có thể chưa được ký đầy đủ, không hợp lệ hoặc xung đột với một khoản thanh toán khác.",
   "broadcastSignedTxErrorOutcomeUnknown": "Không thể xác nhận giao dịch của bạn đã được phát sóng. Hãy kiểm tra trên trình khám phá khối trước khi thử lại.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Phát sóng trên mạng này chưa được bật trong cài đặt hiện tại."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Phát sóng trên mạng này chưa được bật trong cài đặt hiện tại.",
+  "settingsDarkModeTitle": "Chế độ tối",
+  "settingsSourceCodeTitle": "Mã nguồn"
 }

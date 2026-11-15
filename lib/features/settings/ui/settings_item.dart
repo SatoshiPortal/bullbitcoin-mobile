@@ -20,7 +20,10 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
@@ -29,7 +32,6 @@ enum SettingsItemId {
   exchange,
   exchangeAccountSettings,
   quickActions,
-  priceHistory,
   backup,
   startBackup,
   recoverbull,
@@ -37,7 +39,6 @@ enum SettingsItemId {
   transactionHistory,
   walletSettings,
   appSettings,
-  btcMap,
   termsOfService,
   servicesStatus,
   importWallet,
@@ -57,6 +58,7 @@ enum SettingsItemId {
   currency,
   securityPin,
   logs,
+  sourceCode,
   tor,
   screenPrivacy,
   devMode,
@@ -93,6 +95,9 @@ class SettingsItem {
   final List<String> keywords;
   final bool isSuperuser;
   final bool isInlineControl;
+
+  /// SVG asset drawn instead of [icon], for a glyph no icon font has.
+  final String? iconAsset;
   final OpenSettingsItem _open;
 
   const SettingsItem({
@@ -105,6 +110,7 @@ class SettingsItem {
     this.keywords = const [],
     this.isSuperuser = false,
     this.isInlineControl = false,
+    this.iconAsset,
   }) : _open = open; // ignore: prefer_initializing_formals
 
   String location(TextDirection textDirection) =>
@@ -118,8 +124,20 @@ class SettingsItem {
     Color? iconColor,
     Color? textColor,
   }) {
+    final asset = iconAsset;
     return BullSettingsEntryItem(
       icon: icon,
+      leading: asset == null
+          ? null
+          : SvgPicture.asset(
+              asset,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                iconColor ?? context.appColors.onSurface,
+                BlendMode.srcIn,
+              ),
+            ),
       iconColor: iconColor,
       textColor: textColor,
       title: title,
@@ -306,8 +324,8 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.exchange,
       section: SettingsItemSection.root,
-      title: localization.exchangeAccessManage,
-      path: path(SettingsItemSection.root, localization.exchangeAccessManage),
+      title: localization.settingsExchangeTitle,
+      path: path(SettingsItemSection.root, localization.settingsExchangeTitle),
       icon: Icons.currency_exchange,
       open: (context) => context.pushNamed(SettingsRoute.exchangeAccess.name),
       keywords: _keywords(
@@ -337,43 +355,6 @@ List<SettingsItem> buildSettingsItems({
           english.settingsAccountSettingsTitle,
         ],
       ),
-    SettingsItem(
-      id: SettingsItemId.priceHistory,
-      section: SettingsItemSection.root,
-      title: localization.priceHistoryTitle,
-      path: path(SettingsItemSection.root, localization.priceHistoryTitle),
-      icon: Icons.show_chart,
-      open: (context) => context.pushNamed(SettingsRoute.priceHistory.name),
-      keywords: [localization.priceHistoryTitle, english.priceHistoryTitle],
-    ),
-    SettingsItem(
-      id: SettingsItemId.quickActions,
-      section: SettingsItemSection.root,
-      title: localization.quickActionsSettingsTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.quickActionsSettingsTitle,
-      ),
-      icon: Icons.tune,
-      open: (context) => context.pushNamed(SettingsRoute.quickActions.name),
-      keywords: [
-        localization.quickActionsSettingsTitle,
-        english.quickActionsSettingsTitle,
-      ],
-    ),
-    SettingsItem(
-      id: SettingsItemId.btcMap,
-      section: SettingsItemSection.root,
-      title: localization.settingsBtcMapTitle,
-      path: path(SettingsItemSection.root, localization.settingsBtcMapTitle),
-      icon: Icons.map,
-      open: (context) => context.pushNamed(SettingsRoute.btcMap.name),
-      keywords: _keywords(
-        localization.settingsSearchBtcMapKeywords,
-        english.settingsSearchBtcMapKeywords,
-        [english.settingsBtcMapTitle],
-      ),
-    ),
     SettingsItem(
       id: SettingsItemId.termsOfService,
       section: SettingsItemSection.root,
@@ -421,6 +402,26 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchLogsKeywords,
         [english.logSettingsLogsTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.sourceCode,
+      section: SettingsItemSection.root,
+      title: localization.settingsSourceCodeTitle,
+      path: path(
+        SettingsItemSection.root,
+        localization.settingsSourceCodeTitle,
+      ),
+      icon: Icons.code,
+      iconAsset: Assets.icons.github,
+      open: (_) => launchUrl(
+        Uri.parse(SettingsConstants.githubSupportLink),
+        mode: LaunchMode.externalApplication,
+      ),
+      keywords: [
+        localization.settingsSourceCodeTitle,
+        english.settingsSourceCodeTitle,
+        'GitHub',
+      ],
     ),
     SettingsItem(
       id: SettingsItemId.importWallet,
@@ -621,15 +622,20 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.theme,
       section: SettingsItemSection.app,
-      title: localization.settingsThemeTitle,
-      path: path(SettingsItemSection.app, localization.settingsThemeTitle),
+      title: localization.settingsDarkModeTitle,
+      path: path(SettingsItemSection.app, localization.settingsDarkModeTitle),
       icon: Icons.palette,
-      open: (context) => context.pushNamed(SettingsRoute.theme.name),
+      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
       keywords: _keywords(
         localization.settingsSearchThemeKeywords,
         english.settingsSearchThemeKeywords,
-        [english.settingsThemeTitle],
+        [
+          localization.settingsThemeTitle,
+          english.settingsThemeTitle,
+          english.settingsDarkModeTitle,
+        ],
       ),
+      isInlineControl: true,
     ),
     SettingsItem(
       id: SettingsItemId.currency,
@@ -643,6 +649,21 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchCurrencyKeywords,
         [english.settingsCurrencyTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.quickActions,
+      section: SettingsItemSection.app,
+      title: localization.quickActionsSettingsTitle,
+      path: path(
+        SettingsItemSection.app,
+        localization.quickActionsSettingsTitle,
+      ),
+      icon: Icons.tune,
+      open: (context) => context.pushNamed(SettingsRoute.quickActions.name),
+      keywords: [
+        localization.quickActionsSettingsTitle,
+        english.quickActionsSettingsTitle,
+      ],
     ),
     SettingsItem(
       id: SettingsItemId.securityPin,

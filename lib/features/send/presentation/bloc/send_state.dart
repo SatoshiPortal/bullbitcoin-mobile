@@ -682,17 +682,6 @@ abstract class SendState with _$SendState {
     _ => false,
   };
 
-  String sendTypeName() {
-    switch (sendType) {
-      case SendType.bitcoin:
-        return 'Send';
-      case SendType.lightning:
-        return 'Transfer';
-      case SendType.liquid:
-        return 'Send';
-    }
-  }
-
   bool get isLightning => sendType == SendType.lightning;
   bool get isLightningBitcoinSwap =>
       isLightning && selectedWallet!.network.isBitcoin;

@@ -100,8 +100,6 @@
   "settingsAppSettingsTitle": "Paramètres de l'application",
   "settingsTermsOfServiceTitle": "Conditions d'utilisation",
   "settingsAppVersionLabel": "Version de l'application : ",
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Obtenir de l'aide",
   "settingsServiceStatusTitle": "État des services",
   "settingsLanguageTitle": "Langue",
   "settingsThemeTitle": "Thème",
@@ -4605,7 +4603,6 @@
   "settingsSearchLabelsKeywords": "étiquettes du portefeuille|étiquettes de transactions|BIP329|importer les étiquettes|exporter les étiquettes",
   "settingsSearchTransactionHistoryKeywords": "exporter les transactions|export des transactions|CSV|historique du portefeuille",
   "settingsSearchAppSettingsKeywords": "préférences de l’application|paramètres de l’application|paramètres généraux",
-  "settingsSearchBtcMapKeywords": "BTC Map|carte Bitcoin|carte des commerçants|lieux acceptant le bitcoin",
   "settingsSearchTermsOfServiceKeywords": "conditions générales|mentions légales|accord utilisateur|TOS",
   "settingsSearchServicesStatusKeywords": "état des services|état du système|en ligne|panne",
   "settingsSearchImportWalletKeywords": "ajouter un portefeuille|restaurer un portefeuille|importer une phrase mnémonique|portefeuille en lecture seule|portefeuille matériel",
@@ -4750,7 +4747,7 @@
   "swapServerBusyError": "Terminez vos swaps en cours avant de changer de serveur de swap.",
   "exchangeAccessSettingsTitle": "BULL Exchange",
   "exchangeAccessSettingsLabel": "Fonctionnalités de l’exchange",
-  "exchangeAccessSettingsDescription": "Afficher Acheter, Vendre et Payer sur l’écran d’accueil. Transférer reste disponible.",
+  "exchangeAccessSettingsDescription": "Afficher Acheter, Vendre et Payer sur l’écran d’accueil. Échanger reste disponible.",
   "exchangeAccessSettingsOffHint": "Activez cette option pour vous connecter ou créer un compte Bull Bitcoin.",
   "exchangeAccessSettingsOnHint": "Les fonctionnalités de l’exchange sont activées.",
   "exchangeAccessOpenAccount": "Ouvrir mon compte Bull Bitcoin",
@@ -4777,7 +4774,6 @@
   "exchangeAccessReset": "Réinitialiser l’accès à la plateforme",
   "exchangeAccessLogoutIncomplete": "La déconnexion est incomplète. Terminez-la avant d’activer la plateforme.",
   "exchangeAccessRetryLogout": "Terminer la déconnexion",
-  "exchangeAccessManage": "Gérer l’accès",
   "bitcoinSettingsAutoTransferTitle": "Échange automatique",
   "passphraseOption": "J’ai une passphrase",
   "passphraseWhitespaceWarning": "Les espaces au début ou à la fin font partie de votre passphrase.",
@@ -4793,5 +4789,7 @@
   "passphraseClearedNotice": "Votre passphrase a été effacée par sécurité. Saisissez-la à nouveau ou choisissez de continuer sans passphrase.",
   "continueWithoutPassphrase": "Continuer sans passphrase",
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
-  "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide."
+  "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
+  "settingsDarkModeTitle": "Mode sombre",
+  "settingsSourceCodeTitle": "Code source"
 }
