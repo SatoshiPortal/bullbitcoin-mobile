@@ -24,6 +24,7 @@ void main() {
     'unresolved startup never flashes exchange actions for a disabled user',
     () async {
       final exchange = _Exchange();
+      when(exchange.networkUnavailable).thenAnswer((_) async => false);
       final settings = _Settings();
       final access = StreamController<ExchangeAccess>();
       when(
@@ -48,6 +49,7 @@ void main() {
 
   test('non-iOS visibility follows exchange access', () async {
     final exchange = _Exchange();
+    when(exchange.networkUnavailable).thenAnswer((_) async => false);
     final settings = _Settings();
     final access = StreamController<ExchangeAccess>();
     final platform = StreamController<bool>();
@@ -77,6 +79,7 @@ void main() {
     'new iOS platform event wins over a delayed initial settings read',
     () async {
       final exchange = _Exchange();
+      when(exchange.networkUnavailable).thenAnswer((_) async => false);
       final settings = _Settings();
       final pending = Completer<SettingsEntity>();
       final access = StreamController<ExchangeAccess>();
@@ -108,6 +111,7 @@ void main() {
 
   test('iOS settings read failure leaves exchange actions hidden', () async {
     final exchange = _Exchange();
+    when(exchange.networkUnavailable).thenAnswer((_) async => false);
     final settings = _Settings();
     when(
       () => exchange.currentAccess,
@@ -124,5 +128,38 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(values, [false]);
     await sub.cancel();
+  });
+
+  test('a network without exchange hides exchange actions', () async {
+    final exchange = _Exchange();
+    var unavailable = true;
+    when(exchange.networkUnavailable).thenAnswer((_) async => unavailable);
+    final settings = _Settings();
+    final access = StreamController<ExchangeAccess>();
+    when(
+      () => exchange.currentAccess,
+    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    when(exchange.watchAccess).thenAnswer((_) => access.stream);
+    final values = <bool>[];
+    final sub = WatchQuickActionsVisibilityUsecase(
+      exchange: exchange,
+      settings: settings,
+      platformChanges: const Stream.empty(),
+      isIOS: false,
+    ).execute().listen(values.add);
+    await Future<void>.delayed(Duration.zero);
+    // Regtest cannot read exchange access and reports it as unreadable.
+    access.add(const ExchangeAccessUnreadable());
+    await Future<void>.delayed(Duration.zero);
+    expect(values, [false]);
+
+    // Switching back to a supported network reconciles access again.
+    unavailable = false;
+    access.add(const ExchangeAccessEnabled(ExchangeAccessSession.signedOut));
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+    expect(values, [false, true]);
+    await sub.cancel();
+    await access.close();
   });
 }
