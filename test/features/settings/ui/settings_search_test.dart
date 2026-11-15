@@ -109,6 +109,7 @@ void main() {
       final rootItems = items.inSection(SettingsItemSection.root);
 
       expect(rootItems.map((item) => item.id), [
+        SettingsItemId.scanAnything,
         SettingsItemId.appSettings,
         SettingsItemId.backup,
         SettingsItemId.walletSettings,
@@ -119,6 +120,7 @@ void main() {
         SettingsItemId.logs,
       ]);
       expect(rootItems.map((item) => item.title), [
+        'Scan anything',
         'App',
         'Backup',
         'Wallet',
@@ -157,6 +159,7 @@ void main() {
     test('supports dedicated semantic aliases across the registry', () {
       final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
       final expectedIds = {
+        'qr scanner': SettingsItemId.scanAnything,
         'trading': SettingsItemId.exchange,
         'seed backup': SettingsItemId.backup,
         'create backup': SettingsItemId.startBackup,

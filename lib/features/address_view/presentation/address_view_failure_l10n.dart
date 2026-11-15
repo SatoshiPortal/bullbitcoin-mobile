@@ -8,6 +8,15 @@ extension AddressViewFailureL10n on AddressViewFailure {
       context.loc.addressViewErrorWalletNotFound,
     AddressViewAddressesUnavailableFailure() =>
       context.loc.addressViewErrorLoadFailed,
+    AddressViewUnsupportedNetworkFailure() =>
+      context.loc.addressExplorerErrorUnsupportedNetwork,
+    AddressViewInvalidAddressFailure() =>
+      context.loc.addressExplorerErrorInvalidAddress,
+    AddressViewServerUnreachableFailure() =>
+      context.loc.addressExplorerErrorServerUnreachable,
+    AddressViewOwnershipUnavailableFailure() =>
+      context.loc.addressExplorerOwnershipUnknown,
+    AddressViewLabelFailure() => context.loc.addressExplorerLabelError,
     AddressViewUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

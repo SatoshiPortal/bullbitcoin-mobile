@@ -19,6 +19,10 @@ extension TransactionFailureL10n on TransactionFailure {
     TransactionLabelLimitFailure() => context.loc.transactionLabelLimitReached,
     TransactionSwapRetryFailure() =>
       context.loc.transactionDetailSwapRetryFailed,
+    TransactionExplorerUnavailableFailure() =>
+      context.loc.transactionExplorerErrorUnavailable,
+    TransactionExplorerInvalidTxidFailure() =>
+      context.loc.transactionExplorerErrorInvalidTxid,
     // Never `logMessage`.
     TransactionUnexpectedFailure() || TransactionPayjoinVerificationFailure() =>
       context.loc.oopsSomethingWentWrong,

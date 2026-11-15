@@ -10,7 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ElectrumSettingsScreen extends StatelessWidget {
-  const ElectrumSettingsScreen({super.key});
+  final String? prefilledServer;
+
+  const ElectrumSettingsScreen({super.key, this.prefilledServer});
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,8 @@ class ElectrumSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
+                  if (prefilledServer case final server?)
+                    _PrefilledServerPrompt(server: server),
                   BullSegmented(
                     items: {
                       context.loc.electrumNetworkBitcoin,
@@ -82,4 +86,26 @@ class ElectrumSettingsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PrefilledServerPrompt extends StatefulWidget {
+  final String server;
+
+  const _PrefilledServerPrompt({required this.server});
+
+  @override
+  State<_PrefilledServerPrompt> createState() => _PrefilledServerPromptState();
+}
+
+class _PrefilledServerPromptState extends State<_PrefilledServerPrompt> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) addCustomServerFromSheet(context, initialUrl: widget.server);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

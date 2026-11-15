@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bb_mobile/features/scan_anything/public/scan_anything_route.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/exchange_testnet_basic_auth_dialog.dart';
@@ -27,6 +28,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 enum SettingsItemId {
+  scanAnything,
   exchange,
   backup,
   startBackup,
@@ -185,6 +187,19 @@ List<SettingsItem> buildSettingsItems({
       };
 
   return [
+    SettingsItem(
+      id: SettingsItemId.scanAnything,
+      section: SettingsItemSection.root,
+      title: localization.scanAnythingTitle,
+      path: path(SettingsItemSection.root, localization.scanAnythingTitle),
+      icon: Icons.qr_code_scanner,
+      open: (context) => context.pushNamed(ScanAnythingRoute.scanAnything.name),
+      keywords: _keywords(
+        localization.settingsSearchScanAnythingKeywords,
+        english.settingsSearchScanAnythingKeywords,
+        [english.scanAnythingTitle],
+      ),
+    ),
     SettingsItem(
       id: SettingsItemId.appSettings,
       section: SettingsItemSection.root,

@@ -45,11 +45,39 @@ import 'package:bb_mobile/features/transactions/transactions_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction_repository.dart';
+import 'package:bb_mobile/features/transactions/data/transaction_explorer_repository_impl.dart';
+import 'package:bb_mobile/features/transactions/domain/repositories/transaction_explorer_repository.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/find_transaction_owner_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_explored_transaction_usecase.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_explorer/transaction_explorer_cubit.dart';
+import 'package:bb_mobile/features/transactions/public/transaction_explorer_route.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
 class TransactionsLocator {
   static void registerUsecases(GetIt locator) {
+    locator.registerLazySingleton<TransactionExplorerRepository>(
+      () => TransactionExplorerRepositoryImpl(
+        servers: locator<ElectrumServersPort>(),
+        electrumTransactions: locator<ElectrumTransactionRepository>(),
+        environment: locator<EnvironmentPort>(),
+      ),
+    );
+    locator.registerFactory<GetExploredTransactionUsecase>(
+      () => GetExploredTransactionUsecase(
+        repository: locator<TransactionExplorerRepository>(),
+      ),
+    );
+    locator.registerFactory<FindTransactionOwnerUsecase>(
+      () => FindTransactionOwnerUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        getWalletUsecase: locator<GetWalletUsecase>(),
+      ),
+    );
     locator.registerFactory<GetPayjoinByIdUsecase>(
       () => GetPayjoinByIdUsecase(locator<PayjoinSessions>()),
     );
@@ -199,6 +227,17 @@ class TransactionsLocator {
       () => ExportTransactionsCubit(
         exportTransactionsCsvUsecase: locator<ExportTransactionsCsvUsecase>(),
         saver: locator<TransactionExportSaver>(),
+      ),
+    );
+    locator.registerFactoryParam<
+      TransactionExplorerCubit,
+      TransactionExplorerArgs,
+      void
+    >(
+      (args, _) => TransactionExplorerCubit(
+        txid: args.txid,
+        getExploredTransactionUsecase: locator<GetExploredTransactionUsecase>(),
+        findTransactionOwnerUsecase: locator<FindTransactionOwnerUsecase>(),
       ),
     );
     locator.registerFactory<TransactionDetailsCubit>(

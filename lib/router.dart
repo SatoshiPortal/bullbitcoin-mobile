@@ -41,7 +41,10 @@ import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
+import 'package:bb_mobile/features/address_view/ui/address_explorer_router.dart';
+import 'package:bb_mobile/features/scan_anything/ui/scan_anything_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
+import 'package:bb_mobile/features/transactions/ui/transaction_explorer_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -253,6 +256,9 @@ class AppRouter {
       ),
       LabelsRouter.route,
       StatusCheckRouter.route,
+      AddressExplorerRouter.route,
+      TransactionExplorerRouter.route,
+      ScanAnythingRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

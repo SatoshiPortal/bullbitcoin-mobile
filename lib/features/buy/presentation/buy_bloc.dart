@@ -146,14 +146,21 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     }
     // Always prefer the default liquid wallet if available, fallback to just
     // the first wallet if no default liquid wallet is found.
-    final selectedWallet = wallets.isNotEmpty
+    final externalAddress = event.externalAddress;
+    final selectedWallet = externalAddress == null && wallets.isNotEmpty
         ? wallets.firstWhere(
             (w) => w.isDefault && w.isLiquid,
             orElse: () => wallets.first,
           )
         : null;
 
-    emit(state.copyWith(wallets: wallets, selectedWallet: selectedWallet));
+    emit(
+      state.copyWith(
+        wallets: wallets,
+        selectedWallet: selectedWallet,
+        bitcoinAddressInput: externalAddress ?? state.bitcoinAddressInput,
+      ),
+    );
 
     final rate = await _loadBuyContextUsecase.satsToCurrency(
       currencyCode: currencyInput,

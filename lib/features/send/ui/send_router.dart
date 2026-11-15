@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -23,16 +25,35 @@ class SendRouter {
       final wallet =
           args?.wallet ??
           (state.extra is Wallet ? state.extra! as Wallet : null);
+      final prefilledPaymentRequest = args?.prefilledPaymentRequest;
       return BlocProvider(
-        create: (_) => locator<SendCubit>(
-          param1: wallet,
-          param2: (
-            args: args,
-            spWalletLabel: args?.isSpMode == true
-                ? context.loc.walletSpTitle
-                : null,
-          ),
-        )..loadWalletWithRatesAndFees(),
+        create: (_) {
+          final cubit = locator<SendCubit>(
+            param1: wallet,
+            param2: (
+              args: args,
+              spWalletLabel: args?.isSpMode == true
+                  ? context.loc.walletSpTitle
+                  : null,
+            ),
+          );
+          unawaited(
+            cubit.loadWalletWithRatesAndFees().then((_) async {
+              if (prefilledPaymentRequest == null || cubit.isClosed) return;
+              if (cubit.isSpMode) {
+                await cubit.onChangedText(prefilledPaymentRequest);
+                if (cubit.isClosed) return;
+                await cubit.continueOnAddressConfirmed();
+                return;
+              }
+              await cubit.onScannedPaymentRequest(
+                prefilledPaymentRequest,
+                null,
+              );
+            }),
+          );
+          return cubit;
+        },
         child: const SendScreen(),
       );
     },

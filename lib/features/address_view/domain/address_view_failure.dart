@@ -14,6 +14,26 @@ final class AddressViewAddressesUnavailableFailure extends AddressViewFailure {
   const AddressViewAddressesUnavailableFailure([super.logMessage]);
 }
 
+final class AddressViewUnsupportedNetworkFailure extends AddressViewFailure {
+  const AddressViewUnsupportedNetworkFailure();
+}
+
+final class AddressViewInvalidAddressFailure extends AddressViewFailure {
+  const AddressViewInvalidAddressFailure();
+}
+
+final class AddressViewServerUnreachableFailure extends AddressViewFailure {
+  const AddressViewServerUnreachableFailure([super.logMessage]);
+}
+
+final class AddressViewOwnershipUnavailableFailure extends AddressViewFailure {
+  const AddressViewOwnershipUnavailableFailure([super.logMessage]);
+}
+
+final class AddressViewLabelFailure extends AddressViewFailure {
+  const AddressViewLabelFailure([super.logMessage]);
+}
+
 final class AddressViewUnexpectedFailure extends AddressViewFailure {
   const AddressViewUnexpectedFailure([super.logMessage]);
 }

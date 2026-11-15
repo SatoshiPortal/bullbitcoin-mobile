@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/public/buy_route.dart' show BuyRouteArgs;
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_success_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
@@ -26,8 +27,14 @@ class BuyRouter {
   static final routes = [
     ShellRoute(
       builder: (context, state, child) {
+        final extra = state.extra;
+        final externalAddress = extra is BuyRouteArgs
+            ? extra.externalAddress
+            : null;
         return BlocProvider(
-          create: (_) => locator<BuyBloc>()..add(const BuyEvent.started()),
+          create: (_) =>
+              locator<BuyBloc>()
+                ..add(BuyEvent.started(externalAddress: externalAddress)),
           child: child,
         );
       },

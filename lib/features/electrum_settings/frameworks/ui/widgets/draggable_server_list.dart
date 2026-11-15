@@ -114,15 +114,7 @@ class DraggableServerList extends StatelessWidget {
         ],
         TextButton.icon(
           onPressed: () async {
-            final result = await AddCustomServerBottomSheet.show(context);
-            if (result != null && context.mounted) {
-              context.read<ElectrumSettingsBloc>().add(
-                ElectrumCustomServerAdded(
-                  url: result.url,
-                  enableSsl: result.enableSsl,
-                ),
-              );
-            }
+            await addCustomServerFromSheet(context);
           },
           icon: Icon(
             Icons.add_circle_outline,
@@ -136,6 +128,21 @@ class DraggableServerList extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+Future<void> addCustomServerFromSheet(
+  BuildContext context, {
+  String? initialUrl,
+}) async {
+  final result = await AddCustomServerBottomSheet.show(
+    context,
+    initialUrl: initialUrl,
+  );
+  if (result != null && context.mounted) {
+    context.read<ElectrumSettingsBloc>().add(
+      ElectrumCustomServerAdded(url: result.url, enableSsl: result.enableSsl),
     );
   }
 }

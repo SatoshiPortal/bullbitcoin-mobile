@@ -61,6 +61,15 @@ final class TransactionSwapRetryFailure extends TransactionFailure {
   const TransactionSwapRetryFailure([super.logMessage]);
 }
 
+/// The explored transaction could not be read from the server.
+final class TransactionExplorerUnavailableFailure extends TransactionFailure {
+  const TransactionExplorerUnavailableFailure([super.logMessage]);
+}
+
+final class TransactionExplorerInvalidTxidFailure extends TransactionFailure {
+  const TransactionExplorerInvalidTxidFailure();
+}
+
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI.
 final class TransactionUnexpectedFailure extends TransactionFailure {
   const TransactionUnexpectedFailure([super.logMessage]);

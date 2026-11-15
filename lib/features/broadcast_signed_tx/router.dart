@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:bb_mobile/features/broadcast_signed_tx/public/broadcast_signed_tx_route.dart'
+    show BroadcastSignedTxArgs;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
@@ -31,11 +35,22 @@ class BroadcastSignedTxRouter {
         _ => (null, null),
       };
 
+      final extra = state.extra;
+      final signedPayload = extra is BroadcastSignedTxArgs
+          ? extra.signedPayload.trim()
+          : null;
+
       return BlocProvider(
-        create: (_) => locator<BroadcastSignedTxCubit>(
-          param1: unsignedPsbt,
-          param2: network,
-        ),
+        create: (_) {
+          final cubit = locator<BroadcastSignedTxCubit>(
+            param1: unsignedPsbt,
+            param2: network,
+          );
+          if (signedPayload != null) {
+            unawaited(cubit.onQrScanned(signedPayload));
+          }
+          return cubit;
+        },
         child: child,
       );
     },

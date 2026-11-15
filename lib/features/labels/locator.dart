@@ -108,6 +108,7 @@ class LabelsLocator {
         fetchAllLabelsUsecase: locator<FetchAllLabelsUsecase>(),
         storeLabelsUsecase: locator<StoreLabelUsecase>(),
         trashLabelUsecase: locator<TrashLabelUsecase>(),
+        importLabelsUsecase: () => locator<ImportLabelsUsecase>(),
       ),
     );
   }

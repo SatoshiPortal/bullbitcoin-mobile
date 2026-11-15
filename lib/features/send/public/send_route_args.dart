@@ -6,23 +6,41 @@ final class SendRouteArgs {
   final bool isSpMode;
   final Set<Outpoint> selectedOutpoints;
   final bool isSweep;
+  final String? prefilledPaymentRequest;
 
   const SendRouteArgs({this.wallet, this.isSpMode = false})
     : selectedOutpoints = const {},
-      isSweep = false;
+      isSweep = false,
+      prefilledPaymentRequest = null;
 
   const SendRouteArgs.sp()
     : wallet = null,
       isSpMode = true,
       selectedOutpoints = const {},
-      isSweep = false;
+      isSweep = false,
+      prefilledPaymentRequest = null;
+
+  const SendRouteArgs.spPrefilled(String address)
+    : wallet = null,
+      isSpMode = true,
+      selectedOutpoints = const {},
+      isSweep = false,
+      prefilledPaymentRequest = address;
+
+  const SendRouteArgs.prefilled(String paymentRequest)
+    : wallet = null,
+      isSpMode = false,
+      selectedOutpoints = const {},
+      isSweep = false,
+      prefilledPaymentRequest = paymentRequest;
 
   SendRouteArgs.selected({
     required Wallet this.wallet,
     required Set<Outpoint> outpoints,
   }) : isSpMode = false,
        selectedOutpoints = Set.unmodifiable(outpoints),
-       isSweep = false {
+       isSweep = false,
+       prefilledPaymentRequest = null {
     _validate();
   }
 
@@ -31,7 +49,8 @@ final class SendRouteArgs {
     required Set<Outpoint> outpoints,
   }) : isSpMode = false,
        selectedOutpoints = Set.unmodifiable(outpoints),
-       isSweep = true {
+       isSweep = true,
+       prefilledPaymentRequest = null {
     _validate();
   }
 

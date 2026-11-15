@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/parse_signer_export_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
 import 'package:get_it/get_it.dart';
 
@@ -9,6 +10,10 @@ class ImportWatchOnlyLocator {
     // Use cases
     locator.registerFactory<ParseWatchOnlyInputUsecase>(
       ParseWatchOnlyInputUsecase.new,
+    );
+
+    locator.registerFactory<ParseSignerExportUsecase>(
+      ParseSignerExportUsecase.new,
     );
 
     locator.registerFactory<ImportWatchOnlyDescriptorUsecase>(

@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/domain/signer_export.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/cupertino.dart';
@@ -132,22 +132,19 @@ void showCopiedSnackBar(BuildContext context) {
 
 Future<String?> _chooseDerivation(BuildContext context, String data) async {
   try {
-    final parsed = json.decode(data);
-    if (parsed is! Map<String, dynamic>) return null;
-
-    final options = <Map<String, String>>[];
-
-    void addIfPresent(String key, String label) {
-      if (!parsed.containsKey(key)) return;
-      final descriptor = parsed[key];
-      if (descriptor is String) {
-        options.add({'key': key, 'label': label, 'descriptor': descriptor});
-      }
-    }
-
-    addIfPresent('bip84', 'Segwit (BIP84)');
-    addIfPresent('bip49', 'Nested Segwit (BIP49)');
-    addIfPresent('bip44', 'Legacy (BIP44)');
+    const labels = {
+      'bip84': 'Segwit (BIP84)',
+      'bip49': 'Nested Segwit (BIP49)',
+      'bip44': 'Legacy (BIP44)',
+    };
+    final options = <Map<String, String>>[
+      for (final (:derivation, :descriptor) in SignerExport.descriptors(data))
+        {
+          'key': derivation,
+          'label': labels[derivation] ?? derivation,
+          'descriptor': descriptor,
+        },
+    ];
 
     if (options.isEmpty) return null;
     if (options.length == 1) return options.first['descriptor'];

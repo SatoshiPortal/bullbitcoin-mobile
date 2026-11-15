@@ -15311,5 +15311,550 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Broadcasting on this network is not enabled in the current settings.",
   "@broadcastSignedTxErrorNetworkNotEnabled": {
     "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
+  },
+  "addressExplorerTitle": "Address explorer",
+  "@addressExplorerTitle": {
+    "description": "Title of the address explorer screen"
+  },
+  "addressExplorerNetworkLabel": "Network",
+  "@addressExplorerNetworkLabel": {
+    "description": "Label of the network row in the address explorer"
+  },
+  "addressExplorerNetworkBitcoinMainnet": "Bitcoin Mainnet",
+  "@addressExplorerNetworkBitcoinMainnet": {
+    "description": "Network name in the address explorer"
+  },
+  "addressExplorerNetworkBitcoinTestnet": "Bitcoin Testnet",
+  "@addressExplorerNetworkBitcoinTestnet": {
+    "description": "Network name in the address explorer"
+  },
+  "addressExplorerNetworkBitcoinRegtest": "Bitcoin Regtest",
+  "@addressExplorerNetworkBitcoinRegtest": {
+    "description": "Network name in the address explorer"
+  },
+  "addressExplorerNetworkLiquid": "Liquid",
+  "@addressExplorerNetworkLiquid": {
+    "description": "Network name in the address explorer"
+  },
+  "addressExplorerOwnershipChecking": "Checking your wallets...",
+  "@addressExplorerOwnershipChecking": {
+    "description": "Shown while the address explorer checks if the address is in a wallet of the user"
+  },
+  "addressExplorerOwnedByWallet": "This address belongs to your wallet {label}",
+  "@addressExplorerOwnedByWallet": {
+    "description": "Shown when the address is in a wallet of the user",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "addressExplorerNotOwned": "This address is not in your wallets",
+  "@addressExplorerNotOwned": {
+    "description": "Shown when the address is in no wallet of the user"
+  },
+  "addressExplorerOwnershipUnknown": "Could not check if this address is in your wallets",
+  "@addressExplorerOwnershipUnknown": {
+    "description": "Shown when the local wallet ownership check failed"
+  },
+  "addressExplorerConfirmedBalance": "Confirmed balance",
+  "@addressExplorerConfirmedBalance": {
+    "description": "Label of the confirmed balance of an address"
+  },
+  "addressExplorerPendingBalance": "Pending balance",
+  "@addressExplorerPendingBalance": {
+    "description": "Label of the unconfirmed balance of an address"
+  },
+  "addressExplorerTransactionCount": "Transactions",
+  "@addressExplorerTransactionCount": {
+    "description": "Label of the number of transactions of an address"
+  },
+  "addressExplorerNoTransactions": "No transactions found for this address",
+  "@addressExplorerNoTransactions": {
+    "description": "Shown when an address has no transactions"
+  },
+  "addressExplorerConfirmedAtBlock": "Confirmed at block {height}",
+  "@addressExplorerConfirmedAtBlock": {
+    "description": "Status of a confirmed transaction in the address explorer",
+    "placeholders": {
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "addressExplorerUnconfirmed": "Unconfirmed",
+  "@addressExplorerUnconfirmed": {
+    "description": "Status of an unconfirmed transaction in the address explorer"
+  },
+  "addressExplorerTxidCopied": "Transaction ID copied to clipboard",
+  "@addressExplorerTxidCopied": {
+    "description": "Message shown after a transaction ID is copied"
+  },
+  "addressExplorerErrorServerUnreachable": "Could not reach the server. Check your connection and try again.",
+  "@addressExplorerErrorServerUnreachable": {
+    "description": "Error shown when the Electrum server lookup of an address failed"
+  },
+  "addressExplorerErrorUnsupportedNetwork": "The address explorer supports Bitcoin addresses only.",
+  "@addressExplorerErrorUnsupportedNetwork": {
+    "description": "Error shown when the address explorer gets a Liquid address"
+  },
+  "addressExplorerErrorInvalidAddress": "This address is not valid for the selected network.",
+  "@addressExplorerErrorInvalidAddress": {
+    "description": "Error shown when the address cannot be parsed for the network"
+  },
+  "addressExplorerMissingAddress": "No address to show.",
+  "@addressExplorerMissingAddress": {
+    "description": "Shown when the address explorer opens without an address"
+  },
+  "transactionExplorerTitle": "Transaction explorer",
+  "@transactionExplorerTitle": {
+    "description": "Title of the transaction explorer screen"
+  },
+  "transactionExplorerOwnedByWallet": "This transaction is in your wallet {label}",
+  "@transactionExplorerOwnedByWallet": {
+    "description": "Shown when the transaction is in a wallet of the user",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionExplorerNotOwned": "This transaction is not in your wallets",
+  "@transactionExplorerNotOwned": {
+    "description": "Shown when the transaction is in no wallet of the user"
+  },
+  "transactionExplorerOwnershipUnknown": "Could not check if this transaction is in your wallets",
+  "@transactionExplorerOwnershipUnknown": {
+    "description": "Shown when the local wallet check of a transaction failed"
+  },
+  "transactionExplorerOpenDetails": "Open transaction details",
+  "@transactionExplorerOpenDetails": {
+    "description": "Button that opens the wallet transaction details"
+  },
+  "transactionExplorerTotalOutput": "Total output amount",
+  "@transactionExplorerTotalOutput": {
+    "description": "Label of the sum of all outputs of a transaction"
+  },
+  "transactionExplorerInputs": "Inputs",
+  "@transactionExplorerInputs": {
+    "description": "Label of the number of inputs of a transaction"
+  },
+  "transactionExplorerOutputs": "Outputs ({count})",
+  "@transactionExplorerOutputs": {
+    "description": "Heading of the list of outputs of a transaction",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transactionExplorerNoAddress": "No address for this output",
+  "@transactionExplorerNoAddress": {
+    "description": "Shown for an output whose script has no address"
+  },
+  "transactionExplorerSize": "Size",
+  "@transactionExplorerSize": {
+    "description": "Label of the size of a transaction"
+  },
+  "transactionExplorerVirtualSize": "Virtual size",
+  "@transactionExplorerVirtualSize": {
+    "description": "Label of the virtual size of a transaction"
+  },
+  "transactionExplorerBytes": "{count} bytes",
+  "@transactionExplorerBytes": {
+    "description": "Transaction size in bytes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transactionExplorerVirtualBytes": "{count} vB",
+  "@transactionExplorerVirtualBytes": {
+    "description": "Transaction virtual size in virtual bytes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transactionExplorerVersion": "Version",
+  "@transactionExplorerVersion": {
+    "description": "Label of the version of a transaction"
+  },
+  "transactionExplorerLocktime": "Locktime",
+  "@transactionExplorerLocktime": {
+    "description": "Label of the locktime of a transaction"
+  },
+  "transactionExplorerErrorUnavailable": "Could not load the transaction. The server could not be reached or the transaction does not exist.",
+  "@transactionExplorerErrorUnavailable": {
+    "description": "Error shown when the Electrum lookup of a transaction failed"
+  },
+  "transactionExplorerErrorInvalidTxid": "This is not a valid transaction ID.",
+  "@transactionExplorerErrorInvalidTxid": {
+    "description": "Error shown when the transaction explorer gets an invalid transaction ID"
+  },
+  "transactionExplorerMissingTxid": "No transaction to show.",
+  "@transactionExplorerMissingTxid": {
+    "description": "Shown when the transaction explorer opens without a transaction ID"
+  },
+  "scanAnythingTitle": "Scan anything",
+  "@scanAnythingTitle": {
+    "description": "Title of the Scan anything feature and its settings entry"
+  },
+  "settingsSearchScanAnythingKeywords": "scan|qr scanner|qr code|scanner|identify|camera|paste",
+  "@settingsSearchScanAnythingKeywords": {
+    "description": "Pipe-separated search aliases for Scan anything. Search metadata; not displayed."
+  },
+  "scanAnythingInstruction": "Scan a QR code or paste text",
+  "@scanAnythingInstruction": {
+    "description": "Instruction above the paste field of the scan screen"
+  },
+  "scanAnythingPasteHint": "Paste an address, invoice, transaction or key",
+  "@scanAnythingPasteHint": {
+    "description": "Hint of the paste field of the scan screen"
+  },
+  "scanAnythingContinue": "Continue",
+  "@scanAnythingContinue": {
+    "description": "Button that identifies the pasted text"
+  },
+  "scanAnythingCameraUnavailable": "The camera is not available on this device. Paste the text below.",
+  "@scanAnythingCameraUnavailable": {
+    "description": "Shown in place of the camera on a device without a camera"
+  },
+  "scanAnythingMultipartProgress": "Scanned {received} of {total} parts",
+  "@scanAnythingMultipartProgress": {
+    "description": "Progress of a multi-part QR code scan",
+    "placeholders": {
+      "received": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scanAnythingErrorEmpty": "Scan a QR code or paste text first.",
+  "@scanAnythingErrorEmpty": {
+    "description": "Error shown when there is no input to identify"
+  },
+  "scanAnythingErrorUnrecognized": "This content is not recognized.",
+  "@scanAnythingErrorUnrecognized": {
+    "description": "Error shown when the scanned or pasted content is not a supported type"
+  },
+  "scanAnythingTypeBitcoinAddress": "Bitcoin address",
+  "@scanAnythingTypeBitcoinAddress": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypeLiquidAddress": "Liquid address",
+  "@scanAnythingTypeLiquidAddress": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypePaymentRequest": "Payment request",
+  "@scanAnythingTypePaymentRequest": {
+    "description": "Detected content type: a BIP21 payment URI"
+  },
+  "scanAnythingTypeLightningInvoice": "Lightning invoice",
+  "@scanAnythingTypeLightningInvoice": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypeLightningAddress": "Lightning address",
+  "@scanAnythingTypeLightningAddress": {
+    "description": "Detected content type: a Lightning address or LNURL"
+  },
+  "scanAnythingTypeDescriptor": "Wallet descriptor",
+  "@scanAnythingTypeDescriptor": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypeXpub": "Extended public key",
+  "@scanAnythingTypeXpub": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypePsbt": "PSBT",
+  "@scanAnythingTypePsbt": {
+    "description": "Detected content type: a partially signed Bitcoin transaction"
+  },
+  "scanAnythingTypeSignedTransaction": "Signed transaction",
+  "@scanAnythingTypeSignedTransaction": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypeTransactionId": "Transaction ID",
+  "@scanAnythingTypeTransactionId": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypeRecoveryPhrase": "Recovery phrase",
+  "@scanAnythingTypeRecoveryPhrase": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypePrivateKey": "Private key",
+  "@scanAnythingTypePrivateKey": {
+    "description": "Detected content type"
+  },
+  "scanAnythingContent": "Content",
+  "@scanAnythingContent": {
+    "description": "Label of the shortened scanned value"
+  },
+  "scanAnythingNetwork": "Network",
+  "@scanAnythingNetwork": {
+    "description": "Label of the network of the scanned content"
+  },
+  "scanAnythingLabel": "Label",
+  "@scanAnythingLabel": {
+    "description": "Label of the label field of a payment request"
+  },
+  "scanAnythingDescription": "Description",
+  "@scanAnythingDescription": {
+    "description": "Label of the description of a Lightning invoice"
+  },
+  "scanAnythingExpiry": "Expires",
+  "@scanAnythingExpiry": {
+    "description": "Label of the expiry date of a Lightning invoice"
+  },
+  "scanAnythingIncludesLightning": "This request includes a Lightning invoice",
+  "@scanAnythingIncludesLightning": {
+    "description": "Note for a payment request with a Lightning invoice"
+  },
+  "scanAnythingIncludesPayjoin": "This request supports payjoin",
+  "@scanAnythingIncludesPayjoin": {
+    "description": "Note for a payment request with a payjoin endpoint"
+  },
+  "scanAnythingRecoveryPhraseWarning": "This looks like a recovery phrase. Never show it to anyone.",
+  "@scanAnythingRecoveryPhraseWarning": {
+    "description": "Warning shown when the scanned content is a recovery phrase"
+  },
+  "scanAnythingPrivateKeyWarning": "This looks like a private key. Never show it to anyone. The app cannot import a private key.",
+  "@scanAnythingPrivateKeyWarning": {
+    "description": "Warning shown when the scanned content is a private key"
+  },
+  "scanAnythingActionsTitle": "What you can do",
+  "@scanAnythingActionsTitle": {
+    "description": "Heading of the list of actions for the scanned content"
+  },
+  "scanAnythingScanAgain": "Scan again",
+  "@scanAnythingScanAgain": {
+    "description": "Button that returns to the scan screen"
+  },
+  "scanAnythingActionSend": "Send",
+  "@scanAnythingActionSend": {
+    "description": "Action title"
+  },
+  "scanAnythingActionSendSubtitle": "Pay this destination from one of your wallets",
+  "@scanAnythingActionSendSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionExploreAddress": "Check balance and history",
+  "@scanAnythingActionExploreAddress": {
+    "description": "Action title"
+  },
+  "scanAnythingActionExploreAddressSubtitle": "See the balance and transactions, and if the address is in your wallets",
+  "@scanAnythingActionExploreAddressSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionBuy": "Buy bitcoin to this address",
+  "@scanAnythingActionBuy": {
+    "description": "Action title"
+  },
+  "scanAnythingActionBuySubtitle": "Use your exchange account to buy bitcoin and receive it at this address",
+  "@scanAnythingActionBuySubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionImportWatchOnly": "Import as watch-only wallet",
+  "@scanAnythingActionImportWatchOnly": {
+    "description": "Action title"
+  },
+  "scanAnythingActionImportWatchOnlySubtitle": "See the balance and transactions without the ability to sign",
+  "@scanAnythingActionImportWatchOnlySubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionImportRemoteSigner": "Import with a remote signer",
+  "@scanAnythingActionImportRemoteSigner": {
+    "description": "Action title"
+  },
+  "scanAnythingActionImportRemoteSignerSubtitle": "Prepare transactions here and sign them on an external device",
+  "@scanAnythingActionImportRemoteSignerSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionBroadcast": "Review and broadcast",
+  "@scanAnythingActionBroadcast": {
+    "description": "Action title"
+  },
+  "scanAnythingActionBroadcastSubtitle": "Check the transaction before you send it to the network",
+  "@scanAnythingActionBroadcastSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionExploreTransaction": "View transaction",
+  "@scanAnythingActionExploreTransaction": {
+    "description": "Action title"
+  },
+  "scanAnythingActionExploreTransactionSubtitle": "See the transaction details, and if it is in your wallets",
+  "@scanAnythingActionExploreTransactionSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionImportRecoveryPhrase": "Import a wallet from a recovery phrase",
+  "@scanAnythingActionImportRecoveryPhrase": {
+    "description": "Action title"
+  },
+  "scanAnythingActionImportRecoveryPhraseSubtitle": "Type the words on the import screen. You cannot paste them there.",
+  "@scanAnythingActionImportRecoveryPhraseSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionCopy": "Copy",
+  "@scanAnythingActionCopy": {
+    "description": "Action title"
+  },
+  "scanAnythingActionCopySubtitle": "Copy the content to the clipboard",
+  "@scanAnythingActionCopySubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingTypeSignerExport": "Hardware wallet export",
+  "@scanAnythingTypeSignerExport": {
+    "description": "Detected content type: a signing device export with several derivations"
+  },
+  "scanAnythingTypeSilentPaymentAddress": "Silent payment address",
+  "@scanAnythingTypeSilentPaymentAddress": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypeElectrumServer": "Electrum server",
+  "@scanAnythingTypeElectrumServer": {
+    "description": "Detected content type"
+  },
+  "scanAnythingTypeLabels": "Label export",
+  "@scanAnythingTypeLabels": {
+    "description": "Detected content type: a BIP329 label export"
+  },
+  "scanAnythingDerivations": "Derivations",
+  "@scanAnythingDerivations": {
+    "description": "Label of the derivations found in a signing device export"
+  },
+  "scanAnythingDerivationBip84": "Segwit (BIP84)",
+  "@scanAnythingDerivationBip84": {
+    "description": "Name of a derivation"
+  },
+  "scanAnythingDerivationBip49": "Nested Segwit (BIP49)",
+  "@scanAnythingDerivationBip49": {
+    "description": "Name of a derivation"
+  },
+  "scanAnythingDerivationBip44": "Legacy (BIP44)",
+  "@scanAnythingDerivationBip44": {
+    "description": "Name of a derivation"
+  },
+  "scanAnythingConnection": "Connection",
+  "@scanAnythingConnection": {
+    "description": "Label of the connection type of an Electrum server"
+  },
+  "scanAnythingConnectionSsl": "SSL",
+  "@scanAnythingConnectionSsl": {
+    "description": "Encrypted Electrum connection"
+  },
+  "scanAnythingConnectionTcp": "TCP (no SSL)",
+  "@scanAnythingConnectionTcp": {
+    "description": "Plain Electrum connection"
+  },
+  "scanAnythingLabelCount": "Labels",
+  "@scanAnythingLabelCount": {
+    "description": "Label of the number of labels in a label export"
+  },
+  "scanAnythingLabelsImported": "Imported {count} labels",
+  "@scanAnythingLabelsImported": {
+    "description": "Message shown after labels are imported",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanAnythingErrorLabelsImport": "Could not import the labels.",
+  "@scanAnythingErrorLabelsImport": {
+    "description": "Error shown when the label import failed"
+  },
+  "scanAnythingActionAddElectrumServer": "Add as custom Electrum server",
+  "@scanAnythingActionAddElectrumServer": {
+    "description": "Action title"
+  },
+  "scanAnythingActionAddElectrumServerSubtitle": "Open the Electrum settings with this server filled in. You confirm there.",
+  "@scanAnythingActionAddElectrumServerSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionImportLabels": "Import labels",
+  "@scanAnythingActionImportLabels": {
+    "description": "Action title"
+  },
+  "scanAnythingActionImportLabelsSubtitle": "Add these labels to your addresses and transactions",
+  "@scanAnythingActionImportLabelsSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingTxidHint": "A 64-character code can also be a backup key. Continue only if this is a transaction ID.",
+  "@scanAnythingTxidHint": {
+    "description": "Hint on the transaction ID result"
+  },
+  "scanAnythingInvoiceExpired": "This invoice is expired. You cannot pay it.",
+  "@scanAnythingInvoiceExpired": {
+    "description": "Note for an expired Lightning invoice"
+  },
+  "scanAnythingAlreadyImported": "This wallet is already imported as {label}",
+  "@scanAnythingAlreadyImported": {
+    "description": "Note when the scanned descriptor or key is a wallet of the user",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "scanAnythingActionSwap": "Swap to this address",
+  "@scanAnythingActionSwap": {
+    "description": "Action title"
+  },
+  "scanAnythingActionSwapSubtitle": "Send from your wallet on the other network to this address",
+  "@scanAnythingActionSwapSubtitle": {
+    "description": "Action subtitle"
+  },
+  "scanAnythingActionOpenWallet": "Open wallet",
+  "@scanAnythingActionOpenWallet": {
+    "description": "Action title"
+  },
+  "scanAnythingActionOpenWalletSubtitle": "Go to the wallet that is already imported",
+  "@scanAnythingActionOpenWalletSubtitle": {
+    "description": "Action subtitle"
+  },
+  "addressExplorerLabels": "Labels",
+  "@addressExplorerLabels": {
+    "description": "Label of the labels row in the address explorer"
+  },
+  "addressExplorerNoLabels": "No label",
+  "@addressExplorerNoLabels": {
+    "description": "Shown when an owned address has no label"
+  },
+  "addressExplorerAddLabel": "Add label",
+  "@addressExplorerAddLabel": {
+    "description": "Button and sheet title to add a label to an address"
+  },
+  "addressExplorerLabelError": "Could not save the label.",
+  "@addressExplorerLabelError": {
+    "description": "Error shown when the address label was not saved"
+  },
+  "scanAnythingChooseImage": "Choose an image",
+  "@scanAnythingChooseImage": {
+    "description": "Button that opens a file picker to read a QR code from an image"
+  },
+  "scanAnythingReadNfc": "Read an NFC tag",
+  "@scanAnythingReadNfc": {
+    "description": "Button and sheet title to read content from an NFC tag"
+  },
+  "scanAnythingRecent": "Recent ({count})",
+  "@scanAnythingRecent": {
+    "description": "Button that opens the list of recent scans",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "scanAnythingRecentTitle": "Recent scans",
+  "@scanAnythingRecentTitle": {
+    "description": "Title of the list of recent scans"
+  },
+  "scanAnythingRecentClear": "Clear",
+  "@scanAnythingRecentClear": {
+    "description": "Button that clears the list of recent scans"
   }
 }

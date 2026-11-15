@@ -4,6 +4,9 @@ import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/domain/cancel_abandoned_buy_payjoin_usecase.dart';
@@ -61,6 +64,18 @@ class _MockBuyOrder extends Mock implements BuyOrder {}
 
 class _MockLabelCompletedBuyOrderUsecase extends Mock
     implements LabelCompletedBuyOrderUsecase {}
+
+class _MockWallet extends Mock implements Wallet {}
+
+const _userSummary = UserSummary(
+  userNumber: 1,
+  groups: [],
+  profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
+  email: 'sat@example.com',
+  balances: [],
+  dca: UserDca(isActive: false),
+  autoBuy: UserAutoBuy(isActive: false, addresses: UserAutoBuyAddresses()),
+);
 
 void main() {
   setUpAll(() => registerFallbackValue(const FiatAmount(100)));
@@ -687,4 +702,67 @@ void main() {
       verify(() => cancelAbandonedPayjoin.execute(order)).called(1);
     },
   );
+
+  group('start', () {
+    late BuyBloc bloc;
+    late _MockWallet wallet;
+
+    setUp(() {
+      final load = _MockLoadBuyContextUsecase();
+      final payjoin = _MockGetBuyPayjoinEnabledUsecase();
+      final cancel = _MockCancelAbandonedBuyPayjoinUsecase();
+      wallet = _MockWallet();
+      when(() => wallet.isDefault).thenReturn(true);
+      when(() => wallet.isLiquid).thenReturn(true);
+      when(load.userSummaryAndSettings).thenAnswer(
+        (_) async => const Ok((
+          userSummary: _userSummary,
+          settings: SettingsEntity(
+            environment: Environment.mainnet,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'CAD',
+          ),
+        )),
+      );
+      when(load.wallets).thenAnswer((_) async => Ok([wallet]));
+      when(
+        () => load.satsToCurrency(currencyCode: 'CAD'),
+      ).thenAnswer((_) async => const Ok<double, BuyFailure>(100000));
+      when(payjoin.execute).thenAnswer((_) async => const Ok(false));
+      when(
+        () => cancel.execute(any()),
+      ).thenAnswer((_) async => const Ok<void, BuyFailure>(null));
+      bloc = BuyBloc(
+        syncBuyReceiptUsecase: SyncBuyReceiptUsecase(
+          const WalletFacade(Stream.empty()),
+        ),
+        loadBuyContextUsecase: load,
+        confirmBuyOrderUsecase: _MockConfirmBuyOrderUsecase(),
+        createBuyOrderUsecase: _MockCreateBuyOrderUsecase(),
+        refreshBuyOrderUsecase: _MockRefreshBuyOrderUsecase(),
+        accelerateBuyOrderUsecase: _MockAccelerateBuyOrderUsecase(),
+        cancelAbandonedBuyPayjoinUsecase: cancel,
+        getBuyPayjoinEnabledUsecase: payjoin,
+        labelCompletedBuyOrderUsecase: _MockLabelCompletedBuyOrderUsecase(),
+      );
+    });
+    tearDown(() => bloc.close());
+
+    test('selects the default wallet without an external address', () async {
+      bloc.add(const BuyEvent.started());
+      await bloc.stream.firstWhere((state) => state.isStarted);
+
+      expect(bloc.state.selectedWallet, same(wallet));
+      expect(bloc.state.bitcoinAddressInput, isEmpty);
+    });
+
+    test('an external address opens with no wallet selected', () async {
+      bloc.add(const BuyEvent.started(externalAddress: 'bc1qexternal'));
+      await bloc.stream.firstWhere((state) => state.isStarted);
+
+      expect(bloc.state.selectedWallet, isNull);
+      expect(bloc.state.bitcoinAddressInput, 'bc1qexternal');
+      expect(bloc.state.wallets, [wallet]);
+    });
+  });
 }

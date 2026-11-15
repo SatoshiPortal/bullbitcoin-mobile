@@ -31,9 +31,14 @@ bool isOnionCustomServerInput(String input) {
 }
 
 class AddCustomServerBottomSheet extends StatefulWidget {
-  const AddCustomServerBottomSheet({super.key});
+  final String? initialUrl;
 
-  static Future<CustomServerInput?> show(BuildContext context) {
+  const AddCustomServerBottomSheet({super.key, this.initialUrl});
+
+  static Future<CustomServerInput?> show(
+    BuildContext context, {
+    String? initialUrl,
+  }) {
     final bloc = context.read<ElectrumSettingsBloc>();
 
     return BullBottomSheet.show<CustomServerInput>(
@@ -42,7 +47,7 @@ class AddCustomServerBottomSheet extends StatefulWidget {
         context: context,
         child: BlocProvider.value(
           value: bloc,
-          child: const AddCustomServerBottomSheet(),
+          child: AddCustomServerBottomSheet(initialUrl: initialUrl),
         ),
       ),
     );
@@ -66,6 +71,12 @@ class _AddCustomServerBottomSheetState
   void initState() {
     super.initState();
     _controller.addListener(_onUrlChanged);
+    final initialUrl = widget.initialUrl;
+    if (initialUrl != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _controller.text = initialUrl;
+      });
+    }
   }
 
   @override

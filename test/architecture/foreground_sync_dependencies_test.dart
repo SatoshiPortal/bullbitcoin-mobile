@@ -14,7 +14,7 @@ import 'package:path/path.dart' as p;
 // In particular, sp/swap -> wallet predates foreground sync: repository
 // compatibility exports and swap's wallet navigation remain out of scope.
 const _allowedTargets = <String, String>{
-  'address_view': 'settings wallet',
+  'address_view': 'electrum_settings labels settings wallet',
   'all_seed_view': 'app_unlock wallet',
   'announcements': 'settings swap',
   'app_startup':
@@ -60,10 +60,12 @@ const _allowedTargets = <String, String>{
   'replace_by_fee': 'fees send wallet',
   'sell':
       'bitcoin_price exchange fees labels recipients send settings transactions wallet',
+  'scan_anything':
+      'address_view broadcast_signed_tx buy electrum_settings exchange import_mnemonic import_watch_only_wallet labels send sp swap transactions wallet',
   'send':
       'bitbox consolidation electrum_settings fees labels ledger psbt_flow settings sp swap transactions wallet',
   'settings':
-      'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code recoverbull sp status_check swap test_wallet_backup tor_settings transactions wallet',
+      'address_view all_seed_view app_unlock autoswap backup_settings bip85_entropy bitcoin_price broadcast_signed_tx default_wallets electrum_settings exchange exchange_settings import_wallet labels logs mempool_settings pay pin_code recoverbull scan_anything sp status_check swap test_wallet_backup tor_settings transactions wallet',
   'sp': 'wallet',
   'status_check': 'electrum_settings recoverbull wallet',
   'support': 'exchange_support_chat',
@@ -71,7 +73,7 @@ const _allowedTargets = <String, String>{
       'autoswap consolidation fees labels send settings transactions wallet',
   'test_wallet_backup': 'onboarding recoverbull wallet',
   'transactions':
-      'buy electrum_settings exchange labels pay replace_by_fee swap wallet',
+      'address_view buy electrum_settings exchange labels pay replace_by_fee swap wallet',
   'wallet':
       'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding receive recoverbull send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',

@@ -2,6 +2,8 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
@@ -23,6 +25,8 @@ export 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 export 'package:bb_mobile/features/labels/router.dart';
 export 'package:bb_mobile/features/labels/locator.dart';
 export 'package:bb_mobile/features/labels/ui/page.dart';
+export 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart'
+    show LabelEntryBottomSheet;
 export 'package:bb_mobile/features/labels/ui/label_text.dart';
 export 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 
@@ -39,13 +43,18 @@ class LabelsFacade {
   final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
   final StoreLabelUsecase _storeLabelsUsecase;
   final TrashLabelUsecase _trashLabelUsecase;
+  final ImportLabelsUsecase Function() _importLabelsUsecase;
 
   LabelsFacade({
     required this._fetchLabelByReferenceUsecase,
     required this._fetchAllLabelsUsecase,
     required this._storeLabelsUsecase,
     required this._trashLabelUsecase,
+    required this._importLabelsUsecase,
   });
+
+  Future<Result<int, LabelFailure>> importBip329(String jsonl) =>
+      _importLabelsUsecase().call(FormattedLabelsBIP329(jsonl: jsonl));
 
   PayjoinLabelsPort payjoinLabels() => AppPayjoinLabelsAdapter((label) async {
     await store(label);
