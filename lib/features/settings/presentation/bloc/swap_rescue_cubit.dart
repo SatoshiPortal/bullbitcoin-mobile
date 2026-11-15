@@ -1,5 +1,5 @@
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -42,12 +42,12 @@ class SwapRescueState {
 
 class SwapRescueCubit extends Cubit<SwapRescueState> {
   final RescueSwapUsecase _rescueSwapUsecase;
-  final GetWalletsUsecase _getWalletsUsecase;
+  final GetSwapRescueWalletsUsecase _getRescueWalletsUsecase;
   final RestoredSwap _restored;
 
   SwapRescueCubit({
     required this._rescueSwapUsecase,
-    required this._getWalletsUsecase,
+    required this._getRescueWalletsUsecase,
     required this._restored,
   }) : super(const SwapRescueState()) {
     _loadWallets();
@@ -55,9 +55,8 @@ class SwapRescueCubit extends Cubit<SwapRescueState> {
 
   Future<void> _loadWallets() async {
     emit(state.copyWith(status: SwapRescueStatus.loading));
-    final result = await _getWalletsUsecase.execute(
-      onlyBitcoin: !_restored.actsOnLiquid,
-      onlyLiquid: _restored.actsOnLiquid,
+    final result = await _getRescueWalletsUsecase.execute(
+      actsOnLiquid: _restored.actsOnLiquid,
     );
     if (isClosed) return;
     switch (result) {
