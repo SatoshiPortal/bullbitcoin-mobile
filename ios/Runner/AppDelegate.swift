@@ -3,19 +3,18 @@ import UIKit
 import workmanager_apple
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GeneratedPluginRegistrant.register(with: self)
     excludeSensitiveFilesFromBackup()
 
     // workmanager_apple spawns a separate FlutterEngine per background task
     // (see BackgroundWorker.swift in workmanager_apple). Plugins registered
-    // against `self` above only attach to the main app's engine — the BG
-    // engine starts with an empty plugin registry. Without this callback,
-    // every platform-channel call from tasksHandler (shared_preferences,
+    // on the main engine only attach to that engine — the BG engine starts
+    // with an empty plugin registry. Without this callback, every
+    // platform-channel call from tasksHandler (shared_preferences,
     // flutter_secure_storage, drift, lwk, etc.) fails with `channel-error`
     // "Unable to establish connection on channel: ...". Registering the
     // generated registrant against the BG engine makes all plugins usable
@@ -24,7 +23,20 @@ import workmanager_apple
       GeneratedPluginRegistrant.register(with: registry)
     }
 
+    // BGTaskScheduler only delivers a task to a relaunched app if its launch
+    // handler is registered before `didFinishLaunching` returns. Under the
+    // UIScene lifecycle plugins register later (on scene connection), so the
+    // plugin's own re-registration comes too late; workmanager_apple asks
+    // scene apps to call this here.
+    WorkmanagerPlugin.registerLaunchHandlers()
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // UIScene lifecycle: Flutter creates the main engine after
+  // `didFinishLaunching`, so plugins are registered here instead.
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
   }
 
   private func excludeSensitiveFilesFromBackup() {

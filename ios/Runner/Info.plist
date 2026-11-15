@@ -63,6 +63,27 @@
 		<string>The app itself never collects your location. Location access is only requested if a website opened in the in-app browser asks for it</string>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>The app itself never collects your location. Location access is only requested if a website opened in the in-app browser asks for it</string>
+		<key>UIApplicationSceneManifest</key>
+		<dict>
+			<key>UIApplicationSupportsMultipleScenes</key>
+			<false/>
+			<key>UISceneConfigurations</key>
+			<dict>
+				<key>UIWindowSceneSessionRoleApplication</key>
+				<array>
+					<dict>
+						<key>UISceneClassName</key>
+						<string>UIWindowScene</string>
+						<key>UISceneDelegateClassName</key>
+						<string>FlutterSceneDelegate</string>
+						<key>UISceneConfigurationName</key>
+						<string>flutter</string>
+						<key>UISceneStoryboardFile</key>
+						<string>Main</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIDesignRequiresCompatibility</key>
