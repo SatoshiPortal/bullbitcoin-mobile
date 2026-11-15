@@ -20,7 +20,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
   - `make bootstrap` — melos workspace bootstrap (wraps `fvm dart run melos bootstrap`)
   - `make build-runner` — codegen (freezed, json_serializable, drift, flutter_gen)
   - `make translations` — `fvm flutter gen-l10n`
-  - `make setup` — full first-time setup (clean + deps + build-runner + translations + hooks + ios pods on macOS)
+  - `make setup` — full first-time setup (clean + deps + build-runner + translations + hooks + iOS precache on macOS)
   - `make unit-test` / `make integration-test` / `make test`
   - `make drift-migrations` — after changing Drift schema
   - `make android` / `make android release` — reproducible build

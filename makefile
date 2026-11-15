@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-pod-update ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rustc-pins-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rustc-pins-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -13,7 +13,7 @@ all: setup
 	@echo "✨ All tasks completed!"
 
 setup: fvm-check clean deps build-runner translations hooks
-	@if [ "$$(uname)" = "Darwin" ]; then $(MAKE) ios-pod-update; fi
+	@if [ "$$(uname)" = "Darwin" ]; then fvm flutter precache --ios; fi
 	@echo "🚀 Setup complete!"
 
 clean:
@@ -28,8 +28,8 @@ deps:
 # fresh versions (and, for branch refs, fresh commits). Use only when you mean to
 # update dependencies, then commit the regenerated pubspec.lock.
 deps-update:
-	@echo "🔓 Re-resolving dependencies (deletes pubspec.lock + ios/Podfile.lock)"
-	@rm -f pubspec.lock ios/Podfile.lock
+	@echo "🔓 Re-resolving dependencies (deletes pubspec.lock)"
+	@rm -f pubspec.lock
 	@fvm flutter pub get
 
 # Melos workspace bootstrap (pub get across the workspace + package linking).
@@ -157,17 +157,6 @@ drift-migrations:
 .PHONY: recoverbull-drift-migrations
 recoverbull-drift-migrations:
 	@(cd features/recoverbull && fvm dart run drift_dev make-migrations)
-
-ios-pod-update:
-	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
-	@echo "Fetching iOS dependencies"
-	@fvm flutter precache --ios
-	@cd ios && pod install --repo-update && cd -
-
-ios-sqlite-update:
-	@if [ "$$(uname)" != "Darwin" ]; then echo "Skipping pod update (not macOS)"; exit 0; fi
-	@echo "Updating SQLite"
-	@cd ios && pod update sqlite3 && cd -
 
 ios-simulator:
 	@if [ "$$(uname)" != "Darwin" ]; then echo "iOS simulator builds require macOS"; exit 1; fi

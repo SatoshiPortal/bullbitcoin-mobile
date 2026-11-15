@@ -106,12 +106,6 @@ jobs:
             ~/.cargo/git
           key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
 
-      - name: Cache CocoaPods downloads
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/Library/Caches/CocoaPods
-          key: cocoapods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
-
       # Install the pinned native FVM binary without executing the mutable
       # fvm.app installer script on a runner that later receives signing keys.
       - name: Install FVM 4.1.2
@@ -160,21 +154,6 @@ jobs:
             echo "::error::Code generation changed the checkout; commit the regenerated files."
             exit 1
           fi
-
-      - name: Install locked CocoaPods dependencies
-        working-directory: ios
-        run: |
-          test -f Podfile.lock
-          # The image's CocoaPods floats (1.16 -> 1.17 changed podspec checksums,
-          # which `--deployment` rejects). Pin to whatever generated Podfile.lock
-          # so the lockfile stays the single source of truth across image bumps.
-          locked_version="$(awk '/^COCOAPODS:/ { print $2; exit }' Podfile.lock)"
-          test -n "$locked_version"
-          if [ "$(pod --version)" != "$locked_version" ]; then
-            sudo gem install cocoapods -v "$locked_version" --no-document
-          fi
-          test "$(pod "_${locked_version}_" --version)" = "$locked_version"
-          pod "_${locked_version}_" install --deployment
 
       - name: Build iOS Simulator app
         run: make ios-simulator BUILD_NUMBER="$BUILD_NUMBER"

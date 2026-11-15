@@ -20,7 +20,7 @@ void main() {
   test('the canonical Drift target includes the Payjoin package schema', () {
     final makefile = File('makefile').readAsStringSync();
     final start = makefile.indexOf('drift-migrations:');
-    final end = makefile.indexOf('\nios-pod-update:', start);
+    final end = makefile.indexOf('\nios-simulator:', start);
     final target = makefile.substring(start, end);
 
     expect(
