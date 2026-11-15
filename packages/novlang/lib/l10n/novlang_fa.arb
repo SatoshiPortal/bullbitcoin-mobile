@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "پرداخت ارسال شد. Bull Bitcoin گزارش می‌دهد که مهلت پرداخت این سفارش به پایان رسیده است. شناسه تراکنش زیر را نگه دارید و اگر سفارش به‌روز نشد با پشتیبانی تماس بگیرید.",
   "app__allSeedViewSwapMnemonicTitle_apple": "عبارت یادآور انتقال",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "عبارت یادآور انتقال حذف شود؟",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "این کار کلید اصلی انتقال را از حافظه امن حذف می‌کند. دفعه بعد که برنامه به آن نیاز داشته باشد، با همان اثر انگشت دوباره از seed کیف پول شما استخراج می‌شود. انتقال‌های در حال انجام تحت تأثیر قرار نمی‌گیرند."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "این کار کلید اصلی انتقال را از حافظه امن حذف می‌کند. دفعه بعد که برنامه به آن نیاز داشته باشد، با همان اثر انگشت دوباره از seed کیف پول شما استخراج می‌شود. انتقال‌های در حال انجام تحت تأثیر قرار نمی‌گیرند.",
+  "quick_actions__transfer_apple": "Transfer"
 }

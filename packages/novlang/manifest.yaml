@@ -38,6 +38,9 @@ catalogues:
   app:
     path: .
     description: the root catalogue (localization/app_<lang>.arb)
+  quick_actions:
+    path: features/quick_actions
+    description: the quick actions feature catalogue (features/quick_actions/localization/app_<lang>.arb)
 entries:
   - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
@@ -270,3 +273,4 @@ entries:
   - {catalogue: app, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: quick_actions, key: transfer, store: apple, word: swap, euphemism: transfer}

@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "Pagamento inviato. Bull Bitcoin segnala che la scadenza per pagare questo ordine è passata. Conserva l'ID della transazione qui sotto e contatta l'assistenza se l'ordine non si aggiorna.",
   "app__allSeedViewSwapMnemonicTitle_apple": "Frase mnemonica dei trasferimenti",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Eliminare la frase mnemonica dei trasferimenti?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Questa operazione rimuove la chiave master dei trasferimenti dall'archivio sicuro. Verrà ricavata di nuovo dalla frase di recupero del portafoglio la prossima volta che l'app ne avrà bisogno, con la stessa impronta. I trasferimenti in corso non vengono toccati."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Questa operazione rimuove la chiave master dei trasferimenti dall'archivio sicuro. Verrà ricavata di nuovo dalla frase di recupero del portafoglio la prossima volta che l'app ne avrà bisogno, con la stessa impronta. I trasferimenti in corso non vengono toccati.",
+  "quick_actions__transfer_apple": "Transfer"
 }

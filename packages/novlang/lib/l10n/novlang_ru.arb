@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "Платёж отправлен. Bull Bitcoin сообщает, что срок оплаты этого заказа истёк. Сохраните ID транзакции ниже и свяжитесь с поддержкой, если заказ не обновится.",
   "app__allSeedViewSwapMnemonicTitle_apple": "Мнемоника переводов",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Удалить мнемонику переводов?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Это удаляет мастер-ключ переводов из защищённого хранилища. При следующем обращении приложения он будет заново получен из сида вашего кошелька с тем же отпечатком. Текущие переводы не затрагиваются."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Это удаляет мастер-ключ переводов из защищённого хранилища. При следующем обращении приложения он будет заново получен из сида вашего кошелька с тем же отпечатком. Текущие переводы не затрагиваются.",
+  "quick_actions__transfer_apple": "Transfer"
 }

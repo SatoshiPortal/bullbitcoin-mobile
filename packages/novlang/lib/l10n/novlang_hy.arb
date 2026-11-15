@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "Վճարումն ուղարկվել է։ Bull Bitcoin-ը հայտնում է, որ այս պատվերի վճարման վերջնաժամկետը լրացել է։ Պահեք ստորև նշված գործարքի ID-ն և դիմեք աջակցությանը, եթե պատվերը չթարմացվի։",
   "app__allSeedViewSwapMnemonicTitle_apple": "Փոխանցման mnemonic",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Ջնջե՞լ փոխանցման mnemonic-ը",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։"
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Սա հեռացնում է փոխանցման գլխավոր բանալին անվտանգ պահոցից։ Հավելվածին հաջորդ անգամ անհրաժեշտ լինելու դեպքում այն կվերստացվի ձեր դրամապանակի seed-ից՝ նույն մատնահետքով։ Ընթացիկ փոխանցումների վրա դա չի ազդում։",
+  "quick_actions__transfer_apple": "Transfer"
 }

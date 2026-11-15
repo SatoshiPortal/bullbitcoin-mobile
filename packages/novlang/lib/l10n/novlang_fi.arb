@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "Maksu lähetetty. Bull Bitcoin ilmoittaa, että tämän tilauksen maksuaika on umpeutunut. Säilytä alla oleva transaktiotunnus ja ota yhteyttä tukeen, jos tilaus ei päivity.",
   "app__allSeedViewSwapMnemonicTitle_apple": "Siirron mnemoninen lause",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Poistetaanko siirron mnemoninen lause?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Tämä poistaa siirron pääavaimen suojatusta tallennustilasta. Se johdetaan uudelleen lompakkosi siemenestä seuraavalla kerralla, kun sovellus tarvitsee sitä, samalla sormenjäljellä. Käynnissä olevat siirrot eivät vaikuta."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Tämä poistaa siirron pääavaimen suojatusta tallennustilasta. Se johdetaan uudelleen lompakkosi siemenestä seuraavalla kerralla, kun sovellus tarvitsee sitä, samalla sormenjäljellä. Käynnissä olevat siirrot eivät vaikuta.",
+  "quick_actions__transfer_apple": "Transfer"
 }

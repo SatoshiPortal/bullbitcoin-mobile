@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "Pagamento enviado. A Bull Bitcoin informa que o prazo de pagamento deste pedido expirou. Guarde o ID da transação abaixo e entre em contato com o suporte se o pedido não for atualizado.",
   "app__allSeedViewSwapMnemonicTitle_apple": "Mnemônico de transferência",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Excluir mnemônico de transferência?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Isso remove a chave mestra de transferência do armazenamento seguro. Ela será derivada novamente da seed da sua carteira na próxima vez que o app precisar dela, com a mesma impressão digital. As transferências em andamento não são afetadas."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Isso remove a chave mestra de transferência do armazenamento seguro. Ela será derivada novamente da seed da sua carteira na próxima vez que o app precisar dela, com a mesma impressão digital. As transferências em andamento não são afetadas.",
+  "quick_actions__transfer_apple": "Transfer"
 }

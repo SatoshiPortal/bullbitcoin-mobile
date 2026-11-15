@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "Đã gửi thanh toán. Bull Bitcoin báo rằng hạn thanh toán của đơn hàng này đã hết. Hãy giữ lại ID giao dịch bên dưới và liên hệ hỗ trợ nếu đơn hàng không được cập nhật.",
   "app__allSeedViewSwapMnemonicTitle_apple": "Mnemonic chuyển khoản",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Xóa mnemonic chuyển khoản?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Thao tác này xóa khóa chính chuyển khoản khỏi bộ nhớ an toàn. Khóa sẽ được dẫn xuất lại từ seed ví của bạn vào lần tiếp theo ứng dụng cần đến, với cùng fingerprint. Các khoản chuyển đang thực hiện không bị ảnh hưởng.",
+  "quick_actions__transfer_apple": "Transfer"
 }

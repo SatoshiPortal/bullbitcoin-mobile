@@ -230,5 +230,6 @@
   "app__exchangePaymentSentPastDeadline_apple": "Malipo yametumwa. Bull Bitcoin inaripoti kuwa muda wa mwisho wa malipo wa agizo hili umeisha. Hifadhi kitambulisho cha muamala kilicho hapa chini na wasiliana na usaidizi ikiwa agizo halijasasishwa.",
   "app__allSeedViewSwapMnemonicTitle_apple": "Mnemoniki ya uhamisho",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Futa mnemoniki ya uhamisho?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Hii inaondoa ufunguo mkuu wa uhamisho kutoka kwenye hifadhi salama. Utatolewa upya kutoka kwenye seed ya pochi yako wakati ujao programu itakapouhitaji, ukiwa na alama ya kidole ile ile. Uhamisho unaoendelea hauathiriwi."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Hii inaondoa ufunguo mkuu wa uhamisho kutoka kwenye hifadhi salama. Utatolewa upya kutoka kwenye seed ya pochi yako wakati ujao programu itakapouhitaji, ukiwa na alama ya kidole ile ile. Uhamisho unaoendelea hauathiriwi.",
+  "quick_actions__transfer_apple": "Transfer"
 }
