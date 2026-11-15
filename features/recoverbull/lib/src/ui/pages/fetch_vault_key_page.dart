@@ -4,6 +4,7 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
+import 'package:screen_awake/screen_awake.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
 
@@ -193,13 +194,16 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: RecoverBullAppBar(title: context.loc.recoverbullFetchVaultKey),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: RecoverBullProgress(
-              title: context.loc.recoverbullFetchingVaultKey,
-              description: context.loc.recoverbullConnectingTor,
+      body: ScreenAwakeScope(
+        enabled: true,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: RecoverBullProgress(
+                title: context.loc.recoverbullFetchingVaultKey,
+                description: context.loc.recoverbullConnectingTor,
+              ),
             ),
           ),
         ),

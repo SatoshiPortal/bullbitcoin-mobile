@@ -8,6 +8,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../domain/entities/vault_provider.dart';
 import '../../l10n/context_localizations.dart';
 import '../../presentation/vault_flow_cubit.dart';
+import '../recoverbull_flow_navigator.dart';
 
 const _package = 'bull_recoverbull';
 
@@ -257,7 +258,7 @@ class RecoverBullAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       forceMaterialTransparency: true,
       leading: IconButton(
-        onPressed: () => Navigator.of(context).maybePop(),
+        onPressed: () => recoverBullBack(context),
         icon: const Icon(Icons.arrow_back),
       ),
       title: BullText(

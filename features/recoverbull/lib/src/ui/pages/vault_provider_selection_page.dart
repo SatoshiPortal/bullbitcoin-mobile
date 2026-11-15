@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:screen_awake/screen_awake.dart';
 
 import '../../domain/entities/drive_file_metadata.dart';
 import '../../domain/entities/recoverbull_flow.dart';
 import '../../domain/entities/vault_provider.dart';
+import '../../domain/recoverbull_failure.dart';
 import '../../l10n/context_localizations.dart';
 import '../../presentation/recoverbull_failure_l10n.dart';
 import '../../presentation/vault_flow_cubit.dart';
@@ -37,6 +39,10 @@ class _VaultProviderSelectionPageState
   VaultProvider? _provider;
   bool _awaitingLatestDriveVault = false;
 
+  /// Set while this page creates the vault, so a key-server probe started
+  /// elsewhere is not shown as vault creation.
+  bool _creating = false;
+
   Future<void> _select(VaultProvider provider) async {
     final cubit = context.read<VaultFlowCubit>();
     setState(() => _provider = provider);
@@ -44,11 +50,13 @@ class _VaultProviderSelectionPageState
     if (flow == RecoverBullFlow.secureVault) {
       final password = widget.password;
       if (password == null) return;
+      setState(() => _creating = true);
       await cubit.create(
         provider,
         password,
         passphraseWarningAccepted: widget.passphraseWarningAccepted,
       );
+      if (mounted) setState(() => _creating = false);
       return;
     }
     switch (provider) {
@@ -81,7 +89,10 @@ class _VaultProviderSelectionPageState
     if (ModalRoute.of(context)?.isCurrent != true) return;
     final failure = state.failure;
     if (failure != null) {
-      BullSnackBar.show(context, message: failure.toTranslated(context));
+      // Closing the file picker is a choice, not an error.
+      if (failure is! VaultCancelledFailure) {
+        BullSnackBar.show(context, message: failure.toTranslated(context));
+      }
       context.read<VaultFlowCubit>().clearFailure();
       return;
     }
@@ -130,75 +141,79 @@ class _VaultProviderSelectionPageState
                 previous.completion != current.completion),
         listener: _onState,
         builder: (context, state) {
-          final creating = flow == RecoverBullFlow.secureVault && state.busy;
-          return Column(
-            children: [
-              BullFadingLinearProgress(
-                trigger: state.busy,
-                backgroundColor: context.bull.surface,
-                foregroundColor: context.bull.primary,
-                height: 2,
-              ),
-              if (creating)
-                Center(
-                  child: RecoverBullProgress(
-                    title: context.loc.recoverbullCreatingVault,
-                    description: context.loc.recoverbullConnectingTor,
-                  ),
-                )
-              else if (state.hasPendingProviderSave)
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: .stretch,
-                    children: [
-                      BullText(
-                        context.loc.recoverbullPendingProviderSave,
-                        style: context.bullText.bodyMedium,
-                        maxLines: 5,
-                      ),
-                      const Gap(16),
-                      BullButton.big(
-                        label: context.loc.recoverbullRetryProviderSave,
-                        bgColor: context.bull.onSurface,
-                        textColor: context.bull.surface,
-                        disabled: state.busy,
-                        onPressed: () =>
-                            context.read<VaultFlowCubit>().retryProviderSave(
-                              _provider ?? VaultProvider.customLocation,
-                            ),
-                      ),
-                    ],
-                  ),
-                )
-              else ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: IgnorePointer(
-                    ignoring: state.busy,
-                    child: VaultProviderSelector(onProviderSelected: _select),
-                  ),
+          final creating =
+              flow == RecoverBullFlow.secureVault && _creating && state.busy;
+          return ScreenAwakeScope(
+            enabled: creating,
+            child: Column(
+              children: [
+                BullFadingLinearProgress(
+                  trigger: state.busy,
+                  backgroundColor: context.bull.surface,
+                  foregroundColor: context.bull.primary,
+                  height: 2,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: GestureDetector(
-                      onTap: () => BullBottomSheet.show<void>(
-                        context: context,
-                        child: const HowToDecideVaultLocation(),
-                      ),
-                      child: BullText(
-                        context.loc.backupWalletHowToDecide,
-                        style: context.bullText.headlineLarge?.copyWith(
-                          color: context.bull.primary,
+                if (creating)
+                  Center(
+                    child: RecoverBullProgress(
+                      title: context.loc.recoverbullCreatingVault,
+                      description: context.loc.recoverbullConnectingTor,
+                    ),
+                  )
+                else if (state.hasPendingProviderSave)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: .stretch,
+                      children: [
+                        BullText(
+                          context.loc.recoverbullPendingProviderSave,
+                          style: context.bullText.bodyMedium,
+                          maxLines: 5,
+                        ),
+                        const Gap(16),
+                        BullButton.big(
+                          label: context.loc.recoverbullRetryProviderSave,
+                          bgColor: context.bull.onSurface,
+                          textColor: context.bull.surface,
+                          disabled: state.busy,
+                          onPressed: () =>
+                              context.read<VaultFlowCubit>().retryProviderSave(
+                                _provider ?? VaultProvider.customLocation,
+                              ),
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: IgnorePointer(
+                      ignoring: state.busy,
+                      child: VaultProviderSelector(onProviderSelected: _select),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => BullBottomSheet.show<void>(
+                          context: context,
+                          child: const HowToDecideVaultLocation(),
+                        ),
+                        child: BullText(
+                          context.loc.backupWalletHowToDecide,
+                          style: context.bullText.headlineLarge?.copyWith(
+                            color: context.bull.primary,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
+            ),
           );
         },
       ),

@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../domain/entities/drive_file_metadata.dart';
 import '../../domain/entities/vault_provider.dart';
+import '../../domain/recoverbull_failure.dart';
 import '../../l10n/context_localizations.dart';
 import '../../presentation/recoverbull_failure_l10n.dart';
 import '../../presentation/vault_flow_cubit.dart';
@@ -127,8 +128,11 @@ class _DriveVaultsListPageState extends State<DriveVaultsListPage> {
     final cubit = context.read<VaultFlowCubit>();
     await cubit.list();
     if (!mounted) return;
+    final files = cubit.state.files;
+    // A list skipped while another operation ran says nothing about Drive.
+    if (files == null) return;
     setState(() {
-      _files = [...?cubit.state.files]
+      _files = [...files]
         ..sort((a, b) => b.createdTime.compareTo(a.createdTime));
       _loaded = true;
     });
@@ -246,7 +250,9 @@ class _DriveVaultsListPageState extends State<DriveVaultsListPage> {
         if (ModalRoute.of(context)?.isCurrent != true) return;
         final failure = state.failure;
         if (failure == null) return;
-        BullSnackBar.show(context, message: failure.toTranslated(context));
+        if (failure is! VaultCancelledFailure) {
+          BullSnackBar.show(context, message: failure.toTranslated(context));
+        }
         context.read<VaultFlowCubit>().clearFailure();
       },
       builder: (context, state) => Scaffold(
