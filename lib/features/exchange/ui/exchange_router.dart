@@ -86,11 +86,17 @@ class ExchangeRouter {
         return NoTransitionPage(
           key: state.pageKey,
           // Redirects run only on navigation: a session that ends while Trade
-          // is open must still lead to sign-in.
+          // is open must still leave it. Sign-in is offered only while access
+          // stays enabled; sign-out turns access off and returns home.
           child: ExchangeSessionListener(
             listenWhen: (wasLoggedIn, isLoggedIn) => wasLoggedIn && !isLoggedIn,
-            listener: (context, _) =>
-                context.goNamed(ExchangeRoute.exchangeLanding.name),
+            listener: (context, _) {
+              if (ExchangeScope.isEnabled(context)) {
+                context.goNamed(ExchangeRoute.exchangeLanding.name);
+              } else {
+                config.onExit(context);
+              }
+            },
             child: ExchangeHomeScreen(
               homeCards: config.buildHomeCards(),
               onHomeRefresh: config.onHomeRefresh,
