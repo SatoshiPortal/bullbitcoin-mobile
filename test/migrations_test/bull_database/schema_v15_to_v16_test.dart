@@ -120,6 +120,7 @@ void main() {
   test(
     'v15 to v16 keeps certificate validation for existing servers',
     () async {
+      final verifier = SchemaVerifier(GeneratedHelper());
       final schema = await verifier.schemaAt(15);
       final oldDb = v15.DatabaseAtV15(schema.newConnection());
       await oldDb.batch((batch) {

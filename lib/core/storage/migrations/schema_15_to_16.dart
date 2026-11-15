@@ -8,7 +8,8 @@ import 'package:drift/drift.dart';
 /// The single pending revision: concrete wallet/Electrum networks, removal
 /// of the price cache now owned by bull_pricer, and the move of the default
 /// Blockstream Electrum servers off ports 700, 993, 995 and 465 (filtered by
-/// many networks) to Blockstream's current hosts on 50002, plus the Mempool TLS setting.
+/// many networks) to Blockstream's current hosts on 50002. Adds a Mempool TLS
+/// validation setting.
 class Schema15To16 {
   static Future<void> migrate(Migrator m, Schema16 schema16) =>
       m.database.transaction(() => _migrate(m, schema16));
