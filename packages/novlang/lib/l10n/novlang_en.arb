@@ -965,6 +965,10 @@
   "@app__allSeedViewDeleteSwapMnemonicMessage_apple": {
     "description": "Apple (App Store) wording for the root catalogue key allSeedViewDeleteSwapMnemonicMessage."
   },
+  "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "@app__exchangeAccessSettingsDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeAccessSettingsDescription."
+  },
   "quick_actions__transfer_apple": "Transfer",
   "@quick_actions__transfer_apple": {
     "description": "Apple (App Store) wording for the quick_actions catalogue key transfer."

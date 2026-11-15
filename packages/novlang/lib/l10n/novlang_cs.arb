@@ -231,5 +231,6 @@
   "app__allSeedViewSwapMnemonicTitle_apple": "Mnemotechnická fráze převodů",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Smazat mnemotechnickou frázi převodů?",
   "app__allSeedViewDeleteSwapMnemonicMessage_apple": "Tím se hlavní klíč převodů odstraní ze zabezpečeného úložiště. Při příští potřebě aplikace bude znovu odvozen z seedu vaší peněženky se stejným otiskem. Probíhající převody nejsou dotčeny.",
+  "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
   "quick_actions__transfer_apple": "Transfer"
 }

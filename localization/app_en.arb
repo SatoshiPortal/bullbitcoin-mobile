@@ -15192,7 +15192,7 @@
   "@exchangeAccessSettingsLabel": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "exchangeAccessSettingsDescription": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "exchangeAccessSettingsDescription": "Show Buy, Sell and Pay on the home screen. Swap remains available.",
   "@exchangeAccessSettingsDescription": {
     "description": "Optional exchange access or wallet quick action setting."
   },

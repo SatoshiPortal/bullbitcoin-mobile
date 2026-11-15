@@ -273,4 +273,5 @@ entries:
   - {catalogue: app, key: allSeedViewSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: allSeedViewDeleteSwapMnemonicMessage, store: apple, word: swap, euphemism: transfer}
+  - {catalogue: app, key: exchangeAccessSettingsDescription, store: apple, word: swap, euphemism: transfer}
   - {catalogue: quick_actions, key: transfer, store: apple, word: swap, euphemism: transfer}

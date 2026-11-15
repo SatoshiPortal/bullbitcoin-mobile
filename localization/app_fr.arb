@@ -4743,7 +4743,7 @@
   "passphraseHide": "Masquer la passphrase",
   "exchangeAccessSettingsTitle": "BULL Exchange",
   "exchangeAccessSettingsLabel": "Fonctionnalités de l’exchange",
-  "exchangeAccessSettingsDescription": "Afficher Acheter, Vendre et Payer sur l’écran d’accueil. Transférer reste disponible.",
+  "exchangeAccessSettingsDescription": "Afficher Acheter, Vendre et Payer sur l’écran d’accueil. Échanger reste disponible.",
   "exchangeAccessSettingsOffHint": "Activez cette option pour vous connecter ou créer un compte Bull Bitcoin.",
   "exchangeAccessSettingsOnHint": "Les fonctionnalités de l’exchange sont activées.",
   "exchangeAccessOpenAccount": "Ouvrir mon compte Bull Bitcoin",
