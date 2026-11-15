@@ -40,6 +40,7 @@ export 'package:flutter/widgets.dart'
         EdgeInsetsGeometry,
         Expanded,
         ExcludeSemantics,
+        Semantics,
         Flexible,
         FontFeature,
         FontWeight,

@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +18,7 @@ void main() {
   setUp(() {
     createDefaultWalletsUsecase = _MockCreateDefaultWalletsUsecase();
     usecase = CreateOnboardingWalletUsecase(
-      createDefaultWalletsUsecase: createDefaultWalletsUsecase,
+      defaultWallets: DefaultWalletsFacade(createDefaultWalletsUsecase),
     );
   });
 
@@ -26,7 +26,7 @@ void main() {
     test('maps a foreign wallet-setup failure to OnboardingWalletSetupFailure '
         'without leaking the raw exception', () async {
       when(() => createDefaultWalletsUsecase.execute())
-          .thenThrow(Exception('BDK: descriptor derivation failed 0xdeadbeef'));
+          .thenAnswer((_) async => const Err(DefaultWalletCreationFailure()));
 
       final result = await usecase.execute();
 
@@ -40,7 +40,7 @@ void main() {
     test('returns Ok with the wallets on success', () async {
       final wallets = [_MockWallet()];
       when(() => createDefaultWalletsUsecase.execute())
-          .thenAnswer((_) async => wallets);
+          .thenAnswer((_) async => Ok(wallets));
 
       final result = await usecase.execute();
 

@@ -53,13 +53,14 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
     return true;
   }
 
-  Future<void> _submit(List<String> words) async {
+  Future<void> _submit(List<String> words, String passphrase) async {
     setState(() {
       _busy = true;
       _error = null;
     });
     final result = await context.read<AppStartupBloc>().restoreDefaultSecret(
       words,
+      passphrase: passphrase,
     );
     if (!mounted) return;
     setState(() {
@@ -97,11 +98,11 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
               initialLength: bip39.MnemonicLength.words12,
               allowMultipleMnemonicLength: true,
               allowLabel: false,
-              // Default wallets never have a passphrase.
-              allowPassphrase: false,
+              allowPassphrase: true,
               externalError: _error,
               submitLabel: context.loc.onboardingRecover,
-              onSubmit: (mnemonic) => unawaited(_submit(mnemonic.words)),
+              onSubmit: (mnemonic) =>
+                  unawaited(_submit(mnemonic.words, mnemonic.passphrase)),
             ),
           ),
         ),

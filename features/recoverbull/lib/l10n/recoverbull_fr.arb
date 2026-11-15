@@ -324,5 +324,16 @@
   "recoverbullLockoutDays": "{count, plural, one{1 jour} other{{count} jours}}",
   "recoverbullLockoutHours": "{count, plural, one{1 heure} other{{count} heures}}",
   "recoverbullLockoutMinutes": "{count, plural, one{1 minute} other{{count} minutes}}",
-  "recoverbullLockoutSeconds": "{count, plural, one{1 seconde} other{{count} secondes}}"
+  "recoverbullLockoutSeconds": "{count, plural, one{1 seconde} other{{count} secondes}}",
+  "recoverbullVaultPassphraseNotIncluded": "Votre passphrase n’est pas incluse dans cette sauvegarde. Vous devrez la saisir à la restauration. Si vous l’oubliez, vos fonds seront perdus. Personne ne peut la récupérer.",
+  "recoverbullPassphraseAcknowledgement": "Je l’ai notée et la conserve séparément",
+  "recoverbullPassphraseRequired": "Passphrase requise",
+  "recoverbullPassphraseNotVaultPassword": "Elle n’est pas dans le coffre. Ce n’est pas le mot de passe du coffre.",
+  "recoverbullPassphraseMismatch": "Ce n’est pas le bon wallet. Cette passphrase ne correspond pas à votre sauvegarde.",
+  "recoverbullPassphraseShow": "Afficher la passphrase",
+  "recoverbullPassphraseHide": "Masquer la passphrase",
+  "recoverbullPassphraseWhitespace": "Les espaces au début ou à la fin font partie de votre passphrase.",
+  "recoverbullContinueWithoutPassphrase": "Continuer sans",
+  "recoverbullContinueWithoutPassphraseWarning": "Ouvrir un autre wallet ? Il est probablement vide. Cela ne restaure pas le wallet de votre sauvegarde.",
+  "recoverbullPassphraseVerify": "Vérifier"
 }

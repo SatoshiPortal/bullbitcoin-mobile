@@ -8935,10 +8935,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "پشتیبان گیری شما توسط passphrase محافظت نمی شود. یک passphrase را با ایجاد کیف پول جدید به پشتیبان خود اضافه کنید.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "تغییر شناسه ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9081,10 +9077,6 @@
   "payCustomFee": "هزینه های سفارشی",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "پشتیبان گیری شما توسط passphrase محافظت نمی شود. یک passphrase را با ایجاد کیف پول جدید به پشتیبان خود اضافه کنید.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "تایید بیان",
   "@buyConfirmExpress": {

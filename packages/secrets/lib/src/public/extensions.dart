@@ -42,7 +42,7 @@ extension SecretExtension on Secret {
 
   /// The Silent Payments (BIP352) account.
   ///
-  /// ⚠️ Hands the stored words to bwk. See [Secret.silentPaymentsAccount].
+  /// The full BIP39 seed reaches bwk inside the package. See [Secret.silentPaymentsAccount].
   SecretSilentPayments get silentPayments => SecretSilentPayments._(this);
 
   /// The sealed widgets: the words on screen, never in the caller's hands.
@@ -95,7 +95,7 @@ extension type const SecretDescriptors._(Secret _secret) {
 
   /// The confidential descriptor.
   ///
-  /// The passphrase is ignored. See [Secret.liquidDescriptor].
+  /// The full BIP39 seed, including its passphrase, determines the descriptor.
   @useResult
   Future<Result<String, SecretFailure>> liquid({
     required LiquidNetwork network,
@@ -143,7 +143,7 @@ extension type const SecretSigning._(Secret _secret) {
 
   /// Signs a PSET.
   ///
-  /// ⚠️ A passphrase is ignored here, as in the Liquid descriptor. See
+  /// The same full BIP39 seed determines the descriptor and signature. See
   /// [Secret.signPset].
   @useResult
   Future<Result<String, SecretFailure>> pset(
@@ -154,6 +154,11 @@ extension type const SecretSigning._(Secret _secret) {
 
 /// Verdicts only: comparison never hands the stored material to the caller.
 extension type const SecretVerification._(Secret _secret) {
+  /// Compares a BIP39-normalized passphrase without revealing the stored one.
+  @useResult
+  Future<Result<bool, SecretFailure>> passphrase(String candidate) =>
+      _secret.verifyPassphrase(candidate);
+
   /// Compares words only. A raw seed returns [MnemonicRequiredFailure].
   @useResult
   Future<Result<bool, SecretFailure>> mnemonic(List<String> words) =>
@@ -176,10 +181,7 @@ extension type const SecretBackup._(Secret _secret) {
 
 /// The Silent Payments account, opened inside the package.
 extension type const SecretSilentPayments._(Secret _secret) {
-  /// Opens the bwk account, which scans and signs while it lives.
-  ///
-  /// ⚠️ bwk receives the stored words, and a secret with a passphrase is
-  /// refused. See [Secret.silentPaymentsAccount].
+  /// Opens the bwk account, which scans and signs while it lives. See [Secret.silentPaymentsAccount].
   @useResult
   Future<Result<SpAccount, SecretFailure>> account({
     required String name,

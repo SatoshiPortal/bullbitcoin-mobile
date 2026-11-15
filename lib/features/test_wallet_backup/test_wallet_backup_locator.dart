@@ -7,10 +7,14 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_back
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_backup_passphrase_usecase.dart';
 import 'package:get_it/get_it.dart';
 
 class TestWalletBackupLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<VerifyBackupPassphraseUsecase>(
+      () => const VerifyBackupPassphraseUsecase(),
+    );
     locator.registerLazySingleton<LoadWalletsForNetworkUsecase>(
       () => LoadWalletsForNetworkUsecase(
         walletRepository: locator<WalletRepository>(),

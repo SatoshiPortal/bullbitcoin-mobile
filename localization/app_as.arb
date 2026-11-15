@@ -1152,7 +1152,6 @@
   "backupInstruction2": "বেকআপ নোহোৱাকৈ, যদি আপুনি আপোনাৰ ফোন হেৰুৱায় বা ভাঙে, বা যদি আপুনি Bull Bitcoin এপ্প আনইনষ্টল কৰে, আপোনাৰ bitcoin চিৰকালৰ বাবে হেৰাব।",
   "backupInstruction3": "আপোনাৰ 12 শব্দৰ বেকআপত প্ৰৱেশ থকা যিকোনো ব্যক্তিয়ে আপোনাৰ bitcoin চুৰি কৰিব পাৰে। ভালদৰে লুকুৱাই ৰাখক।",
   "backupInstruction4": "আপোনাৰ বেকআপৰ ডিজিটেল কপি নকৰিব। কাগজত লিখক, বা ধাতুত খোদিত কৰক।",
-  "backupInstruction5": "আপোনাৰ বেকআপ passphrase-দ্বাৰা সুৰক্ষিত নহয়। নতুন wallet তৈয়াৰ কৰি পিছত আপোনাৰ বেকআপত passphrase যোগ কৰক।",
   "backupButton": "বেকআপ কৰক",
   "backupCompletedTitle": "বেকআপ সম্পন্ন হৈছে!",
   "backupCompletedDescription": "এতিয়া আপোনাৰ বেকআপ পৰীক্ষা কৰোঁ আহক যাতে সকলো ঠিকমতে কৰা হৈছে।",
@@ -4118,10 +4117,6 @@
   "backupWalletInstructionNoDigitalCopies": "আপোনাৰ বেকআপৰ ডিজিটেল কপি নবনাওক। এখন কাগজত লিখক, বা ধাতুত খোদাই কৰক।",
   "@backupWalletInstructionNoDigitalCopies": {
     "description": "Instruction to avoid digital copies and use physical medium"
-  },
-  "backupWalletInstructionNoPassphrase": "আপোনাৰ বেকআপ passphrase দ্বাৰা সুৰক্ষিত নহয়। নতুন wallet তৈয়াৰ কৰি পিছত আপোনাৰ বেকআপত passphrase যোগ কৰক।",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
   },
   "backupWalletBackupButton": "বেকআপ",
   "@backupWalletBackupButton": {

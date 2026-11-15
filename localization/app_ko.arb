@@ -9658,10 +9658,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "귀하의 백업은 passphrase에 의해 보호되지 않습니다. 새로운 지갑을 만들기 위해 나중에 백업에 passphrase를 추가하십시오.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "스왑 ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9816,10 +9812,6 @@
   "payCustomFee": "회사 소개",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "귀하의 백업은 passphrase에 의해 보호되지 않습니다. 새로운 지갑을 만들기 위해 나중에 백업에 passphrase를 추가하십시오.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "자주 묻는 질문",
   "@buyConfirmExpress": {
