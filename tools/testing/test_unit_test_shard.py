@@ -1,0 +1,57 @@
+import os
+import subprocess
+import tempfile
+import unittest
+from pathlib import Path
+
+
+SCRIPT = Path(__file__).resolve().parents[1] / "unit_test_shard.sh"
+FILES = [f"test/{name}_test.dart" for name in "abcdefg"] + ["test/nested/h_test.dart", "test/helper.dart"]
+
+
+class UnitTestShardTest(unittest.TestCase):
+    def run_shard(self, total, index, files=FILES):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in files:
+                (root / name).parent.mkdir(parents=True, exist_ok=True)
+                (root / name).write_text("")
+            # A fake fvm records the test files it is asked to run.
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            (bin_dir / "fvm").write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+            (bin_dir / "fvm").chmod(0o755)
+            env = dict(os.environ, PATH=f"{bin_dir}:{os.environ['PATH']}", TEST_TOTAL_SHARDS=str(total), TEST_SHARD_INDEX=str(index), MELOS_PACKAGE_NAME="member")
+            result = subprocess.run(["bash", str(SCRIPT), "flutter", "--reporter=compact"], cwd=root, env=env, text=True, capture_output=True, check=False)
+        files_run = [line for line in result.stdout.splitlines() if line.endswith("_test.dart")]
+        return result, files_run
+
+    def test_shards_partition_every_test_file(self):
+        seen = []
+        for index in range(3):
+            result, files_run = self.run_shard(3, index)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            seen += files_run
+        self.assertEqual(sorted(seen), sorted(f for f in FILES if f.endswith("_test.dart")))
+
+    def test_unsharded_run_passes_no_file(self):
+        result, files_run = self.run_shard(1, 0)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(files_run, [])
+        self.assertIn("test", result.stdout.splitlines())
+
+    def test_empty_shard_succeeds_without_running_tests(self):
+        outputs = [self.run_shard(3, index, files=["test/only_test.dart"]) for index in range(3)]
+        self.assertTrue(all(result.returncode == 0 for result, _ in outputs))
+        self.assertEqual(sum(len(files_run) for _, files_run in outputs), 1)
+        # Without files, `flutter test` would run the whole member: the empty shards must not call the runner at all.
+        empty = [result for result, files_run in outputs if not files_run]
+        self.assertTrue(all("test" not in result.stdout.splitlines() for result in empty))
+
+    def test_rejects_an_index_outside_the_shards(self):
+        result, _ = self.run_shard(3, 3)
+        self.assertEqual(result.returncode, 2)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -20,10 +20,6 @@ jobs:
     permissions:
       contents: read
     env:
-      RUST_VERSION: 1.100.0
-      BDK_RUST_VERSION: 1.100.0
-      PAYJOIN_RUST_VERSION: 1.85.1
-      RUSTUP_TOOLCHAIN: 1.100.0
       RUSTUP_AUTO_INSTALL: 0
       CARGO_NET_GIT_FETCH_WITH_CLI: true
       CARGO_INCREMENTAL: 0
@@ -124,6 +120,10 @@ jobs:
 
       - name: Install pinned Rust toolchains
         run: |
+          # The makefile is the single source of the pinned compilers.
+          make -s rust-versions >> "$GITHUB_ENV"
+          eval "$(make -s rust-versions)"
+          echo "RUSTUP_TOOLCHAIN=$RUST_VERSION" >> "$GITHUB_ENV"
           rustup toolchain install "$RUST_VERSION" --profile minimal
           rustup component add --toolchain "$RUST_VERSION" clippy rustfmt
           rustup target add --toolchain "$RUST_VERSION" aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
