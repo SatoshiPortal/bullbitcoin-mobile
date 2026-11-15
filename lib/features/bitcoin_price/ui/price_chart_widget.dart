@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -12,31 +11,6 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-
-extension _CurrencyIconExtension on String {
-  String get currencyIcon {
-    switch (this) {
-      case 'USD':
-        return '🇺🇸';
-      case 'EUR':
-        return '🇪🇺';
-      case 'CAD':
-        return '🇨🇦';
-      case 'CRC':
-        return '🇨🇷';
-      case 'MXN':
-        return '🇲🇽';
-      case 'ARS':
-        return '🇦🇷';
-      case 'COP':
-        return '🇨🇴';
-      case 'sats':
-      case 'BTC':
-      default:
-        return '₿';
-    }
-  }
-}
 
 class PriceChartWidget extends StatelessWidget {
   const PriceChartWidget({
@@ -174,114 +148,85 @@ class _PriceDisplay extends StatelessWidget {
   final String currency;
   final Color foregroundColor;
 
-  Future<void> _openCurrencyBottomSheet(BuildContext context) async {
-    final blocCurrencies = context
-        .read<BitcoinPriceBloc>()
-        .state
-        .availableCurrencies;
-    final availableCurrencies =
-        blocCurrencies != null && blocCurrencies.isNotEmpty
-        ? blocCurrencies
-        : SupportedCurrency.codes;
-
-    final selectedCurrency = await BullBottomSheet.show<String?>(
-      context: context,
-      child: CurrencyBottomSheet(
-        availableCurrencies: availableCurrencies,
-        selectedValue: currency,
-      ),
-    );
-
-    if (selectedCurrency != null &&
-        selectedCurrency != currency &&
-        context.mounted) {
-      context.read<PriceChartCubit>().changeCurrency(selectedCurrency);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final price = rate.fiatAmount;
     final dateFormat = DateFormat('MMM d, yyyy HH:mm');
     final date = rate.time;
 
-    return Builder(
-      builder: (builderContext) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _openCurrencyBottomSheet(builderContext);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8.0,
-                  horizontal: 16.0,
-                ),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      currency.currencyIcon,
-                      style: context.font.headlineSmall?.copyWith(
-                        color: foregroundColor,
-                      ),
-                    ),
-                    const Gap(6),
-                    BullText(
-                      currency,
-                      style: context.font.bodyMedium?.copyWith(
-                        color: foregroundColor.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    final blocCurrencies = context.select(
+      (BitcoinPriceBloc bloc) => bloc.state.availableCurrencies,
+    );
+    final currencies = blocCurrencies != null && blocCurrencies.isNotEmpty
+        ? blocCurrencies
+        : SupportedCurrency.codes;
+
+    return BullPickerMenu<String>(
+      value: currency,
+      items: [
+        for (final code in currencies)
+          BullPickerItem(
+            value: code,
+            label: '${SupportedCurrency.tryFromCode(code)?.flag ?? ''} $code',
+          ),
+      ],
+      onChanged: (picked) {
+        if (picked == currency) return;
+        context.read<PriceChartCubit>().changeCurrency(picked);
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 16.0,
             ),
-            const Gap(4),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _openCurrencyBottomSheet(builderContext);
-              },
-              child: Center(
-                child: BullText(
-                  NumberFormat.currency(
-                    symbol: '',
-                    decimalDigits: 2,
-                  ).format(price),
-                  style: context.font.displaySmall?.copyWith(
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  SupportedCurrency.tryFromCode(currency)?.flag ?? '',
+                  style: context.font.headlineSmall?.copyWith(
                     color: foregroundColor,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-            ),
-            const Gap(4),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () {
-                _openCurrencyBottomSheet(builderContext);
-              },
-              child: Center(
-                child: BullText(
-                  dateFormat.format(date.toLocal()),
-                  style: context.font.bodySmall?.copyWith(
-                    color: foregroundColor.withValues(alpha: 0.6),
+                const Gap(6),
+                BullText(
+                  currency,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: foregroundColor.withValues(alpha: 0.7),
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
+              ],
             ),
-          ],
-        );
-      },
+          ),
+          const Gap(4),
+          Center(
+            child: BullText(
+              NumberFormat.currency(symbol: '', decimalDigits: 2).format(price),
+              style: context.font.displaySmall?.copyWith(
+                color: foregroundColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const Gap(4),
+          Center(
+            child: BullText(
+              dateFormat.format(date.toLocal()),
+              style: context.font.bodySmall?.copyWith(
+                color: foregroundColor.withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
