@@ -3,24 +3,27 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _Exchange extends Mock implements ExchangeFacade {}
+class _Cubit extends Mock implements ExchangeCubit {}
+
+Widget _withCubit(ExchangeCubit cubit, Widget child) =>
+    BlocProvider<ExchangeCubit>.value(value: cubit, child: child);
 
 void main() {
   testWidgets('support login enables exchange before opening authentication', (
     tester,
   ) async {
-    final exchange = _Exchange();
-    when(
-      () => exchange.enable(forSupport: true),
-    ).thenAnswer((_) async => const Ok(null));
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
+    final cubit = _Cubit();
+    when(() => cubit.state).thenReturn(const ExchangeState());
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+    when(cubit.enableForSupport).thenAnswer((_) async => const Ok(null));
     const draft = ExchangeSupportChatDraft(initialMessage: 'Help');
     Object? receivedDraft;
     String? receivedSource;
@@ -44,12 +47,15 @@ void main() {
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      MaterialApp.router(
-        routerConfig: router,
-        theme: AppTheme.themeData(AppThemeType.light),
-        locale: const Locale('en'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+      _withCubit(
+        cubit,
+        MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.themeData(AppThemeType.light),
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -58,7 +64,7 @@ void main() {
       find.text(AppLocalizations.of(context).exchangeLoginButton),
     );
     await tester.pumpAndSettle();
-    verify(() => exchange.enable(forSupport: true)).called(1);
+    verify(cubit.enableForSupport).called(1);
     expect(find.text('Authentication'), findsOneWidget);
     expect(receivedDraft, same(draft));
     expect(receivedSource, 'support');
@@ -85,19 +91,19 @@ void main() {
   testWidgets('activation failure stays on support and shows an error', (
     tester,
   ) async {
-    final exchange = _Exchange();
+    final cubit = _Cubit();
+    when(() => cubit.state).thenReturn(const ExchangeState());
+    when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
     when(
-      () => exchange.enable(forSupport: true),
+      cubit.enableForSupport,
     ).thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
-    locator.registerSingleton<ExchangeFacade>(exchange);
-    addTearDown(() => locator.unregister<ExchangeFacade>());
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
         locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const ExchangeSupportLoginScreen(),
+        home: _withCubit(cubit, const ExchangeSupportLoginScreen()),
       ),
     );
     await tester.pumpAndSettle();
@@ -106,7 +112,7 @@ void main() {
     await tester.tap(find.text(loc.exchangeLoginButton));
     await tester.pump();
     expect(find.text(loc.exchangeErrorNetwork), findsOneWidget);
-    verify(() => exchange.enable(forSupport: true)).called(1);
+    verify(cubit.enableForSupport).called(1);
     await tester.pump(const Duration(seconds: 4));
     await tester.pumpAndSettle();
   });

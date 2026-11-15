@@ -29,6 +29,9 @@ class _Keys extends Mock implements ExchangeApiKeyRepository {}
 
 class _Cubit extends Mock implements ExchangeCubit {}
 
+class _FakeAuthentication extends Fake
+    implements CompleteExchangeAuthenticationUsecase {}
+
 class _Platform extends FakeWebViewPlatform {
   _Delegate? delegate;
   _Controller? controller;
@@ -61,6 +64,7 @@ class _Delegate extends FakePlatformNavigationDelegate {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() => registerFallbackValue(_FakeAuthentication()));
   for (final scenario in ['deferred', 'acknowledge', 'retry', 'inactive']) {
     testWidgets('authentication WebView: $scenario', (tester) async {
       var generations = 0;
@@ -94,6 +98,21 @@ void main() {
       );
       when(() => cubit.state).thenReturn(const ExchangeState());
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+      // The screen authenticates through its cubit, which runs the use case.
+      when(
+        () => cubit.completeAuthentication(
+          any(),
+          isCurrent: any(named: 'isCurrent'),
+        ),
+      ).thenAnswer(
+        (invocation) =>
+            (invocation.positionalArguments.single
+                    as CompleteExchangeAuthenticationUsecase)
+                .execute(
+                  isCurrent:
+                      invocation.namedArguments[#isCurrent] as bool Function(),
+                ),
+      );
       locator.registerSingleton<GetExchangeWebSettingsUsecase>(settings);
       locator.registerFactoryParam<
         CompleteExchangeAuthenticationUsecase,
@@ -184,6 +203,12 @@ void main() {
       expect(exits, 0);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(platform.controller?.reloadCount, scenario == 'retry' ? 1 : 0);
+      verify(
+        () => cubit.completeAuthentication(
+          any(),
+          isCurrent: any(named: 'isCurrent'),
+        ),
+      ).called(1);
       verify(() => keys.readActiveApiKey(isTestnet: true)).called(1);
       verifyNoMoreInteractions(keys);
     });

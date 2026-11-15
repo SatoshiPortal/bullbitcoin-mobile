@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/complete_exchange_authentication_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
@@ -24,6 +27,13 @@ class _Delete extends Mock implements DeleteExchangeAccountUsecase {}
 
 class _WatchAccess extends Mock implements WatchExchangeAccessUsecase {}
 
+class _Enable extends Mock implements EnableExchangeUsecase {}
+
+class _Resolve extends Mock implements ResolveExchangeAccessUsecase {}
+
+class _Authentication extends Mock
+    implements CompleteExchangeAuthenticationUsecase {}
+
 class _Notifications extends Mock
     implements WatchExchangeNotificationsUsecase {}
 
@@ -43,6 +53,8 @@ void main() {
   late _Announcements announcements;
   late _Delete deletion;
   late _WatchAccess watchAccess;
+  late _Enable enable;
+  late _Resolve resolve;
   late _Notifications notifications;
   late StreamController<ExchangeAccess> changes;
 
@@ -56,6 +68,8 @@ void main() {
     saveExchangePreferencesUsecase: preferences,
     getExchangeAnnouncementsUsecase: announcements,
     deleteAccount: deletion,
+    enableAccess: enable,
+    resolveAccess: resolve,
     watchAccess: watchAccess,
     watchExchangeNotificationsUsecase: notifications,
   );
@@ -66,6 +80,8 @@ void main() {
     announcements = _Announcements();
     deletion = _Delete();
     watchAccess = _WatchAccess();
+    enable = _Enable();
+    resolve = _Resolve();
     when(() => watchAccess.current).thenReturn(const ExchangeAccessDisabled());
     notifications = _Notifications();
     changes = StreamController<ExchangeAccess>.broadcast(sync: true);
@@ -108,6 +124,49 @@ void main() {
       expect(cubit.state.userSummary, isNull);
     },
   );
+
+  test('support activation and retry go through their use cases', () async {
+    when(
+      () => enable.execute(forSupport: true),
+    ).thenAnswer((_) async => const Ok(null));
+    when(resolve.execute).thenAnswer((_) async => const Ok(null));
+    final cubit = build();
+    addTearDown(cubit.close);
+    expect(await cubit.enableForSupport(), isA<Ok<void, ExchangeFailure>>());
+    await cubit.retryAccess();
+    verify(() => enable.execute(forSupport: true)).called(1);
+    verify(resolve.execute).called(1);
+  });
+
+  test('authentication loads the account only when it succeeds', () async {
+    final authentication = _Authentication();
+    var outcome =
+        const Err<void, ExchangeFailure>(ExchangeAuthenticationFailure())
+            as Result<void, ExchangeFailure>;
+    when(
+      () => authentication.execute(isCurrent: any(named: 'isCurrent')),
+    ).thenAnswer((_) async => outcome);
+    final cubit = build();
+    addTearDown(cubit.close);
+    when(
+      () => watchAccess.current,
+    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+
+    final failed = await cubit.completeAuthentication(
+      authentication,
+      isCurrent: () => true,
+    );
+    expect(failed, isA<Err<void, ExchangeFailure>>());
+    verifyNever(getAccount.execute);
+
+    outcome = const Ok(null);
+    final saved = await cubit.completeAuthentication(
+      authentication,
+      isCurrent: () => true,
+    );
+    expect(saved, isA<Ok<void, ExchangeFailure>>());
+    expect(cubit.state.userSummary, account);
+  });
 
   test('deletion failure is forwarded by the account use case', () async {
     when(deletion.execute).thenAnswer(
