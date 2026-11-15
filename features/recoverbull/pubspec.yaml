@@ -24,6 +24,7 @@ dependencies:
   bull_logger:
   bull_tor:
   bull_ui:
+  screen_awake:
   screen_privacy:
   flutter_bloc: ^9.1.1
   go_router: ^18.1.4

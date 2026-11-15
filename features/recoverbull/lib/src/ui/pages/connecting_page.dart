@@ -4,6 +4,7 @@ import 'package:bull_tor/tor.dart' as tor;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:screen_awake/screen_awake.dart';
 
 import '../../domain/entities/recoverbull_flow.dart';
 import '../../domain/recoverbull_failure.dart';
@@ -45,6 +46,11 @@ class _ConnectingPageState extends State<ConnectingPage> {
   /// Readiness is reported more than once; navigate only the first time.
   bool _hasNavigated = false;
 
+  /// The network appeared to block Tor during this visit: the switch to
+  /// Snowflake and any later failure are explained as filtering, not as a
+  /// connectivity problem.
+  bool _filtered = false;
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +90,11 @@ class _ConnectingPageState extends State<ConnectingPage> {
       _ => null,
     };
     setState(() {
+      if (connection
+          case tor.TorConnecting(:final circumvention, :final diagnostic)
+          when circumvention || (diagnostic?.suggestsCensorship ?? false)) {
+        _filtered = true;
+      }
       if (diagnostic == null) {
         _blockageSince = null;
       } else {
@@ -137,17 +148,23 @@ class _ConnectingPageState extends State<ConnectingPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: BlocBuilder<VaultFlowCubit, VaultFlowState>(
-              builder: (context, state) => LayoutBuilder(
-                builder: (context, constraints) => SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: _Body(
-                      state: state,
-                      elapsed: _elapsed,
-                      showBlockage: _blockageIsSettled,
-                      onRetry: _resetWait,
+              // Locking the screen backgrounds the app and puts Tor dormant,
+              // which would stall the bootstrap the user is waiting on.
+              builder: (context, state) => ScreenAwakeScope(
+                enabled: state.busy,
+                child: LayoutBuilder(
+                  builder: (context, constraints) => SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: _Body(
+                        state: state,
+                        elapsed: _elapsed,
+                        showBlockage: _blockageIsSettled,
+                        filtered: _filtered,
+                        onRetry: _resetWait,
+                      ),
                     ),
                   ),
                 ),
@@ -166,12 +183,14 @@ class _Body extends StatelessWidget {
   final VaultFlowState state;
   final Duration elapsed;
   final bool showBlockage;
+  final bool filtered;
   final VoidCallback onRetry;
 
   const _Body({
     required this.state,
     required this.elapsed,
     required this.showBlockage,
+    required this.filtered,
     required this.onRetry,
   });
 
@@ -180,10 +199,19 @@ class _Body extends StatelessWidget {
   tor.TorDiagnostic? get _diagnostic {
     if (!showBlockage) return null;
     return switch (_tor) {
+      // Snowflake bootstraps slowly and reports transient blockages; only its
+      // terminal failure is a failure.
+      tor.TorConnecting(transport: tor.TorTransport.snowflake) => null,
       tor.TorConnecting(:final diagnostic) => diagnostic,
       _ => null,
     };
   }
+
+  bool get _snowflake => switch (_tor) {
+    tor.TorConnecting(transport: tor.TorTransport.snowflake) ||
+    tor.TorConnecting(circumvention: true) => true,
+    _ => false,
+  };
 
   tor.TorDiagnostic? get _failureDiagnostic => switch (_tor) {
     tor.TorUnavailable(failure: tor.TorBootstrapFailure(:final diagnostic)) =>
@@ -214,10 +242,15 @@ class _Body extends StatelessWidget {
     KeyServerStatus.unknown => _PhaseState.pending,
   };
 
+  /// A censorship verdict is not a failure: automatic mode answers it by
+  /// switching to Snowflake, which the screen announces instead.
   bool get _hasFailure =>
       _torPhase == _PhaseState.failed ||
       _serverPhase == _PhaseState.failed ||
-      _diagnostic != null;
+      switch (_diagnostic) {
+        final diagnostic? => !diagnostic.suggestsCensorship,
+        null => false,
+      };
 
   /// The failure panel stays up while a retry runs, so its buttons show as disabled instead of vanishing.
   bool get _showFailurePanel =>
@@ -233,11 +266,20 @@ class _Body extends StatelessWidget {
         _ => false,
       };
 
+  /// Arti currently sees the network blocking Tor. Shown at once: it is an
+  /// explanation, not a failure, so it needs no grace period.
+  bool get _censorshipNow => switch (_tor) {
+    tor.TorConnecting(:final diagnostic, transport: final transport)
+        when transport != tor.TorTransport.snowflake =>
+      diagnostic?.suggestsCensorship ?? false,
+    _ => false,
+  };
+
   TorBullState get _mascotState {
-    final diagnostic = _diagnostic;
-    if (diagnostic?.suggestsCensorship ?? false) return TorBullState.filtered;
+    if (_censorshipNow) return TorBullState.filtered;
     if (_hasFailure) return TorBullState.failed;
     if (_tor is tor.TorReady) return TorBullState.ready;
+    if (_snowflake) return TorBullState.snowflake;
     return switch (_tor) {
       tor.TorConnecting(transport: tor.TorTransport.snowflake) =>
         TorBullState.snowflake,
@@ -270,6 +312,10 @@ class _Body extends StatelessWidget {
 
   /// One message, chosen by what actually failed.
   String _failureMessage(BuildContext context) {
+    // Tor never got through a network seen blocking it: say so, not "offline".
+    if (filtered && _tor is! tor.TorReady) {
+      return context.loc.torSettingsDescCensored;
+    }
     final diagnostic = _diagnostic ?? _failureDiagnostic;
     if (diagnostic != null) {
       if (diagnostic.suggestsCensorship) {
@@ -338,6 +384,8 @@ class _Body extends StatelessWidget {
               decoration: BoxDecoration(
                 color: switch (_mascotState) {
                   TorBullState.filtered => context.bull.warningContainer,
+                  TorBullState.snowflake when filtered =>
+                    context.bull.warningContainer,
                   TorBullState.failed => context.bull.errorContainer,
                   _ => context.bull.surface,
                 },
@@ -345,7 +393,8 @@ class _Body extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  if (_mascotState == TorBullState.filtered)
+                  if (_mascotState == TorBullState.filtered ||
+                      (_mascotState == TorBullState.snowflake && filtered))
                     BullText(
                       context.loc.torSettingsStatusCensored,
                       textAlign: .center,
@@ -397,12 +446,16 @@ class _Body extends StatelessWidget {
         const Gap(24),
         if (_showFailurePanel)
           _FailurePanel(
-            busy: !_hasFailure,
+            busy: state.busy || !_hasFailure,
             message: _failureMessage(context),
+            // Tor not ready means its bootstrap failed: restart it, as 6.15 did.
             onRetry: () {
               onRetry();
-              unawaited(cubit.connect());
+              unawaited(cubit.connect(restartTor: _tor is! tor.TorReady));
             },
+            onOpenTorSettings: filtered || _tor is tor.TorUnavailable
+                ? RecoverBullFlowScope.of(context).onOpenTorSettings
+                : null,
             onNewCircuit: _offersNewCircuit
                 ? () {
                     onRetry();
@@ -566,12 +619,14 @@ class _FailurePanel extends StatelessWidget {
   final bool busy;
   final VoidCallback onRetry;
   final VoidCallback? onNewCircuit;
+  final VoidCallback? onOpenTorSettings;
 
   const _FailurePanel({
     required this.message,
     required this.onRetry,
     this.busy = false,
     this.onNewCircuit,
+    this.onOpenTorSettings,
   });
 
   @override
@@ -606,6 +661,16 @@ class _FailurePanel extends StatelessWidget {
             borderColor: context.bull.onSurface,
             disabled: busy,
             onPressed: onNewCircuit,
+          ),
+        ],
+        if (onOpenTorSettings case final onOpenTorSettings?) ...[
+          const Gap(12),
+          BullButton.big(
+            label: context.loc.torSettingsTitle,
+            textStyle: context.bullText.headlineLarge,
+            bgColor: context.bull.surface,
+            textColor: context.bull.onSurface,
+            onPressed: onOpenTorSettings,
           ),
         ],
       ],

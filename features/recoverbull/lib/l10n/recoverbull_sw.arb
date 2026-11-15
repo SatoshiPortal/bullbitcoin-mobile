@@ -164,5 +164,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "Nichague vipi?",
   "backupWalletHowToDecideBackupModalTitle": "Nichague vipi",
-  "backupSettingsSecurityWarning": "Onyo la Usalama"
+  "backupSettingsSecurityWarning": "Onyo la Usalama",
+  "torSettingsTitle": "Mipangilio ya Tor"
 }

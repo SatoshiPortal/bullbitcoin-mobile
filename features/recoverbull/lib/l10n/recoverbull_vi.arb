@@ -164,5 +164,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "Làm sao để quyết định?",
   "backupWalletHowToDecideBackupModalTitle": "Làm sao để quyết định",
-  "backupSettingsSecurityWarning": "Cảnh báo bảo mật"
+  "backupSettingsSecurityWarning": "Cảnh báo bảo mật",
+  "torSettingsTitle": "Cài đặt Tor"
 }

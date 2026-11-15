@@ -598,5 +598,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "Kaise decide karein?",
   "backupWalletHowToDecideBackupModalTitle": "Kaise decide karein",
-  "backupSettingsSecurityWarning": "Security Chetavni"
+  "backupSettingsSecurityWarning": "Security Chetavni",
+  "torSettingsTitle": "Tor Settings"
 }

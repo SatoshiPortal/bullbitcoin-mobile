@@ -346,5 +346,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "Comment décider ?",
   "backupWalletHowToDecideBackupModalTitle": "Comment décider",
-  "backupSettingsSecurityWarning": "Avertissement de sécurité"
+  "backupSettingsSecurityWarning": "Avertissement de sécurité",
+  "torSettingsTitle": "Paramètres Tor"
 }

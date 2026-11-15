@@ -270,5 +270,6 @@
   "torTitle": "Tor",
   "backupWalletHowToDecide": "Come decidere?",
   "backupWalletHowToDecideBackupModalTitle": "Come decidere",
-  "backupSettingsSecurityWarning": "Avviso di sicurezza"
+  "backupSettingsSecurityWarning": "Avviso di sicurezza",
+  "torSettingsTitle": "Impostazioni Tor"
 }

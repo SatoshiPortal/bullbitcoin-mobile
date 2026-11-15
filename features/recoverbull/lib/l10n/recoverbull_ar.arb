@@ -599,5 +599,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "كيف تقرر؟?",
   "backupWalletHowToDecideBackupModalTitle": "كيفية تقرير",
-  "backupSettingsSecurityWarning": "تحذير أمني"
+  "backupSettingsSecurityWarning": "تحذير أمني",
+  "torSettingsTitle": "تنظيمات التعذيب"
 }

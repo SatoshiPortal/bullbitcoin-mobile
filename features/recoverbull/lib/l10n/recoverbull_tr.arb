@@ -599,5 +599,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "Nasıl karar verilir?",
   "backupWalletHowToDecideBackupModalTitle": "Nasıl karar verilir",
-  "backupSettingsSecurityWarning": "Güvenlik Uyarısı"
+  "backupSettingsSecurityWarning": "Güvenlik Uyarısı",
+  "torSettingsTitle": "Tor Ayarları"
 }

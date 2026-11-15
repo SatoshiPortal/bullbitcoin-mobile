@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:bull_tor/tor.dart' show TorConnectionState, TorUninitialized;
+import 'package:bull_tor/tor.dart'
+    show TorConnecting, TorConnectionState, TorReady, TorUninitialized;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
@@ -79,6 +80,13 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
   }) : super(VaultFlowState(vault: vault)) {
     _torSubscription = tor?.listen((value) {
       if (_closing || isClosed) return;
+      // A ready route stays ready through Tor's own directory refreshes, which
+      // briefly report Connecting without any blockage.
+      if (state.tor is TorReady &&
+          value is TorConnecting &&
+          value.diagnostic == null) {
+        return;
+      }
       emit(_copy(tor: value));
     });
   }
@@ -174,18 +182,21 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
 
   /// Probes the key server through this flow's route; the connection screen
   /// calls it once consent is granted, and again on Retry or New route.
-  Future<void> connect({bool newRoute = false}) async {
+  Future<void> connect({bool newRoute = false, bool restartTor = false}) async {
     if (state.busy || _closing || isClosed) return;
     emit(
       _copy(
         keyServer: KeyServerStatus.connecting,
-        keyServerFailures: newRoute ? 0 : null,
+        keyServerFailures: newRoute || restartTor ? 0 : null,
       ),
     );
     var connected = false;
     await _run(() async {
       final result =
-          await (_session?.connect(newRoute: newRoute) ??
+          await (_session?.connect(
+                newRoute: newRoute,
+                restartTor: restartTor,
+              ) ??
               Future.value(Err<void, RecoverBullFailure>(unavailable)));
       connected = result is Ok;
       return result;

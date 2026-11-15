@@ -641,5 +641,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "कैसे तय करें?",
   "backupWalletHowToDecideBackupModalTitle": "कैसे तय करें",
-  "backupSettingsSecurityWarning": "सुरक्षा चेतावनी"
+  "backupSettingsSecurityWarning": "सुरक्षा चेतावनी",
+  "torSettingsTitle": "Tor सेटिंग्स"
 }

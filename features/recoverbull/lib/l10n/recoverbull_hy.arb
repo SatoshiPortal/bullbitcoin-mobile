@@ -164,5 +164,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "Ինչպե՞ս որոշել",
   "backupWalletHowToDecideBackupModalTitle": "Ինչպես որոշել",
-  "backupSettingsSecurityWarning": "Անվտանգության նախազգուշացում"
+  "backupSettingsSecurityWarning": "Անվտանգության նախազգուշացում",
+  "torSettingsTitle": "Tor կարգավորումներ"
 }

@@ -599,5 +599,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "วิธีการตัดสินใจ?",
   "backupWalletHowToDecideBackupModalTitle": "วิธีการตัดสินใจ",
-  "backupSettingsSecurityWarning": "คําเตือน"
+  "backupSettingsSecurityWarning": "คําเตือน",
+  "torSettingsTitle": "ปุ่ม"
 }

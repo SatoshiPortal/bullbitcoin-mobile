@@ -638,5 +638,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "==WEBLATE_PART==\nকীভাবে সিদ্ধান্ত নেবেন?",
   "backupWalletHowToDecideBackupModalTitle": "কীভাবে সিদ্ধান্ত নেবেন",
-  "backupSettingsSecurityWarning": "নিরাপত্তা সতর্কতা\n==WEBLATE_PART=="
+  "backupSettingsSecurityWarning": "নিরাপত্তা সতর্কতা\n==WEBLATE_PART==",
+  "torSettingsTitle": "টর সেটিংস"
 }

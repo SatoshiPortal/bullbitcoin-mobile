@@ -269,5 +269,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "Как решить?",
   "backupWalletHowToDecideBackupModalTitle": "Как решить",
-  "backupSettingsSecurityWarning": "Предупреждение"
+  "backupSettingsSecurityWarning": "Предупреждение",
+  "torSettingsTitle": "Параметры Tor"
 }

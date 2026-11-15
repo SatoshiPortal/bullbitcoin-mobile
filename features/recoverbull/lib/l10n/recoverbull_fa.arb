@@ -599,5 +599,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "چگونه تصمیم بگیریم؟?",
   "backupWalletHowToDecideBackupModalTitle": "چگونه تصمیم بگیریم",
-  "backupSettingsSecurityWarning": "هشدار امنیتی"
+  "backupSettingsSecurityWarning": "هشدار امنیتی",
+  "torSettingsTitle": "تنظیمات Tor"
 }

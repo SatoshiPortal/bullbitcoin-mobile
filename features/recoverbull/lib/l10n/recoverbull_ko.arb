@@ -599,5 +599,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "결정하는 방법?",
   "backupWalletHowToDecideBackupModalTitle": "결정하는 방법",
-  "backupSettingsSecurityWarning": "보안 경고"
+  "backupSettingsSecurityWarning": "보안 경고",
+  "torSettingsTitle": "Tor 설정"
 }

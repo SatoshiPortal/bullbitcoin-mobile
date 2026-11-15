@@ -919,5 +919,9 @@
   "backupSettingsSecurityWarning": "Security Warning",
   "@backupSettingsSecurityWarning": {
     "description": "Title for backup key security warning modal"
+  },
+  "torSettingsTitle": "Tor Settings",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
   }
 }

@@ -39,8 +39,16 @@ final class ManageVaultSessionUsecase {
 
   bool get hasPendingProviderSave => _create.hasPendingProviderSave;
 
-  Future<Result<void, RecoverBullFailure>> connect({bool newRoute = false}) =>
-      _run((server, _) => server.probe(), newRoute: newRoute);
+  /// [restartTor] restarts a Tor bootstrap that failed or stalled, as Retry
+  /// does when Tor is not ready; New route only replaces this flow's circuit.
+  Future<Result<void, RecoverBullFailure>> connect({
+    bool newRoute = false,
+    bool restartTor = false,
+  }) => _run(
+    (server, _) => server.probe(),
+    newRoute: newRoute || restartTor,
+    restartTor: restartTor,
+  );
 
   Future<Result<VaultCompletion, RecoverBullFailure>> create({
     required VaultProvider provider,
@@ -162,6 +170,7 @@ final class ManageVaultSessionUsecase {
     )
     action, {
     bool newRoute = false,
+    bool restartTor = false,
   }) async {
     if (_closed) return const Err(VaultCancelledFailure());
     if (_active != null) return const Err(VaultContextChangedFailure());
@@ -190,7 +199,10 @@ final class ManageVaultSessionUsecase {
       }
       if (_closed) return const Err(VaultCancelledFailure());
       if (server == null) {
-        switch (await _open.execute(expected: settings)) {
+        switch (await _open.execute(
+          expected: settings,
+          restartEmbedded: restartTor,
+        )) {
           case Err(:final failure):
             return Err(failure);
           case Ok(:final value):

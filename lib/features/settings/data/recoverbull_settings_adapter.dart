@@ -86,8 +86,11 @@ final class RecoverBullSettingsAdapter
           _ => const Err(KeyServerFailure(KeyServerFailureKind.unavailable)),
         };
       }
-      // New route never restarts the shared engine or another flow's circuit.
-      final ready = await _embedded.ensureReady();
+      // New route never restarts the shared engine or another flow's circuit;
+      // only Retry after a failed or stalled bootstrap asks for a restart.
+      final ready = restartEmbedded
+          ? await _embedded.retry()
+          : await _embedded.ensureReady();
       if (ready is! TorReady || ready.route.source != TorSource.embedded) {
         return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
       }

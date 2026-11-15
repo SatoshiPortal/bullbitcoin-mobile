@@ -269,5 +269,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "如何决定?",
   "backupWalletHowToDecideBackupModalTitle": "如何决定",
-  "backupSettingsSecurityWarning": "安保预警"
+  "backupSettingsSecurityWarning": "安保预警",
+  "torSettingsTitle": "三、背景"
 }

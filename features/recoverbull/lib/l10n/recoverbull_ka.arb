@@ -164,5 +164,6 @@
   "torSettingsModeSnowflake": "Snowflake",
   "backupWalletHowToDecide": "როგორ გადავწყვიტო?",
   "backupWalletHowToDecideBackupModalTitle": "როგორ გადავწყვიტო",
-  "backupSettingsSecurityWarning": "უსაფრთხოების გაფრთხილება"
+  "backupSettingsSecurityWarning": "უსაფრთხოების გაფრთხილება",
+  "torSettingsTitle": "Tor-ის პარამეტრები"
 }
