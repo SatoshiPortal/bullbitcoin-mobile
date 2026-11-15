@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +29,16 @@ class _Settings extends Mock implements SettingsRepository {}
 class _References extends Mock implements WalletSecretReferencesRepository {}
 
 class _Defaults extends Mock implements CreateDefaultWalletsUsecase {}
+
+class _MemoryQuickActionsStorage implements QuickActionsStorage {
+  String? value;
+  @override
+  Future<String?> read(String key) async => value;
+  @override
+  Future<void> write(String key, String value) async => this.value = value;
+  @override
+  Future<void> remove(String key) async => value = null;
+}
 
 void main() {
   testWidgets('pushing Receive never requests a sync; returning home does', (
@@ -55,6 +66,12 @@ void main() {
         _Defaults(),
       ),
     );
+    final quickActions = createQuickActionsCubit(
+      storage: _MemoryQuickActionsStorage(),
+      warning: (_) {},
+      exchangeVisible: Stream.value(false),
+    );
+    addTearDown(quickActions.close);
     final router = GoRouter(
       initialLocation: '/wallet',
       routes: [
@@ -67,6 +84,9 @@ void main() {
                 createSetupCubit: createSetupCubit,
                 onEmptyMainnet: () {},
                 onImportNetworkWallet: () {},
+                quickActions: quickActions,
+                onQuickAction: (_, _) {},
+                onCustomizeQuickActions: (_) {},
               ),
             ),
           ],

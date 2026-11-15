@@ -349,7 +349,7 @@ void main() {
           },
           param2: (isTestnet: true, isOpen: () => true),
         );
-        final result = await operation.execute();
+        final result = await operation.execute(isCurrent: () => true);
         expect(
           result is Ok,
           isTrue,

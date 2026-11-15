@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
 
@@ -65,7 +67,9 @@ class Bull {
 
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
+    final _ = await locator<ExchangeFacade>().resolveAccess();
     await completeStartupWizard(locator);
+    await locator<QuickActionsCubit>().load();
     await AppLocator.setupRecoverBull(
       locator,
       databasePath: p.join(bullDirectory.path, 'recoverbull.sqlite'),

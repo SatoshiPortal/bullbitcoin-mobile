@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:convert';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -26,6 +29,9 @@ class _Settings extends Mock implements GetExchangeWebSettingsUsecase {}
 class _Keys extends Mock implements ExchangeApiKeyRepository {}
 
 class _Cubit extends Mock implements ExchangeCubit {}
+
+class _FakeAuthentication extends Fake
+    implements CompleteExchangeAuthenticationUsecase {}
 
 class _Platform extends FakeWebViewPlatform {
   _Delegate? delegate;
@@ -79,6 +85,7 @@ class _Delegate extends FakePlatformNavigationDelegate {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() => registerFallbackValue(_FakeAuthentication()));
   for (final scenario in [
     'deferred',
     'acknowledge',
@@ -95,6 +102,17 @@ void main() {
       final settings = _Settings();
       final keys = _Keys();
       final cubit = _Cubit();
+      SharedPreferences.setMockInitialValues({});
+      when(() => keys.readActiveApiKey(isTestnet: true))
+          .thenAnswer((_) async => const Ok(null));
+      final access = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => true,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      await access.enable();
       when(settings.execute).thenAnswer(
         (_) async => const Ok(
           SettingsEntity(
@@ -106,6 +124,21 @@ void main() {
       );
       when(() => cubit.state).thenReturn(const ExchangeState());
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+      // The screen authenticates through its cubit, which runs the use case.
+      when(
+        () => cubit.completeAuthentication(
+          any(),
+          isCurrent: any(named: 'isCurrent'),
+        ),
+      ).thenAnswer(
+        (invocation) =>
+            (invocation.positionalArguments.single
+                    as CompleteExchangeAuthenticationUsecase)
+                .execute(
+                  isCurrent:
+                      invocation.namedArguments[#isCurrent] as bool Function(),
+                ),
+      );
       locator.registerSingleton<GetExchangeWebSettingsUsecase>(settings);
       locator.registerFactoryParam<
         CompleteExchangeAuthenticationUsecase,
@@ -137,26 +170,10 @@ void main() {
               },
             ),
           ),
-          apiKeyRepository: keys,
+          access: access,
           isTestnet: session.isTestnet,
         ),
       );
-      registerFallbackValue(
-        locator<CompleteExchangeAuthenticationUsecase>(
-          param1: (String _) async => '',
-          param2: (isTestnet: true, isOpen: () => true),
-        ),
-      );
-      when(() => cubit.completeAuthentication(any()))
-          .thenAnswer((invocation) async {
-            final operation =
-                invocation.positionalArguments.first
-                    as CompleteExchangeAuthenticationUsecase;
-            return switch (await operation.execute()) {
-              Err(:final failure) => failure,
-              Ok() => null,
-            };
-          });
       addTearDown(locator.reset);
       await tester.pumpWidget(
         MaterialApp(
@@ -194,7 +211,23 @@ void main() {
       expect(exits, 0);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(platform.controller?.reloadCount, scenario == 'retry' ? 1 : 0);
-      verifyZeroInteractions(keys);
+      if (scenario == 'no-session') {
+        verifyNever(
+          () => cubit.completeAuthentication(
+            any(),
+            isCurrent: any(named: 'isCurrent'),
+          ),
+        );
+      } else {
+        verify(
+          () => cubit.completeAuthentication(
+            any(),
+            isCurrent: any(named: 'isCurrent'),
+          ),
+        ).called(1);
+      }
+      verify(() => keys.readActiveApiKey(isTestnet: true)).called(1);
+      verifyNoMoreInteractions(keys);
     });
   }
 }

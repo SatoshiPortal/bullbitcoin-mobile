@@ -5,10 +5,12 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_actions.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -16,7 +18,13 @@ import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullPullableBody, BullSupportButton, Gap;
+    show
+        BullButton,
+        BullPullableBody,
+        BullSupportButton,
+        BullText,
+        BullThemeX,
+        Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -25,11 +33,15 @@ class ExchangeHomeScreen extends StatelessWidget {
   final List<Widget> homeCards;
   final VoidCallback onHomeRefresh;
   final VoidCallback onOpenSettings;
+  final void Function(ExchangeHomeAction) onAction;
+  final VoidCallback onExit;
 
   const ExchangeHomeScreen({
     required this.homeCards,
     required this.onHomeRefresh,
     required this.onOpenSettings,
+    required this.onAction,
+    required this.onExit,
     super.key,
   });
 
@@ -60,8 +72,41 @@ class ExchangeHomeScreen extends StatelessWidget {
           cubit.state.userSummary?.isFundingRestricted ?? true,
     );
 
+    if (notLoggedIn && getUserSummaryFailure != null) {
+      return _WithExit(
+        onExit: onExit,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                BullText(
+                  getUserSummaryFailure.toTranslated(context),
+                  style: context.bullText.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(16),
+                BullButton.big(
+                  label: context.loc.retry,
+                  onPressed: () =>
+                      context.read<ExchangeCubit>().fetchUserSummary(),
+                  bgColor: context.bull.primary,
+                  textColor: context.bull.onPrimary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     if (isFetchingUserSummary || notLoggedIn) {
-      return const Center(child: CircularProgressIndicator());
+      return _WithExit(
+        onExit: onExit,
+        child: const Center(child: CircularProgressIndicator()),
+      );
     }
 
     return Stack(
@@ -72,7 +117,9 @@ class ExchangeHomeScreen extends StatelessWidget {
             await context.read<ExchangeCubit>().fetchUserSummary();
           },
           slivers: [
-            const PinnedHeaderSliver(child: ExchangeHomeTopSection()),
+            PinnedHeaderSliver(
+              child: ExchangeHomeTopSection(onAction: onAction),
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -187,10 +234,22 @@ class ExchangeHomeScreen extends StatelessWidget {
                           },
                         )
                       : SizedBox(
-                          width: 96,
+                          width: 136,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              BackButton(
+                                color: context.appColors.onPrimary,
+                                onPressed: onExit,
+                                style: IconButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                              ),
+                              const Gap(8),
                               IconButton(
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
@@ -211,7 +270,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           ),
                         ),
                 ),
-                leadingWidth: showChart ? 56 : 112,
+                leadingWidth: showChart ? 56 : 152,
                 actionsIconTheme: IconThemeData(
                   color: context.appColors.onPrimary,
                   size: 24,
@@ -249,4 +308,31 @@ class ExchangeHomeScreen extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Trade has no tab bar, and iOS has no system back: states without the
+/// account toolbar still offer the way back to the wallet.
+class _WithExit extends StatelessWidget {
+  const _WithExit({required this.onExit, required this.child});
+
+  final VoidCallback onExit;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    fit: StackFit.expand,
+    children: [
+      child,
+      Positioned(
+        top: 0,
+        left: 0,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: BackButton(onPressed: onExit),
+          ),
+        ),
+      ),
+    ],
+  );
 }

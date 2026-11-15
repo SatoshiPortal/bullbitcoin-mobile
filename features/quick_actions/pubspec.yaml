@@ -1,0 +1,29 @@
+name: bull_quick_actions
+description: Wallet quick action selection and presentation.
+publish_to: "none"
+version: 0.0.1
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  material_ui: ^1.11.0
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  bloc: ^9.2.1
+  bull_ui:
+  primitives:
+  meta: ^1.17.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true

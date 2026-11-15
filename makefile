@@ -123,6 +123,7 @@ translations:
 	@$(MAKE) novlang-translations
 	@fvm flutter gen-l10n
 	@(cd features/logs && fvm flutter gen-l10n)
+	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) novlang-bridge

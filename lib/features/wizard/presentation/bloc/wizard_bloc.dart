@@ -27,6 +27,18 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
     on<_WizardConsentPicked>(_onConsentPicked);
     on<_WizardThemeDetected>(_onThemeDetected);
+    on<_WizardExchangePicked>(
+      (event, emit) => emit(
+        state.copyWith(
+          choices: state.choices.copyWith(exchangeAccess: event.enabled),
+        ),
+      ),
+    );
+    on<_WizardExchangeConfirmed>(
+      (event, emit) => emit(
+        state.copyWith(choices: state.choices.copyWith(confirmExchange: true)),
+      ),
+    );
     on<_WizardCompleted>(_onCompleted);
   }
 

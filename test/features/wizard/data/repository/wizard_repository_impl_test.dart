@@ -13,6 +13,59 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
+  test(
+    'stages exchange choice in the existing versioned preferences',
+    () async {
+      await _build().savePending(
+        const WizardChoices(
+          exchangeAccess: false,
+          touched: {WizardField.exchangeAccess},
+        ),
+      );
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getInt('wizard_pending_version'), kCurrentWizardVersion);
+      expect(prefs.getBool('wizard_pending_exchange_access'), isFalse);
+    },
+  );
+
+  group('exchange choice', () {
+    test('confirmed default is staged even without toggling', () async {
+      final repo = _build();
+      await repo.savePending(
+        const WizardChoices().copyWith(confirmExchange: true),
+      );
+      final choices = await repo.readPending();
+      expect(choices?.exchangeAccess, isTrue);
+      expect(choices?.touched, contains(WizardField.exchangeAccess));
+    });
+
+    test('confirmed disabled choice survives a round trip', () async {
+      final repo = _build();
+      await repo.savePending(
+        const WizardChoices().copyWith(
+          exchangeAccess: false,
+          confirmExchange: true,
+        ),
+      );
+      final choices = await repo.readPending();
+      expect(choices?.exchangeAccess, isFalse);
+      expect(choices?.touched, contains(WizardField.exchangeAccess));
+    });
+
+    test(
+      'old version 1 pending remains readable without exchange choice',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'wizard_pending_version': 1,
+          'wizard_pending_error_reporting': false,
+        });
+        final choices = await _build().readPending();
+        expect(choices?.reportingConsent, isFalse);
+        expect(choices?.touched, isNot(contains(WizardField.exchangeAccess)));
+      },
+    );
+  });
+
   group('isComplete / markComplete', () {
     test('isComplete is false on a fresh prefs store', () async {
       expect(await _build().isComplete(), isFalse);
@@ -44,37 +97,38 @@ void main() {
     });
 
     test('writes only fields the user touched (with version tag)', () async {
-      const c = WizardChoices(
+      const choices = WizardChoices(
         language: Language.franceFrench,
         themeMode: AppThemeMode.dark,
         touched: {WizardField.language},
       );
-      await _build().savePending(c);
-      final prefs = await SharedPreferences.getInstance();
-      expect(
-        prefs.getString('wizard_pending_language'),
-        Language.franceFrench.name,
-      );
-      // Theme isn't in `touched` — should be skipped.
-      expect(prefs.getString('wizard_pending_theme_mode'), isNull);
-      expect(prefs.getInt('wizard_pending_version'), kCurrentWizardVersion);
+      final repo = _build();
+      await repo.savePending(choices);
+      final read = await repo.readPending();
+      expect(read?.language, Language.franceFrench);
+      expect(read?.touched, {WizardField.language});
     });
 
-    test('clears stale prefs from a previous run before writing', () async {
-      SharedPreferences.setMockInitialValues({
-        'wizard_pending_language': 'franceFrench',
-        'wizard_pending_currency': 'EUR',
-      });
-      const c = WizardChoices(
-        themeMode: AppThemeMode.dark,
-        touched: {WizardField.themeMode},
-      );
-      await _build().savePending(c);
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('wizard_pending_language'), isNull);
-      expect(prefs.getString('wizard_pending_currency'), isNull);
-      expect(prefs.getString('wizard_pending_theme_mode'), 'dark');
-    });
+    test(
+      'new payload supersedes legacy fields without resurrecting them',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'wizard_pending_version': 1,
+          'wizard_pending_language': 'franceFrench',
+          'wizard_pending_currency': 'EUR',
+        });
+        final repo = _build();
+        await repo.savePending(
+          const WizardChoices(
+            themeMode: AppThemeMode.dark,
+            touched: {WizardField.themeMode},
+          ),
+        );
+        expect((await repo.readPending())?.touched, {WizardField.themeMode});
+        await repo.clearPending();
+        expect(await repo.readPending(), isNull);
+      },
+    );
   });
 
   group('readPending — version invalidation', () {
@@ -114,10 +168,7 @@ void main() {
         'wizard_pending_theme_mode': 'dark',
       });
       expect(await _build().readPending(), isNull);
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getString('wizard_pending_language'), isNull);
-      expect(prefs.getString('wizard_pending_theme_mode'), isNull);
-      expect(prefs.getInt('wizard_pending_version'), isNull);
+      expect(await _build().readPending(), isNull);
     });
   });
 }

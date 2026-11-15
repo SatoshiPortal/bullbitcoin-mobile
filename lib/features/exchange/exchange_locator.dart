@@ -1,4 +1,18 @@
+import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
+import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/expire_exchange_session_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
+
+import 'dart:io';
+
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
+import 'package:bb_mobile/features/exchange/data/exchange_account_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
@@ -6,7 +20,6 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as settings_contract;
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/clear_exchange_session_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
@@ -22,15 +35,60 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeLocator {
   static void setup(GetIt locator) {
+    Future<bool> platformAllowed() async =>
+        !Platform.isIOS ||
+        ((await locator<settings_contract.SettingsRepository>().fetch())
+                .isSuperuser ??
+            false);
+    locator.registerLazySingleton<ExchangeAccessRepository>(
+      () => ExchangeAccessRepositoryImpl(
+        apiKeyRepository: locator<ExchangeApiKeyRepository>(),
+        readEnvironment: () async =>
+            (await locator<settings_contract.SettingsRepository>().fetch())
+                .environment
+                .requireHistoricalTestnet(),
+        platformAllowed: platformAllowed,
+        disconnectNotifications: () async =>
+            locator<ExchangeNotificationRepository>().disconnect(),
+        clearCookies: () async {
+          await WebViewCookieManager().clearCookies();
+        },
+      ),
+    );
+    locator.registerFactory<ResolveExchangeAccessUsecase>(
+      () => ResolveExchangeAccessUsecase(locator<ExchangeAccessRepository>()),
+    );
+    locator.registerFactory<EnableExchangeUsecase>(
+      () => EnableExchangeUsecase(locator<ExchangeAccessRepository>()),
+    );
+    locator.registerFactory<SignOutExchangeUsecase>(
+      () => SignOutExchangeUsecase(locator<ExchangeAccessRepository>()),
+    );
+    locator.registerFactory<ExpireExchangeSessionUsecase>(
+      () => ExpireExchangeSessionUsecase(locator<ExchangeAccessRepository>()),
+    );
+    locator.registerFactory<WatchExchangeAccessUsecase>(
+      () => WatchExchangeAccessUsecase(locator<ExchangeAccessRepository>()),
+    );
+    locator.registerFactory<GuardExchangeTradingUsecase>(
+      () => GuardExchangeTradingUsecase(
+        locator<ExchangeAccessRepository>(),
+        platformAllowed,
+      ),
+    );
     registerUsecases(locator);
     registerBlocs(locator);
-
     locator.registerLazySingleton<ExchangeFacade>(
       () => ExchangeFacade(
         getExchangeWebSettingsUsecase: locator<GetExchangeWebSettingsUsecase>(),
         getExchangeAccountUsecase: locator<GetExchangeAccountUsecase>(),
         saveExchangePreferencesUsecase:
             locator<SaveExchangePreferencesUsecase>(),
+        resolveAccess: locator<ResolveExchangeAccessUsecase>(),
+        enable: locator<EnableExchangeUsecase>(),
+        signOut: locator<SignOutExchangeUsecase>(),
+        watchAccess: locator<WatchExchangeAccessUsecase>(),
+        tradingGuard: locator<GuardExchangeTradingUsecase>(),
       ),
     );
   }
@@ -44,13 +102,19 @@ class ExchangeLocator {
     );
     locator.registerFactory<GetExchangeAccountUsecase>(
       () => GetExchangeAccountUsecase(
-        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'mainnetExchangeUserRepository',
-        ),
-        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
-          instanceName: 'testnetExchangeUserRepository',
-        ),
         settingsRepository: locator<SettingsRepository>(),
+        access: locator<ExchangeAccessRepository>(),
+        expire: locator<ExpireExchangeSessionUsecase>(),
+        mainnetAccountRepository: ExchangeAccountRepositoryImpl(
+          locator<BullbitcoinApiDatasource>(
+            instanceName: 'mainnetExchangeApiDatasource',
+          ),
+        ),
+        testnetAccountRepository: ExchangeAccountRepositoryImpl(
+          locator<BullbitcoinApiDatasource>(
+            instanceName: 'testnetExchangeApiDatasource',
+          ),
+        ),
       ),
     );
 
@@ -63,6 +127,7 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeUserRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
+        access: locator<ExchangeAccessRepository>(),
       ),
     );
 
@@ -75,6 +140,7 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeUserRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
+        access: locator<ExchangeAccessRepository>(),
       ),
     );
 
@@ -92,18 +158,8 @@ class ExchangeLocator {
             isOpen: session.isOpen,
           ),
         ),
-        apiKeyRepository: locator<ExchangeApiKeyRepository>(),
+        access: locator<ExchangeAccessRepository>(),
         isTestnet: session.isTestnet,
-      ),
-    );
-
-    locator.registerFactory<ClearExchangeSessionUsecase>(
-      () => ClearExchangeSessionUsecase(
-        exchangeApiKeyRepository: locator<ExchangeApiKeyRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-        clearCookies: () async {
-          await WebViewCookieManager().clearCookies();
-        },
       ),
     );
 
@@ -114,8 +170,16 @@ class ExchangeLocator {
       ),
     );
 
+    locator.registerFactory<DeleteExchangeAccountUsecase>(
+      () => DeleteExchangeAccountUsecase(
+        locator<RequestExchangeAccountDeletionUsecase>(),
+        locator<SignOutExchangeUsecase>(),
+        locator<ExchangeAccessRepository>(),
+      ),
+    );
     locator.registerFactory<WatchExchangeNotificationsUsecase>(
       () => WatchExchangeNotificationsUsecase(
+        access: locator<ExchangeAccessRepository>(),
         settingsRepository: locator<settings_contract.SettingsRepository>(),
         exchangeNotificationRepository:
             locator<ExchangeNotificationRepository>(),
@@ -129,11 +193,13 @@ class ExchangeLocator {
         getExchangeAccountUsecase: locator<GetExchangeAccountUsecase>(),
         saveExchangePreferencesUsecase:
             locator<SaveExchangePreferencesUsecase>(),
-        clearExchangeSessionUsecase: locator<ClearExchangeSessionUsecase>(),
         getExchangeAnnouncementsUsecase:
             locator<GetExchangeAnnouncementsUsecase>(),
-        requestExchangeAccountDeletionUsecase:
-            locator<RequestExchangeAccountDeletionUsecase>(),
+        deleteAccount: locator<DeleteExchangeAccountUsecase>(),
+        enableAccess: locator<EnableExchangeUsecase>(),
+        resolveAccess: locator<ResolveExchangeAccessUsecase>(),
+        signOut: locator<SignOutExchangeUsecase>(),
+        watchAccess: locator<WatchExchangeAccessUsecase>(),
         watchExchangeNotificationsUsecase:
             locator<WatchExchangeNotificationsUsecase>(),
       ),
