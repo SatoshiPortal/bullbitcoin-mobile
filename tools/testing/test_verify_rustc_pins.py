@@ -1,3 +1,5 @@
+import os
+import re
 import subprocess
 import tempfile
 import unittest
@@ -117,6 +119,19 @@ class VerifyRustcPinsTest(unittest.TestCase):
             )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Invalid APK", result.stderr)
+
+
+class RustPinsInSyncTest(unittest.TestCase):
+    def test_containerfile_defaults_match_the_makefile(self):
+        # The devcontainer builds Containerfile.tools without the makefile's build args, so its defaults must not drift.
+        root = SCRIPT.parents[1]
+        pinned = dict(
+            line.split("=", 1)
+            for line in subprocess.run(["make", "-s", "rust-versions"], cwd=root, env={"PATH": os.environ["PATH"]}, text=True, capture_output=True, check=True).stdout.splitlines()
+        )
+        containerfile = (root / "Containerfile.tools").read_text()
+        for name, version in pinned.items():
+            self.assertRegex(containerfile, rf'(?m)^ARG {name}="{re.escape(version)}"$', name)
 
 
 if __name__ == "__main__":
