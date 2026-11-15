@@ -19,7 +19,7 @@ class QuickActionsLocalizationsFr extends QuickActionsLocalizations {
   String get pay => 'Payer';
 
   @override
-  String get transfer => 'Transfert';
+  String get transfer => 'Échanger';
 
   @override
   String get map => 'Carte';

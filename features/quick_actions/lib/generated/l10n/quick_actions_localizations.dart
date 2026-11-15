@@ -122,7 +122,7 @@ abstract class QuickActionsLocalizations {
   /// No description provided for @transfer.
   ///
   /// In en, this message translates to:
-  /// **'Transfer'**
+  /// **'Swap'**
   String get transfer;
 
   /// No description provided for @map.
