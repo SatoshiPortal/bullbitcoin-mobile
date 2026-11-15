@@ -23,6 +23,10 @@ export 'src/domain/payjoin_policy.dart'
 export 'src/domain/payjoin_ports.dart'
     show
         PayjoinWalletPort,
+        PayjoinWalletOwnership,
+        PayjoinCodecPort,
+        PayjoinTransaction,
+        PayjoinTransactionOutput,
         PayjoinSpendBlockedException,
         PayjoinBroadcastNotAttemptedException,
         PayjoinBlockchainPort,
@@ -48,6 +52,7 @@ export 'src/domain/payjoin_session.dart'
         PayjoinReceiverSession,
         PayjoinOwnership,
         PayjoinParty,
+        PayjoinInputReservation,
         PayjoinStatus;
 export 'src/domain/payjoin_session_window.dart' show PayjoinSessionWindow;
 export 'src/public/payjoin.dart' show Payjoin;

@@ -7,21 +7,17 @@ import 'dart:typed_data';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+import 'support/test_codec.dart';
 
 base class _WalletPort implements PayjoinWalletPort {
   @override
-  Future<bool Function(Uint8List script)> createOwnershipChecker({
+  Future<PayjoinWalletOwnership> captureOwnership({
     required String walletId,
     required BitcoinNetwork network,
-  }) async =>
-      (Uint8List _) => false;
-
-  @override
-  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  }) async =>
-      (Outpoint _) => false;
+  }) async => PayjoinWalletOwnership(
+    ownsScript: (_) => false,
+    ownsOutpoint: (_) => false,
+  );
 
   @override
   Future<String> signPsbt({
@@ -41,6 +37,7 @@ final class _BlockchainPort implements PayjoinBlockchainPort {
   @override
   Future<void> broadcastPsbt({
     required String walletId,
+    required String sessionId,
     required BitcoinNetwork network,
     required String psbt,
   }) async {}
@@ -134,6 +131,7 @@ void main() {
     PayjoinWalletPort? wallet,
   }) {
     return openPayjoin(
+      codec: const TestPayjoinCodec(),
       databasePath: '${directory.path}/payjoin.sqlite',
       wallet: wallet ?? _WalletPort(),
       blockchain: _BlockchainPort(),

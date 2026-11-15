@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:payjoin/payjoin.dart' as pdk;
 import 'package:test/test.dart';
+import 'support/test_codec.dart';
 
 // Public OHTTP key configuration from payjoin-test-utils.
 const _ohttpKeys =
@@ -23,6 +24,7 @@ void main() {
         final stageTimeouts = <Duration>[];
         final dio = Dio();
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           dio: dio,
           log: PayjoinLogger.silent,
           ohttpKeysFetcher:
@@ -55,6 +57,7 @@ void main() {
       ({pdk.OhttpKeys keys, String directory})? result;
       final dio = Dio();
       final datasource = PdkPayjoinDatasource(
+        codec: const TestPayjoinCodec(),
         dio: dio,
         log: PayjoinLogger.silent,
         ohttpKeysFetcher:
@@ -90,6 +93,7 @@ void main() {
       var completed = false;
       final dio = Dio();
       final datasource = PdkPayjoinDatasource(
+        codec: const TestPayjoinCodec(),
         dio: dio,
         log: PayjoinLogger.silent,
         ohttpKeysFetcher:
@@ -128,6 +132,7 @@ void main() {
       var completed = false;
       final dio = Dio();
       final datasource = PdkPayjoinDatasource(
+        codec: const TestPayjoinCodec(),
         dio: dio,
         log: PayjoinLogger.silent,
         ohttpKeysFetcher:

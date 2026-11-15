@@ -1,18 +1,26 @@
-import 'package:transaction_sync/transaction_sync.dart' show WalletRevision;
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/sync.dart'
+    show
+        BitcoinSpendStatus,
+        SyncBusyFailure,
+        SyncFailure,
+        SyncInsufficientFundsFailure,
+        SyncInvalidAddressFailure,
+        SyncNoSpendableInputsFailure,
+        SyncProtectedInputsFailure,
+        SyncSpendBlockedFailure,
+        UnsignedSpend;
 import '../domain/wallet_spend_failure.dart';
-import 'package:transaction_sync/write.dart' show BitcoinSpendStatus;
-import 'package:transaction_sync/read.dart' show validateAddress;
+import 'package:sync/sync.dart' show validateAddress;
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -25,28 +33,26 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
-import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
-import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Secrets _secrets;
-  final Future<WalletRevision> Function(String, {String? replacing})
-  _requireSpend;
   final BdkWalletDatasource _bdkWallet;
-  final FrozenWalletUtxoDatasource _frozenUtxos;
+  final SyncWalletValuesDatasource _values;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
     required this._secrets,
-    required this._requireSpend,
     required BdkWalletDatasource bdkWalletDatasource,
-    required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
+    required SyncWalletValuesDatasource walletValuesDatasource,
   }) : _bdkWallet = bdkWalletDatasource,
-       _frozenUtxos = frozenWalletUtxoDatasource;
+       _values = walletValuesDatasource;
 
+  /// Sync's writer admits the spend, then builds once on a wallet opened for
+  /// the build, excluding the freezes and other sessions' reservations it
+  /// reads itself, and refusing a selected protected coin: [unspendable]
+  /// only narrows what it may use.
   @override
   @useResult
   Future<Result<String, WalletFailure>> buildPsbt({
@@ -58,9 +64,6 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     bool selectedOnly = false,
     bool? replaceByFee,
   }) async {
-    // Spend admission happens before any build and is re-checked after it,
-    // so a wallet that became busy or unavailable meanwhile is not built for.
-    final admission = await _requireSpend(walletId);
     try {
       final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -78,94 +81,32 @@ class BitcoinWalletRepository implements BitcoinSendPort {
           return const Err(WalletAddressNetworkMismatchFailure());
         }
       }
-
-      final wallet =
-          WalletModel.publicBdk(
-                externalDescriptor: metadata.externalPublicDescriptor,
-                internalDescriptor: metadata.internalPublicDescriptor,
-                network: metadata.network,
-                id: metadata.id,
-              )
-              as PublicBdkWalletModel;
-
-      // D7 defense in depth: a frozen coin must never be spendable. BDK's
-      // documented semantics are the opposite — a manually added utxo
-      // (TxBuilder.addUtxos) overrides the unspendable filter — and the
-      // datasource deliberately preserves those raw semantics. Enforce the
-      // app-level invariant here at the repository boundary, reading the
-      // frozen store LIVE at build time, so it holds for ANY caller and
-      // any staleness of the caller's earlier utxo fetch — not only for
-      // callers going through PrepareBitcoinSendUsecase (which reads the
-      // same store plus the payjoin-derived set; payjoin exclusion stays
-      // at the usecase because it comes from another repository).
-      //
-      // The frozen set read here is:
-      //  * merged into `unspendable`, so BDK's automatic selection can
-      //    never pick a frozen coin even when the caller passed no
-      //    exclusion list at all;
-      //  * used to strip `selected`, so a frozen coin can't be forced in
-      //    as a mandatory input either (the addUtxos override above).
-      final frozenRows = await _frozenUtxos.getAllFrozen();
-      final unspendableKeys = {
-        for (final row in frozenRows) '${row.txId}:${row.vout}',
-        for (final outpoint
-            in unspendable ?? const <({String txId, int vout})>[])
-          '${outpoint.txId}:${outpoint.vout}',
-      };
-      final mergedUnspendable = [
-        for (final outpoint in {
-          for (final row in frozenRows) (txId: row.txId, vout: row.vout),
-          ...?unspendable,
-        })
-          outpoint,
-      ];
-      final spendableSelected = selected
-          ?.where(
-            (utxo) => !unspendableKeys.contains('${utxo.txId}:${utxo.vout}'),
-          )
-          .toList();
       if (selectedOnly && (selected == null || selected.isEmpty)) {
         return const Err(WalletSelectedInputsUnavailableFailure());
       }
-      if (selected != null &&
-          (spendableSelected == null ||
-              spendableSelected.length != selected.length)) {
-        return const Err(WalletSelectedInputsUnavailableFailure());
-      }
 
-      final psbt = await _bdkWallet.buildPsbt(
-        wallet: wallet,
+      final built = await _bdkWallet.buildPsbt(
+        wallet: WalletModel.fromMetadata(metadata),
         recipients: recipients.map(_recipientModelFromEntity).toList(),
         networkFee: networkFee,
-        // An empty merged list is equivalent to null for the datasource
-        // (it gates on isNotEmpty), so always pass the merge.
-        unspendable: mergedUnspendable,
-        selected: spendableSelected
+        unspendable: unspendable,
+        selected: selected
             ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
             .toList(),
         selectedOnly: selectedOnly,
-        // Default to RBF-enabled, matching both the datasource default and
-        // BDK's own default sequence (0xFFFFFFFD). `?? false` would disable
-        // RBF for any caller omitting the flag — harmless while
-        // setExactSequence's result was discarded, wrong now that it works.
+        // Default to RBF-enabled, matching BDK's own default sequence
+        // (0xFFFFFFFD).
         replaceByFee: replaceByFee ?? true,
       );
-
-      if (await _requireSpend(walletId) != admission) {
-        throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
-      }
-      return Ok(psbt);
+      return switch (built) {
+        Ok(:final value) => Ok(value.encoded),
+        Err(:final failure) => Err(
+          _buildFailure(failure, selected: selected != null),
+        ),
+      };
     } on WalletSpendBlockedException {
       // The spend gate is not a build failure: the caller names it.
       rethrow;
-    } on InsufficientFundsException {
-      return const Err(WalletInsufficientFundsFailure());
-    } on NoSpendableUtxoException {
-      return Err(
-        selectedOnly
-            ? const WalletSelectedInputsUnavailableFailure()
-            : const WalletNoSpendableInputsFailure(),
-      );
     } on Exception catch (error, trace) {
       log.warning(
         'Bitcoin transaction construction failed',
@@ -175,6 +116,26 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       return const Err(WalletTransactionBuildFailure());
     }
   }
+
+  /// The guard's refusals stay exceptions for the callers that name them.
+  static WalletFailure _buildFailure(
+    SyncFailure failure, {
+    required bool selected,
+  }) => switch (failure) {
+    SyncSpendBlockedFailure(:final status) => throw WalletSpendBlockedException(
+      status,
+    ),
+    SyncBusyFailure() => throw const WalletSpendBlockedException(
+      BitcoinSpendStatus.busy,
+    ),
+    SyncInsufficientFundsFailure() => const WalletInsufficientFundsFailure(),
+    SyncNoSpendableInputsFailure() || SyncProtectedInputsFailure() =>
+      selected
+          ? const WalletSelectedInputsUnavailableFailure()
+          : const WalletNoSpendableInputsFailure(),
+    SyncInvalidAddressFailure() => const WalletAddressNetworkMismatchFailure(),
+    _ => WalletTransactionBuildFailure(failure.logCode),
+  };
 
   /// Signs with the wallet's own key, which never leaves `secrets`.
   ///
@@ -240,7 +201,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
+    final isFromWallet = await _values.isMine(script, wallet: wallet);
 
     return isFromWallet;
   }
@@ -269,7 +230,7 @@ class BitcoinWalletRepository implements BitcoinSendPort {
             )
             as PublicBdkWalletModel;
 
-    final isFromWallet = await _bdkWallet.areAddressesMine(
+    final isFromWallet = await _values.areAddressesMine(
       addresses,
       wallet: wallet,
     );
@@ -375,49 +336,19 @@ class BitcoinWalletRepository implements BitcoinSendPort {
     );
   }
 
-  Future<String> bumpFee({
+  /// A replacement of [txid] built by sync's writer, only on an original
+  /// whose own inputs' signatures verify: the caller signs it, then
+  /// broadcasts it with the generation it carries.
+  Future<Result<UnsignedSpend, SyncFailure>> bumpFee({
     required String walletId,
     required String txid,
     required RelativeFee newFeeRate,
   }) async {
-    final admission = await _requireSpend(walletId, replacing: txid);
-    final signatureStatus = await getTransactionSignatureStatus(
-      walletId: walletId,
-      txid: txid,
-    );
-    switch (signatureStatus) {
-      case TransactionSignatureStatus.valid:
-        break;
-      case TransactionSignatureStatus.invalid:
-        throw ManipulatedTransactionException(
-          'Input signature verification failed for the stored transaction',
-        );
-      case TransactionSignatureStatus.unverifiable:
-        throw UnverifiableTransactionException(
-          'Input signatures of the stored transaction could not be verified',
-        );
-    }
     final metadata = await _metadataFor(walletId);
-    // Building an RBF replacement needs the wallet's UTXO set, not its
-    // key: the public descriptors are enough. Signing happens after,
-    // inside `secrets`.
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              network: metadata.network,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
-
-    final psbt = await _bdkWallet.createUnsignedReplaceByFeePsbt(
-      wallet: wallet,
+    return _bdkWallet.createUnsignedReplaceByFeePsbt(
+      wallet: WalletModel.fromMetadata(metadata),
       txid: txid,
       feeRate: newFeeRate,
     );
-    if (await _requireSpend(walletId, replacing: txid) != admission) {
-      throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
-    }
-    return signPsbt(psbt, walletId: walletId);
   }
 }

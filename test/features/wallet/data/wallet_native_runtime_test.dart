@@ -1,39 +1,38 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/write.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/write.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/sync.dart' as sync show Wallet;
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Reserved implements ReservedAddressPort {
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const Ok(false);
 }
 
-class _Offline implements WalletConnectionPolicy {
+class _Offline implements WalletConnectionPort {
   @override
-  Future<Result<T, TransactionSyncFailure>> run<T>({
+  Future<Result<T, SyncFailure>> run<T>({
     required Network network,
-    required Future<Result<T, TransactionSyncFailure>> Function(
-      WalletConnection,
-    )
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
     operation,
-    required bool Function(TransactionSyncFailure) mayRetry,
+    required bool Function(SyncFailure) mayRetry,
   }) => throw StateError('Provisioning must be offline');
 }
 
@@ -45,20 +44,24 @@ void main() {
       final directory = Directory.systemTemp.createTempSync('runtime-open-');
       final metadata = _Metadata();
       when(() => metadata.fetchAll()).thenAnswer((_) async => []);
-      RevisionStore? abandoned;
+      ForegroundStores? abandoned;
       var attempts = 0;
       final runtime = WalletNativeRuntime(
         catalog: WalletCatalogPortImpl(metadata),
         reserved: _Reserved(),
+        inputReservations: _NoInputReservations(),
         metadata: metadata,
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
+          readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
-        onRevisionStoreOpened: (store) {
+        freezes: MemoryFreezeStore(),
+        connections: _Offline(),
+        onStoresOpened: (stores) {
           if (++attempts == 1) {
-            abandoned = store;
+            abandoned = stores;
             throw const FileSystemException('assembly interrupted');
           }
         },
@@ -69,7 +72,7 @@ void main() {
         expect(failedStore, isNotNull);
         if (failedStore == null) return;
         await expectLater(
-          failedStore.read(
+          failedStore.revisions.read(
             WalletKey(id: 'probe', network: BitcoinNetwork.testnet),
           ),
           throwsStateError,
@@ -93,15 +96,19 @@ void main() {
       final runtime = WalletNativeRuntime(
         catalog: WalletCatalogPortImpl(metadata),
         reserved: _Reserved(),
+        inputReservations: _NoInputReservations(),
         metadata: metadata,
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
+          readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async {
           if (++attempts == 1) throw const FileSystemException('unavailable');
           return directory.path;
         },
+        freezes: MemoryFreezeStore(),
+        connections: _Offline(),
       );
       try {
         await runtime.initialize();
@@ -166,14 +173,27 @@ void main() {
       WalletNativeRuntime open() => WalletNativeRuntime(
         catalog: WalletCatalogPortImpl(metadata),
         reserved: _Reserved(),
+        inputReservations: _NoInputReservations(),
         metadata: metadata,
         sync: ElectrumSync(
           connections: _Offline(),
           documentsDirectory: () async => directory.path,
+          readRevision: (_) async => const Err(SyncNotFoundFailure()),
         ),
         documentsDirectory: () async => directory.path,
+        freezes: MemoryFreezeStore(),
+        connections: _Offline(),
       );
       var runtime = open();
+      // A loaded handle proves the wallet available, as builders used to
+      // prove it by borrowing the native one.
+      Future<sync.Wallet> loaded(WalletMetadataModel model) =>
+          runtime.loadWallet(
+            (WalletCatalogPortImpl.descriptorFromMetadata(model)
+                    as Ok<PublicWalletDescriptor, SyncFailure>)
+                .value
+                .key,
+          );
       try {
         final unfinished = row.copyWith(
           externalPublicDescriptor: 'wpkh(invalid)',
@@ -188,8 +208,8 @@ void main() {
         await runtime.create(row);
         await runtime.initialize();
         var address = await runtime.receive(row);
-        final wallet = await runtime.bitcoin(WalletModel.fromMetadata(row));
-        expect(wallet.balance().total.toSat(), 0);
+        final wallet = await loaded(row);
+        expect(wallet.balances.now.data?.totalSat, BigInt.zero);
         final revisions = <WalletRevisionState>[];
         final observation = runtime.changes.listen(revisions.add);
         final other = open();
@@ -219,13 +239,15 @@ void main() {
         ).thenAnswer((_) async => rows[missing.id]);
         final missingKey =
             (WalletCatalogPortImpl.descriptorFromMetadata(missing)
-                    as Ok<PublicWalletDescriptor, TransactionSyncFailure>)
+                    as Ok<PublicWalletDescriptor, SyncFailure>)
                 .value
                 .key;
         final missingStore = File(
           nativeWalletStoragePath(directory.path, missingKey),
         );
-        final metadataFile = File(writerMetadataPath(directory.path));
+        final metadataFile = File(
+          '${directory.path}/transaction_sync/revisions.sqlite',
+        );
         metadataFile.writeAsStringSync('corrupt revision metadata');
         runtime = open();
         // A global catalog failure leaves recovery pending across a restart.
@@ -244,15 +266,15 @@ void main() {
         expect(missingStore.existsSync(), isFalse);
         final healthyKey =
             (WalletCatalogPortImpl.descriptorFromMetadata(row)
-                    as Ok<PublicWalletDescriptor, TransactionSyncFailure>)
+                    as Ok<PublicWalletDescriptor, SyncFailure>)
                 .value
                 .key;
         final beforeReads = await runtime.readRevision(healthyKey) as Ok;
         clearInteractions(metadata);
         for (var i = 0; i < 5; i++) {
-          await runtime.bitcoin(WalletModel.fromMetadata(row));
+          await loaded(row);
           await expectLater(
-            runtime.bitcoin(WalletModel.fromMetadata(missing)),
+            loaded(missing),
             throwsA(isA<WalletSnapshotException>()),
           );
         }
@@ -272,13 +294,10 @@ void main() {
         await runtime.close();
         runtime = open();
         await runtime.initialize();
-        expect(
-          await runtime.bitcoin(WalletModel.fromMetadata(missing)),
-          isA<bdk.Wallet>(),
-        );
+        expect(await loaded(missing), isA<sync.Wallet>());
         rows.remove(missing.id);
-        final adopted = await runtime.bitcoin(WalletModel.fromMetadata(row));
-        expect(adopted.balance().total.toSat(), 0);
+        final adopted = await loaded(row);
+        expect(adopted.balances.now.data?.totalSat, BigInt.zero);
         expect(
           metadataFile.parent.listSync().where(
             (file) => file.path.contains('.corrupt-'),
@@ -286,10 +305,7 @@ void main() {
           isNotEmpty,
         );
         await runtime.delete(row);
-        await expectLater(
-          runtime.bitcoin(WalletModel.fromMetadata(row)),
-          throwsA(isA<WalletSnapshotException>()),
-        );
+        await expectLater(loaded(row), throwsA(isA<WalletSnapshotException>()));
         // Simulate crash after writer.delete and before catalog deletion.
         expect(rows, isNotEmpty);
         await runtime.close();
@@ -304,10 +320,7 @@ void main() {
         runtime = open();
         await runtime.initialize();
         expect(rows[row.id], row);
-        expect(
-          await runtime.bitcoin(WalletModel.fromMetadata(row)),
-          isA<bdk.Wallet>(),
-        );
+        expect(await loaded(row), isA<sync.Wallet>());
         // If corruption destroys a deletion tombstone before catalog removal,
         // the surviving row is indistinguishable from an interrupted import.
         await runtime.delete(row);
@@ -315,15 +328,12 @@ void main() {
         metadataFile.writeAsStringSync('corrupt deletion metadata');
         runtime = open();
         await runtime.initialize();
-        await expectLater(
-          runtime.bitcoin(WalletModel.fromMetadata(row)),
-          throwsA(isA<WalletSnapshotException>()),
-        );
+        await expectLater(loaded(row), throwsA(isA<WalletSnapshotException>()));
         expect(recoveryMarker.existsSync(), isFalse);
         await runtime.resumeProvisioning();
         expect(
-          await runtime.bitcoin(WalletModel.fromMetadata(row)),
-          isA<bdk.Wallet>(),
+          await loaded(row),
+          isA<sync.Wallet>(),
           reason:
               'documented residual: lost deletion metadata permits reappearance',
         );
@@ -333,4 +343,100 @@ void main() {
       }
     },
   );
+
+  test('a broadcast expected on another network is refused, unsent', () async {
+    final directory = Directory.systemTemp.createTempSync('runtime-net-');
+    final mnemonic = bdk.Mnemonic.fromString(
+      mnemonic:
+          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+    );
+    final secret = bdk.DescriptorSecretKey(
+      networkKind: bdk.NetworkKind.main,
+      mnemonic: mnemonic,
+      password: null,
+    );
+    String derive(bdk.KeychainKind chain) {
+      final descriptor = bdk.Descriptor.newBip84(
+        secretKey: secret,
+        keychainKind: chain,
+        networkKind: bdk.NetworkKind.main,
+      );
+      try {
+        return descriptor.toString();
+      } finally {
+        descriptor.dispose();
+      }
+    }
+
+    final row = WalletMetadataModel(
+      networkCode: 'bitcoinMainnet',
+      id: 'wpkh([aabbccdd/84h/0h/0h])',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: 'aabbccdd',
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      xpub: 'public',
+      externalPublicDescriptor: derive(bdk.KeychainKind.external_),
+      internalPublicDescriptor: derive(bdk.KeychainKind.internal),
+      signer: Signer.none,
+      isDefault: false,
+    );
+    secret.dispose();
+    mnemonic.dispose();
+    final metadata = _Metadata();
+    when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
+    when(() => metadata.fetch(row.id)).thenAnswer((_) async => row);
+    // Any server contact throws: the refusal must come before transport.
+    final runtime = WalletNativeRuntime(
+      catalog: WalletCatalogPortImpl(metadata),
+      reserved: _Reserved(),
+      inputReservations: _NoInputReservations(),
+      metadata: metadata,
+      sync: ElectrumSync(
+        connections: _Offline(),
+        documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
+      ),
+      documentsDirectory: () async => directory.path,
+      freezes: MemoryFreezeStore(),
+      connections: _Offline(),
+    );
+    try {
+      await runtime.create(row);
+      final result = await runtime.broadcast(
+        row.id,
+        SignedBitcoinTransaction(_transaction()),
+        network: BitcoinNetwork.testnet,
+      );
+      expect(
+        result,
+        isA<Err<SpendReceipt, SyncFailure>>().having(
+          (err) => err.failure,
+          'failure',
+          isA<SyncSpendBlockedFailure>().having(
+            (blocked) => blocked.status,
+            'status',
+            BitcoinSpendStatus.unavailable,
+          ),
+        ),
+      );
+    } finally {
+      await runtime.close();
+      directory.deleteSync(recursive: true);
+    }
+  });
+}
+
+/// A one-input, one-output transaction in its consensus serialization.
+Uint8List _transaction() => Uint8List.fromList([
+  2, 0, 0, 0, 1, //
+  ...List.filled(32, 0xaa), 0, 0, 0, 0, 0, 0xfd, 0xff, 0xff, 0xff, //
+  1, 0x10, 0x27, 0, 0, 0, 0, 0, 0, 22, 0, 20, ...List.filled(20, 7), //
+  0, 0, 0, 0,
+]);
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

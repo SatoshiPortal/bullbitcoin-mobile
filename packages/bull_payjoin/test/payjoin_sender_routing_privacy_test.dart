@@ -9,6 +9,7 @@ import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:payjoin/payjoin.dart' as pdk;
 import 'package:test/test.dart';
+import 'support/test_codec.dart';
 
 // Public ORIGINAL_PSBT and OHTTP key fixtures from payjoin-test-utils.
 const _originalPsbt =
@@ -43,7 +44,11 @@ void main() {
         },
       ),
     );
-    final datasource = PdkPayjoinDatasource(dio: dio, log: PayjoinLogger(port));
+    final datasource = PdkPayjoinDatasource(
+      dio: dio,
+      log: PayjoinLogger(port),
+      codec: const TestPayjoinCodec(),
+    );
     try {
       await expectLater(
         datasource.createSender(
@@ -160,6 +165,7 @@ Future<void> _expectSenderRoutes({
       ),
     );
     final datasource = PdkPayjoinDatasource(
+      codec: const TestPayjoinCodec(),
       dio: dio,
       log: PayjoinLogger.silent,
       servers: servers,
