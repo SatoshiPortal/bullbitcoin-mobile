@@ -135,6 +135,18 @@ void main() {
       expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
     });
 
+    test('lists quick actions and the dark mode switch in App Settings', () {
+      final items = _englishItems();
+
+      expect(
+        items.byId(SettingsItemId.quickActions).section,
+        SettingsItemSection.app,
+      );
+      final theme = items.byId(SettingsItemId.theme);
+      expect(theme.title, 'Dark mode');
+      expect(theme.isInlineControl, isTrue);
+    });
+
     test('account settings is listed only when exchange is ready', () {
       final hidden = buildSettingsItems(localization: AppLocalizationsEn());
       final ready = buildSettingsItems(
