@@ -40,8 +40,9 @@ class WatchExchangeNotificationsUsecase {
       );
 
   /// The handshake stays outside the access queue so it cannot delay sign-out
-  /// or trading. Sign-out, reconciliation and expiry disconnect, which also
-  /// abandons an in-flight attempt, so a stale attempt only reports itself.
+  /// or trading. Sign-out, reconciliation and expiry disconnect, but an attempt
+  /// may start after that disconnect (the service first reads settings), so a
+  /// stale attempt closes the socket unless a new session is signed in.
   Future<Result<void, ExchangeFailure>> _open({required bool reconnect}) async {
     final token = _access.epoch;
     if (!_signedIn) return const Err(ExchangeNotAuthenticatedFailure());
@@ -56,11 +57,11 @@ class WatchExchangeNotificationsUsecase {
       _exchangeNotificationRepository.disconnect();
       return Err(failure);
     }
-    // The attempt starts synchronously after this check.
     final result = reconnect
         ? await _exchangeNotificationRepository.reconnect()
         : await _exchangeNotificationRepository.connect();
     if (token != _access.epoch) {
+      if (!_signedIn) _exchangeNotificationRepository.disconnect();
       return const Err(ExchangeOperationStaleFailure());
     }
     return result.mapErr(
