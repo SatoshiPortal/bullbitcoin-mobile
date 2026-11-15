@@ -128,6 +128,27 @@ runs:
         restore-keys: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
 
     # A restored snapshot can reference outputs of files deleted since it was saved (e.g. a source removed from a workspace package): build_runner then aborts with InvalidOutputException instead of rebuilding. Retry once from scratch so a stale snapshot never breaks the job.
+    # build_runner runs the Native Assets hooks, which compile every Rust crate
+    # for the host (~17 min on a 4-vCPU runner). The hooks skip that work when
+    # their recorded inputs, sources and environment (HOME, PATH, RUSTUP_*) are
+    # unchanged and the built libraries exist, so only those records and the
+    # final libraries are cached (~130 MB), not Cargo's multi-GB target dirs.
+    # A stale entry is harmless: the hooks detect it and rebuild. Saved by
+    # cache-warmer.yml on develop; the paths must stay identical there.
+    - name: Restore Native Assets hook outputs
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          .dart_tool/hooks_runner/*/*/*.json
+          .dart_tool/hooks_runner/*/*/hook.dill
+          .dart_tool/hooks_runner/*/*/hook.dill.d
+          .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
+          .dart_tool/hooks_runner/shared/*/build/download-*/*.so
+        key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+        restore-keys: |
+          hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-
+          hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-
+
     - name: Generate code (build_runner)
       shell: bash
       run: |
