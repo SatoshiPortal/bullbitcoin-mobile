@@ -3272,7 +3272,6 @@
   "settingsSearchLabelsKeywords": "nhãn ví|nhãn giao dịch|BIP329|nhập nhãn|xuất nhãn",
   "settingsSearchTransactionHistoryKeywords": "xuất giao dịch|xuất lịch sử giao dịch|CSV|lịch sử ví",
   "settingsSearchAppSettingsKeywords": "tùy chọn ứng dụng|cài đặt ứng dụng|cài đặt chung",
-  "settingsSearchBtcMapKeywords": "BTC Map|bản đồ bitcoin|bản đồ cửa hàng|nơi chi tiêu bitcoin",
   "settingsSearchTermsOfServiceKeywords": "điều khoản và điều kiện|pháp lý|thỏa thuận người dùng|TOS",
   "settingsSearchServicesStatusKeywords": "tình trạng dịch vụ|trạng thái hệ thống|trực tuyến|gián đoạn dịch vụ",
   "settingsSearchImportWalletKeywords": "thêm ví|khôi phục ví|nhập cụm từ ghi nhớ|ví chỉ xem|ví phần cứng",

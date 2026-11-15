@@ -4387,7 +4387,6 @@
   "settingsSearchLabelsKeywords": "метки кошелька|метки транзакций|BIP329|импорт меток|экспорт меток",
   "settingsSearchTransactionHistoryKeywords": "экспорт транзакций|выгрузить транзакции|CSV|история кошелька",
   "settingsSearchAppSettingsKeywords": "параметры приложения|настройки приложения|общие настройки",
-  "settingsSearchBtcMapKeywords": "BTC Map|карта Bitcoin|карта продавцов|места оплаты биткойном",
   "settingsSearchTermsOfServiceKeywords": "условия использования|юридическая информация|пользовательское соглашение|TOS",
   "settingsSearchServicesStatusKeywords": "состояние сервисов|состояние системы|онлайн|сбой",
   "settingsSearchImportWalletKeywords": "добавить кошелёк|восстановить кошелёк|импорт мнемонической фразы|кошелёк только для просмотра|аппаратный кошелёк",

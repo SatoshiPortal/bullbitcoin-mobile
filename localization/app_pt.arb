@@ -4417,7 +4417,6 @@
   "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
   "settingsSearchTransactionHistoryKeywords": "exportar transações|exportação de transações|CSV|histórico da carteira",
   "settingsSearchAppSettingsKeywords": "preferências da aplicação|definições da aplicação|definições gerais",
-  "settingsSearchBtcMapKeywords": "BTC Map|mapa Bitcoin|mapa de comerciantes|locais onde gastar bitcoin",
   "settingsSearchTermsOfServiceKeywords": "termos e condições|informação legal|acordo do utilizador|TOS",
   "settingsSearchServicesStatusKeywords": "estado dos serviços|estado do sistema|online|indisponibilidade",
   "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemónica|carteira só de visualização|carteira de hardware",

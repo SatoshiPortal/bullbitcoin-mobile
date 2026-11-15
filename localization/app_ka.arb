@@ -3395,7 +3395,6 @@
   "settingsSearchLabelsKeywords": "საფულის იარლიყები|ტრანზაქციის იარლიყები|BIP329|იარლიყების იმპორტი|იარლიყების ექსპორტი",
   "settingsSearchTransactionHistoryKeywords": "ტრანზაქციების ექსპორტი|ტრანზაქციების ისტორიის ექსპორტი|CSV|საფულის ისტორია",
   "settingsSearchAppSettingsKeywords": "აპის პარამეტრები|აპლიკაციის პარამეტრები|ზოგადი პარამეტრები",
-  "settingsSearchBtcMapKeywords": "BTC Map|ბიტკოინის რუკა|მოვაჭრეების რუკა|ბიტკოინის დახარჯვის ადგილები",
   "settingsSearchTermsOfServiceKeywords": "წესები და პირობები|იურიდიული ინფორმაცია|მომხმარებლის შეთანხმება|TOS",
   "settingsSearchServicesStatusKeywords": "სერვისის მდგომარეობა|სისტემის სტატუსი|ონლაინ|სერვისის შეფერხება",
   "settingsSearchImportWalletKeywords": "საფულის დამატება|საფულის აღდგენა|მნემონიკური ფრაზის იმპორტი|მხოლოდ სანახავი საფულე|აპარატული საფულე",

@@ -13029,10 +13029,6 @@
   "@settingsSearchAppSettingsKeywords": {
     "description": "Pipe-separated search aliases for App Settings. Search metadata; not displayed."
   },
-  "settingsSearchBtcMapKeywords": "BTC Map|bitcoin map|merchant map|places to spend bitcoin",
-  "@settingsSearchBtcMapKeywords": {
-    "description": "Pipe-separated search aliases for Map. Search metadata; not displayed."
-  },
   "settingsSearchTermsOfServiceKeywords": "terms and conditions|legal|user agreement|TOS",
   "@settingsSearchTermsOfServiceKeywords": {
     "description": "Pipe-separated search aliases for Terms of Service. Search metadata; not displayed."

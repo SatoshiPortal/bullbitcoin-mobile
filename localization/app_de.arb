@@ -4358,7 +4358,6 @@
   "settingsSearchLabelsKeywords": "Wallet-Labels|Transaktions-Labels|BIP329|Labels importieren|Labels exportieren",
   "settingsSearchTransactionHistoryKeywords": "Transaktionen exportieren|Transaktionsexport|CSV|Wallet-Verlauf",
   "settingsSearchAppSettingsKeywords": "App-Voreinstellungen|Anwendungseinstellungen|Allgemeine Einstellungen",
-  "settingsSearchBtcMapKeywords": "BTC Map|Bitcoin-Karte|Händlerkarte|Bitcoin ausgeben",
   "settingsSearchTermsOfServiceKeywords": "Allgemeine Geschäftsbedingungen|AGB|Rechtliches|Nutzungsvereinbarung",
   "settingsSearchServicesStatusKeywords": "Dienststatus|Systemstatus|Online|Störung",
   "settingsSearchImportWalletKeywords": "Wallet hinzufügen|Wallet wiederherstellen|Mnemonic importieren|Watch-only-Wallet|Hardware-Wallet",

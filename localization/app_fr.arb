@@ -4605,7 +4605,6 @@
   "settingsSearchLabelsKeywords": "étiquettes du portefeuille|étiquettes de transactions|BIP329|importer les étiquettes|exporter les étiquettes",
   "settingsSearchTransactionHistoryKeywords": "exporter les transactions|export des transactions|CSV|historique du portefeuille",
   "settingsSearchAppSettingsKeywords": "préférences de l’application|paramètres de l’application|paramètres généraux",
-  "settingsSearchBtcMapKeywords": "BTC Map|carte Bitcoin|carte des commerçants|lieux acceptant le bitcoin",
   "settingsSearchTermsOfServiceKeywords": "conditions générales|mentions légales|accord utilisateur|TOS",
   "settingsSearchServicesStatusKeywords": "état des services|état du système|en ligne|panne",
   "settingsSearchImportWalletKeywords": "ajouter un portefeuille|restaurer un portefeuille|importer une phrase mnémonique|portefeuille en lecture seule|portefeuille matériel",

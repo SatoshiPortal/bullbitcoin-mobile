@@ -11347,7 +11347,6 @@
   "settingsSearchLabelsKeywords": "wallet ke labels|transaction ke labels|BIP329|labels import karein|labels export karein",
   "settingsSearchTransactionHistoryKeywords": "transaction export karein|transaction history export karein|CSV|wallet history",
   "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
-  "settingsSearchBtcMapKeywords": "BTC Map|bitcoin ka naksha|merchant map|bitcoin kharch karne ki jagah",
   "settingsSearchTermsOfServiceKeywords": "niyam aur shartein|kanooni|user agreement|TOS",
   "settingsSearchServicesStatusKeywords": "service health|system status|online|service outage",
   "settingsSearchImportWalletKeywords": "wallet add karein|wallet recover karein|recovery phrase import karein|watch-only wallet|hardware wallet",

@@ -11037,7 +11037,6 @@
   "settingsSearchLabelsKeywords": "štítky peněženky|štítky transakcí|BIP329|import štítků|export štítků",
   "settingsSearchTransactionHistoryKeywords": "export transakcí|vyexportovat transakce|CSV|historie peněženky",
   "settingsSearchAppSettingsKeywords": "předvolby aplikace|nastavení aplikace|obecná nastavení",
-  "settingsSearchBtcMapKeywords": "BTC Map|bitcoinová mapa|mapa obchodníků|místa přijímající bitcoin",
   "settingsSearchTermsOfServiceKeywords": "obchodní podmínky|právní informace|uživatelská smlouva|TOS",
   "settingsSearchServicesStatusKeywords": "stav služeb|stav systému|online|výpadek",
   "settingsSearchImportWalletKeywords": "přidat peněženku|obnovit peněženku|importovat mnemonickou frázi|peněženka pouze pro sledování|hardwarová peněženka",

@@ -11040,7 +11040,6 @@
   "settingsSearchLabelsKeywords": "تسميات المحفظة|تسميات المعاملات|BIP329|استيراد التسميات|تصدير التسميات",
   "settingsSearchTransactionHistoryKeywords": "تصدير المعاملات|تصدير سجل المعاملات|CSV|سجل المحفظة",
   "settingsSearchAppSettingsKeywords": "تفضيلات التطبيق|إعدادات التطبيق|الإعدادات العامة",
-  "settingsSearchBtcMapKeywords": "BTC Map|خريطة بيتكوين|خريطة التجار|أماكن إنفاق بيتكوين",
   "settingsSearchTermsOfServiceKeywords": "الشروط والأحكام|قانوني|اتفاقية المستخدم|TOS",
   "settingsSearchServicesStatusKeywords": "حالة الخدمات|حالة النظام|متصل|انقطاع الخدمة",
   "settingsSearchImportWalletKeywords": "إضافة محفظة|استعادة محفظة|استيراد عبارة الاسترداد|محفظة للمشاهدة فقط|محفظة أجهزة",

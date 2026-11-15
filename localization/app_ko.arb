@@ -11037,7 +11037,6 @@
   "settingsSearchLabelsKeywords": "지갑 라벨|거래 라벨|BIP329|라벨 가져오기|라벨 내보내기",
   "settingsSearchTransactionHistoryKeywords": "거래 내보내기|거래 내역 내보내기|CSV|지갑 기록",
   "settingsSearchAppSettingsKeywords": "앱 환경설정|애플리케이션 설정|일반 설정",
-  "settingsSearchBtcMapKeywords": "BTC Map|비트코인 지도|가맹점 지도|비트코인 사용처",
   "settingsSearchTermsOfServiceKeywords": "이용 약관|법률 정보|사용자 계약|TOS",
   "settingsSearchServicesStatusKeywords": "서비스 상태|시스템 상태|온라인|서비스 중단",
   "settingsSearchImportWalletKeywords": "지갑 추가|지갑 복구|니모닉 가져오기|읽기 전용 지갑|하드웨어 지갑",
