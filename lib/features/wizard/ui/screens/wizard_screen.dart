@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -40,6 +42,10 @@ class _WizardScreenState extends State<WizardScreen> {
 
   final PageController _controller = PageController();
   WizardPage _page = WizardPage.welcome;
+
+  /// Side of the mission Yes button, drawn at random so neither hand is
+  /// favoured, and once so it stays put while the user swipes back and forth.
+  final bool _yesFirst = Random().nextBool();
 
   static const List<WizardPage> _pages = WizardPage.values;
 
@@ -230,6 +236,7 @@ class _WizardScreenState extends State<WizardScreen> {
                                   consent: c.reportingConsent,
                                   onYes: () => _pickConsent(true),
                                   onNo: () => _pickConsent(false),
+                                  yesFirst: _yesFirst,
                                 )
                               else
                                 SizedBox(
