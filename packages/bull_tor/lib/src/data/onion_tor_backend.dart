@@ -37,6 +37,14 @@ final _connectTimeoutMs = BigInt.from(torConnectBudget.inMilliseconds);
 /// carry traffic.
 const _trafficReadyTimeout = Duration(seconds: 60);
 
+/// Snowflake reaches Tor through volunteer WebRTC proxies and can take minutes
+/// on a filtered network: it gets no deadline, a user leaving stops it.
+@visibleForTesting
+Duration? trafficReadyTimeoutFor(TorTransport transport) => switch (transport) {
+  TorTransport.direct => _trafficReadyTimeout,
+  TorTransport.snowflake => null,
+};
+
 /// How long readiness is withheld after Arti first reports `readyForTraffic`.
 ///
 /// Arti says it can carry traffic before a first onion connection actually succeeds, so announcing it at once sent requests into a client that failed them. The hold is applied once per bootstrap, not on directory-refresh republications.
@@ -166,7 +174,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       // `bootstrap()` returns once the directory is usable, before Arti
       // reports `readyForTraffic`; announcing readiness then sent the first
       // request into a client that was not ready yet.
-      await waitForTraffic(_trafficReadyTimeout);
+      await waitForTraffic(trafficReadyTimeoutFor(transport));
       if (generation != _generation) throw _cancelled();
       _log.fine(
         'Embedded Tor reports ready after '
@@ -208,12 +216,14 @@ final class OnionTorBackend implements EmbeddedTorPort {
   /// Completes once a status reports `readyForTraffic`, fails on [stop] or
   /// after [timeout].
   @visibleForTesting
-  Future<void> waitForTraffic(Duration timeout) => _trafficReady.future.timeout(
-    timeout,
-    onTimeout: () => throw TorBackendException(
-      TorBootstrapTimeoutFailure('Not ready for traffic after $timeout'),
-    ),
-  );
+  Future<void> waitForTraffic(Duration? timeout) => timeout == null
+      ? _trafficReady.future
+      : _trafficReady.future.timeout(
+          timeout,
+          onTimeout: () => throw TorBackendException(
+            TorBootstrapTimeoutFailure('Not ready for traffic after $timeout'),
+          ),
+        );
 
   /// Waits out [_readinessHold]; [stop] ends the wait early so a restart does not queue behind it.
   @visibleForTesting
