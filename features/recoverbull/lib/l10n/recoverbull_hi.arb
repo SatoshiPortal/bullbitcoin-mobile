@@ -630,5 +630,16 @@
   },
   "backupKeyWarningMessage": "चेतावनी: ध्यान रखें कि आप बैकअप कुंजी कहाँ सेव करते हैं।।",
   "backupKeySeparationWarning": "यह गंभीर रूप से महत्वपूर्ण है कि आप बैकअप कुंजी को उसी स्थान पर नहीं बचाते हैं जहां आप अपनी बैकअप फ़ाइल को बचाते हैं। हमेशा उन्हें अलग-अलग उपकरणों या अलग क्लाउड प्रदाताओं पर स्टोर करें।।",
-  "backupKeyExampleWarning": "उदाहरण के लिए, यदि आप अपनी बैकअप फ़ाइल के लिए Google ड्राइव का उपयोग करते हैं, तो अपनी बैकअप कुंजी के लिए Google ड्राइव का उपयोग न करें।।"
+  "backupKeyExampleWarning": "उदाहरण के लिए, यदि आप अपनी बैकअप फ़ाइल के लिए Google ड्राइव का उपयोग करते हैं, तो अपनी बैकअप कुंजी के लिए Google ड्राइव का उपयोग न करें।।",
+  "torSettingsModeDirectDescription": "बिना प्लगेबल ट्रांसपोर्ट के सीधे Tor नेटवर्क से जुड़ता है।",
+  "torSettingsDescCensored": "Tor नेटवर्क तक नहीं पहुँच सका। आमतौर पर इसका मतलब है कि कनेक्शन फ़िल्टर किया जा रहा है।",
+  "torSettingsModeAutomaticDescription": "पहले सीधा Tor कनेक्शन आज़माता है और यदि नेटवर्क Tor को रोकता प्रतीत हो तो Snowflake का उपयोग करता है।",
+  "torSettingsModeSnowflakeDescription": "फ़िल्टर किए गए नेटवर्क से Tor तक पहुँचने के लिए स्वयंसेवी Snowflake प्रॉक्सी का उपयोग करता है।",
+  "torSettingsDescConnected": "Tor प्रॉक्सी चल रहा है और तैयार है",
+  "torSettingsStatusCensored": "कनेक्शन फ़िल्टर किया हुआ लगता है",
+  "torSettingsActiveTransport": "सक्रिय ट्रांसपोर्ट: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "कैसे तय करें?",
+  "backupWalletHowToDecideBackupModalTitle": "कैसे तय करें",
+  "backupSettingsSecurityWarning": "सुरक्षा चेतावनी"
 }

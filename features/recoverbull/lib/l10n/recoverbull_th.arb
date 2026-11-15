@@ -588,5 +588,16 @@
   },
   "backupKeyWarningMessage": "คําเตือน: ระมัดระวังที่คุณประหยัดเงิน.",
   "backupKeySeparationWarning": "มันเป็นสิ่งสําคัญที่คุณไม่ได้บันทึกการสํารองข้อมูลคีย์เดียวกันที่ทุกที่ที่คุณบันทึกไฟล์ของคุณ เป็นเจ้าของอุปกรณ์แยกต่างหากหรือแยกคลาวด์.",
-  "backupKeyExampleWarning": "ตัวอย่างเช่นถ้าคุณใช้ Google Drive สําหรับไฟล์การสํารองข้อมูลของคุณไม่ได้ใช้ Google Drive สําหรับการสํารองข้อมูลของคุณ."
+  "backupKeyExampleWarning": "ตัวอย่างเช่นถ้าคุณใช้ Google Drive สําหรับไฟล์การสํารองข้อมูลของคุณไม่ได้ใช้ Google Drive สําหรับการสํารองข้อมูลของคุณ.",
+  "torSettingsModeDirectDescription": "เชื่อมต่อกับเครือข่าย Tor โดยตรง โดยไม่ใช้ pluggable transport",
+  "torSettingsDescCensored": "Tor ไม่สามารถเข้าถึงเครือข่ายได้ ซึ่งมักหมายความว่าการเชื่อมต่อกำลังถูกกรอง",
+  "torSettingsModeAutomaticDescription": "ลองเชื่อมต่อ Tor โดยตรงก่อน และใช้ Snowflake หากเครือข่ายดูเหมือนจะบล็อก Tor",
+  "torSettingsModeSnowflakeDescription": "ใช้พร็อกซี Snowflake จากอาสาสมัครเพื่อเข้าถึง Tor จากเครือข่ายที่ถูกกรอง",
+  "torSettingsDescConnected": "TorDB เป็นการทํางานและพร้อม",
+  "torSettingsStatusCensored": "การเชื่อมต่อดูเหมือนถูกกรอง",
+  "torSettingsActiveTransport": "การขนส่งที่ใช้งาน: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "วิธีการตัดสินใจ?",
+  "backupWalletHowToDecideBackupModalTitle": "วิธีการตัดสินใจ",
+  "backupSettingsSecurityWarning": "คําเตือน"
 }

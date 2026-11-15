@@ -582,5 +582,16 @@
   },
   "backupKeyWarningMessage": "সতৰ্কবাণী: আপুনি বেকআপ key ক'ত সংৰক্ষণ কৰিছে সেই বিষয়ে সাৱধান হওক।",
   "backupKeySeparationWarning": "অতি গুৰুত্বপূৰ্ণ যে আপুনি বেকআপ key আৰু বেকআপ ফাইল একেটা ঠাইতে সংৰক্ষণ নকৰে। সদায় সেইবোৰ পৃথক ডিভাইচত বা পৃথক cloud প্ৰদানকৰ্তাত ৰাখক।",
-  "backupKeyExampleWarning": "উদাহৰণস্বৰূপে, যদি আপুনি বেকআপ ফাইলৰ বাবে Google Drive ব্যৱহাৰ কৰিছে, তেন্তে বেকআপ key-ৰ বাবে Google Drive ব্যৱহাৰ নকৰিব।"
+  "backupKeyExampleWarning": "উদাহৰণস্বৰূপে, যদি আপুনি বেকআপ ফাইলৰ বাবে Google Drive ব্যৱহাৰ কৰিছে, তেন্তে বেকআপ key-ৰ বাবে Google Drive ব্যৱহাৰ নকৰিব।",
+  "torSettingsModeDirectDescription": "প্লাগেবল ট্ৰেন্সপৰ্ট নোহোৱাকৈ পোনপটীয়াকৈ Tor নেটৱৰ্কৰ সৈতে সংযোগ কৰে।",
+  "torSettingsDescCensored": "Tor নেটৱৰ্কলৈ পাব পৰা নাই। সাধাৰণতে ইয়াৰ অৰ্থ হ'ল সংযোগটো ফিল্টাৰ কৰা হৈছে।",
+  "torSettingsModeAutomaticDescription": "প্ৰথমে পোনপটীয়া Tor সংযোগ চেষ্টা কৰে, আৰু নেটৱৰ্কে Tor বাধা দিয়া যেন লাগিলে Snowflake ব্যৱহাৰ কৰে।",
+  "torSettingsModeSnowflakeDescription": "ফিল্টাৰ কৰা নেটৱৰ্কৰ পৰা Tor-লৈ পাবলৈ স্বেচ্ছাসেৱী Snowflake প্ৰক্সী ব্যৱহাৰ কৰে।",
+  "torSettingsDescConnected": "Tor proxy চলি আছে আৰু সাজু",
+  "torSettingsStatusCensored": "সংযোগটো ফিল্টাৰ কৰা যেন লাগিছে",
+  "torSettingsActiveTransport": "সক্ৰিয় ট্ৰেন্সপৰ্ট: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "কেনেকৈ সিদ্ধান্ত ল'ব?",
+  "backupWalletHowToDecideBackupModalTitle": "কেনেকৈ সিদ্ধান্ত ল'ব",
+  "backupSettingsSecurityWarning": "সুৰক্ষা সতৰ্কতা"
 }

@@ -153,5 +153,16 @@
   "recoverbullErrorInvalidVaultFile": "საცავის ფაილი არასწორია.",
   "backupKeyWarningMessage": "გაფრთხილება: იყავით ფრთხილად, სად ინახავთ სარეზერვო ასლის გასაღებს.",
   "backupKeySeparationWarning": "კრიტიკულად მნიშვნელოვანია, რომ სარეზერვო ასლის გასაღები არ შეინახოთ იმავე ადგილას, სადაც თქვენი სარეზერვო ასლის ფაილი. ყოველთვის შეინახეთ ისინი სხვადასხვა მოწყობილობაზე ან სხვადასხვა ღრუბლოვან პროვაიდერთან.",
-  "backupKeyExampleWarning": "მაგალითად, თუ სარეზერვო ასლის ფაილისთვის Google Drive გამოიყენეთ, არ გამოიყენოთ Google Drive გასაღებისთვის."
+  "backupKeyExampleWarning": "მაგალითად, თუ სარეზერვო ასლის ფაილისთვის Google Drive გამოიყენეთ, არ გამოიყენოთ Google Drive გასაღებისთვის.",
+  "torSettingsModeDirectDescription": "პირდაპირ უკავშირდება Tor-ქსელს, მისაერთებელი ტრანსპორტის გარეშე.",
+  "torSettingsDescCensored": "Tor-მა ვერ მიაღწია ქსელს. ეს ხშირად ნიშნავს, რომ კავშირი ფილტრდება.",
+  "torSettingsModeAutomaticDescription": "ჯერ ცდილობს პირდაპირ Tor-კავშირს და იყენებს Snowflake-ს, თუ ქსელი, როგორც ჩანს, ბლოკავს Tor-ს.",
+  "torSettingsModeSnowflakeDescription": "იყენებს მოხალისეთა Snowflake-პროქსებს, რომ ფილტრირებული ქსელიდან მიაღწიოს Tor-ს.",
+  "torSettingsDescConnected": "Tor პროქსი გაშვებულია და მზადაა გამოსაყენებლად",
+  "torSettingsStatusCensored": "კავშირი ფილტრირებული ჩანს",
+  "torSettingsActiveTransport": "აქტიური ტრანსპორტი: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "როგორ გადავწყვიტო?",
+  "backupWalletHowToDecideBackupModalTitle": "როგორ გადავწყვიტო",
+  "backupSettingsSecurityWarning": "უსაფრთხოების გაფრთხილება"
 }

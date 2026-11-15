@@ -587,5 +587,16 @@
   },
   "backupKeyWarningMessage": "Chetavni: Backup key kahaan save kar rahe ho, dhyaan rakho.",
   "backupKeySeparationWarning": "Yeh bahut zaroori hai ki backup key aur backup file ek hi jagah save na karo. Inhe hamesha alag devices ya alag cloud providers par store karo.",
-  "backupKeyExampleWarning": "Misal ke taur par, agar backup file ke liye Google Drive use kiya toh backup key ke liye Google Drive mat use karo."
+  "backupKeyExampleWarning": "Misal ke taur par, agar backup file ke liye Google Drive use kiya toh backup key ke liye Google Drive mat use karo.",
+  "torSettingsModeDirectDescription": "Bina pluggable transport ke seedhe Tor network se judta hai.",
+  "torSettingsDescCensored": "Tor network tak nahi pahunch paaya. Aksar iska matlab hai ki connection filter ho raha hai.",
+  "torSettingsModeAutomaticDescription": "Pehle seedha Tor connection try karta hai, aur agar network Tor ko block karta lage to Snowflake istemal karta hai.",
+  "torSettingsModeSnowflakeDescription": "Filter kiye gaye network se Tor tak pahunchne ke liye volunteer Snowflake proxies ka istemal karta hai.",
+  "torSettingsDescConnected": "Tor proxy chal raha hai aur ready hai",
+  "torSettingsStatusCensored": "Connection filtered lag raha hai",
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "Kaise decide karein?",
+  "backupWalletHowToDecideBackupModalTitle": "Kaise decide karein",
+  "backupSettingsSecurityWarning": "Security Chetavni"
 }

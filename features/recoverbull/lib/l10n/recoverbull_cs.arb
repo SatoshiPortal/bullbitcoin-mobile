@@ -588,5 +588,16 @@
   },
   "backupKeyWarningMessage": "Upozornění: Buďte opatrní, kde uložíte záložní klíč.",
   "backupKeySeparationWarning": "Je kriticky důležité, abyste neuložili záložní klíč na stejném místě, kde uložíte záložní soubor. Vždy je uložíte na samostatných zařízeních nebo samostatných poskytovatelů cloudu.",
-  "backupKeyExampleWarning": "Například pokud používáte Disk Google pro záložní soubor, nepoužívejte Disk Google pro váš záložní klíč."
+  "backupKeyExampleWarning": "Například pokud používáte Disk Google pro záložní soubor, nepoužívejte Disk Google pro váš záložní klíč.",
+  "torSettingsModeDirectDescription": "Připojí se přímo k síti Tor, bez zásuvného transportu.",
+  "torSettingsDescCensored": "Tor se nedokázal připojit k síti. Obvykle to znamená, že je připojení filtrováno.",
+  "torSettingsModeAutomaticDescription": "Nejprve zkusí přímé připojení k Toru a použije Snowflake, pokud se zdá, že síť Tor blokuje.",
+  "torSettingsModeSnowflakeDescription": "Použije dobrovolnické proxy Snowflake k dosažení Toru z filtrované sítě.",
+  "torSettingsDescConnected": "Tor proxy je spuštěn a připraven",
+  "torSettingsStatusCensored": "Připojení je zřejmě filtrováno",
+  "torSettingsActiveTransport": "Aktivní transport: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "Jak se rozhodnout?",
+  "backupWalletHowToDecideBackupModalTitle": "Jak se rozhodnout",
+  "backupSettingsSecurityWarning": "Bezpečnostní upozornění"
 }

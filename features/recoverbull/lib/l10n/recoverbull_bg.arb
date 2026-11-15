@@ -576,5 +576,16 @@
   "recoverbullErrorInvalidVaultFile": "Невалиден файл на трезора.",
   "backupKeyWarningMessage": "Внимание: Бъдете внимателни къде съхранявате резервния ключ.",
   "backupKeySeparationWarning": "Изключително важно е да не съхранявате резервния ключ на едно и също място, на което съхранявате резервния файл. Винаги ги съхранявайте на отделни устройства или на различни облачни доставчици.",
-  "backupKeyExampleWarning": "Например, ако използвате Google Drive за резервния файл, не използвайте Google Drive за резервния ключ."
+  "backupKeyExampleWarning": "Например, ако използвате Google Drive за резервния файл, не използвайте Google Drive за резервния ключ.",
+  "torSettingsModeDirectDescription": "Свързва се пряко с мрежата Tor, без сменяем транспорт.",
+  "torSettingsDescCensored": "Tor не успя да достигне мрежата. Това обикновено означава, че връзката се филтрира.",
+  "torSettingsModeAutomaticDescription": "Първо опитва пряка връзка с Tor и използва Snowflake, ако мрежата изглежда блокира Tor.",
+  "torSettingsModeSnowflakeDescription": "Използва доброволчески Snowflake прокси сървъри, за да достигне Tor от филтрирана мрежа.",
+  "torSettingsDescConnected": "Tor прокси работи и е готов",
+  "torSettingsStatusCensored": "Връзката изглежда филтрирана",
+  "torSettingsActiveTransport": "Активен транспорт: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "Как да решите?",
+  "backupWalletHowToDecideBackupModalTitle": "Как да решите",
+  "backupSettingsSecurityWarning": "Предупреждение за сигурността."
 }

@@ -258,5 +258,16 @@
   "recoverbullErrorInvalidVaultFile": "Virheellinen holvitiedosto.",
   "backupKeyWarningMessage": "Varoitus: Ole varovainen, mihin tallennat varmuuskopioavaimen.",
   "backupKeySeparationWarning": "On elintärkeää, ettet tallenna varmuuskopioavainta samaan paikkaan kuin varmuuskopiotiedostoa. Säilytä ne aina eri laitteilla tai eri pilvipalveluissa.",
-  "backupKeyExampleWarning": "Esimerkiksi jos käytit Google Drivea varmuuskopiotiedostoon, älä käytä Google Drivea varmuuskopioavaimelle."
+  "backupKeyExampleWarning": "Esimerkiksi jos käytit Google Drivea varmuuskopiotiedostoon, älä käytä Google Drivea varmuuskopioavaimelle.",
+  "torSettingsModeDirectDescription": "Yhdistää suoraan Tor-verkkoon ilman liitettävää siirtotapaa.",
+  "torSettingsDescCensored": "Tor ei saanut yhteyttä verkkoon. Tämä tarkoittaa usein, että yhteyttä suodatetaan.",
+  "torSettingsModeAutomaticDescription": "Kokeilee ensin suoraa Tor-yhteyttä ja käyttää Snowflakea, jos verkko näyttää estävän Torin.",
+  "torSettingsModeSnowflakeDescription": "Käyttää vapaaehtoisten Snowflake-välityspalvelimia Torin tavoittamiseen suodatetusta verkosta.",
+  "torSettingsDescConnected": "Tor-välityspalvelin on käynnissä ja valmiina",
+  "torSettingsStatusCensored": "Yhteys vaikuttaa suodatetulta",
+  "torSettingsActiveTransport": "Aktiivinen siirtotapa: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "Miten valita?",
+  "backupWalletHowToDecideBackupModalTitle": "Miten valita",
+  "backupSettingsSecurityWarning": "Turvallisuusvaroitus"
 }

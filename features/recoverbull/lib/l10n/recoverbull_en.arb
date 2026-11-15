@@ -866,5 +866,58 @@
   "recoverbullPassphraseWhitespace": "Leading or trailing spaces are part of your passphrase.",
   "recoverbullContinueWithoutPassphrase": "Continue without",
   "recoverbullContinueWithoutPassphraseWarning": "Open a different wallet? It is probably empty. This does not recover the wallet in your backup.",
-  "recoverbullPassphraseVerify": "Verify"
+  "recoverbullPassphraseVerify": "Verify",
+  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
+  "@torSettingsModeDirectDescription": {
+    "description": "Direct Tor mode explanation"
+  },
+  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
+  "@torSettingsDescCensored": {
+    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
+  },
+  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
+  "@torSettingsModeAutomaticDescription": {
+    "description": "Automatic Tor mode explanation"
+  },
+  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
+  "@torSettingsModeSnowflakeDescription": {
+    "description": "Snowflake Tor mode explanation"
+  },
+  "torSettingsDescConnected": "Tor proxy is running and ready",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsStatusCensored": "Connection appears filtered",
+  "@torSettingsStatusCensored": {
+    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
+  },
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "@torSettingsActiveTransport": {
+    "description": "Transport currently used by embedded Tor",
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "@torSettingsModeSnowflake": {
+    "description": "Snowflake Tor transport mode label"
+  },
+  "torTitle": "Tor",
+  "@torTitle": {
+    "description": "Short title for Tor configuration entry points"
+  },
+  "backupWalletHowToDecide": "How to decide?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "How to decide",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "backupSettingsSecurityWarning": "Security Warning",
+  "@backupSettingsSecurityWarning": {
+    "description": "Title for backup key security warning modal"
+  }
 }

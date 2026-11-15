@@ -588,5 +588,16 @@
   },
   "backupKeyWarningMessage": "هشدار: مراقب باشید که کلید پشتیبان را کجا ذخیره می کنید.",
   "backupKeySeparationWarning": "بسیار مهم است که شما کلید پشتیبان را در همان جایی که فایل پشتیبان خود را ذخیره می کنید ذخیره نکنید. همیشه آنها را در دستگاه های جداگانه یا ارائه دهندگان ابر جداگانه ذخیره کنید.",
-  "backupKeyExampleWarning": "به عنوان مثال، اگر از Google Drive برای فایل پشتیبان خود استفاده می کنید، از Google Drive برای کلید پشتیبان خود استفاده نکنید."
+  "backupKeyExampleWarning": "به عنوان مثال، اگر از Google Drive برای فایل پشتیبان خود استفاده می کنید، از Google Drive برای کلید پشتیبان خود استفاده نکنید.",
+  "torSettingsModeDirectDescription": "بدون حامل اتصال‌پذیر، مستقیماً به شبکه Tor متصل می‌شود.",
+  "torSettingsDescCensored": "Tor نتوانست به شبکه برسد. این معمولاً یعنی اتصال در حال فیلتر شدن است.",
+  "torSettingsModeAutomaticDescription": "ابتدا اتصال مستقیم به Tor را می‌آزماید و اگر به‌نظر برسد شبکه Tor را مسدود می‌کند، از Snowflake استفاده می‌کند.",
+  "torSettingsModeSnowflakeDescription": "از پروکسی‌های داوطلبانه Snowflake استفاده می‌کند تا از شبکه‌ای فیلترشده به Tor برسد.",
+  "torSettingsDescConnected": "Tor پروکسی در حال اجرا و آماده است",
+  "torSettingsStatusCensored": "به‌نظر می‌رسد اتصال فیلتر شده است",
+  "torSettingsActiveTransport": "حامل فعال: {transport}",
+  "torSettingsModeSnowflake": "Snowflake",
+  "backupWalletHowToDecide": "چگونه تصمیم بگیریم؟?",
+  "backupWalletHowToDecideBackupModalTitle": "چگونه تصمیم بگیریم",
+  "backupSettingsSecurityWarning": "هشدار امنیتی"
 }
