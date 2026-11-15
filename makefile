@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rustc-pins-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rustc-pins-test unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -353,6 +353,9 @@ verify-rustc-pins:
 
 rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins
+
+unit-test-shard-test:
+	@python3 -m unittest tools.testing.test_unit_test_shard
 
 verify:
 	@echo "🔍 Verifying reproducible build"

@@ -238,6 +238,10 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make rustc-pins-test
 
+      - name: Unit test shard script regressions
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make unit-test-shard-test
+
       # Default success() gate on purpose: if any static check above is red,
       # skip the tests — the PR needs another push anyway.
       - name: Unit tests must pass
