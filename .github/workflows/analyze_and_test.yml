@@ -244,8 +244,41 @@ jobs:
 
       # Default success() gate on purpose: if any static check above is red,
       # skip the tests — the PR needs another push anyway.
+      # This job runs shard 0 of the unit tests; unit-shards runs the others in parallel.
+      - name: Unit tests must pass (shard 0 of 3)
+        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=0
+
+  # The unit suites are the long pole of `checks`. Each shard gets a disjoint third of every member's test files (tools/unit_test_shard.sh) and pays only the cached setup.
+  unit-shards:
+    needs: [classification, action-pins, readiness]
+    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Unit tests (shard ${{ matrix.shard }} of 3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Same reclaim as `checks`: the setup's .dart_tool and SDK do not fit a stock x64 runner otherwise.
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Flutter setup
+        uses: ./.github/actions/flutter-setup
+
       - name: Unit tests must pass
-        run: make unit-test
+        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
 
   integration:
     needs: [classification, action-pins, readiness]
@@ -318,7 +351,7 @@ jobs:
   ci:
     name: CI
     if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false) }}
-    needs: [classification, action-pins, readiness, checks, integration]
+    needs: [classification, action-pins, readiness, checks, unit-shards, integration]
     runs-on: ubuntu-24.04
     steps:
       - name: Require the expected checks
@@ -328,6 +361,7 @@ jobs:
           ACTION_PINS_RESULT: ${{ needs.action-pins.result }}
           READINESS_RESULT: ${{ needs.readiness.result }}
           CHECKS_RESULT: ${{ needs.checks.result }}
+          UNIT_SHARDS_RESULT: ${{ needs.unit-shards.result }}
           INTEGRATION_RESULT: ${{ needs.integration.result }}
         run: |
           set -euo pipefail
@@ -352,14 +386,18 @@ jobs:
                 echo "Application checks result was ${CHECKS_RESULT}, expected success" >&2
                 exit 1
               }
+              [[ "$UNIT_SHARDS_RESULT" == success ]] || {
+                echo "Unit test shards result was ${UNIT_SHARDS_RESULT}, expected success" >&2
+                exit 1
+              }
               [[ "$INTEGRATION_RESULT" == success ]] || {
                 echo "Integration result was ${INTEGRATION_RESULT}, expected success" >&2
                 exit 1
               }
               ;;
             false)
-              [[ "$CHECKS_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
-                echo "Docs-only PR expected both application jobs to be skipped; got checks=${CHECKS_RESULT}, integration=${INTEGRATION_RESULT}" >&2
+              [[ "$CHECKS_RESULT" == skipped && "$UNIT_SHARDS_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
+                echo "Docs-only PR expected every application job to be skipped; got checks=${CHECKS_RESULT}, unit-shards=${UNIT_SHARDS_RESULT}, integration=${INTEGRATION_RESULT}" >&2
                 exit 1
               }
               ;;
