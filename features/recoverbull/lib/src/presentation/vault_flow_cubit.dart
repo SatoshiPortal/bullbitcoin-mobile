@@ -140,10 +140,18 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     );
   }
 
-  Future<void> create(VaultProvider provider, String password) async {
+  Future<void> create(
+    VaultProvider provider,
+    String password, {
+    bool passphraseWarningAccepted = false,
+  }) async {
     final value = await _run(
       () =>
-          _session?.create(provider: provider, password: password) ??
+          _session?.create(
+            provider: provider,
+            password: password,
+            passphraseWarningAccepted: passphraseWarningAccepted,
+          ) ??
           Future.value(Err<VaultCompletion, RecoverBullFailure>(unavailable)),
     );
     if (value != null) _publish(vault: value.vault, completion: value);
@@ -173,7 +181,13 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     if (value != null) _publish(completion: value);
   }
 
-  Future<void> manual(VaultKey key, BitcoinNetwork? network) async {
+  Future<void> manual(
+    VaultKey key,
+    BitcoinNetwork? network, {
+    String passphrase = '',
+    bool allowUnverified = false,
+    BackupSettings? capturedSettings,
+  }) async {
     final vault = state.vault;
     if (vault == null) return;
     final value = await _run(
@@ -182,9 +196,28 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
         key: key,
         recoveryNetwork: network,
         cancelled: () => _closing || isClosed,
+        passphrase: passphrase,
+        allowUnverified: allowUnverified,
+        capturedSettings: capturedSettings,
       ),
     );
     if (value != null) _publish(completion: value);
+  }
+
+  Future<({VaultKey key, BackupSettings settings})?> verificationKey(
+    String password,
+  ) async {
+    final vault = state.vault;
+    if (vault == null) return null;
+    return _run(
+      () =>
+          _session?.verificationKey(vault: vault, password: password) ??
+          Future.value(
+            Err<({VaultKey key, BackupSettings settings}), RecoverBullFailure>(
+              unavailable,
+            ),
+          ),
+    );
   }
 
   Future<VaultKey?> reveal(String password) async {

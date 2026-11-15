@@ -26,6 +26,9 @@ final class MnemonicView extends StatefulWidget {
   final String? passphraseLabel;
   final TextStyle? passphraseLabelStyle;
 
+  /// Whether to paint the passphrase after an explicit user action.
+  final bool showPassphrase;
+
   /// Rendered while the read is in flight.
   final Widget placeholder;
 
@@ -51,6 +54,7 @@ final class MnemonicView extends StatefulWidget {
     this.style,
     this.passphraseLabel,
     this.passphraseLabelStyle,
+    this.showPassphrase = false,
     this.placeholder = const SizedBox.shrink(),
     this.wordBuilder,
     this.layoutBuilder,
@@ -138,7 +142,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _words(context, value.words, value.language),
-                  if (value.hasPassphrase) ...[
+                  if (widget.showPassphrase && value.hasPassphrase) ...[
                     if (widget.passphraseLabel case final label?)
                       Padding(
                         padding: const EdgeInsets.only(top: 8),

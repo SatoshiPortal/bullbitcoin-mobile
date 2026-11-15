@@ -9373,10 +9373,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "আপনার ব্যাকআপ পাসফ্রেজ দ্বারা সুরক্ষিত নয়। পরে একটি নতুন ওয়ালেট তৈরি করে আপনার ব্যাকআপে একটি পাসফ্রেজ যোগ করুন।",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "বদল আইডি",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9527,10 +9523,6 @@
   "payCustomFee": "নিজস্ব ফি",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "আপনার ব্যাকআপ পাসফ্রেজ দ্বারা সুরক্ষিত নয়। পরে একটি নতুন ওয়ালেট তৈরি করে আপনার ব্যাকআপে একটি পাসফ্রেজ যোগ করুন।",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "এক্সপ্রেস নিশ্চিত করুন",
   "@buyConfirmExpress": {

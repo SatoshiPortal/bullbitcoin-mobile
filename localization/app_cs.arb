@@ -9477,10 +9477,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "Vaše záloha není chráněna pasphrase. Přidejte pasphrase do vaší zálohy později vytvořením nové peněženky.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "Změna ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9631,10 +9627,6 @@
   "payCustomFee": "Vlastní poplatek",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "Vaše záloha není chráněna pasphrase. Přidejte pasphrase do vaší zálohy později vytvořením nové peněženky.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "Potvrzení",
   "@buyConfirmExpress": {

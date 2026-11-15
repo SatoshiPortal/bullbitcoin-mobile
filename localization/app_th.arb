@@ -9658,10 +9658,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "การสํารองข้อมูลของคุณไม่ได้ป้องกันข้อความ เพิ่มข้อความผ่านการสํารองข้อมูลของคุณในภายหลังโดยการสร้างกระเป๋าสตางค์ใหม่.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "รหัส",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9816,10 +9812,6 @@
   "payCustomFee": "ค่าธรรมเนียมที่กําหนดเอง",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "การสํารองข้อมูลของคุณไม่ได้ป้องกันข้อความ เพิ่มข้อความผ่านการสํารองข้อมูลของคุณในภายหลังโดยการสร้างกระเป๋าสตางค์ใหม่.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "ยืนยัน",
   "@buyConfirmExpress": {
