@@ -43,10 +43,6 @@
   "@inMore": {
     "description": "Wallet quick action customization."
   },
-  "preview": "Preview",
-  "@preview": {
-    "description": "Wallet quick action customization."
-  },
   "edit": "Edit",
   "@edit": {
     "description": "Wallet quick action customization."
