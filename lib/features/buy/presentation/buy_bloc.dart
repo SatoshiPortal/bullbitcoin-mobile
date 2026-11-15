@@ -136,7 +136,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       ),
     );
 
-    final List<Wallet> wallets;
+    // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+    List<Wallet> wallets;
     switch (await _loadBuyContextUsecase.wallets()) {
       case Ok(:final value):
         wallets = value;

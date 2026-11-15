@@ -45,7 +45,8 @@ class StartDcaUsecase {
     // The repository is the boundary: it already caught, logged the raw
     // reason, and handed back a sanitized failure — including the
     // "no API key stored" case.
-    final UserSummary userSummary;
+    // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+    UserSummary userSummary;
     switch (await (isMainnet
         ? _mainnetExchangeUserRepository.getUserSummary()
         : _testnetExchangeUserRepository.getUserSummary())) {
