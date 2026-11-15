@@ -1,3 +1,4 @@
+import '../exchange_access.dart';
 import '../repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
@@ -37,24 +38,39 @@ class WatchExchangeNotificationsUsecase {
         },
       );
 
-  Future<Result<void, ExchangeFailure>> _open({required bool reconnect}) =>
-      _access.runAuthenticated(() async {
-        final allowed = await readExchangeEnvironment(
-          _settingsRepository,
-          ExchangeNotificationsUnavailableFailure.new,
-        );
-        if (allowed case Err(:final failure)) {
-          _exchangeNotificationRepository.disconnect();
-          return Err(failure);
-        }
-        final result = reconnect
-            ? await _exchangeNotificationRepository.reconnect()
-            : await _exchangeNotificationRepository.connect();
-        return result.mapErr(
-          (failure) =>
-              ExchangeNotificationsUnavailableFailure(failure.logMessage),
-        );
-      });
+  /// The handshake stays outside the access queue so it cannot delay sign-out
+  /// or trading. Sign-out, reconciliation and expiry disconnect, which also
+  /// abandons an in-flight attempt, so a stale attempt only reports itself.
+  Future<Result<void, ExchangeFailure>> _open({required bool reconnect}) async {
+    final token = _access.epoch;
+    if (!_signedIn) return const Err(ExchangeNotAuthenticatedFailure());
+    final allowed = await readExchangeEnvironment(
+      _settingsRepository,
+      ExchangeNotificationsUnavailableFailure.new,
+    );
+    if (token != _access.epoch || !_signedIn) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    if (allowed case Err(:final failure)) {
+      _exchangeNotificationRepository.disconnect();
+      return Err(failure);
+    }
+    // The attempt starts synchronously after this check.
+    final result = reconnect
+        ? await _exchangeNotificationRepository.reconnect()
+        : await _exchangeNotificationRepository.connect();
+    if (token != _access.epoch) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    return result.mapErr(
+      (failure) => ExchangeNotificationsUnavailableFailure(failure.logMessage),
+    );
+  }
+
+  bool get _signedIn => switch (_access.current) {
+    ExchangeAccessEnabled(session: ExchangeAccessSession.signedIn) => true,
+    _ => false,
+  };
 
   @useResult
   Future<Result<void, ExchangeFailure>> connect() => _open(reconnect: false);

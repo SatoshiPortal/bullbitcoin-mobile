@@ -268,9 +268,12 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
     ++_epoch;
     _cleanupPending = true;
     _emit(const ExchangeAccessSignOutIncomplete());
-    // Interrupt an in-flight handshake before waiting for its serialized completion.
+    // Journal before queued work finishes, so a killed app still completes the
+    // sign-out at the next start. The cleanup writes the journal again.
+    final journaled = _write(false, true);
     final disconnected = _attempt(_disconnectNotifications);
     return _serial(() async {
+      await journaled;
       await disconnected;
       return _signOutCleanup();
     });
