@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 
-/// Combines the exchange state with the current platform restriction.
+/// Combines the exchange state with the platform and network restrictions.
 class WatchQuickActionsVisibilityUsecase {
   const WatchQuickActionsVisibilityUsecase({
     required this._exchange,
@@ -27,10 +27,15 @@ class WatchQuickActionsVisibilityUsecase {
     var platformChanged = false;
     var active = true;
     bool? lastValue;
+    bool? networkAllowed;
+    var networkCheck = 0;
 
     void publish() {
       if (!platformResolved) return;
+      final network = networkAllowed;
+      if (network == null) return;
       final visible =
+          network &&
           access is! ExchangeAccessResolving &&
           ExchangeAvailability.resolve(
                 platformAllowed: allowed,
@@ -43,12 +48,25 @@ class WatchQuickActionsVisibilityUsecase {
       }
     }
 
+    // Network changes reconcile access, so each access state rechecks it.
+    void checkNetwork() {
+      final check = ++networkCheck;
+      unawaited(() async {
+        final unavailable = await _exchange.networkUnavailable();
+        if (check != networkCheck || !active || controller.isClosed) return;
+        networkAllowed = !unavailable;
+        publish();
+      }());
+    }
+
     controller = StreamController<bool>(
       onListen: () {
         accessSubscription = _exchange.watchAccess().listen((value) {
           access = value;
           publish();
+          checkNetwork();
         });
+        checkNetwork();
         platformSubscription = _platformChanges.listen((value) {
           platformChanged = true;
           platformResolved = true;
