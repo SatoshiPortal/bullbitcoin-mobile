@@ -74,8 +74,9 @@ class BullPickerMenu<T> extends StatelessWidget {
   }
 }
 
-/// A compact bordered chip that shows the selected choice and opens a
-/// [BullPickerMenu]: the inline picker of a settings row.
+/// A compact chip that shows the selected choice and opens a
+/// [BullPickerMenu]: the inline picker of a settings row. Bordered unless
+/// [outlined] is false, for a row whose title already frames it.
 class BullPickerChip<T> extends StatelessWidget {
   const BullPickerChip({
     super.key,
@@ -84,6 +85,7 @@ class BullPickerChip<T> extends StatelessWidget {
     required this.onChanged,
     this.icon,
     this.tooltip,
+    this.outlined = true,
   });
 
   /// The choices, in menu order.
@@ -101,6 +103,9 @@ class BullPickerChip<T> extends StatelessWidget {
   /// Accessible name of the picker.
   final String? tooltip;
 
+  /// Draws the border; without it the chip ends flush with the row.
+  final bool outlined;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
@@ -115,11 +120,15 @@ class BullPickerChip<T> extends StatelessWidget {
         decoration: ShapeDecoration(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(context.bullShapes.button),
-            side: BorderSide(color: colors.outline),
+            side: outlined
+                ? BorderSide(color: colors.outline)
+                : BorderSide.none,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: outlined
+              ? const EdgeInsets.symmetric(horizontal: 16, vertical: 8)
+              : const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
