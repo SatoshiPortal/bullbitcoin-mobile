@@ -24,7 +24,6 @@ import 'package:bb_mobile/core/errors/send_errors.dart'
     show BroadcastTransactionException;
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -53,6 +52,7 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_u
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/load_send_fees_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -103,7 +103,7 @@ class SendCubit extends Cubit<SendState>
     required this._detectBitcoinStringUsecase,
     required this._getSettingsUsecase,
     required this._getSendExchangeRateUsecase,
-    required this._getNetworkFeesUsecase,
+    required this._loadSendFeesUsecase,
     required this._getWalletUtxosUsecase,
     required this._prepareBitcoinSendUsecase,
     required this._validateBitcoinSelectionUsecase,
@@ -184,7 +184,7 @@ class SendCubit extends Cubit<SendState>
   final GetSettingsUsecase _getSettingsUsecase;
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
   final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
-  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final LoadSendFeesUsecase _loadSendFeesUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
@@ -255,6 +255,7 @@ class SendCubit extends Cubit<SendState>
   int _selectedWalletGeneration = 0;
   int _utxoLoadGeneration = 0;
   int _paymentRequestInputGeneration = 0;
+  Network? _feeNetwork;
   int _transactionGeneration = 0;
   int _nextRecipientId = 1;
   final Map<int, int> _recipientInputGenerations = {};
@@ -2200,66 +2201,54 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> loadFees({int? inputGeneration}) async {
-    final wallet = state.selectedWallet;
-    if (wallet == null) return;
-    final environment = wallet.network.environment;
-    bool isStale() =>
-        (inputGeneration != null &&
+    final network = state.selectedWallet?.network;
+    if (network == null) return;
+    final canReuseFees = _feeNetwork?.environment == network.environment;
+    final result = await _loadSendFeesUsecase.execute(
+      network: network,
+      previousBitcoinFees: canReuseFees ? state.bitcoinFeesList : null,
+      previousLiquidFees: canReuseFees ? state.liquidFeesList : null,
+    );
+    if ((inputGeneration != null &&
             inputGeneration != _paymentRequestInputGeneration) ||
-        state.selectedWallet?.network != wallet.network;
-    try {
-      final bitcoinFees = await _getNetworkFeesUsecase.execute(
-        isLiquid: false,
-        network: Network.fromEnvironment(
-          environment: environment,
-          isLiquid: false,
-        ),
-      );
-      if (isStale()) return;
-      final liquidFees = wallet.network == Network.bitcoinRegtest
-          ? null
-          : await _getNetworkFeesUsecase.execute(
-              isLiquid: true,
-              network: Network.fromEnvironment(
-                environment: environment,
-                isLiquid: true,
-              ),
-            );
-      if (isStale()) return;
-      final ratesChanged =
-          state.bitcoinFeesList != bitcoinFees ||
-          state.liquidFeesList != liquidFees;
-      // Default to Fastest only on the first successful load. Once a
-      // selection exists, a fee refresh must preserve it — silently
-      // resetting to Fastest would clobber a committed tier (or custom).
-      final isFirstLoad = state.bitcoinFeesList == null;
-      emit(
-        state.copyWith(
-          bitcoinFeesList: bitcoinFees,
-          liquidFeesList: liquidFees,
-          selectedFeeOption: isFirstLoad
-              ? FeeSelection.fastest
-              : state.selectedFeeOption,
-        ),
-      );
-      // Mempool rates changed — preset PSBTs were built at the old
-      // rates and are now stale. Custom slot is keyed by the typed rate
-      // so it's unaffected, but `clearBitcoinFeePreviews` is whole-batch
-      // by design and the next modal open will rebuild it. Skip the
-      // clear when the API returned identical rates (which freezed
-      // equality on FeeOptions makes cheap to check).
-      if (ratesChanged) {
-        clearBitcoinFeePreviews();
-        _scheduleRecipientPreview();
-      }
-    } catch (e) {
-      if (isStale()) return;
-      log.warning('Network fee rates unavailable', error: e.runtimeType);
-      emit(
-        state.copyWith(
-          failure: SendFeesUnavailableFailure(e.runtimeType.toString()),
-        ),
-      );
+        state.selectedWallet?.network != network) {
+      return;
+    }
+    final SendFeeRates fees;
+    switch (result) {
+      case Ok(:final value):
+        fees = value;
+        _feeNetwork = network;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+        return;
+    }
+    final ratesChanged =
+        state.bitcoinFeesList != fees.bitcoin ||
+        state.liquidFeesList != fees.liquid;
+    // Default to Fastest only on the first successful load. Once a
+    // selection exists, a fee refresh must preserve it — silently
+    // resetting to Fastest would clobber a committed tier (or custom).
+    final isFirstLoad = state.bitcoinFeesList == null;
+    emit(
+      state.copyWith(
+        bitcoinFeesList: fees.bitcoin,
+        liquidFeesList: fees.liquid,
+        usingFallbackFees: fees.usingFallbackBitcoinFees,
+        selectedFeeOption: isFirstLoad
+            ? FeeSelection.fastest
+            : state.selectedFeeOption,
+      ),
+    );
+    // Mempool rates changed — preset PSBTs were built at the old
+    // rates and are now stale. Custom slot is keyed by the typed rate
+    // so it's unaffected, but `clearBitcoinFeePreviews` is whole-batch
+    // by design and the next modal open will rebuild it. Skip the
+    // clear when the API returned identical rates (which freezed
+    // equality on FeeOptions makes cheap to check).
+    if (ratesChanged) {
+      clearBitcoinFeePreviews();
+      _scheduleRecipientPreview();
     }
   }
 

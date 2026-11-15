@@ -140,6 +140,9 @@ abstract class SendState with _$SendState {
     @Default(true) bool replaceByFee,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
+
+    /// Whether [bitcoinFeesList] holds previously fetched or fallback rates.
+    @Default(false) bool usingFallbackFees,
     NetworkFee? customFee,
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
     // Arm/disarm snapshot — internal to the custom-fee modal flow. When the

@@ -3,14 +3,17 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_netw
 import 'package:bb_mobile/features/fees/data/regtest_fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/fees_datasource.dart';
 import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
+import 'package:bb_mobile/core/fees/data/models/mempool_fees_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bull_tor/tor.dart';
 
 class FeesRepositoryImpl implements FeesRepository {
   final ElectrumServersPort _electrumServers;
@@ -18,6 +21,8 @@ class FeesRepositoryImpl implements FeesRepository {
   final FeesDatasource _feesDatasource;
   final MempoolSettingsRepository _mempoolSettingsRepository;
   final MempoolServerRepository _mempoolServerRepository;
+  final SettingsRepository _settingsRepository;
+  final Tor _tor;
 
   const FeesRepositoryImpl({
     required this._feesDatasource,
@@ -25,6 +30,8 @@ class FeesRepositoryImpl implements FeesRepository {
     this._regtestFeesDatasource = const RegtestFeesDatasource(),
     required this._mempoolSettingsRepository,
     required this._mempoolServerRepository,
+    required this._settingsRepository,
+    required this._tor,
   });
 
   @override
@@ -40,11 +47,10 @@ class FeesRepositoryImpl implements FeesRepository {
       }
     }
     if (network.isBitcoin) {
-      final fees = await _feesDatasource.fetchBitcoinNetworkFees(
-        baseUrl: await _resolveBitcoinMempoolUrl(
-          isTestnet: network.requireHistoricalTestnet(),
-        ),
+      final baseUrl = await _resolveBitcoinMempoolUrl(
+        isTestnet: network.requireHistoricalTestnet(),
       );
+      final fees = await _fetchBitcoinNetworkFees(baseUrl);
       return MempoolFeesMapper.toFeeOptions(fees);
     }
 
@@ -59,6 +65,79 @@ class FeesRepositoryImpl implements FeesRepository {
       minRelay: minRelay,
     );
   }
+
+  Future<MempoolFeesModel> _fetchBitcoinNetworkFees(String baseUrl) async {
+    final settings = await _settingsRepository.fetch();
+    if (settings.useTorProxy) {
+      return _fetchThroughExternalProxy(
+        baseUrl,
+        proxyPort: settings.torProxyPort,
+      );
+    }
+
+    if (_isOnion(baseUrl)) return _fetchThroughEmbeddedTor(baseUrl);
+
+    try {
+      return await _feesDatasource.fetchBitcoinNetworkFees(
+        baseUrl: baseUrl,
+        proxyEndpoint: null,
+      );
+    } on MempoolFeesException {
+      return _fetchThroughEmbeddedTor(baseUrl);
+    }
+  }
+
+  Future<MempoolFeesModel> _fetchThroughExternalProxy(
+    String baseUrl, {
+    required int proxyPort,
+  }) async {
+    final TorProxyEndpoint endpoint;
+    try {
+      endpoint = TorProxyEndpoint(host: '127.0.0.1', port: proxyPort);
+    } on ArgumentError {
+      throw MempoolFeesException('Configured fee proxy is unavailable');
+    }
+
+    try {
+      return switch (await _tor.external.verify(endpoint)) {
+        TorReady(:final route) => await _feesDatasource.fetchBitcoinNetworkFees(
+          baseUrl: baseUrl,
+          proxyEndpoint: route.endpoint,
+        ),
+        _ => throw MempoolFeesException('Configured fee proxy is unavailable'),
+      };
+    } on MempoolFeesException {
+      rethrow;
+    } on Exception {
+      throw MempoolFeesException('Configured fee proxy is unavailable');
+    }
+  }
+
+  Future<MempoolFeesModel> _fetchThroughEmbeddedTor(String baseUrl) async {
+    TorSession? session;
+    try {
+      session = await _tor.embedded.sessions.open();
+      return await _feesDatasource.fetchBitcoinNetworkFees(
+        baseUrl: baseUrl,
+        proxyEndpoint: session.endpoint,
+      );
+    } on MempoolFeesException {
+      rethrow;
+    } on Exception {
+      throw MempoolFeesException('Tor fee request is unavailable');
+    } finally {
+      try {
+        await session?.close();
+      } on Exception {
+        // Route cleanup must not replace the fee request result.
+      }
+    }
+  }
+
+  bool _isOnion(String baseUrl) =>
+      Uri.parse(baseUrl.contains('://') ? baseUrl : 'https://$baseUrl').host
+          .toLowerCase()
+          .endsWith('.onion');
 
   Future<String> _resolveBitcoinMempoolUrl({required bool isTestnet}) async {
     final network = MempoolServerNetwork.fromEnvironment(

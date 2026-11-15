@@ -24,7 +24,7 @@ void main() {
       expect(tester.takeException(), isNull);
       final context = tester.element(find.byType(Scaffold));
       expect(
-        find.text(AppLocalizations.of(context).oopsSomethingWentWrong),
+        find.text(AppLocalizations.of(context).psbtFlowMissingPsbt),
         findsOneWidget,
       );
     },

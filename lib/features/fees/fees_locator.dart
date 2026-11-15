@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/fees/data/fees_repository_impl.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bull_tor/tor.dart';
 import 'package:get_it/get_it.dart';
 
 class FeesLocator {
@@ -17,6 +18,8 @@ class FeesLocator {
         mempoolSettingsRepository: locator(),
         mempoolServerRepository: locator(),
         electrumServers: locator(),
+        settingsRepository: locator(),
+        tor: locator<Tor>(),
       ),
     );
   }
