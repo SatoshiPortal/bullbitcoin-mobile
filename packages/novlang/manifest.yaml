@@ -32,8 +32,12 @@ stores:
     blacklist:
       all: []
     replacements: {}
+# Each catalogue names the package whose l10n.yaml generates it, from the
+# repository root; tools/novlang_bridge.dart generates its novlang delegate.
 catalogues:
-  app: the root catalogue (localization/app_<lang>.arb)
+  app:
+    path: .
+    description: the root catalogue (localization/app_<lang>.arb)
 entries:
   - {catalogue: app, key: swapRestoreTitle, store: apple, word: swap, euphemism: transfer}
   - {catalogue: app, key: swapRestoreActionable, store: apple, word: swap, euphemism: transfer}
