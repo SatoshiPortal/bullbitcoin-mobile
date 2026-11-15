@@ -212,6 +212,8 @@ class _LegacySeedCard extends StatelessWidget {
           onRevealed: onRevealed,
           style: context.font.bodyMedium,
           passphraseLabel: context.loc.legacyBackupPassphraseLabel,
+          // Words alone restore a different wallet after reinstalling.
+          showPassphrase: true,
           placeholder: const CircularProgressIndicator(),
           failureBuilder: (context, failure, retry) {
             onFailure();
