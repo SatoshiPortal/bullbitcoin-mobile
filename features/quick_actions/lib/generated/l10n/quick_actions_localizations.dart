@@ -224,12 +224,6 @@ abstract class QuickActionsLocalizations {
   /// Wallet quick action customization.
   ///
   /// In en, this message translates to:
-  /// **'Preview'**
-  String get preview;
-
-  /// Wallet quick action customization.
-  ///
-  /// In en, this message translates to:
   /// **'Edit'**
   String get edit;
 

@@ -70,9 +70,6 @@ class QuickActionsLocalizationsEn extends QuickActionsLocalizations {
   String get inMore => 'In More';
 
   @override
-  String get preview => 'Preview';
-
-  @override
   String get edit => 'Edit';
 
   @override
