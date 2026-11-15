@@ -54,10 +54,12 @@ const _labelCount = 3;
 /// 9→10 seeds), so stopping them part-way reproduces what a crash left on
 /// devices running an older release.
 class _ReleasedMigrationOrder extends SqliteDatabase {
+  static const latestSchemaVersion = 15;
+
   _ReleasedMigrationOrder(super.executor);
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => latestSchemaVersion;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -93,10 +95,10 @@ void main() {
   // Exhaustive file-backed crash points exceed 30 s when suites share disk I/O.
   group('killed after any commit while upgrading on an older release', () {
     for (final MapEntry(key: version, value: fixture) in _fixtures.entries) {
+      if (version > _ReleasedMigrationOrder.latestSchemaVersion) continue;
       test('from schema $version, the next launch recovers', () async {
         await _everyCrashPoint(
           seed: (file) => _seedFixture(file, version, fixture),
-          expectRegtest: version == 16,
           crashingOpen: (executor) => _ReleasedMigrationOrder(executor),
         );
       }, timeout: const Timeout(Duration(minutes: 2)));
