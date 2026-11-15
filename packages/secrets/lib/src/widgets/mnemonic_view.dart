@@ -16,6 +16,9 @@ import 'package:secrets/src/public/secret.dart';
 final class MnemonicView extends StatefulWidget {
   final Secret secret;
 
+  /// Called after a successful sealed read; carries no key material.
+  final VoidCallback? onRevealed;
+
   /// Text style for the words and the passphrase.
   final TextStyle? style;
 
@@ -46,6 +49,7 @@ final class MnemonicView extends StatefulWidget {
   const MnemonicView({
     super.key,
     required this.secret,
+    this.onRevealed,
     required this.failureBuilder,
     this.style,
     this.passphraseLabel,
@@ -89,6 +93,7 @@ final class _MnemonicViewState extends State<MnemonicView> {
     ) {
       if (!mounted || generation != _generation) return;
       setState(() => _result = result);
+      if (result is Ok) widget.onRevealed?.call();
     });
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/exceptions.dart';
+import 'package:secrets/src/data/legacy_keystore_datasource.dart';
 import 'package:secrets/src/data/models/key_model.dart';
 import 'package:secrets/src/data/models/secret_model.dart';
 import 'package:secrets/src/domain/domain.dart';
@@ -85,9 +87,26 @@ class FlutterSecureStorageDatasource {
   static const _initialDelay = Duration(milliseconds: 300);
 
   final FlutterSecureStorage _storage;
+  final bool legacyReadOnly;
+
+  static Future<LegacyKeystoreInventory>? _inventory;
+
+  static Future<LegacyKeystoreInventory?> inspectAndroid() async {
+    if (!Platform.isAndroid) return null;
+    return _inventory ??= const LegacyKeystoreDatasource().inspect();
+  }
+
+  static Future<bool> normalStoreAvailable() async {
+    final inventory = await inspectAndroid();
+    return inventory == null ||
+        inventory.format == LegacyKeystoreFormat.gcm ||
+        (inventory.format == LegacyKeystoreFormat.empty &&
+            !inventory.sourcePresent &&
+            !inventory.priorStoreHint);
+  }
 
   @internal
-  FlutterSecureStorageDatasource()
+  FlutterSecureStorageDatasource({this.legacyReadOnly = false})
     : _storage = const FlutterSecureStorage(
         aOptions: AndroidOptions(
           // Never auto-delete on error and never migrate: both defaults
@@ -459,8 +478,17 @@ class FlutterSecureStorageDatasource {
 
   /// Never takes [_lock]. A composed operation already holds it, and
   /// `Lock` is not reentrant: taking it here would hang, not throw.
-  Future<String?> _readRaw(String key) =>
-      _translate(() => _storage.read(key: key));
+  Future<String?> _readRaw(String key) => legacyReadOnly
+      ? _legacyEntries().then((entries) {
+          final value = entries[key];
+          if (value == null || value.isEmpty) {
+            throw const LegacyKeystoreReadException(
+              LegacyKeystoreProblem.unreadable,
+            );
+          }
+          return value;
+        })
+      : _translate(() => _storage.read(key: key));
 
   Future<void> _writeRaw(String key, String value) =>
       _translate(() => _storage.write(key: key, value: value));
@@ -469,14 +497,24 @@ class FlutterSecureStorageDatasource {
       _translate(() => _storage.delete(key: key));
 
   Future<Map<String, String>> _readAllRaw(String prefix) async {
-    final all = await _translate(_storage.readAll);
+    final all = legacyReadOnly
+        ? await _legacyEntries()
+        : await _translate(_storage.readAll);
     return {
       for (final e in all.entries)
         if (e.key.startsWith(prefix)) e.key: e.value,
     };
   }
 
+  Future<Map<String, String>> _legacyEntries() async =>
+      (await const LegacyKeystoreDatasource().readLegacy()).entries;
+
   Future<T> _translate<T>(Future<T> Function() body) async {
+    if (legacyReadOnly || !await normalStoreAvailable()) {
+      throw const LegacyKeystoreReadException(
+        LegacyKeystoreProblem.unsupported,
+      );
+    }
     try {
       return await body();
     } on PlatformException catch (e) {

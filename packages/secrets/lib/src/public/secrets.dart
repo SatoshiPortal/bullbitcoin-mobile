@@ -63,6 +63,44 @@ final class Secrets {
     FlutterSecureStorageDatasource.keyNamespace,
   };
 
+  /// Checks Android's physical store before any plugin initialization. A null result permits normal startup; a list requires the terminal backup screen. Failure never authorizes a fresh install or a write to the old store.
+  static Future<Result<List<Secret>?, SecretFailure>> legacyBackup({
+    required Future<String> Function() scratchDirectory,
+  }) => boundary(() async {
+    if (await FlutterSecureStorageDatasource.normalStoreAvailable()) {
+      return null;
+    }
+    final repository = SecretRepository(legacyReadOnly: true);
+    final listing = await repository.describeAll();
+    final infos = switch (listing) {
+      Ok(:final value)
+          when value.unreadable.isEmpty && value.secrets.isNotEmpty =>
+        value.secrets,
+      _ => throw const FormatException('legacy backup unavailable'),
+    };
+    final handles = <Secret>[];
+    for (final info in infos) {
+      // CBC has no authentication: validate BIP39, shape and derived fingerprint before offering any backup. Seed-only entries cannot be backed up here.
+      if (!info.isMnemonic) {
+        throw const FormatException('legacy backup unavailable');
+      }
+      final checked = await repository.use(info, (material) {
+        material.seedBytes.fillRange(0, material.seedBytes.length, 0);
+      });
+      if (checked is Err) {
+        throw const FormatException('legacy backup unavailable');
+      }
+      handles.add(
+        Secret(
+          info,
+          repository: repository,
+          scratchDirectory: scratchDirectory,
+        ),
+      );
+    }
+    return List<Secret>.unmodifiable(handles);
+  }, orElse: FetchSecretFailure.new);
+
   // ---------------------------------------------------------------- creation
 
   /// Generates a fresh mnemonic, stores it, returns its handle.

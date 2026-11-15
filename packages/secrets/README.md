@@ -59,7 +59,7 @@ Secret
 |-- silentPayments
 |   `-- account(name:, network:, blindbitUrl:, electrumUrl:, dataDir:, dustLimit:, fetchConcurrencyFactor:, matchConcurrencyFactor:, [headerCheckpoint:]) -> SpAccount
 `-- widgets
-    |-- mnemonicView([key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [showPassphrase: false], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
+    |-- mnemonicView([onRevealed:], [key:], failureBuilder:, [style:], [passphraseLabel:], [passphraseLabelStyle:], [showPassphrase: false], [placeholder: const SizedBox.shrink()], [wordBuilder:], [layoutBuilder:]) -> MnemonicView
     `-- mnemonicChallenge([key:], tileBuilder:, layoutBuilder:, onSolved:, onMistake:, failureBuilder:, [onProgress:], [style:], [placeholder: const SizedBox.shrink()]) -> MnemonicChallenge
 ```
 
