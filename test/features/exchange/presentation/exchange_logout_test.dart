@@ -93,24 +93,21 @@ void main() {
     addTearDown(changes.close);
   });
 
-  test(
-    'each signed-in reconciliation reopens notifications for an unchanged account',
-    () async {
-      final cubit = build();
-      addTearDown(cubit.close);
-      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-      await Future<void>.delayed(Duration.zero);
-      expect(cubit.state.userSummary, account);
-      verify(notifications.connect).called(1);
+  test('each signed-in reconciliation reopens notifications for an unchanged account', () async {
+    final cubit = build();
+    addTearDown(cubit.close);
+    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.userSummary, account);
+    verify(notifications.connect).called(1);
 
-      // Reconciliation disconnects and emits signed in again; the account
-      // summary is unchanged, so no summary transition can reopen the socket.
-      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
-      await Future<void>.delayed(Duration.zero);
-      expect(cubit.state.userSummary, account);
-      verify(notifications.connect).called(1);
-    },
-  );
+    // Reconciliation disconnects and emits signed in again; the account
+    // summary is unchanged, so no summary transition can reopen the socket.
+    publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.userSummary, account);
+    verify(notifications.connect).called(1);
+  });
 
   test(
     'signed in access loads the account; disabled access clears it',
@@ -126,9 +123,8 @@ void main() {
   );
 
   test('support activation and retry go through their use cases', () async {
-    when(
-      () => enable.execute(forSupport: true),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => enable.execute(forSupport: true))
+        .thenAnswer((_) async => const Ok(null));
     when(resolve.execute).thenAnswer((_) async => const Ok(null));
     final cubit = build();
     addTearDown(cubit.close);
@@ -140,12 +136,11 @@ void main() {
 
   test('authentication loads the account only when it succeeds', () async {
     final authentication = _Authentication();
-    var outcome =
-        const Err<void, ExchangeFailure>(ExchangeAuthenticationFailure())
-            as Result<void, ExchangeFailure>;
-    when(
-      () => authentication.execute(isCurrent: any(named: 'isCurrent')),
-    ).thenAnswer((_) async => outcome);
+    var outcome = const Err<void, ExchangeFailure>(
+      ExchangeAuthenticationFailure(),
+    ) as Result<void, ExchangeFailure>;
+    when(() => authentication.execute(isCurrent: any(named: 'isCurrent')))
+        .thenAnswer((_) async => outcome);
     final cubit = build();
     addTearDown(cubit.close);
     when(
@@ -210,9 +205,8 @@ void main() {
     final first = Completer<Result<UserSummary, ExchangeFailure>>();
     final second = Completer<Result<UserSummary, ExchangeFailure>>();
     var calls = 0;
-    when(
-      getAccount.execute,
-    ).thenAnswer((_) => ++calls == 1 ? first.future : second.future);
+    when(getAccount.execute)
+        .thenAnswer((_) => ++calls == 1 ? first.future : second.future);
     final cubit = build();
     addTearDown(cubit.close);
     publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
@@ -229,9 +223,8 @@ void main() {
     final first = Completer<Result<UserSummary, ExchangeFailure>>();
     final second = Completer<Result<UserSummary, ExchangeFailure>>();
     var calls = 0;
-    when(
-      getAccount.execute,
-    ).thenAnswer((_) => ++calls == 1 ? first.future : second.future);
+    when(getAccount.execute)
+        .thenAnswer((_) => ++calls == 1 ? first.future : second.future);
     final cubit = build();
     addTearDown(cubit.close);
     publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
@@ -248,9 +241,8 @@ void main() {
     final first = Completer<Result<UserSummary, ExchangeFailure>>();
     final second = Completer<Result<UserSummary, ExchangeFailure>>();
     var calls = 0;
-    when(
-      getAccount.execute,
-    ).thenAnswer((_) => ++calls == 1 ? first.future : second.future);
+    when(getAccount.execute)
+        .thenAnswer((_) => ++calls == 1 ? first.future : second.future);
     final cubit = build();
     addTearDown(cubit.close);
     publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
@@ -324,9 +316,8 @@ void main() {
   );
 
   test('stop DCA reports a preference failure', () async {
-    when(
-      () => preferences.execute(dcaEnabled: false),
-    ).thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
+    when(() => preferences.execute(dcaEnabled: false))
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
     final cubit = build();
     addTearDown(cubit.close);
     await cubit.stopDca();

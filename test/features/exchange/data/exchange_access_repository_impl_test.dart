@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/exchange/domain/exchange_availability.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -24,16 +25,14 @@ void main() {
   setUpAll(() {
     registerFallbackValue(
       (ExchangeApiKey.create(
-                id: 'id',
-                key: 'test',
-                name: 'name',
-                userId: 'user',
-                isActive: true,
-                createdAt: 0,
-                updatedAt: 0,
-              )
-              as Ok<ExchangeApiKey, ExchangeApiKeyFailure>)
-          .value,
+        id: 'id',
+        key: 'test',
+        name: 'name',
+        userId: 'user',
+        isActive: true,
+        createdAt: 0,
+        updatedAt: 0,
+      ) as Ok<ExchangeApiKey, ExchangeApiKeyFailure>).value,
     );
   });
 
@@ -45,9 +44,8 @@ void main() {
           'exchange_access': '{"enabled":false,"signOutPending":false}',
         });
         final keys = _Keys();
-        when(
-          () => keys.readActiveApiKey(isTestnet: false),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => keys.readActiveApiKey(isTestnet: false))
+            .thenAnswer((_) async => const Ok(null));
         final auth = _Auth();
         when(auth.generateApiKey).thenAnswer(
           (_) async => const Err(ExchangeAuthenticationDeferredFailure()),
@@ -78,12 +76,10 @@ void main() {
     () async {
       SharedPreferences.setMockInitialValues({});
       final keys = _Keys();
-      when(
-        () => keys.deleteApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Err(ExchangeApiKeyDeleteFailure()));
-      when(
-        () => keys.deleteApiKey(isTestnet: true),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => keys.deleteApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Err(ExchangeApiKeyDeleteFailure()));
+      when(() => keys.deleteApiKey(isTestnet: true))
+          .thenAnswer((_) async => const Ok(null));
       var cookiesCleared = false;
       final repository = ExchangeAccessRepositoryImpl(
         apiKeyRepository: keys,
@@ -106,9 +102,8 @@ void main() {
   test('corrupt preference does not prevent explicit cleanup', () async {
     SharedPreferences.setMockInitialValues({'exchange_access': 'invalid'});
     final keys = _Keys();
-    when(
-      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok(null));
     var cookies = 0;
     final repository = ExchangeAccessRepositoryImpl(
       apiKeyRepository: keys,
@@ -131,9 +126,8 @@ void main() {
   test('a stale expiration does not delete credentials', () async {
     SharedPreferences.setMockInitialValues({});
     final keys = _Keys();
-    when(
-      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok(null));
     final repository = ExchangeAccessRepositoryImpl(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
@@ -154,12 +148,10 @@ void main() {
       'exchange_access': '{"enabled":true,"signOutPending":false}',
     });
     final keys = _Keys();
-    when(
-      () => keys.readActiveApiKey(isTestnet: false),
-    ).thenAnswer((_) async => const Ok('active'));
-    when(
-      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.readActiveApiKey(isTestnet: false))
+        .thenAnswer((_) async => const Ok('active'));
+    when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok(null));
     final environment = Completer<bool>();
     final repository = ExchangeAccessRepositoryImpl(
       apiKeyRepository: keys,
@@ -175,9 +167,9 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     final prefs = await SharedPreferences.getInstance();
-    final journal =
-        jsonDecode(prefs.getString('exchange_access') ?? '{}')
-            as Map<String, dynamic>;
+    final journal = jsonDecode(
+      prefs.getString('exchange_access') ?? '{}',
+    ) as Map<String, dynamic>;
     expect(journal['signOutPending'], isTrue);
 
     environment.complete(false);
@@ -191,9 +183,8 @@ void main() {
       'exchange_access': '{"enabled":false,"signOutPending":true}',
     });
     final keys = _Keys();
-    when(
-      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok(null));
     final repository = ExchangeAccessRepositoryImpl(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
@@ -212,12 +203,10 @@ void main() {
       'exchange_access': '{"enabled":true,"signOutPending":false}',
     });
     final keys = _Keys();
-    when(
-      () => keys.readActiveApiKey(isTestnet: false),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.readActiveApiKey(isTestnet: false))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok(null));
     final auth = _Auth();
     final generated = Completer<Result<ExchangeApiKey, ExchangeFailure>>();
     when(() => auth.generateApiKey()).thenAnswer((_) => generated.future);
@@ -257,9 +246,8 @@ void main() {
   test('journal write failure still clears both keys and cookies', () async {
     SharedPreferences.setMockInitialValues({});
     final keys = _Keys();
-    when(
-      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok(null));
     var cookies = 0;
     final repository = ExchangeAccessRepositoryImpl(
       apiKeyRepository: keys,
@@ -281,9 +269,8 @@ void main() {
   test('resolving an unset preference preserves the wizard choice', () async {
     SharedPreferences.setMockInitialValues({});
     final keys = _Keys();
-    when(
-      () => keys.readActiveApiKey(isTestnet: false),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.readActiveApiKey(isTestnet: false))
+        .thenAnswer((_) async => const Ok(null));
     final repository = ExchangeAccessRepositoryImpl(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
@@ -308,12 +295,10 @@ void main() {
         'exchange_access': '{"enabled":true,"signOutPending":false}',
       });
       final keys = _Keys();
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok('active'));
-      when(
-        () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+          .thenAnswer((_) async => const Ok(null));
       var environment = false;
       var cookies = 0;
       final repository = ExchangeAccessRepositoryImpl(
@@ -339,9 +324,8 @@ void main() {
     () async {
       SharedPreferences.setMockInitialValues({});
       final keys = _Keys();
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok(null));
       final writeStarted = Completer<void>();
       final releaseWrite = Completer<void>();
       final repository = ExchangeAccessRepositoryImpl(
@@ -367,10 +351,9 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       expect(
         (jsonDecode(
-              (preferences.getString('exchange_access') ??
-                  (throw StateError('Missing preference'))),
-            )
-            as Map)['enabled'],
+          (preferences.getString('exchange_access') ??
+              (throw StateError('Missing preference'))),
+        ) as Map)['enabled'],
         isTrue,
       );
     },
@@ -381,12 +364,10 @@ void main() {
     () async {
       SharedPreferences.setMockInitialValues({});
       final keys = _Keys();
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok('active'));
-      when(
-        () => keys.readActiveApiKey(isTestnet: true),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      when(() => keys.readActiveApiKey(isTestnet: true))
+          .thenAnswer((_) async => const Ok(null));
       ExchangeAccessRepositoryImpl repository(bool isTestnet) =>
           ExchangeAccessRepositoryImpl(
             apiKeyRepository: keys,
@@ -415,9 +396,8 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final keys = _Keys();
       var active = true;
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => Ok(active ? 'active' : null));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => Ok(active ? 'active' : null));
       when(() => keys.deleteApiKey(isTestnet: false)).thenAnswer((_) async {
         active = false;
         return const Ok(null);
@@ -452,9 +432,8 @@ void main() {
   test('re-resolving a known state never emits resolving', () async {
     SharedPreferences.setMockInitialValues({});
     final keys = _Keys();
-    when(
-      () => keys.readActiveApiKey(isTestnet: false),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.readActiveApiKey(isTestnet: false))
+        .thenAnswer((_) async => const Ok(null));
     final repository = ExchangeAccessRepositoryImpl(
       apiKeyRepository: keys,
       readEnvironment: () async => false,
@@ -473,27 +452,23 @@ void main() {
     expect(events.whereType<ExchangeAccessResolving>(), isEmpty);
   });
 
-  test(
-    'a failed inferred-enabled preference write does not present a resolved session',
-    () async {
-      SharedPreferences.setMockInitialValues({});
-      final keys = _Keys();
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok('active'));
-      final repository = ExchangeAccessRepositoryImpl(
-        apiKeyRepository: keys,
-        readEnvironment: () async => false,
-        platformAllowed: () async => true,
-        disconnectNotifications: () async {},
-        clearCookies: () async {},
-        writePreference: (_) async => false,
-      );
-      expect(await repository.resolve(), isA<Err>());
-      expect(repository.current, isA<ExchangeAccessUnreadable>());
-      verifyNever(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')));
-    },
-  );
+  test('a failed inferred-enabled preference write does not present a resolved session', () async {
+    SharedPreferences.setMockInitialValues({});
+    final keys = _Keys();
+    when(() => keys.readActiveApiKey(isTestnet: false))
+        .thenAnswer((_) async => const Ok('active'));
+    final repository = ExchangeAccessRepositoryImpl(
+      apiKeyRepository: keys,
+      readEnvironment: () async => false,
+      platformAllowed: () async => true,
+      disconnectNotifications: () async {},
+      clearCookies: () async {},
+      writePreference: (_) async => false,
+    );
+    expect(await repository.resolve(), isA<Err>());
+    expect(repository.current, isA<ExchangeAccessUnreadable>());
+    verifyNever(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')));
+  });
 
   test(
     '401 does not remove a key if the enabled preference cannot be saved',
@@ -502,9 +477,8 @@ void main() {
         'exchange_access': '{"enabled":true,"signOutPending":false}',
       });
       final keys = _Keys();
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok('active'));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
       var disconnected = false;
       final repository = ExchangeAccessRepositoryImpl(
         apiKeyRepository: keys,
@@ -537,12 +511,10 @@ void main() {
         'exchange_access': '{"enabled":true,"signOutPending":false}',
       });
       final keys = _Keys();
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok('active'));
-      when(
-        () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+          .thenAnswer((_) async => const Ok(null));
       final started = Completer<void>();
       final release = Completer<void>();
       var writes = 0;
@@ -590,9 +562,8 @@ void main() {
       final readStarted = Completer<void>();
       final nextKey = Completer<Result<String?, ExchangeApiKeyFailure>>();
       var isTestnet = false;
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok('active'));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
       when(() => keys.readActiveApiKey(isTestnet: true)).thenAnswer((_) {
         readStarted.complete();
         return nextKey.future;

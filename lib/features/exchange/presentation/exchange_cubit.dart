@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import '../domain/exchange_access.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/usecases/get_exchange_account_usecase.dart';
@@ -11,6 +12,7 @@ import '../domain/usecases/resolve_exchange_access_usecase.dart';
 import '../domain/usecases/watch_exchange_access_usecase.dart';
 import '../domain/usecases/watch_exchange_notifications_usecase.dart';
 import 'exchange_state.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 

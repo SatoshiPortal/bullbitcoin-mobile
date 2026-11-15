@@ -27,9 +27,8 @@ void main() {
       when(exchange.networkUnavailable).thenAnswer((_) async => false);
       final settings = _Settings();
       final access = StreamController<ExchangeAccess>();
-      when(
-        () => exchange.currentAccess,
-      ).thenReturn(const ExchangeAccessResolving());
+      when(() => exchange.currentAccess)
+          .thenReturn(const ExchangeAccessResolving());
       when(exchange.watchAccess).thenAnswer((_) => access.stream);
       final values = <bool>[];
       final sub = WatchQuickActionsVisibilityUsecase(
@@ -53,9 +52,8 @@ void main() {
     final settings = _Settings();
     final access = StreamController<ExchangeAccess>();
     final platform = StreamController<bool>();
-    when(
-      () => exchange.currentAccess,
-    ).thenReturn(const ExchangeAccessDisabled());
+    when(() => exchange.currentAccess)
+        .thenReturn(const ExchangeAccessDisabled());
     when(exchange.watchAccess).thenAnswer((_) => access.stream);
     final values = <bool>[];
     final sub = WatchQuickActionsVisibilityUsecase(

@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import '../exchange_access.dart';
 import '../exchange_failure.dart';
 import '../repositories/exchange_access_repository.dart';

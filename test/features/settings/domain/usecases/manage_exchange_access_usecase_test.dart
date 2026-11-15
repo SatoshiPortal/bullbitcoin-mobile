@@ -74,9 +74,8 @@ void main() {
   );
 
   test('logout failure remains visible to settings', () async {
-    when(
-      exchange.logout,
-    ).thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
+    when(exchange.logout)
+        .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
     final usecase = SetSettingsExchangeAccessUsecase(
       exchange,
       settings,

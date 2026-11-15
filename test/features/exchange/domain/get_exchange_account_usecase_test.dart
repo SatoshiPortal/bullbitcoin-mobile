@@ -63,9 +63,8 @@ void main() {
   });
 
   test('current server rejection expires the matching epoch', () async {
-    when(
-      mainnet.getAccount,
-    ).thenAnswer((_) async => const Err(ExchangeSessionRejectedFailure()));
+    when(mainnet.getAccount)
+        .thenAnswer((_) async => const Err(ExchangeSessionRejectedFailure()));
     expect(await usecase.execute(), isA<Err<UserSummary, ExchangeFailure>>());
     verify(() => expire.execute(epoch: 1, isTestnet: false)).called(1);
   });

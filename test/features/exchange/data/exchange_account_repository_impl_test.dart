@@ -49,9 +49,8 @@ void main() {
   });
 
   test('a missing local key is not a server rejection', () async {
-    when(
-      datasource.getUserSummary,
-    ).thenThrow(const ExchangeAuthenticationException());
+    when(datasource.getUserSummary)
+        .thenThrow(const ExchangeAuthenticationException());
     final result = await repository.getAccount();
     expect(
       (result as Err<UserSummary, ExchangeFailure>).failure,

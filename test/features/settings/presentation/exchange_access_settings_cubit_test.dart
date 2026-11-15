@@ -55,9 +55,8 @@ void main() {
   );
 
   test('exposes a failure after logout fails', () async {
-    when(
-      () => set.execute(false),
-    ).thenAnswer((_) async => const Err(SettingsExchangeSyncFailure()));
+    when(() => set.execute(false))
+        .thenAnswer((_) async => const Err(SettingsExchangeSyncFailure()));
     expect(await cubit.setEnabled(false), isFalse);
     expect(cubit.state.failure, isA<SettingsExchangeSyncFailure>());
     expect(cubit.state.busy, isFalse);

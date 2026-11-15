@@ -47,9 +47,8 @@ void main() {
 
   test('a sign-out failure is returned', () async {
     when(request.execute).thenAnswer((_) async => const Ok(null));
-    when(
-      signOut.execute,
-    ).thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
+    when(signOut.execute)
+        .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
     expect(
       (await usecase.execute() as Err).failure,
       isA<ExchangeSessionClearFailure>(),
