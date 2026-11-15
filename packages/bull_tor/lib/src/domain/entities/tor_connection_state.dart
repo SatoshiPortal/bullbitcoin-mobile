@@ -47,11 +47,15 @@ final class TorConnecting extends TorConnectionState {
   final TorDiagnostic? diagnostic;
   final TorTransport? transport;
 
+  /// This attempt circumvents a network that appeared to block direct Tor.
+  final bool circumvention;
+
   const TorConnecting({
     required this.source,
     this.progress,
     this.diagnostic,
     this.transport,
+    this.circumvention = false,
   });
 }
 
