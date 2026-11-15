@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Listens to ExchangeCubit state changes and manages WebSocket connection lifecycle.
 ///
-/// - Connects WebSocket when user logs in (userSummary becomes non-null)
-/// - Disconnects WebSocket when user logs out (userSummary becomes null)
+/// - Disconnects WebSocket when the account is cleared (userSummary becomes
+///   null); [ExchangeCubit] opens it on every signed-in access state
 /// - Reconnects WebSocket when the app returns from the background, as the OS
 ///   may have dropped the connection while it was hidden
 ///
@@ -49,18 +49,9 @@ class _ExchangeListenerState extends State<ExchangeListener> {
   Widget build(BuildContext context) {
     return BlocListener<ExchangeCubit, ExchangeState>(
       listenWhen: (previous, current) =>
-          previous.userSummary != current.userSummary,
-      listener: (context, state) {
-        final exchangeCubit = context.read<ExchangeCubit>();
-
-        if (state.userSummary != null) {
-          // User logged in - connect WebSocket
-          exchangeCubit.connectWebSocket();
-        } else {
-          // User logged out - disconnect WebSocket
-          exchangeCubit.disconnectWebSocket();
-        }
-      },
+          previous.userSummary != null && current.userSummary == null,
+      listener: (context, state) =>
+          context.read<ExchangeCubit>().disconnectWebSocket(),
       child: widget.child,
     );
   }

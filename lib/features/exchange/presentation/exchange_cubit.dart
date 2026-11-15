@@ -38,7 +38,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       if (access case ExchangeAccessEnabled(
         session: ExchangeAccessSession.signedIn,
       )) {
+        // Reconciliation disconnects before it emits signed in, and an
+        // unchanged account emits no summary transition to reopen the socket.
         unawaited(fetchUserSummary());
+        unawaited(connectWebSocket());
       } else {
         _accountAttempt++;
         emit(const ExchangeState());
