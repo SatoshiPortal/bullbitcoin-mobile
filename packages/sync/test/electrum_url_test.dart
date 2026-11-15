@@ -1,0 +1,21 @@
+import 'package:test/test.dart';
+import 'package:sync/src/data/write/datasources/bdk_electrum_datasource.dart';
+
+void main() {
+  test('LWK host:port URLs use TLS for the BDK probe', () {
+    expect(
+      electrumClientUrl('liquid.example:50002'),
+      'ssl://liquid.example:50002',
+    );
+    expect(electrumClientUrl('[::1]:50002'), 'ssl://[::1]:50002');
+  });
+
+  test('explicit transports remain unchanged', () {
+    for (final url in [
+      'ssl://bitcoin.example:50002',
+      'tcp://localhost:50001',
+    ]) {
+      expect(electrumClientUrl(url), url);
+    }
+  });
+}

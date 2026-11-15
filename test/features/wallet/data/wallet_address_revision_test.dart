@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
@@ -15,9 +14,7 @@ class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
-class _Bitcoin extends Mock implements BdkWalletDatasource {}
-
-class _Liquid extends Mock implements LwkWalletDatasource {}
+class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 class _Labels extends Mock implements LabelsFacade {}
 
@@ -42,22 +39,22 @@ void main() {
       registerFallbackValue(WalletModel.fromMetadata(row));
       final metadata = _Metadata();
       final native = _Native();
-      final liquid = _Liquid();
+      final liquid = _Values();
       final labels = _Labels();
       when(() => metadata.fetch(id)).thenAnswer((_) async => row);
       when(() => native.issuedReceiveIndex(row)).thenAnswer((_) async => 7);
       when(
-        () => liquid.getLastUnusedAddressIndex(wallet: any(named: 'wallet')),
+        () => liquid.getLastAddressIndex(wallet: any(named: 'wallet')),
       ).thenAnswer((_) async => 0);
       when(
-        () => liquid.getAddressByIndex(any(), wallet: any(named: 'wallet')),
+        () => liquid.getAddressByIndex(
+          any(),
+          wallet: any(named: 'wallet'),
+          isChange: any(named: 'isChange'),
+        ),
       ).thenAnswer((call) async {
         final index = call.positionalArguments.first as int;
-        return (
-          standard: 'standard$index',
-          confidential: 'confidential$index',
-          index: index,
-        );
+        return 'confidential$index';
       });
       when(
         () => liquid.getTransactions(wallet: any(named: 'wallet')),
@@ -69,8 +66,7 @@ void main() {
       final repository = WalletAddressRepository(
         native: native,
         walletMetadataDatasource: metadata,
-        bdkWalletDatasource: _Bitcoin(),
-        lwkWalletDatasource: liquid,
+        walletValuesDatasource: liquid,
         labelsFacade: labels,
       );
       final addresses = await repository.getGeneratedReceiveAddresses(

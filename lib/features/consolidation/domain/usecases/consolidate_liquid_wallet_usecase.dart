@@ -91,7 +91,8 @@ class ConsolidateLiquidWalletUsecase {
           pset: pset,
           walletId: walletId,
         );
-        txids.add(await _broadcast.execute(signed));
+        // Sync checks each batch's inputs against the freezes again.
+        txids.add(await _broadcast.execute(signed, walletId: walletId));
       }
       return txids;
     } catch (e) {

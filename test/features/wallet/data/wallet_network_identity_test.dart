@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 WalletMetadataModel _row(String id, String code) => WalletMetadataModel(
   id: id,
@@ -91,9 +91,9 @@ void main() {
       final result = WalletCatalogPortImpl.descriptorFromMetadata(
         _row(id, 'bitcoinRegtest'),
       );
-      expect(result, isA<Ok<PublicWalletDescriptor, TransactionSyncFailure>>());
+      expect(result, isA<Ok<PublicWalletDescriptor, SyncFailure>>());
       final descriptor =
-          (result as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value;
+          (result as Ok<PublicWalletDescriptor, SyncFailure>).value;
       expect(descriptor.key.network, BitcoinNetwork.regtest);
       expect(descriptor.origin, origin);
     },
@@ -108,7 +108,7 @@ void main() {
       ]) {
         expect(
           WalletCatalogPortImpl.descriptorFromMetadata(row),
-          isA<Err<PublicWalletDescriptor, TransactionSyncFailure>>(),
+          isA<Err<PublicWalletDescriptor, SyncFailure>>(),
         );
         // A row remains usable for cross-network custody reference checks.
         expect(row.seedFingerprint?.hex, 'aabbccdd');

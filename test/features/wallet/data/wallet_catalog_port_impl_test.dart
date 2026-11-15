@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 final class _Catalog implements WalletMetadataDatasource {
   List<WalletMetadataModel> rows = [];
@@ -78,15 +78,13 @@ void main() {
           )
           .toList();
       final result =
-          await port.list()
-              as Ok<List<PublicWalletDescriptor>, TransactionSyncFailure>;
+          await port.list() as Ok<List<PublicWalletDescriptor>, SyncFailure>;
       expect(result.value, hasLength(4));
       expect(() => result.value.clear(), throwsUnsupportedError);
       for (final entry in networks.entries) {
         final key = WalletKey(id: entry.key, network: entry.value);
         final found =
-            await port.find(key)
-                as Ok<PublicWalletDescriptor, TransactionSyncFailure>;
+            await port.find(key) as Ok<PublicWalletDescriptor, SyncFailure>;
         expect(found.value.key, key);
         expect(found.value.origin, entry.key);
         switch (found.value) {
@@ -115,9 +113,8 @@ void main() {
         WalletKey(id: networks.keys.first, network: BitcoinNetwork.signet),
       ]) {
         final missing =
-            await port.find(key)
-                as Err<PublicWalletDescriptor, TransactionSyncFailure>;
-        expect(missing.failure, isA<TransactionSyncNotFoundFailure>());
+            await port.find(key) as Err<PublicWalletDescriptor, SyncFailure>;
+        expect(missing.failure, isA<SyncNotFoundFailure>());
       }
     },
   );
@@ -134,15 +131,14 @@ void main() {
     ]) {
       catalog.rows = [_row(bitcoin), invalid];
       final result =
-          await port.list()
-              as Ok<List<PublicWalletDescriptor>, TransactionSyncFailure>;
+          await port.list() as Ok<List<PublicWalletDescriptor>, SyncFailure>;
       expect(result.value, hasLength(1));
     }
     catalog.failure = Exception('private diagnostic');
     final result =
         await port.find(WalletKey(id: bitcoin, network: BitcoinNetwork.mainnet))
-            as Err<PublicWalletDescriptor, TransactionSyncFailure>;
-    expect(result.failure, isA<TransactionSyncStorageFailure>());
+            as Err<PublicWalletDescriptor, SyncFailure>;
+    expect(result.failure, isA<SyncStorageFailure>());
     expect(result.failure.toString(), isNot(contains('private diagnostic')));
     catalog.failure = StateError('programmer failure');
     await expectLater(port.list(), throwsStateError);

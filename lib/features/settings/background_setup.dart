@@ -12,11 +12,9 @@ void setupBackgroundPreferences(
 }) {
   final backgroundPreferences = BackgroundPreferencesUsecase(
     BackgroundPreferencesRepositoryImpl(
-      const SharedPreferencesBackgroundSyncIntervalStore(),
+      const SharedPreferencesBackgroundSyncIntervalRepository(),
       NotificationPermissionsFacade(
-        gateway: FlutterNotificationPermissionGateway(
-          channelId: notificationChannelId,
-        ),
+        gateway: notificationPermissions(channelId: notificationChannelId),
       ),
       configureBackgroundTasks,
     ),

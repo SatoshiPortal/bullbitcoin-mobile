@@ -2,18 +2,14 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:meta/meta.dart';
-import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/write.dart';
+import 'package:sync/sync.dart' hide Wallet;
+import 'package:sync/sync.dart' as sync show Wallet;
+import 'package:sync/write.dart';
 
 import 'wallet_catalog_port_impl.dart';
 import '../domain/wallet_spend_failure.dart';
@@ -37,30 +33,36 @@ abstract interface class WalletNativeLifecycle {
 final class WalletNativeRuntime implements WalletNativeLifecycle {
   final WalletCatalogPort _catalog;
   final ReservedAddressPort _reserved;
+  final InputReservationPort _inputReservations;
   final WalletMetadataDatasource _metadata;
   final ElectrumSync _sync;
   final Future<String> Function() _documentsDirectory;
   final _changes = StreamController<WalletRevisionState>.broadcast();
-  final _unavailable = <WalletKey, TransactionSyncFailure>{};
+  final _unavailable = <WalletKey, SyncFailure>{};
   Future<_NativeServices>? _opening;
   Future<void>? _initialization;
   Type? _initializationFailure;
-  final void Function(RevisionStore)? _onRevisionStoreOpened;
+  final void Function(ForegroundStores)? _onStoresOpened;
+  final FreezeStorePort _freezes;
+  final WalletConnectionPort _connections;
 
   WalletNativeRuntime({
     required this._catalog,
     required this._reserved,
+    required this._inputReservations,
     required this._metadata,
     required this._sync,
     required this._documentsDirectory,
-    @visibleForTesting this._onRevisionStoreOpened,
+    required this._freezes,
+    required this._connections,
+    @visibleForTesting this._onStoresOpened,
   });
 
   Stream<WalletRevisionState> get changes => _changes.stream;
 
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> readRevision(
+  Future<Result<WalletRevisionState, SyncFailure>> readRevision(
     WalletKey key,
-  ) async => (await _services).revisions.read(key);
+  ) async => (await _services).stores.revisions.read(key);
 
   Future<_NativeServices> get _services =>
       _opening ??= _open().catchError((Object error, StackTrace trace) {
@@ -69,60 +71,25 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       });
 
   Future<_NativeServices> _open() async {
-    final documents = await _documentsDirectory();
-    final path = writerMetadataPath(documents);
-    late RevisionStore revisions;
-    final recoveryMarker = File('$path.recovery');
-    var recoveredMetadata = recoveryMarker.existsSync();
-    try {
-      revisions = RevisionStore(path);
-    } on SqliteException catch (error) {
-      // A locked, unwritable or full disk is not corruption. Preserve it intact.
-      if (error.resultCode != 11 && error.resultCode != 26) rethrow;
-      // Persist the adoption-only policy before replacing damaged metadata.
-      // A later restart must not treat an unadopted row as a fresh wallet.
-      recoveryMarker.writeAsStringSync('existing-only\n', flush: true);
-      final suffix =
-          '.corrupt-${DateTime.now().toUtc().microsecondsSinceEpoch}';
-      for (final sidecar in ['', '-wal', '-shm']) {
-        final file = File('$path$sidecar');
-        if (file.existsSync()) file.renameSync('$path$sidecar$suffix');
-      }
-      log.warning('Wallet revision metadata quarantined category=corrupt');
-      revisions = RevisionStore(path);
-      recoveredMetadata = true;
-    }
+    final sync = Sync.foreground(
+      documentsDirectory: await _documentsDirectory(),
+      catalog: _catalog,
+      reservedAddresses: _reserved,
+      freezes: _freezes,
+      inputReservations: _inputReservations,
+      connections: _connections,
+    );
     StreamSubscription<WalletRevisionState>? subscription;
     try {
-      subscription = revisions.changes.listen(_changes.add);
+      subscription = sync.changes.watch().listen(_changes.add);
       // Inject a failure after acquiring resources to verify cleanup in tests.
-      _onRevisionStoreOpened?.call(revisions);
-      final writer = NativeWalletWriter(
-        lockDirectory: writerLockDirectory(documents),
-        revisions: revisions,
-        documentsDirectory: documents,
-        catalog: _catalog,
-        reservedAddresses: _reserved,
-      );
-      return _NativeServices(
-        documents,
-        recoveredMetadata,
-        revisions,
-        subscription,
-        writer,
-        WalletSnapshotReader(
-          documentsDirectory: documents,
-          readiness: PersistedWalletReadiness(revisions),
-          requiredSchemaVersion: writerSchemaVersion,
-          revisions: revisions,
-          liquidAdmission: writer,
-        ),
-      );
+      _onStoresOpened?.call(sync.stores);
+      return _NativeServices(sync, subscription);
     } catch (_) {
       try {
         await subscription?.cancel();
       } finally {
-        await revisions.close();
+        await sync.close();
       }
       rethrow;
     }
@@ -176,7 +143,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
         // A catalog-only row is resumable provisioning. Existing stores are always
         // adopted with load; only the writer may rebuild a known missing store.
         final path = nativeWalletStoragePath(
-          services.documents,
+          services.stores.documentsDirectory,
           descriptor.key,
         );
         final existing =
@@ -184,9 +151,9 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
         var result = await services.writer.create(
           descriptor.key,
           expectedGeneration: state?.stamp.generation ?? 0,
-          existingOnly: services.recoveredMetadata || existing,
+          existingOnly: services.stores.recoveredMetadata || existing,
         );
-        if (result case Err(failure: TransactionSyncNeedsRepairFailure())) {
+        if (result case Err(failure: SyncNeedsRepairFailure())) {
           result = await services.writer.repair(
             descriptor.key,
             expectedGeneration: state?.stamp.generation ?? 0,
@@ -196,7 +163,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
             if (synced case Err(:final failure)) {
               _unavailable[descriptor.key] = failure;
             }
-            await services.revisions.read(descriptor.key);
+            await refresh(descriptor.key);
           }
         }
         if (result case Err(:final failure)) {
@@ -207,18 +174,17 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       } catch (error) {
         _unavailable[descriptor.key] = error is WalletSnapshotException
             ? error.failure
-            : const TransactionSyncStorageFailure();
+            : const SyncStorageFailure();
         log.warning(
           'Native wallet unavailable network=${descriptor.key.network} category=${error is WalletSnapshotException ? error.failure.logCode : 'storage'}',
         );
       }
     }
-    if (services.recoveredMetadata) {
+    if (services.stores.recoveredMetadata) {
       // Every catalog entry has an outcome. completeRecovery durably invalidates
       // all retained spend observations before removing the global barrier,
       // including obligations whose native store could not be adopted.
-      services.revisions.completeRecovery();
-      services.recoveredMetadata = false;
+      services.stores.completeRecovery();
     }
     log.fine(
       'Native wallet initialization finished count=${descriptors.length} unavailable=${_unavailable.length}',
@@ -228,9 +194,9 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<WalletRevisionState?> _state(
     _NativeServices services,
     WalletKey key,
-  ) async => switch (await services.revisions.read(key)) {
+  ) async => switch (await services.stores.revisions.read(key)) {
     Ok(:final value) => value,
-    Err(failure: TransactionSyncNotFoundFailure()) => null,
+    Err(failure: SyncNotFoundFailure()) => null,
     Err(:final failure) => throw WalletSnapshotException(failure),
   };
 
@@ -311,19 +277,13 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     );
     final state = await _state(await _services, descriptor.key);
     if (state?.lifecycle == WalletLifecycle.deleted) {
-      throw const WalletSnapshotException(TransactionSyncNotFoundFailure());
+      throw const WalletSnapshotException(SyncNotFoundFailure());
     }
     return state?.issuedReceiveIndex;
   }
 
-  Future<BitcoinSpendGate> get _spendGate async {
-    final services = await _services;
-    return BitcoinSpendGate(
-      revisions: services.revisions,
-      lockDirectory: writerLockDirectory(services.documents),
-      catalog: _catalog,
-    );
-  }
+  Future<BitcoinSpendGate> get _spendGate async =>
+      (await _services).stores.spendGate;
 
   Future<WalletKey> _spendKey(String walletId) async {
     final metadata = await _metadata.fetch(walletId);
@@ -333,75 +293,68 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     return WalletKey(id: walletId, network: metadata.network.shared);
   }
 
+  /// [walletId]'s handle on its current generation, without loading values.
+  /// Throws [WalletSnapshotException] when the wallet is unavailable.
+  Future<sync.Wallet> wallet(String walletId) async {
+    await initialize();
+    final metadata = await _metadata.fetch(walletId);
+    if (metadata == null) {
+      throw const WalletSnapshotException(SyncNotFoundFailure());
+    }
+    final key = WalletKey(id: walletId, network: metadata.network.shared);
+    final failure = _unavailable[key];
+    if (failure != null) throw WalletSnapshotException(failure);
+    return _value(await (await _services).sync.wallet(key));
+  }
+
+  /// The Bitcoin guard's verdict, asked now under the writer lock.
   Future<BitcoinSpendStatus> spendStatus(
     String walletId, {
     String? replacing,
   }) async {
     try {
-      return (await _spendGate).check(
-        await _spendKey(walletId),
-        replacing: replacing,
-      );
+      return switch (await (await wallet(
+        walletId,
+      )).tx.check(replacing: replacing)) {
+        Ok(:final value) => value,
+        Err(failure: SyncBusyFailure()) => BitcoinSpendStatus.busy,
+        Err() => BitcoinSpendStatus.unavailable,
+      };
     } on Exception {
       return BitcoinSpendStatus.unavailable;
     }
   }
 
-  Future<WalletRevision> requireSpend(
-    String walletId, {
+  /// Broadcasts [transaction] for [walletId] through `wallet.tx`, which
+  /// checks its generation and inputs again under the guard. [built] carries
+  /// the generation it was built at; without it, the current one is used.
+  /// A wallet of another [network] than the one expected is refused before
+  /// any admission or server.
+  Future<Result<SpendReceipt, SyncFailure>> broadcast(
+    String walletId,
+    SignedTransaction transaction, {
+    required Network network,
+    UnsignedSpend? built,
+    SpendOwner? owner,
     String? replacing,
   }) async {
-    final admission = await (await _spendGate).acquire(
-      await _spendKey(walletId),
-      replacing: replacing,
+    final sync.Wallet handle;
+    try {
+      handle = await wallet(walletId);
+    } on WalletSnapshotException catch (error) {
+      return Err(error.failure);
+    }
+    if (built != null && built.key != handle.key) {
+      return const Err(SyncNotFoundFailure());
+    }
+    // Never admitted nor sent on a network the caller did not expect.
+    if (handle.key.network != network) {
+      return const Err(SyncSpendBlockedFailure(BitcoinSpendStatus.unavailable));
+    }
+    return handle.tx.broadcast(
+      built?.signed(transaction) ??
+          handle.tx.signed(transaction, owner: owner, replacing: replacing),
     );
-    if (admission case BitcoinSpendRefused(:final status)) {
-      throw WalletSpendBlockedException(status);
-    }
-    final lease = admission as BitcoinSpendAdmission;
-    try {
-      return lease.revision;
-    } finally {
-      lease.close();
-    }
-  }
-
-  Future<Result<BitcoinBroadcastReceipt, WalletSpendFailure>> broadcastBitcoin(
-    String walletId,
-    BitcoinNetwork network,
-    Future<String> Function() broadcast,
-  ) async {
-    final key = await _spendKey(walletId);
-    if (key.network != network) {
-      return const Err(
-        WalletSpendBlockedFailure(BitcoinSpendStatus.unavailable),
-      );
-    }
-    final admission = await (await _spendGate).acquire(key);
-    if (admission case BitcoinSpendRefused(:final status)) {
-      return Err(WalletSpendBlockedFailure(status));
-    }
-    final lease = admission as BitcoinSpendAdmission;
-    var accepted = false;
-    try {
-      final txid = await broadcast();
-      accepted = true;
-      final receipt = lease.accepted(txid);
-      if (!receipt.durable) {
-        log.warning(
-          'Bitcoin accepted spend recording pending category=storage',
-        );
-      }
-      if (receipt.durable) log.fine('Bitcoin accepted spend recorded');
-      return Ok(receipt);
-    } finally {
-      try {
-        lease.close();
-      } on Exception {
-        if (!accepted) rethrow;
-        log.warning('Bitcoin accepted spend cleanup pending category=storage');
-      }
-    }
   }
 
   /// Called before a Payjoin terminal transition releases owned-input guards.
@@ -422,23 +375,24 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     }
   }
 
-  Future<bdk.Wallet> bitcoin(WalletModel model) async =>
-      _borrow<bdk.Wallet>(model);
-  Future<lwk.Wallet> liquid(WalletModel model) async =>
-      _borrow<lwk.Wallet>(model);
-
-  Future<T> _borrow<T extends Object>(WalletModel model) async {
+  /// A wallet whose values are loaded at its latest committed revision, from
+  /// local stores only. Throws [WalletSnapshotException] with the failure.
+  Future<sync.Wallet> loadWallet(WalletKey key) async {
     await initialize();
-    final key = WalletKey(id: model.id, network: model.network.shared);
     final failure = _unavailable[key];
     if (failure != null) throw WalletSnapshotException(failure);
-    return (await _services).reader.borrowedHandle<T>(key, _catalog);
+    final wallet = _value(await (await _services).sync.wallet(key));
+    _value(await wallet.load());
+    return wallet;
   }
+
+  /// The foreground [Sync], for freezes. Opens it on first use.
+  Future<Sync> foreground() async => (await _services).sync;
 
   /// Called after every worker outcome, including interrupted/failed writes.
   Future<void> refresh(WalletKey key, {bool catalogChanged = false}) async {
     final services = await _services;
-    final state = await services.revisions.read(key);
+    final state = await services.stores.revisions.read(key);
     if (state case Ok(:final value) when catalogChanged) {
       _changes.add(value);
     }
@@ -482,32 +436,24 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       try {
         await services.subscription.cancel();
       } finally {
-        await services.revisions.close();
+        await services.sync.close();
       }
     }
     await _changes.close();
   }
 
-  static T _value<T>(Result<T, TransactionSyncFailure> result) =>
-      switch (result) {
-        Ok(:final value) => value,
-        Err(:final failure) => throw WalletSnapshotException(failure),
-      };
+  static T _value<T>(Result<T, SyncFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw WalletSnapshotException(failure),
+  };
 }
 
 final class _NativeServices {
-  final String documents;
-  bool recoveredMetadata;
-  final RevisionStore revisions;
+  final Sync sync;
   final StreamSubscription<WalletRevisionState> subscription;
-  final NativeWalletWriter writer;
-  final WalletSnapshotReader reader;
-  _NativeServices(
-    this.documents,
-    this.recoveredMetadata,
-    this.revisions,
-    this.subscription,
-    this.writer,
-    this.reader,
-  );
+  _NativeServices(this.sync, this.subscription);
+
+  ForegroundStores get stores => sync.stores;
+
+  WalletWriterRepository get writer => stores.writer;
 }

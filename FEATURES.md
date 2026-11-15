@@ -11,23 +11,26 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
-    TRANSACTION_SYNC[Transaction Sync Package<br/>Electrum sync, contracts and owner ports]
+    SYNC[Sync Package<br/>Electrum sync, codecs, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
-    BG_TASKS --> TRANSACTION_SYNC
-    BG_TASKS --> NOTIFICATIONS
+    BG_TASKS --> SYNC
     WALLETS --> NOTIFICATIONS
     WALLETS --> BG_TASKS
-    NOTIFICATIONS --> TRANSACTION_SYNC
     NOTIFICATIONS --> PRIMITIVES
     BG_TASKS --> PRIMITIVES
     BG_TASKS --> BULL_LOGGER
     SETTINGS --> BG_TASKS
     SETTINGS --> NOTIFICATIONS
-    TRANSACTION_SYNC --> PRIMITIVES
-    TRANSACTION_SYNC --> BULL_LOGGER
-    ELECTRUM_SETTINGS --> TRANSACTION_SYNC
-    LABELS --> TRANSACTION_SYNC
-    WALLETS --> TRANSACTION_SYNC
+    SYNC --> PRIMITIVES
+    SYNC --> BULL_LOGGER
+    ELECTRUM_SETTINGS --> SYNC
+    LABELS --> SYNC
+    WALLETS --> SYNC
+    CORE --> SYNC
+    SEND --> SYNC
+    FEES --> SYNC
+    SELL --> SYNC
+    BROADCAST_SIGNED_TX --> SYNC
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
@@ -309,7 +312,6 @@ graph TB
     REPLACE_BY_FEE --> SEND
     SELL --> FEES
     SELL --> SETTINGS
-    SEND --> ELECTRUM_SETTINGS
     SEND --> SETTINGS
     STATUS --> ELECTRUM_SETTINGS
     STATUS --> WALLETS

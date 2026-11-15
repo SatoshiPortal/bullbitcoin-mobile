@@ -16,6 +16,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:payjoin/payjoin.dart';
 import 'package:test/test.dart';
+import 'support/test_codec.dart';
 
 class _MockDio extends Mock implements Dio {}
 
@@ -154,6 +155,7 @@ void main() {
         final keys = _fakeOhttpKeys();
         final attempts = <(String, String)>[];
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger.silent,
           dio: Dio(),
           random: Random(2),
@@ -189,6 +191,7 @@ void main() {
       () async {
         final attempts = <(String, String)>[];
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger.silent,
           dio: Dio(),
           ohttpKeysFetcher:
@@ -221,6 +224,7 @@ void main() {
         var bullUp = false;
         final port = _CaptureLogPort();
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger(port),
           dio: Dio(),
           random: Random(4),
@@ -269,6 +273,7 @@ void main() {
       () async {
         final port = _CaptureLogPort();
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger(port),
           dio: Dio(),
           random: Random(5),
@@ -313,6 +318,7 @@ void main() {
     test('when fetching the OHTTP keys of a directory', () async {
       final attempts = <(String, String)>[];
       final datasource = PdkPayjoinDatasource(
+        codec: const TestPayjoinCodec(),
         log: PayjoinLogger.silent,
         dio: Dio(),
         servers: servers,
@@ -357,6 +363,7 @@ void main() {
           throw StateError('relay unavailable');
         });
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger.silent,
           dio: dio,
           servers: servers,
@@ -544,6 +551,7 @@ void main() {
     test('stopPolling prevents a pending expiry event', () {
       fakeAsync((async) {
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger.silent,
           dio: Dio(),
         );
@@ -565,6 +573,7 @@ void main() {
       fakeAsync((async) {
         final logs = _CaptureLogPort();
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger(logs),
           dio: relayDio(),
         );
@@ -598,6 +607,7 @@ void main() {
           ),
         ).thenAnswer(throwingRelay());
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger.silent,
           dio: dio,
         );
@@ -634,6 +644,7 @@ void main() {
           ),
         ).thenAnswer(throwingRelay());
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger.silent,
           dio: dio,
         );
@@ -698,6 +709,7 @@ void main() {
         // async.elapse rather than with wall time.
         final start = DateTime.now();
         final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
           log: PayjoinLogger.silent,
           dio: dio,
           now: () => start.add(async.elapsed),
@@ -736,6 +748,7 @@ void main() {
 
     test('dispose closes streams and is idempotent', () async {
       final datasource = PdkPayjoinDatasource(
+        codec: const TestPayjoinCodec(),
         log: PayjoinLogger.silent,
         dio: Dio(),
       );
