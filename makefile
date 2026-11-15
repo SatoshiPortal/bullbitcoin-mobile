@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rustc-pins-test unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -343,6 +343,11 @@ BDK_RUST_VERSION ?= $(RUST_VERSION)
 # Official hosted Payjoin pins this compiler explicitly in native/rust-toolchain.toml.
 PAYJOIN_RUST_VERSION ?= 1.85.1
 EXPECTED_ABIS ?= arm64-v8a
+# The pinned Rust compilers as KEY=VALUE lines: CI loads them into $GITHUB_ENV so these variables stay their single source.
+rust-versions:
+	@echo RUST_VERSION=$(RUST_VERSION)
+	@echo BDK_RUST_VERSION=$(BDK_RUST_VERSION)
+	@echo PAYJOIN_RUST_VERSION=$(PAYJOIN_RUST_VERSION)
 verify-rustc-pins:
 	@set -e; \
 	for version in $(RUST_VERSION) $(BDK_RUST_VERSION) $(PAYJOIN_RUST_VERSION); do \

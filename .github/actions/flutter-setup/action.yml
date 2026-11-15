@@ -29,20 +29,23 @@ runs:
     - name: Install pinned Rust toolchains
       shell: bash
       run: |
+        # The makefile is the single source of the pinned compilers.
+        make -s rust-versions >> "$GITHUB_ENV"
+        eval "$(make -s rust-versions)"
         if ! command -v rustup >/dev/null 2>&1; then
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.100.0
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain "$RUST_VERSION"
           export PATH="$HOME/.cargo/bin:$PATH"
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
         fi
-        rustup toolchain install 1.100.0 --profile minimal
-        rustup component add --toolchain 1.100.0 clippy rustfmt
-        # Official hosted Payjoin explicitly selects Rust 1.85.1.
-        rustup toolchain install 1.85.1 --profile minimal
-        rustup component add --toolchain 1.85.1 clippy rustfmt
-        rustup run 1.100.0 rustc --version | grep -F 'rustc 1.100.0'
-        rustup run 1.85.1 rustc --version | grep -F 'rustc 1.85.1'
+        rustup toolchain install "$RUST_VERSION" --profile minimal
+        rustup component add --toolchain "$RUST_VERSION" clippy rustfmt
+        # Official hosted Payjoin explicitly selects its own compiler.
+        rustup toolchain install "$PAYJOIN_RUST_VERSION" --profile minimal
+        rustup component add --toolchain "$PAYJOIN_RUST_VERSION" clippy rustfmt
+        rustup run "$RUST_VERSION" rustc --version | grep -F "rustc $RUST_VERSION"
+        rustup run "$PAYJOIN_RUST_VERSION" rustc --version | grep -F "rustc $PAYJOIN_RUST_VERSION"
         echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
-        echo RUSTUP_TOOLCHAIN=1.100.0 >> "$GITHUB_ENV"
+        echo "RUSTUP_TOOLCHAIN=$RUST_VERSION" >> "$GITHUB_ENV"
 
     # runner.arch is in the FVM key because the SDK is native binaries — an
     # x64 SDK restored on an arm64 runner is broken. pub/cargo caches hold
