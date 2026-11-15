@@ -303,6 +303,10 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
     });
   }
 
+  Widget _lengthPicker() =>
+      MnemonicLengthDropdown(value: length, onChanged: changeMnemonicLength);
+
+  /// The wordlist and the phrase length share one row, drawn alike.
   Widget _buildLanguageSelection(BuildContext context) {
     return ListenableBuilder(
       listenable: Listenable.merge(_controllers),
@@ -326,27 +330,47 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              context.loc.mnemonicLanguageLabel,
-              style: context.font.bodyMedium,
-            ),
-            DropdownButton<bip39.Language>(
-              key: const Key('mnemonicLanguagePicker'),
-              value: _entryLanguages.contains(_language) ? _language : null,
-              isExpanded: true,
-              dropdownColor: context.appColors.surface,
-              items: [
-                for (final language in _entryLanguages)
-                  DropdownMenuItem(
-                    value: language,
-                    child: Text(
-                      context.loc.mnemonicLanguageName(language.name),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Semantics(
+                    label: context.loc.mnemonicLanguageLabel,
+                    child: _PickerBox(
+                      child: DropdownButton<bip39.Language>(
+                        key: const Key('mnemonicLanguagePicker'),
+                        value: _entryLanguages.contains(_language)
+                            ? _language
+                            : null,
+                        isExpanded: true,
+                        underline: const SizedBox.shrink(),
+                        style: _PickerBox.textStyle(context),
+                        dropdownColor: context.appColors.surface,
+                        borderRadius: BorderRadius.circular(
+                          context.bullShapes.input,
+                        ),
+                        items: [
+                          for (final language in _entryLanguages)
+                            DropdownMenuItem(
+                              value: language,
+                              child: Text(
+                                context.loc.mnemonicLanguageName(language.name),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) _selectLanguage(value);
+                        },
+                      ),
                     ),
                   ),
+                ),
+                if (widget.allowMultipleMnemonicLength) ...[
+                  const Gap(12),
+                  Expanded(flex: 2, child: _lengthPicker()),
+                ],
               ],
-              onChanged: (value) {
-                if (value != null) _selectLanguage(value);
-              },
             ),
             if (ambiguous)
               Text(
@@ -446,10 +470,15 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                     ),
                     const Gap(16),
                   ],
-                  if (widget.allowMultipleMnemonicLength) ...[
-                    MnemonicLengthDropdown(
-                      value: length,
-                      onChanged: changeMnemonicLength,
+                  if (widget.englishOnly &&
+                      widget.allowMultipleMnemonicLength) ...[
+                    const Gap(16),
+                    Row(
+                      children: [
+                        const Spacer(flex: 3),
+                        const Gap(12),
+                        Expanded(flex: 2, child: _lengthPicker()),
+                      ],
                     ),
                     const Gap(16),
                   ],
@@ -1354,30 +1383,51 @@ class MnemonicLengthDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<bip39.MnemonicLength>(
-      value: value,
-      underline: const SizedBox(),
-      style: context.font.bodyMedium?.copyWith(
-        fontWeight: .w600,
-        color: context.appColors.text,
-      ),
-      dropdownColor: context.appColors.surface,
-      borderRadius: BorderRadius.circular(context.bullShapes.input),
-      items: bip39.MnemonicLength.values
-          .map(
-            (length) => DropdownMenuItem(
-              value: length,
-              child: BullText(
-                '${length.words}${context.loc.wordsDropdownSuffix}',
-                style: context.font.bodyMedium?.copyWith(
-                  fontWeight: .w600,
-                  color: context.appColors.text,
+    return _PickerBox(
+      child: DropdownButton<bip39.MnemonicLength>(
+        value: value,
+        isExpanded: true,
+        underline: const SizedBox.shrink(),
+        style: _PickerBox.textStyle(context),
+        dropdownColor: context.appColors.surface,
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
+        items: bip39.MnemonicLength.values
+            .map(
+              (length) => DropdownMenuItem(
+                value: length,
+                child: Text(
+                  '${length.words}${context.loc.wordsDropdownSuffix}',
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-            ),
-          )
-          .toList(),
-      onChanged: (v) => onChanged(v ?? bip39.MnemonicLength.words12),
+            )
+            .toList(),
+        onChanged: (v) => onChanged(v ?? bip39.MnemonicLength.words12),
+      ),
+    );
+  }
+}
+
+/// The bordered box both entry pickers sit in, so they read as one control set.
+class _PickerBox extends StatelessWidget {
+  final Widget child;
+
+  const _PickerBox({required this.child});
+
+  static TextStyle? textStyle(BuildContext context) => context.font.bodyMedium
+      ?.copyWith(fontWeight: .w600, color: context.appColors.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(context.bullShapes.input),
+        border: Border.all(color: context.appColors.border),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: child,
+      ),
     );
   }
 }
