@@ -15248,16 +15248,8 @@
   "@wizardExchangeTitle": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet. Additional identity verification may be needed to trade.",
+  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet.",
   "@wizardExchangeDescription": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
-  "wizardExchangeSupport": "Create a Bull Bitcoin account with just your email address to contact our support team.",
-  "@wizardExchangeSupport": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
-  "wizardExchangeToggle": "Enable BULL Exchange features",
-  "@wizardExchangeToggle": {
     "description": "Optional exchange access or wallet quick action setting."
   },
   "quickActionsSettingsTitle": "Quick actions",

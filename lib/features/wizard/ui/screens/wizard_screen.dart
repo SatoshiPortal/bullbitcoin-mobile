@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
-import 'package:bb_mobile/features/wizard/ui/widgets/exchange_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_bg_pattern.dart';
@@ -19,7 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullShapesX, BullSnackBar;
 
-/// 5-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
+/// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
 /// events on every user pick; dispatches `WizardEvent.completed()`
 /// from the last page's "Get started" button. `initState` runs a
@@ -42,13 +41,7 @@ class _WizardScreenState extends State<WizardScreen> {
   final PageController _controller = PageController();
   WizardPage _page = WizardPage.welcome;
 
-  List<WizardPage> get _pages => [
-    WizardPage.welcome,
-    WizardPage.customize,
-    if (widget.exchangeAllowed) WizardPage.exchange,
-    WizardPage.mission,
-    WizardPage.journey,
-  ];
+  static const List<WizardPage> _pages = WizardPage.values;
 
   @override
   void initState() {
@@ -83,9 +76,7 @@ class _WizardScreenState extends State<WizardScreen> {
     if (_page.isLast) {
       _tryFinish(choices);
     } else {
-      if (_page == WizardPage.exchange) {
-        context.read<WizardBloc>().add(const WizardEvent.exchangeConfirmed());
-      }
+      if (_page == WizardPage.customize) _confirmExchange();
       _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
     }
   }
@@ -97,16 +88,15 @@ class _WizardScreenState extends State<WizardScreen> {
     _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
   }
 
+  /// The exchange switch shares the customize page, which every path to Next
+  /// or Skip goes through: leaving that page confirms what it shows.
+  void _confirmExchange() {
+    if (!widget.exchangeAllowed) return;
+    context.read<WizardBloc>().add(const WizardEvent.exchangeConfirmed());
+  }
+
   void _tryFinish(WizardChoices choices) {
-    if (widget.exchangeAllowed &&
-        !choices.touched.contains(WizardField.exchangeAccess)) {
-      _controller.animateToPage(
-        _pages.indexOf(WizardPage.exchange),
-        duration: _pageDuration,
-        curve: _pageCurve,
-      );
-      return;
-    }
+    _confirmExchange();
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
         _pages.indexOf(WizardPage.mission),
@@ -177,24 +167,22 @@ class _WizardScreenState extends State<WizardScreen> {
                               children: [
                                 const WelcomeStep(),
                                 CustomizeStep(
-                                  themeMode: c.themeMode,
+                                  exchangeAccess: widget.exchangeAllowed
+                                      ? c.exchangeAccess
+                                      : null,
                                   language: c.language,
                                   defaultCurrency: c.defaultCurrency,
                                   onThemePicked: (m) =>
                                       bloc.add(WizardEvent.themePicked(m)),
+                                  onExchangePicked: (value) => bloc.add(
+                                    WizardEvent.exchangePicked(value),
+                                  ),
                                   onLanguagePicked: (l) =>
                                       bloc.add(WizardEvent.languagePicked(l)),
                                   onCurrencyPicked: (code) => bloc.add(
                                     WizardEvent.currencyPicked(code),
                                   ),
                                 ),
-                                if (widget.exchangeAllowed)
-                                  ExchangeStep(
-                                    enabled: c.exchangeAccess,
-                                    onChanged: (value) => bloc.add(
-                                      WizardEvent.exchangePicked(value),
-                                    ),
-                                  ),
                                 const MissionStep(),
                                 const JourneyStep(),
                               ],
