@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bolt11_decoder/bolt11_decoder.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap.freezed.dart';

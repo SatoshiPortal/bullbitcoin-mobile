@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_quick_actions.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_refresh_body.dart';

@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dar
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
 import 'package:primitives/primitives.dart' show Err;
+
 import 'dart:io';
 
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -74,9 +75,8 @@ void main() {
           await log.flush();
           await directory.delete(recursive: true);
         });
-        when(
-          () => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress),
-        ).thenAnswer((_) async => lwk.LiquidNetwork.mainnet);
+        when(() => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress))
+            .thenAnswer((_) async => lwk.LiquidNetwork.mainnet);
         native = _Native();
         labels = _Labels();
         final metadata = _Metadata();
@@ -128,9 +128,8 @@ void main() {
       );
 
       test('persistent busy is bounded', () async {
-        when(
-          () => native.receive(row, advance: false),
-        ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
+        when(() => native.receive(row, advance: false))
+            .thenThrow(const WalletSnapshotException(SyncBusyFailure()));
         final prepare = PrepareReceiveAddressUsecase(
           GetReceiveAddressUsecase(walletAddressRepository: repository),
         );
@@ -161,9 +160,8 @@ void main() {
       });
 
       test('label failure after issuance never replays an advance', () async {
-        when(
-          () => native.receive(row, advance: true),
-        ).thenAnswer((_) async => (address: issuedAddress, index: 8));
+        when(() => native.receive(row, advance: true))
+            .thenAnswer((_) async => (address: issuedAddress, index: 8));
         const error = WalletSnapshotException(SyncBusyFailure());
         when(() => labels.fetchByReference(any())).thenThrow(error);
         await expectLater(

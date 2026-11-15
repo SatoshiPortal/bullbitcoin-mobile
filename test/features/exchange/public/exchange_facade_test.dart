@@ -56,9 +56,8 @@ void main() {
       webSettings.execute,
     ).thenAnswer((_) async => const Err(ExchangeUnsupportedNetworkFailure()));
     expect(await facade.networkUnavailable(), isTrue);
-    when(
-      webSettings.execute,
-    ).thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
+    when(webSettings.execute)
+        .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
     expect(await facade.networkUnavailable(), isFalse);
   });
 

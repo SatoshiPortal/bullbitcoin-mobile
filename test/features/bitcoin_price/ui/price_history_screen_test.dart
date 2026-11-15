@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -37,9 +37,8 @@ void main() {
           currencyCode: 'CAD',
         ),
       );
-      when(
-        () => history.execute(currencyCode: 'CAD'),
-      ).thenAnswer((_) async => const Err(PriceChartLoadFailure()));
+      when(() => history.execute(currencyCode: 'CAD'))
+          .thenAnswer((_) async => const Err(PriceChartLoadFailure()));
       final locator = GetIt.asNewInstance();
       locator.registerFactory<PriceChartCubit>(
         () => PriceChartCubit(
@@ -64,9 +63,8 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider.value(
             value: priceBloc,
-            child: BitcoinPriceFacade(
-              locator,
-            ).buildHistory(onBack: () => returned = true),
+            child: BitcoinPriceFacade(locator)
+                .buildHistory(onBack: () => returned = true),
           ),
         ),
       );

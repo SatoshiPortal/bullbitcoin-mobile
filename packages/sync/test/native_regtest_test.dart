@@ -4,6 +4,7 @@ import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/write/native_wallet_writer_repository.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
+
 import 'dart:io';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -13,6 +14,7 @@ import 'package:sync/sync.dart';
 import 'package:sync/src/data/read/wallet_snapshot_reader.dart';
 
 import 'support/regtest_wallet.dart';
+
 import 'package:sync/src/domain/native_network_policy.dart';
 
 void main() {
@@ -162,9 +164,8 @@ void main() {
           expect((result as Err).failure, isA<SyncInvalidCatalogFailure>());
           expect(revisions.record(descriptor.key), isNull);
           expect(
-            File(
-              nativeWalletStoragePath(directory.path, descriptor.key),
-            ).existsSync(),
+            File(nativeWalletStoragePath(directory.path, descriptor.key))
+                .existsSync(),
             isFalse,
           );
         } finally {

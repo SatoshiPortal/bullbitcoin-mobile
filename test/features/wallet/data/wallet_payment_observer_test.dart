@@ -1,8 +1,10 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
 import 'package:sqlite3/sqlite3.dart';
+
 import 'dart:async';
 import 'dart:io';
+
 import 'package:bb_mobile/features/wallet/data/wallet_payment_observer.dart';
 import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
@@ -80,7 +82,7 @@ void main() {
     try {
       expect(database.select('SELECT 1 FROM observed_events'), hasLength(1));
     } finally {
-      database.dispose();
+      database.close();
     }
   });
 
@@ -146,7 +148,7 @@ void main() {
         expect(await foreground(true).recordCompletion(completion), isA<Ok>());
       }
       final database = sqlite3.open('${directory.path}/notifications.sqlite');
-      addTearDown(database.dispose);
+      addTearDown(database.close);
       final topics = database.select('SELECT topic_id FROM topics');
       final events = database.select('SELECT event_id FROM observed_events');
       expect(topics.map((row) => row['topic_id']).toSet(), hasLength(7));
@@ -187,7 +189,7 @@ void main() {
         ),
       );
       final database = sqlite3.open('${directory.path}/notifications.sqlite');
-      addTearDown(database.dispose);
+      addTearDown(database.close);
       database.execute(
         "CREATE TRIGGER reject BEFORE INSERT ON observed_events BEGIN SELECT RAISE(ABORT, 'injected'); END",
       );

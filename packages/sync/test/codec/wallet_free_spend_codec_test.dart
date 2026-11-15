@@ -31,14 +31,12 @@ void main() {
   group('bitcoinPublicDescriptor', () {
     String descriptor(Keychain keychain, ScriptType scriptType) =>
         (bitcoinPublicDescriptor(
-                  xpub: _xpub,
-                  fingerprint: '73c5da0a',
-                  scriptType: scriptType,
-                  keychain: keychain,
-                  network: BitcoinNetwork.mainnet,
-                )
-                as Ok<String, SyncFailure>)
-            .value;
+          xpub: _xpub,
+          fingerprint: '73c5da0a',
+          scriptType: scriptType,
+          keychain: keychain,
+          network: BitcoinNetwork.mainnet,
+        ) as Ok<String, SyncFailure>).value;
 
     test('carries the key origin of each script type and keychain', () {
       expect(
@@ -62,14 +60,12 @@ void main() {
     test('refuses a key that does not parse', () {
       expect(
         (bitcoinPublicDescriptor(
-                  xpub: 'xpub-not',
-                  fingerprint: '73c5da0a',
-                  scriptType: ScriptType.bip84,
-                  keychain: Keychain.external,
-                  network: BitcoinNetwork.mainnet,
-                )
-                as Err<String, SyncFailure>)
-            .failure,
+          xpub: 'xpub-not',
+          fingerprint: '73c5da0a',
+          scriptType: ScriptType.bip84,
+          keychain: Keychain.external,
+          network: BitcoinNetwork.mainnet,
+        ) as Err<String, SyncFailure>).failure,
         isA<SyncInvalidCatalogFailure>(),
       );
     });

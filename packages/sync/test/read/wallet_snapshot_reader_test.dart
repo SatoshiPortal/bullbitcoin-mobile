@@ -8,7 +8,9 @@ import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sync/diagnostics.dart';
+
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -128,80 +130,77 @@ void main() {
     internal.dispose();
   }
 
-  test(
-    'native reader logs hydrate and cache leases with caller context',
-    () async {
-      create();
-      final store = RevisionStoreDatasource.openForeground(
-        revisionStorePath(documents.path),
+  test('native reader logs hydrate and cache leases with caller context', () async {
+    create();
+    final store = RevisionStoreDatasource.openForeground(
+      revisionStorePath(documents.path),
+    );
+    SpendGateStoreDatasource.provision(spendGateStorePath(documents.path));
+    final writer = NativeWalletWriterRepository(
+      revisions: store,
+      reader: SqliteWalletRevisionReader(store),
+      documentsDirectory: documents.path,
+      catalog: _Catalog(descriptor),
+      reservedAddresses: _Reserved(),
+    );
+    final console = <String>[];
+    final previous = debugPrint;
+    try {
+      expect(
+        await writer.create(
+          descriptor.key,
+          expectedGeneration: 0,
+          existingOnly: true,
+        ),
+        isA<Ok>(),
       );
-      SpendGateStoreDatasource.provision(spendGateStorePath(documents.path));
-      final writer = NativeWalletWriterRepository(
-        revisions: store,
-        reader: SqliteWalletRevisionReader(store),
+      reader = WalletSnapshotReader(
         documentsDirectory: documents.path,
-        catalog: _Catalog(descriptor),
-        reservedAddresses: _Reserved(),
+        readiness: PersistedWalletReadiness(store),
+        requiredSchemaVersion: writerSchemaVersion,
+        revisions: SqliteWalletRevisionReader(store),
+        liquidAdmission: writer,
       );
-      final console = <String>[];
-      final previous = debugPrint;
-      try {
+      debugPrint = (message, {wrapWidth}) {
+        if (message != null) console.add(message);
+      };
+      for (var i = 0; i < 2; i++) {
         expect(
-          await writer.create(
-            descriptor.key,
-            expectedGeneration: 0,
-            existingOnly: true,
+          await LeaseDiagnostics.from(
+            LeaseSource.syncStarted,
+            () => reader.bitcoin(descriptor),
           ),
           isA<Ok>(),
         );
-        reader = WalletSnapshotReader(
-          documentsDirectory: documents.path,
-          readiness: PersistedWalletReadiness(store),
-          requiredSchemaVersion: writerSchemaVersion,
-          revisions: SqliteWalletRevisionReader(store),
-          liquidAdmission: writer,
-        );
-        debugPrint = (message, {wrapWidth}) {
-          if (message != null) console.add(message);
-        };
-        for (var i = 0; i < 2; i++) {
-          expect(
-            await LeaseDiagnostics.from(
-              LeaseSource.syncStarted,
-              () => reader.bitcoin(descriptor),
-            ),
-            isA<Ok>(),
-          );
-        }
-        await log.flush();
-        await pumpEventQueue();
-        final rows = console
-            .where((line) => line.contains('event=lease_'))
-            .toList();
-        expect(
-          rows.where((line) => line.contains('event=lease_acquire')),
-          hasLength(2),
-        );
-        final releases = rows
-            .where((line) => line.contains('event=lease_release'))
-            .toList();
-        expect(releases, hasLength(2));
-        expect(releases.first, contains('read=hydrate'));
-        expect(releases.last, contains('read=cache'));
-        expect(
-          rows.every(
-            (line) => line.contains(
-              'role=reader intent=snapshot scope=foreground source=sync_started',
-            ),
-          ),
-          isTrue,
-        );
-      } finally {
-        debugPrint = previous;
-        store.close();
       }
-    },
-  );
+      await log.flush();
+      await pumpEventQueue();
+      final rows = console
+          .where((line) => line.contains('event=lease_'))
+          .toList();
+      expect(
+        rows.where((line) => line.contains('event=lease_acquire')),
+        hasLength(2),
+      );
+      final releases = rows
+          .where((line) => line.contains('event=lease_release'))
+          .toList();
+      expect(releases, hasLength(2));
+      expect(releases.first, contains('read=hydrate'));
+      expect(releases.last, contains('read=cache'));
+      expect(
+        rows.every(
+          (line) => line.contains(
+            'role=reader intent=snapshot scope=foreground source=sync_started',
+          ),
+        ),
+        isTrue,
+      );
+    } finally {
+      debugPrint = previous;
+      store.close();
+    }
+  });
 
   test('writer adopts the previously revealed receive index', () async {
     create(revealed: 12);
@@ -225,9 +224,10 @@ void main() {
         ),
         isA<Ok>(),
       );
-      final first =
-          await writer.receive(descriptor.key, expectedGeneration: 0)
-              as Ok<ReceiveAddressIssued, SyncFailure>;
+      final first = await writer.receive(
+        descriptor.key,
+        expectedGeneration: 0,
+      ) as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(first.value.index, 12);
       final reopened = NativeWalletWriterRepository(
         revisions: revisions,
@@ -236,22 +236,22 @@ void main() {
         catalog: _Catalog(descriptor),
         reservedAddresses: _Reserved(),
       );
-      final again =
-          await reopened.receive(descriptor.key, expectedGeneration: 0)
-              as Ok<ReceiveAddressIssued, SyncFailure>;
+      final again = await reopened.receive(
+        descriptor.key,
+        expectedGeneration: 0,
+      ) as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(again.value.address, first.value.address);
       expect(again.value.index, 12);
-      final next =
-          await reopened.receive(
-                descriptor.key,
-                expectedGeneration: 0,
-                advance: true,
-              )
-              as Ok<ReceiveAddressIssued, SyncFailure>;
+      final next = await reopened.receive(
+        descriptor.key,
+        expectedGeneration: 0,
+        advance: true,
+      ) as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(next.value.index, 13);
-      final same =
-          await reopened.receive(descriptor.key, expectedGeneration: 0)
-              as Ok<ReceiveAddressIssued, SyncFailure>;
+      final same = await reopened.receive(
+        descriptor.key,
+        expectedGeneration: 0,
+      ) as Ok<ReceiveAddressIssued, SyncFailure>;
       expect(same.value.address, next.value.address);
     } finally {
       revisions.close();
@@ -329,6 +329,26 @@ void main() {
     },
   );
 
+  test(
+    'maps asynchronous stale revision read failures to storage failure',
+    () async {
+      create();
+      expect(await reader.bitcoin(descriptor), isA<Ok>());
+      admission.busy = true;
+      var reads = 0;
+      revisions.beforeRead = () {
+        if (++reads == 2) {
+          throw const FileSystemException('revision unavailable');
+        }
+      };
+
+      final result = await reader.bitcoin(descriptor);
+
+      expect((result as Err).failure, isA<SyncStorageFailure>());
+      expect(reads, 2);
+    },
+  );
+
   test('missing store is typed and creates nothing', () async {
     final result = await reader.bitcoin(descriptor);
     expect((result as Err).failure, isA<SyncNotFoundFailure>());
@@ -338,9 +358,8 @@ void main() {
   test(
     'corrupt store is a storage failure, neither repaired nor deleted',
     () async {
-      await File(
-        nativeWalletStoragePath(documents.path, descriptor.key),
-      ).writeAsString('not a wallet');
+      await File(nativeWalletStoragePath(documents.path, descriptor.key))
+          .writeAsString('not a wallet');
       final before = await fingerprint(documents);
       final result = await reader.bitcoin(descriptor);
       // Repair only answers LWK's status conflict: it cannot fix this store.
@@ -366,9 +385,9 @@ void main() {
     'hydration revision race retains the previous snapshot as stale',
     () async {
       create();
-      final first =
-          await reader.bitcoin(descriptor)
-              as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
+      final first = await reader.bitcoin(
+        descriptor,
+      ) as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
       revisions.state = WalletRevisionState(
         stamp: WalletRevision(key: descriptor.key, generation: 0, revision: 1),
         lifecycle: WalletLifecycle.active,
@@ -403,18 +422,18 @@ void main() {
 
   test('failed sync leaves the same revision readable as stale', () async {
     create();
-    final first =
-        await reader.bitcoin(descriptor)
-            as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
+    final first = await reader.bitcoin(
+      descriptor,
+    ) as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
     revisions.state = WalletRevisionState(
       stamp: revisions.state.stamp,
       lifecycle: WalletLifecycle.active,
       initializedSchema: 1,
       syncFailed: true,
     );
-    final next =
-        await reader.bitcoin(descriptor)
-            as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
+    final next = await reader.bitcoin(
+      descriptor,
+    ) as Ok<WalletReadSnapshot<bdk.Wallet>, SyncFailure>;
     expect(next.value.wallet, same(first.value.wallet));
     expect(next.value.stale, isTrue);
     // A failed sync is stale, yet still the committed revision.

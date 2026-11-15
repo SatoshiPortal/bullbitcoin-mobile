@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbi
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
 import '../../core/exchange/order_json_fixture.dart';
 
 class _Http extends Mock implements Dio {}

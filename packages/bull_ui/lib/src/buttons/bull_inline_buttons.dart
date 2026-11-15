@@ -1,5 +1,6 @@
 import '../theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 
 /// A compact text action for inline controls.
 class BullInlineTextButton extends StatelessWidget {

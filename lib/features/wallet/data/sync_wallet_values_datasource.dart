@@ -272,15 +272,14 @@ class SyncWalletValuesDatasource {
     final outputs = [
       for (final output in tx.outputs)
         TransactionOutputModel.bitcoin(
-              txId: tx.txid,
-              vout: output.vout,
-              isOwn: output.isOwn,
-              value: output.valueSat,
-              scriptPubkey: Uint8List.fromList(output.scriptPubkey),
-              address: output.address,
-              isChange: output.isChange,
-            )
-            as BitcoinTransactionOutputModel,
+          txId: tx.txid,
+          vout: output.vout,
+          isOwn: output.isOwn,
+          value: output.valueSat,
+          scriptPubkey: Uint8List.fromList(output.scriptPubkey),
+          address: output.address,
+          isChange: output.isChange,
+        ) as BitcoinTransactionOutputModel,
     ];
     final isToSelf =
         inputs.every((input) => input.isOwn) &&

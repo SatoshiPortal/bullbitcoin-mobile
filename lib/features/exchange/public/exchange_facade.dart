@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:primitives/primitives.dart';
+
 import '../domain/exchange_access.dart';
 import '../domain/exchange_availability.dart';
 import '../domain/exchange_failure.dart';
@@ -13,6 +14,7 @@ import '../domain/usecases/guard_exchange_trading_usecase.dart';
 import 'exchange_account.dart';
 
 export 'package:primitives/primitives.dart' show Err, Ok, Result;
+
 export '../domain/exchange_failure.dart';
 export '../exchange_locator.dart' show ExchangeLocator;
 export '../presentation/exchange_failure_l10n.dart' show ExchangeFailureL10n;

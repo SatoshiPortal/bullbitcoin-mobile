@@ -3,8 +3,10 @@ import 'package:bull_logger/bull_logger.dart';
 /// Worker messages contain fixed text and safe operation metadata only.
 enum WriterLogLevel { info, fine, warning, severe }
 
-typedef WriterDiagnosticSink =
-    void Function(WriterLogLevel level, String message);
+typedef WriterDiagnosticSink = void Function(
+  WriterLogLevel level,
+  String message,
+);
 
 /// The foreground owns the persisted support log and reporter routing.
 void persistWriterDiagnostic(WriterLogLevel level, String message) {

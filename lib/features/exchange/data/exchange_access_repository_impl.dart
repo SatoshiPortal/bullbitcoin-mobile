@@ -112,14 +112,14 @@ class ExchangeAccessRepositoryImpl implements ExchangeAccessRepository {
       await disconnected;
       try {
         if (_cleanupPending) {
-          return _signOutCleanup();
+          return await _signOutCleanup();
         }
         final preference = await _read();
         if (token != _epoch) {
           return const Ok(null);
         }
         if (preference.pending) {
-          return _signOutCleanup();
+          return await _signOutCleanup();
         }
         final isTestnet = await _readEnvironment();
         final key = await _keys.readActiveApiKey(isTestnet: isTestnet);

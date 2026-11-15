@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:flutter/rendering.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -17,10 +18,10 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullCountdown, BullShimmerLine;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -64,12 +65,11 @@ void main() {
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(textScale)),
           child: child ?? const SizedBox.shrink(),
         ),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
           providers: [
@@ -111,9 +111,8 @@ void main() {
     when(() => order.exchangeRateAmount).thenReturn(200000);
     when(() => order.exchangeRateCurrency).thenReturn('CAD');
     when(() => order.isLiquid).thenReturn(false);
-    when(
-      () => order.confirmationDeadline,
-    ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+    when(() => order.confirmationDeadline)
+        .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
     screen.update(BuyState(buyOrder: order));
     await tester.pump();
 
@@ -216,14 +215,12 @@ void main() {
         ),
       );
       when(() => settings.stream).thenAnswer((_) => const Stream.empty());
-      when(
-        () => exchange.state,
-      ).thenReturn(const ExchangeState(userSummary: user));
+      when(() => exchange.state)
+          .thenReturn(const ExchangeState(userSummary: user));
       when(() => exchange.stream).thenAnswer((_) => const Stream.empty());
       final access = _MockExchangeFacade();
-      when(
-        () => access.guardTradingEntry(),
-      ).thenAnswer((_) async => const Ok(ExchangeAvailability.ready));
+      when(() => access.guardTradingEntry())
+          .thenAnswer((_) async => const Ok(ExchangeAvailability.ready));
       locator.pushNewScope(
         init: (scope) {
           scope.registerFactory<BuyBloc>(() => bloc);
@@ -245,7 +242,7 @@ void main() {
           child: MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
         ),

@@ -22,9 +22,8 @@ void main() {
   setUp(() => getAccountInfo = _MockGetAccountInfo());
 
   test('a successful load holds the account info', () async {
-    when(
-      getAccountInfo.execute,
-    ).thenAnswer((_) async => const Ok(_accountInfo));
+    when(getAccountInfo.execute)
+        .thenAnswer((_) async => const Ok(_accountInfo));
     final cubit = AccountInfoCubit(getAccountInfoUsecase: getAccountInfo);
     addTearDown(cubit.close);
 
@@ -60,9 +59,8 @@ void main() {
     addTearDown(cubit.close);
     await cubit.loadAccountInfo();
 
-    when(
-      getAccountInfo.execute,
-    ).thenAnswer((_) async => const Ok(_accountInfo));
+    when(getAccountInfo.execute)
+        .thenAnswer((_) async => const Ok(_accountInfo));
     await cubit.loadAccountInfo();
 
     expect(cubit.state.failure, isNull);

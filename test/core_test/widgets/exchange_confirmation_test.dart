@@ -1,5 +1,7 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+
 import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -12,9 +14,9 @@ import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_send_payment_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -87,7 +89,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: MultiBlocProvider(
               providers: [
@@ -141,9 +143,8 @@ void main() {
         when(() => sellOrder.exchangeRateCurrency).thenReturn('CAD');
         when(() => payOrder.exchangeRateAmount).thenReturn(50000);
         when(() => payOrder.exchangeRateCurrency).thenReturn('CAD');
-        when(
-          () => sellOrder.payoutMethod,
-        ).thenReturn(OrderPaymentMethod.cadBalance);
+        when(() => sellOrder.payoutMethod)
+            .thenReturn(OrderPaymentMethod.cadBalance);
         when(() => sellOrder.bitcoinAddress).thenReturn(address);
         when(() => sellOrder.liquidAddress).thenReturn(null);
         when(() => sellOrder.payjoinBip21).thenReturn(null);

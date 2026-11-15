@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:bull_recoverbull/bull_recoverbull.dart' show RecoverBullFeature;
+
 import 'package:bull_recoverbull/src/ui/screens/view_vault_key_page.dart';
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:screen_privacy/screen_privacy.dart';
@@ -14,7 +16,7 @@ const _channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
 
 Widget _app(Widget child) => MaterialApp(
   theme: ThemeData(extensions: testBullExtensions),
-  localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+  localizationsDelegates: RecoverBullFeature.localizationsDelegates,
   supportedLocales: RecoverBullLocalizations.supportedLocales,
   home: child,
 );

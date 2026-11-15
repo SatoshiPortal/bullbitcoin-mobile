@@ -53,9 +53,8 @@ void main() {
     owner = freezesOnlySync(dir.path);
     metadata = _Metadata();
     labels = _Labels();
-    when(
-      () => metadata.fetch(walletId),
-    ).thenAnswer((_) async => _row(walletId));
+    when(() => metadata.fetch(walletId))
+        .thenAnswer((_) async => _row(walletId));
     when(() => labels.fetchByReference(any())).thenAnswer((_) async => []);
   });
   tearDown(() async {
@@ -96,9 +95,8 @@ void main() {
     ]);
     final wallet = await testWallet(key: key);
 
-    await repository(
-      wallet,
-    ).unfreezeUtxos(walletId: walletId, outpoints: [frozen]);
+    await repository(wallet)
+        .unfreezeUtxos(walletId: walletId, outpoints: [frozen]);
 
     expect(await repository(wallet).getAllFrozenOutpoints(), isEmpty);
   });

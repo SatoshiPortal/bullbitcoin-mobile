@@ -1,6 +1,6 @@
 import 'dart:ui' show lerpDouble;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The `bull_ui` corner radii, one per role, injected by the app as a [ThemeExtension] next to [BullTheme].
 ///

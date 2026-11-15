@@ -75,9 +75,8 @@ void main() {
           isToSelf: true,
         )),
       );
-      when(
-        () => calculateFees.execute(psbt: 'unsigned'),
-      ).thenAnswer((_) async => 1000);
+      when(() => calculateFees.execute(psbt: 'unsigned'))
+          .thenAnswer((_) async => 1000);
 
       final result = await usecase.execute(
         walletId: 'wallet-1',

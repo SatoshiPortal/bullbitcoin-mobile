@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../sp_fakes.dart';
+
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
 class MockSpBackendConfigRepository extends Mock
@@ -28,20 +29,17 @@ void main() {
     when(() => accountRepo.notifySetupChanged()).thenReturn(null);
     when(() => accountRepo.hasSession).thenReturn(true);
     when(() => accountRepo.dispose()).thenAnswer((_) async => const Ok(null));
-    when(
-      () => accountRepo.accountDirExists(),
-    ).thenAnswer((_) async => const Ok(true));
+    when(() => accountRepo.accountDirExists())
+        .thenAnswer((_) async => const Ok(true));
     when(
       () => accountRepo.writeRevokedSentinel(
         skipIfPresent: any(named: 'skipIfPresent'),
       ),
     ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => accountRepo.deleteOrphanBackups(),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => accountRepo.deleteAccountDir(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => accountRepo.deleteOrphanBackups())
+        .thenAnswer((_) async => const Ok(null));
+    when(() => accountRepo.deleteAccountDir())
+        .thenAnswer((_) async => const Ok(null));
     when(() => configRepo.setIsSetUpNow(isSetUp: false)).thenReturn(null);
     when(() => configRepo.delete()).thenAnswer((_) async => const Ok(null));
     usecase = RevokeSpWalletUsecase(
@@ -90,9 +88,8 @@ void main() {
     test(
       'no sentinel is written when there is no account dir to mark',
       () async {
-        when(
-          () => accountRepo.accountDirExists(),
-        ).thenAnswer((_) async => const Ok(false));
+        when(() => accountRepo.accountDirExists())
+            .thenAnswer((_) async => const Ok(false));
 
         expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
 
@@ -112,9 +109,8 @@ void main() {
   group('RevokeSpWalletUsecase failure paths', () {
     test('a dispose timeout does NOT abort the revoke', () async {
       // Aborting would leave a wallet that can never be deleted.
-      when(
-        () => accountRepo.dispose(),
-      ).thenAnswer((_) async => const Err(SpSessionBusy('still locked')));
+      when(() => accountRepo.dispose())
+          .thenAnswer((_) async => const Err(SpSessionBusy('still locked')));
 
       expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
 
@@ -123,9 +119,8 @@ void main() {
     });
 
     test('a sentinel write failure stops before anything is deleted', () async {
-      when(
-        () => accountRepo.writeRevokedSentinel(),
-      ).thenAnswer((_) async => const Err(SpUnexpected('read-only fs')));
+      when(() => accountRepo.writeRevokedSentinel())
+          .thenAnswer((_) async => const Err(SpUnexpected('read-only fs')));
 
       expect(await usecase.execute(), isA<Err<void, SpFailure>>());
 
@@ -136,9 +131,8 @@ void main() {
 
     test('on a delete failure the sentinel is put back, SpSetupChanged is '
         'emitted, and the failure is returned', () async {
-      when(
-        () => accountRepo.deleteAccountDir(),
-      ).thenAnswer((_) async => const Err(SpUnexpected('locked child')));
+      when(() => accountRepo.deleteAccountDir())
+          .thenAnswer((_) async => const Err(SpUnexpected('locked child')));
 
       final result = await usecase.execute();
 
@@ -149,9 +143,8 @@ void main() {
       );
       // The delete may have removed the sentinel before failing on a locked
       // child, so it goes back on disk and the SP card is dropped.
-      verify(
-        () => accountRepo.writeRevokedSentinel(skipIfPresent: true),
-      ).called(1);
+      verify(() => accountRepo.writeRevokedSentinel(skipIfPresent: true))
+          .called(1);
       verify(() => accountRepo.notifySetupChanged()).called(1);
       verifyNever(() => configRepo.delete());
       verify(() => accountRepo.endTeardown()).called(1);
@@ -160,9 +153,8 @@ void main() {
     test(
       'a config delete failure does not abort the revoke; it still notifies',
       () async {
-        when(
-          () => configRepo.delete(),
-        ).thenAnswer((_) async => const Err(SpUnexpected('config gone')));
+        when(() => configRepo.delete())
+            .thenAnswer((_) async => const Err(SpUnexpected('config gone')));
 
         await usecase.execute();
 
@@ -174,9 +166,8 @@ void main() {
     test(
       'a throw anywhere still runs endTeardown and comes back as Err',
       () async {
-        when(
-          () => accountRepo.deleteAccountDir(),
-        ).thenThrow(Exception('delete boom'));
+        when(() => accountRepo.deleteAccountDir())
+            .thenThrow(Exception('delete boom'));
 
         final result = await usecase.execute();
 

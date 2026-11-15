@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.d
 import 'package:bb_mobile/features/swap/ui/widgets/swap_from_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_sheet.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -108,7 +108,6 @@ class SwapPageState extends State<SwapPage> {
         body: SafeArea(
           child: BBKeyboardActions(
             disableScroll: true,
-            focusNodes: [_amountNode],
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(

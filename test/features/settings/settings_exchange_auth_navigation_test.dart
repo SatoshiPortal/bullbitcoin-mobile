@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -15,7 +16,7 @@ import 'package:bb_mobile/features/settings/presentation/exchange_access_setting
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -235,9 +236,8 @@ void main() {
     final set = _Set();
     final settings = _Settings();
     when(() => settings.state).thenReturn(const SettingsState());
-    when(
-      () => exchange.currentAccess,
-    ).thenReturn(const ExchangeAccessDisabled());
+    when(() => exchange.currentAccess)
+        .thenReturn(const ExchangeAccessDisabled());
     when(exchange.watchAccess).thenAnswer((_) => const Stream.empty());
     final cubits = <ExchangeAccessSettingsCubit>[];
     locator.registerFactory<ExchangeAccessSettingsCubit>(() {
@@ -249,11 +249,12 @@ void main() {
       return cubit;
     });
     final route =
-        SettingsRouter.route(
-          buildPriceHistory: (_) => const SizedBox.shrink(),
-        ).routes.whereType<GoRoute>().singleWhere(
-          (route) => route.name == SettingsRoute.exchangeAccess.name,
-        );
+        SettingsRouter.route(buildPriceHistory: (_) => const SizedBox.shrink())
+            .routes
+            .whereType<GoRoute>()
+            .singleWhere(
+              (route) => route.name == SettingsRoute.exchangeAccess.name,
+            );
     final routeBuilder = route.builder;
     expect(routeBuilder, isNotNull);
     if (routeBuilder == null) throw StateError('Manage access needs a builder');

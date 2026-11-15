@@ -26,15 +26,13 @@ void main() {
     });
 
     test('a silent payment recipient with no label sends a null label', () {
-      final view =
-          SpRecipientMapper.toFfi(
-                SpRecipientSp(
-                  address: SpAddress('sp1qexample'),
-                  amountSat: Sats.fromInt(1),
-                  isMax: false,
-                ),
-              )
-              as bwk.RecipientView_Sp;
+      final view = SpRecipientMapper.toFfi(
+        SpRecipientSp(
+          address: SpAddress('sp1qexample'),
+          amountSat: Sats.fromInt(1),
+          isMax: false,
+        ),
+      ) as bwk.RecipientView_Sp;
 
       expect(view.label, isNull);
       expect(view.isMax, isFalse);

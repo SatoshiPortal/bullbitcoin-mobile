@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dar
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;

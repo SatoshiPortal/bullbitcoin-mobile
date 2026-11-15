@@ -54,9 +54,8 @@ void main() {
         ),
       );
       final transactions = _Transactions();
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => const Stream.empty());
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => const Stream.empty());
       when(
         () => transactions.isTransactionVisible(
           walletId: any(named: 'walletId'),
@@ -98,17 +97,15 @@ void main() {
         for (var i = 0; i < 3; i++) {
           expect(await runtime.resume(), isA<Ok<void, PayjoinFailure>>());
         }
-        verify(
-          () => transactions.watchWallet('wallet-1'),
-        ).called(withFallback ? 2 : 1);
+        verify(() => transactions.watchWallet('wallet-1'))
+            .called(withFallback ? 2 : 1);
         expect(await resumeCount(), 1);
         // Reopening the same persisted session is a real lifecycle restart.
         await runtime.dispose();
         runtime = await open();
         expect(await runtime.resume(), isA<Ok<void, PayjoinFailure>>());
-        verify(
-          () => transactions.watchWallet('wallet-1'),
-        ).called(withFallback ? 2 : 1);
+        verify(() => transactions.watchWallet('wallet-1'))
+            .called(withFallback ? 2 : 1);
         expect(await resumeCount(), 2);
       } finally {
         await runtime.dispose();

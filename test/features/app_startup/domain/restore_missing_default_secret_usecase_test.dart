@@ -69,9 +69,8 @@ void main() {
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     wallets = _MockWalletRepository();
-    when(
-      () => wallets.getWallets(),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
+    when(() => wallets.getWallets())
+        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
     usecase = RestoreMissingDefaultSecretUsecase(
       secrets: secrets,
       walletRepository: wallets,

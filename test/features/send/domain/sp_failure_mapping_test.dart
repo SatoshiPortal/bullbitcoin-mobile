@@ -43,9 +43,8 @@ void main() {
     });
 
     test('a wrong-network address reports the mismatch', () {
-      final failure = const SpAddressNetworkMismatch(
-        'wrong network',
-      ).toSendFailure();
+      final failure = const SpAddressNetworkMismatch('wrong network')
+          .toSendFailure();
 
       expect(failure, isA<SendAddressNetworkMismatchFailure>());
       expect(failure!.logMessage, 'wrong network');
@@ -95,9 +94,8 @@ void main() {
     });
 
     test('the amount check reports an unexpected failure', () {
-      when(
-        () => facade.validateAmount(Sats.zero),
-      ).thenReturn(const Err<Sats, SpFailure>(SpNotSetUp()));
+      when(() => facade.validateAmount(Sats.zero))
+          .thenReturn(const Err<Sats, SpFailure>(SpNotSetUp()));
 
       final result = ValidateSpAmountForSendUsecase(facade).execute(Sats.zero);
 
@@ -115,9 +113,8 @@ void main() {
         (_) async => const Err<SpRecipient, SpFailure>(SpSessionBusy()),
       );
 
-      final result = await ValidateSpRecipientForSendUsecase(
-        facade,
-      ).execute(input: 'sp1qexample', amountSat: Sats.zero, isMax: false);
+      final result = await ValidateSpRecipientForSendUsecase(facade)
+          .execute(input: 'sp1qexample', amountSat: Sats.zero, isMax: false);
 
       expect(failureOf(result), isA<SendInvalidPaymentRequestFailure>());
     });
@@ -133,9 +130,8 @@ void main() {
             const Err<SpTxDraft, SpFailure>(SpBackendUnreachable('down')),
       );
 
-      final result = await PrepareSpPaymentForSendUsecase(
-        facade,
-      ).execute(recipients: const [], fee: null);
+      final result = await PrepareSpPaymentForSendUsecase(facade)
+          .execute(recipients: const [], fee: null);
 
       expect(failureOf(result), isA<SendTransactionBuildFailure>());
       expect(failureOf(result).logMessage, 'down');
@@ -154,9 +150,8 @@ void main() {
             const Err<String, SpFailure>(SpAmountExceedsBalance('exceeds')),
       );
 
-      final result = await SendSpPaymentForSendUsecase(
-        facade,
-      ).execute(draft: draft);
+      final result = await SendSpPaymentForSendUsecase(facade)
+          .execute(draft: draft);
 
       final failure = failureOf(result) as SendTransactionConfirmationFailure;
       expect(failure.isBroadcastFailure, isTrue);

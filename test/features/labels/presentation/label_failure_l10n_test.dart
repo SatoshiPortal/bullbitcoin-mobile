@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/features/labels/domain/label_failure.dart';
 import 'package:bb_mobile/features/labels/domain/note_violation_to_label_failure.dart';
 import 'package:bb_mobile/features/labels/presentation/label_failure_l10n.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Labels hold the user's own words about their money — counterparty names,
@@ -30,7 +30,7 @@ Future<String> _translate(WidgetTester tester, LabelFailure failure) async {
   late String message;
   await tester.pumpWidget(
     MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
@@ -151,15 +151,13 @@ void main() {
     test('never carries a logMessage: a broken input rule is not an incident '
         'to log, and there is no raw reason to leak', () {
       expect(
-        mapNoteViolationToLabelFailure(
-          const NoteTooLong(maxLength: 50),
-        ).logMessage,
+        mapNoteViolationToLabelFailure(const NoteTooLong(maxLength: 50))
+            .logMessage,
         isNull,
       );
       expect(
-        mapNoteViolationToLabelFailure(
-          const NoteForbiddenCharacter('/'),
-        ).logMessage,
+        mapNoteViolationToLabelFailure(const NoteForbiddenCharacter('/'))
+            .logMessage,
         isNull,
       );
     });

@@ -55,9 +55,8 @@ void main() {
       () => access.current,
     ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
     when(() => access.epoch).thenReturn(1);
-    when(
-      settings.fetch,
-    ).thenAnswer((_) async => _settings(Environment.mainnet));
+    when(settings.fetch)
+        .thenAnswer((_) async => _settings(Environment.mainnet));
   });
 
   // SettingsRepository is shared core and still throws. These use-cases
@@ -102,9 +101,8 @@ void main() {
   test(
     'regtest refuses exchange operations without historical side effects',
     () async {
-      when(
-        settings.fetch,
-      ).thenAnswer((_) async => _settings(Environment.regtest));
+      when(settings.fetch)
+          .thenAnswer((_) async => _settings(Environment.regtest));
       final support = _MockSendSupportChat();
       final results = [
         await GetExchangeAnnouncementsUsecase(
@@ -119,9 +117,8 @@ void main() {
           settingsRepository: settings,
           access: access,
         ).execute(language: 'fr'),
-        await GetExchangeWebSettingsUsecase(
-          settingsRepository: settings,
-        ).execute(),
+        await GetExchangeWebSettingsUsecase(settingsRepository: settings)
+            .execute(),
         await RequestExchangeAccountDeletionUsecase(
           sendSupportChatMessageUsecase: support,
           settingsRepository: settings,
@@ -159,9 +156,8 @@ void main() {
     );
 
     test('a repository failure is lifted into the feature family', () async {
-      when(
-        mainnetUsers.getUserSummary,
-      ).thenAnswer((_) async => const Ok(summary));
+      when(mainnetUsers.getUserSummary)
+          .thenAnswer((_) async => const Ok(summary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -183,9 +179,8 @@ void main() {
     // leaves out must be carried over from a fresh summary.
     test('fields the caller leaves out are filled from a fresh '
         'summary', () async {
-      when(
-        mainnetUsers.getUserSummary,
-      ).thenAnswer((_) async => const Ok(summary));
+      when(mainnetUsers.getUserSummary)
+          .thenAnswer((_) async => const Ok(summary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -250,9 +245,8 @@ void main() {
     });
 
     test('a successful load is forwarded', () async {
-      when(
-        mainnetUsers.listAnnouncements,
-      ).thenAnswer((_) async => const Ok(<Announcement>[]));
+      when(mainnetUsers.listAnnouncements)
+          .thenAnswer((_) async => const Ok(<Announcement>[]));
 
       expect(
         await build().execute(),

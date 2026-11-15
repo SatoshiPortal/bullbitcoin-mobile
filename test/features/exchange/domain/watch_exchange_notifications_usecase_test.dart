@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
 import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
@@ -151,12 +152,10 @@ void main() {
         'exchange_access': '{"enabled":true,"signOutPending":false}',
       });
       final keys = _Keys();
-      when(
-        () => keys.readActiveApiKey(isTestnet: false),
-      ).thenAnswer((_) async => const Ok('active'));
-      when(
-        () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => keys.readActiveApiKey(isTestnet: false))
+          .thenAnswer((_) async => const Ok('active'));
+      when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+          .thenAnswer((_) async => const Ok(null));
       final pending = Completer<Result<void, ExchangeNotificationFailure>>();
       when(repository.connect).thenAnswer((_) => pending.future);
       var disconnects = 0;
@@ -211,9 +210,8 @@ void main() {
       final connection = build().connect();
       await Future<void>.delayed(Duration.zero);
       epoch = 2;
-      when(
-        () => access.current,
-      ).thenReturn(const ExchangeAccessSignOutIncomplete());
+      when(() => access.current)
+          .thenReturn(const ExchangeAccessSignOutIncomplete());
       environment.complete(
         const SettingsEntity(
           environment: Environment.mainnet,
@@ -234,12 +232,10 @@ void main() {
       'exchange_access': '{"enabled":true,"signOutPending":false}',
     });
     final keys = _Keys();
-    when(
-      () => keys.readActiveApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok('active'));
-    when(
-      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => keys.readActiveApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok('active'));
+    when(() => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => const Ok(null));
     final pending = Completer<Result<void, ExchangeNotificationFailure>>();
     var calls = 0;
     var connected = false;

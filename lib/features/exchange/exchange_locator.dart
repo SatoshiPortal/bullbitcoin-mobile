@@ -7,7 +7,9 @@ import 'package:bb_mobile/features/exchange/domain/usecases/expire_exchange_sess
 import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_exchange_account_usecase.dart';
+
 import 'dart:io';
+
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_notification_repository.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/features/exchange/data/exchange_account_repository_impl.dart';
@@ -29,7 +31,7 @@ import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_notif
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:get_it/get_it.dart';
-import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeLocator {
   static void setup(GetIt locator) {
@@ -48,7 +50,9 @@ class ExchangeLocator {
         platformAllowed: platformAllowed,
         disconnectNotifications: () async =>
             locator<ExchangeNotificationRepository>().disconnect(),
-        clearCookies: () => WebviewCookieManager().clearCookies(),
+        clearCookies: () async {
+          await WebViewCookieManager().clearCookies();
+        },
       ),
     );
     locator.registerFactory<ResolveExchangeAccessUsecase>(

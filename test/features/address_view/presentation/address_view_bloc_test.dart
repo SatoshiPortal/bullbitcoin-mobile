@@ -36,9 +36,8 @@ void main() {
   setUp(() {
     getAddresses = MockGetAddressListUsecase();
     checkIsLiquid = MockCheckWalletIsLiquidUsecase();
-    when(
-      () => checkIsLiquid.execute(any()),
-    ).thenAnswer((_) async => const Ok(false));
+    when(() => checkIsLiquid.execute(any()))
+        .thenAnswer((_) async => const Ok(false));
   });
 
   group('AddressViewBloc', () {

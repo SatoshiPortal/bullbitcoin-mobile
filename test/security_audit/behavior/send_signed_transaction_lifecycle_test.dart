@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_u
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
+
 // Behavioral proof for two audit findings on SendCubit:
 //
 // 1. `_invalidateSignedTransaction()` (added by `fix(send)`) only clears
@@ -504,9 +505,8 @@ void main() {
         (invocation) async =>
             Ok(Label.tx(id: 1, transactionId: 'broadcast-txid', label: 'rent')),
       );
-      when(
-        () => getWalletUsecase.execute(any(), sync: any(named: 'sync')),
-      ).thenAnswer((_) async => _wallet);
+      when(() => getWalletUsecase.execute(any(), sync: any(named: 'sync')))
+          .thenAnswer((_) async => _wallet);
 
       cubit.seed(
         SendState(

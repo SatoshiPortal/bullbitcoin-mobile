@@ -68,8 +68,7 @@ void main() {
     expect(
       offenders,
       isEmpty,
-      reason:
-          'annotate each with @internal (make implicit constructors explicit first)',
+      reason: 'annotate each with @internal (make implicit constructors explicit first)',
     );
   });
 

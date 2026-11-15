@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart' show BullQuickAction;
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'quick_actions_test.dart' show MemoryStorage;
 
@@ -32,9 +31,7 @@ Future<void> mount(
     theme: ThemeData(extensions: testBullExtensions),
     localizationsDelegates: const [
       QuickActionsFallbackDelegate(),
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
+      ...GlobalMaterialLocalizations.delegates,
     ],
     home: Scaffold(
       body: Padding(
@@ -157,14 +154,11 @@ void matrixTests() {
                   theme: ThemeData(extensions: testBullExtensions),
                   localizationsDelegates: const [
                     QuickActionsFallbackDelegate(),
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
+                    ...GlobalMaterialLocalizations.delegates,
                   ],
                   builder: (context, child) => MediaQuery(
-                    data: MediaQuery.of(
-                      context,
-                    ).copyWith(textScaler: TextScaler.linear(scale)),
+                    data: MediaQuery.of(context)
+                        .copyWith(textScaler: TextScaler.linear(scale)),
                     child: child ?? const SizedBox.shrink(),
                   ),
                   home: Scaffold(

@@ -6,7 +6,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -94,9 +94,8 @@ void main() {
     final cubit = _Cubit();
     when(() => cubit.state).thenReturn(const ExchangeState());
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-    when(
-      cubit.enableForSupport,
-    ).thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
+    when(cubit.enableForSupport)
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),

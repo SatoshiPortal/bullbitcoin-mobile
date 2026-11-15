@@ -1,8 +1,8 @@
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'customization_test.dart' show semanticMove, homeValue;
 
 void main() {
@@ -15,9 +15,7 @@ void main() {
         theme: ThemeData(extensions: testBullExtensions),
         localizationsDelegates: const [
           QuickActionsFallbackDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+          ...GlobalMaterialLocalizations.delegates,
         ],
         home: QuickActionsCustomizationScreen(
           cubit: createQuickActionsCubit(

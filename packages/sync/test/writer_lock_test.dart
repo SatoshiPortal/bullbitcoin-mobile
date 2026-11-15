@@ -115,4 +115,22 @@ void main() {
     if (result case Ok(:final value)) addTearDown(value.release);
     expect(result, isA<Ok<WriterLock, SyncFailure>>());
   });
+
+  test('a released holder cannot release a replacement lease', () {
+    final first = WriterLock.acquire(directory.path, _key) as Ok;
+    final original = first.value as WriterLock;
+    original.release();
+    original.release();
+
+    final second = WriterLock.acquire(directory.path, _key) as Ok;
+    final replacement = second.value as WriterLock;
+    addTearDown(replacement.release);
+    original.release();
+
+    final blocked = WriterLock.acquire(directory.path, _key) as Err;
+    expect(blocked.failure, isA<SyncBusyFailure>());
+    replacement.release();
+    final third = WriterLock.acquire(directory.path, _key) as Ok;
+    (third.value as WriterLock).release();
+  });
 }

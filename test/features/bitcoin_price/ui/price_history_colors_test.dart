@@ -8,7 +8,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart' show BullTheme;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 

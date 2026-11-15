@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart' show BullText, BullThemeX;
+
 import 'dart:ui' show Tristate;
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -9,7 +10,7 @@ import 'package:bb_mobile/features/settings/presentation/exchange_access_setting
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_settings_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -80,9 +81,8 @@ void main() {
     final set = _Set();
     final settings = _Settings();
     when(() => settings.state).thenReturn(const SettingsState());
-    when(
-      () => watch.current,
-    ).thenReturn(const ExchangeAccessSignOutIncomplete());
+    when(() => watch.current)
+        .thenReturn(const ExchangeAccessSignOutIncomplete());
     when(watch.execute).thenAnswer((_) => const Stream.empty());
     when(() => set.execute(false)).thenAnswer((_) async => const Ok(null));
     final cubit = ExchangeAccessSettingsCubit(watch, set);

@@ -52,12 +52,10 @@ void main() {
         payjoin.PayjoinPolicy.defaults().withAction(action, enabled: enabled),
       );
     });
-    when(
-      () => getDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(true));
-    when(
-      () => markDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<void, SettingsFailure>(null));
+    when(() => getDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<bool, SettingsFailure>(true));
+    when(() => markDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<void, SettingsFailure>(null));
     usecase = SetPayjoinEnabledUsecase(
       payjoinPolicy: payjoinPolicy,
       getPayjoinDisclaimerShownUsecase: getDisclaimerShown,
@@ -136,9 +134,8 @@ void main() {
   });
 
   test('requests consent before enabling, then records it', () async {
-    when(
-      () => getDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+    when(() => getDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
     final calls = <String>[];
     when(
       () => payjoinPolicy.setActionEnabled(
@@ -170,9 +167,8 @@ void main() {
   });
 
   test('does not enable or mark when consent is not granted', () async {
-    when(
-      () => getDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+    when(() => getDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
 
     final result = await usecase.execute(
       payjoin.PayjoinAction.receive,
@@ -189,9 +185,8 @@ void main() {
   });
 
   test('does not consume consent when enabling fails', () async {
-    when(
-      () => getDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+    when(() => getDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
     when(
       () => payjoinPolicy.setActionEnabled(
         payjoin.PayjoinAction.receive,
@@ -230,9 +225,8 @@ void main() {
   });
 
   test('keeps Payjoin enabled if recording consent fails', () async {
-    when(
-      () => getDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+    when(() => getDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
     when(() => markDisclaimerShown.execute()).thenAnswer(
       (_) async => const Err<void, SettingsFailure>(SettingsStorageFailure()),
     );
@@ -254,9 +248,8 @@ void main() {
 
   test('a consent dialog that throws is a consent failure, without the '
       'reason', () async {
-    when(
-      () => getDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+    when(() => getDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
 
     final result = await usecase.execute(
       payjoin.PayjoinAction.receive,
@@ -274,9 +267,8 @@ void main() {
   });
 
   test('only receiving asks for consent', () async {
-    when(
-      () => getDisclaimerShown.execute(),
-    ).thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
+    when(() => getDisclaimerShown.execute())
+        .thenAnswer((_) async => const Ok<bool, SettingsFailure>(false));
     var requestedConsent = false;
 
     for (final action in [
@@ -294,9 +286,8 @@ void main() {
       );
 
       expect(_valueOf(result), isTrue);
-      verify(
-        () => payjoinPolicy.setActionEnabled(action, enabled: true),
-      ).called(1);
+      verify(() => payjoinPolicy.setActionEnabled(action, enabled: true))
+          .called(1);
     }
     expect(requestedConsent, isFalse);
     verifyNever(() => markDisclaimerShown.execute());

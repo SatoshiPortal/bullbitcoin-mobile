@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_failure_l10n.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_confirmation_detail_row.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -104,9 +104,8 @@ class DcaConfirmationScreen extends StatelessWidget {
             if (confirmationState.failure case final failure?) ...[
               Text(
                 failure.toTranslated(context),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: context.appColors.error),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: context.appColors.error),
               ),
               const Gap(16),
             ],

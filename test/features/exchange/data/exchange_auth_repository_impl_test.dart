@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:convert';
 import 'dart:async';
 
@@ -158,9 +159,8 @@ void main() {
     'webview-quoted-json': jsonEncode(jsonEncode({'apiKey': fields})),
   }.entries) {
     test('decodes ${payload.key} at the repository boundary', () async {
-      final result = await _repository(
-        () async => payload.value,
-      ).generateApiKey();
+      final result = await _repository(() async => payload.value)
+          .generateApiKey();
       switch (result) {
         case Ok(:final value):
           expect(value.key, 'synthetic-key');
@@ -263,9 +263,8 @@ void main() {
     'platform exceptions become failures; programmer errors propagate',
     () async {
       expect(
-        await _repository(
-          () async => throw Exception('synthetic-key'),
-        ).generateApiKey(),
+        await _repository(() async => throw Exception('synthetic-key'))
+            .generateApiKey(),
         isA<Err<ExchangeApiKey, ExchangeFailure>>(),
       );
       await expectLater(

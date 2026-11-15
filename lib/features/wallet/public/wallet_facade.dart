@@ -1,14 +1,22 @@
 export '../domain/wallet_spend_failure.dart';
+
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
     show SeedReferences;
+
 export '../domain/wallet.dart' show Network;
 export '../domain/network_x.dart' show NetworkX;
+
 import 'package:sync/sync.dart';
+
 import '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
+
 import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart' show Result, Err;
+
 import '../domain/wallet_discovery_failure.dart';
+
 export 'package:primitives/primitives.dart' show Result;
+
 export '../domain/wallet_discovery_failure.dart';
 
 export 'package:sync/sync.dart'
@@ -26,6 +34,7 @@ export 'package:sync/sync.dart'
         WalletRevision,
         WalletKey,
         WalletLifecycle;
+
 export '../wallet_sync_locator.dart' show SyncLocator, initializeWalletRuntime;
 export '../data/broadcast_observation_follow_up.dart' show BroadcastSpend;
 export '../background_setup.dart'

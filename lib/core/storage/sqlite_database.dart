@@ -83,7 +83,7 @@ class SqliteDatabase extends _$SqliteDatabase {
       database.execute('PRAGMA busy_timeout = 2000;');
       return database.userVersion == currentSchemaVersion;
     } finally {
-      database.dispose();
+      database.close();
     }
   }
 

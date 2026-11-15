@@ -25,14 +25,12 @@ void main() {
         spendFailure: const PayjoinSpendBlockedFailure(),
       );
       final usecase = RetryPayjoinProposalUsecase(sender);
-      when(
-        () => sender.retryProposal(session.id),
-      ).thenAnswer((_) async => Ok(session));
+      when(() => sender.retryProposal(session.id))
+          .thenAnswer((_) async => Ok(session));
       final result = await usecase.execute(session.id);
       expect((result as Ok<PayjoinSession, PayFailure>).value, same(session));
-      when(
-        () => sender.retryProposal(session.id),
-      ).thenAnswer((_) async => const Err(PayjoinSpendBlockedFailure()));
+      when(() => sender.retryProposal(session.id))
+          .thenAnswer((_) async => const Err(PayjoinSpendBlockedFailure()));
       final refusal = await usecase.execute(session.id);
       expect(
         (refusal as Err<PayjoinSession, PayFailure>).failure,

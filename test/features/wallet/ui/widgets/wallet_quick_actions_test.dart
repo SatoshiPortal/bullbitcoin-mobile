@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_quick_actions.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _MemoryQuickActionsStorage implements QuickActionsStorage {

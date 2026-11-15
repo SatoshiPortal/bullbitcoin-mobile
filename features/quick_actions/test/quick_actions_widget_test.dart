@@ -1,11 +1,11 @@
 import 'customization_test.dart'
     show openEditor, localizations, semanticMove, homeValue;
+
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullQuickAction, BullText, BullThemeX;
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'quick_actions_test.dart' show MemoryStorage;
@@ -115,9 +115,8 @@ void main() {
         theme: ThemeData(extensions: testBullExtensions),
         localizationsDelegates: const [QuickActionsLocalizations.delegate],
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: const TextScaler.linear(2)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(2)),
           child: child ?? const SizedBox.shrink(),
         ),
         home: Scaffold(
@@ -156,9 +155,7 @@ void main() {
           supportedLocales: const [Locale('es'), Locale('fr')],
           localizationsDelegates: const [
             QuickActionsFallbackDelegate(),
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
+            ...GlobalMaterialLocalizations.delegates,
           ],
           home: Scaffold(
             body: QuickActionsRow(

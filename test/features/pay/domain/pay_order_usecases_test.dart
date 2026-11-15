@@ -143,9 +143,8 @@ void main() {
   group('PlacePayOrderUsecase', () {
     // A bill payment pays the exchange like a sell order does.
     Future<bool> requestedPayjoin(PayjoinPolicy policy) async {
-      when(
-        payjoinPolicy.load,
-      ).thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(policy));
+      when(payjoinPolicy.load)
+          .thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(policy));
       when(
         () => mainnet.placePayOrder(
           orderAmount: any(named: 'orderAmount'),
@@ -213,8 +212,7 @@ void main() {
         expect(
           failure.logMessage,
           isNull,
-          reason:
-              'authentication failures must not retain credential-bearing exception messages',
+          reason: 'authentication failures must not retain credential-bearing exception messages',
         );
       },
     );
@@ -291,17 +289,13 @@ void main() {
     });
 
     test('a refresh failure is sanitized, reason kept for logs only', () async {
-      when(
-        () => mainnet.refreshPayOrder(any()),
-      ).thenThrow(Exception(_rawReason));
+      when(() => mainnet.refreshPayOrder(any()))
+          .thenThrow(Exception(_rawReason));
 
-      final failure =
-          (await buildRefresh().execute(
-                    orderId: 'order-1',
-                    expectedDepositAddress: 'bc1qoriginal',
-                  )
-                  as Err<FiatPaymentOrder, PayFailure>)
-              .failure;
+      final failure = (await buildRefresh().execute(
+        orderId: 'order-1',
+        expectedDepositAddress: 'bc1qoriginal',
+      ) as Err<FiatPaymentOrder, PayFailure>).failure;
 
       expect(failure, isA<PayUnexpectedFailure>());
       expect(failure.logMessage, contains(_rawReason));

@@ -2,7 +2,9 @@ import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+
 import 'dart:async';
+
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/background_setup.dart';

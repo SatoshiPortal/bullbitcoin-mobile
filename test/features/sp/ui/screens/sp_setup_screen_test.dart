@@ -1,3 +1,5 @@
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:bull_ui/bull_ui.dart' show BullLabeledTextInput;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
@@ -9,9 +11,8 @@ import 'package:bb_mobile/features/sp/domain/usecases/test_sp_backend_usecase.da
 import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_setup_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -301,9 +302,8 @@ void main() {
 
     void seed(SpSetupState state) {
       when(() => cubit.state).thenReturn(state);
-      when(
-        () => cubit.stream,
-      ).thenAnswer((_) => const Stream<SpSetupState>.empty());
+      when(() => cubit.stream)
+          .thenAnswer((_) => const Stream<SpSetupState>.empty());
     }
 
     setUp(() {
@@ -366,9 +366,8 @@ void main() {
       expect(field, findsOneWidget);
       await tester.enterText(field, 'tcp://typed.electrum:50001');
 
-      verify(
-        () => cubit.setElectrumUrl('tcp://typed.electrum:50001'),
-      ).called(1);
+      verify(() => cubit.setElectrumUrl('tcp://typed.electrum:50001'))
+          .called(1);
     });
 
     testWidgets('selecting a network calls cubit.setNetwork', (tester) async {

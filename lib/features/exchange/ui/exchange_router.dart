@@ -2,6 +2,7 @@ import 'package:bull_ui/bull_ui.dart'
     show BullScaffold, BullTopBar, BullButton, BullText, BullThemeX, Gap;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -15,7 +16,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.d
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 

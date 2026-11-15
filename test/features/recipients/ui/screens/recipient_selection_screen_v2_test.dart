@@ -2,18 +2,20 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/recipient_selection_screen_v2.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
 
-typedef _SelectionHook =
-    Future<void>? Function(RecipientViewModel, {required bool isNew});
+typedef _SelectionHook = Future<void>? Function(
+  RecipientViewModel, {
+  required bool isNew,
+});
 
 void main() {
   setUpAll(() => registerFallbackValue(const RecipientsEvent.started()));
@@ -48,7 +50,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: const RecipientSelectionScreenV2(isConfidential: false),
           ),

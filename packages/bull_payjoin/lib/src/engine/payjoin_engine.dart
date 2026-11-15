@@ -969,9 +969,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         error: e,
         trace: StackTrace.current,
       );
-      result =
-          (await _broadcastOriginalWithRetry(model.toEntity()))
-              as PayjoinReceiver?;
+      result = (await _broadcastOriginalWithRetry(
+        model.toEntity(),
+      )) as PayjoinReceiver?;
     }
 
     if (result != null) {
@@ -2903,11 +2903,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// even though it already succeeded.
   void _syncWalletAfterBroadcast(String walletId) {
     unawaited(
-      Future(() => _transactions.refreshWallet(walletId)).catchError((
-        Object e,
-      ) {
-        _log.warning(code: api.PayjoinLogCode.walletFailure, error: e);
-      }),
+      Future(() => _transactions.refreshWallet(walletId))
+          .catchError((Object e) {
+            _log.warning(code: api.PayjoinLogCode.walletFailure, error: e);
+          }),
     );
   }
 

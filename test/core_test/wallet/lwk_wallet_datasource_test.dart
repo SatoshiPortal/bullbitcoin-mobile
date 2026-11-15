@@ -68,9 +68,8 @@ void main() {
       (_) async =>
           const lwk.Address(standard: 's', confidential: 'c', index: 0),
     );
-    when(
-      () => lwkWallet.policyAsset(),
-    ).thenAnswer((_) async => AssetConstants.lbtcTestnet);
+    when(() => lwkWallet.policyAsset())
+        .thenAnswer((_) async => AssetConstants.lbtcTestnet);
     when(
       () => lwkWallet.buildCustomTx(
         utxos: any(named: 'utxos'),

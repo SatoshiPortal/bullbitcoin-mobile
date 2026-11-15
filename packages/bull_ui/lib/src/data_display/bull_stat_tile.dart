@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Label / value / sub triplet for the summary bar (the design's `Stat`).
 /// **New.** Optional [accent] recolours the value (e.g. info-blue when any coin
@@ -53,10 +53,8 @@ class BullStatTile extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             sub!,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontSize: 11,
-              color: colors.textMuted,
-            ),
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(fontSize: 11, color: colors.textMuted),
           ),
         ],
       ],

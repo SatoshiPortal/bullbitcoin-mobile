@@ -5,10 +5,9 @@ import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullQuickAction, BullShapes, BullSnackBar;
 import 'package:bull_ui/testing.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'quick_actions_test.dart' show MemoryStorage;
 
@@ -45,16 +44,13 @@ Future<void> openEditor(
         ],
       ),
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(
-          context,
-        ).copyWith(textScaler: TextScaler.linear(textScale)),
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.linear(textScale)),
         child: child ?? const SizedBox.shrink(),
       ),
       localizationsDelegates: const [
         QuickActionsFallbackDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
       ],
       home: Builder(
         builder: (context) => Scaffold(
@@ -442,9 +438,8 @@ void main() {
     final l10n = localizations(tester);
     await semanticMove(tester, QuickAction.map, l10n.moveToMore);
     await tester.pump();
-    Navigator.of(
-      tester.element(find.byType(QuickActionsCustomizationScreen)),
-    ).pop();
+    Navigator.of(tester.element(find.byType(QuickActionsCustomizationScreen)))
+        .pop();
     await tester.pumpAndSettle();
     gate.complete();
     await tester.pumpAndSettle();
@@ -473,9 +468,8 @@ void main() {
     try {
       await semanticMove(tester, QuickAction.map, l10n.moveToMore);
       await tester.pump();
-      Navigator.of(
-        tester.element(find.byType(QuickActionsCustomizationScreen)),
-      ).pop();
+      Navigator.of(tester.element(find.byType(QuickActionsCustomizationScreen)))
+          .pop();
       await tester.pumpAndSettle();
       gate.complete();
       await tester.pumpAndSettle();
@@ -503,9 +497,8 @@ void main() {
     try {
       await tester.tap(find.text(l10n.reset));
       await tester.pumpAndSettle();
-      Navigator.of(
-        tester.element(find.byType(QuickActionsCustomizationScreen)),
-      ).pop();
+      Navigator.of(tester.element(find.byType(QuickActionsCustomizationScreen)))
+          .pop();
       await tester.pumpAndSettle();
       expect(storage.value, isNull);
       await tester.tap(find.text(l10n.undo));

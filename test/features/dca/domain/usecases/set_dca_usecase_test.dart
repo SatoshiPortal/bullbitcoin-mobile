@@ -124,9 +124,8 @@ void main() {
       when(() => settings.fetch()).thenAnswer(
         (_) async => mainnetSettings.copyWith(environment: Environment.regtest),
       );
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Err(ExchangeUserUnexpectedFailure()));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Err(ExchangeUserUnexpectedFailure()));
       final result = await usecase.execute(
         amount: 10,
         currency: FiatCurrency.cad,
@@ -256,9 +255,8 @@ void main() {
 
     test('maps an exchange rejection to OrderCreationFailure without carrying '
         'the raw reason', () async {
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Ok(userSummary));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Ok(userSummary));
       when(
         () => mainnetOrders.createDca(
           amount: any(named: 'amount'),
@@ -298,9 +296,8 @@ void main() {
           address: any(named: 'address'),
         ),
       ).thenAnswer((_) async => dca);
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Ok(userSummary));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Ok(userSummary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -353,9 +350,8 @@ void main() {
           address: any(named: 'address'),
         ),
       ).thenAnswer((_) async => dca);
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Ok(userSummary));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Ok(userSummary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -389,9 +385,8 @@ void main() {
           address: any(named: 'address'),
         ),
       ).thenAnswer((_) async => dca);
-      when(
-        () => mainnetUsers.getUserSummary(),
-      ).thenAnswer((_) async => const Ok(userSummary));
+      when(() => mainnetUsers.getUserSummary())
+          .thenAnswer((_) async => const Ok(userSummary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),

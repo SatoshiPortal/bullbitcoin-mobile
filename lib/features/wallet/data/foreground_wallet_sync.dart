@@ -54,9 +54,8 @@ final class ForegroundWalletSync {
           reason: reason,
         );
         final native = _native;
-        if (result case Err(
-          failure: SyncNeedsRepairFailure(),
-        ) when native != null) {
+        if (result case Err(failure: SyncNeedsRepairFailure())
+            when native != null) {
           await native.repair(value.key);
           result = await _sync.execute(
             value,
