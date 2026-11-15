@@ -60,7 +60,8 @@ class LoadElectrumServerDataUsecase {
         case Err(:final failure):
           return Err(failure);
       }
-      final ElectrumSettings settings;
+      // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+      ElectrumSettings settings;
       switch (settingsResult) {
         case Ok(:final value):
           settings = value;

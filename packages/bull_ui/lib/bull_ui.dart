@@ -14,6 +14,7 @@ export 'package:flutter/semantics.dart' show CustomSemanticsAction;
 // the list grows on demand as components need more symbols.
 export 'package:flutter/widgets.dart'
     show
+        AbsorbPointer,
         Align,
         AppLifecycleListener,
         AppLifecycleState,
@@ -38,6 +39,8 @@ export 'package:flutter/widgets.dart'
         Container,
         CrossAxisAlignment,
         Curves,
+        DragTarget,
+        DragTargetDetails,
         EdgeInsets,
         EdgeInsetsGeometry,
         Expanded,
@@ -58,6 +61,7 @@ export 'package:flutter/widgets.dart'
         Locale,
         LocalizationsDelegate,
         ListView,
+        LongPressDraggable,
         MainAxisAlignment,
         MainAxisSize,
         Navigator,
@@ -144,6 +148,7 @@ export 'src/inputs/bull_dial_pad.dart';
 export 'src/inputs/bull_dropdown.dart';
 export 'src/inputs/bull_filter_chip.dart';
 export 'src/inputs/bull_input_text.dart';
+export 'src/inputs/bull_picker_chip.dart';
 export 'src/inputs/bull_labeled_text_input.dart';
 export 'src/inputs/bull_lowercase_input_formatter.dart';
 export 'src/inputs/bull_paste_input.dart';
@@ -167,7 +172,6 @@ export 'src/feedback/bull_snack_bar.dart';
 
 // Layout.
 export 'src/layout/bull_carousel.dart';
-export 'src/layout/bull_reorderable_list.dart';
 export 'src/layout/bull_stream_value_builder.dart';
 export 'src/layout/bull_pullable_body.dart';
 export 'src/layout/bull_scrollable_column.dart';

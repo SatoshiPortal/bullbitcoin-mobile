@@ -43,6 +43,8 @@ Widget _buildPage({required SettingsCubit settingsCubit}) => MaterialApp(
 void main() {
   late _MockSettingsCubit settingsCubit;
 
+  setUpAll(() => registerFallbackValue(AppThemeMode.system));
+
   // The revoke leaves the wallet unloadable but still on disk, and only the
   // user can retry it, so the failure has to reach the screen.
   const failureMessage =
@@ -77,6 +79,26 @@ void main() {
 
     // Drain the snackbar's own display timer so it does not outlive the test.
     await tester.pump(const Duration(seconds: 4));
+  });
+
+  testWidgets('the dark mode switch stores an explicit theme', (tester) async {
+    when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
+    when(() => settingsCubit.changeThemeMode(any())).thenAnswer((_) async {});
+
+    await pumpScreen(tester);
+    await tester.pump();
+
+    expect(find.text('Dark mode'), findsOneWidget);
+    final darkMode = find.ancestor(
+      of: find.text('Dark mode'),
+      matching: find.byType(ListTile),
+    );
+    final toggle = find.descendant(of: darkMode, matching: find.byType(Switch));
+    // The page runs the light theme, so the switch reads off.
+    expect(tester.widget<Switch>(toggle).value, isFalse);
+
+    await tester.tap(toggle);
+    verify(() => settingsCubit.changeThemeMode(AppThemeMode.dark)).called(1);
   });
 
   testWidgets('a clean dev mode toggle says nothing', (tester) async {

@@ -2099,11 +2099,6 @@
       }
     }
   },
-  "settingsGithubLabel": "뚱 베어",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "도움 받기",
   "exchangeStatisticsOrderStats": "주문 통계",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11037,7 +11032,6 @@
   "settingsSearchLabelsKeywords": "지갑 라벨|거래 라벨|BIP329|라벨 가져오기|라벨 내보내기",
   "settingsSearchTransactionHistoryKeywords": "거래 내보내기|거래 내역 내보내기|CSV|지갑 기록",
   "settingsSearchAppSettingsKeywords": "앱 환경설정|애플리케이션 설정|일반 설정",
-  "settingsSearchBtcMapKeywords": "BTC Map|비트코인 지도|가맹점 지도|비트코인 사용처",
   "settingsSearchTermsOfServiceKeywords": "이용 약관|법률 정보|사용자 계약|TOS",
   "settingsSearchServicesStatusKeywords": "서비스 상태|시스템 상태|온라인|서비스 중단",
   "settingsSearchImportWalletKeywords": "지갑 추가|지갑 복구|니모닉 가져오기|읽기 전용 지갑|하드웨어 지갑",
@@ -11280,5 +11274,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "이 거래는 이미 블록체인에 있습니다. 더 이상 브로드캐스트할 것이 없습니다.",
   "broadcastSignedTxErrorRejected": "네트워크가 이 거래를 거부했습니다. 서명이 완전하지 않거나, 유효하지 않거나, 다른 결제와 충돌할 수 있습니다.",
   "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다."
+  "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다.",
+  "settingsDarkModeTitle": "다크 모드",
+  "settingsSourceCodeTitle": "소스 코드"
 }

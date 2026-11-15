@@ -6,7 +6,8 @@ import 'package:yaml/yaml.dart';
 
 /// Locales are read from the root catalogue so a 28th language cannot ship
 /// without its novlang overrides.
-const _rootArbDir = '../../localization';
+const _repositoryRoot = '../..';
+const _rootArbDir = '$_repositoryRoot/localization';
 const _novlangArbDir = 'lib/l10n';
 
 Map<String, dynamic> _arb(String path) =>
@@ -21,6 +22,14 @@ Set<String> _placeholders(String message) =>
 String _overrideKey(Map<dynamic, dynamic> e) =>
     '${e['catalogue']}__${e['key']}_${e['store']}';
 
+/// The template (English) messages of a manifest catalogue, read through the
+/// l10n.yaml of its package.
+Map<String, dynamic> _template(YamlMap catalogue) {
+  final dir = '$_repositoryRoot/${catalogue['path']}';
+  final l10n = loadYaml(File('$dir/l10n.yaml').readAsStringSync()) as YamlMap;
+  return _arb('$dir/${l10n['arb-dir']}/${l10n['template-arb-file']}');
+}
+
 void main() {
   final manifest =
       loadYaml(File('manifest.yaml').readAsStringSync()) as YamlMap;
@@ -31,7 +40,13 @@ void main() {
       if (RegExp(r'app_[\w]+\.arb$').hasMatch(f.path))
         RegExp(r'app_([\w]+)\.arb$').firstMatch(f.path)!.group(1)!,
   ]..sort();
-  final rootEn = _arb('$_rootArbDir/app_en.arb');
+  final catalogues = manifest['catalogues'] as YamlMap;
+  final templates = {
+    for (final MapEntry(:key, :value) in catalogues.entries)
+      key as String: _template(value as YamlMap),
+  };
+  String? catalogueText(Map<dynamic, dynamic> e) =>
+      templates[e['catalogue']]?[e['key']] as String?;
 
   test('the main Latin-script languages have their own blacklist', () {
     final apple = (manifest['stores'] as YamlMap)['apple'] as YamlMap;
@@ -58,28 +73,39 @@ void main() {
     expect(novlangFiles, locales.length);
   });
 
-  test('manifest entries are unique and name a known store', () {
+  test('declares the root catalogue', () {
+    expect(catalogues.keys, contains('app'));
+    expect((catalogues['app'] as YamlMap)['path'], '.');
+  });
+
+  test('manifest entries are unique and name a known store and catalogue', () {
     final seen = <String>{};
     for (final e in entries) {
       expect(stores.containsKey(e['store']), isTrue, reason: '${e['key']}');
+      expect(
+        catalogues.containsKey(e['catalogue']),
+        isTrue,
+        reason: '${e['key']}: unknown catalogue ${e['catalogue']}',
+      );
       expect(seen.add(_overrideKey(e)), isTrue, reason: 'dup ${e['key']}');
     }
   });
 
-  test(
-    'every manifest key exists in the root catalogue with the real word',
-    () {
-      for (final e in entries) {
-        final text = rootEn[e['key']] as String?;
-        expect(text, isNotNull, reason: 'root catalogue lacks ${e['key']}');
-        expect(
-          text!.toLowerCase(),
-          contains((e['word'] as String).toLowerCase()),
-          reason: '${e['key']} must carry the real word "${e['word']}"',
-        );
-      }
-    },
-  );
+  test('every manifest key exists in its catalogue with the real word', () {
+    for (final e in entries) {
+      final text = catalogueText(e);
+      expect(
+        text,
+        isNotNull,
+        reason: '${e['catalogue']} catalogue lacks ${e['key']}',
+      );
+      expect(
+        text!.toLowerCase(),
+        contains((e['word'] as String).toLowerCase()),
+        reason: '${e['key']} must carry the real word "${e['word']}"',
+      );
+    }
+  });
 
   for (final locale in locales) {
     group('novlang_$locale.arb', () {
@@ -95,7 +121,7 @@ void main() {
           final value = arb[_overrideKey(e)] as String;
           expect(
             _placeholders(value),
-            _placeholders(rootEn[e['key']] as String),
+            _placeholders(catalogueText(e) ?? ''),
             reason: '${e['key']} in $locale',
           );
         }

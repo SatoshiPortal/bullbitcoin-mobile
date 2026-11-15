@@ -230,5 +230,7 @@
   "app__exchangePaymentSentPastDeadline_apple": "付款已发送。Bull Bitcoin 报告此订单的付款期限已过。请保留下方的交易 ID，如果订单未更新，请联系客服。",
   "app__allSeedViewSwapMnemonicTitle_apple": "转账助记词",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "删除转账助记词？",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。"
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "这将从安全存储中移除转账主密钥。下次应用需要时，会使用相同的指纹从您的钱包种子重新派生。进行中的转账不受影响。",
+  "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "quick_actions__transfer_apple": "Transfer"
 }

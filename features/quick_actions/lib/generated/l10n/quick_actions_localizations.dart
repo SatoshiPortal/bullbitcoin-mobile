@@ -122,7 +122,7 @@ abstract class QuickActionsLocalizations {
   /// No description provided for @transfer.
   ///
   /// In en, this message translates to:
-  /// **'Transfer'**
+  /// **'Swap'**
   String get transfer;
 
   /// No description provided for @map.
@@ -220,12 +220,6 @@ abstract class QuickActionsLocalizations {
   /// In en, this message translates to:
   /// **'In More'**
   String get inMore;
-
-  /// Wallet quick action customization.
-  ///
-  /// In en, this message translates to:
-  /// **'Preview'**
-  String get preview;
 
   /// Wallet quick action customization.
   ///

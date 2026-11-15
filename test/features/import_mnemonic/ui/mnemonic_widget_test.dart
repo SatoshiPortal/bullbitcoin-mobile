@@ -557,6 +557,35 @@ void main() {
       );
     });
 
+    testWidgets('turning the passphrase off hides it and drops its text', (
+      tester,
+    ) async {
+      Mnemonic? submitted;
+      await pumpWidget(
+        tester,
+        allowPassphrase: true,
+        onSubmit: (m) => submitted = m,
+      );
+      await fillAll(tester, validWords);
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
+      await tester.enterText(passphraseField(), 'secret');
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('mnemonicPassphraseSwitch')));
+      await tester.pumpAndSettle();
+      expect(passphraseField(), findsNothing);
+
+      await submit(tester);
+      expect(submitted?.passphrase, '');
+
+      await tester.ensureVisible(find.text('I have a passphrase'));
+      await tester.tap(find.text('I have a passphrase'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<TextField>(passphraseField()).controller?.text, '');
+    });
+
     testWidgets('clears the typed passphrase when the app pauses', (
       tester,
     ) async {

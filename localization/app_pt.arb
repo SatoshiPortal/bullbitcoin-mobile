@@ -674,8 +674,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Obter ajuda",
   "sellTransactionFee": "Taxa de transação",
   "coldcardStep5": "Se você tiver problemas de digitalização:",
   "buyExpressWithdrawal": "Retirada expressa",
@@ -4417,7 +4415,6 @@
   "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
   "settingsSearchTransactionHistoryKeywords": "exportar transações|exportação de transações|CSV|histórico da carteira",
   "settingsSearchAppSettingsKeywords": "preferências da aplicação|definições da aplicação|definições gerais",
-  "settingsSearchBtcMapKeywords": "BTC Map|mapa Bitcoin|mapa de comerciantes|locais onde gastar bitcoin",
   "settingsSearchTermsOfServiceKeywords": "termos e condições|informação legal|acordo do utilizador|TOS",
   "settingsSearchServicesStatusKeywords": "estado dos serviços|estado do sistema|online|indisponibilidade",
   "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemónica|carteira só de visualização|carteira de hardware",
@@ -4660,5 +4657,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Esta transação já está na blockchain. Não há mais nada para transmitir.",
   "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que a sua transação foi transmitida. Verifique num explorador de blocos antes de tentar novamente.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas definições atuais."
+  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas definições atuais.",
+  "settingsDarkModeTitle": "Modo escuro",
+  "settingsSourceCodeTitle": "Código-fonte"
 }
