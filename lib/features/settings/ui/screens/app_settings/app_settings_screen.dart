@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/dark_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection_switch.dart';
@@ -31,6 +32,7 @@ class AppSettingsScreen extends StatelessWidget {
         value: currentLanguage,
         onChanged: (lang) => context.read<SettingsCubit>().changeLanguage(lang),
       ),
+      SettingsItemId.theme => const DarkModeSwitch(),
       SettingsItemId.screenPrivacy => const ScreenCaptureProtectionSwitch(),
       SettingsItemId.devMode => const DevModeSwitch(),
       SettingsItemId.testnetMode => const TestnetModeSwitch(),

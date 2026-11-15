@@ -4762,9 +4762,6 @@
   "settingsPayjoinExpireMinutesRangeError": "Deve essere tra {min} e {max} minuti",
   "settingsPayjoinSatsUnit": "sats",
   "settingsPayjoinMinutesUnit": "min",
-  "themeDarkDescription": "Usa il tema scuro",
-  "themeSystemDescription": "Segui l'impostazione di sistema",
-  "themeLightDescription": "Usa il tema chiaro",
   "comingSoonTitle": "Funzione in arrivo",
   "settingsWalletTitle": "Portafogli",
   "settingsWalletSettingsTitle": "Impostazioni dei portafogli",
@@ -4779,5 +4776,6 @@
   "broadcastSignedTxErrorRejected": "La rete ha rifiutato questa transazione. Potrebbe non essere firmata completamente, non essere valida o essere in conflitto con un altro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Non è stato possibile confermare che la transazione sia stata trasmessa. Controlla un block explorer prima di riprovare.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La trasmissione su questa rete non è abilitata nelle impostazioni attuali.",
-  "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà."
+  "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà.",
+  "settingsDarkModeTitle": "Modalità scura"
 }

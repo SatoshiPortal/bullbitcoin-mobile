@@ -4785,5 +4785,6 @@
   "passphraseClearedNotice": "Votre passphrase a été effacée par sécurité. Saisissez-la à nouveau ou choisissez de continuer sans passphrase.",
   "continueWithoutPassphrase": "Continuer sans passphrase",
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
-  "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide."
+  "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
+  "settingsDarkModeTitle": "Mode sombre"
 }

@@ -14991,14 +14991,6 @@
   "@allSeedViewDeleteSwapMnemonicTitle": {
     "description": "Confirmation dialog title for deleting the swap mnemonic"
   },
-  "themeDarkDescription": "Use dark theme",
-  "@themeDarkDescription": {
-    "description": "Dark theme option description"
-  },
-  "themeSystemDescription": "Follow system setting",
-  "@themeSystemDescription": {
-    "description": "System theme option description"
-  },
   "allSeedViewSwapFingerprint": "Fingerprint: {fingerprint} ({network})",
   "@allSeedViewSwapFingerprint": {
     "description": "Fingerprint and network of the swap master key",
@@ -15010,10 +15002,6 @@
         "type": "String"
       }
     }
-  },
-  "themeLightDescription": "Use light theme",
-  "@themeLightDescription": {
-    "description": "Light theme option description"
   },
   "comingSoonTitle": "Feature Coming Soon",
   "@comingSoonTitle": {
@@ -15459,5 +15447,9 @@
   "passphraseOptionHelp": "Only if this wallet was created with one. Otherwise leave empty.",
   "@passphraseOptionHelp": {
     "description": "Advanced passphrase field help during recovery."
+  },
+  "settingsDarkModeTitle": "Dark mode",
+  "@settingsDarkModeTitle": {
+    "description": "App settings switch: on uses the dark theme, off the light theme."
   }
 }

@@ -4830,10 +4830,7 @@
   "allSeedViewSwapLinkedWallet": "Verknüpfte Wallet: {fingerprint}",
   "allSeedViewSwapMnemonicTitle": "Swap-Wiederherstellungsphrase",
   "allSeedViewDeleteSwapMnemonicTitle": "Swap-Wiederherstellungsphrase löschen?",
-  "themeDarkDescription": "Dunkle Darstellung verwenden",
-  "themeSystemDescription": "Systemeinstellung übernehmen",
   "allSeedViewSwapFingerprint": "Fingerabdruck: {fingerprint} ({network})",
-  "themeLightDescription": "Helle Darstellung verwenden",
   "comingSoonTitle": "Funktion demnächst verfügbar",
   "allSeedViewDeleteSwapMnemonicMessage": "Dadurch wird der Swap-Hauptschlüssel aus dem sicheren Speicher entfernt. Wenn die App ihn das nächste Mal benötigt, wird er mit demselben Fingerabdruck erneut aus Ihrer Wallet-Wiederherstellungsphrase abgeleitet. Laufende Swaps bleiben davon unberührt.",
   "spFailurePassphraseUnsupported": "Silent Payments ist für eine Wallet mit Passphrase nicht verfügbar.",
@@ -4847,5 +4844,6 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Das Senden in diesem Netzwerk ist in den aktuellen Einstellungen nicht aktiviert.",
   "coreScreensOutputsExceedInputs": "Die Ausgaben übersteigen die Eingaben: Diese Transaktion ist ungültig und wird vom Netzwerk abgelehnt.",
   "passphraseShow": "Passphrase anzeigen",
-  "passphraseHide": "Passphrase verbergen"
+  "passphraseHide": "Passphrase verbergen",
+  "settingsDarkModeTitle": "Dunkelmodus"
 }

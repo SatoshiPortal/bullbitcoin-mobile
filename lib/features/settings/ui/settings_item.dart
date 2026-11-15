@@ -551,15 +551,20 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.theme,
       section: SettingsItemSection.app,
-      title: localization.settingsThemeTitle,
-      path: path(SettingsItemSection.app, localization.settingsThemeTitle),
+      title: localization.settingsDarkModeTitle,
+      path: path(SettingsItemSection.app, localization.settingsDarkModeTitle),
       icon: Icons.palette,
-      open: (context) => context.pushNamed(SettingsRoute.theme.name),
+      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
       keywords: _keywords(
         localization.settingsSearchThemeKeywords,
         english.settingsSearchThemeKeywords,
-        [english.settingsThemeTitle],
+        [
+          localization.settingsThemeTitle,
+          english.settingsThemeTitle,
+          english.settingsDarkModeTitle,
+        ],
       ),
+      isInlineControl: true,
     ),
     SettingsItem(
       id: SettingsItemId.currency,
