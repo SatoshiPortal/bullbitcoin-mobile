@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Full-width sliding segmented control.
 class BullSegmented extends StatefulWidget {
@@ -81,16 +81,14 @@ class _BullSegmentedState extends State<BullSegmented> {
               item: Text(
                 item,
                 style: item == selectedSegment
-                    ? Theme.of(
-                        context,
-                      ).textTheme.labelLarge?.copyWith(color: colors.primary)
+                    ? Theme.of(context).textTheme.labelLarge
+                          ?.copyWith(color: colors.primary)
                     : widget.disabledItems.contains(item)
                     ? Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: colors.outline.withValues(alpha: 0.5),
                       )
-                    : Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: colors.secondary,
-                      ),
+                    : Theme.of(context).textTheme.labelMedium
+                          ?.copyWith(color: colors.secondary),
               ),
           },
         ),

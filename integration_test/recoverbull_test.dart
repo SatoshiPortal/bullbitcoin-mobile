@@ -1,11 +1,12 @@
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:secrets/secrets.dart' as custody;
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,9 +57,7 @@ Future<void> main({bool isInitialized = false}) async {
     test(
       'Restore encrypted vault',
       timeout: const Timeout(Duration(minutes: 2)),
-      skip: runLiveKeyServerTest
-          ? false
-          : 'calls the production key server: runs on PRs to main or a manually dispatched CI run',
+      skip: runLiveKeyServerTest ? false : 'calls the production key server: runs on PRs to main or a manually dispatched CI run',
       () async {
         final settings = await recoverbull.settings();
         expect(settings, isA<Ok<BackupSettings, RecoverBullFailure>>());

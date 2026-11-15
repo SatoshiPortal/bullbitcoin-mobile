@@ -32,7 +32,7 @@ class CheckSinpeUsecase {
     final bool isTestnet;
     switch (await _getRecipientsEnvironmentUsecase.execute()) {
       case Ok(:final value):
-        isTestnet = value.isTestnet;
+        isTestnet = value.requireHistoricalTestnet();
       case Err(:final failure):
         return Err(failure);
     }

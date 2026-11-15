@@ -66,6 +66,7 @@ class LocalPayjoinDatasource {
                 isExpired: Value(sender.isExpired),
                 isCompleted: Value(sender.isCompleted),
                 isAborted: Value(sender.isAborted),
+                hasNetworkEvidence: Value(sender.hasNetworkEvidence),
               ),
             );
       });
@@ -152,6 +153,20 @@ class LocalPayjoinDatasource {
                 txId: Value(sender.txId),
               ),
             );
+      });
+
+  /// Records, or withdraws, that a payment of this sender may be on the
+  /// network without a recorded outcome. Kept in the row so it survives a
+  /// restart; a terminal row no longer needs it.
+  Future<bool> setSenderNetworkEvidence(String id, {required bool present}) =>
+      _writeTransition(() {
+        return (_db.update(_db.payjoinSenders)..where(
+              (row) =>
+                  row.uri.equals(id) &
+                  row.isCompleted.equals(false) &
+                  row.isAborted.equals(false),
+            ))
+            .write(PayjoinSendersCompanion(hasNetworkEvidence: Value(present)));
       });
 
   Future<bool> markCompleted(PayjoinModel payjoin) {

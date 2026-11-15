@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -66,8 +66,7 @@ Future<void> main({bool isInitialized = false}) async {
         network: lwk.LiquidNetwork.mainnet,
         // P2WPKH scriptPubkey: OP_0 <20 bytes>.
         script: '0014${'22' * 20}',
-        blindingKey:
-            '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
+        blindingKey: '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
       );
     });
 

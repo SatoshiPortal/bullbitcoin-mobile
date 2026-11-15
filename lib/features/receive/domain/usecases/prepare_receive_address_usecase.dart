@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:meta/meta.dart';
 
@@ -24,16 +24,11 @@ class PrepareReceiveAddressUsecase {
           generateNew: generateNew,
         ),
       );
-    } on Object catch (e, st) {
-      // Logged HERE, at the boundary that owns the raw reason. The failure's
-      // logMessage stays secondary (equality, debug): if a caller chooses not
-      // to log, the diagnostic must still exist.
-      log.severe(
-        message: 'Failed to prepare a receive address',
-        error: e,
-        trace: st,
-      );
-      return Err(ReceiveAddressUnavailableFailure(e.toString()));
+    } on Exception catch (e) {
+      if (e is! GetReceiveAddressException || !e.reported) {
+        log.warning('Receive address failed reason=unavailable');
+      }
+      return const Err(ReceiveAddressUnavailableFailure('unavailable'));
     }
   }
 }

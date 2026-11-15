@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -20,9 +20,8 @@ void main() {
   ) async {
     final bloc = _MockTransferBloc();
     when(() => bloc.state).thenReturn(const TransferState());
-    when(
-      () => bloc.stream,
-    ).thenAnswer((_) => StreamController<TransferState>.broadcast().stream);
+    when(() => bloc.stream)
+        .thenAnswer((_) => StreamController<TransferState>.broadcast().stream);
 
     // The real flow reaches this page with a `go`, which leaves the stack as
     // [/swap, /swap/in-progress] — the wallet home is gone from under it, so
@@ -58,7 +57,7 @@ void main() {
       MaterialApp.router(
         routerConfig: router,
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
       ),
     );

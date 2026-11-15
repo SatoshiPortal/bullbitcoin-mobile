@@ -3,9 +3,34 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 
+import 'payjoin_failure.dart';
+
 enum PayjoinStatus { started, requested, proposed, completed, aborted, expired }
 
 enum PayjoinParty { sender, recipient }
+
+/// An input an unfinished session holds. Only that session's own operation may
+/// spend it: the session is the owner, its wallet and network the scope, and
+/// [status] the state the reservation was read in.
+final class PayjoinInputReservation {
+  final Outpoint outpoint;
+  final String sessionId;
+
+  /// The side this wallet plays in the owning session.
+  final PayjoinParty role;
+  final String walletId;
+  final BitcoinNetwork network;
+  final PayjoinStatus status;
+
+  const PayjoinInputReservation({
+    required this.outpoint,
+    required this.sessionId,
+    required this.role,
+    required this.walletId,
+    required this.network,
+    required this.status,
+  });
+}
 
 final class PayjoinOwnership {
   final List<PayjoinParty> inputs;
@@ -126,7 +151,11 @@ final class PayjoinReceiverSession extends PayjoinSession {
 }
 
 final class PayjoinSenderSession extends PayjoinSession {
+  /// Local admission refused; the same persisted proposal remains reserved.
+  final PayjoinSpendBlockedFailure? spendFailure;
+
   PayjoinSenderSession({
+    this.spendFailure,
     required super.status,
     required String uri,
     required super.network,
@@ -139,6 +168,9 @@ final class PayjoinSenderSession extends PayjoinSession {
     super.hasProposal,
     super.ownership,
   }) : super(id: uri);
+
+  bool get canRetryProposal =>
+      spendFailure != null && isOngoing && DateTime.now().isBefore(expiresAt);
 
   String get uri => id;
 

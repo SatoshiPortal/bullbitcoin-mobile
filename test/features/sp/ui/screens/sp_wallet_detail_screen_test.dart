@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_wallet_detail_screen.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
@@ -13,14 +14,15 @@ import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../sp_cubit_harness.dart';
 import '../../sp_test_streams.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
@@ -56,19 +58,29 @@ Widget _buildPage({
   required SpCubit cubit,
   required SettingsCubit settingsCubit,
   required BitcoinPriceBloc bitcoinPriceBloc,
-}) => MaterialApp(
-  theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
-  supportedLocales: AppLocalizations.supportedLocales,
-  home: MultiBlocProvider(
-    providers: [
-      BlocProvider<SpCubit>.value(value: cubit),
-      BlocProvider<SettingsCubit>.value(value: settingsCubit),
-      BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+}) {
+  final navigatorKey = GlobalKey<NavigatorState>();
+  return MaterialApp(
+    navigatorKey: navigatorKey,
+    theme: AppTheme.themeData(AppThemeType.light),
+    localizationsDelegates: const [
+      bullUiLocalizationsDelegate,
+      ...appLocalizationsDelegates,
     ],
-    child: const SpWalletDetailScreen(exitRedirectPath: '/exit-target'),
-  ),
-);
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: MultiBlocProvider(
+      providers: [
+        BlocProvider<SpCubit>.value(value: cubit),
+        BlocProvider<SettingsCubit>.value(value: settingsCubit),
+        BlocProvider<BitcoinPriceBloc>.value(value: bitcoinPriceBloc),
+      ],
+      child: SettingsFacade.amountScope(
+        navigatorKey: navigatorKey,
+        child: const SpWalletDetailScreen(exitRedirectPath: '/exit-target'),
+      ),
+    ),
+  );
+}
 
 void main() {
   late SpCubitHarness harness;
@@ -86,12 +98,10 @@ void main() {
     when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
     when(() => bitcoinPriceBloc.state).thenReturn(const BitcoinPriceState());
     when(() => bitcoinPriceBloc.stream).thenAnswer((_) => const Stream.empty());
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(_walletData()));
-    when(
-      () => harness.watchUsecase.execute(),
-    ).thenAnswer((_) => openSpNotificationStream());
+    when(() => loadUsecase.execute())
+        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(_walletData()));
+    when(() => harness.watchUsecase.execute())
+        .thenAnswer((_) => openSpNotificationStream());
 
     cubit = harness.build();
   });
@@ -352,9 +362,8 @@ void main() {
   ) async {
     final notifications = StreamController<SpNotification>.broadcast();
     addTearDown(notifications.close);
-    when(
-      () => harness.watchUsecase.execute(),
-    ).thenAnswer((_) => notifications.stream);
+    when(() => harness.watchUsecase.execute())
+        .thenAnswer((_) => notifications.stream);
     when(() => loadUsecase.execute()).thenAnswer(
       (_) async => Ok<SpWalletData, SpFailure>(
         _walletData(lastScannedHeight: 968876, chainTip: 970180),
@@ -381,9 +390,8 @@ void main() {
   ) async {
     final notifications = StreamController<SpNotification>.broadcast();
     addTearDown(notifications.close);
-    when(
-      () => harness.watchUsecase.execute(),
-    ).thenAnswer((_) => notifications.stream);
+    when(() => harness.watchUsecase.execute())
+        .thenAnswer((_) => notifications.stream);
     await cubit.load();
     await pumpPage(tester);
 

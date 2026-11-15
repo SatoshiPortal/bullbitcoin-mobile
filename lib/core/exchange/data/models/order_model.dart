@@ -118,15 +118,13 @@ class OrderModel {
       // balance-adjustment orders carry no exchange rate and no deadline. The
       // amounts and the status strings are read defensively for the same
       // reason — an admin-initiated order has no real pay-in side.
-      exchangeRateAmount: (decodeExchangeJson<num?>(
-        json['exchangeRateAmount'],
-      ))?.toDouble(),
+      exchangeRateAmount: (decodeExchangeJson<num?>(json['exchangeRateAmount']))
+          ?.toDouble(),
       exchangeRateCurrency: decodeExchangeJson<String?>(
         json['exchangeRateCurrency'],
       ),
-      indexRateAmount: (decodeExchangeJson<num?>(
-        json['indexRateAmount'],
-      ))?.toDouble(),
+      indexRateAmount: (decodeExchangeJson<num?>(json['indexRateAmount']))
+          ?.toDouble(),
       indexRateCurrency: decodeExchangeJson<String?>(json['indexRateCurrency']),
       payinAmount:
           (decodeExchangeJson<num?>(json['payinAmount']))?.toDouble() ?? 0,
@@ -289,14 +287,12 @@ class OrderModel {
         payinAmountChanged != null && payinAmountChanged is Map<String, dynamic>
         ? PayinAmountChanged(
             requestedAmount:
-                decodeExchangeJson<num?>(
-                  payinAmountChanged['requestedAmount'],
-                )?.toDouble() ??
+                decodeExchangeJson<num?>(payinAmountChanged['requestedAmount'])
+                    ?.toDouble() ??
                 0,
             receivedAmount:
-                decodeExchangeJson<num?>(
-                  payinAmountChanged['receivedAmount'],
-                )?.toDouble() ??
+                decodeExchangeJson<num?>(payinAmountChanged['receivedAmount'])
+                    ?.toDouble() ??
                 0,
           )
         : null;

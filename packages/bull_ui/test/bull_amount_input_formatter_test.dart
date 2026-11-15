@@ -48,6 +48,30 @@ void main() {
       expect(format(capped, '5'), '5');
     });
 
+    test('accepts a leading decimal separator as zero', () {
+      final btc = BullAmountInputFormatter('BTC');
+      expect(format(btc, '.'), '0.');
+      expect(format(btc, '.01'), '0.01');
+      expect(format(btc, ',01'), '0.01');
+      expect(format(BullAmountInputFormatter('CAD'), '.5'), '0.5');
+    });
+
+    test('keeps the caret after the separator when one is typed first', () {
+      final value = BullAmountInputFormatter('BTC').formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(
+          text: '.',
+          selection: TextSelection.collapsed(offset: 1),
+        ),
+      );
+      expect(value.text, '0.');
+      expect(value.selection, const TextSelection.collapsed(offset: 2));
+    });
+
+    test('still rejects a leading separator for sats', () {
+      expect(format(BullAmountInputFormatter('sats'), '.01'), '');
+    });
+
     test('maxDecimals of 0 rejects a fractional rate outright', () {
       final whole = BullAmountInputFormatter('BTC', maxDecimals: 0);
       expect(format(whole, '7'), '7');

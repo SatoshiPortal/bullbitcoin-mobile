@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_re
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -44,9 +44,8 @@ void main() {
     });
 
     test('maps a missing API key to NotAuthenticatedFailure', () async {
-      when(
-        () => apiDatasource.getUserSummary(),
-      ).thenThrow(const ExchangeAuthenticationException());
+      when(() => apiDatasource.getUserSummary())
+          .thenThrow(const ExchangeAuthenticationException());
 
       final result = await repository.getMessages();
 
@@ -147,9 +146,8 @@ void main() {
           testnetRepository: testnetRepo,
           settingsRepository: settingsRepository,
         );
-        when(
-          () => settingsRepository.fetch(),
-        ).thenThrow(Exception('storage locked'));
+        when(() => settingsRepository.fetch())
+            .thenThrow(Exception('storage locked'));
 
         final result = await usecase.execute(page: 1, pageSize: 10);
 
@@ -189,9 +187,8 @@ void main() {
           testnetRepository: testnetRepo,
           settingsRepository: settingsRepository,
         );
-        when(
-          () => mainnetRepo.getMessageAttachment(any()),
-        ).thenAnswer((_) async => const Err(LoadAttachmentFailure('raw')));
+        when(() => mainnetRepo.getMessageAttachment(any()))
+            .thenAnswer((_) async => const Err(LoadAttachmentFailure('raw')));
 
         final result = await usecase.execute('a1');
 

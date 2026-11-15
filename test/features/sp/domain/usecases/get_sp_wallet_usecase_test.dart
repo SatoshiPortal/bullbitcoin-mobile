@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/ensure_sp_session_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_wallet_usecase.dart';
@@ -52,9 +52,8 @@ void main() {
 
   group('GetSpWalletUsecase', () {
     test('returns null when isSuperuser is not true', () async {
-      when(
-        () => settingsRepo.fetch(),
-      ).thenAnswer((_) async => _makeSettings(isSuperuser: false));
+      when(() => settingsRepo.fetch())
+          .thenAnswer((_) async => _makeSettings(isSuperuser: false));
 
       final result = await usecase.execute();
 
@@ -76,12 +75,10 @@ void main() {
     test(
       'returns null when ensureSpSession returns null (not set up)',
       () async {
-        when(
-          () => settingsRepo.fetch(),
-        ).thenAnswer((_) async => _makeSettings(isSuperuser: true));
-        when(
-          () => ensureSpSessionUsecase.execute(),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => settingsRepo.fetch())
+            .thenAnswer((_) async => _makeSettings(isSuperuser: true));
+        when(() => ensureSpSessionUsecase.execute())
+            .thenAnswer((_) async => const Ok(null));
 
         final result = await usecase.execute();
 
@@ -92,12 +89,10 @@ void main() {
 
     test('returns the wallet from ensureSpSession when gated-in', () async {
       final wallet = _makeWallet();
-      when(
-        () => settingsRepo.fetch(),
-      ).thenAnswer((_) async => _makeSettings(isSuperuser: true));
-      when(
-        () => ensureSpSessionUsecase.execute(),
-      ).thenAnswer((_) async => Ok(wallet));
+      when(() => settingsRepo.fetch())
+          .thenAnswer((_) async => _makeSettings(isSuperuser: true));
+      when(() => ensureSpSessionUsecase.execute())
+          .thenAnswer((_) async => Ok(wallet));
 
       final result = await usecase.execute();
 
@@ -106,12 +101,10 @@ void main() {
     });
 
     test('lets an ensureSpSession failure propagate unchanged', () async {
-      when(
-        () => settingsRepo.fetch(),
-      ).thenAnswer((_) async => _makeSettings(isSuperuser: true));
-      when(
-        () => ensureSpSessionUsecase.execute(),
-      ).thenThrow(StateError('boom'));
+      when(() => settingsRepo.fetch())
+          .thenAnswer((_) async => _makeSettings(isSuperuser: true));
+      when(() => ensureSpSessionUsecase.execute())
+          .thenThrow(StateError('boom'));
 
       await expectLater(usecase.execute(), throwsA(isA<StateError>()));
     });

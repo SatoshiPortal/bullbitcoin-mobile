@@ -27,6 +27,8 @@ extension WithdrawFailureL10n on WithdrawFailure {
     // `buyUnexpectedError` and `sellUnexpectedError`.
     WithdrawConfidentialSepaNotActivatedFailure() =>
       context.loc.withdrawConfidentialSepaNotActivatedError,
+    WithdrawUnsupportedNetworkFailure() =>
+      context.loc.networkFeatureUnavailable,
     WithdrawUnexpectedFailure() => context.loc.withdrawUnexpectedError,
   };
 }

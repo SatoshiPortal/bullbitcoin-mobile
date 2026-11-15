@@ -1,7 +1,11 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
+
 import 'dart:math' as math;
 
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -23,6 +27,7 @@ import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
+import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
@@ -36,11 +41,12 @@ import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dar
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_base/bitcoin_base.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullBitcoinAmountInput,
         BullBorderedTile,
         BullBottomSheet,
         BullButton,
@@ -373,11 +379,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
           Expanded(
             child: BBKeyboardActions(
               disableScroll: true,
-              focusNodes: [
-                _amountFocusNode,
-                for (final recipient in recipientDrafts)
-                  ?_recipientAmountFocusNodes[recipient.id],
-              ],
               child: BlocListener<SendCubit, SendState>(
                 listenWhen: (previous, current) =>
                     previous.amount != current.amount &&
@@ -563,36 +564,110 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        PriceInput(
-                                          currency: inputCurrency,
-                                          amountEquivalent: state
-                                              .formattedAmountInputEquivalent,
-                                          availableCurrencies:
-                                              availableInputCurrencies,
-                                          amountController: _amountController,
-                                          onCurrencyChanged: (currencyCode) {
-                                            context
-                                                .read<SendCubit>()
-                                                .onCurrencyChanged(
-                                                  currencyCode,
-                                                );
-                                          },
-                                          error: balanceError && failure != null
-                                              ? failure.toTranslated(
-                                                  context,
-                                                  formattedFrozenBalance:
-                                                      frozenBalanceHint,
-                                                )
-                                              : (!walletHasBalance &&
-                                                    amountConfirmedClicked)
-                                              ? context
-                                                    .loc
-                                                    .sendInsufficientBalance
-                                              : failure?.toTranslated(context),
-                                          focusNode: _amountFocusNode,
-                                          readOnly: state.isMaxSend,
-                                          isMax: state.isMaxSend,
-                                        ),
+                                        if (inputCurrency ==
+                                                BitcoinUnit.btc.code ||
+                                            inputCurrency ==
+                                                BitcoinUnit.sats.code) ...[
+                                          BullBitcoinAmountInput(
+                                            canonicalUnit: BitcoinUnit.fromCode(
+                                              inputCurrency,
+                                            ),
+                                            amountController: _amountController,
+                                            amountEquivalent: state
+                                                .formattedAmountInputEquivalent,
+                                            error:
+                                                balanceError && failure != null
+                                                ? failure.toTranslated(
+                                                    context,
+                                                    formattedFrozenBalance:
+                                                        frozenBalanceHint,
+                                                  )
+                                                : (!walletHasBalance &&
+                                                      amountConfirmedClicked)
+                                                ? context
+                                                      .loc
+                                                      .sendInsufficientBalance
+                                                : failure?.toTranslated(
+                                                    context,
+                                                  ),
+                                            focusNode: _amountFocusNode,
+                                            readOnly: state.isMaxSend,
+                                            isMax: state.isMaxSend,
+                                          ),
+                                          if (availableInputCurrencies.any(
+                                            (code) =>
+                                                code != 'BTC' && code != 'sats',
+                                          ))
+                                            IconButton(
+                                              tooltip: context
+                                                  .loc
+                                                  .settingsCurrencyTitle,
+                                              icon: const Icon(
+                                                Icons.arrow_drop_down,
+                                              ),
+                                              onPressed: () async {
+                                                final cubit = context
+                                                    .read<SendCubit>();
+                                                final selected =
+                                                    await BullBottomSheet.show<
+                                                      String?
+                                                    >(
+                                                      context: context,
+                                                      child: CurrencyBottomSheet(
+                                                        availableCurrencies:
+                                                            availableInputCurrencies
+                                                                .where(
+                                                                  (code) =>
+                                                                      code !=
+                                                                          'BTC' &&
+                                                                      code != 'sats',
+                                                                )
+                                                                .toList(),
+                                                        selectedValue:
+                                                            inputCurrency,
+                                                      ),
+                                                    );
+                                                if (selected != null) {
+                                                  cubit.onCurrencyChanged(
+                                                    selected,
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                        ] else
+                                          PriceInput(
+                                            currency: inputCurrency,
+                                            amountEquivalent: state
+                                                .formattedAmountInputEquivalent,
+                                            availableCurrencies:
+                                                availableInputCurrencies,
+                                            amountController: _amountController,
+                                            onCurrencyChanged: (currencyCode) {
+                                              context
+                                                  .read<SendCubit>()
+                                                  .onCurrencyChanged(
+                                                    currencyCode,
+                                                  );
+                                            },
+                                            error:
+                                                balanceError && failure != null
+                                                ? failure.toTranslated(
+                                                    context,
+                                                    formattedFrozenBalance:
+                                                        frozenBalanceHint,
+                                                  )
+                                                : (!walletHasBalance &&
+                                                      amountConfirmedClicked)
+                                                ? context
+                                                      .loc
+                                                      .sendInsufficientBalance
+                                                : failure?.toTranslated(
+                                                    context,
+                                                  ),
+                                            focusNode: _amountFocusNode,
+                                            readOnly: state.isMaxSend,
+                                            isMax: state.isMaxSend,
+                                          ),
                                       ],
                                     ),
                                   if (suggestsInstantPayments)
@@ -1668,7 +1743,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                     context.loc.sendServerNetworkFees,
                     fees.serverNetworkFees!,
                   ),
-                _feeRow(context, 'Transfer Fee', fees.boltzFee ?? 0),
+                _feeRow(
+                  context,
+                  context.loc.sendTransferFee,
+                  fees.boltzFee ?? 0,
+                ),
                 const Gap(4),
               ],
             ),
@@ -1926,6 +2005,14 @@ class SendSendingScreen extends StatelessWidget {
     final isPayjoin = context.select(
       (SendCubit cubit) => cubit.state.payjoinSender != null,
     );
+    final pausedFailure = context.select(
+      (SendCubit cubit) => cubit.state.failure is SendPayjoinPausedFailure
+          ? cubit.state.failure
+          : null,
+    );
+    final canRetryProposal = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender?.canRetryProposal ?? false,
+    );
     // Same canonical getter the manual-fallback button on the transaction
     // details screen is gated on (Payjoin.canManuallyBroadcastOriginal) —
     // reusing it here, rather than a hand-rolled `proposalPsbt == null`
@@ -1961,11 +2048,12 @@ class SendSendingScreen extends StatelessWidget {
           child: Column(
             children: [
               const Gap(192),
-              Gif(
-                autostart: Autostart.loop,
-                height: 123,
-                image: AssetImage(Assets.animations.cubesLoading.path),
-              ),
+              if (pausedFailure == null)
+                Gif(
+                  autostart: Autostart.loop,
+                  height: 123,
+                  image: AssetImage(Assets.animations.cubesLoading.path),
+                ),
               if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
                 BullText(
@@ -2010,12 +2098,24 @@ class SendSendingScreen extends StatelessWidget {
                 ),
                 const Gap(8),
                 BullText(
-                  context.loc.sendCoordinatingPayjoinTransaction,
+                  pausedFailure?.toTranslated(context) ??
+                      context.loc.sendCoordinatingPayjoinTransaction,
                   style: context.font.bodyMedium,
-                  maxLines: 4,
+                  maxLines: 10,
                   textAlign: TextAlign.center,
                 ),
-                if (showFallbackCountdown &&
+                if (pausedFailure != null && canRetryProposal) ...[
+                  const Gap(16),
+                  BullButton.big(
+                    onPressed: () =>
+                        context.read<SendCubit>().retryPayjoinProposal(),
+                    label: context.loc.retry,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                  ),
+                ],
+                if (pausedFailure == null &&
+                    showFallbackCountdown &&
                     payjoinExpiresAt != null &&
                     isImminent) ...[
                   const Gap(8),
@@ -2324,9 +2424,19 @@ class ShowPsbtButton extends StatelessWidget {
     return BullButton.big(
       label: context.loc.sendShowPsbt,
       onPressed: () {
+        // The PSBT route and the broadcast after signing take the wallet
+        // itself, not the send screen's view of it.
+        final wallet = switch (context.read<SendCubit>().state.selectedWallet) {
+          SendWalletBitcoin(:final wallet) => wallet,
+          _ => null,
+        };
         context.pushNamed(
           PsbtFlowRoutes.show.name,
-          extra: (psbt: unsignedPsbt, signerDevice: signerDevice),
+          extra: (
+            psbt: unsignedPsbt,
+            signerDevice: signerDevice,
+            wallet: wallet,
+          ),
         );
       },
       bgColor: context.appColors.secondary,

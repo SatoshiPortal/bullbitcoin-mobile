@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -88,9 +88,8 @@ void main() {
       final relabelled = _transaction(
         labels: [Label.tx(id: 1, transactionId: 'txid-1', label: 'rent')],
       );
-      when(
-        () => refreshTransactionLabelsUsecase.execute(any()),
-      ).thenAnswer((_) async => [relabelled]);
+      when(() => refreshTransactionLabelsUsecase.execute(any()))
+          .thenAnswer((_) async => [relabelled]);
 
       await cubit.refreshLabels();
 
@@ -130,9 +129,8 @@ void main() {
       );
       // Hold the label read open so the load can land underneath it.
       final labelRead = Completer<List<Transaction>>();
-      when(
-        () => refreshTransactionLabelsUsecase.execute(any()),
-      ).thenAnswer((_) => labelRead.future);
+      when(() => refreshTransactionLabelsUsecase.execute(any()))
+          .thenAnswer((_) => labelRead.future);
       when(
         () => getTransactionsUsecase.execute(
           walletId: any(named: 'walletId'),

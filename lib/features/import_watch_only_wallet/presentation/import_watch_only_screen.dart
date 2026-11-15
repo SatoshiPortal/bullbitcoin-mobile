@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullPasteInput, BullSnackBar, BullText, BullTopBar, Gap;
@@ -75,16 +75,17 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           hint: context.loc.importWatchOnlyPasteHint,
                           onChanged: cubit.parsePastedInput,
                         ),
-                        if (state.failure != null)
-                          Center(
-                            child: BullText(
-                              state.failure!.toTranslated(context),
-                              style: TextStyle(color: context.appColors.error),
-                            ),
-                          ),
                         const Gap(32),
                         const ImportMethodWidget(),
                       ],
+                      if (state.failure case final failure?)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 24),
+                          child: BullText(
+                            failure.toTranslated(context),
+                            style: TextStyle(color: context.appColors.error),
+                          ),
+                        ),
                     ],
                   ),
                 ),

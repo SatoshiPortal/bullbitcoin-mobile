@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -31,6 +31,26 @@ void main() {
       parsePaymentRequest: (_) async => _invoice(),
     );
   });
+
+  test(
+    'Liquid regtest refuses before address or provider side effects',
+    () async {
+      final result = await usecase.execute(
+        wallet: _wallet(Network.liquidRegtest),
+        amountSat: 1000,
+      );
+      expect(
+        result,
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<ReceiveSwapUnavailableFailure>(),
+        ),
+      );
+      verifyZeroInteractions(swapFacade);
+      verifyZeroInteractions(getReceiveAddress);
+    },
+  );
 
   test(
     'creates an input-fixed Lightning to Liquid order without fallback',
@@ -311,9 +331,8 @@ void _stubSuccessfulCreation(
       outNetwork: OrderSwapNetwork.liquid,
     ),
   ).thenAnswer((_) async => Ok(_quote()));
-  when(
-    () => getReceiveAddress.execute(walletId: 'wallet-1', generateNew: true),
-  ).thenAnswer((_) async => _address());
+  when(() => getReceiveAddress.execute(walletId: 'wallet-1', generateNew: true))
+      .thenAnswer((_) async => _address());
   when(
     () => swapFacade.createOrder(
       amountSat: BigInt.from(100000),
@@ -382,13 +401,12 @@ OrderSwapRecord _record({DateTime? confirmationDeadline}) => OrderSwapRecord(
 
 Bolt11PaymentRequest _invoice({int amountSat = 100000, int? expiresAt}) =>
     PaymentRequest.bolt11(
-          invoice: 'lntb-invoice',
-          amountSat: amountSat,
-          paymentHash: 'hash',
-          expiresAt: expiresAt ?? 2000000000,
-          isTestnet: true,
-        )
-        as Bolt11PaymentRequest;
+      invoice: 'lntb-invoice',
+      amountSat: amountSat,
+      paymentHash: 'hash',
+      expiresAt: expiresAt ?? 2000000000,
+      isTestnet: true,
+    ) as Bolt11PaymentRequest;
 
 Wallet _wallet(Network network) => Wallet(
   origin: 'wallet-1',

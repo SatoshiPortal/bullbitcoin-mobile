@@ -38,14 +38,13 @@ void main() {
         AccountOwnerName(firstName: 'Satoshi', lastName: 'Nakamoto'),
       ),
     );
-    when(
-      () => watch.execute(createIfAbsent: any(named: 'createIfAbsent')),
-    ).thenAnswer((invocation) {
-      final create = invocation.namedArguments[#createIfAbsent] as bool;
-      final controller = StreamController<_Event>();
-      streams[create]!.add(controller);
-      return controller.stream;
-    });
+    when(() => watch.execute(createIfAbsent: any(named: 'createIfAbsent')))
+        .thenAnswer((invocation) {
+          final create = invocation.namedArguments[#createIfAbsent] as bool;
+          final controller = StreamController<_Event>();
+          streams[create]!.add(controller);
+          return controller.stream;
+        });
   });
 
   VirtualIbanOnboardingCubit build() => VirtualIbanOnboardingCubit(
@@ -121,9 +120,8 @@ void main() {
   test(
     'an unreadable owner name is a failure and nothing is watched',
     () async {
-      when(
-        () => ownerName.execute(),
-      ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+      when(() => ownerName.execute())
+          .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
       final cubit = build();
 
       await cubit.start();

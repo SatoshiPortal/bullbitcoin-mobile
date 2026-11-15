@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
@@ -45,9 +45,8 @@ void main() {
     summary = _MockGetExchangeUserSummaryUsecase();
     virtualIbans = _MockVirtualIbanRepository();
     environment = _MockGetRecipientsEnvironmentUsecase();
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Ok(Environment.mainnet));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Ok(Environment.mainnet));
   });
 
   Future<Result<ConfidentialSepaAvailability, RecipientsFailure>> run({
@@ -55,9 +54,8 @@ void main() {
     Result<VirtualIban?, RecipientsFailure> virtualIban = const Ok(null),
   }) {
     when(() => summary.execute()).thenAnswer((_) async => _summaryWith(groups));
-    when(
-      () => virtualIbans.find(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async => virtualIban);
+    when(() => virtualIbans.find(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async => virtualIban);
     return GetConfidentialSepaAvailabilityUsecase(
       getExchangeUserSummaryUsecase: summary,
       virtualIbanRepository: virtualIbans,

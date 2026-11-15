@@ -43,6 +43,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
     @Default(false) bool isAborted,
+    @Default(false) bool hasNetworkEvidence,
   }) = PayjoinSenderModel;
   const PayjoinModel._();
 
@@ -90,6 +91,7 @@ sealed class PayjoinModel with _$PayjoinModel {
         isExpired: table.isExpired,
         isCompleted: table.isCompleted,
         isAborted: table.isAborted,
+        hasNetworkEvidence: table.hasNetworkEvidence,
       );
 
   int get expiresAt => createdAt + expireAfterSec;
@@ -213,5 +215,6 @@ extension PayjoinSenderSqlite on PayjoinSenderModel {
     isExpired: isExpired,
     isCompleted: isCompleted,
     isAborted: isAborted,
+    hasNetworkEvidence: hasNetworkEvidence,
   );
 }

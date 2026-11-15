@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/bitcoin_recipient_list_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 

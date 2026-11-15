@@ -22,5 +22,7 @@ export 'src/public/extensions.dart'
 export 'src/public/secret.dart' show Secret, SecretEntry, UnreadableSecret;
 export 'src/public/secrets.dart'
     show DatabaseKeys, Recoverbull, RestoredVault, SecretPreview, Secrets;
+export 'src/public/seed_reference_port.dart'
+    show SeedReferencePort, SeedReferencesUnavailable;
 export 'src/public/types.dart';
 export 'src/public/widgets.dart';

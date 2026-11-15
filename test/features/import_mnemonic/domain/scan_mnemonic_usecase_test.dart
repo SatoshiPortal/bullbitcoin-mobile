@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
@@ -11,8 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
-    show ScriptType;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show ScriptType;
 
 class _MockCheckWalletStatusUsecase extends Mock
     implements CheckWalletStatusUsecase {}

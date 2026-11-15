@@ -5,10 +5,10 @@ import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_mnemonic_from_defa
 import 'package:bb_mobile/core/bip85/domain/errors/bip85_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -101,9 +101,8 @@ void main() {
       ),
     ).thenAnswer((_) async => Ok(<Wallet>[testnetWallet]));
 
-    when(
-      () => bip85Repository.fetchNextIndexForApplication(any()),
-    ).thenAnswer((_) async => const Ok(0));
+    when(() => bip85Repository.fetchNextIndexForApplication(any()))
+        .thenAnswer((_) async => const Ok(0));
     when(
       () => bip85Repository.recordMnemonic(
         xprvFingerprint: any(named: 'xprvFingerprint'),

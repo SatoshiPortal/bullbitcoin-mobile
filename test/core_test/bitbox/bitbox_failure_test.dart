@@ -5,16 +5,16 @@ import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart'
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
-import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecase.dart';
-import 'package:bb_mobile/core/bitbox/domain/usecases/sign_psbt_bitbox_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/sign_psbt_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
-import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
+import 'package:bb_mobile/features/bitbox/domain/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -52,9 +52,8 @@ void main() {
     test(
       'maps a raw thrown exception to BitBoxUnexpectedFailure — no raw leak',
       () async {
-        when(
-          () => datasource.getMasterFingerprint(any()),
-        ).thenThrow(Exception('SECRET raw SDK internals'));
+        when(() => datasource.getMasterFingerprint(any()))
+            .thenThrow(Exception('SECRET raw SDK internals'));
 
         final result = await repository.getMasterFingerprint(_device);
 
@@ -64,9 +63,8 @@ void main() {
     );
 
     test('passes through a semantic BitBoxFailure unchanged', () async {
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenThrow(const PermissionDeniedBitBoxFailure());
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenThrow(const PermissionDeniedBitBoxFailure());
 
       final result = await repository.getMasterFingerprint(_device);
 
@@ -75,9 +73,8 @@ void main() {
     });
 
     test('returns Ok on success', () async {
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => 'aabbccdd');
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenAnswer((_) async => 'aabbccdd');
 
       final result = await repository.getMasterFingerprint(_device);
 
@@ -115,9 +112,8 @@ void main() {
     test('propagates the sanitized failure from the repository', () async {
       final repo = _MockRepository();
       final usecase = ConnectBitBoxDeviceUsecase(repository: repo);
-      when(
-        () => repo.connectDevice(_device),
-      ).thenAnswer((_) async => const Err(ConnectionFailedBitBoxFailure()));
+      when(() => repo.connectDevice(_device))
+          .thenAnswer((_) async => const Err(ConnectionFailedBitBoxFailure()));
 
       final result = await usecase.execute(_device);
 
@@ -130,9 +126,8 @@ void main() {
     test('propagates the sanitized failure from the repository', () async {
       final repo = _MockRepository();
       final usecase = UnlockBitBoxDeviceUsecase(repository: repo);
-      when(
-        () => repo.unlockDevice(_device),
-      ).thenAnswer((_) async => const Err(OperationTimeoutBitBoxFailure()));
+      when(() => repo.unlockDevice(_device))
+          .thenAnswer((_) async => const Err(OperationTimeoutBitBoxFailure()));
 
       final result = await usecase.execute(_device);
 
@@ -221,9 +216,8 @@ void main() {
     test('returns the devices when the scan is non-empty', () async {
       final repo = _MockRepository();
       final usecase = ScanBitBoxDevicesUsecase(repository: repo);
-      when(
-        () => repo.scanDevices(),
-      ).thenAnswer((_) async => const Ok([_device]));
+      when(() => repo.scanDevices())
+          .thenAnswer((_) async => const Ok([_device]));
 
       final result = await usecase.execute();
 

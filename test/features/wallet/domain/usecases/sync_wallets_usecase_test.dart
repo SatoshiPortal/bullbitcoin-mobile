@@ -1,7 +1,9 @@
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_kind.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
-import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show SyncBusyFailure;
+import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
+import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,18 +32,32 @@ void main() {
     usecase = SyncWalletsUsecase(coordinator);
   });
 
+  for (final mixed in [false, true]) {
+    test('busy round preserves classification, mixed=$mixed', () async {
+      when(() => coordinator.sync(trigger: any(named: 'trigger'))).thenThrow(
+        SyncCoordinatorException({
+          SyncKind.bitcoin: const WalletSnapshotException(SyncBusyFailure()),
+          if (mixed) SyncKind.liquid: Exception('connection'),
+        }),
+      );
+      final failure = _failureOf(await usecase.execute());
+      expect(
+        failure,
+        mixed ? isA<WalletSyncFailure>() : isA<WalletSyncBusyFailure>(),
+      );
+    });
+  }
+
   test('a completed sync round is Ok', () async {
-    when(
-      () => coordinator.sync(trigger: any(named: 'trigger')),
-    ).thenAnswer((_) async {});
+    when(() => coordinator.sync(trigger: any(named: 'trigger')))
+        .thenAnswer((_) async {});
 
     expect(await usecase.execute(), isA<Ok<void, WalletFailure>>());
   });
 
   test('forwards the trigger it was given', () async {
-    when(
-      () => coordinator.sync(trigger: any(named: 'trigger')),
-    ).thenAnswer((_) async {});
+    when(() => coordinator.sync(trigger: any(named: 'trigger')))
+        .thenAnswer((_) async {});
 
     // The result is asserted too because `execute` is `@useResult` — the
     // annotation is doing its job here and discarding it is a warning.

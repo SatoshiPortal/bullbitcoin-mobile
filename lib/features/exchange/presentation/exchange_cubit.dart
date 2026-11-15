@@ -73,6 +73,15 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
 
     switch (result) {
+      case Err(failure: ExchangeUnsupportedNetworkFailure()):
+        emit(
+          state.copyWith(
+            userSummary: null,
+            announcements: [],
+            getUserSummaryFailure: const ExchangeUnsupportedNetworkFailure(),
+          ),
+        );
+        return;
       case Err(:final failure):
         emit(state.copyWith(getUserSummaryFailure: failure));
         return;

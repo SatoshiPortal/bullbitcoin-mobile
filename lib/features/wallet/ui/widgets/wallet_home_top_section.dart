@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
+import 'package:primitives/primitives.dart' show NetworkCapability;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/action_card.dart';
@@ -10,7 +12,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/core/widgets/buttons/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
 import 'package:go_router/go_router.dart';
@@ -24,7 +26,7 @@ class WalletHomeTopSection extends StatelessWidget {
   static const double _balanceAreaHeight = 264;
 
   /// Distance from the top of the dark area down to the balance.
-  static const double _balanceTopSpacing = 123;
+  static const double _balanceTopSpacing = 96;
 
   /// How far the [ActionCard] hangs below the dark area.
   static const double _actionCardOverhang = 76;
@@ -48,7 +50,10 @@ class WalletHomeTopSection extends StatelessWidget {
             right: 0,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: ActionCard(),
+              child: NetworkCapabilityVisibility(
+                capability: NetworkCapability.exchange,
+                child: ActionCard(),
+              ),
             ),
           ),
         ],
@@ -121,7 +126,11 @@ class _Amounts extends StatelessWidget {
         Gap(WalletHomeTopSection._balanceTopSpacing),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Spacer(), _BtcTotalAmt(), Gap(16), EyeToggle(), Spacer()],
+          children: [
+            Flexible(child: _BtcTotalAmt()),
+            Gap(16),
+            EyeToggle(),
+          ],
         ),
         Gap(12),
         _FiatAmt(),
@@ -152,10 +161,12 @@ class _BtcTotalAmt extends StatelessWidget {
     }
 
     final btcTotal = walletState.totalBalance();
+    if (btcTotal == null) return Text(context.loc.walletLoadFailed);
 
     return CurrencyText(
       btcTotal,
       showFiat: false,
+      interactive: true,
       style: context.font.displaySmall,
       color: context.appColors.onPrimary,
     );
@@ -172,8 +183,10 @@ class _FiatAmt extends StatelessWidget {
         walletState.status == WalletStatus.initial ||
         walletState.status == WalletStatus.loading;
 
+    final total = walletState.totalBalance();
+    if (total == null) return Text(context.loc.walletLoadFailed);
     return HomeFiatBalance(
-      balanceSat: walletState.totalBalance(),
+      balanceSat: total,
       showBalanceLoading: showBalanceLoading,
     );
   }
@@ -235,6 +248,7 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
                 CurrencyText(
                   unconfirmed,
                   showFiat: false,
+                  interactive: true,
                   style: context.font.bodyLarge,
                   color: color,
                 ),

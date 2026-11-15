@@ -68,9 +68,8 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
           merged['phoneNumber'];
 
       return Ok(
-        GetFundingDetailsResponseModel.fromJson(
-          merged,
-        ).toDomain(method: fundingMethod),
+        GetFundingDetailsResponseModel.fromJson(merged)
+            .toDomain(method: fundingMethod),
       );
     } on FundingDatasourceException catch (e, st) {
       log.warning('$method failed', error: e, trace: st);
@@ -123,9 +122,8 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       final institutions = (elements ?? const [])
           .map((e) {
             try {
-              return InstitutionModel.fromJson(
-                e as Map<String, dynamic>,
-              ).toDomain;
+              return InstitutionModel.fromJson(e as Map<String, dynamic>)
+                  .toDomain;
             } catch (err, st) {
               log.warning(
                 'Skipped an unparseable institution element',

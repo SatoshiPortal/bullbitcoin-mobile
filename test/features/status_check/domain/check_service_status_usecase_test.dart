@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/features/status_check/domain/check_all_service_status_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/status_check/domain/check_service_status_usecase.dart';
 import 'package:bb_mobile/features/status_check/domain/status_check_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,9 +47,8 @@ void main() {
     test(
       'returns NoDefaultWalletFailure when no wallet is the default',
       () async {
-        when(
-          () => getWalletsUsecase.execute(),
-        ).thenAnswer((_) async => Ok([walletWith(isDefault: false)]));
+        when(() => getWalletsUsecase.execute())
+            .thenAnswer((_) async => Ok([walletWith(isDefault: false)]));
 
         final result = await usecase.execute();
 
@@ -80,9 +79,8 @@ void main() {
 
     test('maps an unexpected GetWalletsUsecase failure to a sanitized failure '
         'without leaking the raw reason', () async {
-      when(
-        () => getWalletsUsecase.execute(),
-      ).thenThrow(Exception('electrum: connection reset by 1.2.3.4'));
+      when(() => getWalletsUsecase.execute())
+          .thenThrow(Exception('electrum: connection reset by 1.2.3.4'));
 
       final result = await usecase.execute();
 

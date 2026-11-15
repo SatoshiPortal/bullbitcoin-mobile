@@ -1,9 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show NetworkEnv;
 
 /// The kind of text a settings write fails with: a storage error naming the
 /// database path and the value being written.
@@ -16,6 +17,9 @@ const _everyFailure = <SettingsFailure>[
   SettingsConsentFailure(_rawReason),
   SettingsLogsFailure(_rawReason),
   SettingsUnexpectedFailure(_rawReason),
+  // No selector uses these failures yet; they share the generic text until wired.
+  SettingsNetworkUnavailableFailure(NetworkEnv.signet),
+  SettingsNetworkUnavailableFailure(NetworkEnv.regtest),
 ];
 
 Future<String> _translate(WidgetTester tester, SettingsFailure failure) async {
@@ -24,7 +28,7 @@ Future<String> _translate(WidgetTester tester, SettingsFailure failure) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
@@ -62,13 +66,28 @@ void main() {
     }
   });
 
+  testWidgets('unwired network refusals share the generic text', (
+    tester,
+  ) async {
+    final generic = await _translate(tester, const SettingsUnexpectedFailure());
+    for (final network in [NetworkEnv.signet, NetworkEnv.regtest]) {
+      expect(
+        await _translate(tester, SettingsNetworkUnavailableFailure(network)),
+        generic,
+      );
+    }
+  });
+
   testWidgets('each mapped failure reads differently from the catch-all', (
     tester,
   ) async {
     final generic = await _translate(tester, const SettingsUnexpectedFailure());
 
     for (final failure in _everyFailure) {
-      if (failure is SettingsUnexpectedFailure) continue;
+      if (failure is SettingsUnexpectedFailure ||
+          failure is SettingsNetworkUnavailableFailure) {
+        continue;
+      }
       expect(
         await _translate(tester, failure),
         isNot(generic),

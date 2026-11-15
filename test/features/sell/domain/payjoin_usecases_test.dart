@@ -41,7 +41,7 @@ void main() {
       PayjoinSender sender,
     ) => SendWithPayjoinUsecase(sender).execute(
       walletId: 'wallet-1',
-      isTestnet: false,
+      network: BitcoinNetwork.mainnet,
       bip21: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
       unsignedOriginalPsbt: 'cHNidP8=',
       amountSat: 100000,
@@ -92,9 +92,9 @@ void main() {
         (_) => const Stream<Result<PayjoinSession, PayjoinFailure>>.empty(),
       );
 
-      final first = await WatchPayjoinUsecase(
-        sessions,
-      ).execute(session.id).first;
+      final first = await WatchPayjoinUsecase(sessions)
+          .execute(session.id)
+          .first;
 
       expect(first, isA<Ok<PayjoinSession, SellFailure>>());
     });
@@ -106,9 +106,9 @@ void main() {
             const Err<PayjoinSession?, PayjoinFailure>(PayjoinStorageFailure()),
       );
 
-      final first = await WatchPayjoinUsecase(
-        sessions,
-      ).execute('session-1').first;
+      final first = await WatchPayjoinUsecase(sessions)
+          .execute('session-1')
+          .first;
 
       // Yielded, not thrown: an error would tear down the subscription and
       // leave a settling sale looking stuck.

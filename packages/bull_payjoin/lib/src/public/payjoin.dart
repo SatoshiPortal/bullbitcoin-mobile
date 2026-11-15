@@ -35,6 +35,11 @@ final class _UnavailablePayjoinSender implements PayjoinSender {
   const _UnavailablePayjoinSender(this._failure);
 
   @override
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(
+    String sessionId,
+  ) async => Err(_failure);
+
+  @override
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(
     String sessionId,
   ) async => Err(_failure);
@@ -91,6 +96,10 @@ final class _UnavailablePayjoinSessions implements PayjoinSessions {
   @override
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints() async =>
       Err(_failure);
+
+  @override
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations() async => Err(_failure);
 
   @override
   Stream<Result<PayjoinSession, PayjoinFailure>> watch({

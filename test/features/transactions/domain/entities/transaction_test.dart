@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -192,9 +192,8 @@ void main() {
     test('is null when the transaction has no payjoin', () {
       expect(const Transaction().displayPayjoinStatus, isNull);
       expect(
-        Transaction(
-          walletTransaction: _walletTx(txId: 'any'),
-        ).displayPayjoinStatus,
+        Transaction(walletTransaction: _walletTx(txId: 'any'))
+            .displayPayjoinStatus,
         isNull,
       );
     });
@@ -208,9 +207,8 @@ void main() {
         PayjoinStatus.expired,
       ]) {
         expect(
-          Transaction(
-            payjoin: _senderPayjoin(status: status),
-          ).displayPayjoinStatus,
+          Transaction(payjoin: _senderPayjoin(status: status))
+              .displayPayjoinStatus,
           status,
         );
       }

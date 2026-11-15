@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
@@ -42,9 +42,8 @@ void main() {
   group('LoadPayUserSummaryUsecase', () {
     test('a summary read failure is a value, not a throw', () async {
       final summary = _MockGetUserSummary();
-      when(
-        summary.execute,
-      ).thenThrow(GetExchangeUserSummaryException(_rawReason));
+      when(summary.execute)
+          .thenThrow(GetExchangeUserSummaryException(_rawReason));
 
       final result = await LoadPayUserSummaryUsecase(
         getExchangeUserSummaryUsecase: summary,
@@ -59,13 +58,11 @@ void main() {
   group('GetPayOrderUsecase', () {
     test('a read failure is sanitized', () async {
       final orders = _MockGetOrder();
-      when(
-        () => orders.execute(orderId: any(named: 'orderId')),
-      ).thenThrow(GetOrderException(_rawReason));
+      when(() => orders.execute(orderId: any(named: 'orderId')))
+          .thenThrow(GetOrderException(_rawReason));
 
-      final result = await GetPayOrderUsecase(
-        getOrderUsecase: orders,
-      ).execute(orderId: 'order-1');
+      final result = await GetPayOrderUsecase(getOrderUsecase: orders)
+          .execute(orderId: 'order-1');
 
       expect(
         (result as Err<FiatPaymentOrder, PayFailure>).failure,
@@ -77,13 +74,11 @@ void main() {
       // The shared use-case returns the whole Order family; adopting a
       // non-payment order here would show the wrong thing on the pay screens.
       final orders = _MockGetOrder();
-      when(
-        () => orders.execute(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => _MockSellOrder());
+      when(() => orders.execute(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => _MockSellOrder());
 
-      final result = await GetPayOrderUsecase(
-        getOrderUsecase: orders,
-      ).execute(orderId: 'order-1');
+      final result = await GetPayOrderUsecase(getOrderUsecase: orders)
+          .execute(orderId: 'order-1');
 
       expect(
         (result as Err<FiatPaymentOrder, PayFailure>).failure,
@@ -95,9 +90,8 @@ void main() {
   group('LoadPayNetworkFeesUsecase', () {
     test('an unreachable mempool is actionable, not a generic oops', () async {
       final fees = _MockGetNetworkFees();
-      when(
-        () => fees.execute(isLiquid: any(named: 'isLiquid')),
-      ).thenThrow(GetNetworkFeesException(_rawReason));
+      when(() => fees.execute(isLiquid: any(named: 'isLiquid')))
+          .thenThrow(GetNetworkFeesException(_rawReason));
 
       final result = await LoadPayNetworkFeesUsecase(
         getNetworkFeesUsecase: fees,
@@ -168,9 +162,8 @@ void main() {
     });
 
     test('a PSBT fee read failure is sanitized', () async {
-      when(
-        () => bitcoin.execute(psbt: any(named: 'psbt')),
-      ).thenThrow(CalculateBitcoinAbsoluteFeesException(_rawReason));
+      when(() => bitcoin.execute(psbt: any(named: 'psbt')))
+          .thenThrow(CalculateBitcoinAbsoluteFeesException(_rawReason));
 
       final result = await usecase.bitcoin(psbt: 'psbt');
 
@@ -181,9 +174,8 @@ void main() {
     });
 
     test('a PSET fee read failure is sanitized', () async {
-      when(
-        () => liquid.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-      ).thenThrow(Exception(_rawReason));
+      when(() => liquid.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
+          .thenThrow(Exception(_rawReason));
 
       final result = await usecase.liquid(pset: 'pset');
 

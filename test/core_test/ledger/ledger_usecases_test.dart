@@ -2,12 +2,12 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
-import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show Err;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -81,9 +81,8 @@ void main() {
     test('forwards a repository failure unchanged (no raw leak)', () async {
       final usecase = buildUsecase();
       stubSettings();
-      when(
-        () => repository.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => const Err(LedgerDeviceLockedFailure()));
+      when(() => repository.getMasterFingerprint(any()))
+          .thenAnswer((_) async => const Err(LedgerDeviceLockedFailure()));
 
       final result = await usecase.execute(label: 'Ledger', device: device);
 
@@ -102,9 +101,8 @@ void main() {
     test('sanitizes a throwing settings fetch into an unexpected failure '
         'without touching the device', () async {
       final usecase = buildUsecase();
-      when(
-        () => settingsRepository.fetch(),
-      ).thenThrow(Exception('STORAGE UNAVAILABLE'));
+      when(() => settingsRepository.fetch())
+          .thenThrow(Exception('STORAGE UNAVAILABLE'));
 
       final result = await usecase.execute(label: 'Ledger', device: device);
 

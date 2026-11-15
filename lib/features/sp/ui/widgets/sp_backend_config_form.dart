@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_backend_form_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_url_field.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The backend-config form shared by the setup and settings pages: the
 /// (page-supplied) network field, the regtest-defaults button, the two backend

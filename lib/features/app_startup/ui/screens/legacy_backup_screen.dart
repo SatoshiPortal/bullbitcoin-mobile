@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Blocking backup gate for read-only Android legacy storage. The user writes down their recovery phrase(s), deletes

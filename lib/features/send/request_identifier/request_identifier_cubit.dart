@@ -1,11 +1,15 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_state.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RequestIdentifierCubit extends Cubit<RequestIdentifierState> {
-  RequestIdentifierCubit() : super(const RequestIdentifierState());
+  final DetectBitcoinStringUsecase _detect;
+
+  RequestIdentifierCubit({DetectBitcoinStringUsecase? detect})
+    : _detect = detect ?? DetectBitcoinStringUsecase(),
+      super(const RequestIdentifierState());
 
   Future<void> onScanned(String data) async {
     if (data.isEmpty) return;
@@ -25,7 +29,7 @@ class RequestIdentifierCubit extends Cubit<RequestIdentifierState> {
 
   Future<void> _validate(String data) async {
     try {
-      await PaymentRequest.parse(data);
+      await _detect.execute(data: data);
       emit(
         state.copyWith(
           redirect: RequestIdentifierRedirect.toSend,

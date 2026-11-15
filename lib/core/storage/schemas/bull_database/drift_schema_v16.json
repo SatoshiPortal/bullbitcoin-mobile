@@ -163,6 +163,16 @@
             "dsl_features": []
           },
           {
+            "name": "network",
+            "getter_name": "network",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'unresolved\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
             "name": "master_fingerprint",
             "getter_name": "masterFingerprint",
             "moor_type": "string",
@@ -998,29 +1008,11 @@
             "dsl_features": []
           },
           {
-            "name": "is_testnet",
-            "getter_name": "isTestnet",
-            "moor_type": "bool",
+            "name": "network",
+            "getter_name": "network",
+            "moor_type": "string",
             "nullable": false,
             "customConstraints": null,
-            "defaultConstraints": "CHECK (\"is_testnet\" IN (0, 1))",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "CHECK (\"is_testnet\" IN (0, 1))"
-            },
-            "default_dart": null,
-            "default_client_dart": null,
-            "dsl_features": []
-          },
-          {
-            "name": "is_liquid",
-            "getter_name": "isLiquid",
-            "moor_type": "bool",
-            "nullable": false,
-            "customConstraints": null,
-            "defaultConstraints": "CHECK (\"is_liquid\" IN (0, 1))",
-            "dialectAwareDefaultConstraints": {
-              "sqlite": "CHECK (\"is_liquid\" IN (0, 1))"
-            },
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
@@ -1054,6 +1046,7 @@
         "without_rowid": false,
         "constraints": [],
         "explicit_pk": [
+          "network",
           "url"
         ]
       }
@@ -2520,7 +2513,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"xpub\" TEXT NOT NULL, \"external_public_descriptor\" TEXT NOT NULL, \"internal_public_descriptor\" TEXT NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"wallet_metadatas\" (\"id\" TEXT NOT NULL, \"network\" TEXT NOT NULL DEFAULT 'unresolved', \"master_fingerprint\" TEXT NOT NULL, \"xpub_fingerprint\" TEXT NOT NULL, \"is_encrypted_vault_tested\" INTEGER NOT NULL CHECK (\"is_encrypted_vault_tested\" IN (0, 1)), \"is_physical_backup_tested\" INTEGER NOT NULL CHECK (\"is_physical_backup_tested\" IN (0, 1)), \"latest_encrypted_backup\" INTEGER NULL, \"latest_physical_backup\" INTEGER NULL, \"xpub\" TEXT NOT NULL, \"external_public_descriptor\" TEXT NOT NULL, \"internal_public_descriptor\" TEXT NOT NULL, \"signer\" TEXT NOT NULL, \"signer_device\" TEXT NULL, \"is_default\" INTEGER NOT NULL CHECK (\"is_default\" IN (0, 1)), \"label\" TEXT NULL, \"synced_at\" TEXT NULL, \"birthday\" TEXT NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -2565,7 +2558,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"electrum_servers\" (\"url\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"is_liquid\" INTEGER NOT NULL CHECK (\"is_liquid\" IN (0, 1)), \"priority\" INTEGER NOT NULL, \"is_custom\" INTEGER NOT NULL CHECK (\"is_custom\" IN (0, 1)), PRIMARY KEY (\"url\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"electrum_servers\" (\"url\" TEXT NOT NULL, \"network\" TEXT NOT NULL, \"priority\" INTEGER NOT NULL, \"is_custom\" INTEGER NOT NULL CHECK (\"is_custom\" IN (0, 1)), PRIMARY KEY (\"network\", \"url\"));"
         }
       ]
     },

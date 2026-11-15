@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 
@@ -32,8 +32,18 @@ class TxList extends StatelessWidget {
     if (failure != null) {
       return TransactionsByDayList<Transaction>(
         itemsByDay: const {},
-        itemBuilder: (context, tx) =>
-            TransactionListItem.transaction(tx, onDetailsClosed: refreshLabels),
+        itemBuilder: (context, tx) => TransactionListItem.transaction(
+          tx,
+          key: ValueKey((
+            tx.walletTransaction?.walletId,
+            tx.txId,
+            tx.swap?.id,
+            tx.orderSwap?.localId,
+            tx.payjoin?.id,
+            tx.order?.orderId,
+          )),
+          onDetailsClosed: refreshLabels,
+        ),
         loadingMessage: context.loc.transactionListLoadingTransactions,
         emptyMessage: context.loc.transactionListNoTransactions,
         errorMessage: failure.toTranslated(context),
@@ -53,8 +63,18 @@ class TxList extends StatelessWidget {
 
     return TransactionsByDayList<Transaction>(
       itemsByDay: txsByDay,
-      itemBuilder: (context, tx) =>
-          TransactionListItem.transaction(tx, onDetailsClosed: refreshLabels),
+      itemBuilder: (context, tx) => TransactionListItem.transaction(
+        tx,
+        key: ValueKey((
+          tx.walletTransaction?.walletId,
+          tx.txId,
+          tx.swap?.id,
+          tx.orderSwap?.localId,
+          tx.payjoin?.id,
+          tx.order?.orderId,
+        )),
+        onDetailsClosed: refreshLabels,
+      ),
       loadingMessage: context.loc.transactionListLoadingTransactions,
       emptyMessage: context.loc.transactionListNoTransactions,
       header:

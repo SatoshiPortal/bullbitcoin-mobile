@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WalletSettingsScreen extends StatefulWidget {
@@ -33,7 +33,8 @@ class _WalletSettingsScreenState extends State<WalletSettingsScreen> {
             child: Column(
               children: [
                 for (final id in walletSettingsItemOrder)
-                  items.byId(id).buildTile(context),
+                  for (final item in items.where((item) => item.id == id))
+                    item.buildTile(context),
                 for (final item in items.inSection(SettingsItemSection.wallet))
                   if (!walletSettingsItemOrder.contains(item.id))
                     item.buildTile(context),

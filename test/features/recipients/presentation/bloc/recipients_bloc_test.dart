@@ -90,9 +90,8 @@ void main() {
       (_) async =>
           const Ok(GetPreferredJurisdictionUsecase.defaultJurisdiction),
     );
-    when(
-      () => getRecipients.execute(any()),
-    ).thenAnswer((_) async => const Err(RecipientsLoadFailure()));
+    when(() => getRecipients.execute(any()))
+        .thenAnswer((_) async => const Err(RecipientsLoadFailure()));
     when(() => getAccountOwnerName.execute()).thenAnswer(
       (_) async =>
           const Ok(AccountOwnerName(firstName: 'Mary Ann', lastName: 'Smith')),
@@ -124,9 +123,8 @@ void main() {
     Future<RecipientsBloc> startWith(
       ConfidentialSepaAvailability availability,
     ) async {
-      when(
-        () => getConfidentialSepaAvailability.execute(),
-      ).thenAnswer((_) async => Ok(availability));
+      when(() => getConfidentialSepaAvailability.execute())
+          .thenAnswer((_) async => Ok(availability));
       final bloc = buildBloc(filters: sepaFilters);
       addTearDown(bloc.close);
       bloc.add(const RecipientsStarted());
@@ -152,9 +150,8 @@ void main() {
         'recovers on retry', () async {
       final availability =
           Completer<Result<ConfidentialSepaAvailability, RecipientsFailure>>();
-      when(
-        () => getConfidentialSepaAvailability.execute(),
-      ).thenAnswer((_) => availability.future);
+      when(() => getConfidentialSepaAvailability.execute())
+          .thenAnswer((_) => availability.future);
       final bloc = buildBloc(filters: sepaFilters);
       addTearDown(bloc.close);
 
@@ -177,9 +174,8 @@ void main() {
 
       final retry =
           Completer<Result<ConfidentialSepaAvailability, RecipientsFailure>>();
-      when(
-        () => getConfidentialSepaAvailability.execute(),
-      ).thenAnswer((_) => retry.future);
+      when(() => getConfidentialSepaAvailability.execute())
+          .thenAnswer((_) => retry.future);
       bloc.add(const RecipientsEvent.confidentialSepaAvailabilityRetried());
       await pumpEventQueue();
 
@@ -199,9 +195,8 @@ void main() {
     });
 
     test('refresh retries a failed availability check', () async {
-      when(
-        () => getConfidentialSepaAvailability.execute(),
-      ).thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
+      when(() => getConfidentialSepaAvailability.execute())
+          .thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
       final bloc = buildBloc(filters: sepaFilters);
       addTearDown(bloc.close);
       bloc.add(const RecipientsEvent.started());
@@ -220,9 +215,8 @@ void main() {
     });
 
     test('an account name failure is visible and can be retried', () async {
-      when(
-        () => getAccountOwnerName.execute(),
-      ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+      when(() => getAccountOwnerName.execute())
+          .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
       final bloc = await startWith(ConfidentialSepaAvailability.ready);
 
       expect(
@@ -336,9 +330,8 @@ void main() {
 
   test('a connectivity failure survives as its own variant, so the UI can '
       'give advice the generic one cannot', () async {
-    when(
-      () => getRecipients.execute(any()),
-    ).thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
+    when(() => getRecipients.execute(any()))
+        .thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
@@ -349,9 +342,8 @@ void main() {
   });
 
   test('a save failure reaches state as the typed failure', () async {
-    when(
-      () => addRecipient.execute(any()),
-    ).thenAnswer((_) async => const Err(RecipientsSaveFailure()));
+    when(() => addRecipient.execute(any()))
+        .thenAnswer((_) async => const Err(RecipientsSaveFailure()));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
@@ -367,9 +359,8 @@ void main() {
   // under the phone field, the biller one under the search field — and these
   // pin the state they read.
   test('a SINPE lookup failure reaches state', () async {
-    when(
-      () => checkSinpe.execute(any()),
-    ).thenAnswer((_) async => const Err(RecipientsSinpeLookupFailure()));
+    when(() => checkSinpe.execute(any()))
+        .thenAnswer((_) async => const Err(RecipientsSinpeLookupFailure()));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
@@ -383,9 +374,8 @@ void main() {
   });
 
   test('a biller search failure reaches state', () async {
-    when(
-      () => listCadBillers.execute(any()),
-    ).thenAnswer((_) async => const Err(RecipientsCadBillerSearchFailure()));
+    when(() => listCadBillers.execute(any()))
+        .thenAnswer((_) async => const Err(RecipientsCadBillerSearchFailure()));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 

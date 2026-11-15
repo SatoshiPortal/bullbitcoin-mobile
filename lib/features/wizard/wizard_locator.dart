@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 
 /// The wizard runs pre-locator (during startup) for the gating check and
 /// the bloc itself, so most of its dependencies are wired manually
-/// from `lib/startup_wizard.dart` and `WizardApp`. The locator only exposes the
+/// from `lib/features/wizard/startup_wizard.dart` and `WizardApp`. The locator only exposes the
 /// post-init flush usecase that `Bull.init` calls once the SQLite
 /// settings repository is available.
 class WizardLocator {

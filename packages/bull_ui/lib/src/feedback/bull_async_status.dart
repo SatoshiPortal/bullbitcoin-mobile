@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/feedback/bull_fading_linear_progress.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 enum BullAsyncStatusState { hidden, inProgress, succeeded, fallback }
 

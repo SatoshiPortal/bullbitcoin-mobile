@@ -1,13 +1,14 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_success_screen.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -27,9 +28,8 @@ void main() {
     final settingsCubit = _MockSettingsCubit();
     final order = _MockBuyOrder();
     when(() => buyBloc.state).thenReturn(BuyState(buyOrder: order));
-    when(
-      () => buyBloc.stream,
-    ).thenAnswer((_) => const Stream<BuyState>.empty());
+    when(() => buyBloc.stream)
+        .thenAnswer((_) => const Stream<BuyState>.empty());
     when(() => settingsCubit.state).thenReturn(
       const SettingsState(
         storedSettings: SettingsEntity(
@@ -39,9 +39,9 @@ void main() {
         ),
       ),
     );
-    when(
-      () => settingsCubit.stream,
-    ).thenAnswer((_) => const Stream<SettingsState>.empty());
+    when(() => settingsCubit.stream)
+        .thenAnswer((_) => const Stream<SettingsState>.empty());
+    when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
     when(() => order.orderId).thenReturn('order-42');
     when(() => order.payoutAmount).thenReturn(0.001);
     when(() => order.payinAmount).thenReturn(100.0);
@@ -77,7 +77,7 @@ void main() {
       MaterialApp.router(
         routerConfig: router,
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
       ),
     );
@@ -103,9 +103,8 @@ void main() {
       final settingsCubit = _MockSettingsCubit();
       order = _MockBuyOrder();
       when(() => buyBloc.state).thenReturn(BuyState(buyOrder: order));
-      when(
-        () => buyBloc.stream,
-      ).thenAnswer((_) => const Stream<BuyState>.empty());
+      when(() => buyBloc.stream)
+          .thenAnswer((_) => const Stream<BuyState>.empty());
       when(() => settingsCubit.state).thenReturn(
         const SettingsState(
           storedSettings: SettingsEntity(
@@ -115,9 +114,9 @@ void main() {
           ),
         ),
       );
-      when(
-        () => settingsCubit.stream,
-      ).thenAnswer((_) => const Stream<SettingsState>.empty());
+      when(() => settingsCubit.stream)
+          .thenAnswer((_) => const Stream<SettingsState>.empty());
+      when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.inProgress);
       when(() => order.orderId).thenReturn('order-42');
       when(() => order.payoutAmount).thenReturn(0.0001);
       when(() => order.payinAmount).thenReturn(10.0);
@@ -125,15 +124,14 @@ void main() {
       when(() => order.bitcoinAddress).thenReturn(null);
       when(() => order.transactionId).thenReturn(null);
       when(() => order.scheduledPayoutTime).thenReturn(null);
-      when(
-        () => order.payjoinOutcome,
-      ).thenReturn(OrderPayjoinOutcome.inProgress);
+      when(() => order.payjoinOutcome)
+          .thenReturn(OrderPayjoinOutcome.inProgress);
       when(() => order.createdAt).thenReturn(DateTime.now().subtract(age));
 
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: MultiBlocProvider(
             providers: [
@@ -158,21 +156,48 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
     });
 
-    // The exchange stops negotiating five minutes after creating the order and
-    // may report nothing until its ordinary payout goes out.
-    testWidgets('is no longer claimed nor read once its window has passed', (
+    testWidgets('plain payout is followed until completed, then stops', (
       tester,
     ) async {
-      await pumpSuccess(tester, age: const Duration(minutes: 7));
-
-      expect(find.text('Payjoin in progress'), findsNothing);
-      await tester.pump(const Duration(minutes: 5));
+      await pumpSuccess(tester, age: Duration.zero);
+      when(() => order.payjoinOutcome).thenReturn(OrderPayjoinOutcome.none);
+      await tester.pump(const Duration(seconds: 5));
+      verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(1);
+      when(() => order.payoutStatus).thenReturn(OrderPayoutStatus.completed);
+      await tester.pump(const Duration(seconds: 15));
       verifyNever(() => buyBloc.add(any()));
-
       await tester.pumpWidget(const SizedBox.shrink());
     });
 
-    testWidgets('stops being read when its window closes on screen', (
+    testWidgets('does not poll while inactive and resumes on the next tick', (
+      tester,
+    ) async {
+      await pumpSuccess(tester, age: Duration.zero);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump(const Duration(seconds: 10));
+      verifyNever(() => buyBloc.add(any()));
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump(const Duration(seconds: 5));
+      verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(1);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    // The exchange stops negotiating five minutes after creating the order and
+    // may report nothing until its ordinary payout goes out.
+    testWidgets(
+      'keeps reading the payout after the payjoin window has passed',
+      (tester) async {
+        await pumpSuccess(tester, age: const Duration(minutes: 7));
+
+        expect(find.text('Payjoin in progress'), findsNothing);
+        await tester.pump(const Duration(minutes: 5));
+        verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(60);
+
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+
+    testWidgets('hides expired payjoin but keeps reading its payout', (
       tester,
     ) async {
       await pumpSuccess(tester, age: const Duration(minutes: 5, seconds: 50));
@@ -188,7 +213,7 @@ void main() {
 
       clearInteractions(buyBloc);
       await tester.pump(const Duration(minutes: 5));
-      verifyNever(() => buyBloc.add(any()));
+      verify(() => buyBloc.add(const BuyEvent.refreshOrder())).called(60);
 
       await tester.pumpWidget(const SizedBox.shrink());
     });

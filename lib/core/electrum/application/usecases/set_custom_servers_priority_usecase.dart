@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_custom_servers_priority_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/responses/set_custom_servers_priority_response.dart';
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/domain/errors/electrum_failure.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/repositories/electrum_server_repository.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';

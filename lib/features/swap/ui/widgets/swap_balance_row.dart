@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 
@@ -21,8 +21,10 @@ class SwapBalanceRow extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
-    final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
-    final balance = bitcoinUnit == BitcoinUnit.sats
+    final balanceSat = fromWallet?.balanceSat?.toInt();
+    final balance = balanceSat == null
+        ? context.loc.walletLoadFailed
+        : bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(balanceSat)
         : FormatAmount.btc(ConvertAmount.satsToBtc(balanceSat));
 

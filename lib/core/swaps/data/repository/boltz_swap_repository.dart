@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
+import 'package:bb_mobile/features/swap/data/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
@@ -11,11 +11,11 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
     as outspend;
-import 'package:bb_mobile/core/swaps/domain/repositories/auto_swap_settings_repository.dart';
+import 'package:bb_mobile/features/autoswap/domain/repositories/auto_swap_settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 
 class BoltzSwapRepository

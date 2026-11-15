@@ -1,8 +1,8 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A compact bordered language picker shared across the app (wizard, app
 /// settings, onboarding advanced options). Displays a chip with a globe

@@ -4,6 +4,7 @@ library;
 export 'src/domain/payjoin_failure.dart'
     show
         PayjoinFailure,
+        PayjoinSpendBlockedFailure,
         PayjoinInvalidInputFailure,
         PayjoinUnavailableFailure,
         PayjoinWalletUnavailableFailure,
@@ -22,6 +23,12 @@ export 'src/domain/payjoin_policy.dart'
 export 'src/domain/payjoin_ports.dart'
     show
         PayjoinWalletPort,
+        PayjoinWalletOwnership,
+        PayjoinCodecPort,
+        PayjoinTransaction,
+        PayjoinTransactionOutput,
+        PayjoinSpendBlockedException,
+        PayjoinBroadcastNotAttemptedException,
         PayjoinBlockchainPort,
         PayjoinTransactionPort,
         PayjoinLabelsPort,
@@ -45,12 +52,14 @@ export 'src/domain/payjoin_session.dart'
         PayjoinReceiverSession,
         PayjoinOwnership,
         PayjoinParty,
+        PayjoinInputReservation,
         PayjoinStatus;
 export 'src/domain/payjoin_session_window.dart' show PayjoinSessionWindow;
 export 'src/public/payjoin.dart' show Payjoin;
 export 'src/public/payjoin_lifecycle.dart' show PayjoinLifecycle;
 export 'src/engine/payjoin_runtime.dart' show openPayjoin;
-export 'src/engine/payjoin_constants.dart' show PayjoinConstants;
+export 'src/engine/payjoin_constants.dart'
+    show PayjoinConstants, payjoinDatabaseFilename;
 export 'src/public/payjoin_roles.dart'
     show
         PayjoinSender,
@@ -58,3 +67,5 @@ export 'src/public/payjoin_roles.dart'
         PayjoinSessions,
         PayjoinPolicyAccess,
         PayjoinDiagnostics;
+export 'src/engine/recoverable_payjoin.dart'
+    show RecoverablePayjoin, PayjoinLifecycleOpener;

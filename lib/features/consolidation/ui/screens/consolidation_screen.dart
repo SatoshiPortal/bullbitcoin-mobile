@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_cubit.dart';
 import 'package:bb_mobile/features/consolidation/presentation/consolidation_state.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullFadingLinearProgress, BullText, BullTopBar, Gap;
@@ -85,7 +85,8 @@ class _ReviewView extends StatelessWidget {
       }
     });
 
-    final balanceSat = wallet?.balanceSat.toInt() ?? 0;
+    final balanceSat = wallet?.balanceSat?.toInt();
+    if (balanceSat == null) return Text(context.loc.walletLoadFailed);
     final before = state.utxoCount;
     final after = state.transactionCount;
     final feeSat = state.feeSat;

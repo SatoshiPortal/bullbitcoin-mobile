@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

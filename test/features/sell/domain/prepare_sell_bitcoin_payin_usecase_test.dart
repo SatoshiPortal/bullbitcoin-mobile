@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/prepare_sell_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -67,9 +67,8 @@ void main() {
 
   test('returns the psbt together with its real fee', () async {
     stubPrepare();
-    when(
-      () => calculateFees.execute(psbt: any(named: 'psbt')),
-    ).thenAnswer((_) async => 220);
+    when(() => calculateFees.execute(psbt: any(named: 'psbt')))
+        .thenAnswer((_) async => 220);
 
     final value =
         (await run() as Ok<PreparedSellBitcoinPayin, SellFailure>).value;
@@ -106,9 +105,8 @@ void main() {
 
   test('a fee-measurement failure fails the whole build', () async {
     stubPrepare();
-    when(
-      () => calculateFees.execute(psbt: any(named: 'psbt')),
-    ).thenThrow(Exception(_rawReason));
+    when(() => calculateFees.execute(psbt: any(named: 'psbt')))
+        .thenThrow(Exception(_rawReason));
 
     expect(
       await run(),

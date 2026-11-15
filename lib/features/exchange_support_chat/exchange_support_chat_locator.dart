@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/data/attachment_picker_repository_impl.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/repositories/attachment_picker_repository.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';

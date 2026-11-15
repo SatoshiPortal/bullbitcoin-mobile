@@ -6,7 +6,8 @@ void main() {
   test(
     'Payjoin setup accepts the database path chosen by the composition root',
     () {
-      final source = File('lib/payjoin_setup.dart').readAsStringSync();
+      final source = File('lib/features/transactions/payjoin_setup.dart')
+          .readAsStringSync();
 
       expect(
         source,
@@ -19,7 +20,7 @@ void main() {
   test('the canonical Drift target includes the Payjoin package schema', () {
     final makefile = File('makefile').readAsStringSync();
     final start = makefile.indexOf('drift-migrations:');
-    final end = makefile.indexOf('\nios-pod-update:', start);
+    final end = makefile.indexOf('\nios-simulator:', start);
     final target = makefile.substring(start, end);
 
     expect(
@@ -39,7 +40,7 @@ void main() {
       'lib/features/buy/domain/create_buy_order_usecase.dart',
       'lib/features/transactions/application/usecases/get_transactions_usecase.dart',
       'lib/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart',
-      'lib/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart',
+      'lib/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart',
     ];
     final violations = <String>[];
 

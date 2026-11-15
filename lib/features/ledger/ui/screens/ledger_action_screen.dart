@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/disconnect_ledger_device_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/dispose_ledger_connections_usecase.dart';
-import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_watch_only_wallet_usecase.dart';
+import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
@@ -14,7 +14,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show Err, Result;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
@@ -23,7 +23,7 @@ import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_st
 import 'package:bb_mobile/features/ledger/presentation/ledger_failure_l10n.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:screen_awake/screen_awake.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show

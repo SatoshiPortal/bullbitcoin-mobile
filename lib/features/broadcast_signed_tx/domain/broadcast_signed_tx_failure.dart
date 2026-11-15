@@ -23,6 +23,30 @@ final class BroadcastFailedFailure extends BroadcastSignedTxFailure {
   const BroadcastFailedFailure();
 }
 
+/// The node already has this transaction in a block: there is nothing left to
+/// broadcast.
+final class TransactionAlreadyInChainFailure extends BroadcastSignedTxFailure {
+  const TransactionAlreadyInChainFailure();
+}
+
+/// The node refused the transaction (bitcoind -26): it may be incompletely
+/// signed, invalid, or in conflict with another payment.
+final class TransactionRejectedFailure extends BroadcastSignedTxFailure {
+  const TransactionRejectedFailure();
+}
+
+/// The broadcast failed for a reason that does not show whether the
+/// transaction reached the network.
+final class BroadcastOutcomeUnknownFailure extends BroadcastSignedTxFailure {
+  const BroadcastOutcomeUnknownFailure();
+}
+
+/// The app refused, before any network call, to broadcast on a network the
+/// current settings do not enable.
+final class BroadcastNetworkNotEnabledFailure extends BroadcastSignedTxFailure {
+  const BroadcastNetworkNotEnabledFailure();
+}
+
 final class PsbtFinalizationFailure extends BroadcastSignedTxFailure {
   const PsbtFinalizationFailure();
 }

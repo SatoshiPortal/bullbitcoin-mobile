@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok, Result;
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
@@ -11,11 +16,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
     show ScriptType, Wallet;
 
 class MockWallet extends Mock implements Wallet {}
+
+class _MockMetadata extends Mock implements WalletMetadataDatasource {}
+
+class _MockSettings extends Mock implements SettingsRepository {}
 
 class MockImportWalletUsecase extends Mock implements ImportWalletUsecase {}
 
@@ -25,6 +33,10 @@ typedef _Scan = Future<Result<MnemonicScan, ImportMnemonicScanFailure>>;
 
 class MockCheckDuplicateMnemonicUsecase extends Mock
     implements CheckDuplicateMnemonicUsecase {}
+
+class MockMetadata extends Mock implements WalletMetadataDatasource {}
+
+class MockSettings extends Mock implements SettingsRepository {}
 
 void main() {
   late MockImportWalletUsecase importWallet;
@@ -59,10 +71,22 @@ void main() {
   test('accepts a Japanese vector before scanning', () async {
     FakeSecureStoragePlatform().install();
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final metadata = _MockMetadata();
+    when(metadata.fetchAll).thenAnswer((_) async => []);
+    final settings = _MockSettings();
+    when(settings.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
     final cubit = ImportMnemonicCubit(
       importWalletUsecase: importWallet,
       scanMnemonicUsecase: scanMnemonic,
       checkDuplicateMnemonicUsecase: CheckDuplicateMnemonicUsecase(
+        metadata: metadata,
+        settings: settings,
         secrets: secrets,
       ),
     );
@@ -141,48 +165,42 @@ void main() {
   }
 
   group('ImportMnemonicCubit guards', () {
-    test(
-      'updateMnemonic with empty label emits ImportMnemonicEmptyLabelFailure — no usecase called',
-      () async {
-        final cubit = buildCubit();
+    test('updateMnemonic with empty label emits ImportMnemonicEmptyLabelFailure — no usecase called', () async {
+      final cubit = buildCubit();
 
-        await cubit.updateMnemonic((
-          label: '',
-          passphrase: '',
-          words: const <String>[],
-          language: bip39.Language.english,
-        ));
+      await cubit.updateMnemonic((
+        label: '',
+        passphrase: '',
+        words: const <String>[],
+        language: bip39.Language.english,
+      ));
 
-        expect(cubit.state.failure, isA<ImportMnemonicEmptyLabelFailure>());
-        verifyNever(
-          () => checkDuplicate.execute(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            passphrase: any(named: 'passphrase'),
-          ),
-        );
+      expect(cubit.state.failure, isA<ImportMnemonicEmptyLabelFailure>());
+      verifyNever(
+        () => checkDuplicate.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          passphrase: any(named: 'passphrase'),
+        ),
+      );
 
-        cubit.close();
-      },
-    );
+      cubit.close();
+    });
 
-    test(
-      'import with no mnemonic set emits ImportMnemonicNullMnemonicFailure — no usecase called',
-      () async {
-        final cubit = buildCubit();
+    test('import with no mnemonic set emits ImportMnemonicNullMnemonicFailure — no usecase called', () async {
+      final cubit = buildCubit();
 
-        await cubit.import();
+      await cubit.import();
 
-        expect(cubit.state.failure, isA<ImportMnemonicNullMnemonicFailure>());
-        verifyNever(
-          () => importWallet.execute(
-            mnemonicWords: any(named: 'mnemonicWords'),
-            label: any(named: 'label'),
-          ),
-        );
+      expect(cubit.state.failure, isA<ImportMnemonicNullMnemonicFailure>());
+      verifyNever(
+        () => importWallet.execute(
+          mnemonicWords: any(named: 'mnemonicWords'),
+          label: any(named: 'label'),
+        ),
+      );
 
-        cubit.close();
-      },
-    );
+      cubit.close();
+    });
 
     test('clearFailure resets failure to null', () async {
       final cubit = buildCubit();

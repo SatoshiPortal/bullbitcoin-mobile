@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Reusable Tor configuration owned by the Tor feature.
 ///

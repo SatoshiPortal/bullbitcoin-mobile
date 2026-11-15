@@ -1,0 +1,968 @@
+{
+  "@@locale": "en",
+  "app__swapRestoreTitle_apple": "Transfer restore",
+  "@app__swapRestoreTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRestoreTitle."
+  },
+  "app__swapRestoreActionable_apple": "{count, plural, =0{No transfers to recover} =1{You can attempt recovering 1 transfer. It may already be in a terminal status.} other{You can attempt recovering {count} transfers. Note, some of them may already be in a terminal status.}}",
+  "@app__swapRestoreActionable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRestoreActionable.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "app__swapRestoreNoSwaps_apple": "No transfers found to restore",
+  "@app__swapRestoreNoSwaps_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRestoreNoSwaps."
+  },
+  "app__swapRestoreAllSection_apple": "All transfers",
+  "@app__swapRestoreAllSection_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRestoreAllSection."
+  },
+  "app__swapRestoreFailed_apple": "Couldn't restore transfers",
+  "@app__swapRestoreFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRestoreFailed."
+  },
+  "app__swapRescueTitle_apple": "Rescue transfer",
+  "@app__swapRescueTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRescueTitle."
+  },
+  "app__swapRescueIdLabel_apple": "Transfer ID",
+  "@app__swapRescueIdLabel_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRescueIdLabel."
+  },
+  "app__swapRescueSuccess_apple": "Transfer restored — it will now resume",
+  "@app__swapRescueSuccess_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapRescueSuccess."
+  },
+  "app__coreSwapsLnReceivePending_apple": "Transfer is not yet initialized.",
+  "@app__coreSwapsLnReceivePending_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnReceivePending."
+  },
+  "app__coreSwapsLnReceiveClaimable_apple": "Transfer is ready to be claimed.",
+  "@app__coreSwapsLnReceiveClaimable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnReceiveClaimable."
+  },
+  "app__coreSwapsLnReceiveRefundable_apple": "Transfer is ready to be refunded.",
+  "@app__coreSwapsLnReceiveRefundable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnReceiveRefundable."
+  },
+  "app__coreSwapsLnReceiveCanCoop_apple": "Transfer will complete momentarily.",
+  "@app__coreSwapsLnReceiveCanCoop_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnReceiveCanCoop."
+  },
+  "app__coreSwapsLnReceiveCompleted_apple": "Transfer is completed.",
+  "@app__coreSwapsLnReceiveCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnReceiveCompleted."
+  },
+  "app__coreSwapsLnReceiveExpired_apple": "Transfer Expired.",
+  "@app__coreSwapsLnReceiveExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnReceiveExpired."
+  },
+  "app__coreSwapsLnReceiveFailed_apple": "Transfer Failed.",
+  "@app__coreSwapsLnReceiveFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnReceiveFailed."
+  },
+  "app__coreSwapsLnSendPending_apple": "Transfer is not yet initialized.",
+  "@app__coreSwapsLnSendPending_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendPending."
+  },
+  "app__coreSwapsLnSendClaimable_apple": "Transfer is ready to be claimed.",
+  "@app__coreSwapsLnSendClaimable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendClaimable."
+  },
+  "app__coreSwapsLnSendRefundable_apple": "Transfer is ready to be refunded.",
+  "@app__coreSwapsLnSendRefundable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendRefundable."
+  },
+  "app__coreSwapsLnSendCanCoop_apple": "Transfer will complete momentarily.",
+  "@app__coreSwapsLnSendCanCoop_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendCanCoop."
+  },
+  "app__coreSwapsLnSendCompletedRefunded_apple": "Transfer has been refunded.",
+  "@app__coreSwapsLnSendCompletedRefunded_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendCompletedRefunded."
+  },
+  "app__coreSwapsLnSendCompletedSuccess_apple": "Transfer is completed successfully.",
+  "@app__coreSwapsLnSendCompletedSuccess_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendCompletedSuccess."
+  },
+  "app__coreSwapsLnSendExpired_apple": "Transfer Expired",
+  "@app__coreSwapsLnSendExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendExpired."
+  },
+  "app__coreSwapsLnSendFailedRefunding_apple": "Transfer will be refunded shortly.",
+  "@app__coreSwapsLnSendFailedRefunding_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendFailedRefunding."
+  },
+  "app__coreSwapsLnSendFailed_apple": "Transfer Failed.",
+  "@app__coreSwapsLnSendFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsLnSendFailed."
+  },
+  "app__coreSwapsChainPending_apple": "Transfer is not yet initialized.",
+  "@app__coreSwapsChainPending_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainPending."
+  },
+  "app__coreSwapsChainPaid_apple": "Waiting for transfer provider's payment to receive confirmation. This may take a while to complete.",
+  "@app__coreSwapsChainPaid_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainPaid."
+  },
+  "app__coreSwapsChainClaimable_apple": "Transfer is ready to be claimed.",
+  "@app__coreSwapsChainClaimable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainClaimable."
+  },
+  "app__coreSwapsChainRefundable_apple": "Transfer is ready to be refunded.",
+  "@app__coreSwapsChainRefundable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainRefundable."
+  },
+  "app__coreSwapsChainCanCoop_apple": "Transfer will complete momentarily.",
+  "@app__coreSwapsChainCanCoop_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainCanCoop."
+  },
+  "app__coreSwapsChainCompletedRefunded_apple": "Transfer has been refunded.",
+  "@app__coreSwapsChainCompletedRefunded_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainCompletedRefunded."
+  },
+  "app__coreSwapsChainCompletedSuccess_apple": "Transfer is completed successfully.",
+  "@app__coreSwapsChainCompletedSuccess_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainCompletedSuccess."
+  },
+  "app__coreSwapsChainExpired_apple": "Transfer Expired",
+  "@app__coreSwapsChainExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainExpired."
+  },
+  "app__coreSwapsChainFailedRefunding_apple": "Transfer will be refunded shortly.",
+  "@app__coreSwapsChainFailedRefunding_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainFailedRefunding."
+  },
+  "app__coreSwapsChainFailed_apple": "Transfer Failed.",
+  "@app__coreSwapsChainFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreSwapsChainFailed."
+  },
+  "app__settingsExchangeSettingsTitle_apple": "Account Settings",
+  "@app__settingsExchangeSettingsTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeSettingsTitle."
+  },
+  "app__exchangeTestnetBasicAuthTitle_apple": "Testnet account credentials",
+  "@app__exchangeTestnetBasicAuthTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthTitle."
+  },
+  "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth for the testnet account web pages (login and KYC).",
+  "@app__exchangeTestnetBasicAuthDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthDescription."
+  },
+  "app__exchangeAccountTitle_apple": "Account",
+  "@app__exchangeAccountTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeAccountTitle."
+  },
+  "app__exchangeAccountSettingsTitle_apple": "Account Settings",
+  "@app__exchangeAccountSettingsTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeAccountSettingsTitle."
+  },
+  "app__walletDeletionErrorOngoingSwaps_apple": "You cannot delete a wallet with ongoing transfers.",
+  "@app__walletDeletionErrorOngoingSwaps_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key walletDeletionErrorOngoingSwaps."
+  },
+  "app__onboardingSplashDescription_apple": "Sovereign self custody Bitcoin wallet and Bitcoin-only services.",
+  "@app__onboardingSplashDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key onboardingSplashDescription."
+  },
+  "app__sendSlowPaymentWarningDescription_apple": "Bitcoin transfers will take time to confirm.",
+  "@app__sendSlowPaymentWarningDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSlowPaymentWarningDescription."
+  },
+  "app__receiveSwapID_apple": "Transfer ID",
+  "@app__receiveSwapID_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key receiveSwapID."
+  },
+  "app__receiveBoltzSwapFee_apple": "Boltz Transfer Fee",
+  "@app__receiveBoltzSwapFee_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key receiveBoltzSwapFee."
+  },
+  "app__receiveSwapId_apple": "Transfer ID",
+  "@app__receiveSwapId_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key receiveSwapId."
+  },
+  "app__receiveTransferFee_apple": "Transfer Fee",
+  "@app__receiveTransferFee_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key receiveTransferFee."
+  },
+  "app__sellExchangeRate_apple": "Rate",
+  "@app__sellExchangeRate_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sellExchangeRate."
+  },
+  "app__payExchangeRate_apple": "Rate",
+  "@app__payExchangeRate_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key payExchangeRate."
+  },
+  "app__transactionDetailTransferProgress_apple": "Transfer Progress",
+  "@app__transactionDetailTransferProgress_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailTransferProgress."
+  },
+  "app__transactionDetailSwapProgress_apple": "Transfer Progress",
+  "@app__transactionDetailSwapProgress_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailSwapProgress."
+  },
+  "app__transactionFilterTransfer_apple": "Transfer",
+  "@app__transactionFilterTransfer_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionFilterTransfer."
+  },
+  "app__transactionStatusTransferCompleted_apple": "Transfer Completed",
+  "@app__transactionStatusTransferCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionStatusTransferCompleted."
+  },
+  "app__transactionStatusTransferInProgress_apple": "Transfer In Progress",
+  "@app__transactionStatusTransferInProgress_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionStatusTransferInProgress."
+  },
+  "app__transactionStatusTransferFailed_apple": "Transfer Failed",
+  "@app__transactionStatusTransferFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionStatusTransferFailed."
+  },
+  "app__transactionStatusSwapFailed_apple": "Transfer Failed",
+  "@app__transactionStatusSwapFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionStatusSwapFailed."
+  },
+  "app__transactionStatusTransferExpired_apple": "Transfer Expired",
+  "@app__transactionStatusTransferExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionStatusTransferExpired."
+  },
+  "app__transactionStatusSwapExpired_apple": "Transfer Expired",
+  "@app__transactionStatusSwapExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionStatusSwapExpired."
+  },
+  "app__transactionSwapStatusTransferStatus_apple": "Transfer Status",
+  "@app__transactionSwapStatusTransferStatus_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapStatusTransferStatus."
+  },
+  "app__transactionSwapStatusSwapStatus_apple": "Transfer Status",
+  "@app__transactionSwapStatusSwapStatus_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapStatusSwapStatus."
+  },
+  "app__transactionSwapDescLnReceivePending_apple": "Your transfer has been initiated. We are waiting for a payment to be received on the Lightning Network.",
+  "@app__transactionSwapDescLnReceivePending_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnReceivePending."
+  },
+  "app__transactionSwapDescLnReceiveClaimable_apple": "The on-chain transaction has been confirmed. We are now claiming the funds to complete your transfer.",
+  "@app__transactionSwapDescLnReceiveClaimable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnReceiveClaimable."
+  },
+  "app__transactionSwapDescLnReceiveCompleted_apple": "Your transfer has been completed successfully! The funds should now be available in your wallet.",
+  "@app__transactionSwapDescLnReceiveCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnReceiveCompleted."
+  },
+  "app__transactionSwapDescLnReceiveFailed_apple": "There was an issue with your transfer. Please contact support if funds have not been returned within 24 hours.",
+  "@app__transactionSwapDescLnReceiveFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnReceiveFailed."
+  },
+  "app__transactionSwapDescLnReceiveExpired_apple": "This transfer has expired. Any funds sent will be automatically returned to the sender.",
+  "@app__transactionSwapDescLnReceiveExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnReceiveExpired."
+  },
+  "app__transactionSwapDescLnReceiveDefault_apple": "Your transfer is in progress. This process is automated and may take some time to complete.",
+  "@app__transactionSwapDescLnReceiveDefault_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnReceiveDefault."
+  },
+  "app__transactionSwapDescLnSendPending_apple": "Your transfer has been initiated. We are broadcasting the on-chain transaction to lock your funds.",
+  "@app__transactionSwapDescLnSendPending_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnSendPending."
+  },
+  "app__transactionSwapDescLnSendCompleted_apple": "The Lightning payment has been sent successfully! Your transfer is now complete.",
+  "@app__transactionSwapDescLnSendCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnSendCompleted."
+  },
+  "app__transactionSwapDescLnSendFailed_apple": "There was an issue with your transfer. Your funds will be returned to your wallet automatically.",
+  "@app__transactionSwapDescLnSendFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnSendFailed."
+  },
+  "app__transactionSwapDescLnSendExpired_apple": "This transfer has expired. Your funds will be automatically returned to your wallet.",
+  "@app__transactionSwapDescLnSendExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnSendExpired."
+  },
+  "app__transactionSwapDescLnSendDefault_apple": "Your transfer is in progress. This process is automated and may take some time to complete.",
+  "@app__transactionSwapDescLnSendDefault_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescLnSendDefault."
+  },
+  "app__transactionSwapDescChainPending_apple": "Your transfer has been created but not initiated yet.",
+  "@app__transactionSwapDescChainPending_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescChainPending."
+  },
+  "app__transactionSwapDescChainClaimable_apple": "The lockup transaction has been confirmed. You are now claiming the funds to complete your transfer.",
+  "@app__transactionSwapDescChainClaimable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescChainClaimable."
+  },
+  "app__transactionSwapDescChainRefundable_apple": "The transfer will be refunded. Your funds will be returned to your wallet automatically.",
+  "@app__transactionSwapDescChainRefundable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescChainRefundable."
+  },
+  "app__transactionSwapDescChainCompleted_apple": "Your transfer has been completed successfully! The funds should now be available in your wallet.",
+  "@app__transactionSwapDescChainCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescChainCompleted."
+  },
+  "app__transactionSwapDescChainFailed_apple": "There was an issue with your transfer. Please contact support if funds have not been returned within 24 hours.",
+  "@app__transactionSwapDescChainFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescChainFailed."
+  },
+  "app__transactionSwapDescChainExpired_apple": "This transfer has expired. Your funds will be automatically returned to your wallet.",
+  "@app__transactionSwapDescChainExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescChainExpired."
+  },
+  "app__transactionSwapDescChainDefault_apple": "Your transfer is in progress. This process is automated and may take some time to complete.",
+  "@app__transactionSwapDescChainDefault_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDescChainDefault."
+  },
+  "app__transactionSwapInfoChainDelay_apple": "On-chain transfers may take some time to complete due to blockchain confirmation times.",
+  "@app__transactionSwapInfoChainDelay_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapInfoChainDelay."
+  },
+  "app__transactionSwapInfoClaimableTransfer_apple": "The transfer will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Transfer Claim\" button.",
+  "@app__transactionSwapInfoClaimableTransfer_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapInfoClaimableTransfer."
+  },
+  "app__transactionSwapInfoClaimableSwap_apple": "The transfer will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the \"Retry Transfer Claim\" button.",
+  "@app__transactionSwapInfoClaimableSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapInfoClaimableSwap."
+  },
+  "app__transactionSwapInfoRefundableTransfer_apple": "This transfer will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Transfer Refund\" button.",
+  "@app__transactionSwapInfoRefundableTransfer_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapInfoRefundableTransfer."
+  },
+  "app__transactionSwapInfoRefundableSwap_apple": "This transfer will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the \"Retry Transfer Refund\" button.",
+  "@app__transactionSwapInfoRefundableSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapInfoRefundableSwap."
+  },
+  "app__transactionListOngoingTransfersTitle_apple": "Ongoing Transfers",
+  "@app__transactionListOngoingTransfersTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionListOngoingTransfersTitle."
+  },
+  "app__transactionListOngoingTransfersDescription_apple": "These transfers are currently in progress. Your funds are secure and will be available when the transfer completes.",
+  "@app__transactionListOngoingTransfersDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionListOngoingTransfersDescription."
+  },
+  "app__transactionSwapDoNotUninstall_apple": "Do not uninstall the app until the transfer completes.",
+  "@app__transactionSwapDoNotUninstall_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapDoNotUninstall."
+  },
+  "app__transactionDetailLabelExchangeRate_apple": "Rate",
+  "@app__transactionDetailLabelExchangeRate_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelExchangeRate."
+  },
+  "app__transactionDetailLabelTransferId_apple": "Transfer ID",
+  "@app__transactionDetailLabelTransferId_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelTransferId."
+  },
+  "app__transactionDetailLabelSwapId_apple": "Transfer ID",
+  "@app__transactionDetailLabelSwapId_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelSwapId."
+  },
+  "app__transactionDetailLabelTransferStatus_apple": "Transfer status",
+  "@app__transactionDetailLabelTransferStatus_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelTransferStatus."
+  },
+  "app__transactionDetailLabelSwapStatus_apple": "Transfer status",
+  "@app__transactionDetailLabelSwapStatus_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelSwapStatus."
+  },
+  "app__transactionDetailLabelTransferFees_apple": "Transfer fees",
+  "@app__transactionDetailLabelTransferFees_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelTransferFees."
+  },
+  "app__transactionDetailLabelSwapFees_apple": "Transfer fees",
+  "@app__transactionDetailLabelSwapFees_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelSwapFees."
+  },
+  "app__transactionDetailLabelTransferFee_apple": "Transfer Fee",
+  "@app__transactionDetailLabelTransferFee_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionDetailLabelTransferFee."
+  },
+  "app__swapInternalTransferTitle_apple": "Internal Transfer",
+  "@app__swapInternalTransferTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapInternalTransferTitle."
+  },
+  "app__swapConfirmTransferTitle_apple": "Confirm Transfer",
+  "@app__swapConfirmTransferTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapConfirmTransferTitle."
+  },
+  "app__swapInfoDescription_apple": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
+  "@app__swapInfoDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapInfoDescription."
+  },
+  "app__swapTransferFrom_apple": "Transfer from",
+  "@app__swapTransferFrom_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferFrom."
+  },
+  "app__swapTransferTo_apple": "Transfer to",
+  "@app__swapTransferTo_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferTo."
+  },
+  "app__swapTransferAmount_apple": "Transfer amount",
+  "@app__swapTransferAmount_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferAmount."
+  },
+  "app__swapTransferPendingTitle_apple": "Transfer Pending",
+  "@app__swapTransferPendingTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferPendingTitle."
+  },
+  "app__swapTransferPendingMessage_apple": "The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "@app__swapTransferPendingMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferPendingMessage."
+  },
+  "app__swapTransferCompletedTitle_apple": "Transfer completed",
+  "@app__swapTransferCompletedTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferCompletedTitle."
+  },
+  "app__swapTransferCompletedMessage_apple": "Wow, you waited! The transfer has completed successfully.",
+  "@app__swapTransferCompletedMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferCompletedMessage."
+  },
+  "app__swapTransferRefundInProgressTitle_apple": "Transfer Refund In Progress",
+  "@app__swapTransferRefundInProgressTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferRefundInProgressTitle."
+  },
+  "app__swapTransferRefundInProgressMessage_apple": "There was an error with the transfer. Your refund is in progress.",
+  "@app__swapTransferRefundInProgressMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferRefundInProgressMessage."
+  },
+  "app__swapTransferRefundedTitle_apple": "Transfer Refunded",
+  "@app__swapTransferRefundedTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferRefundedTitle."
+  },
+  "app__swapTransferRefundedMessage_apple": "The transfer has been successfully refunded.",
+  "@app__swapTransferRefundedMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferRefundedMessage."
+  },
+  "app__swapErrorBalanceTooLow_apple": "Balance too low for minimum transfer amount",
+  "@app__swapErrorBalanceTooLow_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorBalanceTooLow."
+  },
+  "app__swapErrorAmountExceedsMaximum_apple": "Amount exceeds maximum transfer amount",
+  "@app__swapErrorAmountExceedsMaximum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorAmountExceedsMaximum."
+  },
+  "app__swapErrorAmountBelowMinimum_apple": "Amount is below minimum transfer amount: {min} sats",
+  "@app__swapErrorAmountBelowMinimum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorAmountBelowMinimum.",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "app__swapErrorAmountAboveMaximum_apple": "Amount exceeds maximum transfer amount: {max} sats",
+  "@app__swapErrorAmountAboveMaximum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorAmountAboveMaximum.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "app__swapTransferTitle_apple": "Transfer",
+  "@app__swapTransferTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTransferTitle."
+  },
+  "app__swapExternalTransferLabel_apple": "External Transfer",
+  "@app__swapExternalTransferLabel_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapExternalTransferLabel."
+  },
+  "app__swapValidationSelectFromWallet_apple": "Please select a wallet to transfer from",
+  "@app__swapValidationSelectFromWallet_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapValidationSelectFromWallet."
+  },
+  "app__swapValidationSelectToWallet_apple": "Please select a wallet to transfer to",
+  "@app__swapValidationSelectToWallet_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapValidationSelectToWallet."
+  },
+  "app__swapDoNotUninstallWarning_apple": "Do not uninstall the app until the transfer completes!",
+  "@app__swapDoNotUninstallWarning_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapDoNotUninstallWarning."
+  },
+  "app__autoswapSettingsTitle_apple": "Auto Transfer Settings",
+  "@app__autoswapSettingsTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapSettingsTitle."
+  },
+  "app__autoswapEnableToggleLabel_apple": "Enable Auto Transfer",
+  "@app__autoswapEnableToggleLabel_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapEnableToggleLabel."
+  },
+  "app__autoswapMaxBalanceInfoText_apple": "When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level",
+  "@app__autoswapMaxBalanceInfoText_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapMaxBalanceInfoText."
+  },
+  "app__autoswapBaseBalanceInfoText_apple": "Your instant payment wallet balance will return to this target balance after an auto transfer.",
+  "@app__autoswapBaseBalanceInfoText_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapBaseBalanceInfoText."
+  },
+  "app__autoswapTriggerAtBalanceInfoText_apple": "Auto Transfer will trigger when your balance goes above this maximum balance.",
+  "@app__autoswapTriggerAtBalanceInfoText_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapTriggerAtBalanceInfoText."
+  },
+  "app__autoswapMaxFeeLabel_apple": "Max Transfer Fee",
+  "@app__autoswapMaxFeeLabel_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapMaxFeeLabel."
+  },
+  "app__autoswapMaxFeeInfoText_apple": "If total transfer fee is above the set percentage, the auto-transfer will be blocked",
+  "@app__autoswapMaxFeeInfoText_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapMaxFeeInfoText."
+  },
+  "app__autoswapAlwaysBlockInfoEnabled_apple": "When enabled, auto-transfers with fees above the set limit will always be blocked",
+  "@app__autoswapAlwaysBlockInfoEnabled_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapAlwaysBlockInfoEnabled."
+  },
+  "app__autoswapAlwaysBlockInfoDisabled_apple": "When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees",
+  "@app__autoswapAlwaysBlockInfoDisabled_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapAlwaysBlockInfoDisabled."
+  },
+  "app__autoswapWarningCardTitle_apple": "Auto Transfer is recommended",
+  "@app__autoswapWarningCardTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapWarningCardTitle."
+  },
+  "app__autoswapActiveCardTitle_apple": "Auto Transfer is active",
+  "@app__autoswapActiveCardTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapActiveCardTitle."
+  },
+  "app__autoswapWarningDescription_apple": "Auto Transfer ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
+  "@app__autoswapWarningDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapWarningDescription."
+  },
+  "app__autoswapWarningTitle_apple": "Auto Transfer is enabled with the following settings",
+  "@app__autoswapWarningTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapWarningTitle."
+  },
+  "app__autoswapWarningExplanation_apple": "When your balance exceeds the maximum balance, a transfer will be triggered automatically. The target balance will be kept in your Instant Payments wallet and the remaining amount will be transferred into your Secure Bitcoin Wallet.",
+  "@app__autoswapWarningExplanation_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapWarningExplanation."
+  },
+  "app__autoswapWarningSettingsLink_apple": "Take me to auto transfer settings",
+  "@app__autoswapWarningSettingsLink_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapWarningSettingsLink."
+  },
+  "app__autoswapInfoTitle_apple": "Auto Transfer is recommended",
+  "@app__autoswapInfoTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapInfoTitle."
+  },
+  "app__autoswapInfoRemindLater_apple": "Configure Auto Transfer Settings",
+  "@app__autoswapInfoRemindLater_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapInfoRemindLater."
+  },
+  "app__autoswapInfoConsentMessage_apple": "Auto Transfer is currently enabled but will not trigger until you consent. Would you like to keep it on?",
+  "@app__autoswapInfoConsentMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapInfoConsentMessage."
+  },
+  "app__autoswapLoadSettingsError_apple": "Failed to load auto transfer settings",
+  "@app__autoswapLoadSettingsError_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapLoadSettingsError."
+  },
+  "app__autoswapUpdateSettingsError_apple": "Failed to update auto transfer settings",
+  "@app__autoswapUpdateSettingsError_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapUpdateSettingsError."
+  },
+  "app__confirmLogoutMessage_apple": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access account features.",
+  "@app__confirmLogoutMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key confirmLogoutMessage."
+  },
+  "app__notLoggedInMessage_apple": "Please log in to your Bull Bitcoin account to access account settings.",
+  "@app__notLoggedInMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key notLoggedInMessage."
+  },
+  "app__paySwapFee_apple": "Transfer Fee",
+  "@app__paySwapFee_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key paySwapFee."
+  },
+  "app__payRequiresSwap_apple": "This payment requires a transfer",
+  "@app__payRequiresSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key payRequiresSwap."
+  },
+  "app__paySwapInProgress_apple": "Transfer in progress…",
+  "@app__paySwapInProgress_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key paySwapInProgress."
+  },
+  "app__paySwapCompleted_apple": "Transfer completed",
+  "@app__paySwapCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key paySwapCompleted."
+  },
+  "app__paySwapFailed_apple": "Transfer failed",
+  "@app__paySwapFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key paySwapFailed."
+  },
+  "app__sendSubmarineSwap_apple": "Submarine Transfer",
+  "@app__sendSubmarineSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSubmarineSwap."
+  },
+  "app__sendInitiatingSwap_apple": "Initiating transfer…",
+  "@app__sendInitiatingSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendInitiatingSwap."
+  },
+  "app__sendSwapDetails_apple": "Transfer Details",
+  "@app__sendSwapDetails_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapDetails."
+  },
+  "app__sendSwapAmount_apple": "Transfer Amount",
+  "@app__sendSwapAmount_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapAmount."
+  },
+  "app__sendSwapFeeEstimate_apple": "Estimated transfer fee: {amount}",
+  "@app__sendSwapFeeEstimate_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapFeeEstimate.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "app__sendConfirmSwap_apple": "Confirm Transfer",
+  "@app__sendConfirmSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendConfirmSwap."
+  },
+  "app__sendSwapCancelled_apple": "Transfer cancelled",
+  "@app__sendSwapCancelled_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapCancelled."
+  },
+  "app__sendSwapTimeout_apple": "Transfer timed out",
+  "@app__sendSwapTimeout_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapTimeout."
+  },
+  "app__sendSwapId_apple": "Transfer ID",
+  "@app__sendSwapId_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapId."
+  },
+  "app__sendTransferFee_apple": "Transfer Fee",
+  "@app__sendTransferFee_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendTransferFee."
+  },
+  "app__sendSwapInProgressInvoice_apple": "The transfer is in progress. The invoice will be paid in a few seconds.",
+  "@app__sendSwapInProgressInvoice_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapInProgressInvoice."
+  },
+  "app__sendSwapInProgressBitcoin_apple": "The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "@app__sendSwapInProgressBitcoin_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapInProgressBitcoin."
+  },
+  "app__sendSwapRefundInProgress_apple": "Transfer Refund In Progress",
+  "@app__sendSwapRefundInProgress_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapRefundInProgress."
+  },
+  "app__sendSwapFailed_apple": "The transfer failed. Your refund will be processed shortly.",
+  "@app__sendSwapFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapFailed."
+  },
+  "app__sendSwapRefundCompleted_apple": "Transfer Refund Completed",
+  "@app__sendSwapRefundCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapRefundCompleted."
+  },
+  "app__sendSwapInitiated_apple": "Transfer Initiated",
+  "@app__sendSwapInitiated_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendSwapInitiated."
+  },
+  "app__sendErrorSwapCreationFailed_apple": "Failed to create transfer.",
+  "@app__sendErrorSwapCreationFailed_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorSwapCreationFailed."
+  },
+  "app__sendErrorHardwareWalletCannotSwap_apple": "Hardware wallets cannot be used for transfers.",
+  "@app__sendErrorHardwareWalletCannotSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorHardwareWalletCannotSwap."
+  },
+  "app__sendErrorInsufficientBalanceForSwap_apple": "Not enough balance to pay this transfer via Liquid and not within transfer limits to pay via Bitcoin.",
+  "@app__sendErrorInsufficientBalanceForSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorInsufficientBalanceForSwap."
+  },
+  "app__sendErrorAmountBelowSwapLimits_apple": "Amount is below transfer limits",
+  "@app__sendErrorAmountBelowSwapLimits_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorAmountBelowSwapLimits."
+  },
+  "app__sendErrorAmountAboveSwapLimits_apple": "Amount is above transfer limits",
+  "@app__sendErrorAmountAboveSwapLimits_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorAmountAboveSwapLimits."
+  },
+  "app__sendErrorAmountBelowMinimum_apple": "Amount below minimum transfer limit: {minLimit} sats",
+  "@app__sendErrorAmountBelowMinimum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorAmountBelowMinimum.",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "app__sendErrorAmountAboveMaximum_apple": "Amount above maximum transfer limit: {maxLimit} sats",
+  "@app__sendErrorAmountAboveMaximum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorAmountAboveMaximum.",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "app__sendErrorSwapFeesNotLoaded_apple": "Transfer fees not loaded",
+  "@app__sendErrorSwapFeesNotLoaded_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorSwapFeesNotLoaded."
+  },
+  "app__sendErrorBalanceTooLowForMinimum_apple": "Balance too low for minimum transfer amount",
+  "@app__sendErrorBalanceTooLowForMinimum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorBalanceTooLowForMinimum."
+  },
+  "app__sendErrorAmountExceedsMaximum_apple": "Amount exceeds maximum transfer amount",
+  "@app__sendErrorAmountExceedsMaximum_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorAmountExceedsMaximum."
+  },
+  "app__sendErrorLiquidWalletRequired_apple": "Liquid wallet must be used for a liquid to lightning transfer",
+  "@app__sendErrorLiquidWalletRequired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorLiquidWalletRequired."
+  },
+  "app__sendErrorBitcoinWalletRequired_apple": "Bitcoin wallet must be used for a bitcoin to lightning transfer",
+  "@app__sendErrorBitcoinWalletRequired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendErrorBitcoinWalletRequired."
+  },
+  "app__sendTypeSwap_apple": "Transfer",
+  "@app__sendTypeSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sendTypeSwap."
+  },
+  "app__sellRateExpired_apple": "Rate expired. Refreshing…",
+  "@app__sellRateExpired_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sellRateExpired."
+  },
+  "app__sellUpdatingRate_apple": "Updating rate…",
+  "@app__sellUpdatingRate_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sellUpdatingRate."
+  },
+  "app__exportTransactionsDescription_apple": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and transfers) as a CSV file. Optionally filter by date range.",
+  "@app__exportTransactionsDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exportTransactionsDescription."
+  },
+  "app__exchangeLandingConnect_apple": "Connect your Bull Bitcoin account",
+  "@app__exchangeLandingConnect_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeLandingConnect."
+  },
+  "app__exchangeLandingLoginToUseSupport_apple": "Please login or sign up to use the support chat for account related issues.",
+  "@app__exchangeLandingLoginToUseSupport_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeLandingLoginToUseSupport."
+  },
+  "app__sellSendPaymentExchangeRate_apple": "Rate",
+  "@app__sellSendPaymentExchangeRate_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key sellSendPaymentExchangeRate."
+  },
+  "app__swapTitle_apple": "Internal Transfer",
+  "@app__swapTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapTitle."
+  },
+  "app__swapInfoBanner_apple": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
+  "@app__swapInfoBanner_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapInfoBanner."
+  },
+  "app__swapConfirmTitle_apple": "Confirm Transfer",
+  "@app__swapConfirmTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapConfirmTitle."
+  },
+  "app__swapProgressTitle_apple": "Internal Transfer",
+  "@app__swapProgressTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressTitle."
+  },
+  "app__swapProgressPending_apple": "Transfer Pending",
+  "@app__swapProgressPending_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressPending."
+  },
+  "app__swapProgressPendingMessage_apple": "The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.",
+  "@app__swapProgressPendingMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressPendingMessage."
+  },
+  "app__swapProgressCompleted_apple": "Transfer completed",
+  "@app__swapProgressCompleted_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressCompleted."
+  },
+  "app__swapProgressCompletedMessage_apple": "Wow, you waited! The transfer has completed sucessfully.",
+  "@app__swapProgressCompletedMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressCompletedMessage."
+  },
+  "app__swapProgressRefundInProgress_apple": "Transfer Refund In Progress",
+  "@app__swapProgressRefundInProgress_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressRefundInProgress."
+  },
+  "app__swapProgressRefundMessage_apple": "There was an error with the transfer. Your refund is in progress.",
+  "@app__swapProgressRefundMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressRefundMessage."
+  },
+  "app__swapProgressRefunded_apple": "Transfer Refunded",
+  "@app__swapProgressRefunded_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressRefunded."
+  },
+  "app__swapProgressRefundedMessage_apple": "The transfer has been sucessfully refunded.",
+  "@app__swapProgressRefundedMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapProgressRefundedMessage."
+  },
+  "app__autoswapTitle_apple": "Auto Transfer Settings",
+  "@app__autoswapTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapTitle."
+  },
+  "app__autoswapEnable_apple": "Enable Auto Transfer",
+  "@app__autoswapEnable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapEnable."
+  },
+  "app__autoswapMaxBalanceInfo_apple": "When wallet balance exceeds double this amount, auto-transfer will trigger to reduce balance to this level",
+  "@app__autoswapMaxBalanceInfo_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapMaxBalanceInfo."
+  },
+  "app__autoswapMaxFee_apple": "Max Transfer Fee",
+  "@app__autoswapMaxFee_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapMaxFee."
+  },
+  "app__autoswapMaxFeeInfo_apple": "If total transfer fee is above the set percentage, the auto-transfer will be blocked",
+  "@app__autoswapMaxFeeInfo_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapMaxFeeInfo."
+  },
+  "app__autoswapAlwaysBlockEnabledInfo_apple": "When enabled, auto-transfers with fees above the set limit will always be blocked",
+  "@app__autoswapAlwaysBlockEnabledInfo_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapAlwaysBlockEnabledInfo."
+  },
+  "app__autoswapAlwaysBlockDisabledInfo_apple": "When disabled, you will be given the option to allow an auto-transfer that is blocked due to high fees",
+  "@app__autoswapAlwaysBlockDisabledInfo_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoswapAlwaysBlockDisabledInfo."
+  },
+  "app__exchangeLandingConnectAccount_apple": "Connect your Bull Bitcoin account",
+  "@app__exchangeLandingConnectAccount_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeLandingConnectAccount."
+  },
+  "app__exchangeLandingRecommendedExchange_apple": "Recommended Bitcoin Account",
+  "@app__exchangeLandingRecommendedExchange_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeLandingRecommendedExchange."
+  },
+  "app__exchangeGoToWebsiteButton_apple": "Go to the Bull Bitcoin website",
+  "@app__exchangeGoToWebsiteButton_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeGoToWebsiteButton."
+  },
+  "app__exchangeSupportChatWalletIssuesInfo_apple": "This chat is only for account related issues in Funding/Buy/Sell/Withdraw/Pay.\nFor wallet related issues, join the telegram group by clicking here.",
+  "@app__exchangeSupportChatWalletIssuesInfo_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangeSupportChatWalletIssuesInfo."
+  },
+  "app__navigationTabExchange_apple": "Account",
+  "@app__navigationTabExchange_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key navigationTabExchange."
+  },
+  "app__coreScreensExternalTransfer_apple": "External Transfer",
+  "@app__coreScreensExternalTransfer_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreScreensExternalTransfer."
+  },
+  "app__coreScreensInternalTransfer_apple": "Internal Transfer",
+  "@app__coreScreensInternalTransfer_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreScreensInternalTransfer."
+  },
+  "app__coreScreensConfirmTransfer_apple": "Confirm Transfer",
+  "@app__coreScreensConfirmTransfer_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreScreensConfirmTransfer."
+  },
+  "app__coreScreensTransferIdLabel_apple": "Transfer ID",
+  "@app__coreScreensTransferIdLabel_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreScreensTransferIdLabel."
+  },
+  "app__coreScreensTransferFeeLabel_apple": "Transfer Fee",
+  "@app__coreScreensTransferFeeLabel_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key coreScreensTransferFeeLabel."
+  },
+  "app__systemLabelSwaps_apple": "Transfers",
+  "@app__systemLabelSwaps_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key systemLabelSwaps."
+  },
+  "app__systemLabelAutoSwap_apple": "Auto Transfer",
+  "@app__systemLabelAutoSwap_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key systemLabelAutoSwap."
+  },
+  "app__logoutConfirmationDescription_apple": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access account features.",
+  "@app__logoutConfirmationDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key logoutConfirmationDescription."
+  },
+  "app__wizardJourneyTip5_apple": "Transfer between Bitcoin and Liquid with no KYC",
+  "@app__wizardJourneyTip5_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key wizardJourneyTip5."
+  },
+  "app__wizardJourneyTip6_apple": "Customize your auto transfer settings",
+  "@app__wizardJourneyTip6_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key wizardJourneyTip6."
+  },
+  "app__transactionSwapOpenWithin24h_apple": "Open the app within 24 hours to complete your transfer.",
+  "@app__transactionSwapOpenWithin24h_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key transactionSwapOpenWithin24h."
+  },
+  "app__homeActionTransfer_apple": "Transfer",
+  "@app__homeActionTransfer_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key homeActionTransfer."
+  },
+  "app__bitcoinPriceExchangeRateUnavailable_apple": "Rate unavailable. Please try again later.",
+  "@app__bitcoinPriceExchangeRateUnavailable_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key bitcoinPriceExchangeRateUnavailable."
+  },
+  "app__announcementAutoswapTitle_apple": "Auto Transfer is active",
+  "@app__announcementAutoswapTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key announcementAutoswapTitle."
+  },
+  "app__announcementAutoswapDescription_apple": "Your Liquid is automatically transferred to Bitcoin.",
+  "@app__announcementAutoswapDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key announcementAutoswapDescription."
+  },
+  "app__swapUnderReviewTitle_apple": "Transfer under review",
+  "@app__swapUnderReviewTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapUnderReviewTitle."
+  },
+  "app__swapUnderReviewDescription_apple": "This transfer requires a manual review. Contact support for assistance. If you do not have a support account, you only need to create one; KYC is not required.",
+  "@app__swapUnderReviewDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapUnderReviewDescription."
+  },
+  "app__swapUnderReviewSupportMessage_apple": "Transfer under review\nOrder ID: {orderId}\nRequest ID: {requestId}\nOrder number: {orderNumber}",
+  "@app__swapUnderReviewSupportMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapUnderReviewSupportMessage.",
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      },
+      "requestId": {
+        "type": "String"
+      },
+      "orderNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "app__announcementAppUpdateRequiredDescription_apple": "To use the Lightning payment and transfer service, please update the BULL mobile app with the new version.",
+  "@app__announcementAppUpdateRequiredDescription_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key announcementAppUpdateRequiredDescription."
+  },
+  "app__swapErrorRouteUnavailableGeneric_apple": "This transfer is not available.",
+  "@app__swapErrorRouteUnavailableGeneric_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key swapErrorRouteUnavailableGeneric."
+  },
+  "app__settingsExchangeTitle_apple": "Account",
+  "@app__settingsExchangeTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsExchangeTitle."
+  },
+  "app__bitcoinSettingsAutoTransferTitle_apple": "Auto Transfer",
+  "@app__bitcoinSettingsAutoTransferTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key bitcoinSettingsAutoTransferTitle."
+  },
+  "app__autoBuyInfoMessage_apple": "Any amount added to your account will be converted to Bitcoin at the current rate and sent to your wallet.",
+  "@app__autoBuyInfoMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key autoBuyInfoMessage."
+  },
+  "app__limitOrdersBackToExchange_apple": "Back to Account",
+  "@app__limitOrdersBackToExchange_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key limitOrdersBackToExchange."
+  },
+  "app__settingsPayjoinExchangeSection_apple": "With the Bull Bitcoin account",
+  "@app__settingsPayjoinExchangeSection_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key settingsPayjoinExchangeSection."
+  },
+  "app__exchangePaymentSentPastDeadline_apple": "Payment sent. Bull Bitcoin reports that the payment deadline for this order expired. Keep the transaction ID below and contact support if the order is not updated.",
+  "@app__exchangePaymentSentPastDeadline_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key exchangePaymentSentPastDeadline."
+  },
+  "app__allSeedViewSwapMnemonicTitle_apple": "Transfer mnemonic",
+  "@app__allSeedViewSwapMnemonicTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key allSeedViewSwapMnemonicTitle."
+  },
+  "app__allSeedViewDeleteSwapMnemonicTitle_apple": "Delete transfer mnemonic?",
+  "@app__allSeedViewDeleteSwapMnemonicTitle_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key allSeedViewDeleteSwapMnemonicTitle."
+  },
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "This removes the transfer master key from secure storage. It will be re-derived from your wallet seed the next time the app needs it, with the same fingerprint. Ongoing transfers are unaffected.",
+  "@app__allSeedViewDeleteSwapMnemonicMessage_apple": {
+    "description": "Apple (App Store) wording for the root catalogue key allSeedViewDeleteSwapMnemonicMessage."
+  }
+}

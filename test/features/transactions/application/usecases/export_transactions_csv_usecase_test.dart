@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
@@ -464,45 +464,42 @@ void main() {
     },
   );
 
-  test(
-    'incoming leg with neither confirmationTime nor completionTime falls back to outgoing leg time',
-    () async {
-      final swap = _chainSwap(
-        sendTxid: 'chain_send_b',
-        receiveTxid: 'chain_recv_b',
-        type: SwapType.bitcoinToLiquid,
-      );
-      stub([
-        Transaction(
-          swap: swap,
-          walletTransaction: _walletTx(
-            txId: 'chain_send_b',
-            amountSat: 100000,
-            direction: WalletTransactionDirection.outgoing,
-            confirmationTime: DateTime.utc(2026, 4, 2, 8),
-          ),
+  test('incoming leg with neither confirmationTime nor completionTime falls back to outgoing leg time', () async {
+    final swap = _chainSwap(
+      sendTxid: 'chain_send_b',
+      receiveTxid: 'chain_recv_b',
+      type: SwapType.bitcoinToLiquid,
+    );
+    stub([
+      Transaction(
+        swap: swap,
+        walletTransaction: _walletTx(
+          txId: 'chain_send_b',
+          amountSat: 100000,
+          direction: WalletTransactionDirection.outgoing,
+          confirmationTime: DateTime.utc(2026, 4, 2, 8),
         ),
-        Transaction(
-          swap: swap,
-          walletTransaction: _walletTx(
-            txId: 'chain_recv_b',
-            amountSat: 99000,
-            network: Network.liquidMainnet,
-            direction: WalletTransactionDirection.incoming,
-            confirmationTime: null,
-          ),
+      ),
+      Transaction(
+        swap: swap,
+        walletTransaction: _walletTx(
+          txId: 'chain_recv_b',
+          amountSat: 99000,
+          network: Network.liquidMainnet,
+          direction: WalletTransactionDirection.incoming,
+          confirmationTime: null,
         ),
-      ]);
+      ),
+    ]);
 
-      final lines = (await buildCsv()).trim().split('\n');
-      final rowsByTxid = {
-        for (final line in lines.skip(1)) line.split(',')[7]: line.split(','),
-      };
-      expect(rowsByTxid['chain_send_b']![0], '2026-04-02T08:00:00Z');
-      // incoming leg has no own confirmation and no completion → outgoing leg's time
-      expect(rowsByTxid['chain_recv_b']![0], '2026-04-02T08:00:00Z');
-    },
-  );
+    final lines = (await buildCsv()).trim().split('\n');
+    final rowsByTxid = {
+      for (final line in lines.skip(1)) line.split(',')[7]: line.split(','),
+    };
+    expect(rowsByTxid['chain_send_b']![0], '2026-04-02T08:00:00Z');
+    // incoming leg has no own confirmation and no completion → outgoing leg's time
+    expect(rowsByTxid['chain_recv_b']![0], '2026-04-02T08:00:00Z');
+  });
 
   test('chain swap with only send leg (no receive yet) is kept', () async {
     final swap = _chainSwap(sendTxid: 'chain_send_only', receiveTxid: null);

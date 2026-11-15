@@ -1,16 +1,17 @@
 import 'package:bb_mobile/core/exchange/domain/exchange_order_failure.dart';
+
 import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
@@ -21,7 +22,8 @@ import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart'
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Err, Ok;
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -132,17 +134,14 @@ void main() {
     when(
       () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => []);
-    when(
-      () => mainnetOrderRepository.getOrders(),
-    ).thenAnswer((_) async => Ok(orders));
-    when(
-      () => labelExchangeOrdersUsecase.execute(orders: orders),
-    ).thenAnswer((_) async {});
-    when(
-      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
-    );
+    when(() => mainnetOrderRepository.getOrders())
+        .thenAnswer((_) async => Ok(orders));
+    when(() => labelExchangeOrdersUsecase.execute(orders: orders))
+        .thenAnswer((_) async {});
+    when(() => getOrderSwaps.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
+        );
 
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
@@ -156,6 +155,36 @@ void main() {
     );
   });
 
+  test('regtest history reads only its concrete wallet transactions', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final walletTx = _walletTransaction(
+      txId: 'regtest-tx',
+      walletId: 'regtest-wallet',
+      isIncoming: true,
+    ).copyWith(network: Network.bitcoinRegtest);
+    when(
+      () => walletTransactionRepository.getWalletTransactions(
+        walletId: 'regtest-wallet',
+        sync: false,
+        environment: Environment.regtest,
+      ),
+    ).thenAnswer((_) async => [walletTx]);
+    final rows = unwrap(await usecase.execute(walletId: 'regtest-wallet'));
+    expect(rows.single.walletTransaction, walletTx);
+    expect(rows.single.supportsPublicExplorer, false);
+    verifyZeroInteractions(mainnetOrderRepository);
+    verifyZeroInteractions(testnetOrderRepository);
+    verifyZeroInteractions(payjoinSessions);
+    verifyZeroInteractions(boltzSwapRepository);
+    verifyZeroInteractions(getOrderSwaps);
+  });
+
   test(
     'credential failure removes exchange enrichment, not wallet history',
     () async {
@@ -164,9 +193,8 @@ void main() {
         walletId: 'w1',
         isIncoming: true,
       );
-      when(
-        () => mainnetOrderRepository.getOrders(),
-      ).thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
+      when(() => mainnetOrderRepository.getOrders())
+          .thenAnswer((_) async => const Err(ExchangeOrderCredentialFailure()));
       when(
         () => walletTransactionRepository.getWalletTransactions(
           walletId: any(named: 'walletId'),
@@ -174,9 +202,8 @@ void main() {
           environment: any(named: 'environment'),
         ),
       ).thenAnswer((_) async => [tx]);
-      when(
-        () => payjoinSessions.list(any()),
-      ).thenAnswer((_) async => const Ok([]));
+      when(() => payjoinSessions.list(any()))
+          .thenAnswer((_) async => const Ok([]));
       when(
         () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
       ).thenAnswer((_) async {});
@@ -189,9 +216,8 @@ void main() {
   test(
     'hides an aborted Payjoin until its original wallet tx is synced',
     () async {
-      when(
-        () => payjoinSessions.list(any()),
-      ).thenAnswer((_) async => Ok([receiver(PayjoinStatus.aborted)]));
+      when(() => payjoinSessions.list(any()))
+          .thenAnswer((_) async => Ok([receiver(PayjoinStatus.aborted)]));
 
       final transactions = unwrap(await usecase.execute());
 
@@ -200,9 +226,8 @@ void main() {
   );
 
   test('keeps a genuinely pending Payjoin in the transaction list', () async {
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => Ok([receiver(PayjoinStatus.requested)]));
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => Ok([receiver(PayjoinStatus.requested)]));
 
     final transactions = unwrap(await usecase.execute());
 
@@ -242,16 +267,14 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => [payout]);
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
-    when(
-      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([
-        _receiveOrderSwap(),
-      ]),
-    );
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
+    when(() => getOrderSwaps.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([
+            _receiveOrderSwap(),
+          ]),
+        );
 
     final transactions = unwrap(await usecase.execute());
 
@@ -280,9 +303,8 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => [payout]);
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
     orders.add(
       _buyOrder(
         txId: null,
@@ -322,9 +344,8 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => [payin, payout]);
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
     when(
       () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
     ).thenAnswer(
@@ -365,9 +386,8 @@ void main() {
           environment: any(named: 'environment'),
         ),
       ).thenAnswer((_) async => walletTransactions);
-      when(
-        () => payjoinSessions.list(any()),
-      ).thenAnswer((_) async => const Ok([]));
+      when(() => payjoinSessions.list(any()))
+          .thenAnswer((_) async => const Ok([]));
 
       final transactions = unwrap(await usecase.execute());
 
@@ -393,17 +413,14 @@ void main() {
     );
 
     orders = [_sellOrder('exchange-tx')];
-    when(
-      () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
-    ).thenAnswer((_) async {});
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
-    when(
-      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
-    );
+    when(() => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')))
+        .thenAnswer((_) async {});
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
+    when(() => getOrderSwaps.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
+        );
     when(
       () => walletTransactionRepository.getWalletTransactions(
         walletId: any(named: 'walletId'),
@@ -411,16 +428,14 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => [walletTransaction]);
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
-    when(
-      () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([
-        _receiveOrderSwap(),
-      ]),
-    );
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
+    when(() => getOrderSwaps.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([
+            _receiveOrderSwap(),
+          ]),
+        );
 
     final transactions = unwrap(await usecase.execute());
 
@@ -444,14 +459,12 @@ void main() {
       when(
         () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
       ).thenAnswer((_) async {});
-      when(
-        () => payjoinSessions.list(any()),
-      ).thenAnswer((_) async => const Ok([]));
-      when(
-        () => getOrderSwaps.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
-      );
+      when(() => payjoinSessions.list(any()))
+          .thenAnswer((_) async => const Ok([]));
+      when(() => getOrderSwaps.execute(walletId: any(named: 'walletId')))
+          .thenAnswer(
+            (_) async => bb.Ok<List<OrderSwapRecord>, TransactionFailure>([]),
+          );
       final validTransaction = _walletTransaction(
         txId: 'valid-tx',
         walletId: 'wallet-1',

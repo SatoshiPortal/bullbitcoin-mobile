@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/payjoin_runtime_adapters.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_codec_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bull_logger/bull_logger.dart' as support;
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,9 +54,8 @@ void main() {
         ),
       );
       final transactions = _Transactions();
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => const Stream.empty());
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => const Stream.empty());
       when(
         () => transactions.isTransactionVisible(
           walletId: any(named: 'walletId'),
@@ -74,6 +74,7 @@ void main() {
           labels: _Labels(),
           legacyData: legacy,
           log: const AppPayjoinLogAdapter(),
+          codec: const AppPayjoinCodecAdapter(),
         );
         return switch (result) {
           Ok(:final value) => value,
@@ -96,17 +97,15 @@ void main() {
         for (var i = 0; i < 3; i++) {
           expect(await runtime.resume(), isA<Ok<void, PayjoinFailure>>());
         }
-        verify(
-          () => transactions.watchWallet('wallet-1'),
-        ).called(withFallback ? 2 : 1);
+        verify(() => transactions.watchWallet('wallet-1'))
+            .called(withFallback ? 2 : 1);
         expect(await resumeCount(), 1);
         // Reopening the same persisted session is a real lifecycle restart.
         await runtime.dispose();
         runtime = await open();
         expect(await runtime.resume(), isA<Ok<void, PayjoinFailure>>());
-        verify(
-          () => transactions.watchWallet('wallet-1'),
-        ).called(withFallback ? 2 : 1);
+        verify(() => transactions.watchWallet('wallet-1'))
+            .called(withFallback ? 2 : 1);
         expect(await resumeCount(), 2);
       } finally {
         await runtime.dispose();

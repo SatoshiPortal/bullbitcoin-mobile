@@ -15,9 +15,8 @@ void main() {
 
   setUp(() {
     var repository = Directory.current;
-    while (!File(
-      '${repository.path}/packages/secrets/pubspec.yaml',
-    ).existsSync()) {
+    while (!File('${repository.path}/packages/secrets/pubspec.yaml')
+        .existsSync()) {
       if (repository.parent.path == repository.path) {
         throw StateError('No repository');
       }
@@ -147,28 +146,25 @@ final class Description {
     },
   );
 
-  test(
-    'a changed public signature changes the diagram without a method list',
-    () async {
-      final before = await generate();
-      final source = File('${fixture.path}/implementation.dart');
-      source.writeAsStringSync(
-        source.readAsStringSync().replaceAll(
-          'child({required int index, String? language})',
-          'descendant({required int position, String? language, int count = 24})',
-        ),
-      );
-      final after = await generate();
-      expect(after, isNot(before));
-      expect(
-        after,
-        contains(
-          'descendant(position:, [language:], [count: 24]) -> List<String>',
-        ),
-      );
-      expect(after, isNot(contains('child(')));
-    },
-  );
+  test('a changed public signature changes the diagram without a method list', () async {
+    final before = await generate();
+    final source = File('${fixture.path}/implementation.dart');
+    source.writeAsStringSync(
+      source.readAsStringSync().replaceAll(
+        'child({required int index, String? language})',
+        'descendant({required int position, String? language, int count = 24})',
+      ),
+    );
+    final after = await generate();
+    expect(after, isNot(before));
+    expect(
+      after,
+      contains(
+        'descendant(position:, [language:], [count: 24]) -> List<String>',
+      ),
+    );
+    expect(after, isNot(contains('child(')));
+  });
 
   test('a missing root and unresolved exported source fail generation', () async {
     await expectLater(
@@ -186,45 +182,38 @@ final class Description {
     await expectLater(generate(), throwsStateError);
   });
 
-  test(
-    'the getting-started example resolves with its documented imports',
-    () async {
-      final readme = File('$packagePath/README.md').readAsStringSync();
-      final example = RegExp(
-        r'<!-- secrets-example:start -->\s*```dart\n([\s\S]*?)\n```\s*<!-- secrets-example:end -->',
-      ).firstMatch(readme);
+  test('the getting-started example resolves with its documented imports', () async {
+    final readme = File('$packagePath/README.md').readAsStringSync();
+    final example = RegExp(
+      r'<!-- secrets-example:start -->\s*```dart\n([\s\S]*?)\n```\s*<!-- secrets-example:end -->',
+    ).firstMatch(readme);
+    expect(example, isNotNull, reason: 'Keep one complete documented example');
+    final file = File('${fixture.path}/example.dart')
+      ..writeAsStringSync(example!.group(1)!);
+    final path = file.resolveSymbolicLinksSync();
+    final collection = AnalysisContextCollection(
+      includedPaths: [fixture.resolveSymbolicLinksSync()],
+      sdkPath: sdkPath,
+    );
+    try {
+      final result = await collection
+          .contextFor(path)
+          .currentSession
+          .getResolvedUnit(path);
+      expect(result, isA<ResolvedUnitResult>());
+      final resolved = result as ResolvedUnitResult;
       expect(
-        example,
-        isNotNull,
-        reason: 'Keep one complete documented example',
+        resolved.diagnostics.where(
+          (diagnostic) => diagnostic.diagnosticCode.severity.name == 'ERROR',
+        ),
+        isEmpty,
+        reason:
+            'The README must not rely on undefined helpers or missing imports',
       );
-      final file = File('${fixture.path}/example.dart')
-        ..writeAsStringSync(example!.group(1)!);
-      final path = file.resolveSymbolicLinksSync();
-      final collection = AnalysisContextCollection(
-        includedPaths: [fixture.resolveSymbolicLinksSync()],
-        sdkPath: sdkPath,
-      );
-      try {
-        final result = await collection
-            .contextFor(path)
-            .currentSession
-            .getResolvedUnit(path);
-        expect(result, isA<ResolvedUnitResult>());
-        final resolved = result as ResolvedUnitResult;
-        expect(
-          resolved.diagnostics.where(
-            (diagnostic) => diagnostic.diagnosticCode.severity.name == 'ERROR',
-          ),
-          isEmpty,
-          reason:
-              'The README must not rely on undefined helpers or missing imports',
-        );
-      } finally {
-        await collection.dispose();
-      }
-    },
-  );
+    } finally {
+      await collection.dispose();
+    }
+  });
 
   test(
     'check reports drift without writing and regeneration preserves prose',

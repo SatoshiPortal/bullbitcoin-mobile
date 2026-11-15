@@ -1,26 +1,31 @@
 import 'package:primitives/primitives.dart'
-    show BitcoinTransactionRecipient, Err, Ok;
+    show BitcoinTransactionRecipient, Err, Ok, Result;
+import 'package:primitives/primitives.dart' as primitives show Network;
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/frozen_utxos_freeze_store.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
+import 'package:sync/sync.dart' as sync;
 import 'package:flutter_test/flutter_test.dart';
+
+import 'developer_network.dart';
 
 // Integration tests for the Coins / UTXO view + freeze (issue #760).
 //
@@ -41,7 +46,7 @@ Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final frozenDatasource = locator<FrozenWalletUtxoDatasource>();
+  final frozenDatasource = locator<SyncFreezesDatasource>();
   final utxoRepository = locator<WalletUtxoRepository>();
 
   group('Coins / freeze persistence (funds-free)', () {
@@ -52,30 +57,19 @@ Future<void> main({bool isInitialized = false}) async {
     );
 
     Future<void> clear() async {
-      await frozenDatasource.unfreezeOutpoints(
-        walletId: walletId,
-        outpoints: [outpoint],
-      );
+      await frozenDatasource.unfreeze([outpoint]);
     }
 
     setUp(clear);
     tearDown(clear);
 
-    test('freeze is durable across a database restart', () async {
-      // Use a dedicated on-disk database, fully isolated from the locator's
-      // shared SqliteDatabase singleton. Closing that singleton (the previous
-      // approach) killed the connection for every other test in the aggregated
-      // integration run. Here: write through one handle, close it, then reopen
-      // a SECOND handle on the SAME file — a fresh connection only sees
-      // committed-to-disk rows, which is exactly what "survives a restart"
-      // means.
-      // This test deliberately opens a second SqliteDatabase on the same file
-      // to simulate a restart, on top of the locator's existing singleton.
-      // Drift's "multiple databases" warning targets instances SHARING a
-      // QueryExecutor (a real race) — not our case: `before` and `after` use
-      // separate NativeDatabase executors and never overlap. Silence the
-      // debug-only false positive for the duration of this test only, so the
-      // warning still guards genuine misuse in the rest of the run.
+    test('freeze is durable across a restart', () async {
+      // A dedicated documents directory and database file, isolated from the
+      // app's own Sync and SqliteDatabase: freeze through one pair, close
+      // both, then reopen a second pair on the same files, which only sees
+      // what was committed to disk. Drift's "multiple databases" warning
+      // targets instances sharing a QueryExecutor; these use separate
+      // executors and never overlap, so it is silenced for this test only.
       final previousWarnFlag =
           driftRuntimeOptions.dontWarnAboutMultipleDatabases;
       driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -83,22 +77,31 @@ Future<void> main({bool isInitialized = false}) async {
         () => driftRuntimeOptions.dontWarnAboutMultipleDatabases =
             previousWarnFlag,
       );
-
       final dir = await Directory.systemTemp.createTemp('coins_restart');
       addTearDown(() => dir.delete(recursive: true));
       final dbFile = File('${dir.path}/restart.sqlite');
+      sync.Sync open(SqliteDatabase db) => sync.Sync.foreground(
+        documentsDirectory: dir.path,
+        catalog: const _NoCatalog(),
+        reservedAddresses: const _NoReserved(),
+        freezes: FrozenUtxosFreezeStore(sqlite: db),
+        inputReservations: _NoInputReservations(),
+        connections: const _NoConnections(),
+      );
 
-      final before = SqliteDatabase(NativeDatabase(dbFile));
-      await FrozenWalletUtxoDatasource(
-        db: before,
-      ).freezeOutpoints(walletId: walletId, outpoints: [outpoint]);
+      final beforeDb = SqliteDatabase(NativeDatabase(dbFile));
+      final before = open(beforeDb);
+      await SyncFreezesDatasource(sync: () async => before)
+          .freezeAttributed([sync.FrozenOutpoint(outpoint, origin: walletId)]);
       await before.close();
+      await beforeDb.close();
 
-      final after = SqliteDatabase(NativeDatabase(dbFile));
+      final afterDb = SqliteDatabase(NativeDatabase(dbFile));
+      addTearDown(afterDb.close);
+      final after = open(afterDb);
       addTearDown(after.close);
-      final afterRestart = await FrozenWalletUtxoDatasource(
-        db: after,
-      ).getFrozenOutpoints(walletId: walletId);
+      final afterRestart = await SyncFreezesDatasource(sync: () async => after)
+          .getFrozenOutpoints();
 
       expect(
         afterRestart,
@@ -108,15 +111,13 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     test('unfreeze removes the freeze row', () async {
-      await utxoRepository.freezeUtxos(
-        walletId: walletId,
-        outpoints: [outpoint],
-      );
+      await frozenDatasource.freezeAttributed([
+        sync.FrozenOutpoint(outpoint, origin: walletId),
+      ]);
       await utxoRepository.unfreezeUtxos(
         walletId: walletId,
         outpoints: [outpoint],
       );
-
       // Freeze is matched by outpoint across all wallets — the global set must
       // no longer carry it after unfreeze.
       final remaining = await utxoRepository.getAllFrozenOutpoints();
@@ -154,12 +155,9 @@ Future<void> main({bool isInitialized = false}) async {
         addressRepository = locator<WalletAddressRepository>();
         prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
-        // Setup: assert rather than discard, so a failed write surfaces here
-        // instead of as a confusing failure further down the test.
-        expect(
-          await locator<SetEnvironmentUsecase>().execute(Environment.testnet),
-          isA<Ok<void, SettingsFailure>>(),
-        );
+        // Testnet is a developer network: enable it as a user would.
+        // Restored when the group ends, even if this setup fails.
+        await selectDeveloperNetwork(Environment.testnet);
         final secret = switch (await locator<Secrets>().import(
           words: mnemonic!.split(' '),
         )) {
@@ -178,14 +176,6 @@ Future<void> main({bool isInitialized = false}) async {
           isA<Ok<List<Wallet>, WalletFailure>>(),
         );
       });
-
-      // Restore the shared app environment so this group can't leave the
-      // aggregated run on testnet — later files (e.g. sqlite_transactions)
-      // fetch mainnet data through env-bound ports and would otherwise fail.
-      // mainnet is the seeded default (database_seeds.dart).
-      tearDownAll(
-        () => locator<SetEnvironmentUsecase>().execute(Environment.mainnet),
-      );
 
       test('list surfaces confirmations and labels per UTXO', () async {
         final utxos = await utxoRepository.getWalletUtxos(walletId: wallet.id);
@@ -239,9 +229,9 @@ Future<void> main({bool isInitialized = false}) async {
           ),
         };
 
-        final inputs = bdk.Psbt(
-          psbtBase64: prepared.unsignedPsbt,
-        ).extractTx().input();
+        final inputs = bdk.Psbt(psbtBase64: prepared.unsignedPsbt)
+            .extractTx()
+            .input();
         expect(inputs, hasLength(1));
         expect(inputs.single.previousOutput.txid.toString(), selected.txId);
         expect(inputs.single.previousOutput.vout, selected.vout);
@@ -347,4 +337,46 @@ Future<void> main({bool isInitialized = false}) async {
         ? false
         : 'requires funded testnet wallet (set TEST_ALICE_MNEMONIC)',
   );
+}
+
+final class _NoCatalog implements sync.WalletCatalogPort {
+  const _NoCatalog();
+
+  @override
+  Future<Result<sync.PublicWalletDescriptor, sync.SyncFailure>> find(
+    sync.WalletKey key,
+  ) async => const Err(sync.SyncNotFoundFailure());
+
+  @override
+  Future<Result<List<sync.PublicWalletDescriptor>, sync.SyncFailure>>
+  list() async => const Ok([]);
+}
+
+final class _NoReserved implements sync.ReservedAddressPort {
+  const _NoReserved();
+
+  @override
+  Future<Result<bool, sync.SyncFailure>> isReserved(
+    sync.WalletKey key,
+    String address,
+  ) async => const Ok(false);
+}
+
+/// The test broadcasts nothing.
+final class _NoConnections implements sync.WalletConnectionPort {
+  const _NoConnections();
+
+  @override
+  Future<Result<T, sync.SyncFailure>> run<T>({
+    required primitives.Network network,
+    required Future<Result<T, sync.SyncFailure>> Function(sync.WalletConnection)
+    operation,
+    required bool Function(sync.SyncFailure) mayRetry,
+  }) async => const Err(sync.SyncConnectionFailure());
+}
+
+final class _NoInputReservations implements sync.InputReservationPort {
+  @override
+  Future<Result<List<sync.InputReservation>, sync.SyncFailure>>
+  reservations() async => const Ok([]);
 }

@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 extension AutoBuyFailureL10n on AutoBuyFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    AutoBuyUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
     AutoBuyAccountUnavailableFailure() =>
       context.loc.autoBuyAccountUnavailableError,
     AutoBuyFundingRestrictedFailure() =>

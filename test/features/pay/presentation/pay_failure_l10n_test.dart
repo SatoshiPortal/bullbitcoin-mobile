@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_failure_l10n.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A raw reason of the shape the API and BDK/LWK actually produce. Every
@@ -12,6 +12,7 @@ const _rawReason =
     'bc1qsecret, xprv9s21ZrQH143K3';
 
 final _everyFailure = <PayFailure>[
+  const PayPayjoinPausedFailure(),
   const PayUnauthenticatedFailure(_rawReason),
   const PayBelowMinAmountFailure(
     minAmount: 10,
@@ -44,7 +45,7 @@ Future<String> _translate(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {

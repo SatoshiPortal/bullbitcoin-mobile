@@ -78,3 +78,7 @@ final class RecipientsEuResidencyRequiredFailure extends RecipientsFailure {
 final class RecipientsUnexpectedFailure extends RecipientsFailure {
   const RecipientsUnexpectedFailure([super.logMessage]);
 }
+
+final class RecipientsUnsupportedNetworkFailure extends RecipientsFailure {
+  const RecipientsUnsupportedNetworkFailure();
+}

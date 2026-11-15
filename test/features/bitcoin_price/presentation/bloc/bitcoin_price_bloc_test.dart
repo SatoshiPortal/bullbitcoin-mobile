@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -46,9 +46,8 @@ void main() {
   );
 
   void stubPrice(Future<double?> Function() answer, {String currency = 'USD'}) {
-    when(
-      () => getBitcoinPrice.execute(currencyCode: currency),
-    ).thenAnswer((_) => _result(answer()));
+    when(() => getBitcoinPrice.execute(currencyCode: currency))
+        .thenAnswer((_) => _result(answer()));
   }
 
   setUp(() {
@@ -56,9 +55,8 @@ void main() {
     getBitcoinPrice = _MockGetBitcoinPriceUsecase();
     watchCurrencyChanges = _MockWatchCurrencyChangesUsecase();
 
-    when(
-      () => watchCurrencyChanges.execute(),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => watchCurrencyChanges.execute())
+        .thenAnswer((_) => const Stream.empty());
     when(() => getSettings.execute()).thenAnswer(
       (_) async => SettingsEntity(
         environment: Environment.mainnet,

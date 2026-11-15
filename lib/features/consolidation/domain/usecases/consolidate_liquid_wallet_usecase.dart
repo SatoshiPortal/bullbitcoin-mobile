@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/consolidation/domain/consolidation_config.dart';
 
 /// Result of building (but not yet broadcasting) a consolidation: the unsigned
@@ -91,7 +91,8 @@ class ConsolidateLiquidWalletUsecase {
           pset: pset,
           walletId: walletId,
         );
-        txids.add(await _broadcast.execute(signed));
+        // Sync checks each batch's inputs against the freezes again.
+        txids.add(await _broadcast.execute(signed, walletId: walletId));
       }
       return txids;
     } catch (e) {

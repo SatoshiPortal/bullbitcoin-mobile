@@ -1,12 +1,14 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/msats.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, LiquidNetwork, Ok;
+import 'package:sync/sync.dart'
+    show canonicalBitcoinPsbt, liquidAddressNetwork, parseBitcoinAddress;
 
 part 'payment_request.freezed.dart';
 
@@ -151,25 +153,18 @@ sealed class PaymentRequest with _$PaymentRequest {
         data.startsWith('tb1');
 
     if (!tryTestnetFirst) {
-      try {
-        final address = bdk.Address(
-          address: data,
-          network: bdk.Network.bitcoin,
-        );
-        return PaymentRequest.bitcoin(
-          address: address.toString(),
-          isTestnet: false,
-        );
-      } catch (_) {}
+      if (parseBitcoinAddress(data, BitcoinNetwork.mainnet) case Ok(
+        :final value,
+      )) {
+        return PaymentRequest.bitcoin(address: value, isTestnet: false);
+      }
     }
 
-    try {
-      final address = bdk.Address(address: data, network: bdk.Network.testnet);
-      return PaymentRequest.bitcoin(
-        address: address.toString(),
-        isTestnet: true,
-      );
-    } catch (_) {}
+    if (parseBitcoinAddress(data, BitcoinNetwork.testnet) case Ok(
+      :final value,
+    )) {
+      return PaymentRequest.bitcoin(address: value, isTestnet: true);
+    }
 
     return null;
   }
@@ -191,30 +186,26 @@ sealed class PaymentRequest with _$PaymentRequest {
             address.startsWith('3') ||
             address.startsWith('bc1')) {
           network = Network.bitcoinMainnet;
-          bdk.Address(address: address, network: bdk.Network.bitcoin);
+          _requireBitcoinAddress(address, BitcoinNetwork.mainnet);
         } else if (address.startsWith('2') ||
             address.startsWith('m') ||
             address.startsWith('n') ||
             address.startsWith('tb1')) {
           network = Network.bitcoinTestnet;
-          bdk.Address(address: address, network: bdk.Network.testnet);
+          _requireBitcoinAddress(address, BitcoinNetwork.testnet);
         } else {
           network = await _validateBitcoinAddress(address);
         }
       } else if (uri.scheme == 'liquidnetwork' || uri.scheme == 'liquid') {
         network = Network.liquidMainnet;
-        final networkValidation = await lwk.Address.validate(
-          addressString: address,
-        );
-        if (networkValidation != lwk.LiquidNetwork.mainnet) {
+        if (await liquidAddressNetwork(address)
+            case Ok(value: != LiquidNetwork.mainnet) || Err()) {
           throw 'Invalid liquid mainnet address';
         }
       } else if (uri.scheme == 'liquidtestnet') {
         network = Network.liquidTestnet;
-        final networkValidation = await lwk.Address.validate(
-          addressString: address,
-        );
-        if (networkValidation != lwk.LiquidNetwork.testnet) {
+        if (await liquidAddressNetwork(address)
+            case Ok(value: != LiquidNetwork.testnet) || Err()) {
           throw 'Invalid liquid testnet address';
         }
       } else {
@@ -243,36 +234,39 @@ sealed class PaymentRequest with _$PaymentRequest {
   }
 
   static Future<Network> _validateBitcoinAddress(String address) async {
-    try {
-      bdk.Address(address: address, network: bdk.Network.bitcoin);
+    if (parseBitcoinAddress(address, BitcoinNetwork.mainnet) is Ok) {
       return Network.bitcoinMainnet;
-    } catch (_) {
-      try {
-        bdk.Address(address: address, network: bdk.Network.testnet);
-        return Network.bitcoinTestnet;
-      } catch (e) {
-        throw 'Invalid bitcoin address';
-      }
+    }
+    if (parseBitcoinAddress(address, BitcoinNetwork.testnet) is Ok) {
+      return Network.bitcoinTestnet;
+    }
+    throw 'Invalid bitcoin address';
+  }
+
+  static void _requireBitcoinAddress(String address, BitcoinNetwork network) {
+    if (parseBitcoinAddress(address, network) is! Ok) {
+      throw 'Invalid bitcoin address';
     }
   }
 
   static Future<PaymentRequest?> _tryParseLiquidAddress(String data) async {
-    try {
-      final network = await lwk.Address.validate(addressString: data);
-      // The app has no Liquid regtest environment: an Elements regtest
-      // address is not a destination, rather than a mainnet one.
-      final isTestnet = switch (network) {
-        lwk.LiquidNetwork.mainnet => false,
-        lwk.LiquidNetwork.testnet => true,
-        lwk.LiquidNetwork.regtest => null,
-      };
-      if (isTestnet == null) return null;
-      return PaymentRequest.liquid(address: data, isTestnet: isTestnet);
-    } catch (e) {
-      log.warning(e.toString());
+    // The app has no Liquid regtest environment: an Elements regtest
+    // address is not a destination, rather than a mainnet one.
+    final network = await liquidAddressNetwork(data);
+    if (network case Err(:final failure)) {
+      log.warning('Not a Liquid address category=${failure.logCode}');
     }
-
-    return null;
+    return switch (network) {
+      Ok(value: LiquidNetwork.mainnet) => PaymentRequest.liquid(
+        address: data,
+        isTestnet: false,
+      ),
+      Ok(value: LiquidNetwork.testnet) => PaymentRequest.liquid(
+        address: data,
+        isTestnet: true,
+      ),
+      Ok(value: LiquidNetwork.regtest) || Err() => null,
+    };
   }
 
   static Future<PaymentRequest?> _tryParseBolt11(String data) async {
@@ -334,13 +328,13 @@ sealed class PaymentRequest with _$PaymentRequest {
   }
 
   static Future<PaymentRequest?> _tryParsePsbt(String psbtBase64) async {
-    try {
-      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
-      return PaymentRequest.psbt(psbt: psbt.toString());
-    } catch (e) {
-      log.warning(e.toString());
+    switch (canonicalBitcoinPsbt(psbtBase64)) {
+      case Ok(:final value):
+        return PaymentRequest.psbt(psbt: value);
+      case Err(:final failure):
+        log.warning('Not a PSBT category=${failure.logCode}');
+        return null;
     }
-    return null;
   }
 
   bool get isBolt11 => this is Bolt11PaymentRequest;
@@ -354,7 +348,8 @@ sealed class PaymentRequest with _$PaymentRequest {
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
-    Bip21PaymentRequest(network: final network) => network.isTestnet,
+    Bip21PaymentRequest(network: final network) =>
+      network.requireHistoricalTestnet(),
     LnAddressPaymentRequest() => false,
     PsbtPaymentRequest() => false,
   };

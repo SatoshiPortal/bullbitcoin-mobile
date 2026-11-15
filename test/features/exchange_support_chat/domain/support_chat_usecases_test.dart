@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/repositories/attachment_picker_repository.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
@@ -39,18 +39,16 @@ void main() {
     });
 
     test('forwards the id when the core use-case answers', () async {
-      when(
-        () => getUserSummaryUsecase.execute(),
-      ).thenAnswer((_) async => _userSummary);
+      when(() => getUserSummaryUsecase.execute())
+          .thenAnswer((_) async => _userSummary);
 
       expect((await usecase.execute() as Ok).value, 'user-1');
     });
 
     test('a raw throw never escapes: it becomes the catch-all failure and the '
         'reason stays in logMessage', () async {
-      when(
-        () => getUserSummaryUsecase.execute(),
-      ).thenThrow(Exception('token=SECRET at host=internal.bull'));
+      when(() => getUserSummaryUsecase.execute())
+          .thenThrow(Exception('token=SECRET at host=internal.bull'));
 
       final failure = (await usecase.execute() as Err).failure;
 

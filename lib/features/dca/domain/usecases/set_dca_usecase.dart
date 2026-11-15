@@ -1,13 +1,13 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/domain/dca_failure.dart';
@@ -52,6 +52,13 @@ class SetDcaUsecase {
       return const Err(DcaUnexpectedFailure('settings fetch failed'));
     }
     final environment = settings.environment;
+    if (!NetworkCapabilities.supports(
+      BitcoinNetwork.fromName(environment.name),
+      NetworkCapability.exchange,
+    )) {
+      log.warning('Capability refused feature=dca reason=unsupported');
+      return const Err(DcaAccountUnavailableFailure('network unsupported'));
+    }
 
     final String address;
     if (network == DcaNetwork.lightning) {
@@ -104,7 +111,7 @@ class SetDcaUsecase {
     // by writing it — and saveUserPreferences replaces the whole stored set,
     // so the enabling write must carry the current values. Aborting here is
     // clean: nothing exists on the exchange yet.
-    final userRepository = environment.isTestnet
+    final userRepository = environment.requireHistoricalTestnet()
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 

@@ -18,7 +18,10 @@ final class _LegacyData implements PayjoinLegacyDataPort {
   }
 }
 
-PayjoinLegacySnapshot _snapshot() => PayjoinLegacySnapshot(
+PayjoinLegacySnapshot _snapshot({
+  bool senderCompleted = true,
+  bool senderExpired = false,
+}) => PayjoinLegacySnapshot(
   sourceSchemaVersion: 14,
   senders: [
     PayjoinLegacySender(
@@ -33,8 +36,8 @@ PayjoinLegacySnapshot _snapshot() => PayjoinLegacySnapshot(
       expireAfterSec: 86400,
       proposalPsbt: 'proposal',
       transactionId: 'payjoin-tx',
-      isExpired: false,
-      isCompleted: true,
+      isExpired: senderExpired,
+      isCompleted: senderCompleted,
     ),
   ],
   receivers: [
@@ -99,6 +102,28 @@ void main() {
     expect(sender.isAborted, isFalse);
     expect(receiver.isAborted, isFalse);
   });
+
+  for (final state in ['unfinished', 'completed', 'expired']) {
+    test(
+      'legacy $state senders preserve conservative network evidence',
+      () async {
+        await importLegacyPayjoinData(
+          database,
+          _LegacyData(
+            _snapshot(
+              senderCompleted: state == 'completed',
+              senderExpired: state == 'expired',
+            ),
+          ),
+        );
+
+        final sender = await database
+            .select(database.payjoinSenders)
+            .getSingle();
+        expect(sender.hasNetworkEvidence, state == 'unfinished');
+      },
+    );
+  }
 
   test('seeds the policy row from the defaults', () async {
     // The root settings payjoin columns only existed in the unreleased schema

@@ -9,7 +9,7 @@ import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart';
 import 'package:bull_payjoin/src/domain/payjoin_requests.dart';
 import 'package:bull_payjoin/src/domain/payjoin_session.dart';
-import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
+import 'package:bull_payjoin/src/engine/payjoin_ownership.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as engine;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
 import 'package:bull_payjoin/src/engine/payjoin_fee_cap.dart';
@@ -31,6 +31,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   required PayjoinLabelsPort labels,
   required PayjoinLegacyDataPort legacyData,
   required PayjoinLogPort log,
+  required PayjoinCodecPort codec,
 }) async {
   // Scoped to this runtime rather than held in a library global: two runtimes
   // in one isolate (a retried open, a test) would otherwise overwrite each
@@ -70,6 +71,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
         ),
       ),
       log: payjoinLog,
+      codec: codec,
     );
     final engine = PayjoinRepositoryImpl(
       localPayjoinDatasource: local,
@@ -80,8 +82,16 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       transactions: transactions,
       policy: policy,
       labels: labels,
+      codec: codec,
     );
-    final roles = _PayjoinRoles(engine, policy, wallet, fees, payjoinLog);
+    final roles = _PayjoinRoles(
+      engine,
+      policy,
+      wallet,
+      fees,
+      payjoinLog,
+      codec,
+    );
     return Ok(_PayjoinLifecycle(database, engine, roles.payjoin));
   } catch (error, trace) {
     // No quarantine-and-retry here: with the import's row-level quarantine,
@@ -194,6 +204,7 @@ abstract interface class _PayjoinRuntimeContract {
   );
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id);
   Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id);
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(String id);
   Future<Result<void, PayjoinFailure>> cancel(String id);
   Future<Result<void, PayjoinFailure>> disableAll();
   Future<Result<PayjoinSession?, PayjoinFailure>> byId(String id);
@@ -207,6 +218,8 @@ abstract interface class _PayjoinRuntimeContract {
     Set<String>? sessionIds,
   });
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints();
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations();
   Future<Result<PayjoinPolicy, PayjoinFailure>> load();
   Stream<Result<PayjoinPolicy, PayjoinFailure>> watchPolicy();
   Future<Result<PayjoinPolicy, PayjoinFailure>> setActionEnabled(
@@ -226,6 +239,7 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
   final PayjoinWalletPort _wallet;
   final PayjoinFeesPort _fees;
   final logger.PayjoinLogger _log;
+  final PayjoinCodecPort _codec;
   final Lock _policyMutationLock = Lock();
 
   late final Payjoin payjoin = Payjoin(
@@ -242,11 +256,14 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     this._wallet,
     this._fees,
     this._log,
+    this._codec,
   );
 
   PayjoinSession _toSession(engine.Payjoin value) => _mapSession(
     value,
+    codec: _codec,
     fallbackAvailableAt: _engine.receiverFallbackAvailableAt(value.id),
+    spendFailure: _engine.proposalSpendFailure(value.id),
   );
 
   @override
@@ -268,6 +285,8 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     late final String signed;
     try {
       signed = await _engineWalletSign(request);
+    } on PayjoinSpendBlockedException catch (blocked) {
+      return Err(PayjoinSpendBlockedFailure(busy: blocked.busy));
     } catch (error, trace) {
       _log.warning(
         code: PayjoinLogCode.signingFailure,
@@ -358,11 +377,23 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       if (current == null) {
         return const Err(PayjoinSessionNotFoundFailure('Session not found'));
       }
-      return (await _engine.tryBroadcastOriginalTransaction(
-        current,
-      )).map(_toSession);
+      return (await _engine.tryBroadcastOriginalTransaction(current))
+          .map(_toSession);
+    } on PayjoinSpendBlockedException catch (blocked) {
+      return Err(PayjoinSpendBlockedFailure(busy: blocked.busy));
     } catch (_) {
       return const Err(PayjoinBroadcastFailure('Broadcast failed'));
+    }
+  }
+
+  @override
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(
+    String id,
+  ) async {
+    try {
+      return (await _engine.retryProposal(id)).map(_toSession);
+    } catch (_) {
+      return const Err(PayjoinStorageFailure('Proposal retry failed'));
     }
   }
 
@@ -455,6 +486,16 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
       return Ok(
         values.map((value) => (txId: value.txId, vout: value.vout)).toSet(),
       );
+    } catch (_) {
+      return const Err(PayjoinStorageFailure('UTXO lookup failed'));
+    }
+  }
+
+  @override
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations() async {
+    try {
+      return Ok(await _engine.getInputReservations());
     } catch (_) {
       return const Err(PayjoinStorageFailure('UTXO lookup failed'));
     }
@@ -593,6 +634,10 @@ final class _SenderRole implements PayjoinSender {
       _runtime.broadcastOriginal(id);
 
   @override
+  Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(String id) =>
+      _runtime.retryProposal(id);
+
+  @override
   Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id) =>
       _runtime.canBroadcastOriginal(id);
 }
@@ -641,6 +686,10 @@ final class _SessionsRole implements PayjoinSessions {
   @override
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints() =>
       _runtime.reservedOutpoints();
+
+  @override
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations() => _runtime.inputReservations();
 }
 
 final class _PolicyRole implements PayjoinPolicyAccess {
@@ -683,15 +732,18 @@ final class _DiagnosticsRole implements PayjoinDiagnostics {
 
 PayjoinSession _mapSession(
   engine.Payjoin value, {
+  required PayjoinCodecPort codec,
   DateTime? fallbackAvailableAt,
+  PayjoinSpendBlockedFailure? spendFailure,
 }) {
   final network = value.isTestnet
       ? BitcoinNetwork.testnet
       : BitcoinNetwork.mainnet;
   final status = PayjoinStatus.values.byName(value.status.name);
-  final ownership = _deriveOwnership(value);
+  final ownership = _deriveOwnership(value, codec);
   return switch (value) {
     engine.PayjoinSender() => PayjoinSenderSession(
+      spendFailure: spendFailure,
       status: status,
       uri: value.id,
       network: network,
@@ -723,24 +775,27 @@ PayjoinSession _mapSession(
   };
 }
 
-PayjoinOwnership? _deriveOwnership(engine.Payjoin payjoin) {
+PayjoinOwnership? _deriveOwnership(
+  engine.Payjoin payjoin,
+  PayjoinCodecPort codec,
+) {
   final proposalPsbt = payjoin.proposalPsbt;
   final txId = payjoin.txId;
   if (proposalPsbt == null || txId == null) return null;
 
   try {
-    final proposal = BitcoinTx.fromPsbtSync(proposalPsbt);
+    final proposal = codec.decodePsbt(proposalPsbt);
     if (proposal.txid != txId) return null;
 
     final (original, bip21) = switch (payjoin) {
       engine.PayjoinSender(:final originalPsbt, :final uri) => (
-        BitcoinTx.fromPsbtSync(originalPsbt),
+        codec.decodePsbt(originalPsbt),
         uri,
       ),
       engine.PayjoinReceiver(:final originalTxBytes, :final pjUri) => (
         originalTxBytes == null
             ? null
-            : BitcoinTx.fromBytesSync(originalTxBytes),
+            : codec.decodeTransaction(originalTxBytes),
         pjUri,
       ),
     };
@@ -748,6 +803,7 @@ PayjoinOwnership? _deriveOwnership(engine.Payjoin payjoin) {
 
     final paymentScript = paymentScriptFromBip21(
       bip21,
+      codec: codec,
       isTestnet: payjoin.isTestnet,
     );
     if (paymentScript == null) return null;

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,9 +20,8 @@ void main() {
   });
 
   test('returns the absolute fee, discarding the vsize', () async {
-    when(
-      () => repository.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-    ).thenAnswer((_) async => (1234, 250));
+    when(() => repository.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
+        .thenAnswer((_) async => (1234, 250));
 
     final result = await usecase.execute(pset: 'pset');
 
@@ -30,9 +29,8 @@ void main() {
   });
 
   test('sanitizes an LWK error into the catch-all', () async {
-    when(
-      () => repository.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-    ).thenThrow(Exception('LwkError: bad pset lq1qsecret'));
+    when(() => repository.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
+        .thenThrow(Exception('LwkError: bad pset lq1qsecret'));
 
     final result = await usecase.execute(pset: 'pset');
 

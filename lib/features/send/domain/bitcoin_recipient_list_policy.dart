@@ -21,7 +21,7 @@ final class BitcoinRecipientListPolicy {
   bool? networkIsTestnet(PaymentRequest? request) => switch (request) {
     BitcoinPaymentRequest(:final isTestnet) => isTestnet,
     Bip21PaymentRequest(:final network) when network.isBitcoin =>
-      network.isTestnet,
+      !network.isMainnet,
     _ => null,
   };
 

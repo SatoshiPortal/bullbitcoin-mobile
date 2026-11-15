@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// Shimmering skeleton box.

@@ -1,7 +1,7 @@
 import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/sell/domain/get_sell_confidential_sepa_availability_usecase_v2.dart';
@@ -11,11 +11,11 @@ import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_payout_cubit_v2.dart';
 import 'package:bb_mobile/features/sell/ui/screens/sell_payout_method_screen_v2.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullShimmerLine;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -111,7 +111,7 @@ void main() {
             MaterialApp.router(
               routerConfig: appRouter,
               theme: AppTheme.themeData(AppThemeType.light),
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              localizationsDelegates: appLocalizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
             ),
           );
@@ -131,15 +131,13 @@ void main() {
             return;
           }
           expect(find.byType(SellPayoutMethodScreenV2), findsOneWidget);
-          when(
-            () => sell.state,
-          ).thenReturn(SellPreparingPaymentState(input: input));
+          when(() => sell.state)
+              .thenReturn(SellPreparingPaymentState(input: input));
           appRouter.pop();
           await popped;
           await tester.pumpAndSettle();
-          verify(
-            () => sell.add(const SellEvent.paymentPreparationAbandoned()),
-          ).called(1);
+          verify(() => sell.add(const SellEvent.paymentPreparationAbandoned()))
+              .called(1);
         },
       );
     }
@@ -243,7 +241,7 @@ void main() {
         child: MaterialApp.router(
           routerConfig: router,
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
@@ -395,9 +393,8 @@ void main() {
     expect(find.text(loc.recipientsTypeConfidentialSepa), findsNothing);
     expect(find.textContaining(loc.oopsSomethingWentWrong), findsOneWidget);
     expect(find.textContaining(loc.recipientsErrorNetwork), findsOneWidget);
-    when(
-      load.execute,
-    ).thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
+    when(load.execute)
+        .thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
     await tester.tap(find.widgetWithText(BullButton, loc.retry));
     await tester.pumpAndSettle();
     expect(find.text(loc.recipientsTypeConfidentialSepa), findsOneWidget);

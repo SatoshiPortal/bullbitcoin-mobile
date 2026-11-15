@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_settings_exception.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 
 class ElectrumSettings {
   int _stopGap;

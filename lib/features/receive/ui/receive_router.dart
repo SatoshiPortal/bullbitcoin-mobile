@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payjoin_in_progress_screen.dart';
@@ -9,7 +10,7 @@ import 'package:bb_mobile/features/receive/ui/screens/receive_scaffold.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,14 +42,12 @@ class ReceiveRouter {
       //  of the incoming route
       final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
 
-      // The BlocProvider wraps the whole ReceiveScaffold (not just its child)
-      //  so the scaffold's TopBar can host a bloc-aware payjoin toggle. The
-      //  scaffold itself doesn't listen — it only rebuilds via the narrowly
-      //  scoped selectors inside its TopBar action — so switching networks
-      //  still doesn't rebuild it.
+      // Wrap the whole scaffold so its TopBar can host a bloc-aware payjoin toggle.
+      // The scaffold selects only the displayed wallet and chain for its local polling timer.
       return BlocProvider<ReceiveBloc>(
         create: (_) => locator<ReceiveBloc>(param1: wallet),
         child: ReceiveScaffold(
+          poll: locator<PollReceiveWalletUsecase>(),
           wallet: wallet,
           child: MultiBlocListener(
             listeners: [

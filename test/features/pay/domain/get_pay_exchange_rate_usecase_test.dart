@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -44,9 +44,8 @@ void main() {
   });
 
   test('asks the testnet price in the testnet environment', () async {
-    when(
-      getSettings.execute,
-    ).thenAnswer((_) async => _settings(environment: Environment.testnet));
+    when(getSettings.execute)
+        .thenAnswer((_) async => _settings(environment: Environment.testnet));
 
     expect(
       await usecase.execute(currencyCode: 'CAD'),

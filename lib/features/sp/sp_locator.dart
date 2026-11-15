@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/sp/domain/usecases/get_sp_secret_usecase.dart
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_account_repository.dart';
 import 'package:bb_mobile/features/sp/data/bwk_sp_recipient_address_validator.dart';
@@ -72,15 +71,15 @@ import 'package:get_it/get_it.dart';
 /// DI wiring for the Silent Payments feature:
 /// adapter (single live session) -> use cases -> facade -> presentation.
 ///
-/// Must be registered BEFORE the wallet/settings locators, whose own use
-/// cases resolve `locator<SpFacade>()`.
+/// Wallet infrastructure must be registered before foreground watchers start.
+/// Wallet/settings usecases resolve this feature's facade lazily.
 class SpLocator {
-  static void setup(GetIt locator) {
+  static void setup(GetIt locator, {bool startForegroundWatchers = false}) {
     _registerAdapters(locator);
     _registerUseCases(locator);
     _registerFacade(locator);
     _registerPresentation(locator);
-    _startWatchers(locator);
+    if (startForegroundWatchers) _startWatchers(locator);
     _loadAutoScanSetting(locator);
   }
 
@@ -101,10 +100,9 @@ class SpLocator {
 
   // The sync tick usually runs before the header store reports a tip, so the
   // scan policy has to be re-judged once it lands, and a dropped electrum
-  // connection has to be restarted. Foreground-only, like the coordinator,
-  // which is absent in the background isolate.
+  // connection has to be restarted. Composition explicitly enables these
+  // watchers only in the foreground graph.
   static void _startWatchers(GetIt locator) {
-    if (!locator.isRegistered<SyncCoordinator>()) return;
     locator<SpTipWatcher>().start();
     locator<SpElectrumReconnectWatcher>().start();
   }
@@ -177,6 +175,7 @@ class SpLocator {
     // concurrent callers never race two live SpAccount instances.
     locator.registerLazySingleton<EnsureSpSessionUsecase>(
       () => EnsureSpSessionUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
         configRepository: locator<SpBackendConfigRepository>(),
@@ -257,7 +256,10 @@ class SpLocator {
       ),
     );
     locator.registerFactory<ScanSpWalletUsecase>(
-      () => ScanSpWalletUsecase(repository: locator<SpScanPort>()),
+      () => ScanSpWalletUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpScanPort>(),
+      ),
     );
     locator.registerFactory<StopSpScanUsecase>(
       () => StopSpScanUsecase(repository: locator<SpScanControlPort>()),
@@ -266,14 +268,22 @@ class SpLocator {
       () => ClearSpScanStateUsecase(repository: locator<SpScanControlPort>()),
     );
     locator.registerFactory<GenerateTaprootAddressUsecase>(
-      () =>
-          GenerateTaprootAddressUsecase(repository: locator<SpPaymentsPort>()),
+      () => GenerateTaprootAddressUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpPaymentsPort>(),
+      ),
     );
     locator.registerFactory<PrepareSpPaymentUsecase>(
-      () => PrepareSpPaymentUsecase(repository: locator<SpPaymentsPort>()),
+      () => PrepareSpPaymentUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpPaymentsPort>(),
+      ),
     );
     locator.registerFactory<SendSpPaymentUsecase>(
-      () => SendSpPaymentUsecase(repository: locator<SpPaymentsPort>()),
+      () => SendSpPaymentUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
+        repository: locator<SpPaymentsPort>(),
+      ),
     );
     locator.registerFactory<GetSpNetworkUsecase>(
       () => GetSpNetworkUsecase(repository: locator<SpAccountRepository>()),
@@ -343,6 +353,7 @@ class SpLocator {
     );
     locator.registerFactory<RecreateSpWalletUsecase>(
       () => RecreateSpWalletUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
         getSpSecretUsecase: locator<GetSpSecretUsecase>(),
         repository: locator<SpAccountRepository>(),
         files: locator<SpAccountFilesPort>(),
@@ -363,6 +374,7 @@ class SpLocator {
     // listener.
     locator.registerLazySingleton<ResyncSpListenerUsecase>(
       () => ResyncSpListenerUsecase(
+        getSpFeatureGateUsecase: locator<GetSpFeatureGateUsecase>(),
         repository: locator<SpAccountRepository>(),
         scanControl: locator<SpScanControlPort>(),
       ),

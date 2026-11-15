@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 
 /// UTXO count above which a Liquid wallet should be consolidated. Kept a bit
 /// below the ~256 hard confidential-tx input limit so we warn the user before

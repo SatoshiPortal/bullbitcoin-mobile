@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart' show Secret;
 
 import '../../sp_fakes.dart';
+
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
 class _MockSpBackendConfigRepository extends Mock
@@ -38,10 +39,10 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(await spSecret());
-    registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(
       SpBackendConfig(
-        network: BitcoinNetwork.regtest,
+        network: BitcoinNetwork.testnet,
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
       ),
@@ -55,6 +56,7 @@ void main() {
     configRepository = _MockSpBackendConfigRepository();
     ensureSpSessionUsecase = _MockEnsureSpSessionUsecase();
     usecase = RecreateSpWalletUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
@@ -63,27 +65,22 @@ void main() {
       guard: SpSessionGuard(),
     );
 
-    when(
-      () => getSpSecretUsecase.execute(any()),
-    ).thenAnswer((_) async => Ok(secret));
+    when(() => getSpSecretUsecase.execute(any()))
+        .thenAnswer((_) async => Ok(secret));
     when(() => repository.beginTeardown()).thenReturn(null);
     when(() => repository.endTeardown()).thenReturn(null);
     when(() => repository.dispose()).thenAnswer((_) async => const Ok(null));
-    when(
-      () => repository.backupAccountDir(),
-    ).thenAnswer((_) async => const Ok(true));
-    when(
-      () => repository.restoreAccountDir(),
-    ).thenAnswer((_) async => const Ok(true));
-    when(
-      () => repository.discardBackup(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.backupAccountDir())
+        .thenAnswer((_) async => const Ok(true));
+    when(() => repository.restoreAccountDir())
+        .thenAnswer((_) async => const Ok(true));
+    when(() => repository.discardBackup())
+        .thenAnswer((_) async => const Ok(null));
     when(() => configRepository.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(_previousConfig()),
     );
-    when(
-      () => configRepository.save(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => configRepository.save(any()))
+        .thenAnswer((_) async => const Ok(null));
     when(
       () => ensureSpSessionUsecase.execute(
         allowDuringTeardown: any(named: 'allowDuringTeardown'),
@@ -181,9 +178,8 @@ void main() {
   test(
     'rollback without a backup still reverts config but skips re-establish',
     () async {
-      when(
-        () => repository.restoreAccountDir(),
-      ).thenAnswer((_) async => const Ok(false));
+      when(() => repository.restoreAccountDir())
+          .thenAnswer((_) async => const Ok(false));
       when(
         () => repository.createFromSecret(
           network: any(named: 'network'),
@@ -236,15 +232,12 @@ void main() {
     () async {
       // A corrupt/absent previous config: the fetch folds to null, so the rollback
       // must delete() rather than re-save, leaving the wallet not-set-up.
-      when(
-        () => configRepository.fetch(),
-      ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
-      when(
-        () => configRepository.delete(),
-      ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => repository.restoreAccountDir(),
-      ).thenAnswer((_) async => const Ok(false));
+      when(() => configRepository.fetch())
+          .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
+      when(() => configRepository.delete())
+          .thenAnswer((_) async => const Ok(null));
+      when(() => repository.restoreAccountDir())
+          .thenAnswer((_) async => const Ok(false));
       when(
         () => repository.createFromSecret(
           network: any(named: 'network'),
@@ -282,9 +275,8 @@ void main() {
   );
 
   test('a backup throw returns Err (execute is total)', () async {
-    when(
-      () => repository.backupAccountDir(),
-    ).thenThrow(Exception('backup boom'));
+    when(() => repository.backupAccountDir())
+        .thenThrow(Exception('backup boom'));
 
     final result = await usecase.execute(
       network: BitcoinNetwork.mainnet,

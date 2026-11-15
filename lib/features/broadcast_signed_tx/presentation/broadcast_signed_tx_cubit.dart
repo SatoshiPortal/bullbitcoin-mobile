@@ -1,15 +1,20 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
+
 import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/public/broadcast_failure.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_failure_for_category.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:sync/sync.dart'
+    show SyncNotFinalizableFailure, finalizeBitcoinPsbts;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
@@ -19,13 +24,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final Future<Network> capturedNetwork;
   final VerifyBroadcastSignedTxUsecase _verifySignedTxUsecase;
 
   BroadcastSignedTxCubit({
     required this._broadcastBitcoinTransactionUsecase,
     required this._verifySignedTxUsecase,
     String? unsignedPsbt,
-  }) : super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+    Network? network,
+  }) : capturedNetwork = network != null
+           ? Future.value(network)
+           : _broadcastBitcoinTransactionUsecase.captureNetwork(),
+       super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
   Future<void> onQrScanned(String payload) async {
     try {
@@ -39,26 +49,29 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         try {
           finalTx = builder.finalizeAll().toHex();
         } catch (e) {
-          if (state.unsignedPsbt == null) {
+          final unsignedPsbt = state.unsignedPsbt;
+          if (unsignedPsbt == null) {
             rethrow;
           }
 
           // Seedsigner doesn't return the original input data, so here we try to add inputs data from the unsigned tx
-
-          final psbt = bdk.Psbt(psbtBase64: state.unsignedPsbt!);
-          final signedPsbt = bdk.Psbt(psbtBase64: payload);
-
-          final tx = psbt.combine(other: signedPsbt);
-          final finalized = tx.finalize();
-          if (!finalized.couldFinalize) {
-            log.warning(
-              'Could not finalize the combined PSBT',
-              error: finalized.errors,
-            );
-            emit(state.copyWith(failure: const PsbtFinalizationFailure()));
-            return;
+          switch (finalizeBitcoinPsbts(
+            unsignedBase64: unsignedPsbt,
+            signedBase64: payload,
+          )) {
+            case Ok(:final value):
+              finalTx = hex.encode(value.bytes);
+            case Err(failure: SyncNotFinalizableFailure()):
+              log.warning('Could not finalize the combined PSBT');
+              emit(state.copyWith(failure: const PsbtFinalizationFailure()));
+              return;
+            case Err(:final failure):
+              log.warning(
+                'Scanned PSBT is unreadable category=${failure.logCode}',
+              );
+              emit(state.copyWith(failure: const InvalidTransactionFailure()));
+              return;
           }
-          finalTx = hex.encode(finalized.psbt.extractTx().serialize());
         }
         if (!await _verifyAgainstOriginal(finalTx)) return;
 
@@ -219,9 +232,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
   String? _tryFinalize(String psbtBase64) {
     try {
-      return PsbtBuilder.fromPsbt(
-        Psbt.fromBase64(psbtBase64),
-      ).finalizeAll().toHex();
+      return PsbtBuilder.fromPsbt(Psbt.fromBase64(psbtBase64))
+          .finalizeAll()
+          .toHex();
     } on Exception {
       return null;
     }
@@ -264,14 +277,16 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       await _broadcastBitcoinTransactionUsecase.execute(
         state.transaction!.data,
         isPsbt: state.transaction!.format == TxFormat.psbt,
+        network: await capturedNetwork,
       );
       emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
     } catch (e, st) {
       // Keep the raw infra detail (Electrum server / node rejection) in the
-      // logs instead of leaking it to the UI; the screen shows a generic
-      // localized message. A rejected broadcast is an expected user-facing
-      // condition (already confirmed, fee too low, server down), so this is a
-      // warning, not a Sentry-reported severe.
+      // logs instead of leaking it to the UI; the screen shows a localized
+      // message chosen from the failure's diagnostic category. A rejected
+      // broadcast is an expected user-facing condition (already confirmed,
+      // fee too low, server down), so this is a warning, not a
+      // Sentry-reported severe.
       log.warning(
         'Failed to broadcast signed transaction',
         error: e,
@@ -279,7 +294,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       );
       emit(
         state.copyWith(
-          failure: const BroadcastFailedFailure(),
+          failure: broadcastSignedTxFailureFor(BroadcastFailureCategory.of(e)),
           isBroadcasting: false,
         ),
       );

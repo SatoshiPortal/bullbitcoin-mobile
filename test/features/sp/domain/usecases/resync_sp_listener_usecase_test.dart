@@ -15,12 +15,12 @@ void main() {
   setUp(() {
     repository = MockSpAccountRepository();
     usecase = ResyncSpListenerUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       repository: repository,
       scanControl: repository,
     );
-    when(
-      () => repository.restartElectrum(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.restartElectrum())
+        .thenAnswer((_) async => const Ok(null));
   });
 
   test(
@@ -79,9 +79,8 @@ void main() {
   test('maps a restart failure to Err', () async {
     when(() => repository.hasSession).thenReturn(true);
     when(() => repository.isScanningCached).thenReturn(false);
-    when(
-      () => repository.restartElectrum(),
-    ).thenAnswer((_) async => const Err(SpUnexpected('socket')));
+    when(() => repository.restartElectrum())
+        .thenAnswer((_) async => const Err(SpUnexpected('socket')));
 
     final result = await usecase.execute();
 

@@ -1,9 +1,10 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -56,9 +57,7 @@ class CheckBackupNeededUsecase {
     final status = await _backupStatus(
       rb.VaultContext(
         fingerprint: rb.Fingerprint(bitcoin.masterFingerprint),
-        network: bitcoin.network.isTestnet
-            ? rb.BitcoinNetwork.testnet
-            : rb.BitcoinNetwork.mainnet,
+        network: bitcoin.network.bitcoin,
       ),
     );
     // Unavailable metadata cannot certify a backup; its historical flag is

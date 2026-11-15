@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 

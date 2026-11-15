@@ -5,16 +5,17 @@ import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/status/domain/ports/electrum_connectivity_port.dart';
 import 'package:bb_mobile/features/status_check/domain/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:clock/clock.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Ok;
 
 import '../../fake_index_price_reader.dart';
 
@@ -58,24 +59,21 @@ void main() {
   test('the pricer is dated by its last real answer, not by now', () async {
     final fetchedAt = DateTime.utc(2026, 10, 21, 12);
     final electrum = _MockElectrumConnectivityPort();
-    when(
-      () => electrum.checkServersInUseAreOnlineForNetwork(any()),
-    ).thenAnswer((_) async => true);
+    when(() => electrum.checkServersInUseAreOnlineForNetwork(any()))
+        .thenAnswer((_) async => true);
     final getIndexPrice = FakeIndexPriceReader(fiatAmount: 70000)
       ..fetchedAt = fetchedAt;
     final feesRepository = _MockFeesRepository();
-    when(
-      () => feesRepository.getNetworkFees(network: any(named: 'network')),
-    ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final settingsRepository = _MockSettingsRepository();
     final tor = _MockTor();
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(useTorProxy: false));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: electrum,
@@ -103,25 +101,22 @@ void main() {
   test('an offline pricer is dated by the controlled clock', () async {
     final now = DateTime(2026, 10, 21, 12, 30);
     final electrum = _MockElectrumConnectivityPort();
-    when(
-      () => electrum.checkServersInUseAreOnlineForNetwork(any()),
-    ).thenAnswer((_) async => true);
+    when(() => electrum.checkServersInUseAreOnlineForNetwork(any()))
+        .thenAnswer((_) async => true);
     final getIndexPrice = FakeIndexPriceReader(
       failure: const PricerNetworkFailure('offline'),
     );
     final feesRepository = _MockFeesRepository();
-    when(
-      () => feesRepository.getNetworkFees(network: any(named: 'network')),
-    ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final settingsRepository = _MockSettingsRepository();
     final tor = _MockTor();
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(useTorProxy: false));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => tor.external).thenReturn(_MockExternalTor());
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: electrum,
@@ -149,16 +144,14 @@ void main() {
     'Payjoin with every switch off is not probed or reported offline',
     () async {
       final electrum = _MockElectrumConnectivityPort();
-      when(
-        () => electrum.checkServersInUseAreOnlineForNetwork(any()),
-      ).thenAnswer((_) async => true);
+      when(() => electrum.checkServersInUseAreOnlineForNetwork(any()))
+          .thenAnswer((_) async => true);
       final getIndexPrice = FakeIndexPriceReader(
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(
-        () => feesRepository.getNetworkFees(network: any(named: 'network')),
-      ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       final payjoinDiagnostics = _MockPayjoinDiagnostics();
       final walletRepository = _MockWalletRepository();
@@ -169,9 +162,8 @@ void main() {
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
-      when(
-        () => settingsRepository.fetch(),
-      ).thenAnswer((_) async => _settings(useTorProxy: false));
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => _settings(useTorProxy: false));
       when(() => tor.external).thenReturn(external);
       final usecase = CheckAllServiceStatusUsecase(
         electrumConnectivityPort: electrum,
@@ -200,24 +192,21 @@ void main() {
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final electrum = _MockElectrumConnectivityPort();
-      when(
-        () => electrum.checkServersInUseAreOnlineForNetwork(any()),
-      ).thenAnswer((_) async => true);
+      when(() => electrum.checkServersInUseAreOnlineForNetwork(any()))
+          .thenAnswer((_) async => true);
       final getIndexPrice = FakeIndexPriceReader(
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(
-        () => feesRepository.getNetworkFees(network: any(named: 'network')),
-      ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
-      when(
-        () => settingsRepository.fetch(),
-      ).thenAnswer((_) async => _settings(useTorProxy: true));
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => _settings(useTorProxy: true));
       when(() => tor.external).thenReturn(external);
       when(() => external.verify(any())).thenAnswer(
         (_) async => TorReady(
@@ -254,24 +243,21 @@ void main() {
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final electrum = _MockElectrumConnectivityPort();
-      when(
-        () => electrum.checkServersInUseAreOnlineForNetwork(any()),
-      ).thenAnswer((_) async => true);
+      when(() => electrum.checkServersInUseAreOnlineForNetwork(any()))
+          .thenAnswer((_) async => true);
       final getIndexPrice = FakeIndexPriceReader(
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(
-        () => feesRepository.getNetworkFees(network: any(named: 'network')),
-      ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
       final settingsRepository = _MockSettingsRepository();
       final tor = _MockTor();
       final external = _MockExternalTor();
-      when(
-        () => settingsRepository.fetch(),
-      ).thenAnswer((_) async => _settings(useTorProxy: true));
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => _settings(useTorProxy: true));
       when(() => tor.external).thenReturn(external);
       when(() => external.verify(any())).thenAnswer(
         (_) async => const TorUnavailable(
@@ -318,16 +304,14 @@ void main() {
         failure: const PricerNetworkFailure('Pricer probe failed'),
       );
       final feesRepository = _MockFeesRepository();
-      when(
-        () => feesRepository.getNetworkFees(network: any(named: 'network')),
-      ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+      when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+          .thenAnswer((_) async => throw Exception('Mempool probe failed'));
 
       final walletRepository = _MockWalletRepository();
       when(walletRepository.isTorRequired).thenAnswer((_) async => false);
       final settingsRepository = _MockSettingsRepository();
-      when(
-        () => settingsRepository.fetch(),
-      ).thenAnswer((_) async => _settings(useTorProxy: false));
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => _settings(useTorProxy: false));
       final payjoinPolicy = _MockPayjoinPolicyAccess();
       when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
 
@@ -382,9 +366,8 @@ void main() {
       failure: const PricerNetworkFailure('Pricer probe failed'),
     );
     final feesRepository = _MockFeesRepository();
-    when(
-      () => feesRepository.getNetworkFees(network: any(named: 'network')),
-    ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
 
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
@@ -417,55 +400,48 @@ void main() {
     expect(result.lastChecked, isNotNull);
   });
 
-  test(
-    'reports only the failing Electrum probe as unknown when it throws an Exception',
-    () async {
-      final electrum = _MockElectrumConnectivityPort();
-      when(
-        () => electrum.checkServersInUseAreOnlineForNetwork(
-          Network.bitcoinMainnet,
-        ),
-      ).thenAnswer((_) async => true);
-      when(
-        () => electrum.checkServersInUseAreOnlineForNetwork(
-          Network.liquidMainnet,
-        ),
-      ).thenAnswer((_) async => throw Exception('Electrum probe failed'));
-      final getIndexPrice = FakeIndexPriceReader(
-        failure: const PricerNetworkFailure('Pricer probe failed'),
-      );
-      final feesRepository = _MockFeesRepository();
-      when(
-        () => feesRepository.getNetworkFees(network: any(named: 'network')),
-      ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
-      final payjoinPolicy = _MockPayjoinPolicyAccess();
-      when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
-      final walletRepository = _MockWalletRepository();
-      when(walletRepository.isTorRequired).thenAnswer((_) async => false);
-      final settingsRepository = _MockSettingsRepository();
-      when(
-        () => settingsRepository.fetch(),
-      ).thenAnswer((_) async => _settings(useTorProxy: false));
+  test('reports only the failing Electrum probe as unknown when it throws an Exception', () async {
+    final electrum = _MockElectrumConnectivityPort();
+    when(
+      () =>
+          electrum.checkServersInUseAreOnlineForNetwork(Network.bitcoinMainnet),
+    ).thenAnswer((_) async => true);
+    when(
+      () =>
+          electrum.checkServersInUseAreOnlineForNetwork(Network.liquidMainnet),
+    ).thenAnswer((_) async => throw Exception('Electrum probe failed'));
+    final getIndexPrice = FakeIndexPriceReader(
+      failure: const PricerNetworkFailure('Pricer probe failed'),
+    );
+    final feesRepository = _MockFeesRepository();
+    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    final payjoinPolicy = _MockPayjoinPolicyAccess();
+    when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
+    final walletRepository = _MockWalletRepository();
+    when(walletRepository.isTorRequired).thenAnswer((_) async => false);
+    final settingsRepository = _MockSettingsRepository();
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(useTorProxy: false));
 
-      final usecase = CheckAllServiceStatusUsecase(
-        electrumConnectivityPort: electrum,
-        getIndexPrice: getIndexPrice.call,
-        payjoinPolicy: payjoinPolicy,
-        payjoinDiagnostics: _MockPayjoinDiagnostics(),
-        feesRepository: feesRepository,
-        walletRepository: walletRepository,
-        ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
-        checkServerConnection: () async => const Ok(false),
-        settingsRepository: settingsRepository,
-        tor: _MockTor(),
-      );
+    final usecase = CheckAllServiceStatusUsecase(
+      electrumConnectivityPort: electrum,
+      getIndexPrice: getIndexPrice.call,
+      payjoinPolicy: payjoinPolicy,
+      payjoinDiagnostics: _MockPayjoinDiagnostics(),
+      feesRepository: feesRepository,
+      walletRepository: walletRepository,
+      ensureTorReadyUsecase: _MockEnsureTorReadyUsecase(),
+      checkServerConnection: () async => const Ok(false),
+      settingsRepository: settingsRepository,
+      tor: _MockTor(),
+    );
 
-      final result = await usecase.execute(network: Network.bitcoinMainnet);
+    final result = await usecase.execute(network: Network.bitcoinMainnet);
 
-      expect(result.bitcoinElectrum.status, ServiceStatus.online);
-      expect(result.liquidElectrum.status, ServiceStatus.unknown);
-    },
-  );
+    expect(result.bitcoinElectrum.status, ServiceStatus.online);
+    expect(result.liquidElectrum.status, ServiceStatus.unknown);
+  });
 
   test('propagates a StateError from a service probe', () async {
     final electrum = _MockElectrumConnectivityPort();
@@ -477,17 +453,15 @@ void main() {
       failure: const PricerNetworkFailure('Pricer probe failed'),
     );
     final feesRepository = _MockFeesRepository();
-    when(
-      () => feesRepository.getNetworkFees(network: any(named: 'network')),
-    ).thenAnswer((_) async => throw Exception('Mempool probe failed'));
+    when(() => feesRepository.getNetworkFees(network: any(named: 'network')))
+        .thenAnswer((_) async => throw Exception('Mempool probe failed'));
     final payjoinPolicy = _MockPayjoinPolicyAccess();
     when(payjoinPolicy.load).thenAnswer((_) async => Ok(_allPayjoinOff()));
     final walletRepository = _MockWalletRepository();
     when(walletRepository.isTorRequired).thenAnswer((_) async => false);
     final settingsRepository = _MockSettingsRepository();
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(useTorProxy: false));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(useTorProxy: false));
 
     final usecase = CheckAllServiceStatusUsecase(
       electrumConnectivityPort: electrum,

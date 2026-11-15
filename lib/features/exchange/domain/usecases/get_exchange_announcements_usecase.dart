@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/read_exchange_environment.dart';
@@ -32,7 +32,7 @@ class GetExchangeAnnouncementsUsecase {
       case Err(:final failure):
         return Err(failure);
     }
-    final repo = environment.isTestnet
+    final repo = (environment == Environment.testnet)
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 

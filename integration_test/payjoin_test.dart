@@ -2,23 +2,24 @@ import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
+
+import 'developer_network.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -86,7 +87,11 @@ Future<void> main({bool isInitialized = false}) async {
       psbt: prepared.unsignedPsbt,
       walletId: walletId,
     );
-    await broadcastBitcoinTx.execute(signed.signedPsbt, isPsbt: true);
+    await broadcastBitcoinTx.execute(
+      signed.signedPsbt,
+      isPsbt: true,
+      network: Network.bitcoinTestnet,
+    );
     await Future<void>.delayed(const Duration(seconds: 3));
     // Fail fast: a funding sync that failed would otherwise surface as a
     // confusing balance assertion further down.
@@ -169,12 +174,9 @@ Future<void> main({bool isInitialized = false}) async {
   // full wallet sync before every one of their tests.
   group('funded testnet Payjoin', () {
     setUpAll(() async {
-      // Setup: assert rather than discard, so a failed write surfaces here
-      // instead of as a confusing failure further down the test.
-      expect(
-        await locator<SetEnvironmentUsecase>().execute(Environment.testnet),
-        isA<Ok<void, SettingsFailure>>(),
-      );
+      // Testnet is a developer network: enable it as a user would.
+      // Restored when the group ends, even if this setup fails.
+      await selectDeveloperNetwork(Environment.testnet);
       final currentPolicy = await policy.load();
       previousPayjoinPolicy = switch (currentPolicy) {
         Ok(:final value) => value,
@@ -210,24 +212,17 @@ Future<void> main({bool isInitialized = false}) async {
       );
     });
 
+    // The network and developer flags are restored by selectDeveloperNetwork,
+    // independently of this policy restore.
     tearDownAll(() async {
-      try {
-        if (previousPayjoinPolicy case final previous?) {
-          for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
-            final restored = await policy.setActionEnabled(
-              action,
-              enabled: previous.allows(action),
-            );
-            if (restored case Err(:final failure)) throw failure;
-          }
+      if (previousPayjoinPolicy case final previous?) {
+        for (final action in [PayjoinAction.send, PayjoinAction.receive]) {
+          final restored = await policy.setActionEnabled(
+            action,
+            enabled: previous.allows(action),
+          );
+          if (restored case Err(:final failure)) throw failure;
         }
-      } finally {
-        // Teardown: assert rather than discard, so a failed restore surfaces
-        // here instead of leaking into whatever test runs next.
-        expect(
-          await locator<SetEnvironmentUsecase>().execute(Environment.mainnet),
-          isA<Ok<void, SettingsFailure>>(),
-        );
       }
     });
 
@@ -240,125 +235,115 @@ Future<void> main({bool isInitialized = false}) async {
       );
     });
 
-    test(
-      'funded testnet wallets complete a Payjoin',
-      () async {
-        receiverWallet = _wallet(
-          await walletRepository.getWallet(receiverWallet.id),
-        );
-        senderWallet = _wallet(
-          await walletRepository.getWallet(senderWallet.id),
-        );
-        expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
-        expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
+    test('funded testnet wallets complete a Payjoin', () async {
+      receiverWallet = _wallet(
+        await walletRepository.getWallet(receiverWallet.id),
+      );
+      senderWallet = _wallet(await walletRepository.getWallet(senderWallet.id));
+      expect(receiverWallet.balanceSat, greaterThan(BigInt.zero));
+      expect(senderWallet.balanceSat, greaterThan(BigInt.zero));
 
-        await consolidateUtxos(receiverWallet.id);
-        await consolidateUtxos(senderWallet.id);
+      await consolidateUtxos(receiverWallet.id);
+      await consolidateUtxos(senderWallet.id);
 
-        final address = await addressRepository.generateNewReceiveAddress(
+      final address = await addressRepository.generateNewReceiveAddress(
+        walletId: receiverWallet.id,
+      );
+      final receiverResult = await receiverRole.start(
+        StartPayjoinReceiver(
           walletId: receiverWallet.id,
-        );
-        final receiverResult = await receiverRole.start(
-          StartPayjoinReceiver(
-            walletId: receiverWallet.id,
-            network: BitcoinNetwork.testnet,
-            address: address.address,
-            amount: Sats.fromInt(10000),
-          ),
-        );
-        final receiver = switch (receiverResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
-        final uri = Uri.parse(receiver.pjUri);
-        expect(uri.scheme, 'bitcoin');
-        expect(uri.path, address.address);
-        expect(uri.queryParameters, contains('pj'));
+          network: BitcoinNetwork.testnet,
+          address: address.address,
+          amount: Sats.fromInt(10000),
+        ),
+      );
+      final receiver = switch (receiverResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      final uri = Uri.parse(receiver.pjUri);
+      expect(uri.scheme, 'bitcoin');
+      expect(uri.path, address.address);
+      expect(uri.queryParameters, contains('pj'));
 
-        const feeRate = testnetFeeRate;
-        final preparationResult = await prepareBitcoinSend.execute(
+      const feeRate = testnetFeeRate;
+      final preparationResult = await prepareBitcoinSend.execute(
+        walletId: senderWallet.id,
+        recipients: [
+          BitcoinTransactionRecipient.fixed(
+            address: address.address,
+            amountSat: Sats.fromInt(10000),
+          ),
+        ],
+        networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
+      );
+      final prepared = switch (preparationResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => fail(
+          'Bitcoin preparation failed: ${failure.runtimeType}',
+        ),
+      };
+      final senderResult = await senderRole.start(
+        StartPayjoinSender(
           walletId: senderWallet.id,
-          recipients: [
-            BitcoinTransactionRecipient.fixed(
-              address: address.address,
-              amountSat: Sats.fromInt(10000),
-            ),
-          ],
-          networkFee: NetworkFee.relativeFromSatPerVbyte(feeRate),
-        );
-        final prepared = switch (preparationResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => fail(
-            'Bitcoin preparation failed: ${failure.runtimeType}',
-          ),
-        };
-        final senderResult = await senderRole.start(
-          StartPayjoinSender(
-            walletId: senderWallet.id,
-            network: BitcoinNetwork.testnet,
-            bip21Uri: receiver.pjUri,
-            unsignedOriginalPsbt: prepared.unsignedPsbt,
-            amount: Sats.fromInt(10000),
-            feeRate: FeeRate(feeRate),
-          ),
-        );
-        final sender = switch (senderResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
+          network: BitcoinNetwork.testnet,
+          bip21Uri: receiver.pjUri,
+          unsignedOriginalPsbt: prepared.unsignedPsbt,
+          amount: Sats.fromInt(10000),
+          feeRate: FeeRate(feeRate),
+        ),
+      );
+      final sender = switch (senderResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
 
-        final completed = await sessions
-            .watch(sessionIds: {sender.id})
-            .where(
-              (result) => switch (result) {
-                Ok(:final value) => value.status == PayjoinStatus.completed,
-                Err() => false,
-              },
-            )
-            .first
-            .timeout(const Duration(seconds: 300));
-        expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
-      },
-      timeout: const Timeout(Duration(seconds: 330)),
-    );
+      final completed = await sessions
+          .watch(sessionIds: {sender.id})
+          .where(
+            (result) => switch (result) {
+              Ok(:final value) => value.status == PayjoinStatus.completed,
+              Err() => false,
+            },
+          )
+          .first
+          .timeout(const Duration(seconds: 300));
+      expect(completed, isA<Ok<PayjoinSession, PayjoinFailure>>());
+    }, timeout: const Timeout(Duration(seconds: 330)));
 
-    test(
-      'a receiver expires when no sender submits a request',
-      () async {
-        final address = await addressRepository.generateNewReceiveAddress(
+    test('a receiver expires when no sender submits a request', () async {
+      final address = await addressRepository.generateNewReceiveAddress(
+        walletId: receiverWallet.id,
+      );
+      final receiverResult = await receiverRole.start(
+        StartPayjoinReceiver(
           walletId: receiverWallet.id,
-        );
-        final receiverResult = await receiverRole.start(
-          StartPayjoinReceiver(
-            walletId: receiverWallet.id,
-            network: BitcoinNetwork.testnet,
-            address: address.address,
-            amount: Sats.fromInt(10000),
-            expiresAt: DateTime.now().add(
-              PayjoinPolicy.minimumSessionLifetime + const Duration(seconds: 1),
-            ),
+          network: BitcoinNetwork.testnet,
+          address: address.address,
+          amount: Sats.fromInt(10000),
+          expiresAt: DateTime.now().add(
+            PayjoinPolicy.minimumSessionLifetime + const Duration(seconds: 1),
           ),
-        );
-        final receiver = switch (receiverResult) {
-          Ok(:final value) => value,
-          Err(:final failure) => throw failure,
-        };
+        ),
+      );
+      final receiver = switch (receiverResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
 
-        final expired = await sessions
-            .watch(sessionIds: {receiver.id})
-            .where(
-              (result) => switch (result) {
-                Ok(:final value) => value.status == PayjoinStatus.expired,
-                Err() => false,
-              },
-            )
-            .first
-            .timeout(const Duration(seconds: 240));
+      final expired = await sessions
+          .watch(sessionIds: {receiver.id})
+          .where(
+            (result) => switch (result) {
+              Ok(:final value) => value.status == PayjoinStatus.expired,
+              Err() => false,
+            },
+          )
+          .first
+          .timeout(const Duration(seconds: 240));
 
-        expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
-      },
-      timeout: const Timeout(Duration(seconds: 270)),
-    );
+      expect(expired, isA<Ok<PayjoinSession, PayjoinFailure>>());
+    }, timeout: const Timeout(Duration(seconds: 270)));
   }, skip: hasFixtures ? null : fixtureSkip);
 }
 

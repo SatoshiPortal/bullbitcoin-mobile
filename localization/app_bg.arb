@@ -129,27 +129,27 @@
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
   },
-  "coreSwapsChainPending": "Трансферът все още не е инициализиран.",
+  "coreSwapsChainPending": "Обменът все още не е инициализиран.",
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
-  "coreSwapsChainPaid": "Изчакване на плащането от доставчика на трансфера за получаване на потвърждение. Това може да отнеме известно време.",
+  "coreSwapsChainPaid": "Изчакване на плащането от доставчика на обмена за получаване на потвърждение. Това може да отнеме известно време.",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
-  "coreSwapsChainClaimable": "Прехвърлянето е готово за получаване.",
+  "coreSwapsChainClaimable": "Обменът е готов за получаване.",
   "@coreSwapsChainClaimable": {
     "description": "Status message for claimable chain swap"
   },
-  "coreSwapsChainRefundable": "Прехвърлянето е готово за възстановяване.",
+  "coreSwapsChainRefundable": "Обменът е готов за възстановяване.",
   "@coreSwapsChainRefundable": {
     "description": "Status message for refundable chain swap"
   },
-  "coreSwapsChainCanCoop": "Транзакцията ще завърши всеки момент.",
+  "coreSwapsChainCanCoop": "Обменът ще завърши всеки момент.",
   "@coreSwapsChainCanCoop": {
     "description": "Status message for chain swap that can complete cooperatively"
   },
-  "coreSwapsChainCompletedRefunded": "Преводът е възстановен.",
+  "coreSwapsChainCompletedRefunded": "Сумата от обмена е възстановена.",
   "@coreSwapsChainCompletedRefunded": {
     "description": "Status message for chain swap completed via refund"
   },
@@ -414,7 +414,7 @@
   "@replaceByFeeErrorNoFeeRateSelected": {
     "description": "Error message when no fee rate is selected"
   },
-  "transactionSwapDescChainPending": "Вашият превод е създаден, но все още не е иницииран.",
+  "transactionSwapDescChainPending": "Вашият обмен е създаден, но все още не е иницииран.",
   "@transactionSwapDescChainPending": {
     "description": "Description for pending chain swap"
   },
@@ -438,7 +438,7 @@
   "@autoswapUpdateSettingsError": {
     "description": "Error message when updating settings fails"
   },
-  "transactionStatusTransferFailed": "Прехвърлянето се провали",
+  "transactionStatusTransferFailed": "Обменът се провали",
   "@transactionStatusTransferFailed": {
     "description": "Status label for failed transfers"
   },
@@ -478,7 +478,7 @@
   "@hwKrux": {
     "description": "Name of Krux hardware wallet"
   },
-  "transactionFilterTransfer": "Прехвърляне",
+  "transactionFilterTransfer": "Обмен",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
@@ -664,7 +664,7 @@
   "@payPhone": {
     "description": "Label for phone details"
   },
-  "transactionDetailLabelTransferStatus": "Статус на прехвърлянето",
+  "transactionDetailLabelTransferStatus": "Статус на обмена",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
@@ -801,7 +801,7 @@
   "@fundExchangeSinpeWarningNoBitcoin": {
     "description": "Bold warning text at start of bitcoin warning message"
   },
-  "coreSwapsChainFailedRefunding": "Преводът ще бъде върнат скоро.",
+  "coreSwapsChainFailedRefunding": "Обменът ще бъде възстановен скоро.",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
   },
@@ -869,7 +869,7 @@
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
-  "transactionSwapDescChainFailed": "Възникна проблем с вашия превод. Моля, свържете се с поддръжката, ако средствата не са върнати в рамките на 24 часа.",
+  "transactionSwapDescChainFailed": "Възникна проблем с вашия обмен. Моля, свържете се с поддръжката, ако средствата не са върнати в рамките на 24 часа.",
   "@transactionSwapDescChainFailed": {
     "description": "Description for failed chain swap"
   },
@@ -1264,7 +1264,7 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "swapTransferRefundedMessage": "Трансферът е успешно възстановен.",
+  "swapTransferRefundedMessage": "Обменът е успешно възстановен.",
   "@swapTransferRefundedMessage": {
     "description": "Refund completion message"
   },
@@ -1300,7 +1300,7 @@
   "@exchangeReferralsMissionLink": {
     "description": "Link to the Bull Bitcoin mission page"
   },
-  "swapTransferPendingMessage": "Преводът е в процес. Биткойн транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете вкъщи и да изчакате.",
+  "swapTransferPendingMessage": "Обменът е в процес. Биткойн транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете в началото и да изчакате.",
   "@swapTransferPendingMessage": {
     "description": "Message shown during pending swap"
   },
@@ -1348,7 +1348,7 @@
   "@buyContinue": {
     "description": "Button to continue to next step"
   },
-  "swapTransferTitle": "Прехвърляне",
+  "swapTransferTitle": "Обмен",
   "@swapTransferTitle": {
     "description": "AppBar title on the main swap page"
   },
@@ -1418,7 +1418,7 @@
   "@payCalculating": {
     "description": "Text shown while calculating fees"
   },
-  "transactionDetailLabelTransferId": "ID на прехвърлянето",
+  "transactionDetailLabelTransferId": "ID на обмена",
   "@transactionDetailLabelTransferId": {
     "description": "Label for transfer ID"
   },
@@ -1721,7 +1721,7 @@
     "description": "Error when payment request is invalid"
   },
   "sendErrorUnsupportedQrCodeFormat": "Неподдържан формат на QR код",
-  "transactionStatusTransferInProgress": "Прехвърлянето е в процес",
+  "transactionStatusTransferInProgress": "Обменът е в процес",
   "@transactionStatusTransferInProgress": {
     "description": "Status label for transfers in progress"
   },
@@ -1795,7 +1795,7 @@
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
   },
-  "transactionDetailTransferProgress": "Напредък на прехвърлянето",
+  "transactionDetailTransferProgress": "Напредък на обмена",
   "@transactionDetailTransferProgress": {
     "description": "Title for ongoing transfer details"
   },
@@ -1837,7 +1837,7 @@
       }
     }
   },
-  "swapTransferFrom": "Прехвърля от",
+  "swapTransferFrom": "Обмен от",
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
   },
@@ -2052,7 +2052,7 @@
   "@confirmButton": {
     "description": "Button label to confirm action"
   },
-  "transactionSwapInfoClaimableTransfer": "Трансферът ще бъде завършен автоматично за няколко секунди. Ако не стане, можете да опитате ръчно заявяване на претенция, като щракнете върху бутона „Повторно искане за претенция за прехвърляне“.",
+  "transactionSwapInfoClaimableTransfer": "Обменът ще бъде завършен автоматично за няколко секунди. Ако не стане, можете да опитате ръчно получаване, като натиснете бутона „Повторен опит за получаване на обмена“.",
   "@transactionSwapInfoClaimableTransfer": {
     "description": "Additional info for claimable transfers"
   },
@@ -2092,7 +2092,7 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "swapValidationSelectFromWallet": "Моля, изберете портфейл, от който да прехвърлите",
+  "swapValidationSelectFromWallet": "Моля, изберете портфейл, от който да обменяте",
   "@swapValidationSelectFromWallet": {
     "description": "Validation error when no source wallet selected"
   },
@@ -2208,7 +2208,7 @@
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
   },
-  "swapTransferRefundInProgressTitle": "Възстановяването на трансфера е в процес",
+  "swapTransferRefundInProgressTitle": "Възстановяването на обмена е в процес",
   "@swapTransferRefundInProgressTitle": {
     "description": "Title when swap is being refunded"
   },
@@ -2521,7 +2521,7 @@
   "@payWhichWalletQuestion": {
     "description": "Question prompting user to select wallet"
   },
-  "transactionSwapDescChainExpired": "Този превод е изтекъл. Вашите средства ще бъдат автоматично върнати във вашия портфейл.",
+  "transactionSwapDescChainExpired": "Този обмен е изтекъл. Вашите средства ще бъдат автоматично върнати във вашия портфейл.",
   "@transactionSwapDescChainExpired": {
     "description": "Description for expired chain swap"
   },
@@ -2637,7 +2637,7 @@
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
-  "swapTransferRefundedTitle": "Трансферът е възстановен.",
+  "swapTransferRefundedTitle": "Обменът е възстановен",
   "@swapTransferRefundedTitle": {
     "description": "Title when swap has been refunded"
   },
@@ -2743,7 +2743,7 @@
   "@payMyFiatRecipients": {
     "description": "Tab label for saved recipients"
   },
-  "swapTransferTo": "Прехвърля към",
+  "swapTransferTo": "Обмен към",
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
   },
@@ -2898,7 +2898,7 @@
   "@bitboxActionImportWalletProcessing": {
     "description": "Processing text for import wallet"
   },
-  "swapConfirmTransferTitle": "Потвърдете превода.",
+  "swapConfirmTransferTitle": "Потвърдете обмена",
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
   },
@@ -2926,7 +2926,7 @@
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "sendTransferFee": "Такса за прехвърляне",
+  "sendTransferFee": "Такса за обмен",
   "@sendTransferFee": {
     "description": "Label for total swap transfer fee"
   },
@@ -2950,7 +2950,7 @@
   "@testBackupErrorIncorrectOrder": {
     "description": "Error when words are selected in wrong order"
   },
-  "swapValidationSelectToWallet": "Моля, изберете портфейл, към който да прехвърлите",
+  "swapValidationSelectToWallet": "Моля, изберете портфейл, към който да обменяте",
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
   },
@@ -3071,7 +3071,7 @@
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
-  "coreSwapsChainCompletedSuccess": "Прехвърлянето е успешно завършено.",
+  "coreSwapsChainCompletedSuccess": "Обменът е успешно завършен.",
   "@coreSwapsChainCompletedSuccess": {
     "description": "Status message for successfully completed chain swap"
   },
@@ -3187,7 +3187,7 @@
   "@buyBitcoinAddressHint": {
     "description": "Placeholder hint for bitcoin address input"
   },
-  "transactionListOngoingTransfersTitle": "Активни трансфери",
+  "transactionListOngoingTransfersTitle": "Текущи обмени",
   "@transactionListOngoingTransfersTitle": {
     "description": "Title for ongoing transfers section"
   },
@@ -3215,7 +3215,7 @@
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
   },
-  "transactionSwapDescChainClaimable": "Транзакцията за заключване е потвърдена. Сега заявявате средствата, за да довършите превода си.",
+  "transactionSwapDescChainClaimable": "Транзакцията за заключване е потвърдена. Сега получавате средствата, за да завършите обмена си.",
   "@transactionSwapDescChainClaimable": {
     "description": "Description for claimable chain swap"
   },
@@ -3263,7 +3263,7 @@
   "@coldcardStep7": {
     "description": "Coldcard troubleshooting tip 2"
   },
-  "transactionSwapDescChainRefundable": "Преводът ще бъде върнат. Вашите средства ще бъдат върнати автоматично във вашия портфейл.",
+  "transactionSwapDescChainRefundable": "Обменът ще бъде възстановен. Вашите средства ще бъдат върнати автоматично във вашия портфейл.",
   "@transactionSwapDescChainRefundable": {
     "description": "Description for refundable chain swap"
   },
@@ -3303,7 +3303,7 @@
   "@replaceByFeeBroadcastButton": {
     "description": "Button to broadcast the replacement transaction"
   },
-  "swapExternalTransferLabel": "Външен превод",
+  "swapExternalTransferLabel": "Външен обмен",
   "@swapExternalTransferLabel": {
     "description": "Label for external transfer toggle"
   },
@@ -3599,7 +3599,7 @@
   "@dcaSelectFrequencyLabel": {
     "description": "Label above frequency selection radio buttons"
   },
-  "transactionSwapDescChainCompleted": "Вашият превод е успешно завършен! Средствата вече трябва да са налични във вашия портфейл.",
+  "transactionSwapDescChainCompleted": "Вашият обмен е успешно завършен! Средствата вече трябва да са налични във вашия портфейл.",
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
@@ -3677,7 +3677,7 @@
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
   },
-  "autoswapAlwaysBlockInfoEnabled": "Когато е включено, автоматичните прехвърляния с такси над зададения лимит винаги ще бъдат блокирани",
+  "autoswapAlwaysBlockInfoEnabled": "Когато е включено, автоматичните обмени с такси над зададения лимит винаги ще бъдат блокирани",
   "@autoswapAlwaysBlockInfoEnabled": {
     "description": "Help text when always block is enabled"
   },
@@ -3877,7 +3877,7 @@
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
-  "autoswapMaxBalanceInfoText": "Когато балансът на портфейла надвиши двойното на тази стойност, автоматичното прехвърляне ще се задейства, за да намали баланса до това ниво.",
+  "autoswapMaxBalanceInfoText": "Когато балансът на портфейла надвиши двойния размер на тази сума, автоматичният обмен ще се задейства, за да намали баланса до това ниво",
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
@@ -4154,7 +4154,7 @@
   "@kruxStep13": {
     "description": "Krux instruction to return to app"
   },
-  "transactionSwapInfoRefundableTransfer": "Трансферът ще бъде автоматично възстановен за няколко секунди. Ако не стане, можете да опитате ръчно възстановяване, като щракнете върху бутона „Повторно искане за възстановяване на трансфера“.",
+  "transactionSwapInfoRefundableTransfer": "Този обмен ще бъде автоматично възстановен за няколко секунди. Ако не стане, можете да опитате ръчно възстановяване, като натиснете бутона „Повторен опит за възстановяване на обмена“.",
   "@transactionSwapInfoRefundableTransfer": {
     "description": "Additional info for refundable transfers"
   },
@@ -4259,7 +4259,7 @@
   "@dcaWalletLightningSubtitle": {
     "description": "Subtitle/description for Lightning wallet option"
   },
-  "swapTransferRefundInProgressMessage": "Възникна грешка при трансфера. Вашето възстановяване е в процес",
+  "swapTransferRefundInProgressMessage": "Възникна грешка при обмена. Вашето възстановяване е в процес.",
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
   },
@@ -4462,7 +4462,7 @@
   "@sendEconomyFee": {
     "description": "Lowest fee tier"
   },
-  "coreSwapsChainFailed": "Преводът не успя.",
+  "coreSwapsChainFailed": "Обменът не успя.",
   "@coreSwapsChainFailed": {
     "description": "Status message for failed chain swap"
   },
@@ -4528,7 +4528,7 @@
   "@sellCopBalance": {
     "description": "Display text for COP balance payout method"
   },
-  "receiveTransferFee": "Такса за прехвърляне",
+  "receiveTransferFee": "Такса за обмен",
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
@@ -4536,7 +4536,7 @@
   "@payRBFDisabled": {
     "description": "Status when RBF is disabled"
   },
-  "transactionStatusTransferCompleted": "Прехвърлянето завършено",
+  "transactionStatusTransferCompleted": "Обменът е завършен",
   "@transactionStatusTransferCompleted": {
     "description": "Status label for completed transfers"
   },
@@ -4677,7 +4677,7 @@
   "@exchangeFileUploadAddMoreFiles": {
     "description": "Button label to add more files"
   },
-  "transactionSwapDescChainDefault": "Вашият превод е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време за завършване.",
+  "transactionSwapDescChainDefault": "Вашият обмен е в процес на изпълнение. Този процес е автоматизиран и може да отнеме известно време за завършване.",
   "@transactionSwapDescChainDefault": {
     "description": "Default description for chain swap"
   },
@@ -4785,7 +4785,7 @@
   "@backupWalletGoogleDrivePrivacyMessage4": {
     "description": "Fourth part of privacy message (bold)"
   },
-  "swapTransferCompletedTitle": "Преводът завърши",
+  "swapTransferCompletedTitle": "Обменът завърши",
   "@swapTransferCompletedTitle": {
     "description": "Title when swap completes successfully"
   },
@@ -4907,7 +4907,7 @@
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
   },
-  "autoswapEnableToggleLabel": "Включи автоматично прехвърляне\n==WEBLATE_PART==",
+  "autoswapEnableToggleLabel": "Включи автоматичен обмен",
   "@autoswapEnableToggleLabel": {
     "description": "Label for the main toggle switch to enable/disable auto transfer feature"
   },
@@ -5222,7 +5222,7 @@
   "@keystoneStep7": {
     "description": "Keystone troubleshooting tip 3"
   },
-  "coreSwapsChainExpired": "Изтекъл превод",
+  "coreSwapsChainExpired": "Обменът е изтекъл",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
   },
@@ -5423,7 +5423,7 @@
   "@payWalletNotSynced": {
     "description": "Error when wallet sync is incomplete"
   },
-  "transactionSwapInfoChainDelay": "Трансфери по веригата може да отнемат известно време за завършване поради времето за потвърждение в блокчейна.",
+  "transactionSwapInfoChainDelay": "Обмените по веригата може да отнемат известно време за завършване поради времето за потвърждение в блокчейна.",
   "@transactionSwapInfoChainDelay": {
     "description": "Additional info about chain transfer delays"
   },
@@ -5515,7 +5515,7 @@
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
   },
-  "swapInternalTransferTitle": "Вътрешен превод.",
+  "swapInternalTransferTitle": "Вътрешен обмен",
   "@swapInternalTransferTitle": {
     "description": "AppBar title on the amount entry page"
   },
@@ -5720,7 +5720,7 @@
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
   },
-  "transactionDetailLabelTransferFees": "Такси за прехвърляне",
+  "transactionDetailLabelTransferFees": "Такси за обмен",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
@@ -5976,7 +5976,7 @@
   "@confirmLogoutTitle": {
     "description": "Dialog title for logout confirmation"
   },
-  "swapTransferCompletedMessage": "Уау, изчакахте! Преводът завърши успешно.",
+  "swapTransferCompletedMessage": "Уау, изчакахте! Обменът завърши успешно.",
   "@swapTransferCompletedMessage": {
     "description": "Success message after transfer completion"
   },
@@ -6435,7 +6435,7 @@
   "@fundExchangeLabelIban": {
     "description": "Label for IBAN account number field"
   },
-  "swapDoNotUninstallWarning": "Не деинсталирайте приложението, докато прехвърлянето не завърши!",
+  "swapDoNotUninstallWarning": "Не деинсталирайте приложението, докато обменът не завърши!",
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
@@ -6582,7 +6582,7 @@
   "@bitboxErrorConnectionTypeNotInitialized": {
     "description": "Error when connection type is not initialized"
   },
-  "transactionListOngoingTransfersDescription": "Тези трансфери в момента са в ход. Вашите средства са защитени и ще бъдат налични, когато прехвърлянето завърши.",
+  "transactionListOngoingTransfersDescription": "Тези обмени в момента са в ход. Вашите средства са защитени и ще бъдат налични, когато обменът завърши.",
   "@transactionListOngoingTransfersDescription": {
     "description": "Description for ongoing transfers section"
   },
@@ -6594,7 +6594,7 @@
   "@buyViewDetails": {
     "description": "Button to view order details"
   },
-  "autoswapMaxFeeLabel": "Максимална такса за трансфер",
+  "autoswapMaxFeeLabel": "Максимална такса за обмен",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
   },
@@ -6672,7 +6672,7 @@
   "@bitboxActionSignTransactionSuccessSubtext": {
     "description": "Success subtext for sign transaction"
   },
-  "transactionStatusTransferExpired": "Изтекъл превод",
+  "transactionStatusTransferExpired": "Обменът е изтекъл",
   "@transactionStatusTransferExpired": {
     "description": "Status label for expired transfers"
   },
@@ -6708,7 +6708,7 @@
   "@settingsScreenTitle": {
     "description": "The title of the settings screen"
   },
-  "transactionDetailLabelTransferFee": "Такса за прехвърляне",
+  "transactionDetailLabelTransferFee": "Такса за обмен",
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
@@ -6839,7 +6839,7 @@
   "@backupWalletImportanceWarning": {
     "description": "Warning message emphasizing the importance of creating a backup"
   },
-  "autoswapMaxFeeInfoText": "Ако общата такса за прехвърляне надвишава зададения процент, автоматичното прехвърляне ще бъде блокирано",
+  "autoswapMaxFeeInfoText": "Ако общата такса за обмен надвишава зададения процент, автоматичният обмен ще бъде блокиран",
   "@autoswapMaxFeeInfoText": {
     "description": "Help text explaining how the max fee threshold works"
   },
@@ -6908,7 +6908,7 @@
   "@fundExchangeCrIbanCrcLabelRecipientName": {
     "description": "Label for recipient name in CR IBAN CRC transfer"
   },
-  "swapTransferPendingTitle": "Превод в процес",
+  "swapTransferPendingTitle": "Обмен в процес",
   "@swapTransferPendingTitle": {
     "description": "Title during pending swap status"
   },
@@ -6976,7 +6976,7 @@
   "@payIban": {
     "description": "Label for IBAN field"
   },
-  "swapInfoDescription": "Прехвърляйте Bitcoin безпроблемно между вашите портфейли. Съхранявайте средствата само в Instant Payment Wallet за ежедневни разходи.",
+  "swapInfoDescription": "Обменяйте Bitcoin безпроблемно между вашите портфейли. Съхранявайте средствата само в Instant Payment Wallet за ежедневни разходи.",
   "@swapInfoDescription": {
     "description": "Information banner text on amount page"
   },
@@ -7151,7 +7151,7 @@
   "@bitcoinSettingsBip85EntropiesTitle": {
     "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
-  "swapTransferAmount": "Сума за прехвърляне",
+  "swapTransferAmount": "Сума за обмен",
   "@swapTransferAmount": {
     "description": "Label for amount input field"
   },
@@ -7310,7 +7310,7 @@
   "@receiveLiquidNetwork": {
     "description": "Liquid Network option"
   },
-  "autoswapSettingsTitle": "Настройки за автоматично прехвърляне",
+  "autoswapSettingsTitle": "Настройки за автоматичен обмен",
   "@autoswapSettingsTitle": {
     "description": "Main header/title of the auto swap settings bottom sheet"
   },
@@ -7575,7 +7575,7 @@
   "@backupSettingsEncryptedVault": {
     "description": "Label for encrypted vault backup status row"
   },
-  "autoswapAlwaysBlockInfoDisabled": "Когато е деактивирано, ще имате възможност да позволите автоматично прехвърляне, блокирано поради високи такси",
+  "autoswapAlwaysBlockInfoDisabled": "Когато е изключено, ще имате възможност да разрешите автоматичен обмен, блокиран поради високи такси",
   "@autoswapAlwaysBlockInfoDisabled": {
     "description": "Help text when always block is disabled"
   },
@@ -7885,7 +7885,7 @@
   "wizardJourneyTip2": "Опитайте криптираното резервно копие на хранилището",
   "wizardJourneyTip3": "Свържете се със собствен Bitcoin възел",
   "wizardJourneyTip4": "Свържете се със собствен Mempool изследовател",
-  "wizardJourneyTip5": "Прехвърляйте между Bitcoin и Liquid без KYC",
+  "wizardJourneyTip5": "Обменяйте между Bitcoin и Liquid без KYC",
   "wizardJourneyTip6": "Персонализирайте настройките на autoswap",
   "wizardJourneyTip7": "Превключвайте между Bitcoin (BTC) и Satoshis (sats)",
   "wizardJourneyTip8": "Създавайте air-gap транзакции за хардуерния си портфейл",
@@ -8050,7 +8050,7 @@
   "homeActionBuy": "Купи",
   "homeActionSell": "Продай",
   "homeActionPay": "Плати",
-  "homeActionTransfer": "Прехвърли",
+  "homeActionTransfer": "Обмени",
   "backupCardTitle": "Защитете своите биткойни.",
   "backupCardSubtitle": "Архивирайте портфейла си сега.",
   "mempoolCustomServerNoSsl": "Без SSL",
@@ -8402,7 +8402,7 @@
   "transactionSwapProgressBroadcasted": "Излъчено",
   "transactionSwapProgressInvoicePaid": "Фактурата\nплатена",
   "transactionSwapProgressConfirmed": "Потвърдено",
-  "transactionSwapStatusTransferStatus": "Статус на прехвърлянето",
+  "transactionSwapStatusTransferStatus": "Статус на обмена",
   "transactionSwapStatusSwapStatus": "Статус на обмена",
   "transactionSwapDescLnReceivePending": "Обменът ви е инициран. Изчакваме получаване на плащане в мрежата Lightning.",
   "transactionSwapDescLnReceivePaid": "Плащането е получено! В момента излъчваме верижната транзакция към вашия портфейл.",
@@ -8744,30 +8744,30 @@
   "sellSendPaymentAboveMax": "Опитвате се да продадете над максималната сума, която може да бъде продадена с този портфейл.",
   "sellSendPaymentBelowMin": "Опитвате се да продадете под минималната сума, която може да бъде продадена с този портфейл.",
   "sellSendPaymentInsufficientBalance": "Недостатъчен баланс в избрания портфейл за завършване на тази поръчка за продажба.",
-  "swapTitle": "Вътрешно прехвърляне",
-  "swapInfoBanner": "Прехвърляйте Bitcoin безпроблемно между вашите портфейли. Дръжте средства в Портфейла за мигновени плащания само за ежедневни разходи.",
+  "swapTitle": "Вътрешен обмен",
+  "swapInfoBanner": "Обменяйте Bitcoin безпроблемно между вашите портфейли. Съхранявайте средствата само в Instant Payment Wallet за ежедневни разходи.",
   "swapMax": "МАКС",
   "swapContinue": "Продължи",
-  "swapConfirmTitle": "Потвърди прехвърлянето",
-  "swapProgressTitle": "Вътрешно прехвърляне",
-  "swapProgressPending": "Прехвърлянето е в процес",
-  "swapProgressPendingMessage": "Прехвърлянето е в процес на изпълнение. Bitcoin транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете вкъщи и да изчакате.",
-  "swapProgressCompleted": "Прехвърлянето е завършено",
-  "swapProgressCompletedMessage": "Уау, изчакахте! Прехвърлянето беше завършено успешно.",
-  "swapProgressRefundInProgress": "Възстановяването на прехвърлянето е в процес",
-  "swapProgressRefundMessage": "Възникна грешка с прехвърлянето. Възстановяването ви е в процес.",
-  "swapProgressRefunded": "Прехвърлянето е възстановено",
-  "swapProgressRefundedMessage": "Прехвърлянето беше успешно възстановено.",
+  "swapConfirmTitle": "Потвърдете обмена",
+  "swapProgressTitle": "Вътрешен обмен",
+  "swapProgressPending": "Обмен в процес",
+  "swapProgressPendingMessage": "Обменът е в процес. Биткойн транзакциите могат да отнемат известно време за потвърждение. Можете да се върнете в началото и да изчакате.",
+  "swapProgressCompleted": "Обменът завърши",
+  "swapProgressCompletedMessage": "Уау, изчакахте! Обменът завърши успешно.",
+  "swapProgressRefundInProgress": "Възстановяването на обмена е в процес",
+  "swapProgressRefundMessage": "Възникна грешка при обмена. Вашето възстановяване е в процес.",
+  "swapProgressRefunded": "Обменът е възстановен",
+  "swapProgressRefundedMessage": "Обменът е успешно възстановен.",
   "swapProgressGoHome": "Върни се вкъщи",
-  "autoswapTitle": "Настройки за автоматично прехвърляне",
-  "autoswapEnable": "Активирай автоматично прехвърляне",
+  "autoswapTitle": "Настройки за автоматичен обмен",
+  "autoswapEnable": "Включи автоматичен обмен",
   "autoswapMaxBalance": "Макс. баланс на Instant портфейла",
-  "autoswapMaxBalanceInfo": "Когато балансът на портфейла надвиши двойния размер на тази сума, автоматичното прехвърляне ще се задейства, за да намали баланса до това ниво",
-  "autoswapMaxFee": "Макс. такса за прехвърляне",
-  "autoswapMaxFeeInfo": "Ако общата такса за прехвърляне е над зададения процент, автоматичното прехвърляне ще бъде блокирано",
+  "autoswapMaxBalanceInfo": "Когато балансът на портфейла надвиши двойния размер на тази сума, автоматичният обмен ще се задейства, за да намали баланса до това ниво",
+  "autoswapMaxFee": "Максимална такса за обмен",
+  "autoswapMaxFeeInfo": "Ако общата такса за обмен надвишава зададения процент, автоматичният обмен ще бъде блокиран",
   "autoswapAlwaysBlock": "Винаги блокирай високи такси",
-  "autoswapAlwaysBlockEnabledInfo": "Когато е активирано, автоматичните прехвърляния с такси над зададения лимит винаги ще бъдат блокирани",
-  "autoswapAlwaysBlockDisabledInfo": "Когато е деактивирано, ще ви бъде дадена възможност да разрешите автоматично прехвърляне, което е блокирано поради високи такси",
+  "autoswapAlwaysBlockEnabledInfo": "Когато е включено, автоматичните обмени с такси над зададения лимит винаги ще бъдат блокирани",
+  "autoswapAlwaysBlockDisabledInfo": "Когато е изключено, ще имате възможност да разрешите автоматичен обмен, блокиран поради високи такси",
   "autoswapRecipientWallet": "Портфейл получател на Bitcoin",
   "autoswapRecipientRequired": "*",
   "autoswapSelectWallet": "Изберете биткойн портфейл",
@@ -9028,17 +9028,17 @@
   "coreScreensPageNotFound": "Страницата не е намерена",
   "coreScreensLogsTitle": "Логове",
   "coreScreensConfirmSend": "Потвърди изпращането",
-  "coreScreensExternalTransfer": "Външно прехвърляне",
-  "coreScreensInternalTransfer": "Вътрешно прехвърляне",
-  "coreScreensConfirmTransfer": "Потвърди прехвърлянето",
+  "coreScreensExternalTransfer": "Външен обмен",
+  "coreScreensInternalTransfer": "Вътрешен обмен",
+  "coreScreensConfirmTransfer": "Потвърдете обмена",
   "coreScreensFromLabel": "От",
   "coreScreensToLabel": "До",
   "coreScreensAmountLabel": "Сума",
   "coreScreensNetworkFeesLabel": "Мрежови такси",
   "coreScreensFeePriorityLabel": "Приоритет на таксата",
-  "coreScreensTransferIdLabel": "ID на прехвърлянето",
+  "coreScreensTransferIdLabel": "ID на обмена",
   "coreScreensTotalFeesLabel": "Общи такси",
-  "coreScreensTransferFeeLabel": "Такса за прехвърляне",
+  "coreScreensTransferFeeLabel": "Такса за обмен",
   "coreScreensFeeDeductionExplanation": "Това е общата такса, приспадната от изпратената сума",
   "coreScreensReceiveNetworkFeeLabel": "Мрежова такса за получаване",
   "coreScreensServerNetworkFeesLabel": "Мрежови такси на сървъра",
@@ -9399,5 +9399,13 @@
   "sellPayoutSepaDescription": "Тегленията се показват като изпратени от Leonod",
   "sellPayoutTitle": "Избор на получател",
   "sellPayoutNewBadge": "НОВО",
-  "coreScreensOutputsExceedInputs": "Изходите надвишават входовете: тази транзакция е невалидна и мрежата ще я отхвърли."
+  "coreScreensOutputsExceedInputs": "Изходите надвишават входовете: тази транзакция е невалидна и мрежата ще я отхвърли.",
+  "swapUnderReviewTitle": "Обменът се проверява",
+  "swapUnderReviewDescription": "Този обмен изисква ръчна проверка. Свържете се с поддръжката за съдействие. Ако нямате акаунт за поддръжка, трябва само да създадете такъв; KYC не се изисква.",
+  "swapUnderReviewSupportMessage": "Обменът се проверява\nID на поръчката: {orderId}\nID на заявката: {requestId}\nНомер на поръчката: {orderNumber}",
+  "bitcoinSettingsAutoTransferTitle": "Автоматичен обмен",
+  "broadcastSignedTxErrorAlreadyInChain": "Тази транзакция вече е в блокчейна. Няма какво повече да се излъчва.",
+  "broadcastSignedTxErrorRejected": "Мрежата отхвърли тази транзакция. Възможно е да не е напълно подписана, да е невалидна или да е в конфликт с друго плащане.",
+  "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
+  "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки."
 }

@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/buy/domain/buy_failure.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Renders whichever error the order creation failed with. Amount limits get
 /// the amount appended, everything else falls back to its translation so that

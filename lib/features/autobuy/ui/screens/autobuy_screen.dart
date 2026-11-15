@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
@@ -14,7 +14,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullSpacing,
         Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';

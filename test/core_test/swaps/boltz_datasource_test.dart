@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
+import 'package:bb_mobile/features/swap/data/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

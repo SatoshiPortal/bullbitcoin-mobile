@@ -1,5 +1,5 @@
 import 'package:bull_ui/src/feedback/bull_refresh_indicator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Standard pull-to-refresh body.
 ///

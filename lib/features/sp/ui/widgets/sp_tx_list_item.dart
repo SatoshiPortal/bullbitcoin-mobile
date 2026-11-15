@@ -1,9 +1,10 @@
+import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -20,7 +21,12 @@ TxListItemData spPaymentListItemData(BuildContext context, SpPayment payment) {
     icon: isIncoming ? Icons.arrow_downward : Icons.arrow_upward,
     iconBackgroundColor: context.appColors.surface,
     iconBorderColor: context.appColors.border,
-    amountSat: payment.amountSat.value.toInt(),
+    amount: CurrencyText(
+      payment.amountSat.value.toInt(),
+      showFiat: false,
+      interactive: true,
+      style: context.font.bodyLarge,
+    ),
     labels: const [],
     networkLabel: isSp
         ? context.loc.spCoinSourceSp

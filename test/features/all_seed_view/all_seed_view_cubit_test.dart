@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
@@ -66,18 +66,16 @@ void main() {
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
-    final stored = await Secrets(
-      scratchDirectory: () async => '/tmp',
-    ).import(words: words);
+    final stored = await Secrets(scratchDirectory: () async => '/tmp')
+        .import(words: words);
     aSecret = (stored as Ok<Secret, SecretFailure>).value;
 
     getAllSecretsUsecase = _MockGetAllSecretsUsecase();
     getWalletsUsecase = _MockGetWalletsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
     getSwapMnemonicUsecase = _MockGetSwapMnemonicUsecase();
-    when(
-      () => getAllSecretsUsecase.execute(),
-    ).thenAnswer((_) async => Ok([aSecret]));
+    when(() => getAllSecretsUsecase.execute())
+        .thenAnswer((_) async => Ok([aSecret]));
     when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
     when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
 

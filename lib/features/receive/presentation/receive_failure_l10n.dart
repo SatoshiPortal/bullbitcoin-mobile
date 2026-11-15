@@ -27,6 +27,7 @@ extension ReceiveFailureL10n on ReceiveFailure {
         inNetwork.toTranslated(context),
         outNetwork.toTranslated(context),
       ),
+    ReceiveUnsupportedNetworkFailure() ||
     ReceiveSwapRouteUnavailableFailure() =>
       context.loc.swapErrorRouteUnavailableGeneric,
     ReceiveRateLimitedFailure(:final retryAfter) =>

@@ -1,10 +1,10 @@
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
@@ -44,7 +44,13 @@ class SyncExchangeCurrencyUsecase {
       return const Err(SettingsExchangeSyncFailure('settings fetch failed'));
     }
 
-    final userRepository = environment.isTestnet
+    if (!NetworkCapabilities.supports(
+      BitcoinNetwork.fromName(environment.name),
+      NetworkCapability.exchange,
+    )) {
+      return Err(SettingsNetworkUnavailableFailure(environment.networkEnv));
+    }
+    final userRepository = environment.requireHistoricalTestnet()
         ? _testnetExchangeUserRepository
         : _mainnetExchangeUserRepository;
 

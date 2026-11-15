@@ -92,9 +92,8 @@ void main() {
   blocTest<AutoBuyCubit, AutoBuyState>(
     'enables AutoBuy only once the account confirms it',
     setUp: () {
-      when(
-        () => setAutoBuy.execute(enabled: true),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => setAutoBuy.execute(enabled: true))
+          .thenAnswer((_) async => const Ok(null));
       when(() => getStatus.execute()).thenAnswer(
         (_) async =>
             const Ok(AutoBuyStatus(isActive: true, isRestricted: false)),
@@ -127,9 +126,8 @@ void main() {
   blocTest<AutoBuyCubit, AutoBuyState>(
     'does not report success when the account still reports it inactive',
     setUp: () {
-      when(
-        () => setAutoBuy.execute(enabled: true),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => setAutoBuy.execute(enabled: true))
+          .thenAnswer((_) async => const Ok(null));
       when(() => getStatus.execute()).thenAnswer(
         (_) async =>
             const Ok(AutoBuyStatus(isActive: false, isRestricted: false)),
@@ -158,9 +156,8 @@ void main() {
   blocTest<AutoBuyCubit, AutoBuyState>(
     'does not report success when the confirming refresh fails',
     setUp: () {
-      when(
-        () => setAutoBuy.execute(enabled: true),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => setAutoBuy.execute(enabled: true))
+          .thenAnswer((_) async => const Ok(null));
       when(
         () => getStatus.execute(),
       ).thenAnswer((_) async => const Err(AutoBuyAccountUnavailableFailure()));
@@ -187,9 +184,8 @@ void main() {
   blocTest<AutoBuyCubit, AutoBuyState>(
     'disables AutoBuy without requiring a wallet',
     setUp: () {
-      when(
-        () => setAutoBuy.execute(enabled: false),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => setAutoBuy.execute(enabled: false))
+          .thenAnswer((_) async => const Ok(null));
       when(() => getStatus.execute()).thenAnswer(
         (_) async =>
             const Ok(AutoBuyStatus(isActive: false, isRestricted: false)),
@@ -207,9 +203,8 @@ void main() {
   blocTest<AutoBuyCubit, AutoBuyState>(
     'keeps AutoBuy inactive when the preference update fails',
     setUp: () {
-      when(
-        () => setAutoBuy.execute(enabled: true),
-      ).thenAnswer((_) async => const Err(AutoBuyPreferenceUpdateFailure()));
+      when(() => setAutoBuy.execute(enabled: true))
+          .thenAnswer((_) async => const Err(AutoBuyPreferenceUpdateFailure()));
     },
     build: buildCubit,
     seed: () => const AutoBuyState(

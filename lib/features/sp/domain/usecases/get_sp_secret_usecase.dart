@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -19,7 +19,19 @@ class GetSpSecretUsecase {
 
   @useResult
   Future<Result<Secret, SpFailure>> execute(BitcoinNetwork network) async {
-    final List<Wallet> wallets;
+    final walletNetwork = switch (network) {
+      BitcoinNetwork.mainnet => app.Network.bitcoinMainnet,
+      BitcoinNetwork.testnet => app.Network.bitcoinTestnet,
+      BitcoinNetwork.signet || BitcoinNetwork.regtest => null,
+    };
+    if (walletNetwork == null ||
+        !NetworkCapabilities.supports(
+          network,
+          NetworkCapability.silentPayments,
+        )) {
+      return const Err(SpUnsupportedNetwork());
+    }
+    final List<app.Wallet> wallets;
     switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
@@ -32,10 +44,7 @@ class GetSpSecretUsecase {
 
     // Mainnet and testnet defaults need not share a seed: the account must be
     // the one of the network it scans.
-    final isMainnet = network == BitcoinNetwork.mainnet;
-    final wallet = wallets
-        .where((w) => w.network.isMainnet == isMainnet)
-        .firstOrNull;
+    final wallet = wallets.where((w) => w.network == walletNetwork).firstOrNull;
     if (wallet == null) {
       return const Err(SpUnexpected('SP secret lookup failed'));
     }

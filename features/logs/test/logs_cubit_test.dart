@@ -43,9 +43,8 @@ void main() {
   test('loads once and exposes ready entries', () async {
     final repository = _LogsRepository(
       entries: [
-        LogEntryModel.fromRawLine(
-          '2026-01-01T00:00:00Z\tINFO\tmessage',
-        ).toDomain(),
+        LogEntryModel.fromRawLine('2026-01-01T00:00:00Z\tINFO\tmessage')
+            .toDomain(),
       ],
     );
     final cubit = _buildCubit(repository);

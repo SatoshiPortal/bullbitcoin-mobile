@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_payments_port.dart';
@@ -11,11 +12,19 @@ import 'package:meta/meta.dart';
 /// confirmed simulation) lives in the adapter/FFI; this use case just routes
 /// the confirmed [SpTxDraft] through unchanged.
 class SendSpPaymentUsecase {
+  final GetSpFeatureGateUsecase _getSpFeatureGateUsecase;
   final SpPaymentsPort _repository;
 
-  SendSpPaymentUsecase({required this._repository});
+  SendSpPaymentUsecase({
+    required this._getSpFeatureGateUsecase,
+    required this._repository,
+  });
 
   @useResult
-  Future<Result<String, SpFailure>> execute({required SpTxDraft draft}) =>
-      _repository.finalizeSignBroadcast(draft: draft);
+  Future<Result<String, SpFailure>> execute({required SpTxDraft draft}) async {
+    if (!await _getSpFeatureGateUsecase.execute()) {
+      return const Err(SpUnsupportedNetwork());
+    }
+    return _repository.finalizeSignBroadcast(draft: draft);
+  }
 }

@@ -27,3 +27,7 @@ final class AutoBuyStatusUnconfirmedFailure extends AutoBuyFailure {
 final class AutoBuyUnexpectedFailure extends AutoBuyFailure {
   const AutoBuyUnexpectedFailure([super.logMessage]);
 }
+
+final class AutoBuyUnsupportedNetworkFailure extends AutoBuyFailure {
+  const AutoBuyUnsupportedNetworkFailure();
+}

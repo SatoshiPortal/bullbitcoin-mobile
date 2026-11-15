@@ -11,12 +11,12 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_swaps_usecase.dart';
@@ -27,7 +27,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
 /// The use case returns a `Result`; these tests are about what it binds, so a
 /// failure is a test failure rather than a case to assert on.
@@ -114,18 +114,15 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
     when(
       () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
     ).thenAnswer((_) async => <Swap>[]);
-    when(
-      () => orderRepository.getOrders(),
-    ).thenAnswer((_) async => const Ok(<Order>[]));
-    when(
-      () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
-    ).thenAnswer((_) async {});
+    when(() => orderRepository.getOrders())
+        .thenAnswer((_) async => const Ok(<Order>[]));
+    when(() => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')))
+        .thenAnswer((_) async {});
     when(
       () => getTransactionOrderSwapsUsecase.execute(
         walletId: any(named: 'walletId'),

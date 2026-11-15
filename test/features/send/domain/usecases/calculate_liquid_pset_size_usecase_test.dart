@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,9 +18,8 @@ void main() {
   });
 
   test('returns the discounted vsize from the repository', () async {
-    when(
-      () => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-    ).thenAnswer((_) async => (1234, 250));
+    when(() => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
+        .thenAnswer((_) async => (1234, 250));
 
     final result = await usecase.execute(pset: 'dummy-pset');
 
@@ -30,9 +29,8 @@ void main() {
   });
 
   test('sanitizes any underlying error into a build failure', () async {
-    when(
-      () => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')),
-    ).thenThrow(Exception('boom: bc1qsecretaddress'));
+    when(() => repo.getPsetSizeAndAbsoluteFees(pset: any(named: 'pset')))
+        .thenThrow(Exception('boom: bc1qsecretaddress'));
 
     final result = await usecase.execute(pset: 'dummy-pset');
 

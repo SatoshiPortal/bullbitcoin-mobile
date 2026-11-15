@@ -32,24 +32,29 @@ class TransactionDetailsAmount extends StatelessWidget {
     return Row(
       mainAxisAlignment: .center,
       children: [
-        CurrencyText(
-          isOrder && !showOrderInFiat && orderAmountAndCurrency != null
-              ? orderAmountAndCurrency.$1.toInt()
-              : amountSat ?? 0,
-          showFiat: false,
-          style: context.font.displaySmall?.copyWith(
-            color: context.appColors.secondary,
-            fontWeight: .w500,
+        if (showOrderInFiat && orderAmountAndCurrency != null)
+          CurrencyText(
+            0,
+            showFiat: false,
+            style: context.font.displaySmall?.copyWith(
+              color: context.appColors.secondary,
+              fontWeight: .w500,
+            ),
+            fiatAmount: orderAmountAndCurrency.$1.toDouble(),
+            fiatCurrency: orderAmountAndCurrency.$2,
+          )
+        else
+          CurrencyText(
+            isOrder && orderAmountAndCurrency != null
+                ? orderAmountAndCurrency.$1.toInt()
+                : amountSat ?? 0,
+            showFiat: false,
+            interactive: true,
+            style: context.font.displaySmall?.copyWith(
+              color: context.appColors.secondary,
+              fontWeight: .w500,
+            ),
           ),
-          fiatAmount:
-              isOrder && showOrderInFiat && orderAmountAndCurrency != null
-              ? orderAmountAndCurrency.$1.toDouble()
-              : null,
-          fiatCurrency:
-              isOrder && showOrderInFiat && orderAmountAndCurrency != null
-              ? orderAmountAndCurrency.$2
-              : null,
-        ),
       ],
     );
   }

@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
@@ -89,9 +89,8 @@ void main() {
   group('networkFees', () {
     test('returns the fee options', () async {
       final fees = _MockFeeOptions();
-      when(
-        () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-      ).thenAnswer((_) async => fees);
+      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+          .thenAnswer((_) async => fees);
 
       final result = await usecase.networkFees(isLiquid: false);
 
@@ -99,9 +98,8 @@ void main() {
     });
 
     test('names the failure so the message stays actionable', () async {
-      when(
-        () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-      ).thenThrow(Exception(_rawReason));
+      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+          .thenThrow(Exception(_rawReason));
 
       final result = await usecase.networkFees(isLiquid: false);
 
@@ -185,9 +183,8 @@ void main() {
     });
 
     test('asks the testnet price in the testnet environment', () async {
-      when(
-        getSettings.execute,
-      ).thenAnswer((_) async => _settings(environment: Environment.testnet));
+      when(getSettings.execute)
+          .thenAnswer((_) async => _settings(environment: Environment.testnet));
 
       final result = await usecase.satsToCurrency();
 
@@ -230,9 +227,8 @@ void main() {
   group('order', () {
     test('returns the order', () async {
       final order = _MockOrder();
-      when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => order);
+      when(() => getOrder.execute(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => order);
 
       final result = await usecase.order(orderId: 'order-1');
 
@@ -240,9 +236,8 @@ void main() {
     });
 
     test('sanitizes a fetch failure', () async {
-      when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
-      ).thenThrow(Exception(_rawReason));
+      when(() => getOrder.execute(orderId: any(named: 'orderId')))
+          .thenThrow(Exception(_rawReason));
 
       final result = await usecase.order(orderId: 'order-1');
 

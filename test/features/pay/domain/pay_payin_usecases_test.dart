@@ -1,12 +1,16 @@
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/public/send_facade.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show WalletFacade;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
@@ -73,14 +77,13 @@ void main() {
     }
 
     Future<Result<PreparedPayBitcoinPayin, PayFailure>> run() =>
-        PreparePayBitcoinPayinUsecase(
-          prepareBitcoinSendUsecase: prepare,
-        ).execute(
-          walletId: 'wallet-1',
-          address: 'bc1qpayin',
-          networkFee: const NetworkFee.absolute(200),
-          amountSat: 100000,
-        );
+        PreparePayBitcoinPayinUsecase(prepareBitcoinSendUsecase: prepare)
+            .execute(
+              walletId: 'wallet-1',
+              address: 'bc1qpayin',
+              networkFee: const NetworkFee.absolute(200),
+              amountSat: 100000,
+            );
 
     test('a build failure is sanitized, reason kept for logs only', () async {
       stubFailure(const WalletTransactionBuildFailure(_rawReason));
@@ -239,26 +242,39 @@ void main() {
     test('a rejected broadcast is sanitized, not quoted', () async {
       final broadcast = _MockBroadcastBitcoin();
       when(
-        () => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')),
+        () => broadcast.execute(
+          any(),
+          isPsbt: any(named: 'isPsbt'),
+          walletId: any(named: 'walletId'),
+          network: app.Network.bitcoinMainnet,
+        ),
       ).thenThrow(Exception(_rawReason));
 
-      final result = await BroadcastPayPayinUsecase(
-        broadcastBitcoinTransactionUsecase: broadcast,
-        broadcastLiquidTransactionUsecase: _MockBroadcastLiquid(),
-      ).bitcoin('rawtx', isPsbt: true);
+      final result =
+          await BroadcastPayPayinUsecase(
+            wallet: const WalletFacade(Stream.empty()),
+            send: SendFacade(
+              bitcoin: broadcast.execute,
+              liquid: _MockBroadcastLiquid().execute,
+            ),
+          ).bitcoin(
+            'rawtx',
+            walletId: 'source',
+            isPsbt: true,
+            network: app.Network.bitcoinMainnet,
+          );
 
       final failure = (result as Err<String, PayFailure>).failure;
       expect(failure, isA<PayUnexpectedFailure>());
-      expect(failure.logMessage, contains(_rawReason));
+      expect(failure.logMessage, 'pay_payin_broadcast_failed');
     });
   });
 
   group('LoadPayWalletUtxosUsecase', () {
     test('a utxo read failure is a value, not a throw', () async {
       final utxos = _MockGetWalletUtxos();
-      when(
-        () => utxos.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception(_rawReason));
+      when(() => utxos.execute(walletId: any(named: 'walletId')))
+          .thenThrow(Exception(_rawReason));
 
       final result = await LoadPayWalletUtxosUsecase(
         getWalletUtxosUsecase: utxos,

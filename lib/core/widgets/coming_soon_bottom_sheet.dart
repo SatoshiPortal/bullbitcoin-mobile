@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullBottomSheet, BullButton, BullShapesX;
 
@@ -11,8 +11,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
 
   const ComingSoonBottomSheet({
     super.key,
-    this.description =
-        'This feature is currently under development and will be available soon.',
+    this.description = 'This feature is currently under development and will be available soon.',
     this.icon,
     this.onDismissed,
   });
@@ -26,9 +25,7 @@ class ComingSoonBottomSheet extends StatelessWidget {
     return BullBottomSheet.show(
       context: context,
       child: ComingSoonBottomSheet(
-        description:
-            description ??
-            'This feature is currently under development and will be available soon.',
+        description: description ?? 'This feature is currently under development and will be available soon.',
         icon: icon,
         onDismissed: onDismissed,
       ),

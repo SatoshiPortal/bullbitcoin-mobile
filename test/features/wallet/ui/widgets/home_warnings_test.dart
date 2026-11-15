@@ -3,10 +3,10 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart' show BullCarousel;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,7 +25,7 @@ Future<void> _pump(WidgetTester tester, WalletState state) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: BlocProvider<WalletBloc>.value(

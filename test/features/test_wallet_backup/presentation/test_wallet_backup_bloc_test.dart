@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
@@ -81,9 +81,8 @@ void main() {
     test('loads wallets and selects the default one', () async {
       final nonDefault = _wallet(isDefault: false, origin: 'a');
       final defaultWallet = _wallet(isDefault: true, origin: 'b');
-      when(
-        () => loadWalletsUsecase.execute(),
-      ).thenAnswer((_) async => Ok([nonDefault, defaultWallet]));
+      when(() => loadWalletsUsecase.execute())
+          .thenAnswer((_) async => Ok([nonDefault, defaultWallet]));
       final bloc = buildBloc();
 
       final expectation = expectLater(
@@ -106,9 +105,8 @@ void main() {
         // through `secret.verify.mnemonic`, inside the package, and the event
         // that reaches this bloc carries no words at all. What is left to test
         // is the bookkeeping.
-        when(
-          () => completeUsecase.execute(),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => completeUsecase.execute())
+            .thenAnswer((_) async => const Ok(null));
         final bloc = buildBloc();
         bloc.seed(
           TestWalletBackupState(

@@ -24,6 +24,18 @@ import 'domain/usecases/watch_tor_connection_usecase.dart';
 import 'tor_lifecycle_controller.dart';
 import 'tor_controller.dart';
 
+/// Native runtime initialization, replaceable by hosts without the native plugin.
+abstract interface class TorNativeInitializer {
+  Future<void> initialize();
+}
+
+final class _OnionInitializer implements TorNativeInitializer {
+  const _OnionInitializer();
+
+  @override
+  Future<void> initialize() => OnionTorBackend.initialize();
+}
+
 /// Wires the package into the host app's service locator.
 ///
 /// Two independent capabilities are registered here and they never meet:
@@ -34,7 +46,12 @@ final class TorLocator {
     GetIt locator, {
     TorLogger logger = const TorLogger(),
   }) async {
-    await OnionTorBackend.initialize();
+    if (!locator.isRegistered<TorNativeInitializer>()) {
+      locator.registerSingleton<TorNativeInitializer>(
+        const _OnionInitializer(),
+      );
+    }
+    await locator<TorNativeInitializer>().initialize();
     locator.registerSingleton<TorLogger>(logger);
     locator.registerLazySingleton<SocketPort>(DartIoSocketAdapter.new);
     locator.registerLazySingleton<EmbeddedTorPort>(

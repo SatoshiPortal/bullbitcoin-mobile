@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/ui/screens/default_wallets_screen.dart';
 import 'package:bb_mobile/features/default_wallets/ui/widgets/default_wallets_editor.dart';

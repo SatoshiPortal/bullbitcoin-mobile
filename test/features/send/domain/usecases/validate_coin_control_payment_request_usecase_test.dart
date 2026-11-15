@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/validate_coin_control_payment_request_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -122,5 +122,44 @@ void main() {
         isA<Err<void, SendFailure>>(),
       );
     }
+  });
+
+  // Regtest detection produces BIP21 requests, whose isTestnet getter throws
+  // for regtest: the concrete network alone must decide.
+  for (final network in [Network.bitcoinMainnet, Network.bitcoinRegtest]) {
+    test('coin control accepts an amountless BIP21 on ${network.name}', () {
+      final wallet = _wallet.copyWith(network: network);
+      final request = PaymentRequest.bip21(
+        network: network,
+        uri: 'bitcoin:recipient',
+        address: 'recipient',
+      );
+      for (final isSweep in [true, false]) {
+        expect(
+          ValidateCoinControlPaymentRequestUsecase().execute(
+            wallet: wallet,
+            paymentRequest: request,
+            isSweep: isSweep,
+          ),
+          isA<Ok<void, SendFailure>>(),
+        );
+      }
+    });
+  }
+
+  test('coin control refuses a BIP21 for another concrete network', () {
+    final wallet = _wallet.copyWith(network: Network.bitcoinTestnet);
+    const request = PaymentRequest.bip21(
+      network: Network.bitcoinRegtest,
+      uri: 'bitcoin:recipient',
+      address: 'recipient',
+    );
+    expect(
+      ValidateCoinControlPaymentRequestUsecase().execute(
+        wallet: wallet,
+        paymentRequest: request,
+      ),
+      isA<Err<void, SendFailure>>(),
+    );
   });
 }

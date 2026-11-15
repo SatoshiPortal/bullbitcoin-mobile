@@ -1,11 +1,16 @@
+import '../../../../fake_index_price_reader.dart';
+
+import 'dart:io';
+
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/convert_receive_amount_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_at_index_usecase.dart';
@@ -17,7 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
-import '../../../../fake_index_price_reader.dart';
+class _Reporter extends Mock implements LoggerReporter {}
 
 class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
@@ -69,9 +74,8 @@ void main() {
         ),
       ).thenAnswer((_) async => Ok([_wallet()]));
 
-      final result = await GetReceiveWalletsUsecase(
-        inner,
-      ).execute(onlyBitcoin: true);
+      final result = await GetReceiveWalletsUsecase(inner)
+          .execute(onlyBitcoin: true);
 
       expect(result, isA<Ok<List<Wallet>, ReceiveFailure>>());
     });
@@ -89,9 +93,8 @@ void main() {
           ),
         ).thenThrow(Exception(_rawReason));
 
-        final result = await GetReceiveWalletsUsecase(
-          inner,
-        ).execute(onlyBitcoin: true);
+        final result = await GetReceiveWalletsUsecase(inner)
+            .execute(onlyBitcoin: true);
 
         switch (result) {
           case Ok():
@@ -225,9 +228,8 @@ void main() {
         ),
       ).thenAnswer((_) async => _address());
 
-      final result = await PrepareReceiveAddressUsecase(
-        inner,
-      ).execute(walletId: 'w1');
+      final result = await PrepareReceiveAddressUsecase(inner)
+          .execute(walletId: 'w1');
 
       expect(result, isA<Ok<WalletAddress, ReceiveFailure>>());
     });
@@ -235,6 +237,15 @@ void main() {
     test(
       'maps a throw to the dedicated address failure, not the catch-all',
       () async {
+        final directory = await Directory.systemTemp.createTemp(
+          'receive-boundary-',
+        );
+        final reporter = _Reporter();
+        await initializeLogging(directory: directory, reporter: reporter);
+        addTearDown(() async {
+          await log.flush();
+          await directory.delete(recursive: true);
+        });
         final inner = _MockGetReceiveAddressUsecase();
         when(
           () => inner.execute(
@@ -243,9 +254,17 @@ void main() {
           ),
         ).thenThrow(Exception(_rawReason));
 
-        final result = await PrepareReceiveAddressUsecase(
-          inner,
-        ).execute(walletId: 'w1');
+        final result = await PrepareReceiveAddressUsecase(inner)
+            .execute(walletId: 'w1');
+
+        final lines = await log.readLogs();
+        expect(lines.map((line) => line.split('\t').sublist(1, 3)), [
+          ['FINE', 'Logs created'],
+          ['WARNING', 'Receive address failed reason=unavailable'],
+        ]);
+        expect(lines.join(), isNot(contains(_rawReason)));
+        expect(lines.join(), isNot(contains('app.sqlite')));
+        verifyZeroInteractions(reporter);
 
         switch (result) {
           case Ok():
@@ -254,7 +273,7 @@ void main() {
             // Dedicated variant: the user gets an actionable "could not prepare
             // an address" message rather than the generic one.
             expect(failure, isA<ReceiveAddressUnavailableFailure>());
-            expect(failure.logMessage, contains('app.sqlite'));
+            expect(failure.logMessage, 'unavailable');
         }
       },
     );
@@ -270,9 +289,8 @@ void main() {
         ),
       ).thenThrow(Exception(_rawReason));
 
-      final result = await GetReceiveAddressAtIndexUsecase(
-        inner,
-      ).execute(walletId: 'w1', index: 1);
+      final result = await GetReceiveAddressAtIndexUsecase(inner)
+          .execute(walletId: 'w1', index: 1);
 
       switch (result) {
         case Ok():

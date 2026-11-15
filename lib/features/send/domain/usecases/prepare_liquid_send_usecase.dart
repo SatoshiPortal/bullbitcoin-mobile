@@ -47,6 +47,8 @@ class PrepareLiquidSendUsecase {
               : const SendInsufficientFundsForFeesFailure(),
         WalletConsolidationRequiredFailure() =>
           const SendConsolidationRequiredFailure(),
+        WalletAddressNetworkMismatchFailure() =>
+          const SendAddressNetworkMismatchFailure(),
         _ => const SendTransactionBuildFailure(),
       },
     );

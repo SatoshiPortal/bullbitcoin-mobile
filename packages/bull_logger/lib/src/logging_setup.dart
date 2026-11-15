@@ -14,7 +14,8 @@ Future<void> initializeLogging({
   final diagnosticContextProvider = background
       ? null
       : DiagnosticContextProvider(
-          diagnosticContextSource ?? PlatformDiagnosticContextSource(),
+          diagnosticContextSource ??
+              PlatformDiagnosticContextSource(runtime: _diagnosticRuntime),
         );
   log = Logger.replace(
     directory: directory,
@@ -27,4 +28,10 @@ Future<void> initializeLogging({
     // Pruning is per isolate; background files are pruned by their own tasks.
     unawaited(log.prune());
   }
+}
+
+final _diagnosticRuntime = DiagnosticRuntimeContext();
+
+void configureLogTorContext(Future<DiagnosticTorContext> Function() loader) {
+  _diagnosticRuntime.setTorLoader(loader);
 }

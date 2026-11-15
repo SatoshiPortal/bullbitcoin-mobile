@@ -3,7 +3,7 @@ import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/check_sp_wallet_setup_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/revoke_sp_wallet_for_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -97,20 +97,16 @@ void main() {
     revokeSpWalletUsecase = _MockRevokeSpWalletUsecase();
     checkSpWalletSetupUsecase = _MockCheckSpWalletSetupUsecase();
 
-    when(
-      () => setIsDevModeUsecase.execute(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => revokeSpWalletUsecase.execute(),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => checkSpWalletSetupUsecase.execute(),
-    ).thenAnswer((_) async => Ok(false));
+    when(() => setIsDevModeUsecase.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => revokeSpWalletUsecase.execute())
+        .thenAnswer((_) async => const Ok(null));
+    when(() => checkSpWalletSetupUsecase.execute())
+        .thenAnswer((_) async => Ok(false));
 
     final watchPayjoinPolicyUsecase = _MockWatchPayjoinPolicyUsecase();
-    when(
-      () => watchPayjoinPolicyUsecase.execute(),
-    ).thenAnswer((_) => const Stream<PayjoinPolicy>.empty());
+    when(() => watchPayjoinPolicyUsecase.execute())
+        .thenAnswer((_) => const Stream<PayjoinPolicy>.empty());
 
     cubit = SettingsCubit(
       getSettingsUsecase: _MockGetSettingsUsecase(),
@@ -140,6 +136,23 @@ void main() {
   tearDown(() => cubit.close());
 
   group('toggleDevMode', () {
+    test(
+      'disabling developer mode publishes the committed mainnet selection',
+      () async {
+        cubit.emit(
+          cubit.state.copyWith(
+            storedSettings: _settings().copyWith(
+              environment: Environment.testnet,
+            ),
+          ),
+        );
+        await cubit.toggleDevMode(false);
+        expect(cubit.state.environment, Environment.mainnet);
+        expect(cubit.state.storedSettings?.isDevModeEnabled, isFalse);
+        verify(() => setIsDevModeUsecase.execute(false)).called(1);
+      },
+    );
+
     test(
       'dev-mode true -> false revokes the SP wallet; the wallet feature picks '
       'the change up from SpSetupChanged, settings never drives it',
@@ -179,9 +192,8 @@ void main() {
     test(
       'dev-mode toggle-off keeps dev mode enabled when revoke fails',
       () async {
-        when(
-          () => revokeSpWalletUsecase.execute(),
-        ).thenAnswer((_) async => const Err(SpUnexpected('file locked')));
+        when(() => revokeSpWalletUsecase.execute())
+            .thenAnswer((_) async => const Err(SpUnexpected('file locked')));
         cubit.emit(
           cubit.state.copyWith(
             storedSettings: _settings(isDevModeEnabled: true),

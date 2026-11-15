@@ -4,6 +4,12 @@ import 'package:flutter/widgets.dart';
 
 extension ReplaceByFeeFailureL10n on ReplaceByFeeFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    ReplaceByFeeSpendBlockedFailure(:final replacementPending, :final busy) =>
+      busy
+          ? context.loc.walletSpendBusy
+          : replacementPending
+          ? context.loc.walletSpendReplacementUnavailable
+          : context.loc.walletSpendAwaitingObservation,
     ReplaceByFeeNoFeeRateSelectedFailure() =>
       context.loc.replaceByFeeErrorNoFeeRateSelected,
     ReplaceByFeeFeeRateTooLowFailure() =>

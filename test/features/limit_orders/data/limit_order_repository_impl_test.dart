@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/limit_orders/data/datasources/limit_orders_api_datasource.dart';
 import 'package:bb_mobile/features/limit_orders/data/limit_order_repository_impl.dart';
@@ -42,6 +42,24 @@ void main() {
     useEnvironment(isTestnet: false);
   });
 
+  test('regtest refuses before either orders backend', () async {
+    when(() => settingsRepository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(() => mainnet.listActive()).thenAnswer((_) async => []);
+
+    expect(
+      failureOf(await repository.listActive()),
+      isA<LimitOrdersUnsupportedNetworkFailure>(),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
+  });
+
   test('routes to the testnet datasource on testnet', () async {
     useEnvironment(isTestnet: true);
     when(() => testnet.listActive()).thenAnswer((_) async => []);
@@ -53,9 +71,8 @@ void main() {
   });
 
   test('maps the maximum-active API code to its own failure', () async {
-    when(
-      () => mainnet.listActive(),
-    ).thenThrow(const LimitOrdersApiException(code: 'ERR_ORDTRG_LOMAX429'));
+    when(() => mainnet.listActive())
+        .thenThrow(const LimitOrdersApiException(code: 'ERR_ORDTRG_LOMAX429'));
 
     expect(
       failureOf(await repository.listActive()),
@@ -64,9 +81,8 @@ void main() {
   });
 
   test('maps the not-found API code to its own failure', () async {
-    when(
-      () => mainnet.get(any()),
-    ).thenThrow(const LimitOrdersApiException(code: 'ERR_ORDTRG_LO404'));
+    when(() => mainnet.get(any()))
+        .thenThrow(const LimitOrdersApiException(code: 'ERR_ORDTRG_LO404'));
 
     final result = await repository.get('lo-1');
 
@@ -77,9 +93,8 @@ void main() {
   });
 
   test('maps an unknown API code to the operation fallback', () async {
-    when(
-      () => mainnet.listActive(),
-    ).thenThrow(const LimitOrdersApiException(code: 'ERR_SOMETHING_NEW'));
+    when(() => mainnet.listActive())
+        .thenThrow(const LimitOrdersApiException(code: 'ERR_SOMETHING_NEW'));
 
     expect(
       failureOf(await repository.listActive()),

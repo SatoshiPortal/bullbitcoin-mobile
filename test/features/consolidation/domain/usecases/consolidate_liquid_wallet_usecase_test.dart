@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/consolidation/domain/usecases/consolidate_liquid_wallet_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -44,12 +44,10 @@ void main() {
           maximumInputs: any(named: 'maximumInputs'),
         ),
       ).thenAnswer((_) async => ['pset-1', 'pset-2']);
-      when(
-        () => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-1'),
-      ).thenAnswer((_) async => (200, 50));
-      when(
-        () => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-2'),
-      ).thenAnswer((_) async => (210, 60));
+      when(() => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-1'))
+          .thenAnswer((_) async => (200, 50));
+      when(() => repo.getPsetSizeAndAbsoluteFees(pset: 'pset-2'))
+          .thenAnswer((_) async => (210, 60));
 
       final preview = await usecase.prepare(walletId: walletId);
 
@@ -111,10 +109,11 @@ void main() {
           final pset = invocation.namedArguments[#pset] as String;
           return 'signed-$pset';
         });
-        when(() => broadcast.execute(any())).thenAnswer((invocation) async {
-          final signed = invocation.positionalArguments.first as String;
-          return 'txid-$signed';
-        });
+        when(() => broadcast.execute(any(), walletId: any(named: 'walletId')))
+            .thenAnswer((invocation) async {
+              final signed = invocation.positionalArguments.first as String;
+              return 'txid-$signed';
+            });
 
         final txids = await usecase.broadcast(
           walletId: walletId,
@@ -122,12 +121,10 @@ void main() {
         );
 
         expect(txids, ['txid-signed-pset-1', 'txid-signed-pset-2']);
-        verify(
-          () => repo.signPset(pset: 'pset-1', walletId: walletId),
-        ).called(1);
-        verify(
-          () => repo.signPset(pset: 'pset-2', walletId: walletId),
-        ).called(1);
+        verify(() => repo.signPset(pset: 'pset-1', walletId: walletId))
+            .called(1);
+        verify(() => repo.signPset(pset: 'pset-2', walletId: walletId))
+            .called(1);
       },
     );
 
@@ -144,7 +141,9 @@ void main() {
         () => usecase.broadcast(walletId: walletId, unsignedPsets: ['pset-1']),
         throwsA(isA<ConsolidationException>()),
       );
-      verifyNever(() => broadcast.execute(any()));
+      verifyNever(
+        () => broadcast.execute(any(), walletId: any(named: 'walletId')),
+      );
     });
 
     test('wraps a broadcast failure in a ConsolidationException with an empty '
@@ -155,9 +154,8 @@ void main() {
           walletId: any(named: 'walletId'),
         ),
       ).thenAnswer((_) async => 'signed');
-      when(
-        () => broadcast.execute(any()),
-      ).thenThrow(Exception('broadcast rejected'));
+      when(() => broadcast.execute(any(), walletId: any(named: 'walletId')))
+          .thenThrow(Exception('broadcast rejected'));
 
       await expectLater(
         () => usecase.broadcast(walletId: walletId, unsignedPsets: ['pset-1']),
@@ -178,13 +176,14 @@ void main() {
         final pset = invocation.namedArguments[#pset] as String;
         return 'signed-$pset';
       });
-      when(() => broadcast.execute(any())).thenAnswer((invocation) async {
-        final signed = invocation.positionalArguments.first as String;
-        if (signed == 'signed-pset-2') {
-          throw Exception('node unreachable');
-        }
-        return 'txid-$signed';
-      });
+      when(() => broadcast.execute(any(), walletId: any(named: 'walletId')))
+          .thenAnswer((invocation) async {
+            final signed = invocation.positionalArguments.first as String;
+            if (signed == 'signed-pset-2') {
+              throw Exception('node unreachable');
+            }
+            return 'txid-$signed';
+          });
 
       try {
         await usecase.broadcast(

@@ -10,22 +10,9 @@ abstract interface class PayjoinWalletPort {
     required String psbt,
   });
 
-  Future<bool Function(Uint8List script)> createOwnershipChecker({
-    required String walletId,
-    required BitcoinNetwork network,
-  });
-
-  /// Answers whether an outpoint belongs to this wallet.
-  ///
-  /// Deliberately keyed on the outpoint and never on the previous output's
-  /// scriptPubKey: in a payjoin proposal that script comes from the sender's
-  /// PSBT, so a sender could misdeclare it and make one of our own coins look
-  /// foreign to a script-based check. The outpoint is the consensus identity of
-  /// the input — forging it means spending a different coin.
-  ///
-  /// Must answer for every output the wallet has ever owned, spent included, so
-  /// the receiver's guard has no gap to reason about.
-  Future<bool Function(Outpoint outpoint)> createOutpointOwnershipChecker({
+  /// One exact capture of what this wallet owns, at a single committed state:
+  /// both answers of a proposal come from the same view.
+  Future<PayjoinWalletOwnership> captureOwnership({
     required String walletId,
     required BitcoinNetwork network,
   });
@@ -36,13 +23,76 @@ abstract interface class PayjoinWalletPort {
   });
 }
 
+final class PayjoinWalletOwnership {
+  /// Whether an output script belongs to this wallet: the receiver's own output.
+  final bool Function(Uint8List script) ownsScript;
+
+  /// Whether an outpoint belongs to this wallet.
+  ///
+  /// Deliberately keyed on the outpoint and never on the previous output's
+  /// scriptPubKey: in a payjoin proposal that script comes from the sender's
+  /// PSBT, so a sender could misdeclare it and make one of our own coins look
+  /// foreign to a script-based check. The outpoint is the consensus identity of
+  /// the input — forging it means spending a different coin.
+  ///
+  /// Must answer for every output the wallet has ever owned, spent included, so
+  /// the receiver's guard has no gap to reason about.
+  final bool Function(Outpoint outpoint) ownsOutpoint;
+
+  const PayjoinWalletOwnership({
+    required this.ownsScript,
+    required this.ownsOutpoint,
+  });
+}
+
+/// Decodes Bitcoin data for the protocol, so the package links no wallet library.
+/// Synchronous on purpose: sessions are mapped inside synchronous stream transforms.
+abstract interface class PayjoinCodecPort {
+  /// Throws [FormatException] when [bytes] is not a transaction.
+  PayjoinTransaction decodeTransaction(Uint8List bytes);
+
+  /// The transaction a base64 PSBT carries. Throws [FormatException] when [psbt] is not a PSBT.
+  PayjoinTransaction decodePsbt(String psbt);
+
+  /// The output script [address] pays to, or null when it is not an address of [network].
+  Uint8List? addressScript(String address, BitcoinNetwork network);
+}
+
+/// A decoded transaction: its id, the outpoints it spends and its outputs in order.
+final class PayjoinTransaction {
+  final String txid;
+  final List<Outpoint> inputs;
+  final List<PayjoinTransactionOutput> outputs;
+
+  PayjoinTransaction({
+    required this.txid,
+    required List<Outpoint> inputs,
+    required List<PayjoinTransactionOutput> outputs,
+  }) : inputs = List.unmodifiable(inputs),
+       outputs = List.unmodifiable(outputs);
+}
+
+final class PayjoinTransactionOutput {
+  final Sats value;
+  final Uint8List scriptPubkey;
+
+  PayjoinTransactionOutput({
+    required this.value,
+    required Uint8List scriptPubkey,
+  }) : scriptPubkey = Uint8List.fromList(scriptPubkey).asUnmodifiableView();
+}
+
 abstract interface class PayjoinBlockchainPort {
   Future<void> broadcastTransaction({
     required BitcoinNetwork network,
     required Uint8List transaction,
   });
 
+  /// Broadcasts a sender's [psbt] for its session [sessionId], which alone
+  /// may spend the inputs it reserved.
   Future<void> broadcastPsbt({
+    required String walletId,
+    required String sessionId,
     required BitcoinNetwork network,
     required String psbt,
   });
@@ -58,6 +108,12 @@ abstract interface class PayjoinFeesPort {
 }
 
 abstract interface class PayjoinTransactionPort {
+  /// Transfer owned-input protection before releasing a terminal session.
+  Future<bool> protectObservedSpend({
+    required String walletId,
+    required String transactionId,
+  });
+
   Stream<void> watchWallet(String walletId);
 
   Future<bool> isTransactionVisible({
@@ -260,6 +316,7 @@ enum PayjoinLogCode {
   proposalSent('Payjoin proposal sent to the sender'),
   proposalReceived('Payjoin proposal received from the receiver'),
   proposalSigned('Payjoin proposal signed'),
+  proposalSpendPaused('Proposal paused while wallet spending is unavailable'),
   payjoinBroadcast('Payjoin transaction broadcast'),
   fallbackBroadcast('Original transaction broadcast instead of a payjoin'),
   fallbackObserved('Original transaction seen on the network instead'),
@@ -325,4 +382,19 @@ final class PayjoinLogEvent {
       );
     }
   }
+}
+
+/// A local spend barrier is not a failed network broadcast and must never
+/// trigger the competing original-transaction fallback.
+final class PayjoinSpendBlockedException implements Exception {
+  /// The wallet is only busy with another operation: retrying shortly works.
+  final bool busy;
+  const PayjoinSpendBlockedException({this.busy = false});
+}
+
+/// A broadcast that failed before anything was handed to the network. Thrown
+/// by a [PayjoinBlockchainPort] only when that is certain; any other failure
+/// is treated as a payment that may have gone out.
+final class PayjoinBroadcastNotAttemptedException implements Exception {
+  const PayjoinBroadcastNotAttemptedException();
 }

@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,13 +51,36 @@ void main() {
     return order;
   }
 
+  test('regtest refuses sell refresh before backend IO', () async {
+    when(settingsRepository.fetch).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    final result = await usecase.execute(
+      orderId: 'order-1',
+      expectedDepositAddress: _confirmedAddress,
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (result) => result.failure,
+        'failure',
+        isA<SellUnsupportedNetworkFailure>(),
+      ),
+    );
+    verifyZeroInteractions(mainnet);
+    verifyZeroInteractions(testnet);
+  });
+
   test(
     'returns the refreshed order when the deposit address is stable',
     () async {
       final order = orderPaying(_confirmedAddress);
-      when(
-        () => mainnet.refreshSellOrder('order-1'),
-      ).thenAnswer((_) async => order);
+      when(() => mainnet.refreshSellOrder('order-1'))
+          .thenAnswer((_) async => order);
 
       final result = await usecase.execute(
         orderId: 'order-1',
@@ -75,9 +98,8 @@ void main() {
         when(() => order.bitcoinAddress).thenReturn(address);
         when(() => order.liquidAddress).thenReturn(null);
         when(() => order.payinMethod).thenReturn(OrderPaymentMethod.bitcoin);
-        when(
-          () => mainnet.refreshPayOrder('bank-order'),
-        ).thenAnswer((_) async => order);
+        when(() => mainnet.refreshPayOrder('bank-order'))
+            .thenAnswer((_) async => order);
         final result = await usecase.execute(
           orderId: 'bank-order',
           expectedDepositAddress: _confirmedAddress,
@@ -100,9 +122,8 @@ void main() {
         final order = _MockFiatPaymentOrder();
         when(() => order.payinMethod).thenReturn(OrderPaymentMethod.lnInvoice);
         when(() => order.lightningInvoice).thenReturn(invoice);
-        when(
-          () => mainnet.refreshPayOrder('lightning-order'),
-        ).thenAnswer((_) async => order);
+        when(() => mainnet.refreshPayOrder('lightning-order'))
+            .thenAnswer((_) async => order);
         final result = await usecase.execute(
           orderId: 'lightning-order',
           expectedDepositAddress: null,
@@ -123,9 +144,8 @@ void main() {
   // else would send the user's funds to an address they never confirmed.
   test('refuses an order whose deposit address moved', () async {
     final order = orderPaying('bc1qattackercontrolledaddress');
-    when(
-      () => mainnet.refreshSellOrder('order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => mainnet.refreshSellOrder('order-1'))
+        .thenAnswer((_) async => order);
 
     final result = await usecase.execute(
       orderId: 'order-1',
@@ -142,9 +162,8 @@ void main() {
 
   test('refuses when there is no address to compare against', () async {
     final order = orderPaying(_confirmedAddress);
-    when(
-      () => mainnet.refreshSellOrder('order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => mainnet.refreshSellOrder('order-1'))
+        .thenAnswer((_) async => order);
 
     for (final expected in [null, '']) {
       final result = await usecase.execute(
@@ -161,9 +180,8 @@ void main() {
   });
 
   test('maps an unauthenticated API to its own failure', () async {
-    when(
-      () => mainnet.refreshSellOrder('order-1'),
-    ).thenThrow(ApiKeyException('API key not found or inactive'));
+    when(() => mainnet.refreshSellOrder('order-1'))
+        .thenThrow(ApiKeyException('API key not found or inactive'));
 
     final result = await usecase.execute(
       orderId: 'order-1',
@@ -177,9 +195,8 @@ void main() {
   });
 
   test('sanitizes any other error into the catch-all', () async {
-    when(
-      () => mainnet.refreshSellOrder('order-1'),
-    ).thenThrow(Exception('Dio 500: {"token":"secret"}'));
+    when(() => mainnet.refreshSellOrder('order-1'))
+        .thenThrow(Exception('Dio 500: {"token":"secret"}'));
 
     final result = await usecase.execute(
       orderId: 'order-1',
@@ -197,9 +214,8 @@ void main() {
     when(() => settings.environment).thenReturn(Environment.testnet);
     when(settingsRepository.fetch).thenAnswer((_) async => settings);
     final order = orderPaying(_confirmedAddress);
-    when(
-      () => testnet.refreshSellOrder('order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => testnet.refreshSellOrder('order-1'))
+        .thenAnswer((_) async => order);
 
     final result = await usecase.execute(
       orderId: 'order-1',

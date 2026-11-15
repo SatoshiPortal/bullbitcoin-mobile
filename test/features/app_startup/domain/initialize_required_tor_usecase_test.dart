@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/app_startup/domain/app_startup_wallet_port.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,9 +55,8 @@ void main() {
   });
 
   test('does not start embedded Tor without an encrypted backup', () async {
-    when(
-      () => walletPort.hasMainnetBitcoinEncryptedBackup(),
-    ).thenAnswer((_) async => const Ok(false));
+    when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
+        .thenAnswer((_) async => const Ok(false));
 
     expect(await usecase.execute(), isNull);
     verifyNever(() => settingsRepository.fetch());
@@ -70,18 +69,14 @@ void main() {
       endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 19050),
       evidence: TorReadinessEvidence.externalSocksHandshake,
     );
-    when(
-      () => walletPort.hasMainnetBitcoinEncryptedBackup(),
-    ).thenAnswer((_) async => const Ok(true));
-    when(
-      () => walletPort.hasMainnetBitcoinEncryptedBackup(),
-    ).thenAnswer((_) async => const Ok(true));
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(useTorProxy: true));
-    when(
-      () => externalTor.verify(any()),
-    ).thenAnswer((_) async => TorReady(route));
+    when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
+        .thenAnswer((_) async => const Ok(true));
+    when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
+        .thenAnswer((_) async => const Ok(true));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(useTorProxy: true));
+    when(() => externalTor.verify(any()))
+        .thenAnswer((_) async => TorReady(route));
 
     final state = await usecase.execute();
     expect(state, isA<TorReady>());
@@ -93,12 +88,10 @@ void main() {
     'does not fall back to embedded Tor when external Tor is unavailable',
     () async {
       final failure = TorExternalProxyUnavailableFailure('offline');
-      when(
-        () => walletPort.hasMainnetBitcoinEncryptedBackup(),
-      ).thenAnswer((_) async => const Ok(true));
-      when(
-        () => settingsRepository.fetch(),
-      ).thenAnswer((_) async => _settings(useTorProxy: true));
+      when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
+          .thenAnswer((_) async => const Ok(true));
+      when(() => settingsRepository.fetch())
+          .thenAnswer((_) async => _settings(useTorProxy: true));
       when(() => externalTor.verify(any())).thenAnswer(
         (_) async =>
             TorUnavailable(source: TorSource.external, failure: failure),
@@ -113,12 +106,10 @@ void main() {
 
   test('starts embedded Tor when external Tor is disabled', () async {
     final ready = const TorUninitialized();
-    when(
-      () => walletPort.hasMainnetBitcoinEncryptedBackup(),
-    ).thenAnswer((_) async => const Ok(true));
-    when(
-      () => settingsRepository.fetch(),
-    ).thenAnswer((_) async => _settings(useTorProxy: false));
+    when(() => walletPort.hasMainnetBitcoinEncryptedBackup())
+        .thenAnswer((_) async => const Ok(true));
+    when(() => settingsRepository.fetch())
+        .thenAnswer((_) async => _settings(useTorProxy: false));
     when(() => ensureTorReadyUsecase.execute()).thenAnswer((_) async => ready);
 
     expect(await usecase.execute(), same(ready));

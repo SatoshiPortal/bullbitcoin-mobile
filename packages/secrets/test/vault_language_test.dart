@@ -59,16 +59,14 @@ void main() {
           );
           expect(opened.language, language);
           expect(opened.metadata, {'label': 'published vector'});
-          final plaintext =
-              jsonDecode(
-                    utf8.decode(
-                      RecoverBull.restoreBackup(
-                        backup: BullBackup.fromJson(backup.vault.json),
-                        backupKey: convert.hex.decode(backup.key.hex),
-                      ),
-                    ),
-                  )
-                  as Map<String, dynamic>;
+          final plaintext = jsonDecode(
+            utf8.decode(
+              RecoverBull.restoreBackup(
+                backup: BullBackup.fromJson(backup.vault.json),
+                backupKey: convert.hex.decode(backup.key.hex),
+              ),
+            ),
+          ) as Map<String, dynamic>;
           if (language == bip39.Language.english) {
             const golden =
                 '{"label":"published vector","mnemonic":["abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","about"],"mnemonicLanguage":"english"}';

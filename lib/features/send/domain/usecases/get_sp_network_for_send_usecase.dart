@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/sp_failure_mapping.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
-export 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
+export 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 
 class GetSpNetworkForSendUsecase {
   final SpFacade _spFacade;
@@ -17,9 +17,10 @@ class GetSpNetworkForSendUsecase {
   Result<Network, SendFailure> execute() => _spFacade.network().fold(
     (network) => switch (network) {
       BitcoinNetwork.mainnet => const Ok(Network.bitcoinMainnet),
-      BitcoinNetwork.testnet ||
-      BitcoinNetwork.signet ||
-      BitcoinNetwork.regtest => const Ok(Network.bitcoinTestnet),
+      BitcoinNetwork.testnet => const Ok(Network.bitcoinTestnet),
+      BitcoinNetwork.signet || BitcoinNetwork.regtest => const Err(
+        SendUnexpectedFailure('unsupported network'),
+      ),
       null => const Err(
         SendUnexpectedFailure('no live SP session to read the network from'),
       ),

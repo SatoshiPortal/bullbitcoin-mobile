@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/autobuy/domain/autobuy_failure.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
@@ -99,6 +99,34 @@ void main() {
     );
   });
 
+  test('regtest refuses AutoBuy before account or wallet access', () async {
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
+    when(() => getUserSummary.execute()).thenAnswer((_) async => _summary);
+    stubSaveSucceeds();
+
+    for (final enabled in [true, false]) {
+      expect(
+        await usecase.execute(enabled: enabled),
+        isA<Err<void, AutoBuyFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<AutoBuyUnsupportedNetworkFailure>(),
+        ),
+      );
+    }
+    verifyZeroInteractions(getDefaultWallets);
+    verifyZeroInteractions(getUserSummary);
+    verifyZeroInteractions(savePreferences);
+    verifyZeroInteractions(testnetUsers);
+  });
+
   test('requires a default wallet before enabling AutoBuy', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _noWallets);
 
@@ -138,9 +166,8 @@ void main() {
 
   test('refuses to enable AutoBuy on a funding-restricted account', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
-    when(
-      () => getUserSummary.execute(),
-    ).thenAnswer((_) async => _restrictedSummary);
+    when(() => getUserSummary.execute())
+        .thenAnswer((_) async => _restrictedSummary);
 
     final result = await usecase.execute(enabled: true);
 
@@ -152,9 +179,8 @@ void main() {
   });
 
   test('still allows disabling AutoBuy on a restricted account', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenAnswer((_) async => _restrictedSummary);
+    when(() => getUserSummary.execute())
+        .thenAnswer((_) async => _restrictedSummary);
     stubSaveSucceeds();
 
     final result = await usecase.execute(enabled: false);
@@ -191,9 +217,8 @@ void main() {
   });
 
   test('maps an unreadable default wallet list to the catch-all', () async {
-    when(
-      () => getDefaultWallets.execute(),
-    ).thenThrow(Exception('recipient request failed'));
+    when(() => getDefaultWallets.execute())
+        .thenThrow(Exception('recipient request failed'));
 
     final result = await usecase.execute(enabled: true);
 
@@ -206,9 +231,8 @@ void main() {
 
   test('maps an unavailable account to a typed failure', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(GetExchangeUserSummaryException('account request failed'));
+    when(() => getUserSummary.execute())
+        .thenThrow(GetExchangeUserSummaryException('account request failed'));
 
     final result = await usecase.execute(enabled: true);
 
@@ -221,9 +245,8 @@ void main() {
 
   test('maps an unclassified account error to the catch-all', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(Exception('something nobody classified'));
+    when(() => getUserSummary.execute())
+        .thenThrow(Exception('something nobody classified'));
 
     final result = await usecase.execute(enabled: true);
 

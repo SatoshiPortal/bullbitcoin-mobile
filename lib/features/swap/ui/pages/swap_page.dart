@@ -1,15 +1,14 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
@@ -17,7 +16,7 @@ import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.d
 import 'package:bb_mobile/features/swap/ui/widgets/swap_from_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_sheet.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -109,7 +108,6 @@ class SwapPageState extends State<SwapPage> {
         body: SafeArea(
           child: BBKeyboardActions(
             disableScroll: true,
-            focusNodes: [_amountNode],
             child: Form(
               key: _formKey,
               child: SingleChildScrollView(

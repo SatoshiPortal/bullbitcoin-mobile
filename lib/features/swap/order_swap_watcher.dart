@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_kind.dart';
+import 'package:bb_mobile/features/swap/domain/entities/order_swap_polling.dart';
+import 'package:bb_mobile/features/swap/domain/usecases/schedule_order_swap_refresh_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter/widgets.dart';
 
 class OrderSwapWatcher {
-  final SyncCoordinator _syncCoordinator;
+  final ScheduleOrderSwapRefreshUsecase _scheduleRefresh;
   final Duration _pollInterval;
   final bool Function() _isAppUpdateRequired;
 
@@ -17,7 +17,7 @@ class OrderSwapWatcher {
   bool _isStarted = false;
 
   OrderSwapWatcher(
-    this._syncCoordinator, {
+    this._scheduleRefresh, {
     this._pollInterval = const Duration(seconds: 30),
     bool Function()? isAppUpdateRequired,
   }) : _isAppUpdateRequired = isAppUpdateRequired ?? (() => false);
@@ -48,25 +48,22 @@ class OrderSwapWatcher {
   }
 
   Future<void> _refreshOnce() async {
-    try {
-      await _syncCoordinator.sync(only: {SyncKind.swaps});
-    } catch (error) {
-      log.warning('[OrderSwapWatcher] refresh failed: ${error.runtimeType}');
-    } finally {
-      _schedule(_nextDelay());
+    final attempt = await _scheduleRefresh.execute();
+    if (attempt.failure case final failure?) {
+      log.warning('[OrderSwapWatcher] refresh failed: ${failure.runtimeType}');
     }
+    _schedule(_nextDelay(attempt.lastOutcome));
   }
 
-  Duration _nextDelay() {
-    final outcome = _syncCoordinator.lastSwapSyncOutcome;
-    if (outcome?.kind == SyncOutcomeKind.rateLimited) {
+  Duration _nextDelay(OrderSwapPolling? outcome) {
+    if (outcome?.kind == OrderSwapPollingKind.rateLimited) {
       final retryAfter = outcome?.retryAfter;
       if (retryAfter != null && retryAfter >= const Duration(seconds: 60)) {
         return retryAfter;
       }
       return const Duration(seconds: 60);
     }
-    if (outcome?.kind == SyncOutcomeKind.idle) {
+    if (outcome?.kind == OrderSwapPollingKind.idle) {
       return const Duration(minutes: 5);
     }
     return _pollInterval;

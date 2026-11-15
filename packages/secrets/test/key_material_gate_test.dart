@@ -14,9 +14,8 @@ void main() {
 
   setUpAll(() {
     var current = Directory.current;
-    while (!File(
-      '${current.path}/packages/secrets/pubspec.yaml',
-    ).existsSync()) {
+    while (!File('${current.path}/packages/secrets/pubspec.yaml')
+        .existsSync()) {
       if (current.parent.path == current.path) {
         throw StateError('No repository');
       }
@@ -360,8 +359,7 @@ Object _performDryScan() {
     keychainKind: bdk.KeychainKind.external_, networkKind: bdk.NetworkKind.main);
 }
 ''';
-  const scanPath =
-      'lib/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+  const scanPath = 'lib/features/wallet/data/bdk_wallet_datasource.dart';
 
   test('the former pre-import scan has no exemption', () async {
     // The scan now receives public descriptors from `secrets`; deriving them from words in the wallet package is a violation again.

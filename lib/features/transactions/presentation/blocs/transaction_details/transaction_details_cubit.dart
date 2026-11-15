@@ -4,8 +4,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/retry_swap_usecase.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -740,9 +740,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       // persisted status is still in progress: it already knows the
       // negotiated txid, and the sender may have broadcast it while this
       // wallet was waiting for its background watcher.
-      broadcastTxId = (await _syncBroadcastTransactionForPayjoin(
-        payjoin,
-      ))?.txId;
+      broadcastTxId = (await _syncBroadcastTransactionForPayjoin(payjoin))
+          ?.txId;
     }
     if (broadcastTxId != null) {
       // Reset so _loadDetailsByWalletTxId re-arms its own payjoin watcher

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_url.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -10,6 +11,7 @@ part 'electrum_server_view_model.freezed.dart';
 sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
   const factory ElectrumServerViewModel({
     required String url,
+    required ElectrumServerNetwork network,
     required ElectrumServerStatus status,
     required int priority,
   }) = _ElectrumServerViewModel;

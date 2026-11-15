@@ -1,8 +1,9 @@
-import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/data/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/transaction_review_failure.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
@@ -21,7 +22,7 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
 
   Future<void> loadFromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {
-    required bool isTestnet,
+    required Future<Network> network,
   }) async {
     if (state is TransactionReviewLoading) return;
     emit(const TransactionReviewState.loading());
@@ -31,7 +32,7 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
     // (Sentry) and surfaces a sanitized failure.
     final Transaction tx;
     try {
-      tx = TransactionMapper.fromBitcoinTx(bitcoinTx, isTestnet: isTestnet);
+      tx = TransactionMapper.fromBitcoinTx(bitcoinTx, network: await network);
     } catch (e, st) {
       log.severe(
         message: 'Unexpected failure mapping transaction for review',

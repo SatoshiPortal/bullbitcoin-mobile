@@ -1,19 +1,21 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_network.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDetailsTableItem;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDetailsTableItem, bullUiLocalizationsDelegate;
 
 class _MockTransactionDetailsCubit extends Mock
     implements TransactionDetailsCubit {}
@@ -47,9 +49,8 @@ void main() {
         transaction: Transaction(orderSwap: _orderSwap()),
       ),
     );
-    when(
-      () => detailsCubit.stream,
-    ).thenAnswer((_) => const Stream<TransactionDetailsState>.empty());
+    when(() => detailsCubit.stream)
+        .thenAnswer((_) => const Stream<TransactionDetailsState>.empty());
     when(() => settingsCubit.state).thenReturn(
       const SettingsState(
         storedSettings: SettingsEntity(
@@ -59,21 +60,28 @@ void main() {
         ),
       ),
     );
-    when(
-      () => settingsCubit.stream,
-    ).thenAnswer((_) => const Stream<SettingsState>.empty());
+    when(() => settingsCubit.stream)
+        .thenAnswer((_) => const Stream<SettingsState>.empty());
 
+    final navigatorKey = GlobalKey<NavigatorState>();
     await tester.pumpWidget(
       MaterialApp(
+        navigatorKey: navigatorKey,
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(
           providers: [
             BlocProvider<TransactionDetailsCubit>.value(value: detailsCubit),
             BlocProvider<SettingsCubit>.value(value: settingsCubit),
           ],
-          child: const Scaffold(body: TransactionDetailsTable()),
+          child: SettingsFacade.amountScope(
+            navigatorKey: navigatorKey,
+            child: const Scaffold(body: TransactionDetailsTable()),
+          ),
         ),
       ),
     );

@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
+import 'package:bb_mobile/features/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/domain/usecases/resolve_support_chat_user_id_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_s
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullInputText, BullShapesX, Gap;

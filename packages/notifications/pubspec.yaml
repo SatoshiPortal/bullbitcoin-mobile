@@ -1,0 +1,24 @@
+name: notifications
+description: Local notifications with a durable store of observed events and pending aggregates.
+publish_to: "none"
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.17.0
+  bull_logger:
+  primitives:
+  sqlite3: ^3.5.2
+  flutter_local_notifications: ^23.0.2
+  permission_handler: ^13.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

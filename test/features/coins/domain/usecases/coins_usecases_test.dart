@@ -1,7 +1,5 @@
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/sync/sync_coordinator.dart';
-import 'package:bb_mobile/core/sync/sync_kind.dart';
-import 'package:bb_mobile/core/sync/sync_trigger.dart';
+import 'package:primitives/primitives.dart' hide Network;
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -20,34 +18,33 @@ class _MockGetWalletUtxosUsecase extends Mock
 
 class _MockWalletUtxoRepository extends Mock implements WalletUtxoRepository {}
 
-class _MockSyncCoordinator extends Mock implements SyncCoordinator {}
-
 void main() {
   group('RefreshCoinsUsecase', () {
-    late _MockSyncCoordinator coordinator;
-    late RefreshCoinsUsecase usecase;
-
-    setUp(() {
-      coordinator = _MockSyncCoordinator();
-      usecase = RefreshCoinsUsecase(coordinator);
-    });
-
-    test('requests a user-triggered wallet sync', () async {
-      when(
-        () => coordinator.sync(trigger: SyncTrigger.user),
-      ).thenAnswer((_) async {});
-
-      await usecase.execute();
-
-      verify(() => coordinator.sync(trigger: SyncTrigger.user)).called(1);
-    });
-
-    test('settles after a recorded sync failure', () async {
-      when(() => coordinator.sync(trigger: SyncTrigger.user)).thenThrow(
-        SyncCoordinatorException({SyncKind.bitcoin: Exception('offline')}),
+    test('requests a screen sync of the wallet', () async {
+      final polled = <String>[];
+      final usecase = RefreshCoinsUsecase(
+        WalletFacade(
+          const Stream.empty(),
+          pollWallet: (walletId, {required isActive}) async =>
+              polled.add(walletId),
+        ),
       );
 
-      await expectLater(usecase.execute(), completes);
+      await usecase.execute(walletId: 'w1');
+
+      expect(polled, ['w1']);
+    });
+
+    test('settles after a sync failure', () async {
+      final usecase = RefreshCoinsUsecase(
+        WalletFacade(
+          const Stream.empty(),
+          pollWallet: (_, {required isActive}) async =>
+              throw Exception('offline'),
+        ),
+      );
+
+      await expectLater(usecase.execute(walletId: 'w1'), completes);
     });
   });
 
@@ -62,9 +59,8 @@ void main() {
 
     test('returns the utxos from the core usecase', () async {
       final utxos = [walletUtxoFixture()];
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => utxos);
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => utxos);
 
       final result = await usecase.execute(walletId: 'w1');
 
@@ -73,9 +69,8 @@ void main() {
     });
 
     test('maps GetUtxosUsecaseException to CoinsLoadFailure', () async {
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(GetUtxosUsecaseException('boom'));
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenThrow(GetUtxosUsecaseException('boom'));
 
       final result = await usecase.execute(walletId: 'w1');
 
@@ -84,9 +79,8 @@ void main() {
     });
 
     test('maps another exception to CoinsUnexpectedFailure', () async {
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('weird'));
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenThrow(Exception('weird'));
 
       final result = await usecase.execute(walletId: 'w1');
 
@@ -95,9 +89,8 @@ void main() {
     });
 
     test('allows programmer errors to propagate', () async {
-      when(
-        () => core.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(StateError('programmer defect'));
+      when(() => core.execute(walletId: any(named: 'walletId')))
+          .thenThrow(StateError('programmer defect'));
 
       await expectLater(
         usecase.execute(walletId: 'w1'),

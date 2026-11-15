@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 
 /// The Silent Payments feature is gated behind superuser + dev mode. Thin read
@@ -11,6 +12,12 @@ class GetSpFeatureGateUsecase {
   Future<bool> execute() async {
     final settings = await _settingsRepository.fetch();
     return (settings.isSuperuser ?? false) &&
-        (settings.isDevModeEnabled ?? false);
+        (settings.isDevModeEnabled ?? false) &&
+        NetworkCapabilities.supports(
+          BitcoinNetwork.values.firstWhere(
+            (network) => network.env == settings.environment.networkEnv,
+          ),
+          NetworkCapability.silentPayments,
+        );
   }
 }

@@ -11,11 +11,10 @@ void main() {
     test(
       'fee URL selection stays outside the datasource exception boundary',
       () {
-        final datasourceSource = File(
-          'lib/core/fees/data/fees_datasource.dart',
-        ).readAsStringSync();
+        final datasourceSource = File('lib/core/fees/data/fees_datasource.dart')
+            .readAsStringSync();
         final repositorySource = File(
-          'lib/core/fees/data/fees_repository_impl.dart',
+          'lib/features/fees/data/fees_repository_impl.dart',
         ).readAsStringSync();
 
         expect(repositorySource, contains('customServer.fullUrl'));

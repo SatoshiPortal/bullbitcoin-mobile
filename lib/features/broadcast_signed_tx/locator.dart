@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
@@ -25,12 +25,13 @@ class BroadcastSignedTxLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<BroadcastSignedTxCubit, String?, void>(
-      (unsignedPsbt, _) => BroadcastSignedTxCubit(
+    locator.registerFactoryParam<BroadcastSignedTxCubit, String?, Network?>(
+      (unsignedPsbt, network) => BroadcastSignedTxCubit(
         broadcastBitcoinTransactionUsecase:
             locator<BroadcastBitcoinTransactionUsecase>(),
         verifySignedTxUsecase: locator<VerifyBroadcastSignedTxUsecase>(),
         unsignedPsbt: unsignedPsbt,
+        network: network,
       ),
     );
     locator.registerFactory<TransactionReviewCubit>(

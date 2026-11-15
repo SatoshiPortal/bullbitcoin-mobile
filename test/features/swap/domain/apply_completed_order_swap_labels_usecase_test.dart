@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart' show Ok;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/domain/entities/order_swap.dart';
@@ -50,16 +50,14 @@ void main() {
       labelsFacade,
       now: () => now,
     );
-    when(
-      () => getOrders.execute(purpose: OrderSwapPurpose.receiveLightning),
-    ).thenAnswer((_) async => const Ok([]));
+    when(() => getOrders.execute(purpose: OrderSwapPurpose.receiveLightning))
+        .thenAnswer((_) async => const Ok([]));
   });
 
   test('does not label a completed swap before wallet confirmation', () async {
     final order = _record();
-    when(
-      () => getOrders.execute(purpose: OrderSwapPurpose.sendLightning),
-    ).thenAnswer((_) async => Ok([order]));
+    when(() => getOrders.execute(purpose: OrderSwapPurpose.sendLightning))
+        .thenAnswer((_) async => Ok([order]));
     when(
       () => walletTransactions.getWalletTransaction(
         'payin-tx',
@@ -81,9 +79,8 @@ void main() {
 
   test('stores system and user labels after completion and one conf', () async {
     final order = _record();
-    when(
-      () => getOrders.execute(purpose: OrderSwapPurpose.sendLightning),
-    ).thenAnswer((_) async => Ok([order]));
+    when(() => getOrders.execute(purpose: OrderSwapPurpose.sendLightning))
+        .thenAnswer((_) async => Ok([order]));
     when(
       () => walletTransactions.getWalletTransaction(
         'payin-tx',
@@ -102,34 +99,29 @@ void main() {
         ),
       );
     });
-    when(
-      () => markApplied.execute(localId: 'local-1', appliedAt: now),
-    ).thenAnswer((_) async => Ok(order.withLabelsAppliedAt(now)));
+    when(() => markApplied.execute(localId: 'local-1', appliedAt: now))
+        .thenAnswer((_) async => Ok(order.withLabelsAppliedAt(now)));
 
     final result = await usecase.execute();
 
     expect((result as Ok<int, SwapFailure>).value, 1);
-    final labels = verify(
-      () => labelsFacade.store(captureAny()),
-    ).captured.cast<NewLabel>();
+    final labels = verify(() => labelsFacade.store(captureAny())).captured
+        .cast<NewLabel>();
     expect(labels.map((label) => label.label), [
       LabelSystem.swaps.label,
       'coffee',
     ]);
     expect(labels.every((label) => label.reference == 'payin-tx'), isTrue);
-    verify(
-      () => markApplied.execute(localId: 'local-1', appliedAt: now),
-    ).called(1);
+    verify(() => markApplied.execute(localId: 'local-1', appliedAt: now))
+        .called(1);
   });
 
   test('labels a confirmed Lightning receive payout', () async {
     final order = _receiveRecord();
-    when(
-      () => getOrders.execute(purpose: OrderSwapPurpose.sendLightning),
-    ).thenAnswer((_) async => const Ok([]));
-    when(
-      () => getOrders.execute(purpose: OrderSwapPurpose.receiveLightning),
-    ).thenAnswer((_) async => Ok([order]));
+    when(() => getOrders.execute(purpose: OrderSwapPurpose.sendLightning))
+        .thenAnswer((_) async => const Ok([]));
+    when(() => getOrders.execute(purpose: OrderSwapPurpose.receiveLightning))
+        .thenAnswer((_) async => Ok([order]));
     when(
       () => walletTransactions.getWalletTransaction(
         'payout-tx',
@@ -146,16 +138,14 @@ void main() {
         ),
       ),
     );
-    when(
-      () => markApplied.execute(localId: 'receive-local', appliedAt: now),
-    ).thenAnswer((_) async => Ok(order.withLabelsAppliedAt(now)));
+    when(() => markApplied.execute(localId: 'receive-local', appliedAt: now))
+        .thenAnswer((_) async => Ok(order.withLabelsAppliedAt(now)));
 
     final result = await usecase.execute();
 
     expect((result as Ok<int, SwapFailure>).value, 1);
-    final labels = verify(
-      () => labelsFacade.store(captureAny()),
-    ).captured.cast<NewLabel>();
+    final labels = verify(() => labelsFacade.store(captureAny())).captured
+        .cast<NewLabel>();
     expect(labels.every((label) => label.reference == 'payout-tx'), isTrue);
   });
 }

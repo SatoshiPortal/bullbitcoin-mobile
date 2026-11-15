@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A raw reason of the shape the API and BDK/LWK actually produce. Every
@@ -12,6 +12,7 @@ const _rawReason =
     'bc1qsecret, xprv9s21ZrQH143K3';
 
 final _everyFailure = <SellFailure>[
+  const SellPayjoinPausedFailure(),
   const SellUnauthenticatedFailure(_rawReason),
   const SellBelowMinAmountFailure(
     minAmount: 10,
@@ -46,7 +47,7 @@ Future<String> _translate(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
@@ -97,6 +98,22 @@ void main() {
         withoutReason,
         reason: 'the message must not depend on the raw reason at all',
       );
+    });
+
+    testWidgets('a busy wallet is told to retry, not to await a payment', (
+      tester,
+    ) async {
+      final busy = await _translate(
+        tester,
+        const SellSpendBlockedFailure(busy: true),
+      );
+      final awaiting = await _translate(
+        tester,
+        const SellSpendBlockedFailure(),
+      );
+
+      expect(busy, isNot(awaiting));
+      expect(busy, contains('busy'));
     });
 
     testWidgets('every variant reads differently from the catch-all', (

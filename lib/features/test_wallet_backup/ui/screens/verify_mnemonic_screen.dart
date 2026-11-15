@@ -16,7 +16,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullText,
         Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart'

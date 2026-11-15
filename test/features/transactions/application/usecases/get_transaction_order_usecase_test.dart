@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transaction_order_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_failure.dart';
@@ -49,9 +49,8 @@ void main() {
 
   test('forwards the order on success', () async {
     final order = _order();
-    when(
-      () => getOrder.execute(orderId: 'order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => getOrder.execute(orderId: 'order-1'))
+        .thenAnswer((_) async => order);
 
     expect(_valueOf(await usecase.execute('order-1')), order);
   });

@@ -29,7 +29,7 @@ final class RecoverBullSettingsAdapter
     try {
       final settings = await _settings.fetch();
       return Ok(
-        settings.environment.isTestnet
+        settings.environment.requireHistoricalTestnet()
             ? BitcoinNetwork.testnet
             : BitcoinNetwork.mainnet,
       );

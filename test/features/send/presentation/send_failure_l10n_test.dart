@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A raw reason of the shape a foreign SDK would produce. Every variant below
@@ -19,6 +19,7 @@ const _rawReason = 'BdkException: secret-detail xprv9s21ZrQH143K3';
 /// is that each arm resolves to a real, non-empty `.arb` value and that no arm
 /// echoes the raw reason — that is what this table locks in.
 final _everyFailure = <SendFailure>[
+  const SendPayjoinPausedFailure(),
   const SendInvalidPaymentRequestFailure(logMessage: _rawReason),
   const SendInvalidPaymentRequestFailure(
     isUnsupportedQr: true,
@@ -72,7 +73,7 @@ Future<String> _translate(
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
@@ -66,11 +66,32 @@ void main() {
     );
   });
 
+  test(
+    'regtest refuses confirmation before backend or recipient access',
+    () async {
+      when(settingsRepository.fetch).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+        ),
+      );
+      final result = await usecase.execute(
+        orderId: 'order-1',
+        interacSecurityDetails: interacSecurityDetails,
+        saveSecurityDetailsAsDefault: true,
+      );
+      expect(_err(result), isA<WithdrawUnsupportedNetworkFailure>());
+      verifyZeroInteractions(mainnetRepository);
+      verifyZeroInteractions(testnetRepository);
+      verifyZeroInteractions(recipientsFacade);
+    },
+  );
+
   test('confirms the order before saving Interac defaults', () async {
     final order = _MockWithdrawOrder();
-    when(
-      () => mainnetRepository.confirmWithdrawOrder('order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
+        .thenAnswer((_) async => order);
     when(
       () => recipientsFacade.updateInteracSecurityDetails(
         recipientId: any(named: 'recipientId'),
@@ -100,9 +121,8 @@ void main() {
 
   test('clears saved Interac defaults when save is not selected', () async {
     final order = _MockWithdrawOrder();
-    when(
-      () => mainnetRepository.confirmWithdrawOrder('order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
+        .thenAnswer((_) async => order);
     when(
       () => recipientsFacade.updateInteracSecurityDetails(
         recipientId: any(named: 'recipientId'),
@@ -133,9 +153,8 @@ void main() {
     'does not fail a confirmed order when updating defaults fails',
     () async {
       final order = _MockWithdrawOrder();
-      when(
-        () => mainnetRepository.confirmWithdrawOrder('order-1'),
-      ).thenAnswer((_) async => order);
+      when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
+          .thenAnswer((_) async => order);
       when(
         () => recipientsFacade.updateInteracSecurityDetails(
           recipientId: any(named: 'recipientId'),
@@ -161,9 +180,8 @@ void main() {
 
   test('does not update recipients for non-Interac withdrawals', () async {
     final order = _MockWithdrawOrder();
-    when(
-      () => mainnetRepository.confirmWithdrawOrder('order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
+        .thenAnswer((_) async => order);
 
     final result = await usecase.execute(orderId: 'order-1');
 
@@ -180,9 +198,8 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
-    when(
-      () => testnetRepository.confirmWithdrawOrder('order-1'),
-    ).thenAnswer((_) async => order);
+    when(() => testnetRepository.confirmWithdrawOrder('order-1'))
+        .thenAnswer((_) async => order);
 
     final result = await usecase.execute(orderId: 'order-1');
 
@@ -191,9 +208,8 @@ void main() {
   });
 
   test('sanitizes unexpected confirmation failures', () async {
-    when(
-      () => mainnetRepository.confirmWithdrawOrder('order-1'),
-    ).thenThrow(Exception('Montreal'));
+    when(() => mainnetRepository.confirmWithdrawOrder('order-1'))
+        .thenThrow(Exception('Montreal'));
 
     final result = await usecase.execute(orderId: 'order-1');
 

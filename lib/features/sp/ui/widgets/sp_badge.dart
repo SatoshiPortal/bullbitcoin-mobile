@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_address_kind.dart';
 import 'package:bull_ui/bull_ui.dart' show BullBadge;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The outlined pill used across the SP screens: a [BullBadge] tinted by one
 /// [color] (15% fill, solid outline and matching text). One recipe so the

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart'
+import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
     as core;
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
@@ -53,9 +53,8 @@ void main() {
 
   test('delegates deletion when no active order uses the wallet', () async {
     when(swapFacade.getPendingOrders).thenAnswer((_) async => const Ok([]));
-    when(
-      () => coreDelete.execute(walletId: 'wallet-1'),
-    ).thenAnswer((_) async => const Ok<void, WalletFailure>(null));
+    when(() => coreDelete.execute(walletId: 'wallet-1'))
+        .thenAnswer((_) async => const Ok<void, WalletFailure>(null));
 
     final result = await usecase.execute(walletId: 'wallet-1');
 

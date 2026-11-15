@@ -39,6 +39,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_logs/bull_logs.dart';
+import 'package:bb_mobile/features/settings/presentation/wallet_discovery_cubit.dart';
 
 export 'package:bb_mobile/features/settings/ui/settings_route.dart';
 
@@ -178,7 +179,10 @@ class SettingsRouter {
                 },
               ),
             ],
-            child: WalletDetailsScreen(walletId: walletId),
+            child: BlocProvider(
+              create: (_) => locator<WalletDiscoveryCubit>(),
+              child: WalletDetailsScreen(walletId: walletId),
+            ),
           );
         },
       ),

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
@@ -69,9 +69,8 @@ void main() {
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     wallets = _MockWalletRepository();
-    when(
-      () => wallets.getWallets(),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
+    when(() => wallets.getWallets())
+        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
     usecase = RestoreMissingDefaultSecretUsecase(
       secrets: secrets,
       walletRepository: wallets,

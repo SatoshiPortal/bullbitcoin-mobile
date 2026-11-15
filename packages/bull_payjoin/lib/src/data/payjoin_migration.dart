@@ -49,6 +49,12 @@ Future<void> importLegacyPayjoinData(
               // The root schema never shipped is_aborted (added in schema 14,
               // unreleased), so every imported row starts un-aborted.
               isAborted: false,
+              // Like the v2 upgrade, a legacy unfinished sender may already
+              // have paid without recording an outcome. Importing into a fresh
+              // v3 store must not lose that conservative assumption.
+              hasNetworkEvidence: Value(
+                !sender.isExpired && !sender.isCompleted,
+              ),
             ),
           );
     }

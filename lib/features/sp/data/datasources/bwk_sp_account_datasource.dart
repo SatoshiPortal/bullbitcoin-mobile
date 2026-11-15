@@ -63,6 +63,7 @@ class BwkSpAccountDatasource {
     await account.dispose();
     _account = null;
     _simulations.clear();
+    await account.release();
   }
 
   /// The single-take Rust notification receiver. Taken once per session.

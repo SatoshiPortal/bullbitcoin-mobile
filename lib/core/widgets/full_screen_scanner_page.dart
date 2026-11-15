@@ -2,14 +2,15 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;
 
 /// Callback for when a payment request is detected from a QR code
-typedef OnScannedPaymentRequestCallback =
-    void Function((String, PaymentRequest?) data);
+typedef OnScannedPaymentRequestCallback = void Function(
+  (String, PaymentRequest?) data,
+);
 
 class FullScreenScannerPage extends StatefulWidget {
   final OnScannedPaymentRequestCallback onScannedPaymentRequest;

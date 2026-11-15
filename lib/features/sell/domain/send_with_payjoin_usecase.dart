@@ -13,17 +13,20 @@ class SendWithPayjoinUsecase {
   @useResult
   Future<Result<PayjoinSenderSession, SellFailure>> execute({
     required String walletId,
-    required bool isTestnet,
+    required BitcoinNetwork network,
     required String bip21,
     required String unsignedOriginalPsbt,
     required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
+    if (!NetworkCapabilities.supports(network, NetworkCapability.payjoin)) {
+      return const Err(SellUnexpectedFailure('unsupported network'));
+    }
     final result = await _sender.start(
       StartPayjoinSender(
         walletId: walletId,
-        network: isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet,
+        network: network,
         bip21Uri: bip21,
         unsignedOriginalPsbt: unsignedOriginalPsbt,
         amount: Sats.fromInt(amountSat),
@@ -36,6 +39,8 @@ class SendWithPayjoinUsecase {
     switch (result) {
       case Ok(:final value):
         return Ok(value);
+      case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
+        return Err(SellSpendBlockedFailure(busy: busy));
       case Err(:final failure):
         // Both parts: Failure has no toString() override, so the value alone
         // would log "Instance of 'PayjoinX'" and the message alone drops the

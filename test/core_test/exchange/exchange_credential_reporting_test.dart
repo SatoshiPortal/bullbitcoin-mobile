@@ -3,14 +3,14 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/exchange_authentication.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/get_autobuy_status_usecase.dart';
 import 'package:bb_mobile/features/autobuy/domain/usecases/set_autobuy_usecase.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
@@ -23,6 +23,7 @@ import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order
 import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
 import '../../features/limit_orders/limit_order_fixtures.dart'
     show userSummary, limitOrderRate;
 
@@ -99,9 +100,8 @@ void main() {
         );
         final defaults = _Defaults();
         final wallets = _GetWallets();
-        when(
-          defaults.getDefaultWallets,
-        ).thenAnswer((_) async => const DefaultWallets());
+        when(defaults.getDefaultWallets)
+            .thenAnswer((_) async => const DefaultWallets());
         when(wallets.execute).thenAnswer((_) async => const Ok([]));
         final pending = switch (name) {
           'limit orders' => LoadLimitOrderCreationUsecase(
@@ -254,9 +254,8 @@ void main() {
         final wallets = _GetWallets();
         final read = _ReadDefaults();
         final rates = _Rates();
-        when(
-          () => rates.getRate(any()),
-        ).thenAnswer((_) async => Ok(limitOrderRate()));
+        when(() => rates.getRate(any()))
+            .thenAnswer((_) async => Ok(limitOrderRate()));
         when(defaults.getDefaultWallets).thenThrow(refusal);
         when(read.execute).thenThrow(refusal);
         when(wallets.execute).thenAnswer((_) async => const Ok([]));

@@ -8,9 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2640 bitcoin URI routing', () {
     test('manifest does not advertise unhandled bitcoin links', () {
-      final manifest = File(
-        'android/app/src/main/AndroidManifest.xml',
-      ).readAsStringSync();
+      final manifest = File('android/app/src/main/AndroidManifest.xml')
+          .readAsStringSync();
       expect(manifest, isNot(contains('<data android:scheme="bitcoin" />')));
       expect(
         manifest,

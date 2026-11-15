@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Sats;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Sats;
 
 /// Tests for the payjoin gating on [ReceiveState.isPayjoinLoading] and its
 /// downstream effect on [ReceiveState.paymentRequest]: with payjoin disabled
@@ -140,9 +140,8 @@ void main() {
     // denominated in BTC per BIP21 (regardless of the sats/fiat unit the
     // user typed in) and the note must travel as message=.
     test('bitcoin: amount is always in BTC and the note becomes message=', () {
-      final state = buildState(
-        payjoinGloballyEnabled: false,
-      ).copyWith(confirmedAmountSat: 50000, note: 'lunch money');
+      final state = buildState(payjoinGloballyEnabled: false)
+          .copyWith(confirmedAmountSat: 50000, note: 'lunch money');
 
       final uri = Uri.parse(state.paymentRequest);
       expect(uri.scheme, 'bitcoin');
@@ -152,9 +151,8 @@ void main() {
     });
 
     test('bitcoin: an amount alone produces amount= and no message=', () {
-      final state = buildState(
-        payjoinGloballyEnabled: false,
-      ).copyWith(confirmedAmountSat: 123456789);
+      final state = buildState(payjoinGloballyEnabled: false)
+          .copyWith(confirmedAmountSat: 123456789);
 
       final uri = Uri.parse(state.paymentRequest);
       expect(uri.queryParameters['amount'], '1.23456789');
@@ -162,9 +160,8 @@ void main() {
     });
 
     test('bitcoin: a note alone produces message= and no amount=', () {
-      final state = buildState(
-        payjoinGloballyEnabled: false,
-      ).copyWith(note: 'just a note');
+      final state = buildState(payjoinGloballyEnabled: false)
+          .copyWith(note: 'just a note');
 
       final uri = Uri.parse(state.paymentRequest);
       expect(uri.queryParameters['message'], 'just a note');
@@ -293,6 +290,14 @@ void main() {
   });
 
   group('ReceiveState.isPayjoinAwaitingFunds', () {
+    test('false while the selected wallet is unavailable', () {
+      const state = ReceiveState(
+        type: ReceiveType.bitcoin,
+        payjoinGloballyEnabled: true,
+      );
+      expect(state.isPayjoinAwaitingFunds, isFalse);
+    });
+
     test('true when payjoin is enabled globally but this wallet has no '
         'confirmed balance yet', () {
       final state = buildState(

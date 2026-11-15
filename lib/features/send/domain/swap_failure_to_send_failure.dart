@@ -9,9 +9,8 @@ SendFailure mapSwapFailureToSendFailure(SwapFailure failure) =>
           maximumSat: isMinimum == false ? limitAmountSat : null,
           logMessage: failure.logMessage,
         ),
-      SwapValidationFailure() => SendInvalidPaymentRequestFailure(
-        logMessage: failure.logMessage,
-      ),
+      SwapUnsupportedNetworkFailure() || SwapValidationFailure() =>
+        SendInvalidPaymentRequestFailure(logMessage: failure.logMessage),
       SwapNoPaymentOptionFailure(:final inNetwork, :final outNetwork) =>
         SendSwapRouteUnavailableFailure(
           inNetwork: inNetwork,

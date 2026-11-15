@@ -1,5 +1,6 @@
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bull_tor/src/domain/ports/external_tor_port.dart';
@@ -88,9 +89,8 @@ void main() {
 
   test('returns disabled without checking a disabled proxy', () async {
     final repository = _MockSettingsRepository();
-    when(
-      repository.fetch,
-    ).thenAnswer((_) async => settings(useTorProxy: false));
+    when(repository.fetch)
+        .thenAnswer((_) async => settings(useTorProxy: false));
     final port = _FakeExternalTorPort(true);
 
     final status = await usecase(repository, port).execute();
@@ -101,9 +101,8 @@ void main() {
 
   test('returns unavailable for an invalid enabled port', () async {
     final repository = _MockSettingsRepository();
-    when(
-      repository.fetch,
-    ).thenAnswer((_) async => settings(useTorProxy: true, port: 0));
+    when(repository.fetch)
+        .thenAnswer((_) async => settings(useTorProxy: true, port: 0));
     final port = _FakeExternalTorPort(true);
 
     final status = await usecase(repository, port).execute();

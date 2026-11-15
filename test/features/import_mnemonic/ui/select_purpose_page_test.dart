@@ -3,14 +3,13 @@ import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failur
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/select_purpose_page.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
-    show ScriptType;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show ScriptType;
 
 class _MockImportMnemonicCubit extends MockCubit<ImportMnemonicState>
     implements ImportMnemonicCubit {}
@@ -35,7 +34,7 @@ void main() {
     return tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<ImportMnemonicCubit>.value(
           value: cubit,

@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_s
 import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/widgets.dart' show Widget;
 import 'package:go_router/go_router.dart';
 
 enum TransactionsRoute {
@@ -25,17 +26,20 @@ enum TransactionsRoute {
 
 /// The router for the transactions feature.
 class TransactionsRouter {
-  static final transactionsRoute = GoRoute(
-    name: TransactionsRoute.transactions.name,
-    path: TransactionsRoute.transactions.path,
-    builder: (context, state) {
-      // final filterParam = state.uri.queryParameters['filter'];
-      return BlocProvider(
-        create: (context) => locator<TransactionsCubit>()..loadTxs(),
-        child: const TransactionsScreen(),
+  static GoRoute transactionsRoute({required Widget Function(Widget) scope}) =>
+      GoRoute(
+        name: TransactionsRoute.transactions.name,
+        path: TransactionsRoute.transactions.path,
+        builder: (context, state) {
+          // final filterParam = state.uri.queryParameters['filter'];
+          return scope(
+            BlocProvider(
+              create: (context) => locator<TransactionsCubit>()..loadTxs(),
+              child: const TransactionsScreen(),
+            ),
+          );
+        },
       );
-    },
-  );
 
   static final exportTransactionsRoute = GoRoute(
     name: TransactionsRoute.exportTransactions.name,

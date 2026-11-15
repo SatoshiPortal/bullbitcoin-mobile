@@ -1,7 +1,8 @@
+import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
@@ -98,6 +99,7 @@ class _SeedablePayBloc extends PayBloc {
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
     required super.getPayjoinUsecase,
+    required super.retryPayjoinProposalUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
   });
@@ -110,27 +112,26 @@ FiatPaymentOrder _order({
   String beneficiaryName = 'Alice',
 }) {
   return Order.fiatPayment(
-        orderId: 'order-1',
-        orderType: OrderType.fiatPayment,
-        message: OrderMessage(code: '', message: ''),
-        orderNumber: 1,
-        payinAmount: 0.001,
-        payinCurrency: 'LBTC',
-        payoutAmount: 125.0,
-        payoutCurrency: 'CAD',
-        payinMethod: OrderPaymentMethod.liquid,
-        payoutMethod: OrderPaymentMethod.bankTransfer,
-        orderStatus: OrderStatus.inProgress,
-        payinStatus: payinStatus,
-        payoutStatus: OrderPayoutStatus.notStarted,
-        // Ahead of the clock: a payin is never sent on a lapsed quote.
-        confirmationDeadline: DateTime.now().add(const Duration(minutes: 5)),
-        createdAt: DateTime(2026, 1, 1),
-        liquidAddress: 'lq1address',
-        beneficiaryName: beneficiaryName,
-        isTestnet: false,
-      )
-      as FiatPaymentOrder;
+    orderId: 'order-1',
+    orderType: OrderType.fiatPayment,
+    message: OrderMessage(code: '', message: ''),
+    orderNumber: 1,
+    payinAmount: 0.001,
+    payinCurrency: 'LBTC',
+    payoutAmount: 125.0,
+    payoutCurrency: 'CAD',
+    payinMethod: OrderPaymentMethod.liquid,
+    payoutMethod: OrderPaymentMethod.bankTransfer,
+    orderStatus: OrderStatus.inProgress,
+    payinStatus: payinStatus,
+    payoutStatus: OrderPayoutStatus.notStarted,
+    // Ahead of the clock: a payin is never sent on a lapsed quote.
+    confirmationDeadline: DateTime.now().add(const Duration(minutes: 5)),
+    createdAt: DateTime(2026, 1, 1),
+    liquidAddress: 'lq1address',
+    beneficiaryName: beneficiaryName,
+    isTestnet: false,
+  ) as FiatPaymentOrder;
 }
 
 const _userSummary = UserSummary(
@@ -147,6 +148,8 @@ const _recipient = RecipientViewModel(
   id: 'recipient-1',
   type: RecipientType.bankTransferCad,
 );
+
+class _MockRetryPayjoin extends Mock implements RetryPayjoinProposalUsecase {}
 
 void main() {
   late _MockPreparePayLiquidPayinUsecase prepareLiquidPayin;
@@ -169,6 +172,7 @@ void main() {
     sendWithPayjoinUsecase: _MockSendWithPayjoinUsecase(),
     watchPayjoinUsecase: _MockWatchPayjoinUsecase(),
     getPayjoinUsecase: _MockGetPayjoinUsecase(),
+    retryPayjoinProposalUsecase: _MockRetryPayjoin(),
     loadPayNetworkFeesUsecase: _MockLoadPayNetworkFeesUsecase(),
     calculatePayAbsoluteFeesUsecase: _MockCalculatePayAbsoluteFeesUsecase(),
     getPayPayinAddressUsecase: _MockGetPayPayinAddressUsecase(),
@@ -217,9 +221,8 @@ void main() {
         walletId: any(named: 'walletId'),
       ),
     ).thenAnswer((_) async => const Ok<String, PayFailure>('signed-pset'));
-    when(
-      () => broadcastPayin.liquid(any()),
-    ).thenAnswer((_) async => const Ok<String, PayFailure>('txid'));
+    when(() => broadcastPayin.liquid(any(), walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const Ok<String, PayFailure>('txid'));
   });
 
   // The handler waits 5s after broadcasting to let the backend register the

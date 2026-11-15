@@ -107,11 +107,9 @@ void main() {
       );
     });
 
-    test('uses a name the app reserves', () async {
-      // This used to throw LabelValidationException, which is not a
-      // LabelsImportException — so it fell past the typed handler into the
-      // catch-all and read "Oops something went wrong", the exact outcome
-      // this change exists to remove.
+    test('names the app reserves are skipped, not rejected', () async {
+      // The app exports its own markers, so its export must import back: the
+      // marker is ignored and nothing is reported as imported.
       final reserved = jsonEncode({
         'type': 'tx',
         'ref': 'a' * 64,
@@ -120,13 +118,7 @@ void main() {
 
       final result = await import(reserved);
 
-      switch (result) {
-        case Ok():
-          fail('a reserved label name must not be reported as imported');
-        case Err(:final failure):
-          expect(failure, isA<LabelsFileReservedNameFailure>());
-          expect(failure, isNot(isA<LabelUnexpectedFailure>()));
-      }
+      expect((result as Ok<int, LabelFailure>).value, 0);
     });
 
     test('carries an entry the app cannot accept', () async {
@@ -135,9 +127,8 @@ void main() {
       // LabelValidationException. That is not a LabelsImportException, so it
       // used to fall past the typed handler into the catch-all and read
       // "Oops something went wrong".
-      when(
-        () => repository.storeAll(any()),
-      ).thenThrow(LabelValidationException('Invalid txid: not-a-txid'));
+      when(() => repository.storeAll(any()))
+          .thenThrow(LabelValidationException('Invalid txid: not-a-txid'));
 
       final result = await import(_validLine());
 
@@ -173,9 +164,8 @@ void main() {
 
   test('a store failure is the catch-all, and carries no reason: the label '
       'content is the user\'s own words', () async {
-    when(
-      () => repository.storeAll(any()),
-    ).thenThrow(Exception('drift: rent to Alice Smith'));
+    when(() => repository.storeAll(any()))
+        .thenThrow(Exception('drift: rent to Alice Smith'));
 
     final result = await import(_validLine());
 

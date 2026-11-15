@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/electrum/adapters/electrum_servers_adapter.dart';
-import 'package:bb_mobile/core/electrum/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/features/electrum_settings/data/electrum_servers_adapter.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_tor_session_port.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -73,9 +73,8 @@ void main() {
     serverRepo = _MockServerRepository();
     settingsRepo = _MockSettingsRepository();
     appSettingsRepository = _MockAppSettingsRepository();
-    when(
-      () => appSettingsRepository.fetch(),
-    ).thenAnswer((_) async => _appSettings());
+    when(() => appSettingsRepository.fetch())
+        .thenAnswer((_) async => _appSettings());
     torSessionPort = _MockTorSessionPort();
     when(
       () => torSessionPort.open(
@@ -99,14 +98,38 @@ void main() {
     ElectrumSettings? settings,
     SettingsEntity? appSettings,
   }) {
-    when(
-      () => serverRepo.fetchActiveServers(network: any(named: 'network')),
-    ).thenAnswer((_) async => Ok(servers));
-    when(
-      () => settingsRepo.fetchByNetwork(any()),
-    ).thenAnswer((_) async => Ok(settings ?? _settings()));
+    when(() => serverRepo.fetchActiveServers(network: any(named: 'network')))
+        .thenAnswer((_) async => Ok(servers));
+    when(() => settingsRepo.fetchByNetwork(any()))
+        .thenAnswer((_) async => Ok(settings ?? _settings()));
     final app = appSettings ?? _appSettings();
     when(() => appSettingsRepository.fetch()).thenAnswer((_) async => app);
+  }
+
+  for (final network in [
+    ElectrumServerNetwork.bitcoinTestnet,
+    ElectrumServerNetwork.bitcoinRegtest,
+    ElectrumServerNetwork.liquidTestnet,
+    ElectrumServerNetwork.liquidRegtest,
+  ]) {
+    test('refuses new $network IO without developer authorization', () async {
+      stub(servers: [_server('tcp://localhost:50000', isCustom: true)]);
+      var operations = 0;
+      try {
+        await adapter.runWithFallback<void>(
+          network: network,
+          operation: (_) async {
+            operations++;
+          },
+        );
+      } on Exception {
+        /* Refusal must precede all server access. */
+      }
+      expect(operations, 0);
+      verifyZeroInteractions(serverRepo);
+      verifyZeroInteractions(settingsRepo);
+      verifyZeroInteractions(torSessionPort);
+    });
   }
 
   group('runWithFallback — fallback semantics', () {
@@ -439,21 +462,19 @@ void main() {
     });
 
     test('does not apply the external proxy to Liquid Electrum', () async {
-      when(
-        () => serverRepo.fetchActiveServers(network: any(named: 'network')),
-      ).thenAnswer(
-        (_) async => Ok([
-          ElectrumServer.existing(
-            url: 'ssl://liquid.example:50002',
-            network: _liquidNetwork,
-            isCustom: false,
-            priority: 0,
-          ),
-        ]),
-      );
-      when(
-        () => settingsRepo.fetchByNetwork(any()),
-      ).thenAnswer((_) async => Ok(_settings()));
+      when(() => serverRepo.fetchActiveServers(network: any(named: 'network')))
+          .thenAnswer(
+            (_) async => Ok([
+              ElectrumServer.existing(
+                url: 'ssl://liquid.example:50002',
+                network: _liquidNetwork,
+                isCustom: false,
+                priority: 0,
+              ),
+            ]),
+          );
+      when(() => settingsRepo.fetchByNetwork(any()))
+          .thenAnswer((_) async => Ok(_settings(socks5: 'proxy.example:9999')));
 
       late final String? socks5;
       await adapter.runWithFallback<void>(
@@ -484,9 +505,8 @@ void main() {
             ),
           ]),
         );
-        when(
-          () => settingsRepo.fetchByNetwork(any()),
-        ).thenAnswer((_) async => Ok(_settings()));
+        when(() => settingsRepo.fetchByNetwork(any()))
+            .thenAnswer((_) async => Ok(_settings()));
 
         var reached = false;
         await expectLater(
@@ -522,9 +542,8 @@ void main() {
             ),
           ]),
         );
-        when(
-          () => settingsRepo.fetchByNetwork(any()),
-        ).thenAnswer((_) async => Ok(_settings()));
+        when(() => settingsRepo.fetchByNetwork(any()))
+            .thenAnswer((_) async => Ok(_settings()));
 
         final reached = <String>[];
         await adapter.runWithFallback<void>(

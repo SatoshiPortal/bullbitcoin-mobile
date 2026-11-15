@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullPullableBody, BullText, BullTopBar, Gap;
@@ -53,8 +53,7 @@ class _Screen extends StatelessWidget {
         // Wait for the chain sync (bitcoin + liquid + swaps) to actually
         // finish before reloading the local tx list.
         await context.read<WalletBloc>().refresh();
-        if (!context.mounted) return;
-        await context.read<TransactionsCubit>().loadTxs();
+        // The global history reloads from the coordinator's completion signal.
       },
       slivers: [
         const SliverToBoxAdapter(child: TxsFilterRow()),

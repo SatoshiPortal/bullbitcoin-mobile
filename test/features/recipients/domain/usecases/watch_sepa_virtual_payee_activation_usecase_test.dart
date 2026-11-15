@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_environment_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
@@ -57,9 +57,8 @@ void main() {
 
   setUp(() {
     environment = _MockGetRecipientsEnvironmentUsecase();
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Ok(Environment.testnet));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Ok(Environment.testnet));
   });
 
   Future<List<Result<SepaVirtualPayeeStatus, RecipientsFailure>>> run(

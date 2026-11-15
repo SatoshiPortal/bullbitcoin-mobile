@@ -1,9 +1,11 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:primitives/primitives.dart';
+
 import 'backup_settings_failure.dart';
 
 final class BackupStatusSummary {
@@ -49,16 +51,14 @@ final class ReadBackupStatusUsecase {
           .where(
             (wallet) =>
                 wallet.network.isBitcoin &&
-                wallet.network.isTestnet == settings.environment.isTestnet,
+                wallet.network.environment == settings.environment.networkEnv,
           )
           .firstOrNull;
       if (bitcoin == null) return const Ok(BackupStatusSummary());
       final status = await _backupStatus(
         rb.VaultContext(
           fingerprint: Fingerprint(bitcoin.masterFingerprint),
-          network: bitcoin.network.isTestnet
-              ? BitcoinNetwork.testnet
-              : BitcoinNetwork.mainnet,
+          network: bitcoin.network.bitcoin,
         ),
       );
       final current = switch (status) {

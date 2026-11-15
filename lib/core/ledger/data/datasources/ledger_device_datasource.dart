@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/models/ledger_device_model.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';
@@ -16,6 +16,7 @@ import 'package:ledger_bitcoin/src/psbt/map_extension.dart';
 // ignore: implementation_imports
 import 'package:ledger_bitcoin/src/utils/buffer_reader.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sync/sync.dart' show decodeBitcoinPsbt;
 
 class LedgerDeviceDatasource {
   LedgerInterface? _ledgerBle;
@@ -318,26 +319,23 @@ extension PsbtSigner on PsbtV2 {
     }
     while (_readKeyPair(globalMap, bufferReader)) {}
 
-    final bdkPsbt = bdk.Psbt(psbtBase64: base64.encode(psbt));
-    final tx = bdkPsbt.extractTx();
+    // Throws a FormatException when the decoder refuses the PSBT.
+    final tx = decodeBitcoinPsbt(base64.encode(psbt));
 
-    setGlobalInputCount(tx.input().length);
-    setGlobalOutputCount(tx.output().length);
-    setGlobalTxVersion(tx.version());
+    setGlobalInputCount(tx.inputs.length);
+    setGlobalOutputCount(tx.outputs.length);
+    setGlobalTxVersion(tx.version);
 
     for (var i = 0; i < getGlobalInputCount(); i++) {
       inputMaps.insert(i, <String, Uint8List>{});
       while (_readKeyPair(inputMaps[i], bufferReader)) {}
-      final input = tx.input()[i];
-      setInputOutputIndex(i, input.previousOutput.vout);
+      final input = tx.inputDetails[i];
+      setInputOutputIndex(i, input.outpoint.vout);
 
       setInputPreviousTxId(
         i,
         Uint8List.fromList(
-          convert.hex
-              .decode(input.previousOutput.txid.toString())
-              .reversed
-              .toList(),
+          convert.hex.decode(input.outpoint.txId).reversed.toList(),
         ),
       );
 
@@ -346,9 +344,9 @@ extension PsbtSigner on PsbtV2 {
     for (var i = 0; i < getGlobalOutputCount(); i++) {
       outputMaps.insert(i, <String, Uint8List>{});
       while (_readKeyPair(outputMaps[i], bufferReader)) {}
-      final output = tx.output()[i];
-      setOutputAmount(i, output.value.toSat());
-      setOutputScript(i, Uint8List.fromList(output.scriptPubkey.toBytes()));
+      final output = tx.outputs[i];
+      setOutputAmount(i, output.valueSat);
+      setOutputScript(i, Uint8List.fromList(output.scriptPubkey));
     }
   }
 

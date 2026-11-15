@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/settings/data/settings_datasource.dart';
+import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -34,9 +34,8 @@ void main() {
 
   group('write failures are sanitized', () {
     test('a throwing datasource becomes a typed failure', () async {
-      when(
-        () => datasource.setCurrency(any()),
-      ).thenThrow(Exception(_rawReason));
+      when(() => datasource.setCurrency(any()))
+          .thenThrow(Exception(_rawReason));
 
       final result = await build().setCurrency('CAD');
       final failure = _failureOf(result);
@@ -62,15 +61,12 @@ void main() {
     // Every setter shares the boundary; spot-check the rest rather than the
     // whole 16, since they are generated from one shape.
     test('the other setters are sanitized too', () async {
-      when(
-        () => datasource.setBitcoinUnit(any()),
-      ).thenThrow(Exception(_rawReason));
-      when(
-        () => datasource.setLanguage(any()),
-      ).thenThrow(Exception(_rawReason));
-      when(
-        () => datasource.setHideAmounts(any()),
-      ).thenThrow(Exception(_rawReason));
+      when(() => datasource.setBitcoinUnit(any()))
+          .thenThrow(Exception(_rawReason));
+      when(() => datasource.setLanguage(any()))
+          .thenThrow(Exception(_rawReason));
+      when(() => datasource.setHideAmounts(any()))
+          .thenThrow(Exception(_rawReason));
 
       final repository = build();
       for (final result in [
@@ -105,9 +101,8 @@ void main() {
     // The stream is what other features listen to; it must not announce a
     // change that did not persist.
     test('a failed write does not emit a currency change', () async {
-      when(
-        () => datasource.setCurrency(any()),
-      ).thenThrow(Exception(_rawReason));
+      when(() => datasource.setCurrency(any()))
+          .thenThrow(Exception(_rawReason));
       final repository = build();
       final seen = <String>[];
       final sub = repository.currencyChangeStream.listen(seen.add);

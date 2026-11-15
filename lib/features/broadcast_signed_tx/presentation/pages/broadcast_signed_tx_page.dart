@@ -9,11 +9,10 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_failure_l10n.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullPasteInput, BullText, BullTopBar, Gap;
@@ -247,11 +246,9 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
   @override
   void initState() {
     super.initState();
-    final isTestnet =
-        context.read<SettingsCubit>().state.environment?.isTestnet ?? false;
     context.read<TransactionReviewCubit>().loadFromBitcoinTx(
       widget.bitcoinTx,
-      isTestnet: isTestnet,
+      network: context.read<BroadcastSignedTxCubit>().capturedNetwork,
     );
   }
 

@@ -100,10 +100,9 @@ final class LegacyKeystoreDatasource {
       }
       final entries = <String, String>{};
       for (final entry in raw.entries) {
-        if (entry case MapEntry(
-          key: final String key,
-          value: final String value,
-        ) when key.isNotEmpty) {
+        if (entry
+            case MapEntry(key: final String key, value: final String value)
+            when key.isNotEmpty) {
           entries[key] = value;
         } else {
           throw const LegacyKeystoreReadException(

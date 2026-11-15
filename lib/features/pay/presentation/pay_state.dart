@@ -33,6 +33,8 @@ sealed class PayState with _$PayState {
     Wallet? selectedWallet,
     required FiatPaymentOrder payOrder,
     @Default(false) bool isConfirmingPayment,
+    PayjoinSenderSession? pausedPayjoinSession,
+    @Default(false) bool isRetryingPayjoinProposal,
     @Default(false) bool isPolling,
     // Txid of the payin transaction once it is on the wire. Acts as a latch:
     // the send path must never run again for this order (#2522).

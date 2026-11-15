@@ -128,7 +128,7 @@ void main() {
         'Service Status',
         'Logs',
       ]);
-      expect(items.byId(SettingsItemId.autoswap).title, 'Auto Transfer');
+      expect(items.byId(SettingsItemId.autoswap).title, 'Auto Swap');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
       expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
     });
@@ -223,9 +223,8 @@ void main() {
     });
 
     test('testnet credentials is not marked as a superuser item', () {
-      final credentials = _englishItems(
-        isDevModeEnabled: true,
-      ).byId(SettingsItemId.testnetCredentials);
+      final credentials = _englishItems(isDevModeEnabled: true)
+          .byId(SettingsItemId.testnetCredentials);
 
       expect(credentials.isSuperuser, isFalse);
     });

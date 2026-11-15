@@ -1,5 +1,7 @@
 import 'package:primitives/primitives.dart' show Failure;
 import 'package:bb_mobile/core/primitives/payment_network.dart';
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show BitcoinSpendStatus;
 
 sealed class SwapFailure extends Failure {
   const SwapFailure([super.logMessage]);
@@ -85,4 +87,15 @@ final class SwapPriceUnavailableFailure extends SwapFailure {
 
 final class SwapUnexpectedFailure extends SwapFailure {
   const SwapUnexpectedFailure([super.logMessage]);
+}
+
+final class SwapUnsupportedNetworkFailure extends SwapFailure {
+  const SwapUnsupportedNetworkFailure();
+}
+
+/// Spending is invalid in the source wallet's current admission state.
+final class SwapSpendBlockedFailure extends SwapInvalidStateFailure {
+  final BitcoinSpendStatus status;
+
+  const SwapSpendBlockedFailure(this.status);
 }

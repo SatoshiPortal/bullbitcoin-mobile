@@ -4,17 +4,17 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_transaction_details_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 
 import '../../sp_cubit_harness.dart';
 
 Widget _buildPage(SpCubit cubit, SpPayment payment) => MaterialApp(
   theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpCubit>.value(
     value: cubit,
@@ -43,9 +43,8 @@ void main() {
 
   setUp(() {
     final harness = SpCubitHarness();
-    when(
-      () => harness.watchUsecase.execute(),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => harness.watchUsecase.execute())
+        .thenAnswer((_) => const Stream.empty());
 
     cubit = harness.build();
   });

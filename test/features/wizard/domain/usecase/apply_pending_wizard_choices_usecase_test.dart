@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
@@ -33,18 +33,14 @@ void main() {
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.savePending(any())).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
-    when(
-      () => settings.setLanguage(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setThemeMode(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setCurrency(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setErrorReportingEnabled(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => settings.setLanguage(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setThemeMode(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setErrorReportingEnabled(any()))
+        .thenAnswer((_) async => const Ok(null));
   });
 
   test('short-circuits when nothing is staged', () async {
@@ -139,9 +135,8 @@ void main() {
         touched: {WizardField.defaultCurrency},
       ),
     );
-    when(
-      () => settings.setCurrency(any()),
-    ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
 
     await usecase.execute();
 

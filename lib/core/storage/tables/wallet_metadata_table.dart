@@ -75,6 +75,7 @@ enum SignerDevice {
 @DataClassName('WalletMetadataRow')
 class WalletMetadatas extends Table {
   TextColumn get id => text()();
+  TextColumn get network => text().withDefault(const Constant('unresolved'))();
   TextColumn get masterFingerprint => text()();
   TextColumn get xpubFingerprint => text()();
   BoolColumn get isEncryptedVaultTested => boolean()();

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/sp/watchers/sp_header_retry_watcher.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -23,6 +24,7 @@ import 'package:secrets/secrets.dart' show Secret;
 
 import '../../sp_cubit_harness.dart';
 import '../../sp_fakes.dart';
+
 import 'package:bb_mobile/features/sp/domain/sp_session_guard.dart';
 
 // RecreateSpWalletUsecase with a live cubit subscribed to the session it
@@ -53,7 +55,7 @@ void main() {
   setUpAll(() async {
     registerFallbackValue(await spSecret());
     TestWidgetsFlutterBinding.ensureInitialized();
-    registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(spBackendConfig());
   });
 
@@ -94,35 +96,28 @@ void main() {
     });
     // No account dir on disk in this race harness, so backup/restore/discard
     // are no-ops; the session orchestration is what this test exercises.
-    when(
-      () => repository.backupAccountDir(),
-    ).thenAnswer((_) async => const Ok(false));
-    when(
-      () => repository.restoreAccountDir(),
-    ).thenAnswer((_) async => const Ok(false));
-    when(
-      () => repository.discardBackup(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.backupAccountDir())
+        .thenAnswer((_) async => const Ok(false));
+    when(() => repository.restoreAccountDir())
+        .thenAnswer((_) async => const Ok(false));
+    when(() => repository.discardBackup())
+        .thenAnswer((_) async => const Ok(null));
     // Revoke side, so a revoke can be raced against a recreate below.
-    when(
-      () => repository.accountDirExists(),
-    ).thenAnswer((_) async => const Ok(false));
+    when(() => repository.accountDirExists())
+        .thenAnswer((_) async => const Ok(false));
     when(
       () => repository.writeRevokedSentinel(
         skipIfPresent: any(named: 'skipIfPresent'),
       ),
     ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => repository.deleteOrphanBackups(),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => repository.deleteAccountDir(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.deleteOrphanBackups())
+        .thenAnswer((_) async => const Ok(null));
+    when(() => repository.deleteAccountDir())
+        .thenAnswer((_) async => const Ok(null));
     when(() => repository.notifySetupChanged()).thenReturn(null);
     when(() => configRepository.setIsSetUpNow(isSetUp: false)).thenReturn(null);
-    when(
-      () => configRepository.delete(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => configRepository.delete())
+        .thenAnswer((_) async => const Ok(null));
     when(
       () => repository.createFromSecret(
         network: any(named: 'network'),
@@ -143,27 +138,24 @@ void main() {
     });
     when(() => repository.notifications).thenAnswer((_) => notif.stream);
     when(() => repository.snapshot()).thenReturn(Ok(spWallet()));
-    when(
-      () => repository.history(),
-    ).thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(<SpPayment>[]));
-    when(
-      () => repository.coins(),
-    ).thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
-    when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.regtest));
+    when(() => repository.history())
+        .thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(<SpPayment>[]));
+    when(() => repository.coins())
+        .thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>([]));
+    when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.testnet));
     when(() => repository.chainTip()).thenReturn(0);
     when(() => repository.minBirthdayHeight()).thenReturn(const Ok(0));
 
-    when(
-      () => getSpSecretUsecase.execute(any()),
-    ).thenAnswer((_) async => Ok(secret));
+    when(() => getSpSecretUsecase.execute(any()))
+        .thenAnswer((_) async => Ok(secret));
     when(() => configRepository.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );
-    when(
-      () => configRepository.save(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => configRepository.save(any()))
+        .thenAnswer((_) async => const Ok(null));
 
     ensureSpSessionUsecase = EnsureSpSessionUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       repository: repository,
       files: repository,
       configRepository: configRepository,
@@ -174,6 +166,7 @@ void main() {
       ensureSpSessionUsecase: ensureSpSessionUsecase,
     );
     recreateSpWalletUsecase = RecreateSpWalletUsecase(
+      getSpFeatureGateUsecase: FakeSpFeatureGateUsecase(),
       getSpSecretUsecase: getSpSecretUsecase,
       repository: repository,
       files: repository,
@@ -189,9 +182,8 @@ void main() {
     );
 
     harness = SpCubitHarness();
-    when(
-      () => harness.watchUsecase.execute(),
-    ).thenAnswer((_) => repository.notifications);
+    when(() => harness.watchUsecase.execute())
+        .thenAnswer((_) => repository.notifications);
     cubit = SpCubit(
       loadSpWalletDataUsecase: loadSpWalletDataUsecase,
       restampSpPaymentTimesUsecase: harness.restampUsecase,
@@ -233,7 +225,7 @@ void main() {
     // self-heal) then creates the new session. The self-heal must not slip a
     // second createFromSecret through while teardown is in progress.
     final result = await recreateSpWalletUsecase.execute(
-      network: BitcoinNetwork.regtest,
+      network: BitcoinNetwork.testnet,
       blindbitUrl: 'http://blindbit.new',
       electrumUrl: 'tcp://electrum.new:50001',
     );
@@ -257,7 +249,7 @@ void main() {
     });
 
     final recreate = recreateSpWalletUsecase.execute(
-      network: BitcoinNetwork.regtest,
+      network: BitcoinNetwork.testnet,
       blindbitUrl: 'http://blindbit.new',
       electrumUrl: 'tcp://electrum.new:50001',
     );

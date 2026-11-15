@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' show Ok, Result;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
 import 'package:bb_mobile/features/autoswap/domain/autoswap_failure.dart';
@@ -49,9 +49,8 @@ void main() {
   });
 
   test('runs only after a Liquid wallet sync', () async {
-    when(
-      () => executeAutoswap.execute(),
-    ).thenAnswer((_) async => const Ok('order'));
+    when(() => executeAutoswap.execute())
+        .thenAnswer((_) async => const Ok('order'));
 
     syncs.add(_wallet(liquid: false));
     await pumpEventQueue();

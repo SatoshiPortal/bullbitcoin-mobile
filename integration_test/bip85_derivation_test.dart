@@ -107,9 +107,8 @@ Future<void> main({bool isInitialized = false}) async {
 
         // Get the xprv from the default-wallet seed (the outer `mnemonic`),
         // i.e. the same seed the usecase derives from — NOT the derived result.
-        final xprv = bip32.Bip32Keys.fromSeed(
-          Uint8List.fromList(mnemonic.seed),
-        ).toBase58();
+        final xprv = bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
+            .toBase58();
 
         // Now generate the same derivation using BIP85 library directly
         final directBip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
@@ -141,9 +140,8 @@ Future<void> main({bool isInitialized = false}) async {
         final (derivation: _, mnemonic: bMnemonic) = (bResult as Ok).value;
 
         // Get the xprv from the seed
-        final xprv = bip32.Bip32Keys.fromSeed(
-          Uint8List.fromList(mnemonic.seed),
-        ).toBase58();
+        final xprv = bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
+            .toBase58();
 
         // Verify database has both derivations stored
         final storedDerivations = await bip85Datasource.fetchAll();

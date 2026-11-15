@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
@@ -69,7 +69,13 @@ class EstimatePayPayinFeesUsecase {
       exchangeRateEstimate,
     );
 
-    if (wallet.balanceSat.toInt() < requiredAmountSat) {
+    final balance = wallet.balanceSat;
+    if (balance == null) {
+      return const Err(
+        PayQuoteUnavailableFailure('Wallet balance unavailable'),
+      );
+    }
+    if (balance.toInt() < requiredAmountSat) {
       log.info('Pay wallet ${wallet.id} cannot cover $requiredAmountSat sats');
       return Err(
         PayInsufficientBalanceFailure(requiredAmountSat: requiredAmountSat),
