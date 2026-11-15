@@ -15,6 +15,9 @@ class ExchangeScope extends StatelessWidget {
   static bool isLoggedIn(BuildContext context) =>
       _signedIn(locator<ExchangeFacade>().currentAccess);
 
+  static Stream<ExchangeAccess> accessChanges() =>
+      locator<ExchangeFacade>().watchAccess();
+
   /// A session that ends while access stays enabled can sign in again.
   static bool isEnabled(BuildContext context) =>
       locator<ExchangeFacade>().currentAccess is ExchangeAccessEnabled;

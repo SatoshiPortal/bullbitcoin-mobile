@@ -7,7 +7,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
@@ -230,7 +229,7 @@ class _SettingsAuthenticationReturnState
   @override
   void initState() {
     super.initState();
-    _subscription = locator<ExchangeFacade>().watchAccess().listen((status) {
+    _subscription = ExchangeScope.accessChanges().listen((status) {
       if (mounted &&
           status is ExchangeAccessEnabled &&
           status.session == ExchangeAccessSession.signedIn) {
