@@ -34,9 +34,8 @@ void main() {
   });
 
   test('returns the analyzed wallet policy', () async {
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: 'wallet-id'),
-    ).thenAnswer((_) async => Ok(policy));
+    when(() => bitcoinSigningPort.getPolicy(walletId: 'wallet-id'))
+        .thenAnswer((_) async => Ok(policy));
 
     final result = await usecase.execute('wallet-id');
 

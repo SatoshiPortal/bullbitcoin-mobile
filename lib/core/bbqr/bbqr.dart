@@ -101,10 +101,14 @@ class Bbqr {
   }
 
   static Future<List<String>> splitPsbt(String psbt) async {
-    final psbtBytes = switch (canonicalBitcoinPsbt(normalizeBitcoinPsbt(psbt))) {
+    final psbtBytes = switch (canonicalBitcoinPsbt(
+      normalizeBitcoinPsbt(psbt),
+    )) {
       Ok(:final value) => base64.decode(value),
       Err() => throw const FormatException('PSBT rejected by the decoder'),
     };
+    return _split(psbtBytes, bbqr.FileType.psbt);
+  }
 
   static Future<List<String>> splitText(String text) =>
       _split(utf8.encode(text), bbqr.FileType.unicodeText);

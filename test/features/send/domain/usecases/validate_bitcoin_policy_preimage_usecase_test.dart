@@ -13,9 +13,8 @@ void main() {
 
   test('normalizes and validates a hash preimage', () async {
     final port = _MockBitcoinSigningPort();
-    when(
-      () => port.validatePolicyPreimage(any()),
-    ).thenAnswer((_) async => const Ok(true));
+    when(() => port.validatePolicyPreimage(any()))
+        .thenAnswer((_) async => const Ok(true));
 
     final result = await ValidateBitcoinPolicyPreimageUsecase(
       port,
@@ -25,17 +24,15 @@ void main() {
       (result as Ok<BitcoinPolicyPreimage?, SendFailure>).value,
       _preimage(_repeat('aabb', 16)),
     );
-    verify(
-      () => port.validatePolicyPreimage(_preimage(_repeat('aabb', 16))),
-    ).called(1);
+    verify(() => port.validatePolicyPreimage(_preimage(_repeat('aabb', 16))))
+        .called(1);
   });
 
   test('rejects malformed hex without calling the signing port', () async {
     final port = _MockBitcoinSigningPort();
 
-    final result = await ValidateBitcoinPolicyPreimageUsecase(
-      port,
-    ).execute(hashlock: _hashlock(), preimageHex: 'not hex');
+    final result = await ValidateBitcoinPolicyPreimageUsecase(port)
+        .execute(hashlock: _hashlock(), preimageHex: 'not hex');
 
     expect((result as Ok<BitcoinPolicyPreimage?, SendFailure>).value, isNull);
     verifyNever(() => port.validatePolicyPreimage(any()));

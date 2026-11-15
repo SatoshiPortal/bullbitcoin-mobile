@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:drift/drift.dart' hide isNotNull, isNull;
@@ -412,7 +412,9 @@ String _expectedDescriptor(_LegacyWallet wallet) {
   return BdkFacade.combinePublicDescriptorPair(
     externalDescriptor: wallet.externalDescriptor,
     internalDescriptor: wallet.internalDescriptor,
-    isTestnet: wallet.network == 'bitcoinTestnet',
+    network: wallet.network == 'bitcoinTestnet'
+        ? Network.bitcoinTestnet
+        : Network.bitcoinMainnet,
   );
 }
 

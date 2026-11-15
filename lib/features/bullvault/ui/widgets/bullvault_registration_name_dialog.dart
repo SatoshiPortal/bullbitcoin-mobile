@@ -46,9 +46,8 @@ final class _RegistrationNameDialogState
 
   void _submit() {
     try {
-      Navigator.of(
-        context,
-      ).pop(WalletPolicyRegistrationName.validate(_value, widget.device));
+      Navigator.of(context)
+          .pop(WalletPolicyRegistrationName.validate(_value, widget.device));
     } on ArgumentError {
       setState(() => _invalid = true);
     }

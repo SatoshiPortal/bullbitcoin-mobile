@@ -22,9 +22,8 @@ void main() {
   setUp(() {
     exportSigningKey = _MockExportSigningKeyUsecase();
     releaseSigningKeyAccount = _MockReleaseSigningKeyAccountUsecase();
-    when(
-      releaseSigningKeyAccount.execute,
-    ).thenAnswer((_) async => const Ok(null));
+    when(releaseSigningKeyAccount.execute)
+        .thenAnswer((_) async => const Ok(null));
     cubit = SigningKeyExportCubit(
       exportSigningKeyUsecase: exportSigningKey,
       releaseSigningKeyAccountUsecase: releaseSigningKeyAccount,
@@ -34,16 +33,15 @@ void main() {
   tearDown(() => cubit.close());
 
   test('loads the signing key', () async {
-    when(
-      () => exportSigningKey.execute(account: null, markUsed: false),
-    ).thenAnswer(
-      (_) async => const Ok((
-        account: 0,
-        descriptorKey: 'signing-key',
-        isReserved: false,
-        markedAccount: null,
-      )),
-    );
+    when(() => exportSigningKey.execute(account: null, markUsed: false))
+        .thenAnswer(
+          (_) async => const Ok((
+            account: 0,
+            descriptorKey: 'signing-key',
+            isReserved: false,
+            markedAccount: null,
+          )),
+        );
 
     await cubit.load();
 
@@ -53,16 +51,15 @@ void main() {
   });
 
   test('exports an explicitly selected account', () async {
-    when(
-      () => exportSigningKey.execute(account: 7, markUsed: false),
-    ).thenAnswer(
-      (_) async => const Ok((
-        account: 7,
-        descriptorKey: 'signing-key-7',
-        isReserved: false,
-        markedAccount: null,
-      )),
-    );
+    when(() => exportSigningKey.execute(account: 7, markUsed: false))
+        .thenAnswer(
+          (_) async => const Ok((
+            account: 7,
+            descriptorKey: 'signing-key-7',
+            isReserved: false,
+            markedAccount: null,
+          )),
+        );
 
     await cubit.selectAccount(7);
 
@@ -72,27 +69,25 @@ void main() {
 
   test('clears the previous key while a different account loads', () async {
     final delayed = Completer<void>();
-    when(
-      () => exportSigningKey.execute(account: null, markUsed: false),
-    ).thenAnswer(
-      (_) async => const Ok((
-        account: 0,
-        descriptorKey: 'signing-key-0',
-        isReserved: false,
-        markedAccount: null,
-      )),
-    );
-    when(
-      () => exportSigningKey.execute(account: 1, markUsed: false),
-    ).thenAnswer((_) async {
-      await delayed.future;
-      return const Ok((
-        account: 1,
-        descriptorKey: 'signing-key-1',
-        isReserved: false,
-        markedAccount: null,
-      ));
-    });
+    when(() => exportSigningKey.execute(account: null, markUsed: false))
+        .thenAnswer(
+          (_) async => const Ok((
+            account: 0,
+            descriptorKey: 'signing-key-0',
+            isReserved: false,
+            markedAccount: null,
+          )),
+        );
+    when(() => exportSigningKey.execute(account: 1, markUsed: false))
+        .thenAnswer((_) async {
+          await delayed.future;
+          return const Ok((
+            account: 1,
+            descriptorKey: 'signing-key-1',
+            isReserved: false,
+            markedAccount: null,
+          ));
+        });
 
     await cubit.load();
     final selection = cubit.selectAccount(1);
@@ -114,27 +109,25 @@ void main() {
     'keeps the latest selection when returning to the displayed account',
     () async {
       final accountOne = Completer<void>();
-      when(
-        () => exportSigningKey.execute(account: 1, markUsed: false),
-      ).thenAnswer((_) async {
-        await accountOne.future;
-        return const Ok((
-          account: 1,
-          descriptorKey: 'signing-key-1',
-          isReserved: false,
-          markedAccount: null,
-        ));
-      });
-      when(
-        () => exportSigningKey.execute(account: 0, markUsed: false),
-      ).thenAnswer(
-        (_) async => const Ok((
-          account: 0,
-          descriptorKey: 'signing-key-0',
-          isReserved: false,
-          markedAccount: null,
-        )),
-      );
+      when(() => exportSigningKey.execute(account: 1, markUsed: false))
+          .thenAnswer((_) async {
+            await accountOne.future;
+            return const Ok((
+              account: 1,
+              descriptorKey: 'signing-key-1',
+              isReserved: false,
+              markedAccount: null,
+            ));
+          });
+      when(() => exportSigningKey.execute(account: 0, markUsed: false))
+          .thenAnswer(
+            (_) async => const Ok((
+              account: 0,
+              descriptorKey: 'signing-key-0',
+              isReserved: false,
+              markedAccount: null,
+            )),
+          );
 
       final selectOne = cubit.selectAccount(1);
       await Future<void>.delayed(Duration.zero);
@@ -150,26 +143,24 @@ void main() {
   test(
     'marks the selected account and advances to the next suggestion',
     () async {
-      when(
-        () => exportSigningKey.execute(account: null, markUsed: false),
-      ).thenAnswer(
-        (_) async => const Ok((
-          account: 0,
-          descriptorKey: 'signing-key-0',
-          isReserved: false,
-          markedAccount: null,
-        )),
-      );
-      when(
-        () => exportSigningKey.execute(account: 0, markUsed: true),
-      ).thenAnswer(
-        (_) async => const Ok((
-          account: 1,
-          descriptorKey: 'signing-key-1',
-          isReserved: false,
-          markedAccount: 0,
-        )),
-      );
+      when(() => exportSigningKey.execute(account: null, markUsed: false))
+          .thenAnswer(
+            (_) async => const Ok((
+              account: 0,
+              descriptorKey: 'signing-key-0',
+              isReserved: false,
+              markedAccount: null,
+            )),
+          );
+      when(() => exportSigningKey.execute(account: 0, markUsed: true))
+          .thenAnswer(
+            (_) async => const Ok((
+              account: 1,
+              descriptorKey: 'signing-key-1',
+              isReserved: false,
+              markedAccount: 0,
+            )),
+          );
 
       await cubit.load();
       await cubit.markAccountUsed();
@@ -181,16 +172,15 @@ void main() {
   );
 
   test('exports a reserved selection with its warning state', () async {
-    when(
-      () => exportSigningKey.execute(account: 7, markUsed: false),
-    ).thenAnswer(
-      (_) async => const Ok((
-        account: 7,
-        descriptorKey: 'signing-key-7',
-        isReserved: true,
-        markedAccount: null,
-      )),
-    );
+    when(() => exportSigningKey.execute(account: 7, markUsed: false))
+        .thenAnswer(
+          (_) async => const Ok((
+            account: 7,
+            descriptorKey: 'signing-key-7',
+            isReserved: true,
+            markedAccount: null,
+          )),
+        );
 
     await cubit.selectAccount(7);
 
@@ -200,9 +190,8 @@ void main() {
   });
 
   test('holds a typed failure when export fails', () async {
-    when(
-      () => exportSigningKey.execute(account: null, markUsed: false),
-    ).thenAnswer((_) async => const Err(SettingsSigningKeyExportFailure()));
+    when(() => exportSigningKey.execute(account: null, markUsed: false))
+        .thenAnswer((_) async => const Err(SettingsSigningKeyExportFailure()));
 
     await cubit.load();
 

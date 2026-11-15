@@ -686,9 +686,9 @@ final class _ActivationRow extends StatelessWidget {
       const Gap(12),
       Text(
         context.loc.bullVaultRecoveryDateUtc(
-          DateFormat.yMMMd(
-            Localizations.localeOf(context).toLanguageTag(),
-          ).add_Hm().format(date.toUtc()),
+          DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag())
+              .add_Hm()
+              .format(date.toUtc()),
         ),
         style: context.font.bodySmall?.copyWith(
           color: context.appColors.textMuted,

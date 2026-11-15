@@ -158,7 +158,10 @@ class WalletLocator {
       ),
     );
     locator.registerLazySingleton<BdkWalletDatasource>(
-      () => BdkWalletDatasource(wallet: locator<WalletNativeRuntime>().wallet),
+      () => BdkWalletDatasource(
+        wallet: locator<WalletNativeRuntime>().wallet,
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
+      ),
     );
     locator.registerLazySingleton<LwkWalletDatasource>(
       () => LwkWalletDatasource(wallet: locator<WalletNativeRuntime>().wallet),

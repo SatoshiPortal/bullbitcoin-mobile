@@ -14,9 +14,8 @@ void main() {
   test('blocks deletion only for wallets in a BullVault lineage', () async {
     final repository = _MockRepository();
     final usecase = CanDeleteBullVaultWalletUsecase(repository);
-    when(
-      () => repository.getByWalletId('ordinary-wallet'),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.getByWalletId('ordinary-wallet'))
+        .thenAnswer((_) async => const Ok(null));
     when(() => repository.getByWalletId('bullvault-wallet')).thenAnswer(
       (_) async => Ok(
         BullVaultRecord(

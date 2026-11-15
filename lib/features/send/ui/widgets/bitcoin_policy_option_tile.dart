@@ -6,10 +6,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_description.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap, BullBorderedTile;
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BitcoinPolicyOptionTile extends StatefulWidget {

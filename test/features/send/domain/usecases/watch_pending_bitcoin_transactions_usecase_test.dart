@@ -44,15 +44,13 @@ void main() {
           ),
         ),
       );
-      when(
-        () => validate.execute(valid),
-      ).thenAnswer((_) async => Ok((transaction: valid, details: null)));
+      when(() => validate.execute(valid))
+          .thenAnswer((_) async => Ok((transaction: valid, details: null)));
       when(() => validate.execute(invalid)).thenAnswer(
         (_) async => const Err(SendStoredTransactionInvalidFailure()),
       );
-      when(
-        () => validate.execute(unavailable),
-      ).thenAnswer((_) async => const Err(SendUnexpectedFailure('offline')));
+      when(() => validate.execute(unavailable))
+          .thenAnswer((_) async => const Err(SendUnexpectedFailure('offline')));
 
       final result = await WatchPendingBitcoinTransactionsUsecase(
         repository,

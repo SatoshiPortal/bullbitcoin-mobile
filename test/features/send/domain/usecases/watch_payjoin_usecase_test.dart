@@ -86,9 +86,8 @@ void main() {
     final snapshot = Completer<Result<PayjoinSession?, PayjoinFailure>>();
     final pending = _session();
     final completed = _session(status: PayjoinStatus.completed);
-    when(
-      () => sessions.watch(sessionIds: {pending.id}),
-    ).thenAnswer((_) => events.stream);
+    when(() => sessions.watch(sessionIds: {pending.id}))
+        .thenAnswer((_) => events.stream);
     when(() => sessions.byId(pending.id)).thenAnswer((_) => snapshot.future);
     final seen = <PayjoinSession>[];
     final subscription = WatchPayjoinUsecase(sessions)

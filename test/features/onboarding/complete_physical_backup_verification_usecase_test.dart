@@ -33,9 +33,8 @@ void main() {
         signers: [...requested.signers, ...other.signers],
       );
       var wallets = [requested, liquid, other, shared];
-      when(
-        () => walletRepository.getWallets(),
-      ).thenAnswer((_) async => Ok(wallets));
+      when(() => walletRepository.getWallets())
+          .thenAnswer((_) async => Ok(wallets));
       when(
         () => walletRepository.updateBackupInfo(
           walletId: any(named: 'walletId'),
@@ -74,9 +73,8 @@ void main() {
       ).captured;
       expect(captured, ['requested', 'liquid']);
       final getWallets = _MockGetWalletsUsecase();
-      when(
-        () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
-      ).thenAnswer((_) async => Ok(wallets));
+      when(() => getWallets.execute(onlyBitcoin: true, includeHidden: true))
+          .thenAnswer((_) async => Ok(wallets));
       final check = CheckPhysicalBackupVerifiedUsecase(getWallets);
       expect(await check.execute('deadbeef'), isTrue);
       expect(await check.execute('cafebabe'), isFalse);

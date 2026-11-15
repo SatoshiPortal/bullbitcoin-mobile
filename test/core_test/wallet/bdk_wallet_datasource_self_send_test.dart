@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 
 // Regression test for a send-to-self recorded with the whole value of the
 // utxos it consumed instead of the amount paid. `sentAndReceived.sent` is the
@@ -145,7 +145,7 @@ void main() {
     walletModel = WalletModel.publicBdk(
       id: 'bdk-self-send-test',
       descriptor: twoPathDescriptor(external.toString(), internal.toString()),
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     ) as PublicBdkWalletModel;
 
     final wallet = await BdkTestStore.createWallet(walletModel);

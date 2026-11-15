@@ -72,7 +72,7 @@ class GetLedgerWatchOnlyWalletUsecase {
           DescriptorDerivation.derivePublicBitcoinMultipathDescriptorFromXpub(
             xpub,
             scriptType: scriptType,
-            isTestnet: network.isTestnet,
+            isTestnet: !network.isMainnet,
             masterFingerprint: masterFingerprint,
             derivationPath: derivationPath,
           );

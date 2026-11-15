@@ -2,14 +2,11 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
@@ -81,12 +78,10 @@ void main() {
     getWalletsUsecase = _MockGetWalletsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
     getSwapMnemonicUsecase = _MockGetSwapMnemonicUsecase();
-    when(
-      () => getAllSecretsUsecase.execute(),
-    ).thenAnswer((_) async => Ok([aSecret]));
-    when(
-      () => getWalletsUsecase.execute(includeHidden: true),
-    ).thenAnswer((_) async => Ok([]));
+    when(() => getAllSecretsUsecase.execute())
+        .thenAnswer((_) async => Ok([aSecret]));
+    when(() => getWalletsUsecase.execute(includeHidden: true))
+        .thenAnswer((_) async => Ok([]));
     when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
 
     cubit = AllSeedViewCubit(
@@ -122,9 +117,8 @@ void main() {
         publicDescriptor: 'wsh(pk(xpub/<0;1>/*))',
         balanceSat: BigInt.zero,
       );
-      when(
-        () => getWalletsUsecase.execute(includeHidden: true),
-      ).thenAnswer((_) async => Ok([wallet]));
+      when(() => getWalletsUsecase.execute(includeHidden: true))
+          .thenAnswer((_) async => Ok([wallet]));
       await cubit.unlock(issueGrant());
 
       expect(cubit.state.existingWallets, [aSecret]);

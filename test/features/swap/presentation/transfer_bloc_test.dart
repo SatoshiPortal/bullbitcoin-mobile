@@ -629,8 +629,12 @@ void main() {
           walletId: 'wallet-1',
         ),
       ).thenAnswer((_) async {});
-      when(() => signBitcoin.execute(walletId: 'wallet-1', psbt: 'edited'))
-          .thenAnswer((_) async => (signedPsbt: 'edited-signed', txSize: 100));
+      when(
+        () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'edited'),
+      ).thenAnswer(
+        (_) async =>
+            Ok((signedPsbt: 'edited-signed', txSize: 100, isFinalized: true)),
+      );
       when(() => calculateBitcoin.execute(psbt: 'edited-signed'))
           .thenAnswer((_) async => 1200);
       when(
@@ -1352,7 +1356,10 @@ void main() {
     when(
       () =>
           signBitcoin.execute(walletId: 'wallet-1', psbt: 'old-unsigned-psbt'),
-    ).thenAnswer((_) async => (signedPsbt: 'old-signed-psbt', txSize: 100));
+    ).thenAnswer(
+      (_) async =>
+          Ok((signedPsbt: 'old-signed-psbt', txSize: 100, isFinalized: true)),
+    );
     when(() => calculateBitcoin.execute(psbt: 'old-signed-psbt'))
         .thenAnswer((_) async => 1200);
     bloc.emit(
@@ -1466,9 +1473,8 @@ void main() {
           isFinalized: true,
         )),
       );
-      when(
-        () => calculateBitcoin.execute(psbt: 'signed-psbt'),
-      ).thenAnswer((_) async => 1200);
+      when(() => calculateBitcoin.execute(psbt: 'signed-psbt'))
+          .thenAnswer((_) async => 1200);
       bloc.emit(
         TransferState(
           fromWallet: _wallet(balanceSat: BigInt.from(100000)),
@@ -1577,9 +1583,8 @@ void main() {
           isFinalized: true,
         )),
       );
-      when(
-        () => calculateBitcoin.execute(psbt: 'new-signed-psbt'),
-      ).thenAnswer((_) async => 1200);
+      when(() => calculateBitcoin.execute(psbt: 'new-signed-psbt'))
+          .thenAnswer((_) async => 1200);
       when(
         () => replacePrepared.execute(
           localId: 'local-1',
@@ -1651,9 +1656,8 @@ void main() {
         isFinalized: true,
       )),
     );
-    when(
-      () => calculateBitcoin.execute(psbt: 'new-signed-psbt'),
-    ).thenAnswer((_) async => 1200);
+    when(() => calculateBitcoin.execute(psbt: 'new-signed-psbt'))
+        .thenAnswer((_) async => 1200);
     when(
       () => replacePrepared.execute(
         localId: 'local-1',

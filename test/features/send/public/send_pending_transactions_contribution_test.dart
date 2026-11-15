@@ -27,9 +27,8 @@ void main() {
       final refreshes = StreamController<void>();
       addTearDown(refreshes.close);
       final watch = _MockWatchPending();
-      when(
-        () => watch.execute('wallet'),
-      ).thenAnswer((_) => Stream.value(const Err(SendPersistenceFailure())));
+      when(() => watch.execute('wallet'))
+          .thenAnswer((_) => Stream.value(const Err(SendPersistenceFailure())));
       final cubit = SendPendingTransactionsCubit(watch, _MockDeletePending());
       locator.registerFactory<SendPendingTransactionsCubit>(() => cubit);
       addTearDown(locator.reset);

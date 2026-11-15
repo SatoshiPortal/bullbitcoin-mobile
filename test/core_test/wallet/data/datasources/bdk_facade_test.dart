@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -25,7 +25,7 @@ void main() {
 
         final parsed = BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: descriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         );
 
         expect(parsed.descriptor, contains('/<0;1>/*'));
@@ -49,9 +49,9 @@ void main() {
         expect(
           () => BdkFacade.parsePublicTwoPathDescriptor(
             descriptor: descriptor,
-            isTestnet: true,
+            network: Network.bitcoinTestnet,
           ),
-          throwsA(isA<bdk.InvalidDescriptorChecksumDescriptorException>()),
+          throwsFormatException,
         );
       },
     );
@@ -70,9 +70,9 @@ void main() {
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: descriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ),
-        throwsA(isA<bdk.InvalidDescriptorChecksumDescriptorException>()),
+        throwsFormatException,
       );
     });
 
@@ -82,9 +82,9 @@ void main() {
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: descriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ),
-        throwsA(isA<bdk.DescriptorException>()),
+        throwsFormatException,
       );
     });
 
@@ -92,7 +92,7 @@ void main() {
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: 'wpkh($_mainnetXpub/<0;1>)',
-          isTestnet: false,
+          network: Network.bitcoinMainnet,
         ),
         throwsA(isA<FormatException>()),
       );
@@ -112,9 +112,11 @@ void main() {
         expect(
           () => BdkFacade.parsePublicTwoPathDescriptor(
             descriptor: 'wpkh(${mismatch.extendedPublicKey}/0/*)',
-            isTestnet: mismatch.isTestnet,
+            network: mismatch.isTestnet
+                ? Network.bitcoinTestnet
+                : Network.bitcoinMainnet,
           ),
-          throwsA(isA<bdk.DescriptorException>()),
+          throwsFormatException,
           reason: '${mismatch.network} must reject the other network key',
         );
       }
@@ -128,11 +130,11 @@ void main() {
 
       final apostrophe = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: apostropheDescriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
       final h = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: hDescriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(apostrophe.keys.single.derivationPath, "m/84'/1'/0'");
@@ -143,11 +145,11 @@ void main() {
       final descriptors = singleSignatureDescriptors(testMnemonics.first);
       final withOrigin = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptors.external,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
       final withoutOrigin = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'wpkh(${descriptors.xpub}/0/*)',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(withOrigin.scriptIdentity, withoutOrigin.scriptIdentity);
@@ -157,11 +159,11 @@ void main() {
       final xpub = singleSignatureDescriptors(testMnemonics.first).xpub;
       final conventional = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'wpkh($xpub/<0;1>/*)',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
       final reversed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'wpkh($xpub/<1;0>/*)',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(
@@ -189,7 +191,7 @@ void main() {
 
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(parsed.keys, hasLength(2));
@@ -210,7 +212,7 @@ void main() {
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: 'wpkh($key)',
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ),
         throwsA(isA<FormatException>()),
       );
@@ -227,7 +229,7 @@ void main() {
 
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(parsed.externalDescriptor, contains('/0/*'));
@@ -244,7 +246,7 @@ void main() {
 
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'wsh(and_v(v:pk($key),sha256($digest)))',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(parsed.keys, hasLength(1));
@@ -259,7 +261,7 @@ void main() {
 
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(parsed.descriptor, contains('/<0;1>/*'));
@@ -275,7 +277,7 @@ void main() {
 
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'tr($bip341NumsKey,pk($key))',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(parsed.keys, hasLength(1));
@@ -290,7 +292,7 @@ void main() {
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: 'tr($bip341NumsKey)',
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ),
         throwsFormatException,
       );
@@ -309,7 +311,7 @@ void main() {
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: descriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ),
         throwsA(isA<UnsupportedFixedPublicKeyDescriptorException>()),
       );
@@ -320,11 +322,11 @@ void main() {
 
       final legacy = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'pkh($key)',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
       final nestedSegwit = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'sh(wpkh($key))',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(legacy.scriptType, ScriptType.bip44);
@@ -341,7 +343,7 @@ void main() {
       expect(
         () => BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: descriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ),
         throwsA(isA<FormatException>()),
       );
@@ -355,7 +357,7 @@ void main() {
         () => BdkFacade.combinePublicDescriptorPair(
           externalDescriptor: receive,
           internalDescriptor: change,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ),
         throwsA(isA<FormatException>()),
       );

@@ -8,8 +8,6 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transa
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
-import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -236,8 +234,8 @@ void main() {
             bitcoin: usecase().execute,
             liquid: (_) async => throw StateError('Liquid is not used here'),
             verifySignedTxUsecase: VerifySignedTxUsecase(),
+            watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
           ),
-            watchPending: _MockPendingWatcher(),
         ),
         request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
       );

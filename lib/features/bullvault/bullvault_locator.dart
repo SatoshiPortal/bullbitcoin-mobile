@@ -3,14 +3,14 @@ import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mn
 import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
 import 'package:secrets/secrets.dart' show Secrets;
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
+import 'package:bb_mobile/features/bullvault/domain/bitcoin_chain_tip_port.dart';
+import 'package:bb_mobile/features/bullvault/data/bitcoin_chain_tip_adapter.dart';
+import 'package:sync/sync.dart' show WalletConnectionPort;
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_ownership_port.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bip48_account_usecase.dart';
@@ -134,10 +134,12 @@ abstract final class BullVaultLocator {
         locator<Secrets>(),
       ),
     );
+    locator.registerLazySingleton<BitcoinChainTipPort>(
+      () => BitcoinChainTipAdapter(locator<WalletConnectionPort>()),
+    );
     locator.registerFactory<PrepareBullVaultTimeReferenceUsecase>(
-      () => PrepareBullVaultTimeReferenceUsecase(
-        locator<GetBitcoinChainTipUsecase>(),
-      ),
+      () =>
+          PrepareBullVaultTimeReferenceUsecase(locator<BitcoinChainTipPort>()),
     );
     locator.registerFactory<CheckBullVaultMobileBackupsUsecase>(
       () => CheckBullVaultMobileBackupsUsecase(

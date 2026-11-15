@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:primitives/primitives.dart';
 
 import 'wallet_key.dart';
+import 'bitcoin_policy_descriptor.dart';
 import 'wallet_revision.dart';
 
 /// A protocol session that may spend the inputs it reserved, and only those.
@@ -81,6 +82,54 @@ sealed class SpendRequest {
     : exclude = Set.unmodifiable(exclude);
 }
 
+/// The descriptor branches to satisfy and the coins eligible for them.
+/// Eligibility only narrows the writer's selection; freezes and reservations
+/// remain authoritative even when a coin appears in these sets.
+final class BitcoinSpendPolicy {
+  final Map<String, List<int>> external;
+  final Map<String, List<int>> internal;
+  final bool requiresRelativeTimelock;
+  final ({
+    List<BitcoinDescriptorKey> external,
+    List<BitcoinDescriptorKey> internal,
+  })?
+  requiredKeys;
+  final Set<Outpoint>? eligibleExternal;
+  final Set<Outpoint>? eligibleInternal;
+
+  BitcoinSpendPolicy({
+    Map<String, List<int>> external = const {},
+    Map<String, List<int>> internal = const {},
+    this.requiresRelativeTimelock = false,
+    ({
+      List<BitcoinDescriptorKey> external,
+      List<BitcoinDescriptorKey> internal,
+    })?
+    requiredKeys,
+    Set<Outpoint>? eligibleExternal,
+    Set<Outpoint>? eligibleInternal,
+  }) : requiredKeys = requiredKeys == null
+           ? null
+           : (
+               external: List.unmodifiable(requiredKeys.external),
+               internal: List.unmodifiable(requiredKeys.internal),
+             ),
+       external = _choices(external),
+       internal = _choices(internal),
+       eligibleExternal = eligibleExternal == null
+           ? null
+           : Set.unmodifiable(eligibleExternal),
+       eligibleInternal = eligibleInternal == null
+           ? null
+           : Set.unmodifiable(eligibleInternal);
+
+  static Map<String, List<int>> _choices(Map<String, List<int>> choices) =>
+      Map.unmodifiable({
+        for (final entry in choices.entries)
+          entry.key: List<int>.unmodifiable(entry.value),
+      });
+}
+
 final class BitcoinSpendRequest extends SpendRequest {
   final List<SpendRecipient> recipients;
   final SpendFee fee;
@@ -91,6 +140,7 @@ final class BitcoinSpendRequest extends SpendRequest {
 
   /// Signals BIP125 replaceability, BDK's default.
   final bool replaceable;
+  final BitcoinSpendPolicy? policy;
 
   BitcoinSpendRequest({
     required List<SpendRecipient> recipients,
@@ -98,6 +148,7 @@ final class BitcoinSpendRequest extends SpendRequest {
     List<Outpoint>? selected,
     this.selectedOnly = false,
     this.replaceable = true,
+    this.policy,
     super.exclude,
     super.owner,
   }) : recipients = List.unmodifiable(recipients),

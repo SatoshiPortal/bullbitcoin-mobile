@@ -9,7 +9,6 @@ class GenerateBullVaultInheritanceMnemonicUsecase {
   const GenerateBullVaultInheritanceMnemonicUsecase(this._secrets);
 
   Future<Result<EphemeralMnemonic, BullVaultFailure>> execute() async =>
-      (await _secrets.generateEphemeral(
-        wordCount: MnemonicLength.words24,
-      )).mapErr((_) => const BullVaultCreationFailure());
+      (await _secrets.generateEphemeral(wordCount: MnemonicLength.words24))
+          .mapErr((_) => const BullVaultCreationFailure());
 }

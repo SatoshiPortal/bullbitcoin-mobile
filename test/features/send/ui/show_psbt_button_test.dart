@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
+import 'package:bb_mobile/features/send/ui/widgets/send_action_buttons.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -7,7 +10,6 @@ import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
-import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
@@ -24,11 +26,7 @@ void main() {
       'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
       'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
 
-  // Regression (Pixel 6a, Coldcard Q watch-signer): Show PSBT handed the
-  // router the send screen's wallet view instead of the wallet, so the route
-  // pattern never matched and the screen said "Oops! Something went wrong".
-  // A Mk4 stands in for the Q: its screen has no animated QR to wire up.
-  testWidgets('Show PSBT carries the sending wallet through to the broadcast', (
+  testWidgets('QR signing returns the result to the current send session', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -37,14 +35,18 @@ void main() {
     final wallet = Wallet(
       origin: 'watch-signer',
       network: Network.bitcoinTestnet,
-      xpubFingerprint: '00000000',
       scriptType: ScriptType.bip84,
-      xpub: '',
-      externalPublicDescriptor: '',
-      internalPublicDescriptor: '',
-      signer: SignerEntity.remote,
-      signerDevice: SignerDeviceEntity.coldcardMk4,
       balanceSat: BigInt.from(100000),
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: '',
+          xpubFingerprint: '00000000',
+          xpub: '',
+          signer: SignerEntity.remote,
+          signerDevice: SignerDeviceEntity.coldcardMk4,
+        ),
+      ],
+      publicDescriptor: '',
     );
     final cubit = _MockSendCubit();
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
@@ -55,7 +57,9 @@ void main() {
         unsignedPsbt: psbt,
       ),
     );
-    Object? broadcastExtra;
+    Object? collectionRequest;
+    when(() => cubit.applyExternalBitcoinSigningResult('signed'))
+        .thenAnswer((_) async => true);
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -63,7 +67,7 @@ void main() {
           builder: (context, state) => Scaffold(
             body: BlocProvider<SendCubit>.value(
               value: cubit,
-              child: const ShowPsbtButton(),
+              child: ShowPsbtButton(signer: wallet.signers.single),
             ),
           ),
         ),
@@ -73,7 +77,7 @@ void main() {
           name: BroadcastSignedTxRoute.broadcastHome.name,
           path: BroadcastSignedTxRoute.broadcastHome.path,
           builder: (context, state) {
-            broadcastExtra = state.extra;
+            collectionRequest = state.extra;
             return const Scaffold();
           },
         ),
@@ -98,19 +102,23 @@ void main() {
     expect(find.text(l10n.oopsSomethingWentWrong), findsNothing);
     expect(find.byType(ShowPsbtScreen), findsOneWidget);
     final screen = tester.widget<ShowPsbtScreen>(find.byType(ShowPsbtScreen));
-    expect(screen.wallet, same(wallet));
     expect(screen.psbt, psbt);
     expect(screen.signerDevice, SignerDeviceEntity.coldcardMk4);
 
-    await tester.tap(find.text(l10n.psbtFlowDone));
+    await tester.tap(find.text(l10n.importSignedPsbtTitle));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(
-      broadcastExtra,
-      isA<({String psbt, Wallet? wallet})>()
-          .having((extra) => extra.psbt, 'psbt', psbt)
-          .having((extra) => extra.wallet, 'wallet', same(wallet)),
+      collectionRequest,
+      isA<BroadcastSignedTxRequest>().having(
+        (request) => request.unsignedPsbt,
+        'unsigned PSBT',
+        psbt,
+      ),
     );
+    router.pop('signed');
+    await tester.pumpAndSettle();
+    verify(() => cubit.applyExternalBitcoinSigningResult('signed')).called(1);
   });
 }

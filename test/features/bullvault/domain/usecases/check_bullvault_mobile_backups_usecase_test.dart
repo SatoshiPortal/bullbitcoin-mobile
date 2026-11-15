@@ -14,9 +14,8 @@ void main() {
     'reports both backup methods for the exact Bull seed and network',
     () async {
       final physical = _MockTestWalletBackupFacade();
-      when(
-        () => physical.isPhysicalBackupVerified('deadbeef'),
-      ).thenAnswer((_) async => true);
+      when(() => physical.isPhysicalBackupVerified('deadbeef'))
+          .thenAnswer((_) async => true);
       for (final verifiedAt in [null, DateTime.utc(2026)]) {
         final usecase = CheckBullVaultMobileBackupsUsecase(physical, (
           selected,
@@ -41,9 +40,8 @@ void main() {
     'reports unavailable certification instead of claiming no backup',
     () async {
       final physical = _MockTestWalletBackupFacade();
-      when(
-        () => physical.isPhysicalBackupVerified('deadbeef'),
-      ).thenAnswer((_) async => true);
+      when(() => physical.isPhysicalBackupVerified('deadbeef'))
+          .thenAnswer((_) async => true);
       final usecase = CheckBullVaultMobileBackupsUsecase(
         physical,
         (_) async => const Err(RecoverBullJournalFailure()),

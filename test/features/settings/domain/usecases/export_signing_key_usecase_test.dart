@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -8,8 +9,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_claim.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';

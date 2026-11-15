@@ -36,6 +36,7 @@ sealed class SyncFailure extends Failure {
     SyncConsolidationRequiredFailure() => 'consolidation_required',
     SyncOriginalSignaturesFailure() => 'original_signatures',
     SyncSpendRefusedFailure() => 'spend_refused',
+    SyncPolicyFailure(:final reason) => 'policy_${reason.name}',
   };
 }
 
@@ -190,4 +191,24 @@ final class SyncOriginalSignaturesFailure extends SyncSpendFailure {
 /// that is neither a recipient nor this wallet's.
 final class SyncSpendRefusedFailure extends SyncSpendFailure {
   const SyncSpendRefusedFailure();
+}
+
+/// Why public descriptor or PSBT policy analysis refused its input.
+enum PolicyFailureReason {
+  invalidDescriptor,
+  fixedPublicKey,
+  unsupportedPath,
+  invalidPsbt,
+  walletMismatch,
+  missingOrigin,
+  missingUtxo,
+  frozenUtxo,
+  unsupportedSighash,
+  unsupportedSpendMode,
+}
+
+/// A descriptor or PSBT cannot be used for the requested policy operation.
+final class SyncPolicyFailure extends SyncFailure {
+  final PolicyFailureReason reason;
+  const SyncPolicyFailure(this.reason);
 }

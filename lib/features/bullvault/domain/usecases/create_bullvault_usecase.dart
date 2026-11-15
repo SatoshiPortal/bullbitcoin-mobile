@@ -1,4 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:secrets/secrets.dart' show Secret;
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
@@ -7,9 +9,6 @@ import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_claim.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bip48_account_repository.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -66,7 +65,7 @@ class CreateBullVaultUsecase {
     try {
       final settings = await _getSettingsUsecase.execute();
       final network = Network.fromEnvironment(
-        isTestnet: settings.environment.isTestnet,
+        environment: settings.environment.networkEnv,
         isLiquid: false,
       );
       if (request.label.trim().isEmpty) {
@@ -88,7 +87,7 @@ class CreateBullVaultUsecase {
         return const Err(BullVaultInvalidScheduleFailure());
       }
       final timeReferenceResult = await _prepareTimeReferenceUsecase.execute(
-        isTestnet: network.isTestnet,
+        network: network.bitcoin,
       );
       late final BullVaultTimeReference timeReference;
       switch (timeReferenceResult) {
@@ -128,10 +127,6 @@ class CreateBullVaultUsecase {
             secret = value;
           case Err():
             return const Err(BullVaultCreationFailure());
-        }
-        // Default Bull wallets are backed by a words-only secret.
-        if (secret.info.hasPassphrase) {
-          return const Err(BullVaultCreationFailure());
         }
         seedFingerprint = secret.id.hex;
         mobileSeedFingerprint = secret.id.hex;

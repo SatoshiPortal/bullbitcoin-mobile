@@ -39,16 +39,14 @@ void main() {
         passphrase: 'vault passphrase',
       ),
     ).thenAnswer((_) async => const Ok((psbt: 'signed', isFinalized: false)));
-    when(
-      () => port.reviewPsbt('signed', walletId: 'wallet'),
-    ).thenAnswer((_) async => Ok(signed));
+    when(() => port.reviewPsbt('signed', walletId: 'wallet'))
+        .thenAnswer((_) async => Ok(signed));
     when(
       () => port.finalizePsbt('signed'),
     ).thenAnswer((_) async => const Ok((psbt: 'finalized', isFinalized: true)));
 
-    final result = await SignExternalPsbtUsecase(
-      port,
-    ).execute(review, passphrase: 'vault passphrase');
+    final result = await SignExternalPsbtUsecase(port)
+        .execute(review, passphrase: 'vault passphrase');
 
     expect(result, isA<Ok<PsbtSigningResult, PsbtSigningFailure>>());
     final value = (result as Ok<PsbtSigningResult, PsbtSigningFailure>).value;
@@ -69,9 +67,8 @@ void main() {
     ).thenAnswer(
       (_) async => const Ok((psbt: 'unchanged', isFinalized: false)),
     );
-    when(
-      () => port.reviewPsbt('unchanged', walletId: 'wallet'),
-    ).thenAnswer((_) async => Ok(transaction));
+    when(() => port.reviewPsbt('unchanged', walletId: 'wallet'))
+        .thenAnswer((_) async => Ok(transaction));
 
     final result = await SignExternalPsbtUsecase(port).execute(review);
 

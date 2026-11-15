@@ -24,8 +24,7 @@ class GetBullVaultSecretUsecase {
     };
     final id = Fingerprint.tryParse(fingerprint ?? '');
     if (id == null) return const Err(BullVaultCreationFailure());
-    return (await _secrets.fetch(
-      id,
-    )).mapErr((_) => const BullVaultCreationFailure());
+    return (await _secrets.retainCanonical(id))
+        .mapErr((_) => const BullVaultCreationFailure());
   }
 }

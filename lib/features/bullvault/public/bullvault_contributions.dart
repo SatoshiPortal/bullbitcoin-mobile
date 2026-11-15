@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_home_alert_c
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_wallet_settings_cubit.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_home_alert.dart';
 import 'package:bb_mobile/features/bullvault/ui/widgets/bullvault_wallet_settings_action.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +14,7 @@ final class BullVaultHomeContribution extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<BullVaultHomeAlertCubit>(),
+    create: (_) => GetIt.I<BullVaultHomeAlertCubit>(),
     child: BullVaultHomeAlert(wallets: wallets),
   );
 }
@@ -26,7 +26,7 @@ final class BullVaultWalletSettingsContribution extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) => locator<BullVaultWalletSettingsCubit>()..load(wallet.id),
+    create: (_) => GetIt.I<BullVaultWalletSettingsCubit>()..load(wallet.id),
     child: BullVaultWalletSettingsAction(wallet: wallet),
   );
 }

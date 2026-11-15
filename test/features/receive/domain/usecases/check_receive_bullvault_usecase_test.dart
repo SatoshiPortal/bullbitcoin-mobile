@@ -16,9 +16,8 @@ void main() {
   });
 
   test('identifies a wallet with BullVault metadata', () async {
-    when(
-      () => facade.isBullVaultWallet('vault'),
-    ).thenAnswer((_) async => const Ok(true));
+    when(() => facade.isBullVaultWallet('vault'))
+        .thenAnswer((_) async => const Ok(true));
 
     expect(await usecase.execute('vault'), isTrue);
   });
@@ -26,18 +25,16 @@ void main() {
   test(
     'does not show the reminder when BullVault metadata is unavailable',
     () async {
-      when(
-        () => facade.isBullVaultWallet('wallet'),
-      ).thenAnswer((_) async => const Ok(false));
+      when(() => facade.isBullVaultWallet('wallet'))
+          .thenAnswer((_) async => const Ok(false));
 
       expect(await usecase.execute('wallet'), isFalse);
     },
   );
 
   test('shows the reminder when BullVault metadata cannot be read', () async {
-    when(
-      () => facade.isBullVaultWallet('wallet'),
-    ).thenAnswer((_) async => const Err(BullVaultRenewalFailure()));
+    when(() => facade.isBullVaultWallet('wallet'))
+        .thenAnswer((_) async => const Err(BullVaultRenewalFailure()));
 
     expect(await usecase.execute('wallet'), isTrue);
   });

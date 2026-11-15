@@ -10,8 +10,6 @@ import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_action_buttons.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

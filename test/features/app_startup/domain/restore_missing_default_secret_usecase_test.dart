@@ -69,7 +69,7 @@ void main() {
     network: Network.bitcoinMainnet,
     isDefault: isDefault,
     scriptType: ScriptType.bip84,
-    publicDescriptor: 'desc',
+    publicDescriptor: external.split('#').first.replaceAll('/0/*', '/<0;1>/*'),
     signers: [
       WalletSigner.single(
         masterFingerprint: fingerprint,
@@ -129,15 +129,21 @@ void main() {
       label: 'Default',
       network: Network.bitcoinMainnet,
       isDefault: true,
-      masterFingerprint: _zooFingerprint,
-      xpubFingerprint: _zooFingerprint,
       scriptType: ScriptType.bip84,
-      xpub: xpub,
-      externalPublicDescriptor: 'wpkh([$_zooFingerprint/$path]$xpub/0/*)',
-      internalPublicDescriptor: 'wpkh([$_zooFingerprint/$path]$xpub/1/*)',
-      signer: SignerEntity.local,
-      signerDevice: null,
       balanceSat: BigInt.zero,
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: _zooFingerprint,
+          xpubFingerprint: _zooFingerprint,
+          xpub: xpub,
+          signer: SignerEntity.local,
+          signerDevice: null,
+        ),
+      ],
+      publicDescriptor: ('wpkh([$_zooFingerprint/$path]$xpub/0/*)')
+          .split('#')
+          .first
+          .replaceAll('/0/*', '/<0;1>/*'),
     );
   }
 
@@ -186,9 +192,7 @@ void main() {
     final testnet = mainnet.copyWith(
       origin: 'default-testnet',
       network: Network.bitcoinTestnet,
-      xpub: tpub,
-      externalPublicDescriptor: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/0/*)",
-      internalPublicDescriptor: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/1/*)",
+      publicDescriptor: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/<0;1>/*)",
     );
     when(() => wallets.getWallets()).thenAnswer(
       (_) async => Ok<List<Wallet>, WalletFailure>([mainnet, testnet]),
@@ -237,15 +241,18 @@ void main() {
       final base = zooDefault();
       for (final invalid in [
         base.copyWith(
-          externalPublicDescriptor: base.externalPublicDescriptor.replaceFirst(
+          publicDescriptor: base.publicDescriptor.replaceFirst(
             _zooFingerprint,
             'ffffffff',
           ),
         ),
-        base.copyWith(internalPublicDescriptor: base.externalPublicDescriptor),
         base.copyWith(
-          externalPublicDescriptor: '${base.externalPublicDescriptor}#aaaaaaaa',
+          publicDescriptor: base.publicDescriptor.replaceFirst(
+            '<0;1>',
+            '<0;0>',
+          ),
         ),
+        base.copyWith(publicDescriptor: '${base.publicDescriptor}#aaaaaaaa'),
       ]) {
         when(
           () => wallets.getWallets(),

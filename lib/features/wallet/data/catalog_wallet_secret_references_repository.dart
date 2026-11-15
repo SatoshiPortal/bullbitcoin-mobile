@@ -17,8 +17,16 @@ final class CatalogWalletSecretReferencesRepository
     try {
       final fingerprints = <Fingerprint>{};
       for (final row in await _metadata.fetchAll()) {
-        final fingerprint = Fingerprint.tryParse(row.masterFingerprint);
-        if (fingerprint != null) fingerprints.add(fingerprint);
+        for (final signer in row.signers) {
+          final references = switch (signer.localSeedFingerprint) {
+            final fingerprint? => <String>[fingerprint],
+            null => signer.descriptorKeys.map((key) => key.masterFingerprint),
+          };
+          for (final reference in references) {
+            final fingerprint = Fingerprint.tryParse(reference);
+            if (fingerprint != null) fingerprints.add(fingerprint);
+          }
+        }
       }
       return Ok(List.unmodifiable(fingerprints));
     } on Exception {

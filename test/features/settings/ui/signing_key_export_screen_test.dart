@@ -23,9 +23,8 @@ void main() {
   ) async {
     final exportSigningKey = _MockExportSigningKeyUsecase();
     final releaseSigningKeyAccount = _MockReleaseSigningKeyAccountUsecase();
-    when(
-      releaseSigningKeyAccount.execute,
-    ).thenAnswer((_) async => const Ok(null));
+    when(releaseSigningKeyAccount.execute)
+        .thenAnswer((_) async => const Ok(null));
     when(
       () => exportSigningKey.execute(
         account: any(named: 'account'),
@@ -101,9 +100,8 @@ void main() {
   testWidgets('warns before showing a reserved account key', (tester) async {
     final exportSigningKey = _MockExportSigningKeyUsecase();
     final releaseSigningKeyAccount = _MockReleaseSigningKeyAccountUsecase();
-    when(
-      releaseSigningKeyAccount.execute,
-    ).thenAnswer((_) async => const Ok(null));
+    when(releaseSigningKeyAccount.execute)
+        .thenAnswer((_) async => const Ok(null));
     when(
       () => exportSigningKey.execute(
         account: any(named: 'account'),

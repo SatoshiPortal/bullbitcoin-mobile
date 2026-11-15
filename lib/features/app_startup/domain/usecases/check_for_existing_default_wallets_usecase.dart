@@ -129,7 +129,9 @@ class CheckForExistingDefaultWalletsUsecase {
     // treating that as an absence would be offering to replace a seed that
     // is still there.
     for (final wallet in defaultWallets) {
-      switch (await _secrets.fetch(Fingerprint(wallet.localSeedFingerprints.single))) {
+      switch (await _secrets.fetch(
+        Fingerprint(wallet.localSeedFingerprints.single),
+      )) {
         case Ok():
           log.fine('FINE: Seed Found');
         case Err(failure: KeystoreLockedFailure()):
@@ -148,7 +150,8 @@ class CheckForExistingDefaultWalletsUsecase {
               .where(
                 (candidate) =>
                     candidate.isBitcoin &&
-                    candidate.localMasterFingerprints.single == wallet.localMasterFingerprints.single,
+                    candidate.localSeedFingerprints.single ==
+                        wallet.localSeedFingerprints.single,
               )
               .toList();
           if (bitcoinDefaults.length != 1) {

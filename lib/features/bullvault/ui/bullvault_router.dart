@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/bullvault/ui/bullvault_renewal_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_restore_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,7 +21,7 @@ abstract final class BullVaultRouter {
     path: '/bullvault/create',
     builder: (context, state) => BlocProvider(
       create: (_) =>
-          locator<BullVaultOnboardingCubit>()
+          GetIt.I<BullVaultOnboardingCubit>()
             ..load(walletId: state.uri.queryParameters['walletId']),
       child: const BullVaultOnboardingScreen(),
     ),
@@ -42,7 +42,7 @@ abstract final class BullVaultRouter {
     name: BullVaultFacade.restoreRouteName,
     path: '/bullvault/restore',
     builder: (context, state) => BlocProvider(
-      create: (_) => locator<BullVaultRestoreCubit>(),
+      create: (_) => GetIt.I<BullVaultRestoreCubit>(),
       child: const BullVaultRestoreScreen(),
     ),
   );
@@ -53,7 +53,7 @@ abstract final class BullVaultRouter {
     builder: (context, state) {
       final walletId = state.pathParameters['walletId']!;
       return BlocProvider(
-        create: (_) => locator<BullVaultRenewalCubit>(param1: walletId)..load(),
+        create: (_) => GetIt.I<BullVaultRenewalCubit>(param1: walletId)..load(),
         child: BullVaultRenewalScreen(
           walletLabel:
               state.extra as String? ?? context.loc.bullVaultWalletLabel,

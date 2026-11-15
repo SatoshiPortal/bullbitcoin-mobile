@@ -1,3 +1,5 @@
+import 'package:bull_sdk/bull_sdk.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/send/data/models/pending_bitcoin_transaction_model.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_datasource.dart';
@@ -8,13 +10,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:drift/native.dart';
 
 class _MockPendingBitcoinTransactionDatasource extends Mock
     implements PendingBitcoinTransactionDatasource {}
 
 void main() {
+  setUpAll(BullSdk.init);
   test('only valid Bitcoin recipients replace a saved draft', () async {
     final database = SqliteDatabase(NativeDatabase.memory());
     addTearDown(database.close);
@@ -23,7 +25,7 @@ void main() {
         .insert(
           WalletMetadatasCompanion.insert(
             id: 'wallet-id',
-            network: Network.bitcoinMainnet,
+            network: const Value('bitcoinMainnet'),
             isEncryptedVaultTested: false,
             isPhysicalBackupTested: false,
             publicDescriptor: 'wpkh(xpub/<0;1>/*)',
@@ -107,9 +109,8 @@ void main() {
       ),
     );
 
-    final result = await PendingBitcoinTransactionRepositoryImpl(
-      datasource,
-    ).get('pending-id');
+    final result = await PendingBitcoinTransactionRepositoryImpl(datasource)
+        .get('pending-id');
 
     expect(result, isA<Err<PendingBitcoinTransaction?, SendFailure>>());
     expect(
@@ -140,9 +141,8 @@ void main() {
         ),
       );
 
-      final result = await PendingBitcoinTransactionRepositoryImpl(
-        datasource,
-      ).get('pending-id');
+      final result = await PendingBitcoinTransactionRepositoryImpl(datasource)
+          .get('pending-id');
 
       expect(result, isA<Err<PendingBitcoinTransaction?, SendFailure>>());
       expect(

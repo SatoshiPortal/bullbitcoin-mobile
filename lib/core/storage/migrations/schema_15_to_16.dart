@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/migration_guards.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart';
 
@@ -217,6 +217,7 @@ class Schema15To16 {
       }
 
       await m.createTable(schema16.sendTransactions);
+      await m.createTable(schema16.sendTransactionRecipients);
       await m.createTable(schema16.sendTransactionInputs);
       await m.createTable(schema16.sendTransactionPolicyChoices);
       await m.createIndex(schema16.sendTransactionsWallet);
@@ -244,7 +245,9 @@ class Schema15To16 {
       }
       return externalDescriptor;
     }
-    if (network == 'liquidMainnet' || network == 'liquidTestnet') {
+    if (network == 'liquidMainnet' ||
+        network == 'liquidTestnet' ||
+        network == 'liquidRegtest') {
       if (externalDescriptor != internalDescriptor) {
         throw StateError(
           'Liquid wallet has inconsistent confidential descriptors',
@@ -256,7 +259,7 @@ class Schema15To16 {
     return BdkFacade.combinePublicDescriptorPair(
       externalDescriptor: externalDescriptor,
       internalDescriptor: internalDescriptor,
-      isTestnet: network == 'bitcoinTestnet',
+      network: WalletNetworkCodec.decode(network),
     );
   }
 

@@ -333,7 +333,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
     }
     final isBullVault = await _checkReceiveBullVaultUsecase.execute(wallet.id);
-    emit(state.copyWith(wallet: wallet, walletAdmitted: true, isBullVault: isBullVault));
+    emit(
+      state.copyWith(
+        wallet: wallet,
+        walletAdmitted: true,
+        isBullVault: isBullVault,
+      ),
+    );
 
     if (state.bitcoinUnit == null) {
       // If the bitcoin unit is not set yet, we need to get it from the settings
@@ -607,7 +613,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
     }
     final isBullVault = await _checkReceiveBullVaultUsecase.execute(wallet.id);
-    emit(state.copyWith(wallet: wallet, walletAdmitted: true, isBullVault: isBullVault));
+    emit(
+      state.copyWith(
+        wallet: wallet,
+        walletAdmitted: true,
+        isBullVault: isBullVault,
+      ),
+    );
 
     if (state.exchangeRate == null) {
       // If the exchange rate is not set yet, we need to get it from the settings
@@ -728,7 +740,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
     }
     final isBullVault = await _checkReceiveBullVaultUsecase.execute(wallet.id);
-    emit(state.copyWith(wallet: wallet, walletAdmitted: true, isBullVault: isBullVault));
+    emit(
+      state.copyWith(
+        wallet: wallet,
+        walletAdmitted: true,
+        isBullVault: isBullVault,
+      ),
+    );
 
     var liquidAddress = state.liquidAddress;
     if (liquidAddress == null || liquidAddress.walletId != wallet.id) {

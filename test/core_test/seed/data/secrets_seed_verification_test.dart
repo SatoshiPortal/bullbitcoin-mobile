@@ -10,21 +10,14 @@ void main() {
   test('matches the full account xpub to the stored secret', () async {
     FakeSecureStoragePlatform().install();
     final secrets = Secrets(scratchDirectory: () async => '');
-    final secret =
-        (await secrets.import(
-                  words:
-                      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
-                          .split(' '),
-                )
-                as Ok<Secret, SecretFailure>)
-            .value;
-    final account =
-        (await secret.derive.account(
-                  derivationPath: "m/48'/1'/0'/2'",
-                  network: BitcoinNetwork.testnet,
-                )
-                as Ok<PublicAccountKey, SecretFailure>)
-            .value;
+    final secret = (await secrets.import(
+      words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+          .split(' '),
+    ) as Ok<Secret, SecretFailure>).value;
+    final account = (await secret.derive.account(
+      derivationPath: "m/48'/1'/0'/2'",
+      network: BitcoinNetwork.testnet,
+    ) as Ok<PublicAccountKey, SecretFailure>).value;
     final verification = SecretsSeedVerification(secrets);
 
     expect(

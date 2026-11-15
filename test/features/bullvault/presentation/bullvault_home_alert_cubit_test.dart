@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_funded_predecessor_usecase.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_home_alert_cubit.dart';
@@ -29,9 +28,8 @@ void main() {
     await cubit.load([mainnet]);
     expect(cubit.state, mainnet.id);
 
-    when(
-      () => lookup.execute(any()),
-    ).thenAnswer((_) async => const Err(BullVaultRenewalFailure()));
+    when(() => lookup.execute(any()))
+        .thenAnswer((_) async => const Err(BullVaultRenewalFailure()));
     await cubit.load([mainnet]);
     expect(cubit.state, mainnet.id);
     await cubit.load([testnet]);

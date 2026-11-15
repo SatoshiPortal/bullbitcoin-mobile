@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -67,7 +66,7 @@ void main() {
     final walletRow = await database
         .select(database.walletMetadatas)
         .getSingle();
-    expect(walletRow.network, Network.bitcoinTestnet);
+    expect(walletRow.network, 'bitcoinTestnet');
 
     final signerRows = await database.select(database.walletSigners).get();
     signerRows.sort((a, b) => a.position.compareTo(b.position));
@@ -189,7 +188,6 @@ void main() {
 
 WalletMetadataModel _multisigMetadata() => WalletMetadataModel(
   id: 'wsh(sortedmulti(2,test))',
-  network: Network.bitcoinTestnet,
   signers: [_mobile, _hardware, _server],
   isEncryptedVaultTested: false,
   isPhysicalBackupTested: false,
@@ -197,4 +195,5 @@ WalletMetadataModel _multisigMetadata() => WalletMetadataModel(
       'wsh(sortedmulti(2,xpub-mobile,xpub-hardware,xpub-server))#descriptor',
   isDefault: false,
   label: 'Vault',
+  networkCode: 'bitcoinTestnet',
 );

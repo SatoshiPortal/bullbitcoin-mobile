@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -63,9 +65,8 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
           state.isCancelling) {
         return;
       }
-      if (result case Ok(
-        value: final details?,
-      ) when details.record.walletId == state.details?.record.walletId) {
+      if (result case Ok(value: final details?)
+          when details.record.walletId == state.details?.record.walletId) {
         emit(state.copyWith(details: details));
         _watchPreviousVaults(details);
       }
@@ -154,7 +155,7 @@ final class BullVaultRenewalCubit extends Cubit<BullVaultRenewalState> {
     }
     emit(state.copyWith(isPreparingRenewal: true, clearFailure: true));
     final result = await _prepareTimeReferenceUsecase.execute(
-      isTestnet: details.policy.network.isTestnet,
+      network: details.policy.network.bitcoin,
     );
     if (isClosed) return;
     switch (result) {

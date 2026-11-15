@@ -274,9 +274,8 @@ void main() {
           },
         )..install();
         final seed = ok(
-          await Secrets(
-            scratchDirectory: () async => '/tmp',
-          ).fetch(Fingerprint('73c5da0a')),
+          await Secrets(scratchDirectory: () async => '/tmp')
+              .fetch(Fingerprint('73c5da0a')),
         );
         final entries = Map<String, String>.of(raw.entries);
         const path = "m/84'/0'/1'";

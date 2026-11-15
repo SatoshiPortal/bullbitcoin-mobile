@@ -1,27 +1,26 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:bb_mobile/features/bullvault/domain/bitcoin_chain_tip_port.dart';
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_time_reference.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class PrepareBullVaultTimeReferenceUsecase {
-  final GetBitcoinChainTipUsecase _getBitcoinChainTipUsecase;
+  final BitcoinChainTipPort _chainTip;
   final DateTime Function() _clock;
 
   const PrepareBullVaultTimeReferenceUsecase(
-    this._getBitcoinChainTipUsecase, {
+    this._chainTip, {
     this._clock = DateTime.now,
   });
 
   @useResult
   Future<Result<BullVaultTimeReference, BullVaultFailure>> execute({
-    required bool isTestnet,
+    required BitcoinNetwork network,
   }) async {
     try {
-      final chainTip = await _getBitcoinChainTipUsecase.execute(
-        isTestnet: isTestnet,
-      );
+      final chainTip = await _chainTip.getChainTip(network: network);
       final now = _clock().toUtc();
       final difference =
           ((now.millisecondsSinceEpoch ~/ 1000) - chainTip.medianTimePast)

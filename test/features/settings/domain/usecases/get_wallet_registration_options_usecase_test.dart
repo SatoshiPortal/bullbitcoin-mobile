@@ -40,9 +40,8 @@ void main() {
         ],
       );
       final policy = _multisigPolicy(keyCount: 5);
-      when(
-        () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-      ).thenAnswer((_) async => Ok(policy));
+      when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(policy));
 
       final result = await usecase.execute(wallet);
 
@@ -107,9 +106,8 @@ void main() {
         usesDisjointBranches: true,
       );
       final policy = _miniscriptPolicy();
-      when(
-        () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-      ).thenAnswer((_) async => Ok(policy));
+      when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(policy));
 
       final result = await usecase.execute(wallet);
 
@@ -174,9 +172,8 @@ void main() {
       ],
       taproot: true,
     );
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 8)));
+    when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 8)));
 
     final result = await usecase.execute(wallet);
 
@@ -216,9 +213,8 @@ void main() {
       ],
       taproot: true,
     );
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 2)));
+    when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 2)));
 
     final result = await usecase.execute(wallet);
 
@@ -241,9 +237,8 @@ void main() {
       nestedUnsortedMultisig: true,
     );
     final policy = _multisigPolicy(keyCount: 2);
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(policy));
+    when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(policy));
 
     final result = await usecase.execute(wallet);
     final options =
@@ -262,9 +257,8 @@ void main() {
       miniscript: true,
       hashlock: true,
     );
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(_miniscriptPolicy(hashlock: true)));
+    when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(_miniscriptPolicy(hashlock: true)));
 
     final result = await usecase.execute(wallet);
     final options =
@@ -279,9 +273,8 @@ void main() {
       devices: const [SignerDeviceEntity.passport],
       miniscript: true,
     );
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(_miniscriptPolicy(hashlock: true)));
+    when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(_miniscriptPolicy(hashlock: true)));
 
     final result = await usecase.execute(wallet);
 
@@ -300,12 +293,11 @@ void main() {
         keySuffix: '/5',
       );
       final policy = _multisigPolicy(keyCount: 2);
-      when(
-        () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-      ).thenAnswer((_) async => Ok(policy));
-      final derivedXpub = Bip32Derivation.getBip32Xpub(
-        _xpub,
-      ).derivePath('5').toBase58();
+      when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(policy));
+      final derivedXpub = Bip32Derivation.getBip32Xpub(_xpub)
+          .derivePath('5')
+          .toBase58();
 
       final result = await usecase.execute(wallet);
 
@@ -328,9 +320,8 @@ void main() {
       devices: List.filled(9, SignerDeviceEntity.seedsigner),
       threshold: 9,
     );
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: tenKeyWallet.id),
-    ).thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 10)));
+    when(() => bitcoinSigningPort.getPolicy(walletId: tenKeyWallet.id))
+        .thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 10)));
     when(
       () => bitcoinSigningPort.getPolicy(walletId: nineOfNineWallet.id),
     ).thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 9, threshold: 9)));
@@ -358,9 +349,8 @@ void main() {
       label: '1234567890abcdef',
     );
     final policy = _multisigPolicy(keyCount: 2);
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(policy));
+    when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(policy));
 
     final result = await usecase.execute(wallet);
 
@@ -379,9 +369,8 @@ void main() {
       registrationNames: const ['Primary key', 'Recovery key'],
       taproot: true,
     );
-    when(
-      () => bitcoinSigningPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 2)));
+    when(() => bitcoinSigningPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(_multisigPolicy(keyCount: 2)));
 
     final result = await usecase.execute(wallet, signerId: 'signer-1');
 

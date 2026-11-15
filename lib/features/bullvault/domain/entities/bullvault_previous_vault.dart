@@ -7,5 +7,8 @@ final class BullVaultPreviousVault {
 
   const BullVaultPreviousVault({required this.record, required this.wallet});
 
-  bool get hasFunds => wallet.balanceSat > BigInt.zero;
+  bool get hasFunds => switch (wallet.balanceSat) {
+    final balance? => balance > BigInt.zero,
+    null => false,
+  };
 }

@@ -67,14 +67,19 @@ void main() {
 
   test('regtest is refused before creating a sender session', () async {
     final sender = _MockPayjoinSender();
-    final result = await SendWithPayjoinUsecase(sender).execute(
-      walletId: 'regtest-wallet',
-      network: BitcoinNetwork.regtest,
-      bip21: 'bitcoin:bcrt1unused?pj=https://example.invalid',
-      unsignedOriginalPsbt: 'unused',
-      amountSat: 10000,
-      networkFeesSatPerVb: 1,
-    );
+    final result =
+        await SendWithPayjoinUsecase(
+          sender,
+          _MockPayjoinSessions(),
+          _MockPayjoinLifecycle(),
+        ).execute(
+          walletId: 'regtest-wallet',
+          network: BitcoinNetwork.regtest,
+          bip21: 'bitcoin:bcrt1unused?pj=https://example.invalid',
+          unsignedOriginalPsbt: 'unused',
+          amountSat: 10000,
+          networkFeesSatPerVb: 1,
+        );
     expect(
       (result as core.Err).failure,
       isA<SendTransactionConfirmationFailure>(),
@@ -167,9 +172,8 @@ void main() {
           current = _session(status: PayjoinStatus.completed);
           return const Ok(null);
         });
-        when(
-          () => sessions.byId(session.id),
-        ).thenAnswer((_) async => Ok(current));
+        when(() => sessions.byId(session.id))
+            .thenAnswer((_) async => Ok(current));
 
         final result = await _start(
           sender,
@@ -197,9 +201,8 @@ void main() {
     () async {
       final sender = _MockPayjoinSender();
       final sessions = _MockPayjoinSessions();
-      when(
-        () => sessions.byId(any()),
-      ).thenAnswer((_) async => const Err(PayjoinStorageFailure()));
+      when(() => sessions.byId(any()))
+          .thenAnswer((_) async => const Err(PayjoinStorageFailure()));
 
       final result = await _start(sender, sessions: sessions);
 

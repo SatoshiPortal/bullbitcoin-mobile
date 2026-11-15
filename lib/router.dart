@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';

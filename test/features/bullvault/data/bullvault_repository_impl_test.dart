@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
@@ -32,7 +31,7 @@ void main() {
           .insert(
             WalletMetadatasCompanion.insert(
               id: id,
-              network: Network.bitcoinTestnet,
+              network: const Value('bitcoinTestnet'),
               publicDescriptor: '',
               isEncryptedVaultTested: false,
               isPhysicalBackupTested: false,
@@ -69,9 +68,8 @@ void main() {
           createdAt: DateTime.utc(2027, 1, 15),
         ),
       );
-      final stored = (await BullVaultMetadataDatasource(
-        storage,
-      ).load('wallet-id'))!;
+      final stored = (await BullVaultMetadataDatasource(storage)
+          .load('wallet-id'))!;
 
       expect(switch (result) {
         Ok() => true,
@@ -91,9 +89,8 @@ void main() {
       expect(record.hardwareSetupDeferred, isTrue);
       expect(record.mobileBackupDeferred, isTrue);
 
-      await BullVaultMetadataDatasource(
-        storage,
-      ).save(stored.copyWith(recoveryPackage: '{}'));
+      await BullVaultMetadataDatasource(storage)
+          .save(stored.copyWith(recoveryPackage: '{}'));
       expect(
         await repository.getByWalletId(record.walletId),
         isA<Err<BullVaultRecord?, BullVaultFailure>>(),
@@ -121,9 +118,9 @@ void main() {
     );
     final reloaded = _repository(storage);
     expect(
-      (await reloaded.getByWalletId(record.walletId)
-              as Ok<BullVaultRecord?, BullVaultFailure>)
-          .value,
+      (await reloaded.getByWalletId(
+        record.walletId,
+      ) as Ok<BullVaultRecord?, BullVaultFailure>).value,
       isNull,
     );
     Future<bool> isHidden() async => (await (storage.select(
@@ -137,10 +134,9 @@ void main() {
       isA<Ok<void, BullVaultFailure>>(),
     );
     expect(
-      (await _repository(storage).getByWalletId(record.walletId)
-              as Ok<BullVaultRecord?, BullVaultFailure>)
-          .value
-          ?.status,
+      (await _repository(storage).getByWalletId(
+        record.walletId,
+      ) as Ok<BullVaultRecord?, BullVaultFailure>).value?.status,
       BullVaultLifecycleStatus.active,
     );
     expect(await isHidden(), isFalse);
@@ -189,21 +185,19 @@ void main() {
           isA<Err<void, BullVaultFailure>>(),
         );
         final reloaded = _repository(storage);
-        final stored =
-            (await reloaded.getByWalletId(current.walletId)
-                    as Ok<BullVaultRecord?, BullVaultFailure>)
-                .value!;
+        final stored = (await reloaded.getByWalletId(
+          current.walletId,
+        ) as Ok<BullVaultRecord?, BullVaultFailure>).value!;
         expect(stored.lineageId, current.lineageId);
         expect(
-          (await reloaded.reserveNextGeneration(stored)
-                  as Ok<int, BullVaultFailure>)
-              .value,
+          (await reloaded.reserveNextGeneration(
+            stored,
+          ) as Ok<int, BullVaultFailure>).value,
           2,
         );
-        final family =
-            (await reloaded.getLineage(stored.lineageId)
-                    as Ok<List<BullVaultRecord>, BullVaultFailure>)
-                .value;
+        final family = (await reloaded.getLineage(
+          stored.lineageId,
+        ) as Ok<List<BullVaultRecord>, BullVaultFailure>).value;
         expect(family.length, status == null ? 1 : 2);
         final related = await reloaded.getWalletLineage(
           stored.walletId,
@@ -225,9 +219,9 @@ void main() {
         );
         if (status == BullVaultLifecycleStatus.cancelled) {
           expect(
-            (await reloaded.getMigrationDestinations({stored.walletId})
-                    as Ok<Map<String, String>, BullVaultFailure>)
-                .value,
+            (await reloaded.getMigrationDestinations({
+              stored.walletId,
+            }) as Ok<Map<String, String>, BullVaultFailure>).value,
             {'wallet-1': stored.walletId},
           );
         }
@@ -330,15 +324,15 @@ void main() {
       isA<Err<void, BullVaultFailure>>(),
     );
     expect(
-      (await repository.getByWalletId(first.walletId)
-              as Ok<BullVaultRecord?, BullVaultFailure>)
-          .value,
+      (await repository.getByWalletId(
+        first.walletId,
+      ) as Ok<BullVaultRecord?, BullVaultFailure>).value,
       isNotNull,
     );
     expect(
-      (await repository.getByWalletId(duplicate.walletId)
-              as Ok<BullVaultRecord?, BullVaultFailure>)
-          .value,
+      (await repository.getByWalletId(
+        duplicate.walletId,
+      ) as Ok<BullVaultRecord?, BullVaultFailure>).value,
       isNull,
     );
   });
@@ -549,15 +543,13 @@ void main() {
         isA<Err<void, BullVaultFailure>>(),
       );
       expect(
-        (await BullVaultMetadataDatasource(
-          storage,
-        ).load(previous.walletId))!.status,
+        (await BullVaultMetadataDatasource(storage).load(previous.walletId))!
+            .status,
         'active',
       );
       expect(
-        (await BullVaultMetadataDatasource(
-          storage,
-        ).load(replacement.walletId))!.status,
+        (await BullVaultMetadataDatasource(storage).load(replacement.walletId))!
+            .status,
         'pending',
       );
       final unchangedWallets = await storage
@@ -589,9 +581,9 @@ void main() {
         {previous.walletId: replacement.walletId},
       );
       expect(
-        (await repository.getMigrationDestinations({'unrelated'})
-                as Ok<Map<String, String>, BullVaultFailure>)
-            .value,
+        (await repository.getMigrationDestinations({
+          'unrelated',
+        }) as Ok<Map<String, String>, BullVaultFailure>).value,
         isEmpty,
       );
       final loadedPrevious = await repository.getByWalletId(previous.walletId);
@@ -700,10 +692,9 @@ void main() {
       isA<Ok<void, BullVaultFailure>>(),
     );
 
-    final reserved =
-        (await repository.reserveNextGeneration(descriptorOnly)
-                as Ok<int, BullVaultFailure>)
-            .value;
+    final reserved = (await repository.reserveNextGeneration(
+      descriptorOnly,
+    ) as Ok<int, BullVaultFailure>).value;
     expect(
       await repository.linkRestoredRenewal(
         previous: previous,
@@ -711,14 +702,12 @@ void main() {
       ),
       isA<Err<void, BullVaultFailure>>(),
     );
-    final unchangedPrevious =
-        (await repository.getByWalletId(previous.walletId)
-                as Ok<BullVaultRecord?, BullVaultFailure>)
-            .value!;
-    final unchangedSuccessor =
-        (await repository.getByWalletId(restored.walletId)
-                as Ok<BullVaultRecord?, BullVaultFailure>)
-            .value!;
+    final unchangedPrevious = (await repository.getByWalletId(
+      previous.walletId,
+    ) as Ok<BullVaultRecord?, BullVaultFailure>).value!;
+    final unchangedSuccessor = (await repository.getByWalletId(
+      restored.walletId,
+    ) as Ok<BullVaultRecord?, BullVaultFailure>).value!;
     expect(unchangedPrevious.status, BullVaultLifecycleStatus.active);
     expect(unchangedPrevious.successorWalletId, isNull);
     expect(unchangedSuccessor.lineageId, descriptorOnly.lineageId);
@@ -854,10 +843,9 @@ void main() {
 
       expect(result, isA<Err<void, BullVaultFailure>>());
       expect(
-        (await repository.getByWalletId(previous.walletId)
-                as Ok<BullVaultRecord?, BullVaultFailure>)
-            .value!
-            .status,
+        (await repository.getByWalletId(
+          previous.walletId,
+        ) as Ok<BullVaultRecord?, BullVaultFailure>).value!.status,
         BullVaultLifecycleStatus.active,
       );
     },

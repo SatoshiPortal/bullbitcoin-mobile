@@ -32,15 +32,12 @@ void main() {
     final wallet = psbtSigningWallet();
     final transaction = psbtReview();
     final policy = absoluteChoicePolicy();
-    when(
-      () => getWalletUsecase.execute(wallet.id),
-    ).thenAnswer((_) async => wallet);
-    when(
-      () => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(transaction));
-    when(
-      () => signingPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(policy));
+    when(() => getWalletUsecase.execute(wallet.id))
+        .thenAnswer((_) async => wallet);
+    when(() => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id))
+        .thenAnswer((_) async => Ok(transaction));
+    when(() => signingPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(policy));
     final result = await usecase.execute(
       walletId: wallet.id,
       psbt: testPsbtBase64,
@@ -54,15 +51,12 @@ void main() {
   test('does not offer an unrelated local key for an input', () async {
     final wallet = psbtSigningWallet(remoteSignerIsLocal: true);
     final transaction = psbtReview(signedDescriptorKeyIds: const {'key-local'});
-    when(
-      () => getWalletUsecase.execute(wallet.id),
-    ).thenAnswer((_) async => wallet);
-    when(
-      () => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(transaction));
-    when(
-      () => signingPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(singleLocalPolicy()));
+    when(() => getWalletUsecase.execute(wallet.id))
+        .thenAnswer((_) async => wallet);
+    when(() => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id))
+        .thenAnswer((_) async => Ok(transaction));
+    when(() => signingPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(singleLocalPolicy()));
 
     final result = await usecase.execute(
       walletId: wallet.id,
@@ -76,15 +70,12 @@ void main() {
   test('identifies a protected local key before signing', () async {
     final wallet = psbtSigningWallet(localRequiresPassphrase: true);
     final transaction = psbtReview();
-    when(
-      () => getWalletUsecase.execute(wallet.id),
-    ).thenAnswer((_) async => wallet);
-    when(
-      () => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(transaction));
-    when(
-      () => signingPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(singleLocalPolicy()));
+    when(() => getWalletUsecase.execute(wallet.id))
+        .thenAnswer((_) async => wallet);
+    when(() => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id))
+        .thenAnswer((_) async => Ok(transaction));
+    when(() => signingPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(singleLocalPolicy()));
 
     final result = await usecase.execute(
       walletId: wallet.id,
@@ -97,9 +88,8 @@ void main() {
 
   test('rejects a wallet without a local signer', () async {
     final wallet = psbtSigningWallet(hasLocalSigner: false);
-    when(
-      () => getWalletUsecase.execute(wallet.id),
-    ).thenAnswer((_) async => wallet);
+    when(() => getWalletUsecase.execute(wallet.id))
+        .thenAnswer((_) async => wallet);
 
     final result = await usecase.execute(
       walletId: wallet.id,
@@ -121,15 +111,12 @@ void main() {
     () async {
       final wallet = psbtSigningWallet();
       final transaction = psbtReview(lockTime: 101);
-      when(
-        () => getWalletUsecase.execute(wallet.id),
-      ).thenAnswer((_) async => wallet);
-      when(
-        () => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id),
-      ).thenAnswer((_) async => Ok(transaction));
-      when(
-        () => signingPort.getPolicy(walletId: wallet.id),
-      ).thenAnswer((_) async => Ok(singleLocalPolicy()));
+      when(() => getWalletUsecase.execute(wallet.id))
+          .thenAnswer((_) async => wallet);
+      when(() => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id))
+          .thenAnswer((_) async => Ok(transaction));
+      when(() => signingPort.getPolicy(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(singleLocalPolicy()));
       when(
         () => signingPort.getPolicyMaturity(
           walletId: wallet.id,
@@ -158,15 +145,12 @@ void main() {
   test('reports an immature input sequence without blocking signing', () async {
     final wallet = psbtSigningWallet();
     final transaction = psbtReview(sequence: 10);
-    when(
-      () => getWalletUsecase.execute(wallet.id),
-    ).thenAnswer((_) async => wallet);
-    when(
-      () => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(transaction));
-    when(
-      () => signingPort.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(singleLocalPolicy()));
+    when(() => getWalletUsecase.execute(wallet.id))
+        .thenAnswer((_) async => wallet);
+    when(() => signingPort.reviewPsbt(testPsbtBase64, walletId: wallet.id))
+        .thenAnswer((_) async => Ok(transaction));
+    when(() => signingPort.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(singleLocalPolicy()));
     when(
       () => signingPort.getPolicyMaturity(
         walletId: wallet.id,

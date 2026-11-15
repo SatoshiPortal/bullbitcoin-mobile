@@ -1,4 +1,6 @@
-enum BitcoinPolicyKeychainModel { external, internal }
+import 'package:sync/sync.dart' show Keychain;
+
+typedef BitcoinPolicyKeychainModel = Keychain;
 
 final class BitcoinPolicyUtxoMaturityModel {
   final String outpoint;

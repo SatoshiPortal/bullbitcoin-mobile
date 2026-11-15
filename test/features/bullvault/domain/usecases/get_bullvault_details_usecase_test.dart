@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
@@ -37,12 +36,10 @@ void main() {
     final getAddress = _MockGetAddressAtIndexUsecase();
     final createdAt = DateTime.utc(2027, 1, 15, 12);
     final record = _record(createdAt);
-    when(
-      () => repository.getWalletLineage(record.walletId),
-    ).thenAnswer((_) async => Ok([record]));
-    when(
-      () => getAddress.execute(walletId: record.walletId, index: 0),
-    ).thenAnswer((_) async => _address(record.walletId));
+    when(() => repository.getWalletLineage(record.walletId))
+        .thenAnswer((_) async => Ok([record]));
+    when(() => getAddress.execute(walletId: record.walletId, index: 0))
+        .thenAnswer((_) async => _address(record.walletId));
 
     final early = await GetBullVaultDetailsUsecase(
       repository,
@@ -79,15 +76,12 @@ void main() {
       lineageId: previous.lineageId,
       previousVaultId: previous.walletId,
     );
-    when(
-      () => repository.getWalletLineage(previous.walletId),
-    ).thenAnswer((_) async => Ok([previous, current]));
-    when(
-      () => getWallet.execute(previous.walletId),
-    ).thenAnswer((_) async => _wallet(previous.walletId, balanceSat: 25));
-    when(
-      () => getAddress.execute(walletId: current.walletId, index: 0),
-    ).thenAnswer((_) async => _address(current.walletId));
+    when(() => repository.getWalletLineage(previous.walletId))
+        .thenAnswer((_) async => Ok([previous, current]));
+    when(() => getWallet.execute(previous.walletId))
+        .thenAnswer((_) async => _wallet(previous.walletId, balanceSat: 25));
+    when(() => getAddress.execute(walletId: current.walletId, index: 0))
+        .thenAnswer((_) async => _address(current.walletId));
 
     final result = await GetBullVaultDetailsUsecase(
       repository,
@@ -118,16 +112,14 @@ void main() {
       previousVaultId: current.walletId,
       status: BullVaultLifecycleStatus.cancelled,
     );
-    var cancelledBalance = 0;
-    when(
-      () => repository.getWalletLineage(current.walletId),
-    ).thenAnswer((_) async => Ok([current, cancelled]));
+    int? cancelledBalance;
+    when(() => repository.getWalletLineage(current.walletId))
+        .thenAnswer((_) async => Ok([current, cancelled]));
     when(() => getWallet.execute(cancelled.walletId)).thenAnswer(
       (_) async => _wallet(cancelled.walletId, balanceSat: cancelledBalance),
     );
-    when(
-      () => getAddress.execute(walletId: current.walletId, index: 0),
-    ).thenAnswer((_) async => _address(current.walletId));
+    when(() => getAddress.execute(walletId: current.walletId, index: 0))
+        .thenAnswer((_) async => _address(current.walletId));
     final usecase = GetBullVaultDetailsUsecase(
       repository,
       getWallet,
@@ -135,6 +127,11 @@ void main() {
       clock: () => DateTime.utc(2028, 7, 15, 12),
     );
 
+    expect(
+      await usecase.execute(current.walletId),
+      isA<Err<BullVaultDetails?, BullVaultFailure>>(),
+    );
+    cancelledBalance = 0;
     final beforeDeposit = _details(await usecase.execute(current.walletId));
     cancelledBalance = 25;
     final afterDeposit = _details(await usecase.execute(current.walletId));
@@ -199,13 +196,13 @@ BullVaultRecord _record(
   );
 }
 
-Wallet _wallet(String walletId, {required int balanceSat}) => Wallet(
+Wallet _wallet(String walletId, {required int? balanceSat}) => Wallet(
   origin: walletId,
   network: Network.bitcoinTestnet,
   signers: const [],
   scriptType: null,
   publicDescriptor: 'tr(bullvault)',
-  balanceSat: BigInt.from(balanceSat),
+  balanceSat: balanceSat == null ? null : BigInt.from(balanceSat),
   isHidden: true,
 );
 

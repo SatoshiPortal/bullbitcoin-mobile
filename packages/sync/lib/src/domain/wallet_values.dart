@@ -541,6 +541,10 @@ bool _bytesEqual(Uint8List a, Uint8List b) {
 /// spent ones included. Immutable; a later revision needs a new query.
 final class OwnershipIndex {
   final WalletRevision revision;
+  final int tipHeight;
+  final Map<String, ({int index, Keychain keychain})> _scriptDerivations;
+  final Map<Outpoint, BitcoinOwnedOutput> outputs;
+  final Map<String, List<Outpoint>> transactionInputs;
   final Set<String> _scripts;
   final Set<Outpoint> _outpoints;
 
@@ -548,8 +552,22 @@ final class OwnershipIndex {
     required this.revision,
     required Iterable<Uint8List> scripts,
     required Iterable<Outpoint> outpoints,
-  }) : _scripts = Set.unmodifiable(scripts.map(_hex)),
-       _outpoints = Set.unmodifiable(outpoints);
+    this.tipHeight = 0,
+    Map<String, ({int index, Keychain keychain})> scriptDerivations = const {},
+    Map<Outpoint, BitcoinOwnedOutput> outputs = const {},
+    Map<String, List<Outpoint>> transactionInputs = const {},
+  }) : _scriptDerivations = Map.unmodifiable(scriptDerivations),
+       _scripts = Set.unmodifiable(scripts.map(_hex)),
+       _outpoints = Set.unmodifiable(outpoints),
+       outputs = Map.unmodifiable(outputs),
+       transactionInputs = Map.unmodifiable({
+         for (final entry in transactionInputs.entries)
+           entry.key: List<Outpoint>.unmodifiable(entry.value),
+       });
+
+  /// Known derivation, including scripts beyond a scratch wallet's lookahead.
+  ({int index, Keychain keychain})? derivationOfScript(Uint8List script) =>
+      _scriptDerivations[_hex(script)];
 
   bool ownsScript(Uint8List script) => _scripts.contains(_hex(script));
 
@@ -557,4 +575,22 @@ final class OwnershipIndex {
 
   static String _hex(Uint8List bytes) =>
       bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+}
+
+/// An owned output at the same revision as its [OwnershipIndex]. Spent
+/// outputs remain available to validate replacements and saved transactions.
+final class BitcoinOwnedOutput {
+  final BigInt amountSat;
+  final Uint8List scriptPubkey;
+  final Keychain keychain;
+  final bool isSpent;
+  final int? confirmationHeight;
+
+  BitcoinOwnedOutput({
+    required this.amountSat,
+    required List<int> scriptPubkey,
+    required this.keychain,
+    required this.isSpent,
+    required this.confirmationHeight,
+  }) : scriptPubkey = Uint8List.fromList(scriptPubkey).asUnmodifiableView();
 }

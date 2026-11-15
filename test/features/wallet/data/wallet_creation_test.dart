@@ -1,10 +1,13 @@
+import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
+
+import '../../../core_test/wallet/bdk_wallet_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 
 import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
@@ -42,8 +45,6 @@ class _Native extends Mock implements WalletNativeLifecycle {}
 
 class _Reporter extends Mock implements LoggerReporter {}
 
-class _Bitcoin extends Mock implements BdkWalletDatasource {}
-
 class _Liquid extends Mock implements LwkWalletDatasource {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
@@ -61,7 +62,6 @@ void main() {
   late WalletRepository repository;
   late Secret secret;
   late WalletMetadataModel row;
-  late WatchOnlyDescriptorEntity descriptor;
   late FakeSecureStoragePlatform storage;
   late _Reporter reporter;
 
@@ -81,9 +81,6 @@ void main() {
     );
     registerFallbackValue(row);
     registerFallbackValue(WalletModel.fromMetadata(row));
-    descriptor = await WatchOnlyWalletEntity.parse(
-      row.externalPublicDescriptor,
-    ) as WatchOnlyDescriptorEntity;
     directory = await Directory.systemTemp.createTemp('wallet-create-');
     reporter = _Reporter();
     await initializeLogging(directory: directory, reporter: reporter);
@@ -93,7 +90,7 @@ void main() {
     metadata = WalletMetadataDatasource(sqlite: database);
     native = _Native();
     when(() => native.prepareCreate(any())).thenAnswer((_) async {});
-    final bitcoin = _Bitcoin();
+    final bitcoin = fixturePolicyDatasource();
     final values = _Values();
     when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => BalanceModel(
@@ -136,14 +133,27 @@ void main() {
       scriptType: ScriptType.bip84,
     ),
     'descriptor' => repository.importDescriptor(
-      watchOnlyDescriptor: descriptor,
-    ),
-    _ => repository.importWatchOnlyXpub(
-      xpub: row.xpub,
-      network: Network.bitcoinMainnet,
-      scriptType: ScriptType.bip84,
+      descriptor: row.publicDescriptor,
+      network: row.network,
       label: 'import',
     ),
+    _ =>
+      ImportWatchOnlyXpubUsecase(repository)
+          .execute(
+            watchOnlyXpub: WatchOnlyXpubEntity(
+              extendedPublicKey: row.signers.single.descriptorKeys.single.xpub,
+              canonicalXpub: row.signers.single.descriptorKeys.single.xpub,
+              network: row.network,
+              scriptType: ScriptType.bip84,
+              label: 'import',
+            ),
+          )
+          .then(
+            (result) => switch (result) {
+              Ok(:final value) => value,
+              Err(:final failure) => throw StateError(failure.toString()),
+            },
+          ),
   };
 
   Future<SqliteDatabase> independent() async {
@@ -203,13 +213,19 @@ void main() {
         );
         throw const FileSystemException('injected native failure');
       });
-      await expectLater(create(path), throwsA(isA<FileSystemException>()));
+      await expectLater(
+        create(path),
+        path == 'xpub' ? throwsStateError : throwsA(isA<FileSystemException>()),
+      );
       expect(await metadata.fetchAll(), isEmpty);
       expect(
         (await log.readLogs())
             .where((line) => line.split('\t')[1] == 'WARNING')
             .map((line) => line.split('\t')[2]),
-        ['Wallet creation failed catalog row removed'],
+        [
+          'Wallet creation failed catalog row removed',
+          if (path == 'xpub') 'Failed to import watch-only xpub',
+        ],
       );
       verifyZeroInteractions(reporter);
       expect(storage.entries, secretsBefore);
@@ -320,10 +336,7 @@ void main() {
     });
     final first = create('xpub');
     await entered.future;
-    final second = expectLater(
-      create('xpub'),
-      throwsA(isA<WalletAlreadyExistsException>()),
-    );
+    final second = expectLater(create('xpub'), throwsStateError);
     release.complete();
     final wallet = await first;
     await second;

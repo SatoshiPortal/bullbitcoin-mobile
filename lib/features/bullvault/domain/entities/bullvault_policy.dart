@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_protection.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_schedule.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_signer_key.dart';
@@ -562,7 +561,7 @@ final class BullVaultPolicy {
     if (!network.isBitcoin) {
       throw ArgumentError.value(network, 'network', 'must be Bitcoin');
     }
-    final xpub = network.isTestnet
+    final xpub = !network.isMainnet
         ? _numsTpub
         : Bip32Derivation.getBip32Xpub(_numsTpub).toBase58();
     return '[00000000]$xpub/<$receiveBranch;$changeBranch>/*';
@@ -572,9 +571,8 @@ final class BullVaultPolicy {
     final xpubs = <String>{};
     final fingerprints = <String>{};
     for (final signer in signers) {
-      final canonicalXpub = Bip32Derivation.getBip32Xpub(
-        signer.accountKey.xpub,
-      ).toBase58();
+      final canonicalXpub = Bip32Derivation.getBip32Xpub(signer.accountKey.xpub)
+          .toBase58();
       if (!xpubs.add(canonicalXpub)) return true;
       final fingerprint = signer.accountKey.masterFingerprint.toLowerCase();
       if (fingerprint.isNotEmpty && !fingerprints.add(fingerprint)) return true;

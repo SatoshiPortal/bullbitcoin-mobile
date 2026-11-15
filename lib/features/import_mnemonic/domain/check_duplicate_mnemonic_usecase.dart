@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -28,7 +29,18 @@ class CheckDuplicateMnemonicUsecase {
       // An unresolved persisted network cannot establish a duplicate on this
       // network. The catalog row remains available for secret protection.
       try {
-        if (row.seedFingerprint == id && row.network == network) {
+        if (row.signers.any(
+              (signer) =>
+                  signer.signer == Signer.local &&
+                  (signer.localSeedFingerprint == id.hex ||
+                      (signer.localSeedFingerprint == null &&
+                          signer.descriptorKeys.any(
+                            (key) =>
+                                Fingerprint.tryParse(key.masterFingerprint) ==
+                                id,
+                          ))),
+            ) &&
+            row.network == network) {
           referenced = true;
         }
       } on FormatException {

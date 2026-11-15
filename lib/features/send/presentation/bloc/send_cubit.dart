@@ -39,13 +39,8 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -5497,7 +5492,7 @@ class SendCubit extends Cubit<SendState>
           emit(state.copyWith(failure: failure));
           return false;
       }
-      return _processBitcoinSigningResult(
+      return await _processBitcoinSigningResult(
         result: signedTransaction.signedPsbt,
         kind: BitcoinSignerResultKind.psbt,
         generation: generation,
@@ -5573,7 +5568,7 @@ class SendCubit extends Cubit<SendState>
         failure: null,
       ),
     );
-    return _processBitcoinSigningResult(
+    return await _processBitcoinSigningResult(
       result: result,
       kind: kind,
       generation: generation,

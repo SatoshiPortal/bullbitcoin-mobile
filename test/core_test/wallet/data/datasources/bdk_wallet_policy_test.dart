@@ -1,7 +1,8 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_descriptor_key_matcher.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_policy_maturity_model.dart';
@@ -30,7 +31,7 @@ void main() {
   });
 
   setUp(() {
-    datasource = BdkWalletDatasource();
+    datasource = fixturePolicyDatasource();
   });
 
   BitcoinWalletPolicy analyzePolicy({required PublicBdkWalletModel wallet}) =>
@@ -42,16 +43,14 @@ void main() {
     test('classifies mobile and external single-signature wallets', () {
       final descriptors = singleSignatureDescriptors(testMnemonics.first);
       final policy = analyzePolicy(
-        wallet:
-            WalletModel.publicBdk(
-                  id: 'single-signature',
-                  descriptor: twoPathDescriptor(
-                    descriptors.external,
-                    descriptors.internal,
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel,
+        wallet: WalletModel.publicBdk(
+          id: 'single-signature',
+          descriptor: twoPathDescriptor(
+            descriptors.external,
+            descriptors.internal,
+          ),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel,
       );
       final localPlan = BitcoinSigningPlan.fromPolicy(
         policy: policy,
@@ -81,16 +80,14 @@ void main() {
 
     test('requires another signer when local keys are below the threshold', () {
       final policy = analyzePolicy(
-        wallet:
-            WalletModel.publicBdk(
-                  id: 'multisig',
-                  descriptor: twoPathDescriptor(
-                    externalPublicDescriptor,
-                    internalPublicDescriptor,
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel,
+        wallet: WalletModel.publicBdk(
+          id: 'multisig',
+          descriptor: twoPathDescriptor(
+            externalPublicDescriptor,
+            internalPublicDescriptor,
+          ),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel,
       );
       final oneLocalSigner = BitcoinSigningPlan.fromPolicy(
         policy: policy,
@@ -133,16 +130,11 @@ void main() {
       ).toString();
 
       final policy = analyzePolicy(
-        wallet:
-            WalletModel.publicBdk(
-                  id: 'miniscript',
-                  descriptor: twoPathDescriptor(
-                    externalDescriptor,
-                    internalDescriptor,
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel,
+        wallet: WalletModel.publicBdk(
+          id: 'miniscript',
+          descriptor: twoPathDescriptor(externalDescriptor, internalDescriptor),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel,
       );
 
       expect(policy.requiresPath, isTrue);
@@ -231,7 +223,7 @@ void main() {
           'wsh(sortedmulti(2,$accountKey/0/<0;1>/*,$accountKey/1/<0;1>/*))';
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
       final descriptorKeys = [
         for (final (index, key) in parsed.keys.indexed)
@@ -248,13 +240,11 @@ void main() {
 
       final policy = BitcoinWalletPolicyMapper.toEntity(
         datasource.analyzePolicy(
-          wallet:
-              WalletModel.publicBdk(
-                    id: 'repeated-key',
-                    descriptor: descriptor,
-                    isTestnet: true,
-                  )
-                  as PublicBdkWalletModel,
+          wallet: WalletModel.publicBdk(
+            id: 'repeated-key',
+            descriptor: descriptor,
+            network: Network.bitcoinTestnet,
+          ) as PublicBdkWalletModel,
           descriptorKeys: descriptorKeys,
         ),
       );
@@ -273,9 +263,10 @@ void main() {
       final secondKey = descriptorKeys.singleWhere(
         (key) => key.descriptorPath.startsWith('/1/'),
       );
-      final firstPublicKey = Bip32Derivation.getBip32Xpub(
-        firstKey.xpub,
-      ).derivePath('0/0/0').public.toHexString();
+      final firstPublicKey = Bip32Derivation.getBip32Xpub(firstKey.xpub)
+          .derivePath('0/0/0')
+          .public
+          .toHexString();
       expect(
         walletDescriptorKeyMatches(
           key: firstKey,
@@ -302,7 +293,7 @@ void main() {
       final signer = deriveSignerKeysAtAccount(testMnemonics.first, account: 0);
       final parsedKey = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: 'wsh(pk(${signer.xpub}/<0;1>/*))',
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       ).keys.single;
       final externalFirst = WalletDescriptorKeyModel(
         id: 'external-first',
@@ -317,9 +308,10 @@ void main() {
         id: 'internal-first',
         descriptorPath: '/<1;0>/*',
       );
-      final publicKey = Bip32Derivation.getBip32Xpub(
-        parsedKey.xpub,
-      ).derivePath('0/0').public.toHexString();
+      final publicKey = Bip32Derivation.getBip32Xpub(parsedKey.xpub)
+          .derivePath('0/0')
+          .public
+          .toHexString();
       final derivationPath = '${parsedKey.derivationPath}/0/0';
 
       expect(
@@ -361,7 +353,7 @@ void main() {
       );
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
       final descriptorKeys = [
         for (final (index, key) in parsed.keys.indexed)
@@ -377,21 +369,18 @@ void main() {
 
       final policy = BitcoinWalletPolicyMapper.toEntity(
         datasource.analyzePolicy(
-          wallet:
-              WalletModel.publicBdk(
-                    id: 'reused-taproot-key',
-                    descriptor: descriptor,
-                    isTestnet: true,
-                  )
-                  as PublicBdkWalletModel,
+          wallet: WalletModel.publicBdk(
+            id: 'reused-taproot-key',
+            descriptor: descriptor,
+            network: Network.bitcoinTestnet,
+          ) as PublicBdkWalletModel,
           descriptorKeys: descriptorKeys,
         ),
       );
 
       expect(
-        _signatureKeyValues(
-          policy.external.root,
-        ).where((value) => value == 'key-1'),
+        _signatureKeyValues(policy.external.root)
+            .where((value) => value == 'key-1'),
         hasLength(2),
       );
     });
@@ -411,7 +400,7 @@ void main() {
       );
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
       final descriptorKeys = [
         for (final (index, key) in parsed.keys.indexed)
@@ -427,13 +416,11 @@ void main() {
 
       final policy = BitcoinWalletPolicyMapper.toEntity(
         datasource.analyzePolicy(
-          wallet:
-              WalletModel.publicBdk(
-                    id: 'same-seed-accounts',
-                    descriptor: descriptor,
-                    isTestnet: true,
-                  )
-                  as PublicBdkWalletModel,
+          wallet: WalletModel.publicBdk(
+            id: 'same-seed-accounts',
+            descriptor: descriptor,
+            network: Network.bitcoinTestnet,
+          ) as PublicBdkWalletModel,
           descriptorKeys: descriptorKeys,
         ),
       );
@@ -448,22 +435,20 @@ void main() {
     test('decodes time-based relative timelocks', () {
       const oneTimeUnit = (1 << 22) + 1;
       final policy = analyzePolicy(
-        wallet:
-            WalletModel.publicBdk(
-                  id: 'time-based-miniscript',
-                  descriptor: twoPathDescriptor(
-                    bdk.Descriptor.newWsh(
-                      miniScript:
-                          'and_v(v:older($oneTimeUnit),pk(${signers[0].externalPublic}))',
-                    ).toString(),
-                    bdk.Descriptor.newWsh(
-                      miniScript:
-                          'and_v(v:older($oneTimeUnit),pk(${signers[0].internalPublic}))',
-                    ).toString(),
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel,
+        wallet: WalletModel.publicBdk(
+          id: 'time-based-miniscript',
+          descriptor: twoPathDescriptor(
+            bdk.Descriptor.newWsh(
+              miniScript:
+                  'and_v(v:older($oneTimeUnit),pk(${signers[0].externalPublic}))',
+            ).toString(),
+            bdk.Descriptor.newWsh(
+              miniScript:
+                  'and_v(v:older($oneTimeUnit),pk(${signers[0].internalPublic}))',
+            ).toString(),
+          ),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel,
       );
 
       final timelock = findPolicyNode<BitcoinRelativeTimelockPolicyNode>(

@@ -8,7 +8,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_policy_registration_name.dart';
@@ -125,19 +124,19 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
       model,
       wallet: wallet,
       signerId: signerId,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
     );
     _ensureSupportedPolicy(wallet, signer);
     final registered = await _datasource.isWalletPolicyRegistered(
       model,
       descriptor: wallet.publicDescriptor,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
     );
     if (!registered) {
       await _datasource.registerWalletPolicy(
         model,
         descriptor: wallet.publicDescriptor,
-        isTestnet: wallet.isTestnet,
+        isTestnet: !wallet.network.isMainnet,
         name: _walletPolicyName(wallet, signer),
       );
     }
@@ -155,13 +154,13 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
       model,
       wallet: wallet,
       signerId: signerId,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
     );
     _ensureSupportedPolicy(wallet, signer);
     if (!await _datasource.isWalletPolicyRegistered(
       model,
       descriptor: wallet.publicDescriptor,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
     )) {
       throw const WalletPolicyNotRegisteredBitBoxFailure();
     }
@@ -169,7 +168,7 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
       model,
       descriptor: wallet.publicDescriptor,
       psbt: psbt,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
     );
   });
 
@@ -187,20 +186,20 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
       model,
       wallet: wallet,
       signerId: signerId,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
     );
     _ensureSupportedPolicy(wallet, signer);
     if (!await _datasource.isWalletPolicyRegistered(
       model,
       descriptor: wallet.publicDescriptor,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
     )) {
       throw const WalletPolicyNotRegisteredBitBoxFailure();
     }
     final verifiedAddress = await _datasource.verifyWalletAddress(
       model,
       descriptor: wallet.publicDescriptor,
-      isTestnet: wallet.isTestnet,
+      isTestnet: !wallet.network.isMainnet,
       keychain: keychain,
       index: index,
     );
@@ -216,9 +215,8 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
     required bool isTestnet,
     String? signerId,
   }) async {
-    final fingerprint = (await _datasource.getMasterFingerprint(
-      device,
-    )).toLowerCase();
+    final fingerprint = (await _datasource.getMasterFingerprint(device))
+        .toLowerCase();
     final candidates = wallet.signers.where(
       (signer) =>
           signer.signerDevice?.isBitBox == true &&

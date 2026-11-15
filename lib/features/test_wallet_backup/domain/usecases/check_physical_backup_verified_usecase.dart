@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 
 class CheckPhysicalBackupVerifiedUsecase {
   final GetWalletsUsecase _getWalletsUsecase;

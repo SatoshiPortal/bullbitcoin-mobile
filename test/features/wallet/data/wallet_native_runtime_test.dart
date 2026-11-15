@@ -1,8 +1,10 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
@@ -146,15 +148,24 @@ void main() {
     final row = WalletMetadataModel(
       networkCode: 'bitcoinTestnet',
       id: 'wpkh([aabbccdd/84h/1h/0h])',
-      masterFingerprint: 'aabbccdd',
-      xpubFingerprint: 'aabbccdd',
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
-      xpub: 'public',
-      externalPublicDescriptor: derive(bdk.KeychainKind.external_),
-      internalPublicDescriptor: derive(bdk.KeychainKind.internal),
-      signer: Signer.none,
       isDefault: false,
+      signers: [
+        walletSignerModel(
+          id: 'signer-0',
+          descriptorKeyId: 'key-0',
+          masterFingerprint: 'aabbccdd',
+          xpubFingerprint: 'aabbccdd',
+          xpub: 'public',
+          signer: Signer.none,
+          signerDevice: null,
+        ),
+      ],
+      publicDescriptor: (derive(bdk.KeychainKind.external_))
+          .split('#')
+          .first
+          .replaceAll('/0/*', '/<0;1>/*'),
     );
     secret.dispose();
     mnemonic.dispose();
@@ -189,9 +200,7 @@ void main() {
       ) as Ok<PublicWalletDescriptor, SyncFailure>).value.key,
     );
     try {
-      final unfinished = row.copyWith(
-        externalPublicDescriptor: 'wpkh(invalid)',
-      );
+      final unfinished = row.copyWith(publicDescriptor: 'wpkh(invalid)');
       rows[row.id] = unfinished;
       await expectLater(
         runtime.create(unfinished),
@@ -356,15 +365,24 @@ void main() {
     final row = WalletMetadataModel(
       networkCode: 'bitcoinMainnet',
       id: 'wpkh([aabbccdd/84h/0h/0h])',
-      masterFingerprint: 'aabbccdd',
-      xpubFingerprint: 'aabbccdd',
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
-      xpub: 'public',
-      externalPublicDescriptor: derive(bdk.KeychainKind.external_),
-      internalPublicDescriptor: derive(bdk.KeychainKind.internal),
-      signer: Signer.none,
       isDefault: false,
+      signers: [
+        walletSignerModel(
+          id: 'signer-0',
+          descriptorKeyId: 'key-0',
+          masterFingerprint: 'aabbccdd',
+          xpubFingerprint: 'aabbccdd',
+          xpub: 'public',
+          signer: Signer.none,
+          signerDevice: null,
+        ),
+      ],
+      publicDescriptor: (derive(bdk.KeychainKind.external_))
+          .split('#')
+          .first
+          .replaceAll('/0/*', '/<0;1>/*'),
     );
     secret.dispose();
     mnemonic.dispose();

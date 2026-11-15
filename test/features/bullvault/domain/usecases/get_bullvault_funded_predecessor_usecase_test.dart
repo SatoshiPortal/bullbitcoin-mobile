@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -40,9 +38,9 @@ void main() {
         repository,
         getWallet,
       );
-      Future<String?> destination() async =>
-          (await usecase.execute([active]) as Ok<String?, BullVaultFailure>)
-              .value;
+      Future<String?> destination() async => (await usecase.execute([
+        active,
+      ]) as Ok<String?, BullVaultFailure>).value;
 
       expect(await destination(), isNull);
       for (final source in ['previous', 'cancelled']) {

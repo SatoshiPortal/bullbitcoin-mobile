@@ -1,142 +1,19 @@
-import 'dart:io';
-
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:convert/convert.dart';
-import 'package:path_provider/path_provider.dart';
+part of 'bitcoin_policy_codec.dart';
 
 const _bip341NumsKey =
     '0250929b74c1a04954b78b4b6035e97a5e078a5a0f28ec96d547bfee9ace803ac0';
 
-final class BdkDescriptorKey {
-  final String masterFingerprint;
-  final String xpubFingerprint;
-  final String xpub;
-  final String? derivationPath;
-  final String descriptorPath;
-
-  const BdkDescriptorKey({
-    required this.masterFingerprint,
-    required this.xpubFingerprint,
-    required this.xpub,
-    required this.derivationPath,
-    this.descriptorPath = '',
-  });
-}
-
-final class BdkTwoPathDescriptor {
-  final String descriptor;
-  final String externalDescriptor;
-  final String internalDescriptor;
-  final String scriptIdentity;
-  final ScriptType? scriptType;
-  final List<BdkDescriptorKey> keys;
-  final List<BdkDescriptorKey> policyKeys;
-  final Set<String> unspendablePolicyKeyIdentifiers;
-  final bool inferredChangePath;
-
-  const BdkTwoPathDescriptor({
-    required this.descriptor,
-    required this.externalDescriptor,
-    required this.internalDescriptor,
-    required this.scriptIdentity,
-    required this.scriptType,
-    this.keys = const [],
-    this.policyKeys = const [],
-    this.unspendablePolicyKeyIdentifiers = const {},
-    this.inferredChangePath = false,
-  });
-}
-
-class BdkFacade {
-  // Standard lookahead value for address discovery
-  static const int _lookahead = 25;
-
-  static Future<bdk.Wallet> createWallet(WalletModel walletModel) {
-    if (walletModel is PublicBdkWalletModel) {
-      return createPublicWallet(walletModel);
-    } else {
-      throw ArgumentError('Unsupported wallet model type');
-    }
-  }
-
-  static Future<bdk.Wallet> createPublicWallet(WalletModel walletModel) async {
-    if (walletModel is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final network = walletModel.isTestnet
-        ? bdk.Network.testnet
-        : bdk.Network.bitcoin;
-    final networkKind = walletModel.isTestnet
-        ? bdk.NetworkKind.test
-        : bdk.NetworkKind.main;
-
-    final parsed = parsePublicTwoPathDescriptor(
-      descriptor: walletModel.descriptor,
-      isTestnet: walletModel.isTestnet,
-    );
-    final external = bdk.Descriptor(
-      descriptor: parsed.externalDescriptor,
-      networkKind: networkKind,
-    );
-    final internal = bdk.Descriptor(
-      descriptor: parsed.internalDescriptor,
-      networkKind: networkKind,
-    );
-
-    // Get the database path based on the wallet's id for uniqueness and in hex
-    // to ensure it's a valid filename
-    final dbPath = await _getDbPath(walletModel.hexId);
-    final dbFile = File(dbPath);
-
-    try {
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-
-      // Use load if database (wallet) exists, otherwise create new
-      final wallet = await dbFile.exists()
-          ? bdk.Wallet.load(
-              descriptor: external,
-              changeDescriptor: internal,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            )
-          : bdk.Wallet(
-              descriptor: external,
-              changeDescriptor: internal,
-              network: network,
-              persister: dbPersister,
-              lookahead: _lookahead,
-            );
-
-      return wallet;
-    } catch (e) {
-      // If there's any error (corrupted db, etc.), delete and recreate
-      if (await dbFile.exists()) {
-        await dbFile.delete();
-      }
-      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
-      return bdk.Wallet(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: network,
-        persister: dbPersister,
-        lookahead: _lookahead,
-      );
-    }
-  }
+class _DescriptorCodec {
+  static const _lookahead = 25;
 
   /// Creates an in-memory wallet from public Bitcoin descriptors.
   static bdk.Wallet createEphemeralDescriptorWallet({
     required String descriptor,
-    required bool isTestnet,
+    required BitcoinNetwork network,
   }) {
-    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final networkKind = network == BitcoinNetwork.mainnet
+        ? bdk.NetworkKind.main
+        : bdk.NetworkKind.test;
     final descriptors = _expandTwoPathDescriptor(
       descriptor: descriptor,
       networkKind: networkKind,
@@ -158,7 +35,7 @@ class BdkFacade {
           return bdk.Wallet(
             descriptor: external,
             changeDescriptor: internal,
-            network: network,
+            network: _nativePolicyNetwork(network),
             persister: persister,
             lookahead: _lookahead,
           );
@@ -173,12 +50,13 @@ class BdkFacade {
     }
   }
 
-  static BdkTwoPathDescriptor parsePublicTwoPathDescriptor({
+  static ParsedBitcoinDescriptor parsePublicTwoPathDescriptor({
     required String descriptor,
-    required bool isTestnet,
+    required BitcoinNetwork network,
   }) {
-    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final networkKind = network == BitcoinNetwork.mainnet
+        ? bdk.NetworkKind.main
+        : bdk.NetworkKind.test;
     final supplied = bdk.Descriptor(
       descriptor: descriptor.trim(),
       networkKind: networkKind,
@@ -221,7 +99,7 @@ class BdkFacade {
         try {
           wallet = bdk.Wallet.createFromTwoPathDescriptor(
             twoPathDescriptor: parsed,
-            network: network,
+            network: _nativePolicyNetwork(network),
             persister: persister,
             lookahead: _lookahead,
           );
@@ -235,7 +113,7 @@ class BdkFacade {
           parsed.toString(),
           descriptorType: parsed.descType(),
         );
-        return BdkTwoPathDescriptor(
+        return ParsedBitcoinDescriptor(
           descriptor: parsed.toString(),
           externalDescriptor: externalDescriptor,
           internalDescriptor: singleDescriptors.last.toString(),
@@ -284,21 +162,23 @@ class BdkFacade {
         ),
         (match) {
           final xpub = match.group(3)!;
-          final fingerprint = Bip32Derivation.getBip32Xpub(xpub).fingerprintHex;
+          final fingerprint = publicAccountKey(xpub).fingerprint
+              .map((b) => b.toRadixString(16).padLeft(2, '0'))
+              .join();
           return '[$fingerprint${match.group(2)!}]$xpub';
         },
       );
 
   static ({
-    List<BdkDescriptorKey> signingKeys,
-    List<BdkDescriptorKey> policyKeys,
+    List<BitcoinDescriptorKey> signingKeys,
+    List<BitcoinDescriptorKey> policyKeys,
     Set<String> unspendablePolicyKeyIdentifiers,
   })
   _descriptorKeys(
     String descriptor, {
     required bdk.DescriptorType descriptorType,
   }) {
-    final parsedKeys = <({BdkDescriptorKey key, String expression})>[];
+    final parsedKeys = <({BitcoinDescriptorKey key, String expression})>[];
     final taproot = descriptorType == bdk.DescriptorType.tr
         ? _taprootInternalKey(descriptor)
         : null;
@@ -362,7 +242,9 @@ class BdkFacade {
         }
         throw const UnsupportedFixedPublicKeyDescriptorException();
       }
-      final xpubFingerprint = Bip32Derivation.getBip32Xpub(xpub).fingerprintHex;
+      final xpubFingerprint = publicAccountKey(xpub).fingerprint
+          .map((b) => b.toRadixString(16).padLeft(2, '0'))
+          .join();
 
       var masterFingerprint = '';
       String? derivationPath;
@@ -378,7 +260,7 @@ class BdkFacade {
 
       parsedKeys.add((
         expression: candidate,
-        key: BdkDescriptorKey(
+        key: BitcoinDescriptorKey(
           masterFingerprint: masterFingerprint,
           xpubFingerprint: xpubFingerprint,
           xpub: xpub,
@@ -407,7 +289,7 @@ class BdkFacade {
       );
     }
 
-    List<BdkDescriptorKey> uniqueKeys({required bool includeUnspendable}) {
+    List<BitcoinDescriptorKey> uniqueKeys({required bool includeUnspendable}) {
       final seen = <String>{};
       return List.unmodifiable([
         for (final parsed in parsedKeys)
@@ -431,8 +313,8 @@ class BdkFacade {
   }
 
   static void _validateUnspendableInternalKey(
-    List<({BdkDescriptorKey key, String expression})> parsedKeys,
-    BdkDescriptorKey unspendableInternalKey,
+    List<({BitcoinDescriptorKey key, String expression})> parsedKeys,
+    BitcoinDescriptorKey unspendableInternalKey,
   ) {
     final fingerprints = {
       unspendableInternalKey.masterFingerprint.toLowerCase(),
@@ -455,8 +337,8 @@ class BdkFacade {
     }
   }
 
-  static BdkDescriptorKey? _unspendableTaprootInternalKey(
-    List<({BdkDescriptorKey key, String expression})> parsedKeys, {
+  static BitcoinDescriptorKey? _unspendableTaprootInternalKey(
+    List<({BitcoinDescriptorKey key, String expression})> parsedKeys, {
     required String? taprootInternalKey,
   }) {
     if (taprootInternalKey == null) return null;
@@ -466,7 +348,7 @@ class BdkFacade {
     if (internalIndex < 0) return null;
     final internal = parsedKeys[internalIndex];
 
-    final internalXpub = Bip32Derivation.getBip32Xpub(internal.key.xpub);
+    final internalXpub = publicAccountKey(internal.key.xpub);
     return hex.encode(internalXpub.public).toLowerCase() == _bip341NumsKey
         ? internal.key
         : null;
@@ -558,13 +440,15 @@ class BdkFacade {
   static String combinePublicDescriptorPair({
     required String externalDescriptor,
     required String internalDescriptor,
-    required bool isTestnet,
+    required BitcoinNetwork network,
   }) {
     final parsed = parsePublicTwoPathDescriptor(
       descriptor: externalDescriptor,
-      isTestnet: isTestnet,
+      network: network,
     );
-    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
+    final networkKind = network == BitcoinNetwork.mainnet
+        ? bdk.NetworkKind.main
+        : bdk.NetworkKind.test;
     final normalizedInternalDescriptor = _normalizePublicSingleDescriptor(
       descriptor: internalDescriptor,
       networkKind: networkKind,
@@ -634,29 +518,13 @@ class BdkFacade {
       parsed.dispose();
     }
   }
-
-  /// Persists wallet changes to the database
-  static Future<void> saveWallet(
-    bdk.Wallet bdkWallet,
-    String walletIdHex,
-  ) async {
-    final dbPath = await _getDbPath(walletIdHex);
-    final persister = bdk.Persister.newSqlite(path: dbPath);
-    bdkWallet.persist(persister: persister);
-  }
-
-  static Future<String> _getDbPath(String walletIdHex) async {
-    final dir = await getApplicationDocumentsDirectory();
-    // Add since bdk_dart might not migrate old bdk_flutter db we suffix the db name with `_bdk_dart` to avoid conflicts
-    return '${dir.path}/${'${walletIdHex}_bdk_dart'}';
-  }
-
-  static Future<void> delete(WalletModel walletModel) async {
-    final dbPath = await _getDbPath(walletModel.hexId);
-    final dbFile = File(dbPath);
-
-    if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);
-
-    await dbFile.delete();
-  }
 }
+
+bdk.Network _nativePolicyNetwork(BitcoinNetwork network) => switch (network) {
+  BitcoinNetwork.mainnet => bdk.Network.bitcoin,
+  BitcoinNetwork.testnet => bdk.Network.testnet,
+  BitcoinNetwork.regtest => bdk.Network.regtest,
+  BitcoinNetwork.signet => throw const FormatException(
+    'Unsupported Bitcoin network',
+  ),
+};

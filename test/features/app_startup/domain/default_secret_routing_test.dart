@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+
 import 'dart:convert';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -356,7 +357,17 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Ok<List<Wallet>, WalletFailure>([
-          wallet(Network.liquidMainnet).copyWith(masterFingerprint: 'deadbeef'),
+          wallet(Network.liquidMainnet).copyWith(
+            signers: [
+              WalletSigner.single(
+                masterFingerprint: 'deadbeef',
+                xpubFingerprint: 'deadbeef',
+                xpub: '',
+                signer: SignerEntity.local,
+                signerDevice: null,
+              ),
+            ],
+          ),
           wallet(Network.bitcoinMainnet),
         ]),
       );

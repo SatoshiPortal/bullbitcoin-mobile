@@ -86,7 +86,7 @@ class WatchOnlyInputParser {
     } on UnsupportedFixedPublicKeyDescriptorException {
       rethrow;
     } on Exception catch (error, stackTrace) {
-      final otherNetwork = preferredNetwork.isTestnet
+      final otherNetwork = !preferredNetwork.isMainnet
           ? Network.bitcoinMainnet
           : Network.bitcoinTestnet;
       try {

@@ -133,16 +133,14 @@ void main() {
             schedule: schedule,
             delayedMobileRecovery: recoveryKey,
           );
-          final json =
-              jsonDecode(
-                    codec.encode(
-                      BullVaultRecoveryPackage(
-                        policy: policy,
-                        previousVaultId: 'previous-vault',
-                      ),
-                    ),
-                  )
-                  as Map<String, dynamic>;
+          final json = jsonDecode(
+            codec.encode(
+              BullVaultRecoveryPackage(
+                policy: policy,
+                previousVaultId: 'previous-vault',
+              ),
+            ),
+          ) as Map<String, dynamic>;
           final restored = codec.decode(jsonEncode(json)).policy;
           expect(restored.descriptor, policy.descriptor);
           expect(restored.schedule?.lastResortDelay, 7);
@@ -241,9 +239,9 @@ void main() {
       protection: BullVaultProtection.standard,
       includesInheritance: false,
     );
-    final json =
-        jsonDecode(codec.encode(BullVaultRecoveryPackage(policy: policy)))
-            as Map<String, dynamic>;
+    final json = jsonDecode(
+      codec.encode(BullVaultRecoveryPackage(policy: policy)),
+    ) as Map<String, dynamic>;
     final schedule = json['schedule'] as Map<String, dynamic>;
     schedule['recovery'] = (schedule['recovery'] as int) + 1;
 
@@ -284,9 +282,9 @@ void main() {
       protection: BullVaultProtection.standard,
       includesInheritance: false,
     );
-    final json =
-        jsonDecode(codec.encode(BullVaultRecoveryPackage(policy: policy)))
-            as Map<String, dynamic>;
+    final json = jsonDecode(
+      codec.encode(BullVaultRecoveryPackage(policy: policy)),
+    ) as Map<String, dynamic>;
     json['unexpected'] = true;
 
     expect(() => codec.decode(jsonEncode(json)), throwsFormatException);

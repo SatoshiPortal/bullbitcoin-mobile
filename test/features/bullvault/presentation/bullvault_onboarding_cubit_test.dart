@@ -1,11 +1,12 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
@@ -160,9 +161,8 @@ void main() {
       medianTimePast:
           DateTime.utc(2027, 1, 15, 11).millisecondsSinceEpoch ~/ 1000,
     );
-    when(
-      () => prepare.execute(isTestnet: false),
-    ).thenAnswer((_) async => Ok(reference));
+    when(() => prepare.execute(network: BitcoinNetwork.mainnet))
+        .thenAnswer((_) async => Ok(reference));
     when(load.execute).thenAnswer(
       (_) async =>
           const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
@@ -193,9 +193,8 @@ void main() {
       (_) async =>
           const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
     );
-    when(
-      () => prepare.execute(isTestnet: false),
-    ).thenAnswer((_) async => Ok(reference));
+    when(() => prepare.execute(network: BitcoinNetwork.mainnet))
+        .thenAnswer((_) async => Ok(reference));
     when(() => create.execute(any())).thenAnswer(
       (_) async => Ok(
         BullVaultOnboardingSnapshot(
@@ -243,12 +242,11 @@ void main() {
       (_) async =>
           const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
     );
-    when(() => prepare.execute(isTestnet: false)).thenAnswer(
+    when(() => prepare.execute(network: BitcoinNetwork.mainnet)).thenAnswer(
       (_) async => Ok(preparationCount++ == 0 ? initial : refreshed),
     );
-    when(
-      () => create.execute(any()),
-    ).thenAnswer((_) async => const Err(BullVaultReviewExpiredFailure()));
+    when(() => create.execute(any()))
+        .thenAnswer((_) async => const Err(BullVaultReviewExpiredFailure()));
     final cubit = _cubit(create: create, load: load, prepare: prepare);
 
     await _moveToReview(cubit);
@@ -269,12 +267,10 @@ void main() {
       (_) async =>
           const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
     );
-    when(
-      () => prepare.execute(isTestnet: false),
-    ).thenAnswer((_) async => Ok(_timeReference()));
-    when(
-      () => create.execute(any()),
-    ).thenAnswer((_) async => const Err(BullVaultCreationFailure()));
+    when(() => prepare.execute(network: BitcoinNetwork.mainnet))
+        .thenAnswer((_) async => Ok(_timeReference()));
+    when(() => create.execute(any()))
+        .thenAnswer((_) async => const Err(BullVaultCreationFailure()));
     final cubit = _cubit(create: create, load: load, prepare: prepare);
 
     await cubit.load();
@@ -314,9 +310,8 @@ void main() {
               BullVaultOnboardingLoad(network: Network.bitcoinMainnet),
             ),
           );
-          when(
-            () => prepare.execute(isTestnet: false),
-          ).thenAnswer((_) async => Ok(_timeReference()));
+          when(() => prepare.execute(network: BitcoinNetwork.mainnet))
+              .thenAnswer((_) async => Ok(_timeReference()));
           final cubit = _cubit(load: load, prepare: prepare);
           await cubit.load();
           cubit.setProtection(protection);
@@ -380,9 +375,8 @@ void main() {
       (_) async =>
           const Ok(BullVaultOnboardingLoad(network: Network.bitcoinMainnet)),
     );
-    when(
-      () => prepare.execute(isTestnet: false),
-    ).thenAnswer((_) => review.future);
+    when(() => prepare.execute(network: BitcoinNetwork.mainnet))
+        .thenAnswer((_) => review.future);
     final cubit = _cubit(load: load, prepare: prepare);
 
     await cubit.load();

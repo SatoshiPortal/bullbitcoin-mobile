@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
-import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_account_key_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/register_wallet_policy_bitbox_usecase.dart';
@@ -12,10 +11,7 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecas
 import 'package:bb_mobile/features/bitbox/domain/sign_psbt_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/verify_address_bitbox_usecase.dart';
-import 'package:bb_mobile/features/bitbox/domain/sign_psbt_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/sign_wallet_psbt_bitbox_usecase.dart';
-import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
-import 'package:bb_mobile/features/bitbox/domain/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_wallet_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';

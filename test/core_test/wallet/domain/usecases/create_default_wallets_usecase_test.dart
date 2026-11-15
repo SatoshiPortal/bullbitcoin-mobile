@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:primitives/primitives.dart' show Err, Ok;
 
@@ -5,7 +6,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
@@ -31,7 +32,7 @@ void main() {
     };
   });
   test(
-    'does not attempt Bitcoin creation when Liquid creation fails',
+    'does not attempt Liquid creation when Bitcoin creation fails',
     () async {
       final settings = _MockSettingsRepository();
       final wallets = _MockWalletRepository();
@@ -57,22 +58,26 @@ void main() {
       when(
         () => wallets.createWallet(
           secret: secret,
-          network: Network.liquidMainnet,
+          network: Network.bitcoinMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
           birthday: any(named: 'birthday'),
         ),
-      ).thenThrow(Exception('Liquid wallet creation failed'));
+      ).thenThrow(Exception('Bitcoin wallet creation failed'));
 
-      await expectLater(
-        usecase.execute(secret: secret),
-        throwsA(isA<CreateDefaultWalletsException>()),
+      expect(
+        await usecase.execute(secret: secret),
+        isA<Err<List<Wallet>, DefaultWalletFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<DefaultWalletCreationFailure>(),
+        ),
       );
 
       verifyNever(
         () => wallets.createWallet(
           secret: secret,
-          network: Network.bitcoinMainnet,
+          network: Network.liquidMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
           birthday: any(named: 'birthday'),
@@ -83,7 +88,7 @@ void main() {
   );
 
   test(
-    'deletes a newly created Liquid wallet when Bitcoin creation fails',
+    'retains a newly created Bitcoin wallet when Liquid creation fails',
     () async {
       final settings = _MockSettingsRepository();
       final wallets = _MockWalletRepository();
@@ -111,7 +116,7 @@ void main() {
       when(
         () => wallets.createWallet(
           secret: secret,
-          network: Network.liquidMainnet,
+          network: Network.bitcoinMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
           birthday: any(named: 'birthday'),
@@ -120,22 +125,25 @@ void main() {
       when(
         () => wallets.createWallet(
           secret: secret,
-          network: Network.bitcoinMainnet,
+          network: Network.liquidMainnet,
           scriptType: ScriptType.bip84,
           isDefault: true,
           birthday: any(named: 'birthday'),
         ),
-      ).thenThrow(Exception('Bitcoin wallet creation failed'));
-      when(
-        () => wallets.deleteWallet(walletId: 'liquid-wallet'),
-      ).thenAnswer((_) async => const Ok(null));
+      ).thenThrow(Exception('Liquid wallet creation failed'));
+      when(() => wallets.deleteWallet(walletId: 'liquid-wallet'))
+          .thenAnswer((_) async => const Ok(null));
 
-      await expectLater(
-        usecase.execute(secret: secret),
-        throwsA(isA<CreateDefaultWalletsException>()),
+      expect(
+        await usecase.execute(secret: secret),
+        isA<Err<List<Wallet>, DefaultWalletFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<DefaultWalletCreationFailure>(),
+        ),
       );
 
-      verify(() => wallets.deleteWallet(walletId: 'liquid-wallet')).called(1);
+      verifyNever(() => wallets.deleteWallet(walletId: any(named: 'walletId')));
     },
   );
 }

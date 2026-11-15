@@ -35,12 +35,10 @@ void main() {
           policy: singleLocalPolicy(),
           psbt: 'second',
         );
-        when(
-          () => reviewUsecase.execute(walletId: 'wallet', psbt: 'first'),
-        ).thenAnswer((_) => firstResult.future);
-        when(
-          () => reviewUsecase.execute(walletId: 'wallet', psbt: 'second'),
-        ).thenAnswer((_) => secondResult.future);
+        when(() => reviewUsecase.execute(walletId: 'wallet', psbt: 'first'))
+            .thenAnswer((_) => firstResult.future);
+        when(() => reviewUsecase.execute(walletId: 'wallet', psbt: 'second'))
+            .thenAnswer((_) => secondResult.future);
         final cubit = PsbtSigningCubit(
           walletId: 'wallet',
           reviewPsbtUsecase: reviewUsecase,

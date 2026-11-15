@@ -1,4 +1,4 @@
-part of 'bdk_wallet_datasource.dart';
+part of 'bitcoin_policy_codec.dart';
 
 void _validatePartialSignatures(
   String psbtBase64, {
@@ -316,7 +316,7 @@ void _validateTaprootKeyPathSignature({
   }
 }
 
-typedef _DescriptorOwnership = ({int index, BitcoinPolicyKeychain keychain});
+typedef _DescriptorOwnership = ({int index, Keychain keychain});
 
 bdk.Psbt _parsePsbt(String psbtBase64) {
   try {
@@ -353,8 +353,8 @@ String _retainSelectedSegwitKeyOrigins(
   String psbtBase64, {
   required List<bdk.KeychainKind> inputKeychains,
   required ({
-    List<WalletDescriptorKeyModel> external,
-    List<WalletDescriptorKeyModel> internal,
+    List<BitcoinDescriptorKey> external,
+    List<BitcoinDescriptorKey> internal,
   })
   requiredDescriptorKeys,
 }) {
@@ -365,8 +365,8 @@ String _retainSelectedSegwitKeyOrigins(
 
   for (final (index, keychain) in inputKeychains.indexed) {
     final policyKeychain = keychain == bdk.KeychainKind.external_
-        ? BitcoinPolicyKeychainModel.external
-        : BitcoinPolicyKeychainModel.internal;
+        ? Keychain.external
+        : Keychain.internal;
     final requiredKeys = keychain == bdk.KeychainKind.external_
         ? requiredDescriptorKeys.external
         : requiredDescriptorKeys.internal;
@@ -392,20 +392,20 @@ String _retainSelectedSegwitKeyOrigins(
 int _completedTransactionVsize({
   required bdk.Transaction transaction,
   required List<bdk.Input> inputs,
-  required List<BitcoinPolicyKeychain> inputKeychains,
-  required PublicBdkWalletModel wallet,
+  required List<Keychain> inputKeychains,
+  required BitcoinPolicyDescriptor wallet,
 }) {
   if (inputs.length != inputKeychains.length) {
     throw const InvalidBitcoinPsbtException();
   }
   if (inputs.every(_isFinalizedInput)) return transaction.vsize();
 
-  final networkKind = wallet.isTestnet
-      ? bdk.NetworkKind.test
-      : bdk.NetworkKind.main;
-  final descriptors = BdkFacade.parsePublicTwoPathDescriptor(
+  final networkKind = wallet.network == BitcoinNetwork.mainnet
+      ? bdk.NetworkKind.main
+      : bdk.NetworkKind.test;
+  final descriptors = _DescriptorCodec.parsePublicTwoPathDescriptor(
     descriptor: wallet.descriptor,
-    isTestnet: wallet.isTestnet,
+    network: wallet.network,
   );
   final external = bdk.Descriptor(
     descriptor: descriptors.externalDescriptor,
@@ -418,8 +418,7 @@ int _completedTransactionVsize({
   try {
     final descriptorTypes = [
       for (final keychain in inputKeychains)
-        (keychain == BitcoinPolicyKeychain.external ? external : internal)
-            .descType(),
+        (keychain == Keychain.external ? external : internal).descType(),
     ];
     final hasSegwitInput = descriptorTypes.any(_isSegwitDescriptor);
     final transactionAlreadyHasWitness = transaction.input().any(
@@ -435,7 +434,7 @@ int _completedTransactionVsize({
     }
     for (final index in Iterable<int>.generate(inputs.length)) {
       if (_isFinalizedInput(inputs[index])) continue;
-      final descriptor = inputKeychains[index] == BitcoinPolicyKeychain.external
+      final descriptor = inputKeychains[index] == Keychain.external
           ? external
           : internal;
       var satisfactionWeight = descriptor.maxWeightToSatisfy();
@@ -506,7 +505,7 @@ void _rejectFinalizedInputs(List<bdk.Input> inputs) {
 void _rejectFinalizedWalletInputs(
   bdk.Psbt psbt,
   List<bdk.Input> inputs,
-  bdk.Wallet wallet,
+  OwnershipIndex ownership,
 ) {
   final transaction = psbt.extractTx();
   try {
@@ -517,7 +516,11 @@ void _rejectFinalizedWalletInputs(
     for (final (index, input) in inputs.indexed) {
       if (!_isFinalizedInput(input)) continue;
       final utxo = _inputUtxo(input, transactionInputs[index].previousOutput);
-      if (wallet.isMine(script: utxo.scriptPubkey)) {
+      if (ownership.ownsScript(utxo.scriptPubkey.toBytes()) ||
+          ownership.ownsOutpoint((
+            txId: transactionInputs[index].previousOutput.txid.toString(),
+            vout: transactionInputs[index].previousOutput.vout,
+          ))) {
         throw const InvalidBitcoinPsbtException();
       }
     }
@@ -606,7 +609,7 @@ List<Uint8List>? _inputEcdsaSignatures(bdk.TxIn input, bdk.Input psbtInput) {
       .toList(growable: false);
 }
 
-List<({BitcoinHashlockType type, List<int> hash})> _inputHashlockCommitments(
+List<({BitcoinPreimageType type, List<int> hash})> _inputHashlockCommitments(
   bdk.TxIn input,
   bdk.Input psbtInput,
   List<Uint8List> scriptPushes,
@@ -617,14 +620,14 @@ List<({BitcoinHashlockType type, List<int> hash})> _inputHashlockCommitments(
     if (input.witness.length > 1) input.witness.last,
     if (scriptPushes.length > 1) scriptPushes.last,
   ];
-  final commitments = <({BitcoinHashlockType type, List<int> hash})>[];
+  final commitments = <({BitcoinPreimageType type, List<int> hash})>[];
   for (final scriptBytes in scripts) {
     commitments.addAll(_scriptHashlockCommitments(scriptBytes));
   }
   return commitments;
 }
 
-List<({BitcoinHashlockType type, List<int> hash})> _scriptHashlockCommitments(
+List<({BitcoinPreimageType type, List<int> hash})> _scriptHashlockCommitments(
   List<int> scriptBytes,
 ) {
   final List<dynamic> tokens;
@@ -633,14 +636,14 @@ List<({BitcoinHashlockType type, List<int> hash})> _scriptHashlockCommitments(
   } on RangeError {
     throw const InvalidBitcoinPsbtException();
   }
-  final commitments = <({BitcoinHashlockType type, List<int> hash})>[];
-  BitcoinHashlockType? pendingType;
+  final commitments = <({BitcoinPreimageType type, List<int> hash})>[];
+  BitcoinPreimageType? pendingType;
   for (final token in tokens) {
     final type = switch (token) {
-      'OP_RIPEMD160' => BitcoinHashlockType.ripemd160,
-      'OP_SHA256' => BitcoinHashlockType.sha256,
-      'OP_HASH160' => BitcoinHashlockType.hash160,
-      'OP_HASH256' => BitcoinHashlockType.hash256,
+      'OP_RIPEMD160' => BitcoinPreimageType.ripemd160,
+      'OP_SHA256' => BitcoinPreimageType.sha256,
+      'OP_HASH160' => BitcoinPreimageType.hash160,
+      'OP_HASH256' => BitcoinPreimageType.hash256,
       _ => null,
     };
     if (type != null) {
@@ -657,8 +660,8 @@ List<({BitcoinHashlockType type, List<int> hash})> _scriptHashlockCommitments(
       continue;
     }
     final expectedLength = switch (commitmentType) {
-      BitcoinHashlockType.sha256 || BitcoinHashlockType.hash256 => 32,
-      BitcoinHashlockType.ripemd160 || BitcoinHashlockType.hash160 => 20,
+      BitcoinPreimageType.sha256 || BitcoinPreimageType.hash256 => 32,
+      BitcoinPreimageType.ripemd160 || BitcoinPreimageType.hash160 => 20,
     };
     if (hash.length == expectedLength) {
       commitments.add((type: commitmentType, hash: hash));
@@ -670,19 +673,19 @@ List<({BitcoinHashlockType type, List<int> hash})> _scriptHashlockCommitments(
 
 bool _matchesHashlockPreimage(
   Uint8List item,
-  List<({BitcoinHashlockType type, List<int> hash})> commitments,
+  List<({BitcoinPreimageType type, List<int> hash})> commitments,
 ) {
   for (final commitment in commitments) {
     final hash = switch (commitment.type) {
-      BitcoinHashlockType.sha256 => bitcoin_base.PsbtInputSha256.fromPreImage(
+      BitcoinPreimageType.sha256 => bitcoin_base.PsbtInputSha256.fromPreImage(
         item,
       ).hash,
-      BitcoinHashlockType.hash256 => bitcoin_base.PsbtInputHash256.fromPreImage(
+      BitcoinPreimageType.hash256 => bitcoin_base.PsbtInputHash256.fromPreImage(
         item,
       ).hash,
-      BitcoinHashlockType.ripemd160 =>
+      BitcoinPreimageType.ripemd160 =>
         bitcoin_base.PsbtInputRipemd160.fromPreImage(item).hash,
-      BitcoinHashlockType.hash160 => bitcoin_base.PsbtInputHash160.fromPreImage(
+      BitcoinPreimageType.hash160 => bitcoin_base.PsbtInputHash160.fromPreImage(
         item,
       ).hash,
     };
@@ -970,8 +973,8 @@ String _retainSelectedTaprootSpendPaths(
   required List<bdk.Input> inputs,
   required List<bdk.KeychainKind> inputKeychains,
   required ({
-    List<WalletDescriptorKeyModel> external,
-    List<WalletDescriptorKeyModel> internal,
+    List<BitcoinDescriptorKey> external,
+    List<BitcoinDescriptorKey> internal,
   })
   requiredDescriptorKeys,
 }) {
@@ -983,8 +986,8 @@ String _retainSelectedTaprootSpendPaths(
       _selectedTaprootSpendPath(
         input,
         keychain: inputKeychains[index] == bdk.KeychainKind.external_
-            ? BitcoinPolicyKeychainModel.external
-            : BitcoinPolicyKeychainModel.internal,
+            ? Keychain.external
+            : Keychain.internal,
         requiredKeys: inputKeychains[index] == bdk.KeychainKind.external_
             ? requiredDescriptorKeys.external
             : requiredDescriptorKeys.internal,
@@ -999,8 +1002,8 @@ String _retainSelectedTaprootSpendPaths(
     if (!selection.shouldFilterScripts) continue;
     final leafHash = selection.leafHash;
     final keychain = inputKeychains[index] == bdk.KeychainKind.external_
-        ? BitcoinPolicyKeychainModel.external
-        : BitcoinPolicyKeychainModel.internal;
+        ? Keychain.external
+        : Keychain.internal;
     final requiredKeys = inputKeychains[index] == bdk.KeychainKind.external_
         ? requiredDescriptorKeys.external
         : requiredDescriptorKeys.internal;
@@ -1073,8 +1076,8 @@ String _retainSelectedTaprootSpendPaths(
 
 ({bool shouldFilterScripts, String? leafHash}) _selectedTaprootSpendPath(
   bdk.Input input, {
-  required BitcoinPolicyKeychainModel keychain,
-  required List<WalletDescriptorKeyModel> requiredKeys,
+  required Keychain keychain,
+  required List<BitcoinDescriptorKey> requiredKeys,
 }) {
   if (input.tapInternalKey == null || input.tapScripts.isEmpty) {
     return (shouldFilterScripts: false, leafHash: null);
@@ -1132,8 +1135,8 @@ String _retainSelectedTaprootSpendPaths(
 
 bool _tapOriginMatchesDescriptorKey(
   MapEntry<String, bdk.TapKeyOrigin> origin,
-  WalletDescriptorKeyModel key, {
-  required BitcoinPolicyKeychainModel keychain,
+  BitcoinDescriptorKey key, {
+  required Keychain keychain,
 }) => walletDescriptorKeyMatches(
   key: key,
   publicKey: origin.key,
@@ -1264,14 +1267,17 @@ _DescriptorOwnership? _descriptorOwnership(
   bdk.Wallet wallet, {
   required bdk.Script script,
   required Iterable<bdk.KeySource> keySources,
+  OwnershipIndex? ownership,
 }) {
+  final known = ownership?.derivationOfScript(script.toBytes());
+  if (known != null) return known;
   final tracked = wallet.derivationOfSpk(spk: script);
   if (tracked != null) {
     return (
       index: tracked.index,
       keychain: tracked.keychain == bdk.KeychainKind.external_
-          ? BitcoinPolicyKeychain.external
-          : BitcoinPolicyKeychain.internal,
+          ? Keychain.external
+          : Keychain.internal,
     );
   }
 
@@ -1295,24 +1301,27 @@ _DescriptorOwnership? _descriptorOwnership(
       index: index,
     );
     if (_sameBytes(external.address.scriptPubkey().toBytes(), scriptBytes)) {
-      return (index: index, keychain: BitcoinPolicyKeychain.external);
+      return (index: index, keychain: Keychain.external);
     }
     final internal = wallet.peekAddress(
       keychain: bdk.KeychainKind.internal,
       index: index,
     );
     if (_sameBytes(internal.address.scriptPubkey().toBytes(), scriptBytes)) {
-      return (index: index, keychain: BitcoinPolicyKeychain.internal);
+      return (index: index, keychain: Keychain.internal);
     }
   }
   return null;
 }
 
-String? _addressFromScript(bdk.Script script, {required bool isTestnet}) {
+String? _addressFromScript(
+  bdk.Script script, {
+  required BitcoinNetwork network,
+}) {
   try {
     return bdk.Address.fromScript(
       script: script,
-      network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      network: _nativePolicyNetwork(network),
     ).toString();
   } on Exception {
     return null;
@@ -1327,18 +1336,18 @@ bool _sameBytes(List<int> left, List<int> right) {
   return true;
 }
 
-bitcoin_base.PsbtInputData _psbtPreimage(BitcoinPolicyPreimage preimage) {
+bitcoin_base.PsbtInputData _psbtPreimage(BitcoinHashPreimage preimage) {
   final bytes = hex.decode(preimage.preimageHex);
   return switch (preimage.type) {
-    BitcoinHashlockType.sha256 => bitcoin_base.PsbtInputSha256.fromPreImage(
+    BitcoinPreimageType.sha256 => bitcoin_base.PsbtInputSha256.fromPreImage(
       bytes,
     ),
-    BitcoinHashlockType.hash256 => bitcoin_base.PsbtInputHash256.fromPreImage(
+    BitcoinPreimageType.hash256 => bitcoin_base.PsbtInputHash256.fromPreImage(
       bytes,
     ),
-    BitcoinHashlockType.ripemd160 =>
+    BitcoinPreimageType.ripemd160 =>
       bitcoin_base.PsbtInputRipemd160.fromPreImage(bytes),
-    BitcoinHashlockType.hash160 => bitcoin_base.PsbtInputHash160.fromPreImage(
+    BitcoinPreimageType.hash160 => bitcoin_base.PsbtInputHash160.fromPreImage(
       bytes,
     ),
   };

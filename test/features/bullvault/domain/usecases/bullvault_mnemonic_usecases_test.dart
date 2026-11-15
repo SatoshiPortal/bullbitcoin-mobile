@@ -1,14 +1,15 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/derive_bullvault_mnemonic_key_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
 import 'package:secrets/secrets.dart' show EphemeralMnemonic, Language;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_inheritance_mnemonic_cubit.dart';
+
 import '../../bullvault_secrets_fixture.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../core_test/wallet/bdk_wallet_test_fixture.dart';

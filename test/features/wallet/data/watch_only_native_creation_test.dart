@@ -1,7 +1,8 @@
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -38,13 +39,12 @@ class _Reserved implements ReservedAddressPort {
 
 void main() {
   test('mainnet descriptor retains BIP32 mainnet key version', () async {
-    final metadata = await WalletMetadataService.deriveFromXpub(
+    final metadata = watchOnlyMetadata(
       xpub: 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
     );
-    expect(metadata.externalPublicDescriptor, contains('xpub'));
-    expect(metadata.internalPublicDescriptor, contains('xpub'));
+    expect(metadata.publicDescriptor, contains('xpub'));
   });
   for (final interrupted in [false, true]) {
     test(
@@ -55,7 +55,7 @@ void main() {
         );
         ForegroundStores? stores;
         try {
-          final metadata = await WalletMetadataService.deriveFromXpub(
+          final metadata = watchOnlyMetadata(
             xpub: _vpub,
             network: Network.bitcoinTestnet,
             scriptType: ScriptType.bip84,

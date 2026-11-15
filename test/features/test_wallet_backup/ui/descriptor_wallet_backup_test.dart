@@ -1,5 +1,7 @@
 import 'package:secrets/secrets.dart';
+
 import '../../bullvault/bullvault_secrets_fixture.dart';
+
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -90,12 +92,10 @@ void main() {
     final mnemonic = _MockGetMnemonic();
     final complete = _MockCompleteBackup();
     when(load.execute).thenAnswer((_) async => Ok([wallet]));
-    when(
-      () => mnemonic.execute(fingerprint),
-    ).thenAnswer((_) async => Ok(secret));
-    when(
-      () => complete.execute(fingerprint: fingerprint),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => mnemonic.execute(fingerprint))
+        .thenAnswer((_) async => Ok(secret));
+    when(() => complete.execute(fingerprint: fingerprint))
+        .thenAnswer((_) async => const Ok(null));
     final bloc = TestWalletBackupBloc(
       loadWalletsForNetworkUsecase: load,
       getSecretFromFingerprintUsecase: mnemonic,

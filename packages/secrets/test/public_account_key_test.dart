@@ -97,9 +97,10 @@ void main() {
           );
           expect(
             account.xpub,
-            Bip32Keys.fromSeed(
-              Uint8List.fromList(reference.seed),
-            ).derivePath(path).neutered.toBase58(),
+            Bip32Keys.fromSeed(Uint8List.fromList(reference.seed))
+                .derivePath(path)
+                .neutered
+                .toBase58(),
           );
           expect(account.xpub, preview.xpub);
           expect(account.fingerprint, preview.fingerprint);

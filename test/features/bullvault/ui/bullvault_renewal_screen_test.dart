@@ -1,4 +1,7 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -61,6 +64,7 @@ class _MockEncodeBullVaultRecoveryPackageUsecase extends Mock
 
 void main() {
   setUpAll(() {
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(
       BullVaultRenewRequest(
         walletId: 'fallback-wallet',
@@ -213,17 +217,15 @@ void main() {
     final renew = _MockRenewBullVaultUsecase();
     final prepareTime = _MockPrepareTime();
     final delayed = Completer<void>();
-    when(
-      () => load.execute(details.record.walletId),
-    ).thenAnswer((_) async => Ok(BullVaultRenewalLoad(details: details)));
+    when(() => load.execute(details.record.walletId))
+        .thenAnswer((_) async => Ok(BullVaultRenewalLoad(details: details)));
     var timeRequests = 0;
-    when(
-      () => prepareTime.execute(isTestnet: details.policy.network.isTestnet),
-    ).thenAnswer(
-      (_) async => ++timeRequests == 1
-          ? const Err(BullVaultClockMismatchFailure())
-          : Ok(reference),
-    );
+    when(() => prepareTime.execute(network: details.policy.network.bitcoin))
+        .thenAnswer(
+          (_) async => ++timeRequests == 1
+              ? const Err(BullVaultClockMismatchFailure())
+              : Ok(reference),
+        );
     when(() => renew.execute(any())).thenAnswer((_) async {
       await delayed.future;
       return const Err(BullVaultRenewalFailure());
@@ -270,7 +272,7 @@ void main() {
 
     expect(find.text('Current recovery dates'), findsOneWidget);
     expect(find.text('New recovery dates'), findsNothing);
-    verifyNever(() => prepareTime.execute(isTestnet: any(named: 'isTestnet')));
+    verifyNever(() => prepareTime.execute(network: any(named: 'network')));
     await tester.tap(find.text('Review renewal'));
     await tester.pumpAndSettle();
     expect(find.text('Current recovery dates'), findsOneWidget);

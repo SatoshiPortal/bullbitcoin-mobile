@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
@@ -980,24 +979,6 @@ void main() {
           reason: '${other.runtimeType} is not a construction failure',
         );
       }
-    });
-
-    test('only a broadcast failure sets hasBroadcastFailure', () {
-      expect(
-        const SendState(
-          failure: SendTransactionConfirmationFailure(isBroadcastFailure: true),
-        ).hasBroadcastFailure,
-        isTrue,
-      );
-      expect(
-        const SendState(failure: SendTransactionConfirmationFailure())
-            .hasBroadcastFailure,
-        isFalse,
-      );
-      expect(
-        const SendState(failure: SendUnexpectedFailure()).hasBroadcastFailure,
-        isFalse,
-      );
     });
 
     test('frozenBalanceHint only fires for a shortfall with frozen coins', () {

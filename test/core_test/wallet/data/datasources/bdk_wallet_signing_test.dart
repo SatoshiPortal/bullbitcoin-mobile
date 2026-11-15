@@ -1,7 +1,9 @@
+import '../../support/bdk_test_store.dart';
+
 import 'dart:io';
 
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
@@ -49,7 +51,7 @@ void main() {
     );
     originalPathProvider = PathProviderPlatform.instance;
     PathProviderPlatform.instance = _TestPathProvider(tempDirectory.path);
-    datasource = BdkWalletDatasource();
+    datasource = fixturePolicyDatasource();
   });
 
   tearDown(() {
@@ -282,7 +284,7 @@ void main() {
         final recipientDescriptors = singleSignatureDescriptors(
           testMnemonics.last,
         );
-        final recipientWallet = BdkFacade.createEphemeralDescriptorWallet(
+        final recipientWallet = createFixtureDescriptorWallet(
           descriptor: twoPathDescriptor(
             recipientDescriptors.external,
             recipientDescriptors.internal,
@@ -299,16 +301,14 @@ void main() {
               .address
               .scriptPubkey(),
         );
-        final wallet =
-            WalletModel.publicBdk(
-                  id: 'review',
-                  descriptor: twoPathDescriptor(
-                    externalPublicDescriptor,
-                    internalPublicDescriptor,
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel;
+        final wallet = WalletModel.publicBdk(
+          id: 'review',
+          descriptor: twoPathDescriptor(
+            externalPublicDescriptor,
+            internalPublicDescriptor,
+          ),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel;
 
         final review = await datasource.inspectPsbt(
           unsignedPsbt,
@@ -344,24 +344,28 @@ void main() {
             internalPublicDescriptor,
           ),
         );
-        final wallet =
-            WalletModel.publicBdk(
-                  id: 'size',
-                  descriptor: twoPathDescriptor(
-                    externalPublicDescriptor,
-                    internalPublicDescriptor,
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel;
-        final estimated = datasource.decodeTxSize(unsignedPsbt, wallet: wallet);
+        final wallet = WalletModel.publicBdk(
+          id: 'size',
+          descriptor: twoPathDescriptor(
+            externalPublicDescriptor,
+            internalPublicDescriptor,
+          ),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel;
+        final estimated = await datasource.decodeTxSize(
+          unsignedPsbt,
+          wallet: wallet,
+        );
         final first = await signPsbt(
           datasource,
           unsignedPsbt,
           signers: signers,
           signerIndex: 0,
         );
-        expect(datasource.decodeTxSize(first.psbt, wallet: wallet), estimated);
+        expect(
+          await datasource.decodeTxSize(first.psbt, wallet: wallet),
+          estimated,
+        );
         final second = await signPsbt(
           datasource,
           unsignedPsbt,
@@ -374,7 +378,10 @@ void main() {
         final exact = bdk.Psbt(psbtBase64: finalized.psbt).extractTx().vsize();
 
         expect(finalized.isFinalized, isTrue);
-        expect(datasource.decodeTxSize(finalized.psbt, wallet: wallet), exact);
+        expect(
+          await datasource.decodeTxSize(finalized.psbt, wallet: wallet),
+          exact,
+        );
         expect(estimated, greaterThanOrEqualTo(exact));
       },
     );
@@ -385,7 +392,7 @@ void main() {
         final recipientDescriptors = singleSignatureDescriptors(
           testMnemonics.last,
         );
-        final recipientWallet = BdkFacade.createEphemeralDescriptorWallet(
+        final recipientWallet = createFixtureDescriptorWallet(
           descriptor: twoPathDescriptor(
             recipientDescriptors.external,
             recipientDescriptors.internal,
@@ -403,21 +410,19 @@ void main() {
               .address
               .scriptPubkey(),
         );
-        final wallet =
-            WalletModel.publicBdk(
-                  id: 'finalized-review',
-                  descriptor: twoPathDescriptor(
-                    externalPublicDescriptor,
-                    internalPublicDescriptor,
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel;
-        final trackedWallet = await BdkFacade.createWallet(wallet);
+        final wallet = WalletModel.publicBdk(
+          id: 'finalized-review',
+          descriptor: twoPathDescriptor(
+            externalPublicDescriptor,
+            internalPublicDescriptor,
+          ),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel;
+        final trackedWallet = await BdkTestStore.createWallet(wallet);
         for (var index = 0; index <= 30; index++) {
           trackedWallet.revealNextAddress(keychain: bdk.KeychainKind.external_);
         }
-        await BdkFacade.saveWallet(trackedWallet, wallet.hexId);
+        await BdkTestStore.saveWallet(trackedWallet, wallet.hexId);
         trackedWallet.dispose();
         final first = await signPsbt(
           datasource,
@@ -462,23 +467,24 @@ void main() {
 
     test('estimates a regular single-signature Bitcoin send', () async {
       final descriptors = singleSignatureDescriptors(testMnemonics.first);
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'regular-send-size',
-                descriptor: twoPathDescriptor(
-                  descriptors.external,
-                  descriptors.internal,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'regular-send-size',
+        descriptor: twoPathDescriptor(
+          descriptors.external,
+          descriptors.internal,
+        ),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
       final unsignedPsbt = buildUnsignedPsbt(
         descriptor: twoPathDescriptor(
           descriptors.external,
           descriptors.internal,
         ),
       );
-      final estimated = datasource.decodeTxSize(unsignedPsbt, wallet: wallet);
+      final estimated = await datasource.decodeTxSize(
+        unsignedPsbt,
+        wallet: wallet,
+      );
       final root = bdk.DescriptorSecretKey(
         networkKind: bdk.NetworkKind.test,
         mnemonic: bdk.Mnemonic.fromString(mnemonic: testMnemonics.first),
@@ -503,7 +509,7 @@ void main() {
       final exact = bdk.Psbt(psbtBase64: signed.psbt).extractTx().vsize();
 
       expect(signed.isFinalized, isTrue);
-      expect(datasource.decodeTxSize(signed.psbt, wallet: wallet), exact);
+      expect(await datasource.decodeTxSize(signed.psbt, wallet: wallet), exact);
       expect(estimated, greaterThanOrEqualTo(exact));
     });
 
@@ -518,18 +524,19 @@ void main() {
           amountSat: 150000,
           inputCount: 2,
         );
-        final wallet =
-            WalletModel.publicBdk(
-                  id: 'multi-input-size',
-                  descriptor: twoPathDescriptor(
-                    externalPublicDescriptor,
-                    internalPublicDescriptor,
-                  ),
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel;
+        final wallet = WalletModel.publicBdk(
+          id: 'multi-input-size',
+          descriptor: twoPathDescriptor(
+            externalPublicDescriptor,
+            internalPublicDescriptor,
+          ),
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel;
         expect(bdk.Psbt(psbtBase64: unsignedPsbt).input(), hasLength(2));
-        final estimated = datasource.decodeTxSize(unsignedPsbt, wallet: wallet);
+        final estimated = await datasource.decodeTxSize(
+          unsignedPsbt,
+          wallet: wallet,
+        );
         final first = await signPsbt(
           datasource,
           unsignedPsbt,
@@ -548,7 +555,10 @@ void main() {
         final exact = bdk.Psbt(psbtBase64: finalized.psbt).extractTx().vsize();
 
         expect(finalized.isFinalized, isTrue);
-        expect(datasource.decodeTxSize(finalized.psbt, wallet: wallet), exact);
+        expect(
+          await datasource.decodeTxSize(finalized.psbt, wallet: wallet),
+          exact,
+        );
         expect(estimated, greaterThanOrEqualTo(exact));
       },
     );
@@ -561,13 +571,11 @@ void main() {
         ),
       );
       final other = singleSignatureDescriptors(testMnemonics.last);
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'other',
-                descriptor: twoPathDescriptor(other.external, other.internal),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'other',
+        descriptor: twoPathDescriptor(other.external, other.internal),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
 
       await expectLater(
         datasource.inspectPsbt(
@@ -592,16 +600,14 @@ void main() {
         bitcoin_base.PsbtInputTypes.nonWitnessUTXO,
         bitcoin_base.PsbtInputTypes.witnessUTXO,
       ]);
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'missing-utxo',
-                descriptor: twoPathDescriptor(
-                  externalPublicDescriptor,
-                  internalPublicDescriptor,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'missing-utxo',
+        descriptor: twoPathDescriptor(
+          externalPublicDescriptor,
+          internalPublicDescriptor,
+        ),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
 
       await expectLater(
         datasource.inspectPsbt(
@@ -629,16 +635,14 @@ void main() {
           bitcoin_base.BitcoinOpCodeConst.sighashNone,
         ),
       ]);
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'unsafe-sighash',
-                descriptor: twoPathDescriptor(
-                  externalPublicDescriptor,
-                  internalPublicDescriptor,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'unsafe-sighash',
+        descriptor: twoPathDescriptor(
+          externalPublicDescriptor,
+          internalPublicDescriptor,
+        ),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
 
       await expectLater(
         datasource.inspectPsbt(
@@ -668,16 +672,14 @@ void main() {
       final forged = _replaceSignature(signed.psbt, (signature) {
         signature[signature.length - 2] ^= 0x01;
       });
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'forged-signature',
-                descriptor: twoPathDescriptor(
-                  externalPublicDescriptor,
-                  internalPublicDescriptor,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'forged-signature',
+        descriptor: twoPathDescriptor(
+          externalPublicDescriptor,
+          internalPublicDescriptor,
+        ),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
 
       await expectLater(
         datasource.inspectPsbt(
@@ -709,16 +711,14 @@ void main() {
         (signature) => signature[signature.length - 1] =
             bitcoin_base.BitcoinOpCodeConst.sighashSingle,
       );
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'unsafe-signature',
-                descriptor: twoPathDescriptor(
-                  externalPublicDescriptor,
-                  internalPublicDescriptor,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'unsafe-signature',
+        descriptor: twoPathDescriptor(
+          externalPublicDescriptor,
+          internalPublicDescriptor,
+        ),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
 
       await expectLater(
         datasource.inspectPsbt(
@@ -850,15 +850,13 @@ void main() {
         );
         final parsed = BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: publicDescriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         );
-        final wallet =
-            WalletModel.publicBdk(
-                  id: '${scriptType.name}-multisig',
-                  descriptor: publicDescriptor,
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel;
+        final wallet = WalletModel.publicBdk(
+          id: '${scriptType.name}-multisig',
+          descriptor: publicDescriptor,
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel;
         final policy = BitcoinWalletPolicyMapper.toEntity(
           datasource.analyzePolicy(wallet: wallet),
         );
@@ -902,13 +900,11 @@ void main() {
         signers[1].internalPublic,
         signers[2].internalPublic,
       ]);
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'nested-policy',
-                descriptor: twoPathDescriptor(externalPublic, internalPublic),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'nested-policy',
+        descriptor: twoPathDescriptor(externalPublic, internalPublic),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
       final policy = BitcoinWalletPolicyMapper.toEntity(
         datasource.analyzePolicy(wallet: wallet),
       );
@@ -1152,7 +1148,7 @@ void main() {
 
       expect(
         () => datasource.combinePsbts(first: first, second: second),
-        throwsA(isA<bdk.PsbtException>()),
+        throwsA(isA<InvalidBitcoinPsbtException>()),
       );
     });
 
@@ -1236,7 +1232,7 @@ void main() {
             psbtBase64: unsignedPsbt,
             transactionHex: hex.encode(changedTransaction),
           ),
-          throwsFormatException,
+          throwsA(isA<InvalidBitcoinPsbtException>()),
         );
       }
 
@@ -1260,7 +1256,7 @@ void main() {
           psbtBase64: differentPsbt,
           transactionHex: transaction,
         ),
-        throwsFormatException,
+        throwsA(isA<InvalidBitcoinPsbtException>()),
       );
     });
 
@@ -1308,7 +1304,7 @@ void main() {
             psbtBase64: unsignedPsbt,
             transactionHex: hex.encode(bytes),
           ),
-          throwsFormatException,
+          throwsA(isA<InvalidBitcoinPsbtException>()),
         );
       });
     }
@@ -1329,7 +1325,7 @@ void main() {
           psbtBase64: unsignedPsbt,
           transactionHex: transaction,
         ),
-        throwsFormatException,
+        throwsA(isA<InvalidBitcoinPsbtException>()),
       );
     });
   });
@@ -1358,13 +1354,11 @@ void main() {
           'wsh(and_v(v:pk(${signers[0].externalPrivate}),sha256($hash)))';
       final internalPrivate =
           'wsh(and_v(v:pk(${signers[0].internalPrivate}),sha256($hash)))';
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'hashlock',
-                descriptor: twoPathDescriptor(externalPublic, internalPublic),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'hashlock',
+        descriptor: twoPathDescriptor(externalPublic, internalPublic),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
       final policy = BitcoinWalletPolicyMapper.toEntity(
         datasource.analyzePolicy(wallet: wallet),
       );
@@ -1397,15 +1391,21 @@ void main() {
         preimage,
       ]);
       expect(
-        bdk.Psbt(
-          psbtBase64: withPreimage,
-        ).input().single.sha256Preimages.keys.single,
+        bdk.Psbt(psbtBase64: withPreimage)
+            .input()
+            .single
+            .sha256Preimages
+            .keys
+            .single,
         hash,
       );
       expect(
-        bdk.Psbt(
-          psbtBase64: withPreimage,
-        ).input().single.sha256Preimages.values.single,
+        bdk.Psbt(psbtBase64: withPreimage)
+            .input()
+            .single
+            .sha256Preimages
+            .values
+            .single,
         hex.decode(preimageHex),
       );
       final preimageReview = await datasource.inspectPsbt(
@@ -1511,9 +1511,8 @@ String _replaceFinalizedWitnessSighash(String psbtBase64, int sighash) {
 
 int _sublistIndex(List<int> bytes, List<int> needle) {
   for (var offset = 0; offset <= bytes.length - needle.length; offset++) {
-    if (Iterable<int>.generate(
-      needle.length,
-    ).every((index) => bytes[offset + index] == needle[index])) {
+    if (Iterable<int>.generate(needle.length)
+        .every((index) => bytes[offset + index] == needle[index])) {
       return offset;
     }
   }

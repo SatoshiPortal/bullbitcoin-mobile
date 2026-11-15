@@ -27,9 +27,8 @@ void main() {
           currencyCode: 'USD',
         ),
       );
-      when(
-        () => wallets.getWallets(environment: Environment.mainnet),
-      ).thenAnswer((_) async => Ok([visible, hidden]));
+      when(() => wallets.getWallets(environment: Environment.mainnet))
+          .thenAnswer((_) async => Ok([visible, hidden]));
       final usecase = GetWalletsUsecase(
         walletRepository: wallets,
         settingsRepository: settings,

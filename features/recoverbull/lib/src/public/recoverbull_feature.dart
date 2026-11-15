@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
+
 import '../domain/entities/vault_context.dart';
 import '../domain/entities/vault_completion.dart';
+
 import 'package:secrets/secrets.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:go_router/go_router.dart';
@@ -109,7 +111,7 @@ final class RecoverBullFeature {
   );
 
   /// Creates and tests a backup for the selected seed before returning.
-  Future<bool> openSetup(
+  static Future<bool> openSetup(
     BuildContext context, {
     required VaultContext backupContext,
   }) async {

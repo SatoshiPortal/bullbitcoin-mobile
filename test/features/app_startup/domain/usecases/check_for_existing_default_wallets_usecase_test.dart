@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,9 +40,8 @@ void main() {
         ),
       );
       when(() => liquidWallet.network).thenReturn(Network.liquidMainnet);
-      when(
-        () => liquidWallet.localSeedFingerprints,
-      ).thenReturn([secret.id.hex]);
+      when(() => liquidWallet.localSeedFingerprints)
+          .thenReturn([secret.id.hex]);
       when(
         () => wallets.getWallets(
           environment: Environment.mainnet,

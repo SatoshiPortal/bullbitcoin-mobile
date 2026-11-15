@@ -2,11 +2,6 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
@@ -127,9 +122,8 @@ void main() {
         scriptType: ScriptType.bip84,
         balanceSat: BigInt.zero,
       );
-      when(
-        () => loadWalletsUsecase.execute(),
-      ).thenAnswer((_) async => Ok([defaultWallet, requestedWallet]));
+      when(() => loadWalletsUsecase.execute())
+          .thenAnswer((_) async => Ok([defaultWallet, requestedWallet]));
       final bloc = buildBloc();
 
       final expectation = expectLater(
@@ -152,9 +146,8 @@ void main() {
         // through `secret.verify.mnemonic`, inside the package, and the event
         // that reaches this bloc carries no words at all. What is left to test
         // is the bookkeeping.
-        when(
-          () => completeUsecase.execute(fingerprint: _fingerprint),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => completeUsecase.execute(fingerprint: _fingerprint))
+            .thenAnswer((_) async => const Ok(null));
         final bloc = buildBloc();
         bloc.seed(
           TestWalletBackupState(
@@ -173,9 +166,8 @@ void main() {
         bloc.add(const VerifyPhysicalBackup());
         await expectation;
 
-        verify(
-          () => completeUsecase.execute(fingerprint: _fingerprint),
-        ).called(1);
+        verify(() => completeUsecase.execute(fingerprint: _fingerprint))
+            .called(1);
         await bloc.close();
       },
     );

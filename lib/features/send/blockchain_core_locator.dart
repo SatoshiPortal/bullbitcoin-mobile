@@ -1,4 +1,5 @@
 import 'domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
+
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 
 import 'public/send_facade.dart';
@@ -11,8 +12,6 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:sync/sync.dart' show WalletConnectionPort;
-import 'package:bb_mobile/core/blockchain/domain/bitcoin_chain_tip_port.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/get_bitcoin_chain_tip_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:get_it/get_it.dart';
@@ -30,9 +29,6 @@ class BlockchainLocator {
         connections: locator<WalletConnectionPort>(),
       ),
     );
-    locator.registerLazySingleton<BitcoinChainTipPort>(
-      () => locator<BitcoinBlockchainRepository>(),
-    );
 
     locator.registerLazySingleton<LiquidBlockchainRepository>(
       () => LiquidBlockchainRepositoryImpl(
@@ -47,7 +43,8 @@ class BlockchainLocator {
         bitcoin: locator<BroadcastBitcoinTransactionUsecase>().execute,
         liquid: locator<BroadcastLiquidTransactionUsecase>().execute,
         verifySignedTxUsecase: locator<VerifySignedTxUsecase>(),
-        watchPendingBitcoinTransactionsUsecase: locator<WatchPendingBitcoinTransactionsUsecase>(),
+        watchPendingBitcoinTransactionsUsecase:
+            locator<WatchPendingBitcoinTransactionsUsecase>(),
       ),
     );
     locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
@@ -65,10 +62,6 @@ class BlockchainLocator {
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
-    );
-
-    locator.registerFactory<GetBitcoinChainTipUsecase>(
-      () => GetBitcoinChainTipUsecase(locator<BitcoinChainTipPort>()),
     );
   }
 }

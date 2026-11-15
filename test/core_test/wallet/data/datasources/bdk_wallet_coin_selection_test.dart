@@ -1,27 +1,24 @@
+import 'package:bull_sdk/bull_sdk.dart';
+import 'package:sync/sync.dart'
+    show UnsignedSpend, SyncFailure, SyncInsufficientFundsFailure;
+
+import 'package:primitives/primitives.dart' show Err;
+
+import '../../support/bdk_test_store.dart';
+
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    show Network, ScriptType;
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
-import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bitcoin_base/bitcoin_base.dart' as bitcoin_base;
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -46,6 +43,7 @@ String _alternativeDescriptor(List<String> keys) =>
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(BullSdk.init);
 
   late Directory tempDirectory;
   late PathProviderPlatform originalPathProvider;
@@ -67,17 +65,15 @@ void main() {
     'does not add another wallet coin to an insufficient selection',
     () async {
       final descriptors = singleSignatureDescriptors(testMnemonics.first);
-      final walletModel =
-          WalletModel.publicBdk(
-                id: 'manual-selection',
-                descriptor: twoPathDescriptor(
-                  descriptors.external,
-                  descriptors.internal,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final wallet = await BdkFacade.createWallet(walletModel);
+      final walletModel = WalletModel.publicBdk(
+        id: 'manual-selection',
+        descriptor: twoPathDescriptor(
+          descriptors.external,
+          descriptors.internal,
+        ),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
+      final wallet = await BdkTestStore.createWallet(walletModel);
       final receivingAddress = wallet.peekAddress(
         keychain: bdk.KeychainKind.external_,
         index: 0,
@@ -100,7 +96,7 @@ void main() {
           ),
         ],
       );
-      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+      await BdkTestStore.saveWallet(wallet, walletModel.hexId);
       final selected = wallet.listUnspent().first;
       final recipient = wallet.peekAddress(
         keychain: bdk.KeychainKind.external_,
@@ -110,9 +106,9 @@ void main() {
       final receivingAddressString = receivingAddress.address.toString();
       wallet.dispose();
 
-      final datasource = BdkWalletDatasource();
+      final datasource = await fixtureSpendDatasource(walletModel);
       await expectLater(
-        datasource.buildPsbt(
+        await datasource.buildPsbt(
           recipients: [
             BitcoinTransactionRecipientModel.fixed(
               address: recipientAddress,
@@ -132,24 +128,23 @@ void main() {
           ],
           wallet: walletModel,
         ),
-        throwsA(isA<SelectedBitcoinCoinsInsufficientException>()),
+        isA<Err<UnsignedSpend, SyncFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SyncInsufficientFundsFailure>(),
+        ),
       );
     },
   );
 
   test('rejects a witness UTXO that differs from the wallet output', () async {
     final descriptors = singleSignatureDescriptors(testMnemonics.first);
-    final walletModel =
-        WalletModel.publicBdk(
-              id: 'witness-utxo-validation',
-              descriptor: twoPathDescriptor(
-                descriptors.external,
-                descriptors.internal,
-              ),
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
-    final wallet = await BdkFacade.createWallet(walletModel);
+    final walletModel = WalletModel.publicBdk(
+      id: 'witness-utxo-validation',
+      descriptor: twoPathDescriptor(descriptors.external, descriptors.internal),
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
+    final wallet = await BdkTestStore.createWallet(walletModel);
     final receivingAddress = wallet.peekAddress(
       keychain: bdk.KeychainKind.external_,
       index: 0,
@@ -166,19 +161,21 @@ void main() {
         ),
       ],
     );
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    await BdkTestStore.saveWallet(wallet, walletModel.hexId);
     wallet.dispose();
 
-    final datasource = BdkWalletDatasource();
-    final psbtBase64 = await datasource.buildPsbt(
-      wallet: walletModel,
-      recipients: [
-        BitcoinTransactionRecipientModel.fixed(
-          address: recipient.address.toString(),
-          fixedAmountSat: 50000,
-        ),
-      ],
-      networkFee: const NetworkFee.absolute(1000),
+    final datasource = await fixtureSpendDatasource(walletModel);
+    final psbtBase64 = builtPsbt(
+      await datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: recipient.address.toString(),
+            fixedAmountSat: 50000,
+          ),
+        ],
+        networkFee: const NetworkFee.absolute(1000),
+      ),
     );
     final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
     final witnessUtxo = psbt.input.getInput<bitcoin_base.PsbtInputWitnessUtxo>(
@@ -200,17 +197,12 @@ void main() {
 
   test('rejects a PSBT that repeats a wallet input', () async {
     final descriptors = singleSignatureDescriptors(testMnemonics.first);
-    final walletModel =
-        WalletModel.publicBdk(
-              id: 'duplicate-input-validation',
-              descriptor: twoPathDescriptor(
-                descriptors.external,
-                descriptors.internal,
-              ),
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
-    final wallet = await BdkFacade.createWallet(walletModel);
+    final walletModel = WalletModel.publicBdk(
+      id: 'duplicate-input-validation',
+      descriptor: twoPathDescriptor(descriptors.external, descriptors.internal),
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
+    final wallet = await BdkTestStore.createWallet(walletModel);
     final receivingAddress = wallet.peekAddress(
       keychain: bdk.KeychainKind.external_,
       index: 0,
@@ -227,18 +219,20 @@ void main() {
         ),
       ],
     );
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    await BdkTestStore.saveWallet(wallet, walletModel.hexId);
     wallet.dispose();
-    final datasource = BdkWalletDatasource();
-    final psbtBase64 = await datasource.buildPsbt(
-      wallet: walletModel,
-      recipients: [
-        BitcoinTransactionRecipientModel.fixed(
-          address: recipient.address.toString(),
-          fixedAmountSat: 50000,
-        ),
-      ],
-      networkFee: const NetworkFee.absolute(1000),
+    final datasource = await fixtureSpendDatasource(walletModel);
+    final psbtBase64 = builtPsbt(
+      await datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: recipient.address.toString(),
+            fixedAmountSat: 50000,
+          ),
+        ],
+        networkFee: const NetworkFee.absolute(1000),
+      ),
     );
     final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
     final unsignedTransaction = psbt.global
@@ -287,16 +281,11 @@ void main() {
     final internalDescriptor = _alternativeDescriptor(
       signers.map((signer) => signer.internalPublic).toList(),
     );
-    final walletModel =
-        WalletModel.publicBdk(
-              id: 'selected-policy-origins',
-              descriptor: twoPathDescriptor(
-                externalDescriptor,
-                internalDescriptor,
-              ),
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final walletModel = WalletModel.publicBdk(
+      id: 'selected-policy-origins',
+      descriptor: twoPathDescriptor(externalDescriptor, internalDescriptor),
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final descriptorKeys = [
       for (final (index, signer) in signers.indexed)
         walletSignerModel(
@@ -310,7 +299,7 @@ void main() {
           signerDevice: null,
         ).descriptorKeys.single,
     ];
-    final datasource = BdkWalletDatasource();
+    final datasource = await fixtureSpendDatasource(walletModel);
     final policy = BitcoinWalletPolicyMapper.toEntity(
       datasource.analyzePolicy(
         wallet: walletModel,
@@ -328,7 +317,7 @@ void main() {
     }
     final policyPath = policy.buildPath(selection);
 
-    final wallet = await BdkFacade.createWallet(walletModel);
+    final wallet = await BdkTestStore.createWallet(walletModel);
     final receivingAddress = wallet.peekAddress(
       keychain: bdk.KeychainKind.external_,
       index: 0,
@@ -341,9 +330,9 @@ void main() {
         ),
       ],
     );
-    await BdkFacade.saveWallet(wallet, walletModel.hexId);
+    await BdkTestStore.saveWallet(wallet, walletModel.hexId);
     wallet.dispose();
-    final recipientWallet = BdkFacade.createEphemeralDescriptorWallet(
+    final recipientWallet = createFixtureDescriptorWallet(
       descriptor: twoPathDescriptor(externalDescriptor, internalDescriptor),
       isTestnet: true,
     );
@@ -353,19 +342,21 @@ void main() {
     );
     recipientWallet.dispose();
 
-    final psbtBase64 = await datasource.buildPsbt(
-      wallet: walletModel,
-      recipients: [
-        BitcoinTransactionRecipientModel.fixed(
-          address: recipient.address.toString(),
-          fixedAmountSat: 50000,
+    final psbtBase64 = builtPsbt(
+      await datasource.buildPsbt(
+        wallet: walletModel,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: recipient.address.toString(),
+            fixedAmountSat: 50000,
+          ),
+        ],
+        networkFee: const NetworkFee.absolute(1000),
+        policyPath: policyPath,
+        requiredDescriptorKeys: (
+          external: [descriptorKeys.first],
+          internal: [descriptorKeys.first],
         ),
-      ],
-      networkFee: const NetworkFee.absolute(1000),
-      policyPath: policyPath,
-      requiredDescriptorKeys: (
-        external: [descriptorKeys.first],
-        internal: [descriptorKeys.first],
       ),
     );
     final psbt = bitcoin_base.Psbt.fromBase64(psbtBase64);
@@ -386,17 +377,15 @@ void main() {
     'validates the spent inputs of the transaction being replaced',
     () async {
       final descriptors = singleSignatureDescriptors(testMnemonics.first);
-      final walletModel =
-          WalletModel.publicBdk(
-                id: 'replacement-input-validation',
-                descriptor: twoPathDescriptor(
-                  descriptors.external,
-                  descriptors.internal,
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final wallet = await BdkFacade.createWallet(walletModel);
+      final walletModel = WalletModel.publicBdk(
+        id: 'replacement-input-validation',
+        descriptor: twoPathDescriptor(
+          descriptors.external,
+          descriptors.internal,
+        ),
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
+      final wallet = await BdkTestStore.createWallet(walletModel);
       final receivingAddress = wallet.peekAddress(
         keychain: bdk.KeychainKind.external_,
         index: 0,
@@ -413,20 +402,33 @@ void main() {
           ),
         ],
       );
-      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+      await BdkTestStore.saveWallet(wallet, walletModel.hexId);
 
-      final datasource = BdkWalletDatasource();
-      final originalPsbt = await datasource.buildPsbt(
-        wallet: walletModel,
-        recipients: [
-          BitcoinTransactionRecipientModel.fixed(
-            address: recipient.address.toString(),
-            fixedAmountSat: 50000,
-          ),
-        ],
-        networkFee: const NetworkFee.absolute(1000),
+      final datasource = await fixtureSpendDatasource(walletModel);
+      final originalPsbt = builtPsbt(
+        await datasource.buildPsbt(
+          wallet: walletModel,
+          recipients: [
+            BitcoinTransactionRecipientModel.fixed(
+              address: recipient.address.toString(),
+              fixedAmountSat: 50000,
+            ),
+          ],
+          networkFee: const NetworkFee.absolute(1000),
+        ),
       );
-      final parsedOriginal = bdk.Psbt(psbtBase64: originalPsbt);
+      final signedOriginal = await datasource.signPsbtWithDescriptor(
+        originalPsbt,
+        descriptor: fixtureSigningWallet(
+          id: walletModel.id,
+          scriptType: ScriptType.bip84,
+          mnemonic: testMnemonics.first,
+          account: 0,
+          isTestnet: true,
+        ).descriptor,
+        isTestnet: true,
+      );
+      final parsedOriginal = bdk.Psbt(psbtBase64: signedOriginal.psbt);
       final originalTransaction = parsedOriginal.extractTx();
       final originalTxid = originalTransaction.computeTxid().toString();
       wallet.applyUnconfirmedTxs(
@@ -434,7 +436,7 @@ void main() {
           bdk.UnconfirmedTx(tx: originalTransaction, lastSeen: 2),
         ],
       );
-      await BdkFacade.saveWallet(wallet, walletModel.hexId);
+      await BdkTestStore.saveWallet(wallet, walletModel.hexId);
       parsedOriginal.dispose();
       wallet.dispose();
 
@@ -448,10 +450,12 @@ void main() {
         allowSpentWalletInputs: true,
       );
 
-      final replacementPsbt = await datasource.createUnsignedReplaceByFeePsbt(
-        wallet: walletModel,
-        txid: originalTxid,
-        feeRate: const RelativeFee(2500),
+      final replacementPsbt = builtPsbt(
+        await datasource.createUnsignedReplaceByFeePsbt(
+          wallet: walletModel,
+          txid: originalTxid,
+          feeRate: const RelativeFee(2500),
+        ),
       );
       await datasource.validateWalletPsbtInputs(
         replacementPsbt,

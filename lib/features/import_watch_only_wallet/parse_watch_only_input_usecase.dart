@@ -58,7 +58,7 @@ class ParseWatchOnlyInputUsecase {
     try {
       final settings = await _getSettingsUsecase.execute();
       network = Network.fromEnvironment(
-        isTestnet: settings.environment.isTestnet,
+        environment: settings.environment.networkEnv,
         isLiquid: false,
       );
     } on Exception catch (_, st) {

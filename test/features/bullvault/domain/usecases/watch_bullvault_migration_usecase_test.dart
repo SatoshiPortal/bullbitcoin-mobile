@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -6,17 +7,24 @@ import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockSendFacade extends Mock implements SendFacade {}
+class _MockWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}
 
 void main() {
   test('resumes the newest transaction targeting the current vault', () async {
-    final facade = _MockSendFacade();
+    final watcher = _MockWatcher();
+    final facade = SendFacade(
+      bitcoin: (_, {required walletId, required isPsbt, required network}) =>
+          throw StateError('Not broadcasting'),
+      liquid: (_) => throw StateError('Not broadcasting'),
+      watchPendingBitcoinTransactionsUsecase: watcher,
+    );
     final migration = _transaction(
       id: 'migration',
       recipient: 'tb1qcurrent',
       updatedAt: DateTime.utc(2028, 1, 2),
     );
-    when(() => facade.watchPending('wallet-0')).thenAnswer(
+    when(() => watcher.execute('wallet-0')).thenAnswer(
       (_) => Stream.value(
         Ok(
           PendingBitcoinTransactionSnapshot(

@@ -1,8 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_request.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_details.dart';
@@ -57,9 +55,8 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => resume.execute(created.wallet.network),
-    ).thenAnswer((_) async => Ok(created));
+    when(() => resume.execute(created.wallet.network))
+        .thenAnswer((_) async => Ok(created));
     when(
       () => checkBackups.execute(
         created.record.mobileSeedFingerprint!,
@@ -116,12 +113,10 @@ void main() {
         previous: details.record,
         replacement: replacement,
       );
-      when(
-        () => getDetails.execute(details.record.walletId),
-      ).thenAnswer((_) async => Ok(details));
-      when(
-        () => resume.execute(details.record.walletId),
-      ).thenAnswer((_) async => Ok(renewal));
+      when(() => getDetails.execute(details.record.walletId))
+          .thenAnswer((_) async => Ok(details));
+      when(() => resume.execute(details.record.walletId))
+          .thenAnswer((_) async => Ok(renewal));
       final usecase = LoadBullVaultRenewalUsecase(
         getDetails,
         resume,
@@ -149,12 +144,10 @@ void main() {
         migrationAddress: base.migrationAddress,
         previousVaults: base.previousVaults,
       );
-      when(
-        () => getDetails.execute(details.record.walletId),
-      ).thenAnswer((_) async => Ok(details));
-      when(
-        () => resume.execute(details.record.walletId),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => getDetails.execute(details.record.walletId))
+          .thenAnswer((_) async => Ok(details));
+      when(() => resume.execute(details.record.walletId))
+          .thenAnswer((_) async => const Ok(null));
       final usecase = LoadBullVaultRenewalUsecase(
         getDetails,
         resume,
@@ -190,12 +183,10 @@ void main() {
       showEarlyRenewalWarning: base.showEarlyRenewalWarning,
       migrationAddress: base.migrationAddress,
     );
-    when(
-      () => getDetails.execute(details.record.walletId),
-    ).thenAnswer((_) async => Ok(details));
-    when(
-      () => resume.execute(details.record.walletId),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => getDetails.execute(details.record.walletId))
+        .thenAnswer((_) async => Ok(details));
+    when(() => resume.execute(details.record.walletId))
+        .thenAnswer((_) async => const Ok(null));
     when(
       () => checkBackups.execute(
         details.record.mobileSeedFingerprint!,
@@ -218,9 +209,8 @@ void main() {
 
 _MockCheckBackups _backupStatus() {
   final usecase = _MockCheckBackups();
-  when(
-    () => usecase.execute(any(), network: any(named: 'network')),
-  ).thenAnswer((_) async => const Ok((physical: true, recoverBull: false)));
+  when(() => usecase.execute(any(), network: any(named: 'network')))
+      .thenAnswer((_) async => const Ok((physical: true, recoverBull: false)));
   return usecase;
 }
 

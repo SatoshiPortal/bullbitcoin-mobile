@@ -2,8 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBackupOptionCard, BullButton, BullInfoCard, Gap;
-import 'package:material_ui/material_ui.dart';
     show BullBackupOptionCard, BullButton, BullInfoCard, BullShapesX, Gap;
 import 'package:material_ui/material_ui.dart';
 

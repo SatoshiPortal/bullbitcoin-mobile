@@ -215,586 +215,621 @@ List<SettingsItem> buildSettingsItems({
         SettingsItemSection.app => [rootSection, appSection, title],
       };
 
-  final items = [
-    SettingsItem(
-      id: SettingsItemId.appSettings,
-      section: SettingsItemSection.root,
-      title: appSection,
-      path: path(SettingsItemSection.root, appSection),
-      icon: Icons.app_settings_alt,
-      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchAppSettingsKeywords,
-        english.settingsSearchAppSettingsKeywords,
-        [english.settingsAppTitle, english.settingsAppSettingsTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.backup,
-      section: SettingsItemSection.root,
-      title: backupSection,
-      path: path(SettingsItemSection.root, backupSection),
-      icon: Icons.backup_outlined,
-      open: (context) => context.pushNamed(SettingsRoute.backupSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchBackupKeywords,
-        english.settingsSearchBackupKeywords,
-        [english.settingsBackupTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.startBackup,
-      section: SettingsItemSection.backup,
-      title: localization.backupSettingsStartBackup,
-      path: path(
-        SettingsItemSection.backup,
-        localization.backupSettingsStartBackup,
-      ),
-      icon: Icons.save_as,
-      open: (context) => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
-        extra: BackupSettingsFlow.backup,
-      ),
-      keywords: _keywords(
-        localization.settingsSearchStartBackupKeywords,
-        english.settingsSearchStartBackupKeywords,
-        [english.backupSettingsStartBackup],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.recoverbull,
-      section: SettingsItemSection.backup,
-      title: localization.backupSettingsRecoverBullSettings,
-      path: path(
-        SettingsItemSection.backup,
-        localization.backupSettingsRecoverBullSettings,
-      ),
-      icon: Icons.cloud_circle,
-      open: (context) =>
-          RecoverBullFeature.open(context, RecoverBullFlow.settings),
-      keywords: _keywords(
-        localization.settingsSearchRecoverbullKeywords,
-        english.settingsSearchRecoverbullKeywords,
-        [english.backupSettingsRecoverBullSettings],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.labels,
-      section: SettingsItemSection.backup,
-      title: localization.backupSettingsLabelsButton,
-      path: path(
-        SettingsItemSection.backup,
-        localization.backupSettingsLabelsButton,
-      ),
-      icon: Icons.sell,
-      open: (context) => context.push(LabelsRouter.route.path),
-      keywords: _keywords(
-        localization.settingsSearchLabelsKeywords,
-        english.settingsSearchLabelsKeywords,
-        [english.backupSettingsLabelsButton],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.transactionHistory,
-      section: SettingsItemSection.backup,
-      title: localization.transactionHistoryTitle,
-      path: path(
-        SettingsItemSection.backup,
-        localization.transactionHistoryTitle,
-      ),
-      icon: Icons.file_download,
-      open: (context) =>
-          context.pushNamed(TransactionsRoute.exportTransactions.name),
-      keywords: _keywords(
-        localization.settingsSearchTransactionHistoryKeywords,
-        english.settingsSearchTransactionHistoryKeywords,
-        [english.transactionHistoryTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.walletSettings,
-      section: SettingsItemSection.root,
-      title: walletSection,
-      path: path(SettingsItemSection.root, walletSection),
-      icon: Icons.currency_bitcoin,
-      open: (context) => context.pushNamed(SettingsRoute.walletSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchWalletSettingsKeywords,
-        english.settingsSearchWalletSettingsKeywords,
-        [english.settingsWalletTitle, english.settingsWalletSettingsTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.exchange,
-      section: SettingsItemSection.root,
-      title: localization.settingsExchangeTitle,
-      path: path(SettingsItemSection.root, localization.settingsExchangeTitle),
-      icon: Icons.currency_exchange,
-      open: (context) => context.pushNamed(SettingsRoute.exchangeAccess.name),
-      keywords: _keywords(
-        localization.settingsSearchExchangeKeywords,
-        english.settingsSearchExchangeKeywords,
-        [
-          english.settingsExchangeTitle,
-          english.settingsExchangeSettingsTitle,
-          english.settingsAccountSettingsTitle,
-        ],
-      ),
-    ),
-    if (accountReady)
-      SettingsItem(
-        id: SettingsItemId.exchangeAccountSettings,
-        section: SettingsItemSection.root,
-        title: localization.settingsAccountSettingsTitle,
-        path: path(
-          SettingsItemSection.root,
-          localization.settingsAccountSettingsTitle,
+  final items =
+      [
+        SettingsItem(
+          id: SettingsItemId.appSettings,
+          section: SettingsItemSection.root,
+          title: appSection,
+          path: path(SettingsItemSection.root, appSection),
+          icon: Icons.app_settings_alt,
+          open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchAppSettingsKeywords,
+            english.settingsSearchAppSettingsKeywords,
+            [english.settingsAppTitle, english.settingsAppSettingsTitle],
+          ),
         ),
-        icon: Icons.account_circle_outlined,
-        open: (context) =>
-            context.pushNamed(SettingsRoute.exchangeSettings.name),
-        keywords: [
-          localization.settingsAccountSettingsTitle,
-          english.settingsAccountSettingsTitle,
-        ],
-      ),
-    SettingsItem(
-      id: SettingsItemId.termsOfService,
-      section: SettingsItemSection.root,
-      title: localization.settingsTermsOfServiceTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.settingsTermsOfServiceTitle,
-      ),
-      icon: Icons.description,
-      open: (_) => launchUrl(
-        Uri.parse(SettingsConstants.termsAndConditionsLink),
-        mode: LaunchMode.inAppBrowserView,
-      ),
-      keywords: _keywords(
-        localization.settingsSearchTermsOfServiceKeywords,
-        english.settingsSearchTermsOfServiceKeywords,
-        [english.settingsTermsOfServiceTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.servicesStatus,
-      section: SettingsItemSection.root,
-      title: localization.settingsServiceStatusTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.settingsServiceStatusTitle,
-      ),
-      icon: Icons.monitor_heart,
-      open: (context) => context.pushNamed(StatusCheckRoute.serviceStatus.name),
-      keywords: _keywords(
-        localization.settingsSearchServicesStatusKeywords,
-        english.settingsSearchServicesStatusKeywords,
-        [english.settingsServiceStatusTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.logs,
-      section: SettingsItemSection.root,
-      title: localization.logSettingsLogsTitle,
-      path: path(SettingsItemSection.root, localization.logSettingsLogsTitle),
-      icon: Icons.article,
-      open: (context) => context.pushNamed('logs'),
-      keywords: _keywords(
-        localization.settingsSearchLogsKeywords,
-        english.settingsSearchLogsKeywords,
-        [english.logSettingsLogsTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.sourceCode,
-      section: SettingsItemSection.root,
-      title: localization.settingsSourceCodeTitle,
-      path: path(
-        SettingsItemSection.root,
-        localization.settingsSourceCodeTitle,
-      ),
-      icon: Icons.code,
-      iconAsset: Assets.icons.github,
-      open: (_) => launchUrl(
-        Uri.parse(SettingsConstants.githubSupportLink),
-        mode: LaunchMode.externalApplication,
-      ),
-      keywords: [
-        localization.settingsSourceCodeTitle,
-        english.settingsSourceCodeTitle,
-        'GitHub',
-      ],
-    ),
-    SettingsItem(
-      id: SettingsItemId.importWallet,
-      section: SettingsItemSection.wallet,
-      title: localization.walletSettingsImportWalletTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.walletSettingsImportWalletTitle,
-      ),
-      icon: Icons.sim_card_download,
-      open: (context) =>
-          context.pushNamed(ImportWalletRoute.importWalletHome.name),
-      keywords: _keywords(
-        localization.settingsSearchImportWalletKeywords,
-        english.settingsSearchImportWalletKeywords,
-        [english.walletSettingsImportWalletTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.signingKeyExport,
-      section: SettingsItemSection.wallet,
-      title: localization.signingKeyExportTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.signingKeyExportTitle,
-      ),
-      icon: Icons.key,
-      open: (context) => context.pushNamed(SettingsRoute.signingKeyExport.name),
-      keywords: _keywords(
-        localization.settingsSearchSigningKeyExportKeywords,
-        english.settingsSearchSigningKeyExportKeywords,
-        [english.signingKeyExportTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.broadcastTransaction,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsBroadcastTransactionTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsBroadcastTransactionTitle,
-      ),
-      icon: Icons.satellite_alt,
-      open: (context) =>
-          context.pushNamed(BroadcastSignedTxRoute.broadcastHome.name),
-      keywords: _keywords(
-        localization.settingsSearchBroadcastTransactionKeywords,
-        english.settingsSearchBroadcastTransactionKeywords,
-        [english.bitcoinSettingsBroadcastTransactionTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.payjoin,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsPayjoinTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsPayjoinTitle,
-      ),
-      icon: Icons.compare_arrows,
-      open: (context) => context.pushNamed(SettingsRoute.payjoinSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchPayjoinKeywords,
-        english.settingsSearchPayjoinKeywords,
-        [english.bitcoinSettingsPayjoinTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.autoswap,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsAutoTransferTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsAutoTransferTitle,
-      ),
-      icon: Icons.swap_vertical_circle,
-      open: (context) => context.pushNamed(SettingsRoute.autoswapSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchAutoswapKeywords,
-        english.settingsSearchAutoswapKeywords,
-        [
-          english.bitcoinSettingsAutoTransferTitle,
-          english.autoswapSettingsTitle,
-        ],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.electrum,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsElectrumServerTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsElectrumServerTitle,
-      ),
-      icon: Icons.hub,
-      open: (context) =>
-          context.pushNamed(ElectrumSettingsRoute.electrumSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchElectrumKeywords,
-        english.settingsSearchElectrumKeywords,
-        [english.bitcoinSettingsElectrumServerTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.mempool,
-      section: SettingsItemSection.wallet,
-      title: localization.bitcoinSettingsMempoolServerTitle,
-      path: path(
-        SettingsItemSection.wallet,
-        localization.bitcoinSettingsMempoolServerTitle,
-      ),
-      icon: Icons.memory,
-      open: (context) => context.pushNamed(MempoolSettingsRoute.name),
-      keywords: _keywords(
-        localization.settingsSearchMempoolKeywords,
-        english.settingsSearchMempoolKeywords,
-        [english.bitcoinSettingsMempoolServerTitle],
-      ),
-    ),
-    if (isSuperuser)
-      SettingsItem(
-        id: SettingsItemId.seedViewer,
-        section: SettingsItemSection.wallet,
-        title: localization.allSeedViewTitle,
-        path: path(SettingsItemSection.wallet, localization.allSeedViewTitle),
-        icon: Icons.vpn_key,
-        open: (context) => context.pushNamed(SettingsRoute.allSeedView.name),
-        keywords: _keywords(
-          localization.settingsSearchSeedViewerKeywords,
-          english.settingsSearchSeedViewerKeywords,
-          [english.allSeedViewTitle],
+        SettingsItem(
+          id: SettingsItemId.backup,
+          section: SettingsItemSection.root,
+          title: backupSection,
+          path: path(SettingsItemSection.root, backupSection),
+          icon: Icons.backup_outlined,
+          open: (context) =>
+              context.pushNamed(SettingsRoute.backupSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchBackupKeywords,
+            english.settingsSearchBackupKeywords,
+            [english.settingsBackupTitle],
+          ),
         ),
-        isSuperuser: true,
-      ),
-    if (isSuperuser && isDevModeEnabled)
-      SettingsItem(
-        id: SettingsItemId.bip85,
-        section: SettingsItemSection.wallet,
-        title: localization.bitcoinSettingsBip85EntropiesTitle,
-        path: path(
-          SettingsItemSection.wallet,
-          localization.bitcoinSettingsBip85EntropiesTitle,
+        SettingsItem(
+          id: SettingsItemId.startBackup,
+          section: SettingsItemSection.backup,
+          title: localization.backupSettingsStartBackup,
+          path: path(
+            SettingsItemSection.backup,
+            localization.backupSettingsStartBackup,
+          ),
+          icon: Icons.save_as,
+          open: (context) => context.pushNamed(
+            BackupSettingsSubroute.backupOptions.name,
+            extra: BackupSettingsFlow.backup,
+          ),
+          keywords: _keywords(
+            localization.settingsSearchStartBackupKeywords,
+            english.settingsSearchStartBackupKeywords,
+            [english.backupSettingsStartBackup],
+          ),
         ),
-        icon: Icons.science,
-        open: (context) => context.pushNamed(Bip85EntropyRoute.bip85Home.name),
-        keywords: _keywords(
-          localization.settingsSearchBip85Keywords,
-          english.settingsSearchBip85Keywords,
-          [english.bitcoinSettingsBip85EntropiesTitle],
+        SettingsItem(
+          id: SettingsItemId.recoverbull,
+          section: SettingsItemSection.backup,
+          title: localization.backupSettingsRecoverBullSettings,
+          path: path(
+            SettingsItemSection.backup,
+            localization.backupSettingsRecoverBullSettings,
+          ),
+          icon: Icons.cloud_circle,
+          open: (context) =>
+              RecoverBullFeature.open(context, RecoverBullFlow.settings),
+          keywords: _keywords(
+            localization.settingsSearchRecoverbullKeywords,
+            english.settingsSearchRecoverbullKeywords,
+            [english.backupSettingsRecoverBullSettings],
+          ),
         ),
-        isSuperuser: true,
-      ),
-    // One row either way: it offers to create the SP wallet until there is one,
-    // then opens its settings.
-    if (isSuperuser && isDevModeEnabled)
-      SettingsItem(
-        id: SettingsItemId.sp,
-        section: SettingsItemSection.wallet,
-        title: isSpWalletSetup
-            ? localization.spSettingsTitle
-            : localization.spSetupTitle,
-        path: path(
-          SettingsItemSection.wallet,
-          isSpWalletSetup
-              ? localization.spSettingsTitle
-              : localization.spSetupTitle,
+        SettingsItem(
+          id: SettingsItemId.labels,
+          section: SettingsItemSection.backup,
+          title: localization.backupSettingsLabelsButton,
+          path: path(
+            SettingsItemSection.backup,
+            localization.backupSettingsLabelsButton,
+          ),
+          icon: Icons.sell,
+          open: (context) => context.push(LabelsRouter.route.path),
+          keywords: _keywords(
+            localization.settingsSearchLabelsKeywords,
+            english.settingsSearchLabelsKeywords,
+            [english.backupSettingsLabelsButton],
+          ),
         ),
-        icon: isSpWalletSetup ? Icons.currency_bitcoin : Icons.science,
-        open: (context) => context.pushNamed(
-          isSpWalletSetup ? SpRoute.spSettings.name : SpSetupRoute.spSetup.name,
+        SettingsItem(
+          id: SettingsItemId.transactionHistory,
+          section: SettingsItemSection.backup,
+          title: localization.transactionHistoryTitle,
+          path: path(
+            SettingsItemSection.backup,
+            localization.transactionHistoryTitle,
+          ),
+          icon: Icons.file_download,
+          open: (context) =>
+              context.pushNamed(TransactionsRoute.exportTransactions.name),
+          keywords: _keywords(
+            localization.settingsSearchTransactionHistoryKeywords,
+            english.settingsSearchTransactionHistoryKeywords,
+            [english.transactionHistoryTitle],
+          ),
         ),
-        isSuperuser: true,
-      ),
-    SettingsItem(
-      id: SettingsItemId.language,
-      section: SettingsItemSection.app,
-      title: localization.settingsLanguageTitle,
-      path: path(SettingsItemSection.app, localization.settingsLanguageTitle),
-      icon: Icons.language,
-      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchLanguageKeywords,
-        english.settingsSearchLanguageKeywords,
-        [english.settingsLanguageTitle],
-      ),
-      isInlineControl: true,
-    ),
-    SettingsItem(
-      id: SettingsItemId.theme,
-      section: SettingsItemSection.app,
-      title: localization.settingsDarkModeTitle,
-      path: path(SettingsItemSection.app, localization.settingsDarkModeTitle),
-      icon: Icons.palette,
-      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchThemeKeywords,
-        english.settingsSearchThemeKeywords,
-        [
-          localization.settingsThemeTitle,
-          english.settingsThemeTitle,
-          english.settingsDarkModeTitle,
-        ],
-      ),
-      isInlineControl: true,
-    ),
-    SettingsItem(
-      id: SettingsItemId.currency,
-      section: SettingsItemSection.app,
-      title: localization.settingsCurrencyTitle,
-      path: path(SettingsItemSection.app, localization.settingsCurrencyTitle),
-      icon: Icons.attach_money,
-      open: (context) => context.pushNamed(SettingsRoute.currency.name),
-      keywords: _keywords(
-        localization.settingsSearchCurrencyKeywords,
-        english.settingsSearchCurrencyKeywords,
-        [english.settingsCurrencyTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.quickActions,
-      section: SettingsItemSection.app,
-      title: localization.quickActionsSettingsTitle,
-      path: path(
-        SettingsItemSection.app,
-        localization.quickActionsSettingsTitle,
-      ),
-      icon: Icons.tune,
-      open: (context) => context.pushNamed(SettingsRoute.quickActions.name),
-      keywords: [
-        localization.quickActionsSettingsTitle,
-        english.quickActionsSettingsTitle,
-      ],
-    ),
-    SettingsItem(
-      id: SettingsItemId.securityPin,
-      section: SettingsItemSection.app,
-      title: localization.settingsSecurityPinTitle,
-      path: path(
-        SettingsItemSection.app,
-        localization.settingsSecurityPinTitle,
-      ),
-      icon: Icons.fiber_pin,
-      open: (context) => context.pushNamed(SettingsRoute.pinCode.name),
-      keywords: _keywords(
-        localization.settingsSearchSecurityPinKeywords,
-        english.settingsSearchSecurityPinKeywords,
-        [english.settingsSecurityPinTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.tor,
-      section: SettingsItemSection.app,
-      title: localization.torSettingsTitle,
-      path: path(SettingsItemSection.app, localization.torSettingsTitle),
-      icon: Icons.vpn_lock,
-      open: (context) =>
-          context.pushNamed(const TorSettingsFacade().settingsRouteName),
-      keywords: _keywords(
-        localization.settingsSearchTorKeywords,
-        english.settingsSearchTorKeywords,
-        [english.torSettingsTitle],
-      ),
-    ),
-    SettingsItem(
-      id: SettingsItemId.screenPrivacy,
-      section: SettingsItemSection.app,
-      title: localization.settingsScreenPrivacyTitle,
-      path: path(
-        SettingsItemSection.app,
-        localization.settingsScreenPrivacyTitle,
-      ),
-      icon: Icons.screenshot_monitor,
-      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchScreenPrivacyKeywords,
-        english.settingsSearchScreenPrivacyKeywords,
-        [english.settingsScreenPrivacyTitle],
-      ),
-      isInlineControl: true,
-    ),
-    SettingsItem(
-      id: SettingsItemId.errorReporting,
-      section: SettingsItemSection.app,
-      title: localization.settingsErrorReportingTitle,
-      path: path(
-        SettingsItemSection.app,
-        localization.settingsErrorReportingTitle,
-      ),
-      icon: Icons.bug_report,
-      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchErrorReportingKeywords,
-        english.settingsSearchErrorReportingKeywords,
-        [english.settingsErrorReportingTitle],
-      ),
-      isInlineControl: true,
-    ),
-    if (isSuperuser)
-      SettingsItem(
-        id: SettingsItemId.devMode,
-        section: SettingsItemSection.app,
-        title: localization.appSettingsDevModeTitle,
-        path: path(
-          SettingsItemSection.app,
-          localization.appSettingsDevModeTitle,
+        SettingsItem(
+          id: SettingsItemId.walletSettings,
+          section: SettingsItemSection.root,
+          title: walletSection,
+          path: path(SettingsItemSection.root, walletSection),
+          icon: Icons.currency_bitcoin,
+          open: (context) =>
+              context.pushNamed(SettingsRoute.walletSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchWalletSettingsKeywords,
+            english.settingsSearchWalletSettingsKeywords,
+            [english.settingsWalletTitle, english.settingsWalletSettingsTitle],
+          ),
         ),
-        icon: Icons.logo_dev,
-        open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-        keywords: _keywords(
-          localization.settingsSearchDevModeKeywords,
-          english.settingsSearchDevModeKeywords,
-          [english.appSettingsDevModeTitle],
+        SettingsItem(
+          id: SettingsItemId.exchange,
+          section: SettingsItemSection.root,
+          title: localization.settingsExchangeTitle,
+          path: path(
+            SettingsItemSection.root,
+            localization.settingsExchangeTitle,
+          ),
+          icon: Icons.currency_exchange,
+          open: (context) =>
+              context.pushNamed(SettingsRoute.exchangeAccess.name),
+          keywords: _keywords(
+            localization.settingsSearchExchangeKeywords,
+            english.settingsSearchExchangeKeywords,
+            [
+              english.settingsExchangeTitle,
+              english.settingsExchangeSettingsTitle,
+              english.settingsAccountSettingsTitle,
+            ],
+          ),
         ),
-        isSuperuser: true,
-        isInlineControl: true,
-      ),
-    if (isSuperuser && isDevModeEnabled)
-      SettingsItem(
-        id: SettingsItemId.testnetMode,
-        section: SettingsItemSection.app,
-        title: localization.networkSelectorTitle,
-        path: path(SettingsItemSection.app, localization.networkSelectorTitle),
-        icon: Icons.science,
-        open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-        keywords: _keywords(
-          localization.settingsSearchTestnetModeKeywords,
-          english.settingsSearchTestnetModeKeywords,
-          [english.bitcoinSettingsTestnetModeTitle],
+        if (accountReady)
+          SettingsItem(
+            id: SettingsItemId.exchangeAccountSettings,
+            section: SettingsItemSection.root,
+            title: localization.settingsAccountSettingsTitle,
+            path: path(
+              SettingsItemSection.root,
+              localization.settingsAccountSettingsTitle,
+            ),
+            icon: Icons.account_circle_outlined,
+            open: (context) =>
+                context.pushNamed(SettingsRoute.exchangeSettings.name),
+            keywords: [
+              localization.settingsAccountSettingsTitle,
+              english.settingsAccountSettingsTitle,
+            ],
+          ),
+        SettingsItem(
+          id: SettingsItemId.termsOfService,
+          section: SettingsItemSection.root,
+          title: localization.settingsTermsOfServiceTitle,
+          path: path(
+            SettingsItemSection.root,
+            localization.settingsTermsOfServiceTitle,
+          ),
+          icon: Icons.description,
+          open: (_) => launchUrl(
+            Uri.parse(SettingsConstants.termsAndConditionsLink),
+            mode: LaunchMode.inAppBrowserView,
+          ),
+          keywords: _keywords(
+            localization.settingsSearchTermsOfServiceKeywords,
+            english.settingsSearchTermsOfServiceKeywords,
+            [english.settingsTermsOfServiceTitle],
+          ),
         ),
-        isSuperuser: true,
-        isInlineControl: true,
-      ),
-    if (isDevModeEnabled)
-      SettingsItem(
-        id: SettingsItemId.testnetCredentials,
-        section: SettingsItemSection.app,
-        title: localization.exchangeTestnetBasicAuthTitle,
-        path: path(
-          SettingsItemSection.app,
-          localization.exchangeTestnetBasicAuthTitle,
+        SettingsItem(
+          id: SettingsItemId.servicesStatus,
+          section: SettingsItemSection.root,
+          title: localization.settingsServiceStatusTitle,
+          path: path(
+            SettingsItemSection.root,
+            localization.settingsServiceStatusTitle,
+          ),
+          icon: Icons.monitor_heart,
+          open: (context) =>
+              context.pushNamed(StatusCheckRoute.serviceStatus.name),
+          keywords: _keywords(
+            localization.settingsSearchServicesStatusKeywords,
+            english.settingsSearchServicesStatusKeywords,
+            [english.settingsServiceStatusTitle],
+          ),
         ),
-        icon: Icons.lock_outline,
-        open: showExchangeTestnetBasicAuthDialog,
-        keywords: _keywords(
-          localization.settingsSearchTestnetCredentialsKeywords,
-          english.settingsSearchTestnetCredentialsKeywords,
-          [english.exchangeTestnetBasicAuthTitle],
+        SettingsItem(
+          id: SettingsItemId.logs,
+          section: SettingsItemSection.root,
+          title: localization.logSettingsLogsTitle,
+          path: path(
+            SettingsItemSection.root,
+            localization.logSettingsLogsTitle,
+          ),
+          icon: Icons.article,
+          open: (context) => context.pushNamed('logs'),
+          keywords: _keywords(
+            localization.settingsSearchLogsKeywords,
+            english.settingsSearchLogsKeywords,
+            [english.logSettingsLogsTitle],
+          ),
         ),
-      ),
-  ].where((item) {
-    final capability = switch (item.id) {
-      SettingsItemId.exchange ||
-      SettingsItemId.exchangeAccountSettings ||
-      SettingsItemId.testnetCredentials => NetworkCapability.exchange,
-      SettingsItemId.autoswap => NetworkCapability.swaps,
-      SettingsItemId.payjoin => NetworkCapability.payjoin,
-      SettingsItemId.sp => NetworkCapability.silentPayments,
-      SettingsItemId.mempool ||
-      SettingsItemId.servicesStatus => NetworkCapability.publicFeeEstimates,
-      _ => null,
-    };
-    if (capability == null) return true;
-    final network = switch (environment) {
-      NetworkEnv.mainnet => BitcoinNetwork.mainnet,
-      NetworkEnv.testnet => BitcoinNetwork.testnet,
-      NetworkEnv.regtest => BitcoinNetwork.regtest,
-      NetworkEnv.signet => BitcoinNetwork.signet,
-    };
-    return NetworkCapabilities.supports(network, capability);
-  }).toList();
+        SettingsItem(
+          id: SettingsItemId.sourceCode,
+          section: SettingsItemSection.root,
+          title: localization.settingsSourceCodeTitle,
+          path: path(
+            SettingsItemSection.root,
+            localization.settingsSourceCodeTitle,
+          ),
+          icon: Icons.code,
+          iconAsset: Assets.icons.github,
+          open: (_) => launchUrl(
+            Uri.parse(SettingsConstants.githubSupportLink),
+            mode: LaunchMode.externalApplication,
+          ),
+          keywords: [
+            localization.settingsSourceCodeTitle,
+            english.settingsSourceCodeTitle,
+            'GitHub',
+          ],
+        ),
+        SettingsItem(
+          id: SettingsItemId.importWallet,
+          section: SettingsItemSection.wallet,
+          title: localization.walletSettingsImportWalletTitle,
+          path: path(
+            SettingsItemSection.wallet,
+            localization.walletSettingsImportWalletTitle,
+          ),
+          icon: Icons.sim_card_download,
+          open: (context) =>
+              context.pushNamed(ImportWalletRoute.importWalletHome.name),
+          keywords: _keywords(
+            localization.settingsSearchImportWalletKeywords,
+            english.settingsSearchImportWalletKeywords,
+            [english.walletSettingsImportWalletTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.signingKeyExport,
+          section: SettingsItemSection.wallet,
+          title: localization.signingKeyExportTitle,
+          path: path(
+            SettingsItemSection.wallet,
+            localization.signingKeyExportTitle,
+          ),
+          icon: Icons.key,
+          open: (context) =>
+              context.pushNamed(SettingsRoute.signingKeyExport.name),
+          keywords: _keywords(
+            localization.settingsSearchSigningKeyExportKeywords,
+            english.settingsSearchSigningKeyExportKeywords,
+            [english.signingKeyExportTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.broadcastTransaction,
+          section: SettingsItemSection.wallet,
+          title: localization.bitcoinSettingsBroadcastTransactionTitle,
+          path: path(
+            SettingsItemSection.wallet,
+            localization.bitcoinSettingsBroadcastTransactionTitle,
+          ),
+          icon: Icons.satellite_alt,
+          open: (context) =>
+              context.pushNamed(BroadcastSignedTxRoute.broadcastHome.name),
+          keywords: _keywords(
+            localization.settingsSearchBroadcastTransactionKeywords,
+            english.settingsSearchBroadcastTransactionKeywords,
+            [english.bitcoinSettingsBroadcastTransactionTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.payjoin,
+          section: SettingsItemSection.wallet,
+          title: localization.bitcoinSettingsPayjoinTitle,
+          path: path(
+            SettingsItemSection.wallet,
+            localization.bitcoinSettingsPayjoinTitle,
+          ),
+          icon: Icons.compare_arrows,
+          open: (context) =>
+              context.pushNamed(SettingsRoute.payjoinSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchPayjoinKeywords,
+            english.settingsSearchPayjoinKeywords,
+            [english.bitcoinSettingsPayjoinTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.autoswap,
+          section: SettingsItemSection.wallet,
+          title: localization.bitcoinSettingsAutoTransferTitle,
+          path: path(
+            SettingsItemSection.wallet,
+            localization.bitcoinSettingsAutoTransferTitle,
+          ),
+          icon: Icons.swap_vertical_circle,
+          open: (context) =>
+              context.pushNamed(SettingsRoute.autoswapSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchAutoswapKeywords,
+            english.settingsSearchAutoswapKeywords,
+            [
+              english.bitcoinSettingsAutoTransferTitle,
+              english.autoswapSettingsTitle,
+            ],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.electrum,
+          section: SettingsItemSection.wallet,
+          title: localization.bitcoinSettingsElectrumServerTitle,
+          path: path(
+            SettingsItemSection.wallet,
+            localization.bitcoinSettingsElectrumServerTitle,
+          ),
+          icon: Icons.hub,
+          open: (context) =>
+              context.pushNamed(ElectrumSettingsRoute.electrumSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchElectrumKeywords,
+            english.settingsSearchElectrumKeywords,
+            [english.bitcoinSettingsElectrumServerTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.mempool,
+          section: SettingsItemSection.wallet,
+          title: localization.bitcoinSettingsMempoolServerTitle,
+          path: path(
+            SettingsItemSection.wallet,
+            localization.bitcoinSettingsMempoolServerTitle,
+          ),
+          icon: Icons.memory,
+          open: (context) => context.pushNamed(MempoolSettingsRoute.name),
+          keywords: _keywords(
+            localization.settingsSearchMempoolKeywords,
+            english.settingsSearchMempoolKeywords,
+            [english.bitcoinSettingsMempoolServerTitle],
+          ),
+        ),
+        if (isSuperuser)
+          SettingsItem(
+            id: SettingsItemId.seedViewer,
+            section: SettingsItemSection.wallet,
+            title: localization.allSeedViewTitle,
+            path: path(
+              SettingsItemSection.wallet,
+              localization.allSeedViewTitle,
+            ),
+            icon: Icons.vpn_key,
+            open: (context) =>
+                context.pushNamed(SettingsRoute.allSeedView.name),
+            keywords: _keywords(
+              localization.settingsSearchSeedViewerKeywords,
+              english.settingsSearchSeedViewerKeywords,
+              [english.allSeedViewTitle],
+            ),
+            isSuperuser: true,
+          ),
+        if (isSuperuser && isDevModeEnabled)
+          SettingsItem(
+            id: SettingsItemId.bip85,
+            section: SettingsItemSection.wallet,
+            title: localization.bitcoinSettingsBip85EntropiesTitle,
+            path: path(
+              SettingsItemSection.wallet,
+              localization.bitcoinSettingsBip85EntropiesTitle,
+            ),
+            icon: Icons.science,
+            open: (context) =>
+                context.pushNamed(Bip85EntropyRoute.bip85Home.name),
+            keywords: _keywords(
+              localization.settingsSearchBip85Keywords,
+              english.settingsSearchBip85Keywords,
+              [english.bitcoinSettingsBip85EntropiesTitle],
+            ),
+            isSuperuser: true,
+          ),
+        // One row either way: it offers to create the SP wallet until there is one,
+        // then opens its settings.
+        if (isSuperuser && isDevModeEnabled)
+          SettingsItem(
+            id: SettingsItemId.sp,
+            section: SettingsItemSection.wallet,
+            title: isSpWalletSetup
+                ? localization.spSettingsTitle
+                : localization.spSetupTitle,
+            path: path(
+              SettingsItemSection.wallet,
+              isSpWalletSetup
+                  ? localization.spSettingsTitle
+                  : localization.spSetupTitle,
+            ),
+            icon: isSpWalletSetup ? Icons.currency_bitcoin : Icons.science,
+            open: (context) => context.pushNamed(
+              isSpWalletSetup
+                  ? SpRoute.spSettings.name
+                  : SpSetupRoute.spSetup.name,
+            ),
+            isSuperuser: true,
+          ),
+        SettingsItem(
+          id: SettingsItemId.language,
+          section: SettingsItemSection.app,
+          title: localization.settingsLanguageTitle,
+          path: path(
+            SettingsItemSection.app,
+            localization.settingsLanguageTitle,
+          ),
+          icon: Icons.language,
+          open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchLanguageKeywords,
+            english.settingsSearchLanguageKeywords,
+            [english.settingsLanguageTitle],
+          ),
+          isInlineControl: true,
+        ),
+        SettingsItem(
+          id: SettingsItemId.theme,
+          section: SettingsItemSection.app,
+          title: localization.settingsDarkModeTitle,
+          path: path(
+            SettingsItemSection.app,
+            localization.settingsDarkModeTitle,
+          ),
+          icon: Icons.palette,
+          open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchThemeKeywords,
+            english.settingsSearchThemeKeywords,
+            [
+              localization.settingsThemeTitle,
+              english.settingsThemeTitle,
+              english.settingsDarkModeTitle,
+            ],
+          ),
+          isInlineControl: true,
+        ),
+        SettingsItem(
+          id: SettingsItemId.currency,
+          section: SettingsItemSection.app,
+          title: localization.settingsCurrencyTitle,
+          path: path(
+            SettingsItemSection.app,
+            localization.settingsCurrencyTitle,
+          ),
+          icon: Icons.attach_money,
+          open: (context) => context.pushNamed(SettingsRoute.currency.name),
+          keywords: _keywords(
+            localization.settingsSearchCurrencyKeywords,
+            english.settingsSearchCurrencyKeywords,
+            [english.settingsCurrencyTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.quickActions,
+          section: SettingsItemSection.app,
+          title: localization.quickActionsSettingsTitle,
+          path: path(
+            SettingsItemSection.app,
+            localization.quickActionsSettingsTitle,
+          ),
+          icon: Icons.tune,
+          open: (context) => context.pushNamed(SettingsRoute.quickActions.name),
+          keywords: [
+            localization.quickActionsSettingsTitle,
+            english.quickActionsSettingsTitle,
+          ],
+        ),
+        SettingsItem(
+          id: SettingsItemId.securityPin,
+          section: SettingsItemSection.app,
+          title: localization.settingsSecurityPinTitle,
+          path: path(
+            SettingsItemSection.app,
+            localization.settingsSecurityPinTitle,
+          ),
+          icon: Icons.fiber_pin,
+          open: (context) => context.pushNamed(SettingsRoute.pinCode.name),
+          keywords: _keywords(
+            localization.settingsSearchSecurityPinKeywords,
+            english.settingsSearchSecurityPinKeywords,
+            [english.settingsSecurityPinTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.tor,
+          section: SettingsItemSection.app,
+          title: localization.torSettingsTitle,
+          path: path(SettingsItemSection.app, localization.torSettingsTitle),
+          icon: Icons.vpn_lock,
+          open: (context) =>
+              context.pushNamed(const TorSettingsFacade().settingsRouteName),
+          keywords: _keywords(
+            localization.settingsSearchTorKeywords,
+            english.settingsSearchTorKeywords,
+            [english.torSettingsTitle],
+          ),
+        ),
+        SettingsItem(
+          id: SettingsItemId.screenPrivacy,
+          section: SettingsItemSection.app,
+          title: localization.settingsScreenPrivacyTitle,
+          path: path(
+            SettingsItemSection.app,
+            localization.settingsScreenPrivacyTitle,
+          ),
+          icon: Icons.screenshot_monitor,
+          open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchScreenPrivacyKeywords,
+            english.settingsSearchScreenPrivacyKeywords,
+            [english.settingsScreenPrivacyTitle],
+          ),
+          isInlineControl: true,
+        ),
+        SettingsItem(
+          id: SettingsItemId.errorReporting,
+          section: SettingsItemSection.app,
+          title: localization.settingsErrorReportingTitle,
+          path: path(
+            SettingsItemSection.app,
+            localization.settingsErrorReportingTitle,
+          ),
+          icon: Icons.bug_report,
+          open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
+          keywords: _keywords(
+            localization.settingsSearchErrorReportingKeywords,
+            english.settingsSearchErrorReportingKeywords,
+            [english.settingsErrorReportingTitle],
+          ),
+          isInlineControl: true,
+        ),
+        if (isSuperuser)
+          SettingsItem(
+            id: SettingsItemId.devMode,
+            section: SettingsItemSection.app,
+            title: localization.appSettingsDevModeTitle,
+            path: path(
+              SettingsItemSection.app,
+              localization.appSettingsDevModeTitle,
+            ),
+            icon: Icons.logo_dev,
+            open: (context) =>
+                context.pushNamed(SettingsRoute.appSettings.name),
+            keywords: _keywords(
+              localization.settingsSearchDevModeKeywords,
+              english.settingsSearchDevModeKeywords,
+              [english.appSettingsDevModeTitle],
+            ),
+            isSuperuser: true,
+            isInlineControl: true,
+          ),
+        if (isSuperuser && isDevModeEnabled)
+          SettingsItem(
+            id: SettingsItemId.testnetMode,
+            section: SettingsItemSection.app,
+            title: localization.networkSelectorTitle,
+            path: path(
+              SettingsItemSection.app,
+              localization.networkSelectorTitle,
+            ),
+            icon: Icons.science,
+            open: (context) =>
+                context.pushNamed(SettingsRoute.appSettings.name),
+            keywords: _keywords(
+              localization.settingsSearchTestnetModeKeywords,
+              english.settingsSearchTestnetModeKeywords,
+              [english.bitcoinSettingsTestnetModeTitle],
+            ),
+            isSuperuser: true,
+            isInlineControl: true,
+          ),
+        if (isDevModeEnabled)
+          SettingsItem(
+            id: SettingsItemId.testnetCredentials,
+            section: SettingsItemSection.app,
+            title: localization.exchangeTestnetBasicAuthTitle,
+            path: path(
+              SettingsItemSection.app,
+              localization.exchangeTestnetBasicAuthTitle,
+            ),
+            icon: Icons.lock_outline,
+            open: showExchangeTestnetBasicAuthDialog,
+            keywords: _keywords(
+              localization.settingsSearchTestnetCredentialsKeywords,
+              english.settingsSearchTestnetCredentialsKeywords,
+              [english.exchangeTestnetBasicAuthTitle],
+            ),
+          ),
+      ].where((item) {
+        final capability = switch (item.id) {
+          SettingsItemId.exchange ||
+          SettingsItemId.exchangeAccountSettings ||
+          SettingsItemId.testnetCredentials => NetworkCapability.exchange,
+          SettingsItemId.autoswap => NetworkCapability.swaps,
+          SettingsItemId.payjoin => NetworkCapability.payjoin,
+          SettingsItemId.sp => NetworkCapability.silentPayments,
+          SettingsItemId.mempool ||
+          SettingsItemId.servicesStatus => NetworkCapability.publicFeeEstimates,
+          _ => null,
+        };
+        if (capability == null) return true;
+        final network = switch (environment) {
+          NetworkEnv.mainnet => BitcoinNetwork.mainnet,
+          NetworkEnv.testnet => BitcoinNetwork.testnet,
+          NetworkEnv.regtest => BitcoinNetwork.regtest,
+          NetworkEnv.signet => BitcoinNetwork.signet,
+        };
+        return NetworkCapabilities.supports(network, capability);
+      }).toList();
 
   for (final contribution in contributions) {
     final section = switch (contribution.section) {

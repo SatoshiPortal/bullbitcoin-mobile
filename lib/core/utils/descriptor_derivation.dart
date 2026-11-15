@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:primitives/primitives.dart' as primitives;
+import 'package:sync/sync.dart' as sync;
 
 class DescriptorDerivation {
   static String derivePublicBitcoinMultipathDescriptorFromXpub(
@@ -31,12 +32,17 @@ class DescriptorDerivation {
       ScriptType.bip49 => 'sh(wpkh($descriptorKey))',
       ScriptType.bip44 => 'pkh($descriptorKey)',
     };
-    final descriptor = bdk.Descriptor(
+    return switch (const sync.BitcoinPolicyCodec().parseDescriptor(
       descriptor: descriptorString,
-      networkKind: isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main,
-    );
-    descriptor.sanityCheck();
-    return descriptor.toString();
+      network: isTestnet
+          ? primitives.BitcoinNetwork.testnet
+          : primitives.BitcoinNetwork.mainnet,
+    )) {
+      primitives.Ok(:final value) => value.descriptor,
+      primitives.Err() => throw const FormatException(
+        'Invalid public descriptor',
+      ),
+    };
   }
 
   static String _withoutMasterPrefix(String derivationPath) =>

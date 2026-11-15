@@ -31,11 +31,10 @@ void main() {
 
   group('bitcoin', () {
     test('returns the signed psbt with its vsize', () async {
-      when(
-        () => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => const Ok((psbt: 'signed-psbt', isFinalized: true)),
-      );
+      when(() => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')))
+          .thenAnswer(
+            (_) async => const Ok((psbt: 'signed-psbt', isFinalized: true)),
+          );
       when(
         () => bitcoin.getTxSize(
           psbt: any(named: 'psbt'),
@@ -57,16 +56,15 @@ void main() {
     test(
       'sanitizes a signing error, keeping the reason for logs only',
       () async {
-        when(
-          () => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')),
-        ).thenAnswer(
-          (_) async => const Err(
-            BitcoinSigningFailure(
-              BitcoinSigningFailureKind.unexpected,
-              _rawReason,
-            ),
-          ),
-        );
+        when(() => bitcoin.signPsbt(any(), walletId: any(named: 'walletId')))
+            .thenAnswer(
+              (_) async => const Err(
+                BitcoinSigningFailure(
+                  BitcoinSigningFailureKind.unexpected,
+                  _rawReason,
+                ),
+              ),
+            );
 
         final result = await usecase.bitcoin(
           psbt: 'unsigned',

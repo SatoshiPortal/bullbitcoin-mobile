@@ -77,9 +77,8 @@ void main() {
     );
 
     when(() => getWallet.execute(_wallet.id)).thenAnswer((_) async => _wallet);
-    when(
-      () => getUtxos.execute(walletId: _wallet.id),
-    ).thenAnswer((_) async => [_selectedUtxo, _otherUtxo]);
+    when(() => getUtxos.execute(walletId: _wallet.id))
+        .thenAnswer((_) async => [_selectedUtxo, _otherUtxo]);
   });
 
   test(
@@ -128,18 +127,16 @@ void main() {
               (recipient: 'tb1qsecond', amount: '', receivesRemainder: true),
             ],
           );
-      when(
-        () => getPending.execute(draft.id),
-      ).thenAnswer((_) async => Ok(draft));
+      when(() => getPending.execute(draft.id))
+          .thenAnswer((_) async => Ok(draft));
       for (final recipient in draft.recipients) {
-        when(
-          () => detectBitcoinString.execute(data: recipient.recipient),
-        ).thenAnswer(
-          (_) async => PaymentRequest.bitcoin(
-            address: recipient.recipient,
-            isTestnet: true,
-          ),
-        );
+        when(() => detectBitcoinString.execute(data: recipient.recipient))
+            .thenAnswer(
+              (_) async => PaymentRequest.bitcoin(
+                address: recipient.recipient,
+                isTestnet: true,
+              ),
+            );
       }
       final result = await usecase.execute(draft.id);
       final restored =
@@ -188,18 +185,16 @@ void main() {
                 (recipient: 'saved-input', amount: '', receivesRemainder: true),
               ],
             );
-        when(
-          () => getPending.execute(draft.id),
-        ).thenAnswer((_) async => Ok(draft));
+        when(() => getPending.execute(draft.id))
+            .thenAnswer((_) async => Ok(draft));
         when(() => detectBitcoinString.execute(data: 'tb1qfirst')).thenAnswer(
           (_) async => const PaymentRequest.bitcoin(
             address: 'tb1qfirst',
             isTestnet: true,
           ),
         );
-        when(
-          () => detectBitcoinString.execute(data: 'saved-input'),
-        ).thenAnswer((_) async => request);
+        when(() => detectBitcoinString.execute(data: 'saved-input'))
+            .thenAnswer((_) async => request);
 
         final result = await usecase.execute(draft.id);
         final restored =
@@ -243,9 +238,8 @@ void main() {
           ),
         )),
       );
-      when(
-        () => calculateFees.execute(psbt: stored.psbt!),
-      ).thenAnswer((_) async => 321);
+      when(() => calculateFees.execute(psbt: stored.psbt!))
+          .thenAnswer((_) async => 321);
 
       final result = await usecase.execute(stored.id);
 
@@ -306,9 +300,8 @@ void main() {
         review: null,
       )),
     );
-    when(
-      () => calculateFees.execute(psbt: stored.psbt!),
-    ).thenAnswer((_) async => 321);
+    when(() => calculateFees.execute(psbt: stored.psbt!))
+        .thenAnswer((_) async => 321);
 
     final result = await usecase.execute(stored.id);
 
@@ -369,9 +362,8 @@ void main() {
     when(() => getPending.execute(stored.id)).thenAnswer(
       (_) async => Ok<PendingBitcoinTransaction?, SendFailure>(stored),
     );
-    when(
-      () => getWallet.execute(stored.walletId),
-    ).thenAnswer((_) async => null);
+    when(() => getWallet.execute(stored.walletId))
+        .thenAnswer((_) async => null);
 
     final result = await usecase.execute(stored.id);
 

@@ -13,9 +13,8 @@ void main() {
   test('exposes BullVault details for the wallet settings action', () async {
     final getDetails = _MockGetDetails();
     final details = testBullVaultDetails();
-    when(
-      () => getDetails.execute(details.record.walletId),
-    ).thenAnswer((_) async => Ok(details));
+    when(() => getDetails.execute(details.record.walletId))
+        .thenAnswer((_) async => Ok(details));
     final cubit = BullVaultWalletSettingsCubit(getDetails);
 
     await cubit.load(details.record.walletId);
@@ -26,9 +25,8 @@ void main() {
 
   test('hides the action when BullVault details are unavailable', () async {
     final getDetails = _MockGetDetails();
-    when(
-      () => getDetails.execute('wallet'),
-    ).thenAnswer((_) async => const Err(BullVaultCreationFailure()));
+    when(() => getDetails.execute('wallet'))
+        .thenAnswer((_) async => const Err(BullVaultCreationFailure()));
     final cubit = BullVaultWalletSettingsCubit(getDetails);
 
     await cubit.load('wallet');

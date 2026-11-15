@@ -21,6 +21,10 @@ dependencies:
   primitives:
   meta: ^1.17.0
   crypto: ^3.0.7
+  bitcoin_base: ^7.0.0
+  bs58check: ^1.0.2
+  bip32_keys: ^3.1.1
+  convert: ^3.1.2
 
 dev_dependencies:
   analyzer: ^13.0.0

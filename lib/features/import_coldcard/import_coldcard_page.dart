@@ -7,9 +7,6 @@ import 'package:bb_mobile/features/import_coldcard/instructions_bottom_sheet.dar
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSnackBar, BullText, Gap;
-import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
 import 'package:go_router/go_router.dart';
 

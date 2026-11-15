@@ -1,8 +1,10 @@
+import 'wallet_metadata_service.dart';
+
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
@@ -56,55 +58,49 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
   static Result<PublicWalletDescriptor, SyncFailure> descriptorFromMetadata(
     WalletMetadataModel row,
   ) {
-    // Legacy origin decoding throws strings. Contain only that legacy boundary;
-    // programmer Errors from the datasource or this mapper must still surface.
     final Network network;
-    final ScriptType script;
     try {
-      final origin = WalletMetadataService.parseOrigin(origin: row.origin);
       network = row.network.shared;
-      script = origin.script.shared;
-      if (row.origin.startsWith('el') != (network is LiquidNetwork)) {
-        return const Err(SyncInvalidCatalogFailure());
-      }
       final hasSuffix = row.id.endsWith(WalletMetadataService.regtestSuffix);
       if (hasSuffix != (network.env == NetworkEnv.regtest)) {
         return const Err(SyncInvalidCatalogFailure());
       }
-    } on String {
-      return const Err(SyncInvalidCatalogFailure());
     } on FormatException {
       return const Err(SyncInvalidCatalogFailure());
     }
-    final external = row.externalPublicDescriptor;
-    final internal = row.internalPublicDescriptor;
     final key = WalletKey(id: row.id, network: network);
     switch (network) {
       case BitcoinNetwork():
-        if (!BitcoinWalletDescriptor.isPublicDescriptor(external) ||
-            !BitcoinWalletDescriptor.isPublicDescriptor(internal)) {
-          return const Err(SyncInvalidCatalogFailure());
-        }
-        return Ok(
-          BitcoinWalletDescriptor(
-            key: key,
-            scriptType: script,
-            origin: row.origin,
-            externalDescriptor: external,
-            internalDescriptor: internal,
-          ),
+        final parsed = const BitcoinPolicyCodec().parseDescriptor(
+          descriptor: row.publicDescriptor,
+          network: network,
         );
+        if (parsed case Ok(:final value)) {
+          return Ok(
+            BitcoinWalletDescriptor(
+              key: key,
+              scriptType: value.scriptType,
+              origin: WalletMetadataService.originFromId(row.id),
+              externalDescriptor: value.externalDescriptor,
+              internalDescriptor: value.internalDescriptor,
+            ),
+          );
+        }
+        return const Err(SyncInvalidCatalogFailure());
       case LiquidNetwork():
-        // Liquid uses only the external descriptor, as WalletModel.fromMetadata does.
-        if (!LiquidWalletDescriptor.isConfidentialDescriptor(external)) {
+        final script = row.inferredScriptType;
+        if (script == null ||
+            !LiquidWalletDescriptor.isConfidentialDescriptor(
+              row.publicDescriptor,
+            )) {
           return const Err(SyncInvalidCatalogFailure());
         }
         return Ok(
           LiquidWalletDescriptor(
             key: key,
-            scriptType: script,
-            origin: row.origin,
-            combinedCtDescriptor: external,
+            scriptType: script.shared,
+            origin: WalletMetadataService.originFromId(row.id),
+            combinedCtDescriptor: row.publicDescriptor,
           ),
         );
     }

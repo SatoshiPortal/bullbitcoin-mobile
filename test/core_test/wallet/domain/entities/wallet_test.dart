@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -267,8 +266,7 @@ void main() {
       descriptorKeyCount: 2,
     );
     final hashlock = wallet(
-      publicDescriptor:
-          'wsh(and_v(v:pk(xpub/<0;1>/*),sha256(0000000000000000000000000000000000000000000000000000000000000000)))',
+      publicDescriptor: 'wsh(and_v(v:pk(xpub/<0;1>/*),sha256(0000000000000000000000000000000000000000000000000000000000000000)))',
       scriptType: null,
       signer: SignerEntity.remote,
       signerDevice: SignerDeviceEntity.bitbox02,

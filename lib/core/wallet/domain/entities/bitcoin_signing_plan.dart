@@ -165,21 +165,23 @@ final class BitcoinSigningPlan {
     return _minimumSigners;
   }
 
-  late final _signerRequirement =
-      _SignerRequirement.threshold(_inputEvidence.length, [
-        for (final evidence in _inputEvidence)
-          _nodeSignerRequirement(
-            node: switch (evidence.keychain) {
-              BitcoinPolicyKeychain.external => policy.external.root,
-              BitcoinPolicyKeychain.internal => policy.internal.root,
-            },
-            keychain: evidence.keychain,
-            nodePath: 'root',
-            selection: selection,
-            signers: eligibleSigners,
-            signedDescriptorKeyIds: evidence.signedDescriptorKeyIds,
-          ),
-      ]);
+  late final _signerRequirement = _SignerRequirement.threshold(
+    _inputEvidence.length,
+    [
+      for (final evidence in _inputEvidence)
+        _nodeSignerRequirement(
+          node: switch (evidence.keychain) {
+            BitcoinPolicyKeychain.external => policy.external.root,
+            BitcoinPolicyKeychain.internal => policy.internal.root,
+          },
+          keychain: evidence.keychain,
+          nodePath: 'root',
+          selection: selection,
+          signers: eligibleSigners,
+          signedDescriptorKeyIds: evidence.signedDescriptorKeyIds,
+        ),
+    ],
+  );
   late final int _minimumSigners = _signerRequirement.minimumSignerCount({
     for (final signer in eligibleSigners) signer.id,
   });

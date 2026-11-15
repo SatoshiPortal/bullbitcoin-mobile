@@ -4,21 +4,17 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_failure_l10n.dart';
 import 'package:bb_mobile/features/bullvault/presentation/bullvault_inheritance_mnemonic_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullSnackBar;
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullInfoCard, BullSnackBar, BullScreenPrivacyGate;
-import 'package:material_ui/material_ui.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:secrets/secrets.dart' show SecretWidgets;
 import 'package:screen_privacy/screen_privacy.dart';
 
@@ -47,7 +43,7 @@ final class _GeneratedInheritanceMnemonicScreen extends StatefulWidget {
 
 final class _GeneratedInheritanceMnemonicScreenState
     extends State<_GeneratedInheritanceMnemonicScreen> {
-  late final _cubit = locator<BullVaultInheritanceMnemonicCubit>();
+  late final _cubit = GetIt.I<BullVaultInheritanceMnemonicCubit>();
   late final Future<Result<SecretWidgets, BullVaultFailure>> _generation =
       _cubit.generate();
 
@@ -119,7 +115,7 @@ final class _ImportInheritanceMnemonicScreen extends StatefulWidget {
 final class _ImportInheritanceMnemonicScreenState
     extends State<_ImportInheritanceMnemonicScreen>
     with PrivacyScreen {
-  late final _cubit = locator<BullVaultInheritanceMnemonicCubit>();
+  late final _cubit = GetIt.I<BullVaultInheritanceMnemonicCubit>();
   late Future<bool> _privacyFuture = enableScreenPrivacy();
 
   @override

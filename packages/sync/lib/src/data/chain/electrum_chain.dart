@@ -1,4 +1,5 @@
 import 'dart:isolate';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -242,4 +243,55 @@ bdk.ElectrumClient _connect(WalletConnection connection) {
     // provider. The winner has installed it by the time this retry runs.
     return build();
   }
+}
+
+/// Chain height and BIP113/BIP68 median times, without opening a wallet.
+/// Reference heights are the blocks immediately before confirmed inputs.
+Future<
+  Result<
+    ({int tipHeight, int? medianTimePast, Map<int, int> referenceMedianTimes}),
+    SyncFailure
+  >
+>
+bitcoinPolicyChainState(
+  WalletConnection connection, {
+  required bool includeMedianTimePast,
+  Set<int> referenceHeights = const {},
+}) => Isolate.run(() {
+  try {
+    final client = _connect(connection);
+    try {
+      final tip = client.blockHeadersSubscribe();
+      return Ok((
+        tipHeight: tip.height,
+        medianTimePast: includeMedianTimePast
+            ? _medianTimePast(client, tip.height, tip.header)
+            : null,
+        referenceMedianTimes: Map<int, int>.unmodifiable({
+          for (final height in referenceHeights)
+            height: _medianTimePast(client, min(height, tip.height), null),
+        }),
+      ));
+    } finally {
+      client.dispose();
+    }
+  } on Exception {
+    return const Err(SyncConnectionFailure());
+  }
+});
+
+int _medianTimePast(
+  bdk.ElectrumClient client,
+  int height,
+  bdk.Header? knownHeader,
+) {
+  final times = <int>[];
+  for (var current = max(0, height - 10); current <= height; current++) {
+    final header = current == height && knownHeader != null
+        ? knownHeader
+        : client.blockHeader(height: current);
+    times.add(header.time);
+  }
+  times.sort();
+  return times[times.length ~/ 2];
 }

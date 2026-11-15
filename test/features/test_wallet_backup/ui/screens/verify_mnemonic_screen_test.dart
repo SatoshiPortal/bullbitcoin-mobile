@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -161,7 +162,7 @@ void main() {
 
     getSecretUsecase = _MockGetSecretFromFingerprintUsecase();
     completeUsecase = _MockCompleteBackupVerificationUsecase();
-    when(() => completeUsecase.execute())
+    when(() => completeUsecase.execute(fingerprint: any(named: 'fingerprint')))
         .thenAnswer((_) async => const Ok(null));
     bloc = _SeedableTestWalletBackupBloc(
       completeBackupVerificationUsecase: completeUsecase,
@@ -286,12 +287,12 @@ void main() {
     await tester.tap(find.text('Continue'));
     await flush(tester);
     expect(find.text('Incorrect passphrase.'), findsOneWidget);
-    verifyNever(() => completeUsecase.execute());
+    verifyNever(() => completeUsecase.execute(fingerprint: secret.id.hex));
 
     await tester.enterText(find.byType(TextField), ' Mixed ');
     await tester.tap(find.text('Continue'));
     await flush(tester);
-    verify(() => completeUsecase.execute()).called(1);
+    verify(() => completeUsecase.execute(fingerprint: secret.id.hex)).called(1);
   });
 
   testWidgets('a protected backup offers explicit passphrase reveal', (

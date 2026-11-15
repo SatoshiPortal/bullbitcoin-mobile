@@ -137,9 +137,8 @@ void main() {
                   Network.liquidTestnet,
                   signerDevice: SignerDeviceEntity.ledgerNanoX,
                 )
-              : _wallet(
-                  Network.bitcoinTestnet,
-                ).copyWith(scriptType: null, publicDescriptor: 'tr(...)'),
+              : _wallet(Network.bitcoinTestnet)
+                    .copyWith(scriptType: null, publicDescriptor: 'tr(...)'),
         );
 
         final result = await usecase.execute(

@@ -80,9 +80,9 @@ final class Secrets {
   @useResult
   Future<Result<EphemeralMnemonic, SecretFailure>> generateEphemeral({
     MnemonicLength wordCount = MnemonicLength.words24,
-  }) async => (await EphemeralMnemonicRepository.generate(
-    wordCount,
-  )).map(EphemeralMnemonic.new);
+  }) async =>
+      (await EphemeralMnemonicRepository.generate(wordCount))
+          .map(EphemeralMnemonic.new);
 
   /// Imports user-supplied words and returns a newly stored secret. The caller must release its input afterwards. Invalid words return [InvalidMnemonicFailure]; an existing secret returns [SecretAlreadyExistsFailure] without changing storage.
   ///

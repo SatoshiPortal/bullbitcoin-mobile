@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 
 extension WalletFailureLogCode on WalletFailure {
   String get logCode => switch (this) {
+    Bip48AccountAllocationFailure() => 'bip48_account_allocation',
+    BitcoinSigningFailure(:final kind) => 'bitcoin_signing_${kind.name}',
     WalletTransactionLookupFailure() => 'transaction_lookup',
     WalletStorageFailure() => 'storage',
     WalletNotFoundFailure() => 'not_found',

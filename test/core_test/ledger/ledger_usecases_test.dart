@@ -1,9 +1,7 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_repository.dart';
-import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/ledger/domain/get_ledger_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/get_ledger_account_key_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
@@ -11,9 +9,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -72,9 +68,8 @@ void main() {
     const xpub =
         'tpubDFH9dgzveyD8zTbPUFuLrGmCydNvxehyNdUXKJAQN8x4aZ4j6UZqGfnqFrD4NqyaTVGKbvEW54tsvPTK2UoSbCC1PJY8iCNiwTL3RWZEheQ';
     final usecase = GetLedgerAccountKeyUsecase(repository);
-    when(
-      () => repository.getMasterFingerprint(device),
-    ).thenAnswer((_) async => const Ok('AABBCCDD'));
+    when(() => repository.getMasterFingerprint(device))
+        .thenAnswer((_) async => const Ok('AABBCCDD'));
     when(
       () => repository.getXpub(
         device,

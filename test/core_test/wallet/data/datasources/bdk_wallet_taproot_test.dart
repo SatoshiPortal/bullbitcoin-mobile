@@ -1,9 +1,13 @@
+import '../../support/bdk_test_store.dart';
+
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_psbt_review_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/bitcoin_wallet_policy_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
@@ -34,7 +38,7 @@ void main() {
   });
 
   setUp(() {
-    datasource = BdkWalletDatasource();
+    datasource = fixturePolicyDatasource();
     tempDirectory = Directory.systemTemp.createTempSync('bdk_taproot_test_');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
@@ -130,7 +134,7 @@ void main() {
         psbtBase64: unsigned,
         transactionHex: transaction,
       ),
-      throwsFormatException,
+      throwsA(isA<InvalidBitcoinPsbtException>()),
     );
   });
 
@@ -143,16 +147,14 @@ void main() {
     );
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: publicDescriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     final descriptorKeys = _descriptorKeyModels(parsed.keys);
-    final wallet =
-        WalletModel.publicBdk(
-              id: 'taproot-key-path-selection',
-              descriptor: publicDescriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: 'taproot-key-path-selection',
+      descriptor: publicDescriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final policy = BitcoinWalletPolicyMapper.toEntity(
       datasource.analyzePolicy(wallet: wallet, descriptorKeys: descriptorKeys),
     );
@@ -169,31 +171,34 @@ void main() {
     );
     final path = policy.buildPath(selection);
     final recipient = await _fundStoredWallet(wallet);
-    final unsigned = await datasource.buildPsbt(
-      wallet: wallet,
-      recipients: [
-        BitcoinTransactionRecipientModel.fixed(
-          address: recipient,
-          fixedAmountSat: 50000,
+    datasource = await fixtureSpendDatasource(wallet);
+    final unsigned = builtPsbt(
+      await datasource.buildPsbt(
+        wallet: wallet,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: recipient,
+            fixedAmountSat: 50000,
+          ),
+        ],
+        networkFee: const NetworkFee.absolute(1000),
+        policyPath: path,
+        requiredDescriptorKeys: (
+          external: descriptorKeys
+              .where(
+                (key) => path.requiredExternalKeys.any(
+                  (required) => required.value == key.id,
+                ),
+              )
+              .toList(),
+          internal: descriptorKeys
+              .where(
+                (key) => path.requiredInternalKeys.any(
+                  (required) => required.value == key.id,
+                ),
+              )
+              .toList(),
         ),
-      ],
-      networkFee: const NetworkFee.absolute(1000),
-      policyPath: path,
-      requiredDescriptorKeys: (
-        external: descriptorKeys
-            .where(
-              (key) => path.requiredExternalKeys.any(
-                (required) => required.value == key.id,
-              ),
-            )
-            .toList(),
-        internal: descriptorKeys
-            .where(
-              (key) => path.requiredInternalKeys.any(
-                (required) => required.value == key.id,
-              ),
-            )
-            .toList(),
       ),
     );
     final unsignedPsbt = bdk.Psbt(psbtBase64: unsigned);
@@ -233,17 +238,15 @@ void main() {
       externalKey: signers.first.externalPublic,
       internalKey: signers.first.internalPublic,
     );
-    final wallet =
-        WalletModel.publicBdk(
-              id: 'taproot-key-path-review',
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: 'taproot-key-path-review',
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final descriptorKeys = _descriptorKeyModels(
       BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       ).keys,
     );
     final signed = await datasource.signPsbtWithDescriptor(
@@ -327,13 +330,11 @@ void main() {
     await expectLater(
       datasource.inspectPsbt(
         psbt.toBase64(),
-        wallet:
-            WalletModel.publicBdk(
-                  id: 'taproot-non-witness-utxo',
-                  descriptor: descriptor,
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel,
+        wallet: WalletModel.publicBdk(
+          id: 'taproot-non-witness-utxo',
+          descriptor: descriptor,
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel,
         walletFingerprints: {signers.first.fingerprint},
       ),
       completes,
@@ -375,16 +376,14 @@ void main() {
     final descriptor = _descriptorWithUnspendableInternalKey(signers);
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     final descriptorKeys = _descriptorKeyModels(parsed.keys);
-    final wallet =
-        WalletModel.publicBdk(
-              id: 'unspendable-internal-key',
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: 'unspendable-internal-key',
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final policy = BitcoinWalletPolicyMapper.toEntity(
       datasource.analyzePolicy(wallet: wallet, descriptorKeys: descriptorKeys),
     );
@@ -398,24 +397,19 @@ void main() {
   });
 
   test('omits only a fixed BIP341 NUMS key origin from built PSBTs', () async {
-    await _withTemporaryBdkDirectory('bdk_taproot_nums_', () async {
-      final fixedNumsWallet =
-          WalletModel.publicBdk(
-                id: 'fixed-nums-origin',
-                descriptor: _taprootScriptDescriptor(
-                  externalKeys: signers
-                      .map((signer) => signer.externalPublic)
-                      .toList(),
-                  internalKeys: signers
-                      .map((signer) => signer.internalPublic)
-                      .toList(),
-                ),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final fixedNumsRecipient = await _fundStoredWallet(fixedNumsWallet);
-      final fixedNumsPsbt = bdk.Psbt(
-        psbtBase64: await datasource.buildPsbt(
+    final fixedNumsWallet = WalletModel.publicBdk(
+      id: 'fixed-nums-origin',
+      descriptor: _taprootScriptDescriptor(
+        externalKeys: signers.map((signer) => signer.externalPublic).toList(),
+        internalKeys: signers.map((signer) => signer.internalPublic).toList(),
+      ),
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
+    final fixedNumsRecipient = await _fundStoredWallet(fixedNumsWallet);
+    datasource = await fixtureSpendDatasource(fixedNumsWallet);
+    final fixedNumsPsbt = bdk.Psbt(
+      psbtBase64: builtPsbt(
+        await datasource.buildPsbt(
           wallet: fixedNumsWallet,
           recipients: [
             BitcoinTransactionRecipientModel.fixed(
@@ -425,67 +419,65 @@ void main() {
           ],
           networkFee: const NetworkFee.absolute(1000),
         ),
+      ),
+    );
+    try {
+      final origins = fixedNumsPsbt.input().single.tapKeyOrigins;
+      expect(origins, isNot(contains(_numsKey.substring(2))));
+      expect(origins, hasLength(signers.length));
+      expect(
+        origins.values.every((origin) => origin.tapLeafHashes.isNotEmpty),
+        isTrue,
       );
-      try {
-        final origins = fixedNumsPsbt.input().single.tapKeyOrigins;
-        expect(origins, isNot(contains(_numsKey.substring(2))));
-        expect(origins, hasLength(signers.length));
-        expect(
-          origins.values.every((origin) => origin.tapLeafHashes.isNotEmpty),
-          isTrue,
-        );
-        for (final output in fixedNumsPsbt.output()) {
-          expect(output.tapKeyOrigins, isNot(contains(_numsKey.substring(2))));
-          expect(output.tapKeyOrigins, hasLength(signers.length));
-        }
-
-        final unnormalizedPsbt = bitcoin_base.Psbt.fromBase64(
-          fixedNumsPsbt.serialize(),
-        );
-        unnormalizedPsbt.input.updateInputs(0, [
-          bitcoin_base.PsbtInputTaprootKeyBip32DerivationPath(
-            xOnlyPubKey: hex.decode(_numsKey.substring(2)),
-            leavesHashes: const [],
-            fingerprint: const [0, 0, 0, 0],
-            indexes: const [],
-          ),
-        ]);
-        final signedPsbt = bdk.Psbt(
-          psbtBase64: (await datasource.signPsbtWithDescriptor(
-            unnormalizedPsbt.toBase64(),
-            descriptor: _privateTaprootScriptDescriptor(signers, 0),
-            isTestnet: true,
-            tryFinalize: false,
-          )).psbt,
-        );
-        try {
-          expect(
-            signedPsbt.input().single.tapKeyOrigins,
-            isNot(contains(_numsKey.substring(2))),
-          );
-          for (final output in signedPsbt.output()) {
-            expect(
-              output.tapKeyOrigins,
-              isNot(contains(_numsKey.substring(2))),
-            );
-          }
-        } finally {
-          signedPsbt.dispose();
-        }
-      } finally {
-        fixedNumsPsbt.dispose();
+      for (final output in fixedNumsPsbt.output()) {
+        expect(output.tapKeyOrigins, isNot(contains(_numsKey.substring(2))));
+        expect(output.tapKeyOrigins, hasLength(signers.length));
       }
 
-      final numsXpubWallet =
-          WalletModel.publicBdk(
-                id: 'nums-xpub-origin',
-                descriptor: _descriptorWithUnspendableInternalKey(signers),
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final numsXpubRecipient = await _fundStoredWallet(numsXpubWallet);
-      final numsXpubPsbt = bdk.Psbt(
-        psbtBase64: await datasource.buildPsbt(
+      final unnormalizedPsbt = bitcoin_base.Psbt.fromBase64(
+        fixedNumsPsbt.serialize(),
+      );
+      unnormalizedPsbt.input.updateInputs(0, [
+        bitcoin_base.PsbtInputTaprootKeyBip32DerivationPath(
+          xOnlyPubKey: hex.decode(_numsKey.substring(2)),
+          leavesHashes: const [],
+          fingerprint: const [0, 0, 0, 0],
+          indexes: const [],
+        ),
+      ]);
+      final signedPsbt = bdk.Psbt(
+        psbtBase64: (await datasource.signPsbtWithDescriptor(
+          unnormalizedPsbt.toBase64(),
+          descriptor: _privateTaprootScriptDescriptor(signers, 0),
+          isTestnet: true,
+          tryFinalize: false,
+        )).psbt,
+      );
+      try {
+        expect(
+          signedPsbt.input().single.tapKeyOrigins,
+          isNot(contains(_numsKey.substring(2))),
+        );
+        for (final output in signedPsbt.output()) {
+          expect(output.tapKeyOrigins, isNot(contains(_numsKey.substring(2))));
+        }
+      } finally {
+        signedPsbt.dispose();
+      }
+    } finally {
+      fixedNumsPsbt.dispose();
+    }
+
+    final numsXpubWallet = WalletModel.publicBdk(
+      id: 'nums-xpub-origin',
+      descriptor: _descriptorWithUnspendableInternalKey(signers),
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
+    final numsXpubRecipient = await _fundStoredWallet(numsXpubWallet);
+    datasource = await fixtureSpendDatasource(numsXpubWallet);
+    final numsXpubPsbt = bdk.Psbt(
+      psbtBase64: builtPsbt(
+        await datasource.buildPsbt(
           wallet: numsXpubWallet,
           recipients: [
             BitcoinTransactionRecipientModel.fixed(
@@ -495,29 +487,29 @@ void main() {
           ],
           networkFee: const NetworkFee.absolute(1000),
         ),
+      ),
+    );
+    try {
+      final origins = numsXpubPsbt.input().single.tapKeyOrigins.values;
+      expect(
+        origins.where((origin) => origin.tapLeafHashes.isEmpty),
+        hasLength(1),
       );
-      try {
-        final origins = numsXpubPsbt.input().single.tapKeyOrigins.values;
+      expect(
+        origins.where((origin) => origin.tapLeafHashes.isNotEmpty),
+        hasLength(signers.length),
+      );
+      for (final output in numsXpubPsbt.output()) {
         expect(
-          origins.where((origin) => origin.tapLeafHashes.isEmpty),
+          output.tapKeyOrigins.values.where(
+            (origin) => origin.tapLeafHashes.isEmpty,
+          ),
           hasLength(1),
         );
-        expect(
-          origins.where((origin) => origin.tapLeafHashes.isNotEmpty),
-          hasLength(signers.length),
-        );
-        for (final output in numsXpubPsbt.output()) {
-          expect(
-            output.tapKeyOrigins.values.where(
-              (origin) => origin.tapLeafHashes.isEmpty,
-            ),
-            hasLength(1),
-          );
-        }
-      } finally {
-        numsXpubPsbt.dispose();
       }
-    });
+    } finally {
+      numsXpubPsbt.dispose();
+    }
   });
 
   test('rejects ambiguous unspendable internal-key metadata', () {
@@ -531,7 +523,7 @@ void main() {
     expect(
       () => BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       ),
       throwsFormatException,
     );
@@ -547,7 +539,7 @@ void main() {
     expect(
       () => BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       ),
       throwsFormatException,
     );
@@ -560,18 +552,16 @@ void main() {
     );
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     final descriptorKeys = _descriptorKeyModels(parsed.keys);
     final policy = BitcoinWalletPolicyMapper.toEntity(
       datasource.analyzePolicy(
-        wallet:
-            WalletModel.publicBdk(
-                  id: 'taproot-leaves',
-                  descriptor: descriptor,
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel,
+        wallet: WalletModel.publicBdk(
+          id: 'taproot-leaves',
+          descriptor: descriptor,
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel,
         descriptorKeys: descriptorKeys,
       ),
     );
@@ -592,97 +582,87 @@ void main() {
   });
 
   test('preserves the BDK root path for a single Taproot leaf', () async {
-    await _withTemporaryBdkDirectory('bdk_taproot_single_leaf_', () async {
-      final descriptor = twoPathDescriptor(
-        'tr($_numsKey,pk(${signers.first.externalPublic}))',
-        'tr($_numsKey,pk(${signers.first.internalPublic}))',
-      );
-      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
-        descriptor: descriptor,
-        isTestnet: true,
-      );
-      final descriptorKeys = _descriptorKeyModels(parsed.keys);
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'taproot-single-leaf',
-                descriptor: descriptor,
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final policy = BitcoinWalletPolicyMapper.toEntity(
-        datasource.analyzePolicy(
-          wallet: wallet,
-          descriptorKeys: descriptorKeys,
-        ),
-      );
-      final path = policy.buildPath(const BitcoinPolicySelection.empty());
-      final recipient = await _fundStoredWallet(wallet);
+    final descriptor = twoPathDescriptor(
+      'tr($_numsKey,pk(${signers.first.externalPublic}))',
+      'tr($_numsKey,pk(${signers.first.internalPublic}))',
+    );
+    final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    );
+    final descriptorKeys = _descriptorKeyModels(parsed.keys);
+    final wallet = WalletModel.publicBdk(
+      id: 'taproot-single-leaf',
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
+    final policy = BitcoinWalletPolicyMapper.toEntity(
+      datasource.analyzePolicy(wallet: wallet, descriptorKeys: descriptorKeys),
+    );
+    final path = policy.buildPath(const BitcoinPolicySelection.empty());
+    final recipient = await _fundStoredWallet(wallet);
+    datasource = await fixtureSpendDatasource(wallet);
 
-      expect(path.external.values.single, [1]);
-      expect(path.internal.values.single, [1]);
-      await expectLater(
-        datasource.buildPsbt(
-          wallet: wallet,
-          recipients: [
-            BitcoinTransactionRecipientModel.fixed(
-              address: recipient,
-              fixedAmountSat: 50000,
-            ),
-          ],
-          networkFee: const NetworkFee.absolute(1000),
-          policyPath: path,
-          requiredDescriptorKeys: (
-            external: descriptorKeys,
-            internal: descriptorKeys,
+    expect(path.external.values.single, [1]);
+    expect(path.internal.values.single, [1]);
+    await expectLater(
+      datasource.buildPsbt(
+        wallet: wallet,
+        recipients: [
+          BitcoinTransactionRecipientModel.fixed(
+            address: recipient,
+            fixedAmountSat: 50000,
           ),
+        ],
+        networkFee: const NetworkFee.absolute(1000),
+        policyPath: path,
+        requiredDescriptorKeys: (
+          external: descriptorKeys,
+          internal: descriptorKeys,
         ),
-        completes,
-      );
-    });
+      ),
+      completes,
+    );
   });
 
   test('removes unselected keys from a selected Taproot leaf', () async {
-    await _withTemporaryBdkDirectory('bdk_taproot_selected_keys_', () async {
-      final descriptor = twoPathDescriptor(
-        'tr($_numsKey,{pk(${signers[0].externalPublic}),pk(${signers[1].externalPublic})})',
-        'tr($_numsKey,{pk(${signers[0].internalPublic}),pk(${signers[1].internalPublic})})',
-      );
-      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
-        descriptor: descriptor,
-        isTestnet: true,
-      );
-      final descriptorKeys = _descriptorKeyModels(parsed.keys);
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'taproot-selected-keys',
-                descriptor: descriptor,
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final policy = BitcoinWalletPolicyMapper.toEntity(
-        datasource.analyzePolicy(
-          wallet: wallet,
-          descriptorKeys: descriptorKeys,
-        ),
-      );
-      final requirement = policy
-          .pathSelectors(const BitcoinPolicySelection.empty())
-          .single;
-      final selection = policy.select(
-        current: const BitcoinPolicySelection.empty(),
-        requirement: requirement,
-        selectedIndices: const {0},
-      );
-      final path = policy.buildPath(selection);
-      final requiredKeyIds = path.requiredExternalKeys
-          .map((key) => key.value)
-          .toSet();
-      final requiredInternalKeyIds = path.requiredInternalKeys
-          .map((key) => key.value)
-          .toSet();
-      final recipient = await _fundStoredWallet(wallet);
-      final psbt = bdk.Psbt(
-        psbtBase64: await datasource.buildPsbt(
+    final descriptor = twoPathDescriptor(
+      'tr($_numsKey,{pk(${signers[0].externalPublic}),pk(${signers[1].externalPublic})})',
+      'tr($_numsKey,{pk(${signers[0].internalPublic}),pk(${signers[1].internalPublic})})',
+    );
+    final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    );
+    final descriptorKeys = _descriptorKeyModels(parsed.keys);
+    final wallet = WalletModel.publicBdk(
+      id: 'taproot-selected-keys',
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
+    final policy = BitcoinWalletPolicyMapper.toEntity(
+      datasource.analyzePolicy(wallet: wallet, descriptorKeys: descriptorKeys),
+    );
+    final requirement = policy
+        .pathSelectors(const BitcoinPolicySelection.empty())
+        .single;
+    final selection = policy.select(
+      current: const BitcoinPolicySelection.empty(),
+      requirement: requirement,
+      selectedIndices: const {0},
+    );
+    final path = policy.buildPath(selection);
+    final requiredKeyIds = path.requiredExternalKeys
+        .map((key) => key.value)
+        .toSet();
+    final requiredInternalKeyIds = path.requiredInternalKeys
+        .map((key) => key.value)
+        .toSet();
+    final recipient = await _fundStoredWallet(wallet);
+    datasource = await fixtureSpendDatasource(wallet);
+    final psbt = bdk.Psbt(
+      psbtBase64: builtPsbt(
+        await datasource.buildPsbt(
           wallet: wallet,
           recipients: [
             BitcoinTransactionRecipientModel.fixed(
@@ -701,48 +681,44 @@ void main() {
                 .toList(),
           ),
         ),
-      );
-      try {
-        final origins = psbt.input().single.tapKeyOrigins.values;
-        expect(origins, hasLength(1));
-        expect(origins.single.tapLeafHashes, hasLength(1));
-      } finally {
-        psbt.dispose();
-      }
-    });
+      ),
+    );
+    try {
+      final origins = psbt.input().single.tapKeyOrigins.values;
+      expect(origins, hasLength(1));
+      expect(origins.single.tapLeafHashes, hasLength(1));
+    } finally {
+      psbt.dispose();
+    }
   });
 
   test('builds and satisfies a selected Taproot hashlock path', () async {
-    await _withTemporaryBdkDirectory('bdk_taproot_path_', () async {
-      final descriptor = _taprootConditionalDescriptor(
-        externalKeys: signers.map((signer) => signer.externalPublic).toList(),
-        internalKeys: signers.map((signer) => signer.internalPublic).toList(),
-      );
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'taproot-conditions',
-                descriptor: descriptor,
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
-      final parsed = BdkFacade.parsePublicTwoPathDescriptor(
-        descriptor: descriptor,
-        isTestnet: true,
-      );
-      final descriptorKeys = _descriptorKeyModels(parsed.keys);
-      final policy = BitcoinWalletPolicyMapper.toEntity(
-        datasource.analyzePolicy(
-          wallet: wallet,
-          descriptorKeys: descriptorKeys,
-        ),
-      );
-      final selection = _selectOptionContaining<BitcoinHashlockPolicyNode>(
-        policy,
-      );
-      final recipientAddress = await _fundStoredWallet(wallet);
+    final descriptor = _taprootConditionalDescriptor(
+      externalKeys: signers.map((signer) => signer.externalPublic).toList(),
+      internalKeys: signers.map((signer) => signer.internalPublic).toList(),
+    );
+    final wallet = WalletModel.publicBdk(
+      id: 'taproot-conditions',
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
+    final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    );
+    final descriptorKeys = _descriptorKeyModels(parsed.keys);
+    final policy = BitcoinWalletPolicyMapper.toEntity(
+      datasource.analyzePolicy(wallet: wallet, descriptorKeys: descriptorKeys),
+    );
+    final selection = _selectOptionContaining<BitcoinHashlockPolicyNode>(
+      policy,
+    );
+    final recipientAddress = await _fundStoredWallet(wallet);
+    datasource = await fixtureSpendDatasource(wallet);
 
-      final policyPath = policy.buildPath(selection);
-      final unsigned = await datasource.buildPsbt(
+    final policyPath = policy.buildPath(selection);
+    final unsigned = builtPsbt(
+      await datasource.buildPsbt(
         wallet: wallet,
         recipients: [
           BitcoinTransactionRecipientModel.fixed(
@@ -768,45 +744,43 @@ void main() {
               )
               .toList(),
         ),
-      );
-      final withPreimage = datasource.applyPolicyPreimages(unsigned, [
-        BitcoinPolicyPreimage(
-          type: BitcoinHashlockType.sha256,
-          hash: _preimageHash,
-          preimageHex: _preimage,
-        ),
-      ]);
-      final review = BitcoinPsbtReviewMapper.toEntity(
-        await datasource.inspectPsbt(
-          unsigned,
-          wallet: wallet,
-          walletFingerprints: signers
-              .map((signer) => signer.fingerprint)
-              .toSet(),
-        ),
-        descriptorKeys: descriptorKeys,
-        localSignerIds: const {'signer-0'},
-      );
+      ),
+    );
+    final withPreimage = datasource.applyPolicyPreimages(unsigned, [
+      BitcoinPolicyPreimage(
+        type: BitcoinHashlockType.sha256,
+        hash: _preimageHash,
+        preimageHex: _preimage,
+      ),
+    ]);
+    final review = BitcoinPsbtReviewMapper.toEntity(
+      await datasource.inspectPsbt(
+        unsigned,
+        wallet: wallet,
+        walletFingerprints: signers.map((signer) => signer.fingerprint).toSet(),
+      ),
+      descriptorKeys: descriptorKeys,
+      localSignerIds: const {'signer-0'},
+    );
 
-      final psbt = bdk.Psbt(psbtBase64: withPreimage);
-      try {
-        expect(psbt.input().single.tapScripts, hasLength(1));
-        expect(psbt.extractTx().input().single.sequence, 10);
-      } finally {
-        psbt.dispose();
-      }
-      expect(policy.hasHashlock, isTrue);
-      expect(policy.hasTimelock, isTrue);
-      expect(review.inputs.single.hasLocalSignerOrigin, isFalse);
-      expect(
-        (await datasource.signPsbtWithDescriptor(
-          withPreimage,
-          descriptor: _privateTaprootConditionalDescriptor(signers),
-          isTestnet: true,
-        )).isFinalized,
-        isTrue,
-      );
-    });
+    final psbt = bdk.Psbt(psbtBase64: withPreimage);
+    try {
+      expect(psbt.input().single.tapScripts, hasLength(1));
+      expect(psbt.extractTx().input().single.sequence, 10);
+    } finally {
+      psbt.dispose();
+    }
+    expect(policy.hasHashlock, isTrue);
+    expect(policy.hasTimelock, isTrue);
+    expect(review.inputs.single.hasLocalSignerOrigin, isFalse);
+    expect(
+      (await datasource.signPsbtWithDescriptor(
+        withPreimage,
+        descriptor: _privateTaprootConditionalDescriptor(signers),
+        isTestnet: true,
+      )).isFinalized,
+      isTrue,
+    );
   });
 
   test('validates signer status and both Taproot signing orders', () async {
@@ -814,17 +788,15 @@ void main() {
       externalKeys: signers.map((signer) => signer.externalPublic).toList(),
       internalKeys: signers.map((signer) => signer.internalPublic).toList(),
     );
-    final wallet =
-        WalletModel.publicBdk(
-              id: 'taproot-threshold',
-              descriptor: publicDescriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: 'taproot-threshold',
+      descriptor: publicDescriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final descriptorKeys = _descriptorKeyModels(
       BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: publicDescriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       ).keys,
     );
     final policy = BitcoinWalletPolicyMapper.toEntity(
@@ -886,17 +858,15 @@ void main() {
         externalKeys: signers.map((signer) => signer.externalPublic).toList(),
         internalKeys: signers.map((signer) => signer.internalPublic).toList(),
       );
-      final wallet =
-          WalletModel.publicBdk(
-                id: 'taproot-returned-origin',
-                descriptor: descriptor,
-                isTestnet: true,
-              )
-              as PublicBdkWalletModel;
+      final wallet = WalletModel.publicBdk(
+        id: 'taproot-returned-origin',
+        descriptor: descriptor,
+        network: Network.bitcoinTestnet,
+      ) as PublicBdkWalletModel;
       final descriptorKeys = _descriptorKeyModels(
         BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: descriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ).keys,
       );
       final policy = BitcoinWalletPolicyMapper.toEntity(
@@ -986,13 +956,11 @@ void main() {
       isTestnet: true,
       tryFinalize: false,
     );
-    final wallet =
-        WalletModel.publicBdk(
-              id: 'taproot-control-block',
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: 'taproot-control-block',
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
 
     await expectLater(
       datasource.inspectPsbt(
@@ -1021,17 +989,15 @@ void main() {
     );
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: publicDescriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     final policy = BitcoinWalletPolicyMapper.toEntity(
       datasource.analyzePolicy(
-        wallet:
-            WalletModel.publicBdk(
-                  id: 'script-path-intent',
-                  descriptor: publicDescriptor,
-                  isTestnet: true,
-                )
-                as PublicBdkWalletModel,
+        wallet: WalletModel.publicBdk(
+          id: 'script-path-intent',
+          descriptor: publicDescriptor,
+          network: Network.bitcoinTestnet,
+        ) as PublicBdkWalletModel,
         descriptorKeys: _descriptorKeyModels(parsed.keys),
       ),
     );
@@ -1141,30 +1107,8 @@ void _retainTaprootSpendMode(
   psbt.input.replaceInput(index, entries);
 }
 
-Future<void> _withTemporaryBdkDirectory(
-  String prefix,
-  Future<void> Function() body,
-) async {
-  final directory = await Directory.systemTemp.createTemp(prefix);
-  const channel = MethodChannel('plugins.flutter.io/path_provider');
-  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(channel, (call) async {
-        if (call.method == 'getApplicationDocumentsDirectory') {
-          return directory.path;
-        }
-        return null;
-      });
-  try {
-    await body();
-  } finally {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
-    await directory.delete(recursive: true);
-  }
-}
-
 Future<String> _fundStoredWallet(PublicBdkWalletModel wallet) async {
-  final bdkWallet = await BdkFacade.createWallet(wallet);
+  final bdkWallet = await BdkTestStore.createWallet(wallet);
   try {
     final fundingAddress = bdkWallet.peekAddress(
       keychain: bdk.KeychainKind.external_,
@@ -1182,7 +1126,7 @@ Future<String> _fundStoredWallet(PublicBdkWalletModel wallet) async {
         ),
       ],
     );
-    await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
+    await BdkTestStore.saveWallet(bdkWallet, wallet.hexId);
     return recipientAddress.address.toString();
   } finally {
     bdkWallet.dispose();

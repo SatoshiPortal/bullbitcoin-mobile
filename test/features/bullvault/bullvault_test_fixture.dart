@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -176,7 +176,9 @@ parseTestBullVaultDescriptor({
 }) {
   final parsed = BdkFacade.parsePublicTwoPathDescriptor(
     descriptor: descriptor,
-    isTestnet: network.isTestnet,
+    network: !network.isMainnet
+        ? Network.bitcoinTestnet
+        : Network.bitcoinMainnet,
   );
   return (
     descriptor: parsed.descriptor,
@@ -236,7 +238,7 @@ BullVaultSignerKey _signer(
 }) {
   final derived = deriveSignerKeys(
     testMnemonics[mnemonicIndex],
-    isTestnet: network.isTestnet,
+    isTestnet: !network.isMainnet,
   );
   return BullVaultSignerKey(
     role: role,

@@ -333,7 +333,6 @@ graph TB
     MEMPOOL_SETTINGS --> SETTINGS
     PAY --> FEES
     PAY --> SETTINGS
-    PSBT_FLOW --> WALLETS
     RECIPIENTS --> SETTINGS
     REPLACE_BY_FEE --> FEES
     REPLACE_BY_FEE --> SEND
@@ -532,3 +531,16 @@ Develop also removes the price chart’s shell locator import; its obsolete entr
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
 RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, status_check, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. App startup and onboarding consume the published mnemonic-language facade through their import_mnemonic dependencies.
+
+## BullVault integration with the wallet and sync owners
+
+The reviewed source-edge baseline includes BullVault’s public hardware, mnemonic,
+RecoverBull, backup, settings and send flows; standalone PSBT signing uses the
+PSBT-flow facade. Receive consumes the BullVault facade for the hardware-address
+reminder, and Settings consumes the hardware and standalone-signing facades.
+BullVault and standalone signing retain their existing wallet-model and address
+widget dependencies at the relocated wallet owner; these are relocation debt,
+not permission for new internal feature dependencies. New contribution widgets
+and routes resolve their own presentation from GetIt without importing the shell.
+
+The wallet-to-watch-only-import and PSBT-flow-to-wallet source edges are retired: descriptor import now receives published wallet types, and the QR flow carries its own result.

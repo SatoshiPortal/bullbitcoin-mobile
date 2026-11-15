@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 
 final class ReadBitBoxAccountKeyRequest {

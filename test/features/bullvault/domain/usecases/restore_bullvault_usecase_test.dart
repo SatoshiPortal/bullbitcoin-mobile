@@ -1,8 +1,11 @@
+import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
 import '../../bullvault_secrets_fixture.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -12,10 +15,9 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result, Fingerprint;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
@@ -268,12 +270,11 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => getDefaultSeed.execute(environment: Environment.testnet),
-    ).thenAnswer(
-      (_) async =>
-          Ok(await secretFixture.mnemonic(testMnemonics.first.split(' '))),
-    );
+    when(() => getDefaultSeed.execute(environment: Environment.testnet))
+        .thenAnswer(
+          (_) async =>
+              Ok(await secretFixture.mnemonic(testMnemonics.first.split(' '))),
+        );
     when(
       () => reserveAccount.execute(
         seedFingerprint: any(named: 'seedFingerprint'),
@@ -281,9 +282,8 @@ void main() {
         account: any(named: 'account'),
       ),
     ).thenAnswer((_) async => const Ok(0));
-    when(
-      () => deleteWallet.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => deleteWallet.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const Ok(null));
   });
 
   test(
@@ -486,9 +486,8 @@ void main() {
       ],
     );
     descriptorPort.duplicate = WalletAlreadyExistsException(wallet.id);
-    when(
-      () => getWallet.execute(wallet.id),
-    ).thenAnswer((_) async => existingWallet);
+    when(() => getWallet.execute(wallet.id))
+        .thenAnswer((_) async => existingWallet);
 
     final second = await usecase.execute(
       kind: BullVaultRestoreInputKind.recoveryPackage,
@@ -537,9 +536,8 @@ void main() {
         ],
       );
       descriptorPort.duplicate = WalletAlreadyExistsException(wallet.id);
-      when(
-        () => getWallet.execute(wallet.id),
-      ).thenAnswer((_) async => assigned);
+      when(() => getWallet.execute(wallet.id))
+          .thenAnswer((_) async => assigned);
 
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
@@ -614,12 +612,11 @@ void main() {
   });
 
   test('restores an unverified mobile key as unavailable', () async {
-    when(
-      () => getDefaultSeed.execute(environment: Environment.testnet),
-    ).thenAnswer(
-      (_) async =>
-          Ok(await secretFixture.mnemonic(testMnemonics[1].split(' '))),
-    );
+    when(() => getDefaultSeed.execute(environment: Environment.testnet))
+        .thenAnswer(
+          (_) async =>
+              Ok(await secretFixture.mnemonic(testMnemonics[1].split(' '))),
+        );
     final result = await usecase.execute(
       kind: BullVaultRestoreInputKind.descriptor,
       source: policy.descriptor,
@@ -656,12 +653,11 @@ void main() {
           testMnemonics.first.split(' '),
           passphrase: 'vault passphrase',
         );
-        when(
-          () => getDefaultSeed.execute(environment: Environment.testnet),
-        ).thenAnswer(
-          (_) async =>
-              Ok(await secretFixture.mnemonic(testMnemonics[1].split(' '))),
-        );
+        when(() => getDefaultSeed.execute(environment: Environment.testnet))
+            .thenAnswer(
+              (_) async =>
+                  Ok(await secretFixture.mnemonic(testMnemonics[1].split(' '))),
+            );
         final protectedPolicy = _passphrasePolicy(
           descriptorPort: descriptorPort,
           passphrase: 'vault passphrase',
@@ -719,41 +715,37 @@ void main() {
         );
         final wallets = _MockWalletRepository();
         final swaps = _MockSwapRepository();
-        when(
-          () => wallets.getWallet(ordinaryWallet.id),
-        ).thenAnswer((_) async => Ok(ordinaryWallet));
-        when(
-          () => wallets.deleteWallet(walletId: ordinaryWallet.id),
-        ).thenAnswer((_) async => const Ok(null));
-        when(
-          () => wallets.getWallets(),
-        ).thenAnswer((_) async => Ok([restored.wallet]));
-        when(
-          () => swaps.getOngoingSwaps(walletId: ordinaryWallet.id),
-        ).thenAnswer((_) async => []);
+        when(() => wallets.getWallet(ordinaryWallet.id))
+            .thenAnswer((_) async => Ok(ordinaryWallet));
+        when(() => wallets.deleteWallet(walletId: ordinaryWallet.id))
+            .thenAnswer((_) async => const Ok(null));
+        when(wallets.getCustodyFingerprints).thenAnswer(
+          (_) async => Ok(
+            restored.wallet.localSeedFingerprints.map(Fingerprint.new).toSet(),
+          ),
+        );
+        when(() => swaps.getOngoingSwaps(walletId: ordinaryWallet.id))
+            .thenAnswer((_) async => []);
         final deleted = await DeleteWalletUsecase(
           walletRepository: wallets,
+          seedReferences: SeedReferences(wallets),
           swapRepository: swaps,
           secrets: secretFixture.secrets,
         ).execute(walletId: ordinaryWallet.id);
         expect(deleted, isA<Ok>());
 
-        final retained =
-            (await secretFixture.secrets.fetch(canonical.id)
-                    as Ok<Secret, SecretFailure>)
-                .value;
+        final retained = (await secretFixture.secrets.fetch(
+          canonical.id,
+        ) as Ok<Secret, SecretFailure>).value;
         expect(retained.info.hasPassphrase, isFalse);
         final key = recovery
             ? protectedPolicy.delayedMobileRecoveryKey!
             : protectedPolicy.everydayKey;
-        final account =
-            (await retained.derive.account(
-                      derivationPath: key.accountKey.derivationPath!,
-                      network: BitcoinNetwork.testnet,
-                      passphrase: recovery ? '' : passphrase,
-                    )
-                    as Ok<PublicAccountKey, SecretFailure>)
-                .value;
+        final account = (await retained.derive.account(
+          derivationPath: key.accountKey.derivationPath!,
+          network: BitcoinNetwork.testnet,
+          passphrase: recovery ? '' : passphrase,
+        ) as Ok<PublicAccountKey, SecretFailure>).value;
         expect(account.xpub, key.accountKey.xpub);
       },
     );
@@ -766,9 +758,8 @@ void main() {
         testMnemonics.first.split(' '),
         passphrase: 'import passphrase',
       );
-      when(
-        () => getDefaultSeed.execute(environment: Environment.testnet),
-      ).thenAnswer((_) async => Ok(imported));
+      when(() => getDefaultSeed.execute(environment: Environment.testnet))
+          .thenAnswer((_) async => Ok(imported));
       secretFixture.storage.writesFail = true;
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
@@ -877,9 +868,8 @@ void main() {
     descriptorPort.duplicate = WalletAlreadyExistsException(
       unavailable.wallet.id,
     );
-    when(
-      () => getWallet.execute(unavailable.wallet.id),
-    ).thenAnswer((_) async => unavailable.wallet);
+    when(() => getWallet.execute(unavailable.wallet.id))
+        .thenAnswer((_) async => unavailable.wallet);
     when(
       () => walletSignerOwnership.markSignerLocal(
         walletId: unavailable.wallet.id,
@@ -1185,9 +1175,8 @@ void main() {
         policy: policy,
         signers: signers,
       );
-      when(
-        () => getWallet.execute('existing-wallet'),
-      ).thenAnswer((_) async => existing);
+      when(() => getWallet.execute('existing-wallet'))
+          .thenAnswer((_) async => existing);
 
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
@@ -1216,9 +1205,8 @@ void main() {
       policy: policy,
       signers: signers,
     );
-    when(
-      () => getWallet.execute('existing-wallet'),
-    ).thenAnswer((_) async => existing);
+    when(() => getWallet.execute('existing-wallet'))
+        .thenAnswer((_) async => existing);
 
     for (final status in [
       BullVaultLifecycleStatus.pending,
@@ -1256,9 +1244,8 @@ void main() {
       policy: policy,
       signers: signers,
     );
-    when(
-      () => getWallet.execute('existing-wallet'),
-    ).thenAnswer((_) async => existing);
+    when(() => getWallet.execute('existing-wallet'))
+        .thenAnswer((_) async => existing);
 
     final result = await usecase.execute(
       kind: BullVaultRestoreInputKind.descriptor,
@@ -1318,11 +1305,11 @@ void main() {
     'preserves the account when a restored wallet cannot be removed',
     () async {
       repository.readFailure = const BullVaultCreationFailure();
-      when(
-        () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => const Err(WalletStorageFailure('wallet deletion failed')),
-      );
+      when(() => deleteWallet.execute(walletId: any(named: 'walletId')))
+          .thenAnswer(
+            (_) async =>
+                const Err(WalletStorageFailure('wallet deletion failed')),
+          );
 
       final result = await usecase.execute(
         kind: BullVaultRestoreInputKind.descriptor,
@@ -1360,9 +1347,8 @@ void main() {
 
       expect(result, isA<Err<BullVaultRestoreResult, BullVaultFailure>>());
       expect(repository.records, isEmpty);
-      verify(
-        () => deleteWallet.execute(walletId: 'bullvault-wallet'),
-      ).called(1);
+      verify(() => deleteWallet.execute(walletId: 'bullvault-wallet'))
+          .called(1);
     },
   );
 }

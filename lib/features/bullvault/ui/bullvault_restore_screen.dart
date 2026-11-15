@@ -254,12 +254,12 @@ class _BullVaultRestoreScreenState extends State<BullVaultRestoreScreen>
 
   Future<void> _pickPackage() async {
     try {
-      final selection = await FilePicker.platform.pickFiles(
+      final selection = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: const ['json'],
       );
-      if (!mounted || selection == null || selection.files.isEmpty) return;
-      final path = selection.files.single.path;
+      if (!mounted || selection.isEmpty) return;
+      final path = selection.single.path;
       if (path == null) return;
       final file = File(path);
       if (await file.length() > _maxPackageBytes) {

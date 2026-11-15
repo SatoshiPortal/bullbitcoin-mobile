@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -33,12 +34,16 @@ final class SyncSpendFixture {
     InputReservationPort? reservations,
   }) async {
     final key = WalletKey(id: model.id, network: model.network.shared);
+    final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+      descriptor: model.descriptor,
+      network: model.network,
+    );
     final descriptor = BitcoinWalletDescriptor(
       key: key,
-      scriptType: p.ScriptType.bip84,
+      scriptType: parsed.scriptType?.shared,
       origin: 'test-fixture',
-      externalDescriptor: model.externalDescriptor,
-      internalDescriptor: model.internalDescriptor,
+      externalDescriptor: parsed.externalDescriptor,
+      internalDescriptor: parsed.internalDescriptor,
     );
     final freezes = MemoryFreezeStore();
     final sync = Sync.foreground(

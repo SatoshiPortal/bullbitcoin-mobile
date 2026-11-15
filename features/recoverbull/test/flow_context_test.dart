@@ -63,10 +63,6 @@ void main() {
       fingerprint: Fingerprint('73c5da0a'),
       network: BitcoinNetwork.testnet,
     );
-    final feature = RecoverBullFeature.create(
-      secrets: custody.Secrets(scratchDirectory: () async => '.'),
-      wallets: _Wallets(null),
-    );
     final vault = EncryptedVault(
       id: '11' * 32,
       salt: '22' * 16,
@@ -81,7 +77,7 @@ void main() {
           builder: (context, _) => Scaffold(
             body: TextButton(
               onPressed: () async {
-                result = await feature.openSetup(
+                result = await RecoverBullFeature.openSetup(
                   context,
                   backupContext: selected,
                 );

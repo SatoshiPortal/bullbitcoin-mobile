@@ -437,9 +437,8 @@ class _VaultFlowPageState extends State<VaultFlowPage> with PrivacyScreen {
                 widget.onRecovered != null) {
               widget.onRecovered?.call();
             } else {
-              Navigator.of(
-                context,
-              ).pop(widget.returnCompletion ? completion : true);
+              Navigator.of(context)
+                  .pop(widget.returnCompletion ? completion : true);
             }
           }),
         ] else ...[

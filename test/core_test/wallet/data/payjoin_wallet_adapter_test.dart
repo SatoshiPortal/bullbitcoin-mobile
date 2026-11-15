@@ -1,12 +1,12 @@
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/sync.dart' show BitcoinSpendStatus;
+
+import '../support/sync_spend_fixture.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
@@ -47,10 +47,9 @@ void main() {
     });
     FakeSecureStoragePlatform().install();
     final secrets = Secrets(scratchDirectory: () async => directory.path);
-    final secret =
-        (await secrets.import(words: testMnemonics.first.split(' '))
-                as Ok<Secret, SecretFailure>)
-            .value;
+    final secret = (await secrets.import(
+      words: testMnemonics.first.split(' '),
+    ) as Ok<Secret, SecretFailure>).value;
     final descriptors = singleSignatureDescriptorsAtAccount(
       testMnemonics.first,
       account: 1,
@@ -63,7 +62,6 @@ void main() {
     when(() => metadata.fetch('wallet')).thenAnswer(
       (_) async => WalletMetadataModel(
         id: 'wallet',
-        network: Network.bitcoinTestnet,
         signers: [
           walletSignerModel(
             id: 'signer-0',
@@ -81,11 +79,23 @@ void main() {
         isPhysicalBackupTested: false,
         publicDescriptor: descriptor,
         isDefault: false,
+        networkCode: 'bitcoinTestnet',
       ),
     );
+    final fixture = await SyncSpendFixture.open(
+      directory.path,
+      PublicBdkWalletModel(
+        id: 'wallet',
+        descriptor: descriptor,
+        network: Network.bitcoinTestnet,
+      ),
+    );
+    addTearDown(fixture.close);
     final adapter = PayjoinWalletAdapter(
       secrets,
-      BdkWalletDatasource(),
+      fixture.wallet,
+      (_) async => BitcoinSpendStatus.ready,
+      SyncWalletValuesDatasource(load: (key) => fixture.wallet(key.id)),
       metadata,
     );
 

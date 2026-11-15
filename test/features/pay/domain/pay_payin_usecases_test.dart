@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade;
@@ -212,9 +213,8 @@ void main() {
       when(
         () => port.signPsbt('psbt', walletId: 'wallet-1'),
       ).thenAnswer((_) async => const Ok((psbt: 'signed', isFinalized: true)));
-      when(
-        () => port.getTxSize(psbt: 'signed', walletId: 'wallet-1'),
-      ).thenAnswer((_) async => 110);
+      when(() => port.getTxSize(psbt: 'signed', walletId: 'wallet-1'))
+          .thenAnswer((_) async => 110);
       final result = await usecase.bitcoin(psbt: 'psbt', walletId: 'wallet-1');
       expect(
         (result as Ok<({String signedPsbt, int txSize}), PayFailure>).value,
@@ -235,9 +235,8 @@ void main() {
               BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
             ),
           ]) {
-        when(
-          () => port.signPsbt('psbt', walletId: 'wallet-1'),
-        ).thenAnswer((_) async => signingResult);
+        when(() => port.signPsbt('psbt', walletId: 'wallet-1'))
+            .thenAnswer((_) async => signingResult);
         final result = await usecase.bitcoin(
           psbt: 'psbt',
           walletId: 'wallet-1',
@@ -314,6 +313,7 @@ void main() {
           await BroadcastPayPayinUsecase(
             wallet: const WalletFacade(Stream.empty()),
             send: SendFacade(
+              watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
               bitcoin: broadcast.execute,
               liquid: _MockBroadcastLiquid().execute,
             ),
@@ -347,3 +347,6 @@ void main() {
     });
   });
 }
+
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}

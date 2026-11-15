@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:primitives/primitives.dart';
 import 'package:primitives/primitives.dart' as primitives show Network;
@@ -58,6 +57,7 @@ final class _Connections implements WalletConnectionPort {
 }
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
 class _MockPendingWatcher extends Mock
     implements WatchPendingBitcoinTransactionsUsecase {}
 
@@ -79,11 +79,13 @@ void main() {
       (_) async => const Err(InvalidTransactionFailure('transaction mismatch')),
     );
     final cubit = BroadcastSignedTxCubit(
-      network: app.Network.bitcoinTestnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
-      request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
+      request: const BroadcastSignedTxRequest(
+        network: app.Network.bitcoinTestnet,
+        unsignedPsbt: psbt,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -110,11 +112,13 @@ void main() {
       ),
     ).thenThrow(StateError('programmer defect'));
     final cubit = BroadcastSignedTxCubit(
-      network: app.Network.bitcoinTestnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
-      request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
+      request: const BroadcastSignedTxRequest(
+        network: app.Network.bitcoinTestnet,
+        unsignedPsbt: psbt,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -143,11 +147,13 @@ void main() {
       ),
     ).thenAnswer((_) async => const Ok(null));
     final cubit = BroadcastSignedTxCubit(
-      network: app.Network.bitcoinTestnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: verifier,
-      request: const BroadcastSignedTxRequest(unsignedPsbt: psbt),
+      request: const BroadcastSignedTxRequest(
+        network: app.Network.bitcoinTestnet,
+        unsignedPsbt: psbt,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -162,10 +168,12 @@ void main() {
     () async {
       final verifier = _MockVerifySignedTxUsecase();
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: verifier,
+        request: const BroadcastSignedTxRequest(
+          network: app.Network.bitcoinTestnet,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -196,7 +204,6 @@ void main() {
       // Broadcast Transaction does, so the category sync reports travels to
       // the cubit.
       final cubit = BroadcastSignedTxCubit(
-        network: network,
         broadcastBitcoinTransactionUsecase: BroadcastBitcoinTransactionUsecase(
           bitcoinBlockchainRepository: BitcoinBlockchainRepository(
             connections: connections,
@@ -205,6 +212,7 @@ void main() {
           settingsRepository: settings,
         ),
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+        request: BroadcastSignedTxRequest(network: network),
       );
       addTearDown(cubit.close);
       await cubit.tryParseTransaction(psbt);
@@ -288,17 +296,19 @@ void main() {
       ),
     ).thenAnswer((_) async => 'txid');
     final cubit = BroadcastSignedTxCubit(
-      network: app.Network.bitcoinMainnet,
       broadcastBitcoinTransactionUsecase: broadcast,
       verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
         SendFacade(
           bitcoin: _unusedBitcoinBroadcast,
           liquid: _unusedLiquidBroadcast,
           verifySignedTxUsecase: VerifySignedTxUsecase(),
-          watchPending: _MockPendingWatcher(),
+          watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
         ),
       ),
-      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
+      request: const BroadcastSignedTxRequest(
+        network: app.Network.bitcoinMainnet,
+        unsignedPsbt: unsignedPsbt,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -324,7 +334,6 @@ void main() {
 
   test('rejects a combined PSBT that cannot be finalized', () async {
     final cubit = BroadcastSignedTxCubit(
-      network: app.Network.bitcoinMainnet,
       broadcastBitcoinTransactionUsecase:
           _MockBroadcastBitcoinTransactionUsecase(),
       verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
@@ -332,10 +341,13 @@ void main() {
           bitcoin: _unusedBitcoinBroadcast,
           liquid: _unusedLiquidBroadcast,
           verifySignedTxUsecase: VerifySignedTxUsecase(),
-          watchPending: _MockPendingWatcher(),
+          watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
         ),
       ),
-      request: const BroadcastSignedTxRequest(unsignedPsbt: unsignedPsbt),
+      request: const BroadcastSignedTxRequest(
+        network: app.Network.bitcoinMainnet,
+        unsignedPsbt: unsignedPsbt,
+      ),
     );
     addTearDown(cubit.close);
 
@@ -380,9 +392,11 @@ void main() {
         ),
       ).thenAnswer((_) async => 'txid');
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase: broadcast,
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+        request: const BroadcastSignedTxRequest(
+          network: app.Network.bitcoinTestnet,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -426,9 +440,11 @@ void main() {
         ),
       ).thenAnswer((_) async => 'txid');
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase: broadcast,
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+        request: const BroadcastSignedTxRequest(
+          network: app.Network.bitcoinTestnet,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -465,11 +481,13 @@ void main() {
         ),
       ).thenAnswer((_) async => const Ok(null));
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: verifier,
-        request: const BroadcastSignedTxRequest(unsignedPsbt: exportedPsbt),
+        request: const BroadcastSignedTxRequest(
+          network: app.Network.bitcoinTestnet,
+          unsignedPsbt: exportedPsbt,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -487,7 +505,6 @@ void main() {
 
     test('accepts it against its own exported PSBT', () async {
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
@@ -495,10 +512,13 @@ void main() {
             bitcoin: _unusedBitcoinBroadcast,
             liquid: _unusedLiquidBroadcast,
             verifySignedTxUsecase: VerifySignedTxUsecase(),
-          watchPending: _MockPendingWatcher(),
+            watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
           ),
         ),
-        request: const BroadcastSignedTxRequest(unsignedPsbt: exportedPsbt),
+        request: const BroadcastSignedTxRequest(
+          network: app.Network.bitcoinTestnet,
+          unsignedPsbt: exportedPsbt,
+        ),
       );
       addTearDown(cubit.close);
 
@@ -511,7 +531,6 @@ void main() {
     test('a different skeleton is refused, without falling back to the '
         'PSBT', () async {
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase:
             _MockBroadcastBitcoinTransactionUsecase(),
         verifySignedTxUsecase: VerifyBroadcastSignedTxUsecase(
@@ -519,10 +538,11 @@ void main() {
             bitcoin: _unusedBitcoinBroadcast,
             liquid: _unusedLiquidBroadcast,
             verifySignedTxUsecase: VerifySignedTxUsecase(),
-          watchPending: _MockPendingWatcher(),
+            watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
           ),
         ),
         request: const BroadcastSignedTxRequest(
+          network: app.Network.bitcoinTestnet,
           unsignedPsbt: otherExportedPsbt,
         ),
       );
@@ -544,9 +564,11 @@ void main() {
         ),
       ).thenAnswer((_) async => 'txid');
       final cubit = BroadcastSignedTxCubit(
-        network: app.Network.bitcoinTestnet,
         broadcastBitcoinTransactionUsecase: broadcast,
         verifySignedTxUsecase: _MockVerifySignedTxUsecase(),
+        request: const BroadcastSignedTxRequest(
+          network: app.Network.bitcoinTestnet,
+        ),
       );
       addTearDown(cubit.close);
 

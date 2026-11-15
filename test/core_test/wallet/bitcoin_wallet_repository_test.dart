@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart'
     show
@@ -13,6 +16,7 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
+
 // Unit tests for the repository-boundary guarantees of
 // `BitcoinWalletRepository.buildPsbt`:
 //
@@ -29,12 +33,11 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -45,6 +48,8 @@ class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
 
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
+
+class _MockFreezes extends Mock implements SyncFreezesDatasource {}
 
 class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
@@ -84,7 +89,6 @@ void main() {
 
   final metadata = WalletMetadataModel(
     id: _walletId,
-    network: Network.bitcoinTestnet,
     signers: [
       walletSignerModel(
         id: 'signer-0',
@@ -102,6 +106,7 @@ void main() {
     isPhysicalBackupTested: false,
     publicDescriptor: 'wpkh([73c5da0a/84h/1h/0h]tpub-test/<0;1>/*)',
     isDefault: true,
+    networkCode: 'bitcoinTestnet',
   );
 
   setUpAll(() {
@@ -132,6 +137,7 @@ void main() {
       secrets: Secrets(scratchDirectory: () async => ''),
       bdkWalletDatasource: bdkDatasource,
       walletValuesDatasource: values,
+      frozenWalletUtxoDatasource: _MockFreezes(),
     );
 
     when(() => metadataDatasource.fetch(_walletId))

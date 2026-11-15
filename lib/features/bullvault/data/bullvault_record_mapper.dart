@@ -58,10 +58,9 @@ final class BullVaultRecordMapper {
       status: BullVaultLifecycleStatus.values.byName(model.status),
       hardwareSetupComplete: model.hardwareSetupComplete,
       hardwareSetupDeferred: model.hardwareSetupDeferred,
-      completedHardwareSignerIds:
-          (jsonDecode(model.completedHardwareSignerIdsJson) as List<dynamic>)
-              .cast<String>()
-              .toSet(),
+      completedHardwareSignerIds: (jsonDecode(
+        model.completedHardwareSignerIdsJson,
+      ) as List<dynamic>).cast<String>().toSet(),
       recoveryPackageConfirmed: model.recoveryPackageConfirmed,
       mobileBackupDeferred: model.mobileBackupDeferred,
       createdAt: DateTime.parse(model.createdAt).toUtc(),

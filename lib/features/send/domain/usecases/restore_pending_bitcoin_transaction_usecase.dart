@@ -1,12 +1,9 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/core/price/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -79,7 +76,8 @@ class RestorePendingBitcoinTransactionUsecase {
   Future<Result<RestoredPendingBitcoinTransaction, SendFailure>> execute(
     String id,
   ) async {
-    final PendingBitcoinTransaction stored;
+    // Not final: Dart 3.14.0 AOT crashes on a switch-assigned final captured by a closure (dart-lang/sdk#64917).
+    PendingBitcoinTransaction stored;
     switch (await _getPendingBitcoinTransactionUsecase.execute(id)) {
       case Ok(value: final value?):
         stored = value;
@@ -116,7 +114,8 @@ class RestorePendingBitcoinTransactionUsecase {
             (primary is BitcoinPaymentRequest ||
                 (primary is Bip21PaymentRequest &&
                     primary.network.isBitcoin)) &&
-            recipientPolicy.networkIsTestnet(primary) == wallet.isTestnet &&
+            recipientPolicy.networkIsTestnet(primary) ==
+                !wallet.network.isMainnet &&
             (!stored.isSweep || recipientPolicy.supports(primary));
         return Ok(
           RestoredPendingBitcoinTransaction(
@@ -129,7 +128,8 @@ class RestorePendingBitcoinTransactionUsecase {
                             (request != null &&
                                 recipientPolicy.compatibleAdditionalAddress(
                                       request: request,
-                                      primaryNetworkIsTestnet: wallet.isTestnet,
+                                      primaryNetworkIsTestnet:
+                                          !wallet.network.isMainnet,
                                       isSweep: stored.isSweep,
                                     ) !=
                                     null))

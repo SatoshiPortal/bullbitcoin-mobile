@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/widgets/bitcoin_policy_description.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_action_buttons.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_error.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -17,7 +16,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullButton,
         BullText;
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 

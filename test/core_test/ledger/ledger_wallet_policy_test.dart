@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/ledger_failure.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -73,9 +73,9 @@ void main() {
               'wsh(or_d(pk($key/<0;1>/*),'
               'and_v(v:older(10),pk($key/<2;3>/*))))',
         );
-    final derivedXpub = Bip32Derivation.getBip32Xpub(
-      _xpub,
-    ).derivePath('5').toBase58();
+    final derivedXpub = Bip32Derivation.getBip32Xpub(_xpub)
+        .derivePath('5')
+        .toBase58();
 
     final policy = LedgerWalletPolicyAdapter.fromWallet(
       wallet,
@@ -202,9 +202,8 @@ void main() {
     });
 
     void stubMatchedSigner({String xpub = _xpub}) {
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => 'aabbccdd');
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenAnswer((_) async => 'aabbccdd');
       when(
         () =>
             datasource.getWalletPolicyXpub(any(), derivationPath: _accountPath),
@@ -279,9 +278,8 @@ void main() {
 
     test('rejects Taproot before the safe Bitcoin app version', () async {
       final wallet = _taprootKeyPathPolicyWallet();
-      when(
-        () => datasource.getBitcoinAppVersion(any()),
-      ).thenAnswer((_) async => '2.2.0');
+      when(() => datasource.getBitcoinAppVersion(any()))
+          .thenAnswer((_) async => '2.2.0');
 
       final result = await repository.registerWalletPolicy(
         _device,
@@ -297,9 +295,8 @@ void main() {
 
     test('requires NUMS recognition for a dummy internal key', () async {
       final wallet = _taprootPolicyWallet();
-      when(
-        () => datasource.getBitcoinAppVersion(any()),
-      ).thenAnswer((_) async => '2.2.1');
+      when(() => datasource.getBitcoinAppVersion(any()))
+          .thenAnswer((_) async => '2.2.1');
 
       final result = await repository.registerWalletPolicy(
         _device,
@@ -580,7 +577,7 @@ Wallet _taprootKeyPathPolicyWallet() {
 Wallet _taprootPolicyWallet() {
   final parsed = BdkFacade.parsePublicTwoPathDescriptor(
     descriptor: _taprootPolicyDescriptor,
-    isTestnet: true,
+    network: Network.bitcoinTestnet,
   );
   return Wallet(
     origin: 'taproot-policy-wallet',
@@ -621,7 +618,9 @@ String _policyId(Wallet wallet) => hex.encode(
 _policyAnalysisDescriptor(String descriptor, {required Network network}) {
   final parsed = BdkFacade.parsePublicTwoPathDescriptor(
     descriptor: descriptor,
-    isTestnet: network.isTestnet,
+    network: !network.isMainnet
+        ? Network.bitcoinTestnet
+        : Network.bitcoinMainnet,
   );
   return (
     policyKeys: [

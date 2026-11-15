@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_policy_registration_name.dart';
 import 'package:bb_mobile/features/settings/domain/wallet_registration.dart';
 import 'package:satoshifier/utils/descriptor_checksum.dart';
@@ -414,7 +413,9 @@ final class _CommonMultisigKey {
         ? baseXpub
         : Bip32Derivation.getBip32Xpub(baseXpub)
               .derivePath(suffix.substring(1))
-              .convert(wallet.isTestnet ? XpubType.tpub : XpubType.xpub);
+              .convert(
+                !wallet.network.isMainnet ? XpubType.tpub : XpubType.xpub,
+              );
     return _CommonMultisigKey(
       masterFingerprint: match.group(1)!.toLowerCase(),
       derivationPath: 'm${match.group(2)}$suffix',

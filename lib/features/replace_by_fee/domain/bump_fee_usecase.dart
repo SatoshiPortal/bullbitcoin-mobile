@@ -94,10 +94,20 @@ class BumpFeeUsecase {
         case Err(:final failure):
           return Err(_bumpFailure(failure));
       }
-      final signed = await _bitcoinWalletRepository.signPsbt(
+      final signing = await _bitcoinWalletRepository.signPsbt(
         unsigned.encoded,
         walletId: walletId,
+        replacingTxid: txid,
       );
+      final String signed;
+      switch (signing) {
+        case Ok(value: (psbt: final psbt, isFinalized: true)):
+          signed = psbt;
+        case Ok() || Err():
+          return const Err(
+            ReplaceByFeeUnexpectedFailure('Replacement could not be signed'),
+          );
+      }
       final broadcastedTxid = await _broadcastBitcoinTransactionUsecase.execute(
         signed,
         isPsbt: true,

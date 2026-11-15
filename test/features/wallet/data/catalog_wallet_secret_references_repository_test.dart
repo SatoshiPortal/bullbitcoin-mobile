@@ -1,3 +1,8 @@
+import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/catalog_wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -11,8 +16,19 @@ class _Metadata extends Mock implements WalletMetadataDatasource {}
 // Network/origin getters intentionally absent: even an unresolved catalog row
 // can reference custody used on another chain, and must not be decoded here.
 class _Row extends Fake implements WalletMetadataModel {
-  @override
   final String masterFingerprint;
+  @override
+  List<WalletSignerModel> get signers => [
+    walletSignerModel(
+      id: 'signer-0',
+      descriptorKeyId: 'key-0',
+      masterFingerprint: masterFingerprint,
+      xpubFingerprint: '',
+      xpub: '',
+      signer: Signer.local,
+      signerDevice: null,
+    ),
+  ];
   _Row(this.masterFingerprint);
 }
 

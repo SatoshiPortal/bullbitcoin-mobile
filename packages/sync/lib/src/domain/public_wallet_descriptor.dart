@@ -6,7 +6,7 @@ import 'wallet_key.dart';
 /// Liquid confidential descriptors contain sensitive blinding material.
 sealed class PublicWalletDescriptor {
   final WalletKey key;
-  final ScriptType scriptType;
+  final ScriptType? scriptType;
   final String origin;
 
   PublicWalletDescriptor({

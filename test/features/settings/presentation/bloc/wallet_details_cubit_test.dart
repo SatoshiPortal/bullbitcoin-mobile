@@ -35,9 +35,8 @@ void main() {
 
   test('loads the wallet policy', () async {
     final policy = _policy();
-    when(
-      () => getWalletPolicy.execute('wallet-id'),
-    ).thenAnswer((_) async => Ok(policy));
+    when(() => getWalletPolicy.execute('wallet-id'))
+        .thenAnswer((_) async => Ok(policy));
 
     await cubit.loadPolicy('wallet-id');
 
@@ -47,9 +46,8 @@ void main() {
   });
 
   test('holds a typed failure so policy loading can be retried', () async {
-    when(
-      () => getWalletPolicy.execute('wallet-id'),
-    ).thenAnswer((_) async => const Err(SettingsWalletPolicyFailure()));
+    when(() => getWalletPolicy.execute('wallet-id'))
+        .thenAnswer((_) async => const Err(SettingsWalletPolicyFailure()));
 
     await cubit.loadPolicy('wallet-id');
 

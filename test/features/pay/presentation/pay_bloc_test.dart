@@ -2032,11 +2032,9 @@ void main() {
       );
 
       bloc.add(const PayEvent.sendPaymentConfirmed());
-      final paymentState =
-          await bloc.stream.firstWhere(
-                (state) => state is PayPaymentState && state.error != null,
-              )
-              as PayPaymentState;
+      final paymentState = await bloc.stream.firstWhere(
+        (state) => state is PayPaymentState && state.error != null,
+      ) as PayPaymentState;
 
       expect(paymentState.error, isA<PaySelectedCoinsUnavailableFailure>());
     });

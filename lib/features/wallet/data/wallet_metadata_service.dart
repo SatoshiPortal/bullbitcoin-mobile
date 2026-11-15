@@ -10,10 +10,7 @@ import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart' show Result, Ok, Err;
-import 'package:secrets/secrets.dart';
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -199,7 +196,7 @@ class WalletMetadataService {
           DescriptorDerivation.derivePublicBitcoinMultipathDescriptorFromXpub(
             xpub,
             scriptType: scriptType,
-            isTestnet: network.isTestnet,
+            isTestnet: !network.isMainnet,
             masterFingerprint: secret.info.id.hex,
             derivationPath: _accountDerivationPath(
               network: network,

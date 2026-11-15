@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -111,9 +110,8 @@ void main() {
         records: {replacement.walletId: replacement},
       );
       final getWallet = _MockGetWalletUsecase();
-      when(
-        () => getWallet.execute(replacement.walletId),
-      ).thenThrow(GetWalletException('Wallet storage unavailable'));
+      when(() => getWallet.execute(replacement.walletId))
+          .thenThrow(GetWalletException('Wallet storage unavailable'));
       final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
 
       final failed = await usecase.execute(
@@ -127,9 +125,8 @@ void main() {
       );
       expect(repository.records[replacement.walletId], same(replacement));
 
-      when(
-        () => getWallet.execute(replacement.walletId),
-      ).thenAnswer((_) async => _replacementWallet());
+      when(() => getWallet.execute(replacement.walletId))
+          .thenAnswer((_) async => _replacementWallet());
       final retried = await usecase.execute(
         walletId: replacement.walletId,
         completedHardwareSignerId: 'cold',
@@ -153,9 +150,8 @@ void main() {
       records: {previous.walletId: previous, replacement.walletId: replacement},
     );
     final getWallet = _MockGetWalletUsecase();
-    when(
-      () => getWallet.execute(replacement.walletId),
-    ).thenThrow(GetWalletException('Wallet storage unavailable'));
+    when(() => getWallet.execute(replacement.walletId))
+        .thenThrow(GetWalletException('Wallet storage unavailable'));
     final usecase = ActivateBullVaultRenewalUsecase(repository, getWallet);
 
     final failed = await usecase.execute(
@@ -171,9 +167,8 @@ void main() {
     expect(repository.records[replacement.walletId], same(replacement));
     expect(repository.activatedReplacement, isNull);
 
-    when(
-      () => getWallet.execute(replacement.walletId),
-    ).thenAnswer((_) async => _replacementWallet());
+    when(() => getWallet.execute(replacement.walletId))
+        .thenAnswer((_) async => _replacementWallet());
     final retried = await usecase.execute(
       previousWalletId: previous.walletId,
       replacementWalletId: replacement.walletId,
@@ -194,9 +189,8 @@ void main() {
         records: {initial.walletId: initial},
       );
       final getWallet = _MockGetWalletUsecase();
-      when(
-        () => getWallet.execute(initial.walletId),
-      ).thenThrow(GetWalletException('Wallet storage unavailable'));
+      when(() => getWallet.execute(initial.walletId))
+          .thenThrow(GetWalletException('Wallet storage unavailable'));
       final usecase = ActivateInitialBullVaultUsecase(repository, getWallet);
 
       final failed = await usecase.execute(
@@ -212,9 +206,8 @@ void main() {
       );
       expect(repository.records[initial.walletId], same(initial));
 
-      when(
-        () => getWallet.execute(initial.walletId),
-      ).thenAnswer((_) async => _initialWallet());
+      when(() => getWallet.execute(initial.walletId))
+          .thenAnswer((_) async => _initialWallet());
       final retried = await usecase.execute(
         walletId: initial.walletId,
         hardwareSetupDeferred: true,
@@ -236,9 +229,8 @@ void main() {
       records: {replacement.walletId: replacement},
     );
     final getWallet = _MockGetWalletUsecase();
-    when(
-      () => getWallet.execute(replacement.walletId),
-    ).thenAnswer((_) async => _replacementWallet());
+    when(() => getWallet.execute(replacement.walletId))
+        .thenAnswer((_) async => _replacementWallet());
     final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
 
     final signerResult = await usecase.execute(
@@ -272,9 +264,8 @@ void main() {
       );
       final repository = _RenewalRepository(records: {active.walletId: active});
       final getWallet = _MockGetWalletUsecase();
-      when(
-        () => getWallet.execute(active.walletId),
-      ).thenAnswer((_) async => _initialWallet());
+      when(() => getWallet.execute(active.walletId))
+          .thenAnswer((_) async => _initialWallet());
       final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
 
       final result = await usecase.execute(
@@ -295,9 +286,8 @@ void main() {
     );
     final repository = _RenewalRepository(records: {active.walletId: active});
     final getWallet = _MockGetWalletUsecase();
-    when(
-      () => getWallet.execute(active.walletId),
-    ).thenAnswer((_) async => _replacementWallet());
+    when(() => getWallet.execute(active.walletId))
+        .thenAnswer((_) async => _replacementWallet());
     final usecase = UpdateBullVaultSetupUsecase(repository, getWallet);
 
     final hardware = await usecase.execute(
@@ -351,9 +341,8 @@ void main() {
         },
       );
       final getWallet = _MockGetWalletUsecase();
-      when(
-        () => getWallet.execute(replacement.walletId, sync: true),
-      ).thenAnswer((_) async => _replacementWallet());
+      when(() => getWallet.execute(replacement.walletId, sync: true))
+          .thenAnswer((_) async => _replacementWallet());
       final usecase = CancelBullVaultRenewalUsecase(repository, getWallet);
 
       final result = await usecase.execute(
@@ -377,9 +366,8 @@ void main() {
       records: {previous.walletId: previous, replacement.walletId: replacement},
     );
     final getWallet = _MockGetWalletUsecase();
-    when(
-      () => getWallet.execute(replacement.walletId, sync: true),
-    ).thenAnswer((_) async => _replacementWallet(balanceSat: BigInt.one));
+    when(() => getWallet.execute(replacement.walletId, sync: true))
+        .thenAnswer((_) async => _replacementWallet(balanceSat: BigInt.one));
     final usecase = CancelBullVaultRenewalUsecase(repository, getWallet);
 
     final result = await usecase.execute(
@@ -425,20 +413,17 @@ void main() {
       successorWalletId: 'wallet-1',
       status: BullVaultLifecycleStatus.migrating,
     );
-    final replacement = _replacement(
-      recoveryPackageConfirmed: true,
-    ).copyWith(status: BullVaultLifecycleStatus.active);
+    final replacement = _replacement(recoveryPackageConfirmed: true)
+        .copyWith(status: BullVaultLifecycleStatus.active);
     final repository = _RenewalRepository(
       records: {previous.walletId: previous, replacement.walletId: replacement},
     );
     final getWallet = _MockGetWalletUsecase();
 
-    when(
-      () => getWallet.execute(replacement.walletId),
-    ).thenAnswer((_) async => _replacementWallet());
-    when(
-      () => getWallet.execute(previous.walletId),
-    ).thenAnswer((_) async => _previousWallet(isHidden: true));
+    when(() => getWallet.execute(replacement.walletId))
+        .thenAnswer((_) async => _replacementWallet());
+    when(() => getWallet.execute(previous.walletId))
+        .thenAnswer((_) async => _previousWallet(isHidden: true));
     final usecase = ResumeBullVaultRenewalUsecase(repository, getWallet);
 
     final result = await usecase.execute(replacement.walletId);
@@ -460,9 +445,8 @@ void main() {
     );
     final getWallet = _MockGetWalletUsecase();
 
-    when(
-      () => getWallet.execute(replacement.walletId),
-    ).thenAnswer((_) async => _replacementWallet());
+    when(() => getWallet.execute(replacement.walletId))
+        .thenAnswer((_) async => _replacementWallet());
     final usecase = ActivateBullVaultRenewalUsecase(repository, getWallet);
 
     final result = await usecase.execute(
@@ -560,9 +544,8 @@ void main() {
       );
       final getWallet = _MockGetWalletUsecase();
 
-      when(
-        () => getWallet.execute(initial.walletId),
-      ).thenAnswer((_) async => _initialWallet());
+      when(() => getWallet.execute(initial.walletId))
+          .thenAnswer((_) async => _initialWallet());
       final usecase = ActivateInitialBullVaultUsecase(repository, getWallet);
 
       final beforeHardwareSetup = await usecase.execute(
@@ -642,9 +625,8 @@ void main() {
     final repository = _RenewalRepository(records: {initial.walletId: initial});
     final getWallet = _MockGetWalletUsecase();
 
-    when(
-      () => getWallet.execute(initial.walletId),
-    ).thenAnswer((_) async => wallet);
+    when(() => getWallet.execute(initial.walletId))
+        .thenAnswer((_) async => wallet);
 
     final result = await ActivateInitialBullVaultUsecase(repository, getWallet)
         .execute(

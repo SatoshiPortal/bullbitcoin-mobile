@@ -15,8 +15,7 @@ void main() {
 
   const model = WalletModel.publicBdk(
     id: 'values',
-    externalDescriptor: 'unused',
-    internalDescriptor: 'unused',
+    descriptor: 'unused',
     network: Network.bitcoinTestnet,
   );
   // BIP173 test vector: a testnet P2WPKH address.

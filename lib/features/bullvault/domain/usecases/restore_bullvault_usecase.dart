@@ -1,5 +1,6 @@
 import 'package:secrets/secrets.dart' show Secret, Secrets;
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -124,7 +125,7 @@ class RestoreBullVaultUsecase {
     try {
       final settings = await _getSettingsUsecase.execute();
       final network = Network.fromEnvironment(
-        isTestnet: settings.environment.isTestnet,
+        environment: settings.environment.networkEnv,
         isLiquid: false,
       );
       final packageResult = kind == BullVaultRestoreInputKind.recoveryPackage
@@ -269,14 +270,17 @@ class RestoreBullVaultUsecase {
         descriptor: policy.descriptor,
         network: network,
       );
-      final annotations =
-          BullVaultSignerKey.assignDescriptorKeys(parsed.descriptorKeys, [
-            policy.everydayKey,
-            ?policy.delayedMobileRecoveryKey,
-            policy.coldKey,
-            ?policy.secondColdKey,
-            ?policy.inheritanceKey,
-          ], localSeedFingerprint: mobileSeedFingerprint);
+      final annotations = BullVaultSignerKey.assignDescriptorKeys(
+        parsed.descriptorKeys,
+        [
+          policy.everydayKey,
+          ?policy.delayedMobileRecoveryKey,
+          policy.coldKey,
+          ?policy.secondColdKey,
+          ?policy.inheritanceKey,
+        ],
+        localSeedFingerprint: mobileSeedFingerprint,
+      );
       if (annotations == null) {
         return const Err(BullVaultInvalidRecoveryFailure());
       }

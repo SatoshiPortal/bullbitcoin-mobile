@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_onboarding_snapshot.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/check_bullvault_mobile_backups_usecase.dart';
@@ -25,7 +24,7 @@ class LoadBullVaultOnboardingUsecase {
     try {
       final settings = await _getSettingsUsecase.execute();
       final network = Network.fromEnvironment(
-        isTestnet: settings.environment.isTestnet,
+        environment: settings.environment.networkEnv,
         isLiquid: false,
       );
       final resumed = await _resumeUsecase.execute(network, walletId: walletId);

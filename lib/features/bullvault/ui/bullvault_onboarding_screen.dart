@@ -1,5 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
-import 'package:bb_mobile/locator.dart';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -982,9 +983,9 @@ final class _Review extends StatelessWidget {
           const Gap(12),
           BullInfoCard(
             description: context.loc.bullVaultPassphraseFreeRecoveryWarning(
-              DateFormat.yMMMMd(
-                Localizations.localeOf(context).toLanguageTag(),
-              ).add_Hm().format(recoveryDate.toUtc()),
+              DateFormat.yMMMMd(Localizations.localeOf(context).toLanguageTag())
+                  .add_Hm()
+                  .format(recoveryDate.toUtc()),
             ),
             tagColor: context.appColors.warning,
             bgColor: context.appColors.warningContainer,
@@ -1136,9 +1137,9 @@ final class _Review extends StatelessWidget {
 
   String _recoveryDate(BuildContext context, DateTime activationDate) =>
       context.loc.bullVaultRecoveryDateUtc(
-        DateFormat.yMMMMd(
-          Localizations.localeOf(context).toLanguageTag(),
-        ).add_Hm().format(activationDate.toUtc()),
+        DateFormat.yMMMMd(Localizations.localeOf(context).toLanguageTag())
+            .add_Hm()
+            .format(activationDate.toUtc()),
       );
 }
 
@@ -1210,13 +1211,11 @@ Future<void> _setUpRecoverBull(
   if (result == null || value == null) return;
   final fingerprint = Fingerprint.tryParse(value);
   if (fingerprint == null) return;
-  await locator<RecoverBullFeature>().openSetup(
+  await RecoverBullFeature.openSetup(
     context,
     backupContext: VaultContext(
       fingerprint: fingerprint,
-      network: result.policy.network.isTestnet
-          ? BitcoinNetwork.testnet
-          : BitcoinNetwork.mainnet,
+      network: result.policy.network.bitcoin,
     ),
   );
   if (context.mounted) {
@@ -1735,7 +1734,7 @@ Future<void> _acquireSignerKey(
       extra: ReadBitBoxAccountKeyRequest(
         deviceType: device,
         derivationPath: derivationPath,
-        isTestnet: network.isTestnet,
+        isTestnet: !network.isMainnet,
       ),
     ),
     final ledger when ledger.isLedger => context.pushNamed<String>(

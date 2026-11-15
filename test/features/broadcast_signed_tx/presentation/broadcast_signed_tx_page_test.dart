@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/verify_broadcast_signed_tx_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
@@ -17,10 +18,13 @@ class _MockBroadcast extends Mock
 class _MockVerifier extends Mock implements VerifyBroadcastSignedTxUsecase {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(Network.bitcoinMainnet));
   testWidgets('typing stays editable until the signer result is submitted', (
     tester,
   ) async {
     final broadcast = _MockBroadcast();
+    when(broadcast.captureNetwork)
+        .thenAnswer((_) async => Network.bitcoinMainnet);
     final cubit = BroadcastSignedTxCubit(
       broadcastBitcoinTransactionUsecase: broadcast,
       verifySignedTxUsecase: _MockVerifier(),
@@ -59,6 +63,12 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
     expect(await result, 'cHNidP8=');
-    verifyNever(() => broadcast.execute(any(), isPsbt: any(named: 'isPsbt')));
+    verifyNever(
+      () => broadcast.execute(
+        any(),
+        isPsbt: any(named: 'isPsbt'),
+        network: any(named: 'network'),
+      ),
+    );
   });
 }

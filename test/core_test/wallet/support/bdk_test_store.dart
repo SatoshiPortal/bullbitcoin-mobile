@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/testing.dart';
 
@@ -24,17 +25,21 @@ abstract final class BdkTestStore {
     if (model is! PublicBdkWalletModel) {
       throw ArgumentError('Expected BDK fixture');
     }
+    final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+      descriptor: model.descriptor,
+      network: model.network,
+    );
     final path = await _path(model.hexId);
     final exists = File(path).existsSync();
     final kind = model.network.isMainnet
         ? bdk.NetworkKind.main
         : bdk.NetworkKind.test;
     final external = bdk.Descriptor(
-      descriptor: model.externalDescriptor,
+      descriptor: parsed.externalDescriptor,
       networkKind: kind,
     );
     final internal = bdk.Descriptor(
-      descriptor: model.internalDescriptor,
+      descriptor: parsed.internalDescriptor,
       networkKind: kind,
     );
     final persister = bdk.Persister.newSqlite(path: path);

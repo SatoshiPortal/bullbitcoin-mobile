@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -25,9 +26,10 @@ final class BullVaultSecretsFixture {
     final id =
         (account as Ok<PublicAccountKey, SecretFailure>).value.fingerprint;
     if (await secrets.fetch(id) case Ok(:final value)) return value;
-    return (await secrets.import(words: words, passphrase: passphrase)
-            as Ok<Secret, SecretFailure>)
-        .value;
+    return (await secrets.import(
+      words: words,
+      passphrase: passphrase,
+    ) as Ok<Secret, SecretFailure>).value;
   }
 
   Future<Secret> rawSeed() async {

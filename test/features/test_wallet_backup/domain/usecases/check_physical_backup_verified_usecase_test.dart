@@ -1,6 +1,5 @@
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -13,17 +12,16 @@ class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 void main() {
   test('finds the exact seed backup even when its wallet is hidden', () async {
     final getWallets = _MockGetWalletsUsecase();
-    when(
-      () => getWallets.execute(onlyBitcoin: true, includeHidden: true),
-    ).thenAnswer(
-      (_) async => Ok([
-        _wallet(
-          fingerprint: 'deadbeef',
-          isPhysicalBackupTested: true,
-        ).copyWith(isHidden: true),
-        _wallet(fingerprint: 'deadbeef', isPhysicalBackupTested: false),
-      ]),
-    );
+    when(() => getWallets.execute(onlyBitcoin: true, includeHidden: true))
+        .thenAnswer(
+          (_) async => Ok([
+            _wallet(
+              fingerprint: 'deadbeef',
+              isPhysicalBackupTested: true,
+            ).copyWith(isHidden: true),
+            _wallet(fingerprint: 'deadbeef', isPhysicalBackupTested: false),
+          ]),
+        );
     final usecase = CheckPhysicalBackupVerifiedUsecase(getWallets);
 
     expect(await usecase.execute('DEADBEEF'), isTrue);

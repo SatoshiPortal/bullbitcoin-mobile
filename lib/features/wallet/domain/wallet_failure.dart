@@ -91,6 +91,21 @@ final class WalletAddressNetworkMismatchFailure extends WalletFailure {
   const WalletAddressNetworkMismatchFailure([super.logMessage]);
 }
 
+enum BitcoinSigningFailureKind {
+  invalidPsbt,
+  walletMismatch,
+  missingLocalOrigin,
+  missingUtxo,
+  frozenUtxo,
+  unsupportedSighash,
+  unsupportedSpendMode,
+  unsupportedPolicyPath,
+  passphraseRequired,
+  passphraseMismatch,
+  incomplete,
+  unexpected,
+}
+
 final class BitcoinSigningFailure extends WalletFailure {
   final BitcoinSigningFailureKind kind;
 

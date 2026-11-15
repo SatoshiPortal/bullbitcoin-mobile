@@ -147,7 +147,9 @@ final class _LedgerPolicyKey {
         ? xpub
         : Bip32Derivation.getBip32Xpub(xpub)
               .derivePath(suffix.substring(1))
-              .convert(wallet.isTestnet ? XpubType.tpub : XpubType.xpub);
+              .convert(
+                !wallet.network.isMainnet ? XpubType.tpub : XpubType.xpub,
+              );
     final ledgerOriginPath = originPath.replaceAll('h', "'");
     final origin = fingerprint.isEmpty
         ? ''

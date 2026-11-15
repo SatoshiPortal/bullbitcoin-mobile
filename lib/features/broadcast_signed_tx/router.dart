@@ -25,8 +25,15 @@ class BroadcastSignedTxRouter {
       final extra = state.extra;
       final request = switch (extra) {
         BroadcastSignedTxRequest request => request,
-        (String psbt, Wallet? wallet) => BroadcastSignedTxRequest(unsignedPsbt: psbt, network: wallet?.network),
-        (psbt: final String psbt, wallet: final Wallet? wallet) => BroadcastSignedTxRequest(unsignedPsbt: psbt, network: wallet?.network),
+        (String psbt, Wallet? wallet) => BroadcastSignedTxRequest(
+          unsignedPsbt: psbt,
+          network: wallet?.network,
+        ),
+        (psbt: final String psbt, wallet: final Wallet? wallet) =>
+          BroadcastSignedTxRequest(
+            unsignedPsbt: psbt,
+            network: wallet?.network,
+          ),
         String psbt => BroadcastSignedTxRequest(unsignedPsbt: psbt),
         _ => const BroadcastSignedTxRequest(),
       };

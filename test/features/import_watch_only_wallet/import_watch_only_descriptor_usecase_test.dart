@@ -1,12 +1,9 @@
-import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:primitives/primitives.dart' hide Network, ScriptType;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/reserve_bull_owned_bip48_accounts_usecase.dart';
@@ -46,23 +43,21 @@ void main() {
       reserveAccounts,
       deleteWallet,
     );
-    entity =
-        WatchOnlyWalletEntity.descriptor(
-              descriptor: 'wpkh(xpub/<0;1>/*)',
-              network: Network.bitcoinMainnet,
-              scriptType: ScriptType.bip84,
-              signers: [
-                WalletSigner.single(
-                  masterFingerprint: '86241f88',
-                  xpubFingerprint: '11111111',
-                  xpub: 'xpub',
-                  signer: SignerEntity.local,
-                  signerDevice: null,
-                ),
-              ],
-              label: 'Descriptor wallet',
-            )
-            as WatchOnlyDescriptorEntity;
+    entity = WatchOnlyWalletEntity.descriptor(
+      descriptor: 'wpkh(xpub/<0;1>/*)',
+      network: Network.bitcoinMainnet,
+      scriptType: ScriptType.bip84,
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: '86241f88',
+          xpubFingerprint: '11111111',
+          xpub: 'xpub',
+          signer: SignerEntity.local,
+          signerDevice: null,
+        ),
+      ],
+      label: 'Descriptor wallet',
+    ) as WatchOnlyDescriptorEntity;
   });
 
   group('ImportWatchOnlyDescriptorUsecase', () {

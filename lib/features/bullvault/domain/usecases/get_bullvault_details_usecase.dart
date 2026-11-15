@@ -60,6 +60,9 @@ class GetBullVaultDetailsUsecase {
             }
             final wallet = await _getWalletUsecase.execute(candidate.walletId);
             if (wallet == null) continue;
+            if (wallet.balanceSat == null) {
+              return const Err(BullVaultRenewalFailure());
+            }
             if (candidate.status == BullVaultLifecycleStatus.cancelled &&
                 wallet.balanceSat == BigInt.zero) {
               continue;

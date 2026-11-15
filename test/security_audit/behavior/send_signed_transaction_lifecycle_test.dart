@@ -2,11 +2,12 @@ import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_u
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/refresh_bitcoin_signing_plan_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';

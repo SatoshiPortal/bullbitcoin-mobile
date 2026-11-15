@@ -9,10 +9,6 @@ import 'package:bb_mobile/core/utils/bitcoin_signer_result.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/dialog/signer_passphrase_dialog.dart';
 import 'package:bb_mobile/features/psbt_signing/domain/psbt_signing_review.dart';
@@ -143,17 +139,18 @@ class _InputView extends StatelessWidget {
 
   Future<void> _chooseFile(BuildContext context, PsbtSigningCubit cubit) async {
     try {
-      final selection = await FilePicker.platform.pickFiles(
+      final selection = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: const ['psbt', 'txt'],
-        withData: false,
       );
-      final file = selection?.files.singleOrNull;
+      final file = selection.singleOrNull;
       if (file == null) return;
-      if (file.size > maxBitcoinPsbtTransportBytes || file.path == null) {
+      final path = file.path;
+      if (path == null ||
+          await File(path).length() > maxBitcoinPsbtTransportBytes) {
         throw const FormatException('PSBT file is too large or unavailable');
       }
-      final bytes = await File(file.path!).readAsBytes();
+      final bytes = await File(path).readAsBytes();
       final psbt = decodeBitcoinPsbtFileBytes(bytes);
       if (!context.mounted) return;
       await cubit.review(psbt);

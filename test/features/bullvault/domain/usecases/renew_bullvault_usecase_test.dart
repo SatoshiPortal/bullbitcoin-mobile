@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -332,9 +333,8 @@ void main() {
     () async {
       final fixture = _renewFixture();
       fixture.repository.saveFailure = const BullVaultRenewalFailure();
-      when(
-        () => fixture.deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => fixture.deleteWallet.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => const Ok(null));
 
       final result = await fixture.usecase.execute(
         BullVaultRenewRequest(
@@ -358,12 +358,11 @@ void main() {
   test('keeps the generation reserved when rollback fails', () async {
     final fixture = _renewFixture();
     fixture.repository.saveFailure = const BullVaultRenewalFailure();
-    when(
-      () => fixture.deleteWallet.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) async =>
-          const Err(WalletStorageFailure('wallet storage unavailable')),
-    );
+    when(() => fixture.deleteWallet.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) async =>
+              const Err(WalletStorageFailure('wallet storage unavailable')),
+        );
 
     final result = await fixture.usecase.execute(
       BullVaultRenewRequest(
@@ -498,7 +497,7 @@ _RenewFixture _renewFixture({
   });
   final prepareTimeReference = _MockPrepareBullVaultTimeReferenceUsecase();
   when(
-    () => prepareTimeReference.execute(isTestnet: true),
+    () => prepareTimeReference.execute(network: BitcoinNetwork.testnet),
   ).thenAnswer((_) async => Ok(_timeReference(DateTime.utc(2028, 1, 15, 12))));
   final usecase = RenewBullVaultUsecase(
     repository,

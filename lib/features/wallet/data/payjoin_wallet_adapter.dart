@@ -1,3 +1,11 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    show standardSingleSignatureDescriptorPath;
+
+import 'bitcoin_policy_codec.dart';
+
+import 'package:sync/sync.dart' show BitcoinPolicyCodec;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
     show SpendWallet;
@@ -48,7 +56,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required String psbt,
   }) async {
     await _requireSpend(walletId);
-    final (secret, metadata) = await _loadSecret(walletId, network);
+    final (secret, metadata, account) = await _loadSecret(walletId, network);
     // The receiver's own input in a payjoin proposal carries no derivation
     // path, and the package signs only what it can derive: sync adds the
     // paths first, from the public descriptors.
@@ -57,13 +65,30 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
       Ok(:final value) => value,
       Err(:final failure) => throw StateError('sync: ${failure.logCode}'),
     };
-    return _unwrap(
-      await secret.sign.psbt(
+    final codec = const BitcoinPolicyCodec();
+    final prepared = policyValue(
+      codec.prepareSigning(
         annotated,
-        network: network,
-        scriptType: metadata.scriptType.shared,
+        foreignInputWallet: await _values.getOwnership(
+          wallet: WalletModel.fromMetadata(metadata),
+        ),
       ),
     );
+    final scriptType = metadata.inferredScriptType;
+    if (scriptType == null) {
+      throw StateError('Payjoin requires a standard local wallet');
+    }
+    final signed = _unwrap(
+      await secret.sign.psbt(
+        prepared.psbt,
+        network: network,
+        scriptType: scriptType.shared,
+        accountIndex: account,
+      ),
+    );
+    return policyValue(
+      codec.completeSigning(originalPsbt: prepared.psbt, signedPsbt: signed),
+    ).psbt;
   }
 
   @override
@@ -115,20 +140,33 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     return metadata;
   }
 
-  Future<(Secret, WalletMetadataModel)> _loadSecret(
+  Future<(Secret, WalletMetadataModel, int)> _loadSecret(
     String walletId,
     BitcoinNetwork network,
   ) async {
     final metadata = await _loadMetadata(walletId, network);
-    final fingerprint = metadata.seedFingerprint;
-    if (fingerprint == null) {
-      throw Exception('No secret for wallet: not a seed-derived wallet');
+    final scriptType = metadata.inferredScriptType;
+    if (metadata.signers.length != 1 || scriptType == null) {
+      throw StateError('Payjoin requires a standard local wallet');
     }
-    final secret = _unwrap(await _secrets.fetch(fingerprint));
-    if (!secret.info.isMnemonic) {
-      throw StateError('Payjoin requires a local mnemonic wallet');
+    final signer = metadata.signers.single;
+    if (signer.descriptorKeys.length != 1) {
+      throw StateError('Payjoin requires a standard local wallet');
     }
-    return (secret, metadata);
+    final key = signer.descriptorKeys.single;
+    final account = scriptType.standardAccount(
+      key.derivationPath,
+      metadata.network,
+    );
+    if (signer.signer != Signer.local ||
+        account == null ||
+        key.descriptorPath != standardSingleSignatureDescriptorPath) {
+      throw StateError('Payjoin requires a standard local wallet');
+    }
+    final secret = _unwrap(
+      await _secrets.fetch(Fingerprint(key.masterFingerprint)),
+    );
+    return (secret, metadata, account);
   }
 
   /// This adapter already reports every problem by throwing — the port has no failure type — so a package failure becomes a `StateError` naming its kind, never its message.

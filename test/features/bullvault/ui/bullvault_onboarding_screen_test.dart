@@ -2,20 +2,16 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_inheritance_
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/bullvault/domain/usecases/generate_bullvault_inheritance_mnemonic_usecase.dart';
 import 'package:secrets/secrets.dart';
+
 import '../bullvault_secrets_fixture.dart';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullIcons, BullSecretTextInput;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_create_result.dart';
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_key_source.dart';
@@ -33,7 +29,6 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_c
 import 'package:bb_mobile/features/bullvault/ui/bullvault_onboarding_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

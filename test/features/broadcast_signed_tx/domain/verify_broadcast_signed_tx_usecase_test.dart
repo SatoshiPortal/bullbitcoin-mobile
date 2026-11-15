@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -25,6 +26,7 @@ void main() {
     );
     final usecase = VerifyBroadcastSignedTxUsecase(
       SendFacade(
+        watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
         bitcoin: (_, {required walletId, required isPsbt, required network}) =>
             throw UnimplementedError('verification only'),
         liquid: (_) => throw UnimplementedError('verification only'),
@@ -44,3 +46,6 @@ void main() {
     expect(failure.logMessage, 'transaction mismatch');
   });
 }
+
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}

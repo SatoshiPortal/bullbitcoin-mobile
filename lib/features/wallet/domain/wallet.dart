@@ -143,7 +143,10 @@ abstract class Wallet with _$Wallet {
   /// Native state could not be read; null is unknown, never a zero balance.
   bool get unavailable => balanceSat == null;
 
-  String get id => origin;
+  String get id => switch (network) {
+    Network.bitcoinRegtest || Network.liquidRegtest => '$origin:regtest',
+    _ => origin,
+  };
   List<WalletDescriptorKey> get descriptorKeys =>
       List.unmodifiable(signers.expand((signer) => signer.descriptorKeys));
   String? get singleLocalSeedFingerprint {

@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
 import 'package:bb_mobile/features/bullvault/domain/repositories/bullvault_repository.dart';
@@ -29,7 +28,10 @@ class GetBullVaultFundedPredecessorUsecase {
         try {
           for (final entry in value.entries) {
             final previous = await _getWalletUsecase.execute(entry.key);
-            if (previous != null && previous.balanceSat > BigInt.zero) {
+            if (previous == null) continue;
+            final balance = previous.balanceSat;
+            if (balance == null) return const Err(BullVaultRenewalFailure());
+            if (balance > BigInt.zero) {
               return Ok(entry.value);
             }
           }

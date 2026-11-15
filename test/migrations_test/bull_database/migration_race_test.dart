@@ -139,11 +139,9 @@ void _seedLabels(File file, int version) {
   try {
     if (version == 16) {
       db.execute('''INSERT INTO wallet_metadatas
-        (id, network, master_fingerprint, xpub_fingerprint,
-         is_encrypted_vault_tested, is_physical_backup_tested, xpub,
-         external_public_descriptor, internal_public_descriptor, signer, is_default)
-        VALUES ('regtest-fixture', 'bitcoinRegtest', 'aabbccdd', 'aabbccdd',
-                0, 0, 'public', 'public', 'public', 'none', 0)''');
+        (id, network, is_encrypted_vault_tested, is_physical_backup_tested,
+         public_descriptor, is_default)
+        VALUES ('regtest-fixture', 'bitcoinRegtest', 0, 0, 'public', 0)''');
     }
     for (var i = 0; i < _labelCount; i++) {
       db.execute(

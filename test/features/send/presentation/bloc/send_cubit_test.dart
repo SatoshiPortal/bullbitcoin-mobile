@@ -19,12 +19,6 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
@@ -36,7 +30,6 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_psbt_review.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
@@ -1324,6 +1317,7 @@ void main() {
         any(),
         isPsbt: any(named: 'isPsbt'),
         network: app.Network.bitcoinMainnet,
+        walletId: any(named: 'walletId'),
       ),
     ).thenAnswer((invocation) async {
       broadcastPayloads.add(invocation.positionalArguments.single as String);
@@ -2561,6 +2555,7 @@ void main() {
           any(),
           isPsbt: any(named: 'isPsbt'),
           network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
         ),
       );
     });
@@ -2605,6 +2600,7 @@ void main() {
           any(),
           isPsbt: any(named: 'isPsbt'),
           network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
         ),
       );
     });
@@ -4388,6 +4384,7 @@ void main() {
             any(),
             isPsbt: any(named: 'isPsbt'),
             network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
           ),
         );
       },
@@ -4446,6 +4443,7 @@ void main() {
             any(),
             isPsbt: any(named: 'isPsbt'),
             network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
           ),
         );
       },
@@ -5001,17 +4999,22 @@ void main() {
             Ok(call.positionalArguments.single as PendingBitcoinTransaction),
       );
       final broadcast = Completer<String>();
-      when(() => broadcastBitcoinTxUsecase.execute('signed', isPsbt: true))
-          .thenAnswer((_) => broadcast.future);
+      when(
+        () => broadcastBitcoinTxUsecase.execute(
+          'signed',
+          isPsbt: true,
+          network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
+        ),
+      ).thenAnswer((_) => broadcast.future);
       when(
         () => deletePendingBitcoinTransactionUsecase.execute(
           'saved',
           expectedRevision: 0,
         ),
       ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => getWalletUsecase.execute(ready.selectedWallet!.id, sync: true),
-      ).thenAnswer((_) async => ready.selectedBitcoinWallet);
+      when(() => getWalletUsecase.execute(ready.selectedWallet!.id, sync: true))
+          .thenAnswer((_) async => ready.selectedBitcoinWallet);
       final sending = cubit.broadcastTransaction();
       await pumpEventQueue();
       await Future<void>.delayed(const Duration(milliseconds: 550));
@@ -5054,8 +5057,12 @@ void main() {
         );
         var attempts = 0;
         when(
-          () =>
-              broadcastBitcoinTxUsecase.execute('submitted-psbt', isPsbt: true),
+          () => broadcastBitcoinTxUsecase.execute(
+            'submitted-psbt',
+            isPsbt: true,
+            network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
+          ),
         ).thenAnswer((_) async {
           if (attempts++ == 0) {
             throw BroadcastTransactionException('No response');
@@ -5120,8 +5127,14 @@ void main() {
                 call.positionalArguments.single as PendingBitcoinTransaction;
             return preflight.future;
           });
-      when(() => broadcastBitcoinTxUsecase.execute('signed', isPsbt: true))
-          .thenAnswer((_) => broadcast.future);
+      when(
+        () => broadcastBitcoinTxUsecase.execute(
+          'signed',
+          isPsbt: true,
+          network: any(named: 'network'),
+          walletId: any(named: 'walletId'),
+        ),
+      ).thenAnswer((_) => broadcast.future);
       when(
         () => deletePendingBitcoinTransactionUsecase.execute(
           'saved',
@@ -5253,6 +5266,8 @@ void main() {
           () => broadcastBitcoinTxUsecase.execute(
             any(),
             isPsbt: any(named: 'isPsbt'),
+            network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
           ),
         );
       },
@@ -5291,6 +5306,8 @@ void main() {
           () => broadcastBitcoinTxUsecase.execute(
             any(),
             isPsbt: any(named: 'isPsbt'),
+            network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
           ),
         );
       },
@@ -5455,9 +5472,8 @@ void main() {
 
     test('keeps descriptor wallets available for Send', () async {
       final descriptorWallet = _descriptorWallet();
-      when(
-        () => getWalletsUsecase.execute(),
-      ).thenAnswer((_) async => Ok([descriptorWallet]));
+      when(() => getWalletsUsecase.execute())
+          .thenAnswer((_) async => Ok([descriptorWallet]));
       when(() => getSettingsUsecase.execute()).thenAnswer(
         (_) async => const SettingsEntity(
           environment: Environment.mainnet,
@@ -5472,11 +5488,13 @@ void main() {
           currencyCode: any(named: 'currencyCode'),
         ),
       ).thenAnswer((_) async => const Ok(1.0));
+      when(() => getSendExchangeRateUsecase.execute())
+          .thenAnswer((_) async => const Ok(1.0));
       when(
-        () => getSendExchangeRateUsecase.execute(),
-      ).thenAnswer((_) async => const Ok(1.0));
-      when(
-        () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
+        () => getNetworkFeesUsecase.execute(
+          isLiquid: any(named: 'isLiquid'),
+          network: any(named: 'network'),
+        ),
       ).thenAnswer((_) async => _feeOptions());
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -5555,23 +5573,19 @@ void main() {
           createdAt: DateTime.utc(2026, 8, 14),
           updatedAt: DateTime.utc(2026, 8, 14),
         );
-        when(
-          () => getPendingBitcoinTransactionUsecase.execute(stored.id),
-        ).thenAnswer((_) async => Ok(stored));
+        when(() => getPendingBitcoinTransactionUsecase.execute(stored.id))
+            .thenAnswer((_) async => Ok(stored));
         when(
           () => detectBitcoinStringUsecase.execute(
             data: stored.recipients.single.recipient,
           ),
         ).thenThrow('Invalid payment request');
-        when(
-          () => getSendExchangeRateUsecase.execute(currencyCode: 'USD'),
-        ).thenAnswer((_) async => const Ok(1.25));
-        when(
-          () => getWalletUtxosUsecase.execute(walletId: wallet.id),
-        ).thenAnswer((_) async => []);
-        when(
-          () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
-        ).thenAnswer((_) => const Stream.empty());
+        when(() => getSendExchangeRateUsecase.execute(currencyCode: 'USD'))
+            .thenAnswer((_) async => const Ok(1.25));
+        when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
+            .thenAnswer((_) async => []);
+        when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
+            .thenAnswer((_) => const Stream.empty());
         cubit.setStateForTest(
           SendState(
             wallets: [wallet],
@@ -5671,7 +5685,10 @@ void main() {
       when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
           .thenAnswer((_) => const Stream.empty());
       when(
-        () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
+        () => getNetworkFeesUsecase.execute(
+          isLiquid: any(named: 'isLiquid'),
+          network: any(named: 'network'),
+        ),
       ).thenAnswer((_) async => fees);
       final cubit = buildCubit();
       addTearDown(cubit.close);
@@ -5955,25 +5972,22 @@ void main() {
         );
       });
       var lookupCount = 0;
-      when(
-        () => getPendingBitcoinTransactionUsecase.execute('pending-id'),
-      ).thenAnswer((_) async {
-        if (lookupCount++ == 0) {
-          return Ok<PendingBitcoinTransaction?, SendFailure>(stored);
-        }
-        return const Ok<PendingBitcoinTransaction?, SendFailure>(null);
-      });
+      when(() => getPendingBitcoinTransactionUsecase.execute('pending-id'))
+          .thenAnswer((_) async {
+            if (lookupCount++ == 0) {
+              return Ok<PendingBitcoinTransaction?, SendFailure>(stored);
+            }
+            return const Ok<PendingBitcoinTransaction?, SendFailure>(null);
+          });
       when(
         () => detectBitcoinStringUsecase.execute(
           data: stored.recipients.single.recipient,
         ),
       ).thenThrow('Incomplete payment request');
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: wallet.id),
-      ).thenAnswer((_) async => []);
-      when(
-        () => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id),
-      ).thenAnswer((_) => const Stream.empty());
+      when(() => getWalletUtxosUsecase.execute(walletId: wallet.id))
+          .thenAnswer((_) async => []);
+      when(() => watchFinishedWalletSyncsUsecase.execute(walletId: wallet.id))
+          .thenAnswer((_) => const Stream.empty());
       final cubit = buildCubit();
       addTearDown(cubit.close);
       cubit.setStateForTest(SendState(wallets: [wallet]));
@@ -6181,7 +6195,7 @@ void main() {
         when(
           () => sendWithPayjoinUsecase.execute(
             walletId: any(named: 'walletId'),
-            isTestnet: any(named: 'isTestnet'),
+            network: any(named: 'network'),
             bip21: any(named: 'bip21'),
             unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
             amountSat: any(named: 'amountSat'),
@@ -6204,6 +6218,8 @@ void main() {
           () => broadcastBitcoinTxUsecase.execute(
             any(),
             isPsbt: any(named: 'isPsbt'),
+            network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
           ),
         );
       });
@@ -6932,6 +6948,8 @@ void main() {
           () => broadcastBitcoinTxUsecase.execute(
             any(),
             isPsbt: any(named: 'isPsbt'),
+            network: any(named: 'network'),
+            walletId: any(named: 'walletId'),
           ),
         ).thenAnswer((_) async {
           attempts++;
@@ -7105,7 +7123,10 @@ void main() {
           isTestnet: false,
         );
         when(
-          () => getNetworkFeesUsecase.execute(isLiquid: any(named: 'isLiquid')),
+          () => getNetworkFeesUsecase.execute(
+            isLiquid: any(named: 'isLiquid'),
+            network: any(named: 'network'),
+          ),
         ).thenAnswer((_) async => _feeOptions());
         when(
           () => watchFinishedWalletSyncsUsecase.execute(
@@ -7150,9 +7171,8 @@ void main() {
       final wallet = _bitcoinLocalWallet();
       final cubit = buildCubit(wallet: wallet);
       addTearDown(cubit.close);
-      when(
-        () => detectBitcoinStringUsecase.execute(data: 'bc1qmigration'),
-      ).thenThrow(const FormatException('invalid address'));
+      when(() => detectBitcoinStringUsecase.execute(data: 'bc1qmigration'))
+          .thenThrow(const FormatException('invalid address'));
 
       await cubit.configureRestrictedSend(recipient: 'bc1qmigration');
       await cubit.onChangedText('bc1qredirect');
@@ -7236,9 +7256,8 @@ void main() {
       cubit.onChangedText('invalid-address');
       await cubit.continueOnAddressConfirmed();
 
-      verify(
-        () => detectBitcoinStringUsecase.execute(data: 'invalid-address'),
-      ).called(2);
+      verify(() => detectBitcoinStringUsecase.execute(data: 'invalid-address'))
+          .called(2);
       expect(cubit.state.paymentRequest, isNull);
       expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
       expect(cubit.state.loadingBestWallet, isFalse);
@@ -7793,7 +7812,13 @@ void main() {
             psbt: 'unsigned-regtest',
             walletId: wallet.id,
           ),
-        ).thenAnswer((_) async => (signedPsbt: 'signed-regtest', txSize: 100));
+        ).thenAnswer(
+          (_) async => Ok((
+            signedPsbt: 'signed-regtest',
+            txSize: 100,
+            isFinalized: true,
+          )),
+        );
         cubit.setStateForTest(
           SendState(
             step: SendStep.amount,
@@ -7815,7 +7840,9 @@ void main() {
           ),
         );
         await cubit.createTransaction();
-        expect(cubit.state.signedBitcoinPsbt, 'signed-regtest');
+        expect(cubit.state.unsignedPsbt, 'unsigned-regtest');
+        expect(cubit.state.signedBitcoinPsbt, isNull);
+        verifyZeroInteractions(signBitcoinTxUsecase);
         expect(cubit.state.failure, isNull);
         final recipients =
             verify(

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
@@ -20,14 +22,20 @@ Wallet wallet(Network network, {SignerEntity signer = SignerEntity.local}) =>
     Wallet(
       origin: "review/84'/1'/0'",
       network: network,
-      xpubFingerprint: 'review-public-fixture',
       scriptType: ScriptType.bip84,
-      xpub: 'unused-public-fixture',
-      externalPublicDescriptor: 'unused-public-fixture',
-      internalPublicDescriptor: 'unused-public-fixture',
-      signer: signer,
-      signerDevice: null,
       balanceSat: BigInt.zero,
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: '',
+          xpubFingerprint: 'review-public-fixture',
+          xpub: 'unused-public-fixture',
+          derivationPath: "m/84'/${network.coinType}'/0'",
+          descriptorPath: '/<0;1>/*',
+          signer: signer,
+          signerDevice: null,
+        ),
+      ],
+      publicDescriptor: 'unused-public-fixture',
     );
 
 class _ReceiveBloc extends MockBloc<ReceiveEvent, ReceiveState>

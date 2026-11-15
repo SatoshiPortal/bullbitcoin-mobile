@@ -1,3 +1,16 @@
+import 'sync_wallet_values_datasource.dart';
+
+import 'dart:math';
+
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_wallet_policy_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_psbt_review_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/bitcoin_policy_maturity_model.dart';
+
+import 'bitcoin_policy_codec.dart';
+import 'bitcoin_descriptor_codec.dart';
+
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -19,8 +32,12 @@ typedef SpendWallet = Future<sync.Wallet> Function(String walletId);
 /// without a wallet. No native handle is held here.
 class BdkWalletDatasource {
   final SpendWallet _wallet;
+  final SyncWalletValuesDatasource _values;
 
-  BdkWalletDatasource({required this._wallet});
+  BdkWalletDatasource({
+    required this._wallet,
+    required SyncWalletValuesDatasource walletValuesDatasource,
+  }) : _values = walletValuesDatasource;
 
   static T _value<T>(Result<T, sync.SyncFailure> result) => switch (result) {
     Ok(:final value) => value,
@@ -50,6 +67,12 @@ class BdkWalletDatasource {
     List<WalletUtxoModel>? selected,
     bool selectedOnly = false,
     bool replaceByFee = true,
+    BitcoinPolicyPath? policyPath,
+    ({
+      List<WalletDescriptorKeyModel> external,
+      List<WalletDescriptorKeyModel> internal,
+    })?
+    requiredDescriptorKeys,
     required WalletModel wallet,
   }) async {
     final sync.BitcoinSpendRequest request;
@@ -71,6 +94,29 @@ class BdkWalletDatasource {
             : [for (final utxo in selected) (txId: utxo.txId, vout: utxo.vout)],
         selectedOnly: selectedOnly,
         replaceable: replaceByFee,
+        policy: policyPath == null
+            ? null
+            : sync.BitcoinSpendPolicy(
+                external: policyPath.external,
+                internal: policyPath.internal,
+                requiresRelativeTimelock: policyPath.requiresRelativeTimelock,
+                eligibleExternal: _outpoints(
+                  policyPath.eligibleExternalOutpoints,
+                ),
+                eligibleInternal: _outpoints(
+                  policyPath.eligibleInternalOutpoints,
+                ),
+                requiredKeys: requiredDescriptorKeys == null
+                    ? null
+                    : (
+                        external: requiredDescriptorKeys.external
+                            .map((key) => key.policyKey)
+                            .toList(),
+                        internal: requiredDescriptorKeys.internal
+                            .map((key) => key.policyKey)
+                            .toList(),
+                      ),
+              ),
         exclude: {...?unspendable},
       );
     } on ArgumentError {
@@ -81,14 +127,208 @@ class BdkWalletDatasource {
     return (await _wallet(wallet.id)).tx.build(request);
   }
 
-  Future<int> decodeTxSize(String psbtString) async =>
-      sync.decodeBitcoinPsbt(psbtString).vsize;
+  Future<int> decodeTxSize(
+    String psbtString, {
+    required PublicBdkWalletModel wallet,
+  }) async => policyValue(
+    _codec.transactionVsize(psbtString, wallet: wallet.policyDescriptor),
+  );
 
   Future<int> getFeeAmount(String psbtString) async =>
       switch (sync.bitcoinPsbtFee(psbtString)) {
         Ok(:final value) => value,
         Err() => throw const FormatException('PSBT fee unknown'),
       };
+
+  static const _codec = sync.BitcoinPolicyCodec();
+
+  static Set<({String txId, int vout})>? _outpoints(Set<String>? values) =>
+      values == null
+      ? null
+      : {
+          for (final value in values)
+            (
+              txId: value.substring(0, value.lastIndexOf(':')),
+              vout: int.parse(value.substring(value.lastIndexOf(':') + 1)),
+            ),
+        };
+
+  BdkTwoPathDescriptor parsePublicTwoPathDescriptor({
+    required String descriptor,
+    required Network network,
+  }) => BdkFacade.parsePublicTwoPathDescriptor(
+    descriptor: descriptor,
+    network: network,
+  );
+
+  BitcoinWalletPolicyModel analyzePolicy({
+    required PublicBdkWalletModel wallet,
+    List<WalletDescriptorKeyModel> descriptorKeys = const [],
+  }) => policyValue(
+    _codec.analyzePolicy(
+      wallet: wallet.policyDescriptor,
+      descriptorKeys: descriptorKeys.map((key) => key.policyKey).toList(),
+    ),
+  );
+
+  Future<BitcoinPsbtReviewModel> inspectPsbt(
+    String psbt, {
+    required PublicBdkWalletModel wallet,
+    required Set<String> walletFingerprints,
+  }) async => policyValue(
+    _codec.inspectPsbt(
+      psbt,
+      wallet: wallet.policyDescriptor,
+      walletFingerprints: walletFingerprints,
+      ownership: await _values.getOwnership(wallet: wallet),
+    ),
+  );
+
+  Future<({String psbt, bool signWithTapInternalKey})> preparePsbtForSigning(
+    String psbt, {
+    PublicBdkWalletModel? foreignInputWallet,
+  }) async => policyValue(
+    _codec.prepareSigning(
+      psbt,
+      foreignInputWallet: foreignInputWallet == null
+          ? null
+          : await _values.getOwnership(wallet: foreignInputWallet),
+    ),
+  );
+
+  Future<void> validateWalletPsbtInputs(
+    String psbt, {
+    required PublicBdkWalletModel wallet,
+    Set<String> frozenOutpoints = const {},
+    String? replacingTxid,
+    bool allowSpentWalletInputs = false,
+  }) async => policyValue(
+    _codec.validateInputs(
+      psbt,
+      ownership: await _values.getOwnership(wallet: wallet),
+      frozenOutpoints: frozenOutpoints,
+      replacingTxid: replacingTxid,
+      allowSpentWalletInputs: allowSpentWalletInputs,
+    ),
+  );
+
+  Future<BitcoinPolicyMaturityModel> getPolicyMaturity({
+    required PublicBdkWalletModel wallet,
+    ElectrumConnection? electrumServer,
+    required bool includeTimeBasedLocks,
+    bool includeRelativeTimeLocks = true,
+  }) async {
+    final index = await _values.getOwnership(wallet: wallet);
+    final unspent = index.outputs.entries.where(
+      (entry) => !entry.value.isSpent,
+    );
+    var tipHeight = index.tipHeight;
+    int? medianTimePast;
+    final confirmationMedianTimes = <int, int>{};
+    if (electrumServer != null) {
+      final chain = _value(
+        await sync.bitcoinPolicyChainState(
+          _connection(electrumServer),
+          includeMedianTimePast: includeTimeBasedLocks,
+          referenceHeights: includeTimeBasedLocks && includeRelativeTimeLocks
+              ? {
+                  for (final entry in unspent)
+                    if (entry.value.confirmationHeight case final height?)
+                      max(0, height - 1),
+                }
+              : const {},
+        ),
+      );
+      tipHeight = chain.tipHeight;
+      medianTimePast = chain.medianTimePast;
+      confirmationMedianTimes.addAll(chain.referenceMedianTimes);
+    }
+    return BitcoinPolicyMaturityModel(
+      tipHeight: tipHeight,
+      medianTimePast: medianTimePast,
+      utxos: [
+        for (final entry in unspent)
+          BitcoinPolicyUtxoMaturityModel(
+            outpoint: '${entry.key.txId}:${entry.key.vout}',
+            keychain: entry.value.keychain,
+            amountSat: entry.value.amountSat,
+            confirmations: switch (entry.value.confirmationHeight) {
+              final height? => max(0, tipHeight - height + 1),
+              null => 0,
+            },
+            confirmationMedianTimePast:
+                switch (entry.value.confirmationHeight) {
+                  final height? => confirmationMedianTimes[max(0, height - 1)],
+                  null => null,
+                },
+          ),
+      ],
+    );
+  }
+
+  static sync.WalletConnection _connection(ElectrumConnection connection) =>
+      sync.WalletConnection(
+        url: connection.url,
+        socks5: connection.socks5,
+        timeout: Duration(seconds: connection.effectiveTimeout),
+        retry: connection.retry,
+        stopGap: connection.stopGap,
+        validateDomain: connection.validateDomain,
+      );
+
+  static sync.BitcoinHashPreimage _preimage(BitcoinPolicyPreimage value) =>
+      sync.BitcoinHashPreimage(
+        type: switch (value.type) {
+          BitcoinHashlockType.sha256 => sync.BitcoinPreimageType.sha256,
+          BitcoinHashlockType.hash256 => sync.BitcoinPreimageType.hash256,
+          BitcoinHashlockType.ripemd160 => sync.BitcoinPreimageType.ripemd160,
+          BitcoinHashlockType.hash160 => sync.BitcoinPreimageType.hash160,
+        },
+        hash: value.hash,
+        preimageHex: value.preimageHex,
+      );
+
+  bool validatePolicyPreimage(BitcoinPolicyPreimage preimage) =>
+      policyValue(_codec.validatePreimage(_preimage(preimage)));
+  String applyPolicyPreimages(
+    String psbt,
+    List<BitcoinPolicyPreimage> preimages,
+  ) => policyValue(
+    _codec.applyPreimages(psbt, preimages.map(_preimage).toList()),
+  );
+  ({String transaction, int txSize}) verifyFinalTransaction({
+    required String psbtBase64,
+    required String transactionHex,
+  }) => policyValue(
+    _codec.verifyFinalTransaction(
+      psbtBase64: psbtBase64,
+      transactionHex: transactionHex,
+    ),
+  );
+  ({String psbt, bool isFinalized}) completePsbtSigning({
+    required String originalPsbt,
+    required String signedPsbt,
+    bool tryFinalize = true,
+  }) => policyValue(
+    _codec.completeSigning(
+      originalPsbt: originalPsbt,
+      signedPsbt: signedPsbt,
+      tryFinalize: tryFinalize,
+    ),
+  );
+  String combinePsbts({required String first, required String second}) =>
+      policyValue(_codec.combinePsbts(first: first, second: second));
+  String validateExternalPartialPsbt({
+    required String currentPsbtBase64,
+    required String signedPsbtBase64,
+  }) => policyValue(
+    _codec.validateExternalPartialPsbt(
+      currentPsbtBase64: currentPsbtBase64,
+      signedPsbtBase64: signedPsbtBase64,
+    ),
+  );
+  ({String psbt, bool isFinalized}) finalizePsbt(String psbt) =>
+      policyValue(_codec.finalizePsbt(psbt));
 
   static Uint8List _script(String address, Network network) =>
       switch (sync.bitcoinAddressScript(address, network.bitcoin)) {

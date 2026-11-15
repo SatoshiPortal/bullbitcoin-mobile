@@ -241,9 +241,8 @@ class LedgerDeviceRepositoryImpl implements LedgerDeviceRepository {
     required Wallet wallet,
     String? signerId,
   }) async {
-    final fingerprint = (await _datasource.getMasterFingerprint(
-      device,
-    )).toLowerCase();
+    final fingerprint = (await _datasource.getMasterFingerprint(device))
+        .toLowerCase();
     final candidates = wallet.signers.where(
       (signer) =>
           signer.signerDevice?.isLedger == true &&

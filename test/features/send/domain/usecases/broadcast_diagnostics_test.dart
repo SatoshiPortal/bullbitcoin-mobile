@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
+
 import '../../../../frozen_outpoints_fixture.dart';
 
 import 'package:bb_mobile/features/send/public/send_facade.dart';
@@ -174,7 +176,11 @@ void main() {
           if (feature == 'sell') {
             final usecase = BroadcastSellPayinUsecase(
               wallet: wallet,
-              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
+              send: SendFacade(
+                watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
+                bitcoin: btc.execute,
+                liquid: lbtc.execute,
+              ),
             );
             if (chain == 'bitcoin') {
               expect(
@@ -195,7 +201,11 @@ void main() {
           } else {
             final usecase = BroadcastPayPayinUsecase(
               wallet: wallet,
-              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
+              send: SendFacade(
+                watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
+                bitcoin: btc.execute,
+                liquid: lbtc.execute,
+              ),
             );
             if (chain == 'bitcoin') {
               expect(
@@ -231,3 +241,6 @@ void main() {
     }
   }
 }
+
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}

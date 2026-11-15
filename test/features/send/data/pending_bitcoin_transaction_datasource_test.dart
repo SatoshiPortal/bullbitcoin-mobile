@@ -1,7 +1,8 @@
+import 'package:drift/drift.dart' show Value;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_datasource.dart';
 import 'package:bb_mobile/features/send/data/models/pending_bitcoin_transaction_model.dart';
 import 'package:bb_mobile/features/send/data/pending_bitcoin_transaction_mapper.dart';
@@ -25,7 +26,7 @@ void main() {
         .insert(
           WalletMetadatasCompanion.insert(
             id: 'wallet-id',
-            network: Network.bitcoinTestnet,
+            network: const Value('bitcoinTestnet'),
             isEncryptedVaultTested: false,
             isPhysicalBackupTested: false,
             publicDescriptor: 'wpkh(tpub/<0;1>/*)#descriptor',
@@ -153,11 +154,9 @@ void main() {
         expect(reloaded?.stage, stage);
         expect(reloaded?.psbt, submitted.psbt);
         final reopened =
-            (await PendingBitcoinTransactionRepositoryImpl(
-                      datasource,
-                    ).get(submitted.id)
-                    as Ok<PendingBitcoinTransaction?, SendFailure>)
-                .value!;
+            (await PendingBitcoinTransactionRepositoryImpl(datasource).get(
+              submitted.id,
+            ) as Ok<PendingBitcoinTransaction?, SendFailure>).value!;
         expect(reopened.isDraft, isFalse);
         expect(reopened.isSubmission, isTrue);
         for (final replacement in [

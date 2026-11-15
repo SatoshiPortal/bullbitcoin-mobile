@@ -1,8 +1,7 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:primitives/primitives.dart' show Fingerprint, BitcoinNetwork;
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
@@ -59,7 +58,7 @@ class ExportSigningKeyUsecase {
         case Err():
           return const Err(SettingsSigningKeyExportFailure());
       }
-      final isTestnet = settings.environment.isTestnet;
+      final isTestnet = settings.environment.networkEnv != NetworkEnv.mainnet;
       final coinType = isTestnet ? 1 : 0;
       final selectionResult = await _accountSession.select(
         requestId: requestId,

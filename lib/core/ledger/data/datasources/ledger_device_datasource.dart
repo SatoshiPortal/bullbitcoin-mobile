@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/ledger/data/ledger_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';
@@ -256,18 +255,16 @@ class LedgerDeviceDatasource {
     required String derivationPath,
   }) {
     final connection = _getSdkConnection(device);
-    return BitcoinLedgerApp(
-      connection,
-    ).getXPubKey(derivationPath: derivationPath, displayPublicKey: false);
+    return BitcoinLedgerApp(connection)
+        .getXPubKey(derivationPath: derivationPath, displayPublicKey: false);
   }
 
   Future<String> getBitcoinAppVersion(LedgerDeviceModel device) async {
     final connection = _getSdkConnection(device);
     final ledgerDevice = _cachedDevice;
     if (ledgerDevice == null) throw const DeviceNotFoundLedgerException();
-    final appVersion = await BitcoinLedgerApp(
-      connection,
-    ).getVersion(ledgerDevice);
+    final appVersion = await BitcoinLedgerApp(connection)
+        .getVersion(ledgerDevice);
     return appVersion.version;
   }
 
@@ -276,9 +273,8 @@ class LedgerDeviceDatasource {
     required WalletPolicy walletPolicy,
   }) async {
     final connection = _getSdkConnection(device);
-    final registration = await BitcoinLedgerApp(
-      connection,
-    ).registerWallet(walletPolicy: walletPolicy);
+    final registration = await BitcoinLedgerApp(connection)
+        .registerWallet(walletPolicy: walletPolicy);
     return registration.walletHMAC;
   }
 

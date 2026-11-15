@@ -47,9 +47,8 @@ void main() {
       getSigningPlanUsecase,
     );
 
-    when(
-      () => getWalletUsecase.execute('wallet-id'),
-    ).thenAnswer((_) async => _wallet);
+    when(() => getWalletUsecase.execute('wallet-id'))
+        .thenAnswer((_) async => _wallet);
     when(
       () => getSigningPlanUsecase.execute(
         wallet: _wallet,
@@ -64,9 +63,8 @@ void main() {
   test(
     'revalidates input conflicts and readiness from the stored PSBT',
     () async {
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-      ).thenAnswer((_) async => const []);
+      when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+          .thenAnswer((_) async => const []);
       when(() => signingPort.finalizePsbt('cHNidP8=')).thenAnswer(
         (_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)),
       );
@@ -88,9 +86,8 @@ void main() {
       );
       expect(conflictedValue.signersNeeded, 1);
 
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-      ).thenAnswer((_) async => [_utxo]);
+      when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+          .thenAnswer((_) async => [_utxo]);
       when(() => signingPort.finalizePsbt('cHNidP8=')).thenAnswer(
         (_) async => const Ok((psbt: 'cHNidP8=', isFinalized: true)),
       );
@@ -133,9 +130,8 @@ void main() {
       output(2, 'tb1qfirst', 20000),
       output(3, 'tb1qsecond', 15000),
     ];
-    when(
-      () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-    ).thenAnswer((_) async => [_utxo]);
+    when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+        .thenAnswer((_) async => [_utxo]);
     when(
       () => signingPort.finalizePsbt('cHNidP8='),
     ).thenAnswer((_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)));
@@ -203,9 +199,8 @@ void main() {
     ).thenAnswer(
       (_) async => Ok(_details(_review(recipientWalletOwned: true))),
     );
-    when(
-      () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-    ).thenAnswer((_) async => [_utxo]);
+    when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+        .thenAnswer((_) async => [_utxo]);
     when(
       () => signingPort.finalizePsbt('cHNidP8='),
     ).thenAnswer((_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)));
@@ -219,9 +214,8 @@ void main() {
     'keeps a frozen-input session visible as a conflict until unfrozen',
     () async {
       var frozen = true;
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-      ).thenAnswer((_) async => [_utxo.copyWith(isFrozen: frozen)]);
+      when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+          .thenAnswer((_) async => [_utxo.copyWith(isFrozen: frozen)]);
       when(() => signingPort.finalizePsbt('cHNidP8=')).thenAnswer(
         (_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)),
       );
@@ -258,9 +252,8 @@ void main() {
     ).thenAnswer(
       (_) async => Ok(_details(_review(recipient: 'TB1QRECIPIENT'))),
     );
-    when(
-      () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-    ).thenAnswer((_) async => [_utxo]);
+    when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+        .thenAnswer((_) async => [_utxo]);
     when(
       () => signingPort.finalizePsbt('cHNidP8='),
     ).thenAnswer((_) async => const Ok((psbt: 'cHNidP8=', isFinalized: false)));
@@ -282,9 +275,8 @@ void main() {
           allowFrozenWalletInputs: true,
         ),
       ).thenAnswer((_) async => Ok(_details(_review(isFinalized: true))));
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-      ).thenAnswer((_) async => [_utxo]);
+      when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+          .thenAnswer((_) async => [_utxo]);
 
       final first = await usecase.execute(_pendingTransaction);
       final second = await usecase.execute(
@@ -306,9 +298,8 @@ void main() {
   test(
     'retains the submission stage when a broadcast consumed its inputs',
     () async {
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: 'wallet-id'),
-      ).thenAnswer((_) async => []);
+      when(() => getWalletUtxosUsecase.execute(walletId: 'wallet-id'))
+          .thenAnswer((_) async => []);
       when(() => signingPort.finalizePsbt('cHNidP8=')).thenAnswer(
         (_) async => const Ok((psbt: 'cHNidP8=', isFinalized: true)),
       );

@@ -1,9 +1,21 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
+import 'package:sync/sync.dart' show OwnershipIndex, UnsignedSpend, SyncFailure;
+import 'package:flutter_test/flutter_test.dart' show addTearDown;
+import 'package:path_provider/path_provider.dart';
+
+import 'support/bdk_test_store.dart';
+import 'support/sync_spend_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -352,7 +364,9 @@ bdk.Transaction fundingTransaction(
           publicWallet: PublicBdkWalletModel(
             id: id,
             descriptor: descriptor(publicKey.toString()),
-            isTestnet: isTestnet,
+            network: isTestnet
+                ? Network.bitcoinTestnet
+                : Network.bitcoinMainnet,
           ),
         );
       } finally {
@@ -376,7 +390,7 @@ extension FixturePsbtSigning on BdkWalletDatasource {
   }) => signPsbtWithDescriptor(
     psbt,
     descriptor: wallet.descriptor,
-    isTestnet: wallet.publicWallet.isTestnet,
+    isTestnet: !wallet.publicWallet.network.isMainnet,
     foreignInputWallet: allowFinalizedForeignInputs
         ? wallet.publicWallet
         : null,
@@ -462,3 +476,46 @@ bdk.Wallet createFixtureDescriptorWallet({
     external.dispose();
   }
 }
+
+/// Read/codec tests need no writer; ownership comes from the native fixture
+/// through sync's real value mapper.
+BdkWalletDatasource fixturePolicyDatasource() => BdkWalletDatasource(
+  wallet: (_) => throw StateError('Use fixtureSpendDatasource for spends'),
+  walletValuesDatasource: FixtureWalletValues(),
+);
+
+class FixtureWalletValues extends SyncWalletValuesDatasource {
+  @override
+  Future<BalanceModel> getBalance({required WalletModel wallet}) =>
+      BdkTestStore.values(wallet).getBalance(wallet: wallet);
+
+  FixtureWalletValues()
+    : super(load: (_) => throw StateError('No fixture wallet'));
+
+  @override
+  Future<OwnershipIndex> getOwnership({required WalletModel wallet}) =>
+      BdkTestStore.values(wallet).getOwnership(wallet: wallet);
+}
+
+Future<BdkWalletDatasource> fixtureSpendDatasource(
+  PublicBdkWalletModel model,
+) async {
+  final fixture = await SyncSpendFixture.open(
+    (await getApplicationDocumentsDirectory()).path,
+    model,
+  );
+  addTearDown(fixture.close);
+  return BdkWalletDatasource(
+    wallet: fixture.wallet,
+    walletValuesDatasource: SyncWalletValuesDatasource(
+      load: (key) => fixture.wallet(key.id),
+    ),
+  );
+}
+
+String builtPsbt(Result<UnsignedSpend, SyncFailure> result) => switch (result) {
+  Ok(:final value) => value.encoded,
+  Err(:final failure) => throw StateError(
+    'Fixture spend failed: ${failure.logCode}',
+  ),
+};

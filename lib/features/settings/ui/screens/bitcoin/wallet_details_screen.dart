@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -18,14 +17,15 @@ import 'package:bb_mobile/features/settings/ui/widgets/wallet_signer_details.dar
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_sheet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
-typedef WalletDetailsActionsBuilder =
-    List<Widget> Function(BuildContext context, Wallet wallet);
+typedef WalletDetailsActionsBuilder = List<Widget> Function(
+  BuildContext context,
+  Wallet wallet,
+);
 typedef WalletDeletionGuard = Future<bool> Function(String walletId);
 
 class WalletDetailsScreen extends StatelessWidget {

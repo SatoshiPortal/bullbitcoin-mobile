@@ -1,11 +1,13 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/utils/result.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/features/bullvault/domain/usecases/watch_bullvault_details_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -63,6 +65,7 @@ class _MockEncodeRecoveryPackage extends Mock
 
 void main() {
   setUpAll(() {
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(
       BullVaultRenewRequest(
         walletId: 'fallback-wallet',
@@ -72,9 +75,9 @@ void main() {
           deviceTime: DateTime.utc(2027),
           chainHeight: 3_000_000,
           medianTimePast:
-              DateTime.utc(
-                2027,
-              ).subtract(const Duration(hours: 1)).millisecondsSinceEpoch ~/
+              DateTime.utc(2027)
+                  .subtract(const Duration(hours: 1))
+                  .millisecondsSinceEpoch ~/
               1000,
         ),
       ),
@@ -140,9 +143,8 @@ void main() {
       when(() => load.execute(details.record.walletId)).thenAnswer(
         (_) async => Ok(BullVaultRenewalLoad(details: details, renewal: null)),
       );
-      when(
-        () => watchDetails.execute(details.record.walletId),
-      ).thenAnswer((_) => updates.stream);
+      when(() => watchDetails.execute(details.record.walletId))
+          .thenAnswer((_) => updates.stream);
       when(
         () => watchMigration.execute(
           previousWalletId: 'retired-wallet',
@@ -208,9 +210,8 @@ void main() {
         ),
       );
     });
-    when(
-      () => encode.execute(renewal.replacement.recoveryPackage),
-    ).thenReturn('{}');
+    when(() => encode.execute(renewal.replacement.recoveryPackage))
+        .thenReturn('{}');
     when(
       () => cancel.execute(
         previousWalletId: details.record.walletId,
@@ -268,29 +269,25 @@ void main() {
         deviceTime: DateTime.utc(2028),
         chainHeight: 3_100_000,
         medianTimePast:
-            DateTime.utc(
-              2028,
-            ).subtract(const Duration(hours: 1)).millisecondsSinceEpoch ~/
+            DateTime.utc(2028)
+                .subtract(const Duration(hours: 1))
+                .millisecondsSinceEpoch ~/
             1000,
       );
-      when(
-        () => load.execute(details.record.walletId),
-      ).thenAnswer((_) async => Ok(BullVaultRenewalLoad(details: details)));
+      when(() => load.execute(details.record.walletId))
+          .thenAnswer((_) async => Ok(BullVaultRenewalLoad(details: details)));
       var timeRequests = 0;
-      when(
-        () => prepareTime.execute(isTestnet: details.policy.network.isTestnet),
-      ).thenAnswer(
-        (_) async => ++timeRequests == 1
-            ? const Err(BullVaultClockMismatchFailure())
-            : Ok(reference),
-      );
+      when(() => prepareTime.execute(network: details.policy.network.bitcoin))
+          .thenAnswer(
+            (_) async => ++timeRequests == 1
+                ? const Err(BullVaultClockMismatchFailure())
+                : Ok(reference),
+          );
       when(() => renew.execute(any())).thenAnswer((_) async => Ok(renewal));
-      when(
-        () => encode.execute(renewal.replacement.recoveryPackage),
-      ).thenReturn('{}');
-      when(
-        () => encode.execute(details.record.recoveryPackage),
-      ).thenReturn('current-package');
+      when(() => encode.execute(renewal.replacement.recoveryPackage))
+          .thenReturn('{}');
+      when(() => encode.execute(details.record.recoveryPackage))
+          .thenReturn('current-package');
       when(
         () => watchMigration.execute(
           previousWalletId: 'retired-wallet',
@@ -351,9 +348,7 @@ void main() {
       await cubit.load();
       expect(cubit.state.details, same(details));
       expect(cubit.state.timeReference, isNull);
-      verifyNever(
-        () => prepareTime.execute(isTestnet: any(named: 'isTestnet')),
-      );
+      verifyNever(() => prepareTime.execute(network: any(named: 'network')));
       await cubit.prepareRenewal();
       expect(cubit.state.failure, isA<BullVaultClockMismatchFailure>());
       expect(cubit.state.details, same(details));

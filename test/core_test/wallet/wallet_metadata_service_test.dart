@@ -1,13 +1,8 @@
-import 'dart:typed_data';
-
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:primitives/primitives.dart' show Ok;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -35,14 +30,10 @@ void main() {
     'records the standard descriptor path for a Bitcoin seed wallet',
     () async {
       final secrets = Secrets(scratchDirectory: () async => '');
-      final secret =
-          (await secrets.import(
-                    words:
-                        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
-                            .split(' '),
-                  )
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      final secret = (await secrets.import(
+        words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+            .split(' '),
+      ) as Ok<Secret, SecretFailure>).value;
       final wallet = await WalletMetadataService.deriveFromSecret(
         secret: secret,
         network: Network.bitcoinTestnet,

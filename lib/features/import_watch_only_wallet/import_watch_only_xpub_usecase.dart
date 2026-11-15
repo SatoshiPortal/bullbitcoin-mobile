@@ -1,6 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/import_watch_only_failure.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 
 class ImportWatchOnlyXpubUsecase {
@@ -29,7 +27,7 @@ class ImportWatchOnlyXpubUsecase {
           DescriptorDerivation.derivePublicBitcoinMultipathDescriptorFromXpub(
             watchOnlyXpub.canonicalXpub,
             scriptType: watchOnlyXpub.scriptType,
-            isTestnet: watchOnlyXpub.network.isTestnet,
+            isTestnet: !watchOnlyXpub.network.isMainnet,
             masterFingerprint: watchOnlyXpub.masterFingerprint,
             derivationPath: watchOnlyXpub.derivationPath,
           );

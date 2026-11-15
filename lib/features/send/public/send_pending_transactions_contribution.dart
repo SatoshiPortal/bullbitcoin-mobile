@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/send/presentation/bloc/send_pending_transactions_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_pending_transactions_section.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,7 +29,7 @@ class _SendPendingTransactionsContributionState
   @override
   void initState() {
     super.initState();
-    _cubit = locator<SendPendingTransactionsCubit>()..watch(widget.walletId);
+    _cubit = GetIt.I<SendPendingTransactionsCubit>()..watch(widget.walletId);
     _refreshSubscription = widget.walletRefreshes.listen((_) => _cubit.retry());
   }
 

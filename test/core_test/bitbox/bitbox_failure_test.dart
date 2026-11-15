@@ -1,4 +1,3 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/bitbox/data/datasources/bitbox_device_datasource.dart';
 import 'package:bb_mobile/core/bitbox/data/models/bitbox_device_model.dart';
 import 'package:bb_mobile/core/bitbox/data/repositories/bitbox_device_repository_impl.dart';
@@ -6,7 +5,6 @@ import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart'
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/connect_bitbox_device_usecase.dart';
-import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/bitbox/domain/get_bitbox_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/get_bitbox_account_key_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/pair_bitbox_device_usecase.dart';
@@ -18,13 +16,10 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -96,9 +91,8 @@ void main() {
 
     test('requires the fingerprint and account xpub to match', () async {
       final wallet = _policyWallet(SignerDeviceEntity.bitbox02);
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => 'aabbccdd');
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenAnswer((_) async => 'aabbccdd');
       when(
         () => datasource.getWalletPolicyXpub(
           any(),
@@ -130,9 +124,8 @@ void main() {
           SignerDeviceEntity.bitbox02,
           registrationName: 'Family vault',
         );
-        when(
-          () => datasource.getMasterFingerprint(any()),
-        ).thenAnswer((_) async => 'aabbccdd');
+        when(() => datasource.getMasterFingerprint(any()))
+            .thenAnswer((_) async => 'aabbccdd');
         when(
           () => datasource.getWalletPolicyXpub(
             any(),
@@ -177,9 +170,8 @@ void main() {
       final wallet = _multiKeyPolicyWallet();
       final secondPath = "m/48'/0'/1'/2'";
       final secondXpub = Bip32Derivation.getBip32Xpub(_otherXpub).toBase58();
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => 'aabbccdd');
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenAnswer((_) async => 'aabbccdd');
       when(
         () => datasource.getWalletPolicyXpub(
           any(),
@@ -216,9 +208,8 @@ void main() {
 
     test('accepts disjoint policy roles for one BitBox account key', () async {
       final wallet = _disjointRolePolicyWallet(SignerDeviceEntity.bitbox02);
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => 'aabbccdd');
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenAnswer((_) async => 'aabbccdd');
       when(
         () => datasource.getWalletPolicyXpub(
           any(),
@@ -245,9 +236,8 @@ void main() {
 
     test('rejects a wallet-policy address mismatch', () async {
       final wallet = _policyWallet(SignerDeviceEntity.bitbox02);
-      when(
-        () => datasource.getMasterFingerprint(any()),
-      ).thenAnswer((_) async => 'aabbccdd');
+      when(() => datasource.getMasterFingerprint(any()))
+          .thenAnswer((_) async => 'aabbccdd');
       when(
         () => datasource.getWalletPolicyXpub(
           any(),
@@ -407,9 +397,8 @@ void main() {
     const path = "m/48'/1'/0'/2'";
     final repository = _MockRepository();
     final usecase = GetBitBoxAccountKeyUsecase(repository);
-    when(
-      () => repository.getMasterFingerprint(_device),
-    ).thenAnswer((_) async => const Ok('AABBCCDD'));
+    when(() => repository.getMasterFingerprint(_device))
+        .thenAnswer((_) async => const Ok('AABBCCDD'));
     when(
       () => repository.getXpub(
         _device,

@@ -31,9 +31,8 @@ void main() {
           ),
         ],
       );
-      when(
-        () => port.getPolicy(walletId: wallet.id),
-      ).thenAnswer((_) async => Ok(policy));
+      when(() => port.getPolicy(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(policy));
       when(
         () => port.getPolicyMaturity(
           walletId: wallet.id,
@@ -57,9 +56,8 @@ void main() {
         ),
       );
 
-      final result = await GetBitcoinSigningPlanUsecase(
-        port,
-      ).execute(wallet: wallet, psbt: 'psbt');
+      final result = await GetBitcoinSigningPlanUsecase(port)
+          .execute(wallet: wallet, psbt: 'psbt');
       final details =
           (result as Ok<BitcoinSigningPlanDetails, SendFailure>).value;
       final plan = details.plan;
@@ -83,9 +81,8 @@ void main() {
     final port = _MockBitcoinSigningPort();
     final wallet = _wallet(network: Network.liquidTestnet);
 
-    final result = await GetBitcoinSigningPlanUsecase(
-      port,
-    ).execute(wallet: wallet);
+    final result = await GetBitcoinSigningPlanUsecase(port)
+        .execute(wallet: wallet);
 
     expect(
       (result as Err<BitcoinSigningPlanDetails, SendFailure>).failure,
@@ -113,9 +110,8 @@ void main() {
         ),
       ],
     );
-    when(
-      () => port.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(policy));
+    when(() => port.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(policy));
     when(
       () => port.reviewPsbt(
         'psbt',
@@ -141,9 +137,8 @@ void main() {
       ),
     ).thenAnswer((_) async => Ok(maturity));
 
-    final result = await GetBitcoinSigningPlanUsecase(
-      port,
-    ).execute(wallet: wallet, psbt: 'psbt');
+    final result = await GetBitcoinSigningPlanUsecase(port)
+        .execute(wallet: wallet, psbt: 'psbt');
     final details =
         (result as Ok<BitcoinSigningPlanDetails, SendFailure>).value;
 
@@ -164,9 +159,8 @@ void main() {
       threshold: 1,
       fingerprints: const ['aabbccdd'],
     );
-    when(
-      () => port.getPolicy(walletId: wallet.id),
-    ).thenAnswer((_) async => Ok(policy));
+    when(() => port.getPolicy(walletId: wallet.id))
+        .thenAnswer((_) async => Ok(policy));
     when(
       () => port.reviewPsbt(
         'psbt',
@@ -184,9 +178,8 @@ void main() {
       ),
     );
 
-    final result = await GetBitcoinSigningPlanUsecase(
-      port,
-    ).execute(wallet: wallet, psbt: 'psbt');
+    final result = await GetBitcoinSigningPlanUsecase(port)
+        .execute(wallet: wallet, psbt: 'psbt');
     final details =
         (result as Ok<BitcoinSigningPlanDetails, SendFailure>).value;
 

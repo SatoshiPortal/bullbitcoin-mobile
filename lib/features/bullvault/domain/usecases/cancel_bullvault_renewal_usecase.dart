@@ -20,13 +20,14 @@ class CancelBullVaultRenewalUsecase {
         replacementWalletId,
         sync: true,
       );
-      if (replacementWallet == null) {
+      final balance = replacementWallet?.balanceSat;
+      if (balance == null) {
         return const Err(BullVaultRenewalFailure());
       }
-      if (replacementWallet.balanceSat > BigInt.zero) {
+      if (balance > BigInt.zero) {
         return const Err(BullVaultRenewalHasFundsFailure());
       }
-      return _repository.cancelRenewal(
+      return await _repository.cancelRenewal(
         previousWalletId: previousWalletId,
         replacementWalletId: replacementWalletId,
       );

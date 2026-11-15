@@ -1,15 +1,14 @@
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/bullvault/domain/usecases/get_bullvault_secret_usecase.dart';
+
 import '../../bullvault_secrets_fixture.dart';
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:primitives/primitives.dart' show Result, Ok, Err;
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -260,7 +259,10 @@ final class _TestBullVaultRepository extends Fake
 late BullVaultSecretsFixture secretFixture;
 
 void main() {
-  setUpAll(() => registerFallbackValue(Environment.testnet));
+  setUpAll(() {
+    registerFallbackValue(Environment.testnet);
+    registerFallbackValue(BitcoinNetwork.testnet);
+  });
   setUp(() {
     secretFixture = BullVaultSecretsFixture();
   });
@@ -282,7 +284,7 @@ void main() {
     final accounts = _TestBip48AccountRepository();
     final reviewed = _timeReference();
     final prepare = _MockPrepareBullVaultTimeReferenceUsecase();
-    when(() => prepare.execute(isTestnet: true)).thenAnswer(
+    when(() => prepare.execute(network: BitcoinNetwork.testnet)).thenAnswer(
       (_) async => Ok(
         BullVaultTimeReference(
           deviceTime: reviewed.deviceTime,
@@ -323,7 +325,7 @@ void main() {
     final cold = deriveSignerKeys(testMnemonics[1]);
     final prepare = _MockPrepareBullVaultTimeReferenceUsecase();
     final reviewed = _timeReference();
-    when(() => prepare.execute(isTestnet: true)).thenAnswer(
+    when(() => prepare.execute(network: BitcoinNetwork.testnet)).thenAnswer(
       (_) async => Ok(
         BullVaultTimeReference(
           deviceTime: reviewed.deviceTime.add(const Duration(minutes: 5)),
@@ -392,9 +394,8 @@ void main() {
     );
 
     final getWallet = _MockGetWalletUsecase();
-    when(
-      () => getWallet.execute(created.wallet.id),
-    ).thenAnswer((_) async => created.wallet);
+    when(() => getWallet.execute(created.wallet.id))
+        .thenAnswer((_) async => created.wallet);
     final reserveAccount = _MockReserveBip48AccountUsecase();
     when(
       () => reserveAccount.execute(
@@ -614,77 +615,70 @@ void main() {
     },
   );
 
-  test(
-    'keeps passphrase-free recovery outside the immediate threshold',
-    () async {
-      final repository = _TestBullVaultRepository();
-      final getDefaultSeed = _MockGetBullVaultSecretUsecase();
-      final mnemonic = bip39.Mnemonic.fromWords(
-        words: testMnemonics.first.split(' '),
-      );
-      when(
-        () => getDefaultSeed.execute(environment: Environment.testnet),
-      ).thenAnswer(
-        (_) async => Ok(await secretFixture.mnemonic(mnemonic.words)),
-      );
-      final cold = deriveSignerKeys(testMnemonics[1]);
+  test('keeps passphrase-free recovery outside the immediate threshold', () async {
+    final repository = _TestBullVaultRepository();
+    final getDefaultSeed = _MockGetBullVaultSecretUsecase();
+    final mnemonic = bip39.Mnemonic.fromWords(
+      words: testMnemonics.first.split(' '),
+    );
+    when(
+      () => getDefaultSeed.execute(environment: Environment.testnet),
+    ).thenAnswer((_) async => Ok(await secretFixture.mnemonic(mnemonic.words)));
+    final cold = deriveSignerKeys(testMnemonics[1]);
 
-      final result =
-          await _usecase(
-            repository,
-            getSettings,
-            getDefaultSeed: getDefaultSeed,
-          ).execute(
-            BullVaultCreateRequest(
-              label: 'BullVault',
-              protection: BullVaultProtection.standard,
-              mobilePassphrase: 'vault passphrase',
-              passphraseFreeRecovery: true,
-              cold: BullVaultSignerRequest(
-                input: cold.xpub,
-                device: SignerDeviceEntity.ledgerNanoX,
-              ),
-              secondCold: null,
-              inheritance: null,
-              schedule: BullVaultSchedule.standardWithoutInheritance,
-              timeReference: _timeReference(),
+    final result =
+        await _usecase(
+          repository,
+          getSettings,
+          getDefaultSeed: getDefaultSeed,
+        ).execute(
+          BullVaultCreateRequest(
+            label: 'BullVault',
+            protection: BullVaultProtection.standard,
+            mobilePassphrase: 'vault passphrase',
+            passphraseFreeRecovery: true,
+            cold: BullVaultSignerRequest(
+              input: cold.xpub,
+              device: SignerDeviceEntity.ledgerNanoX,
             ),
-          );
+            secondCold: null,
+            inheritance: null,
+            schedule: BullVaultSchedule.standardWithoutInheritance,
+            timeReference: _timeReference(),
+          ),
+        );
 
-      final created =
-          (result as Ok<BullVaultCreateResult, BullVaultFailure>).value;
-      final everyday = created.policy.everydayKey;
-      final recovery = created.policy.delayedMobileRecoveryKey!;
-      final coldKey = created.policy.coldKey;
-      expect(everyday.accountKey.xpub, isNot(recovery.accountKey.xpub));
-      expect(
-        everyday.accountKey.derivationPath,
-        recovery.accountKey.derivationPath,
-      );
-      expect(everyday.accountKey.requiresPassphrase, isTrue);
-      expect(recovery.accountKey.requiresPassphrase, isFalse);
-      expect(
-        created.policy.descriptor,
-        contains(
-          'multi_a(2,${everyday.expression(receiveBranch: 0, changeBranch: 1)},${coldKey.expression(receiveBranch: 0, changeBranch: 1)})',
-        ),
-      );
-      expect(
-        created.policy.descriptor,
-        contains(
-          'pk(${recovery.expression(receiveBranch: 0, changeBranch: 1)})',
-        ),
-      );
-      final mobileSigner = created.wallet.signers.singleWhere(
-        (signer) => signer.id == BullVaultSignerRole.everyday.name,
-      );
-      expect(mobileSigner.descriptorKeys.map((key) => key.xpub).toSet(), {
-        everyday.accountKey.xpub,
-        recovery.accountKey.xpub,
-      });
-      expect(created.record.mobileAccount, 0);
-    },
-  );
+    final created =
+        (result as Ok<BullVaultCreateResult, BullVaultFailure>).value;
+    final everyday = created.policy.everydayKey;
+    final recovery = created.policy.delayedMobileRecoveryKey!;
+    final coldKey = created.policy.coldKey;
+    expect(everyday.accountKey.xpub, isNot(recovery.accountKey.xpub));
+    expect(
+      everyday.accountKey.derivationPath,
+      recovery.accountKey.derivationPath,
+    );
+    expect(everyday.accountKey.requiresPassphrase, isTrue);
+    expect(recovery.accountKey.requiresPassphrase, isFalse);
+    expect(
+      created.policy.descriptor,
+      contains(
+        'multi_a(2,${everyday.expression(receiveBranch: 0, changeBranch: 1)},${coldKey.expression(receiveBranch: 0, changeBranch: 1)})',
+      ),
+    );
+    expect(
+      created.policy.descriptor,
+      contains('pk(${recovery.expression(receiveBranch: 0, changeBranch: 1)})'),
+    );
+    final mobileSigner = created.wallet.signers.singleWhere(
+      (signer) => signer.id == BullVaultSignerRole.everyday.name,
+    );
+    expect(mobileSigner.descriptorKeys.map((key) => key.xpub).toSet(), {
+      everyday.accountKey.xpub,
+      recovery.accountKey.xpub,
+    });
+    expect(created.record.mobileAccount, 0);
+  });
 
   test('creates a mainnet policy from mainnet account keys', () async {
     final repository = _TestBullVaultRepository();
@@ -698,9 +692,8 @@ void main() {
 
     final cold = deriveSignerKeys(testMnemonics[1], isTestnet: false);
     final getDefaultSeed = _MockGetBullVaultSecretUsecase();
-    when(
-      () => getDefaultSeed.execute(environment: Environment.mainnet),
-    ).thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
+    when(() => getDefaultSeed.execute(environment: Environment.mainnet))
+        .thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
     final result =
         await _usecase(
           repository,
@@ -733,9 +726,8 @@ void main() {
       created.policy.everydayKey.accountKey.derivationPath,
       contains("/0'/"),
     );
-    verify(
-      () => getDefaultSeed.execute(environment: Environment.mainnet),
-    ).called(1);
+    verify(() => getDefaultSeed.execute(environment: Environment.mainnet))
+        .called(1);
     expect(repository.savedRecord, isNotNull);
   });
 
@@ -745,9 +737,8 @@ void main() {
       final repository = _TestBullVaultRepository();
       final getDefaultSeed = _MockGetBullVaultSecretUsecase();
       final accounts = _TestBip48AccountRepository(events: repository.events);
-      when(
-        () => getDefaultSeed.execute(environment: Environment.testnet),
-      ).thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
+      when(() => getDefaultSeed.execute(environment: Environment.testnet))
+          .thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -782,9 +773,8 @@ void main() {
       final repository = _TestBullVaultRepository();
       final accounts = _TestBip48AccountRepository(commitFailuresRemaining: 1);
       final deleteWallet = _MockDeleteWalletUsecase();
-      when(
-        () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => deleteWallet.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => const Ok(null));
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -812,9 +802,8 @@ void main() {
       expect(repository.savedRecord, isNull);
       expect(accounts.claims, isEmpty);
       expect(accounts.reserved, isEmpty);
-      verify(
-        () => deleteWallet.execute(walletId: 'bullvault-wallet'),
-      ).called(1);
+      verify(() => deleteWallet.execute(walletId: 'bullvault-wallet'))
+          .called(1);
     },
   );
 
@@ -824,11 +813,11 @@ void main() {
       final repository = _TestBullVaultRepository();
       final accounts = _TestBip48AccountRepository(commitFailuresRemaining: 1);
       final deleteWallet = _MockDeleteWalletUsecase();
-      when(
-        () => deleteWallet.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => const Err(WalletStorageFailure('wallet deletion failed')),
-      );
+      when(() => deleteWallet.execute(walletId: any(named: 'walletId')))
+          .thenAnswer(
+            (_) async =>
+                const Err(WalletStorageFailure('wallet deletion failed')),
+          );
       final cold = deriveSignerKeys(testMnemonics[1]);
 
       final result =
@@ -889,8 +878,7 @@ void main() {
         label: 'BullVault',
         protection: BullVaultProtection.standard,
         cold: BullVaultSignerRequest(
-          input:
-              'tpubD6NzVbkrYhZ4WLd82sJzTQAcHXancR9nXqyNo8pXVNNEQ7qTDXiwX6dSW97sUvxdVBV2tAgod7gfG8dhJsVqDspXrsaLSifGx8suAPrpyUn',
+          input: 'tpubD6NzVbkrYhZ4WLd82sJzTQAcHXancR9nXqyNo8pXVNNEQ7qTDXiwX6dSW97sUvxdVBV2tAgod7gfG8dhJsVqDspXrsaLSifGx8suAPrpyUn',
           device: SignerDeviceEntity.bitbox02,
         ),
         secondCold: null,
@@ -945,20 +933,18 @@ CreateBullVaultUsecase _usecase(
 }) {
   final seedUsecase = getDefaultSeed ?? _MockGetBullVaultSecretUsecase();
   if (getDefaultSeed == null) {
-    when(
-      () => seedUsecase.execute(environment: any(named: 'environment')),
-    ).thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
+    when(() => seedUsecase.execute(environment: any(named: 'environment')))
+        .thenAnswer((_) async => Ok(await secretFixture.rawSeed()));
   }
   final prepareTimeReference =
       prepareTimeReferenceUsecase ??
       _MockPrepareBullVaultTimeReferenceUsecase();
   if (prepareTimeReferenceUsecase == null) {
-    when(
-      () => prepareTimeReference.execute(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((invocation) async {
-      final isTestnet = invocation.namedArguments[#isTestnet] as bool;
-      return Ok(_timeReference(isMainnet: !isTestnet));
-    });
+    when(() => prepareTimeReference.execute(network: any(named: 'network')))
+        .thenAnswer((invocation) async {
+          final network = invocation.namedArguments[#network] as BitcoinNetwork;
+          return Ok(_timeReference(isMainnet: network.isMainnet));
+        });
   }
   return CreateBullVaultUsecase(
     repository,

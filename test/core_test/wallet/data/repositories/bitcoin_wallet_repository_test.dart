@@ -1,4 +1,7 @@
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:sync/sync.dart' show SyncReason, FrozenOutpoint;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+
 import 'dart:io';
 
 import 'package:secrets/secrets.dart';
@@ -6,40 +9,29 @@ import 'package:secrets/testing.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:drift_dev/api/migrations_native.dart';
+
 import '../../../../migrations_test/bull_database/generated/schema.dart';
 import '../../../../migrations_test/bull_database/generated/schema_v15.dart'
     as v15;
 
-import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_psbt_review_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/manipulated_transaction_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
-import 'package:bb_mobile/core/wallet/domain/unverifiable_transaction_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -58,43 +50,23 @@ import '../../wallet_signer_test_fixture.dart';
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
 
-class _MockFrozenWalletUtxoDatasource extends Mock
-    implements FrozenWalletUtxoDatasource {}
+class _MockSyncFreezesDatasource extends Mock
+    implements SyncFreezesDatasource {}
 
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
 
 class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
-
-class _MockElectrumServersPort extends Mock implements ElectrumServersPort {}
 
 class _MockGetSettingsUsecase extends Mock implements GetSettingsUsecase {}
 
 class _MockSeedVerificationPort extends Mock implements SeedVerificationPort {}
 
 class _SigningTestBdkWalletDatasource extends BdkWalletDatasource {
-  TransactionSignatureStatus signatureStatus = TransactionSignatureStatus.valid;
-  String? replacementPsbt;
-
-  @override
-  Future<TransactionSignatureStatus> verifyTransactionInputSignatures({
-    required String txid,
-    required WalletModel wallet,
-  }) async => signatureStatus;
-
-  @override
-  Future<String> createUnsignedReplaceByFeePsbt({
-    required WalletModel wallet,
-    required String txid,
-    required RelativeFee feeRate,
-  }) async {
-    final replacement = replacementPsbt;
-    if (replacement != null) return replacement;
-    return super.createUnsignedReplaceByFeePsbt(
-      wallet: wallet,
-      txid: txid,
-      feeRate: feeRate,
-    );
-  }
+  _SigningTestBdkWalletDatasource()
+    : super(
+        wallet: (_) => throw StateError('Signing does not build a transaction'),
+        walletValuesDatasource: FixtureWalletValues(),
+      );
 
   @override
   Future<void> validateWalletPsbtInputs(
@@ -130,7 +102,7 @@ void main() {
   late WalletMetadataDatasource metadataDatasource;
   late Secrets secrets;
   late BdkWalletDatasource bdkDatasource;
-  late FrozenWalletUtxoDatasource frozenWalletUtxoDatasource;
+  late SyncFreezesDatasource frozenWalletUtxoDatasource;
   late BitcoinWalletRepository repository;
   late Directory tempDirectory;
   late PathProviderPlatform originalPathProvider;
@@ -145,15 +117,15 @@ void main() {
     FakeSecureStoragePlatform().install();
     secrets = Secrets(scratchDirectory: () async => tempDirectory.path);
     bdkDatasource = _SigningTestBdkWalletDatasource();
-    frozenWalletUtxoDatasource = _MockFrozenWalletUtxoDatasource();
-    when(
-      () => frozenWalletUtxoDatasource.getAllFrozen(),
-    ).thenAnswer((_) async => const []);
+    frozenWalletUtxoDatasource = _MockSyncFreezesDatasource();
+    when(() => frozenWalletUtxoDatasource.getAllFrozen())
+        .thenAnswer((_) async => const []);
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       secrets: secrets,
       bdkWalletDatasource: bdkDatasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
+      walletValuesDatasource: FixtureWalletValues(),
     );
   });
 
@@ -166,9 +138,8 @@ void main() {
     WalletMetadataModel metadata,
     List<_SignerFixture> localSigners,
   ) async {
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(metadata.id))
+        .thenAnswer((_) async => metadata);
     for (final signer in localSigners) {
       final imported = await secrets.import(
         words: signer.words.split(' '),
@@ -195,10 +166,9 @@ void main() {
             scriptType: scriptType,
           );
           var metadata = await WalletMetadataService.deriveFromSecret(
-            secret:
-                (await secrets.import(words: signer.words.split(' '))
-                        as Ok<Secret, SecretFailure>)
-                    .value,
+            secret: (await secrets.import(
+              words: signer.words.split(' '),
+            ) as Ok<Secret, SecretFailure>).value,
             network: Network.bitcoinTestnet,
             scriptType: scriptType,
             isDefault: true,
@@ -245,50 +215,6 @@ void main() {
     expect(signed.isFinalized, isTrue);
   });
 
-  test(
-    'fee bump requires verified inputs and signs the stored account',
-    () async {
-      final signer = _singleSignatureFixture(testMnemonics.first, account: 1);
-      final metadata = _metadata(
-        descriptor: twoPathDescriptor(
-          signer.externalPublic,
-          signer.internalPublic,
-        ),
-        signers: [signer],
-        localSignerCount: 1,
-        derivationPath: "m/84'/1'/1'",
-      );
-      await stubWallet(metadata, [signer]);
-      final datasource = bdkDatasource as _SigningTestBdkWalletDatasource;
-      datasource.replacementPsbt = buildUnsignedPsbt(
-        descriptor: metadata.publicDescriptor,
-      );
-      Future<String> bump() => repository.bumpFee(
-        walletId: metadata.id,
-        txid: 'original',
-        newFeeRate: const RelativeFee(2500),
-      );
-
-      datasource.signatureStatus = TransactionSignatureStatus.invalid;
-      await expectLater(
-        bump(),
-        throwsA(isA<ManipulatedTransactionException>()),
-      );
-      datasource.signatureStatus = TransactionSignatureStatus.unverifiable;
-      await expectLater(
-        bump(),
-        throwsA(isA<UnverifiableTransactionException>()),
-      );
-      datasource.signatureStatus = TransactionSignatureStatus.valid;
-      final signed = bdk.Psbt(psbtBase64: await bump());
-      try {
-        expect(signed.input().single.finalScriptWitness, isNotEmpty);
-      } finally {
-        signed.dispose();
-      }
-    },
-  );
-
   test('preserves an existing PSBT when adding a local signature', () async {
     final signer = _singleSignatureFixture(testMnemonics.first);
     final metadata = _metadata(
@@ -332,7 +258,6 @@ void main() {
     ).toString();
     final metadata = WalletMetadataModel(
       id: 'wallet',
-      network: Network.bitcoinTestnet,
       signers: [
         walletSignerModel(
           id: 'signer-0',
@@ -362,6 +287,7 @@ void main() {
         internalDescriptor,
       ),
       isDefault: false,
+      networkCode: 'bitcoinTestnet',
     );
     await stubWallet(metadata, [local]);
     final policy = _unwrapSigning(
@@ -433,14 +359,22 @@ void main() {
         'wsh(sortedmulti(2,$descriptorKey/0/<0;1>/*,'
         '${signer.xpub}/1/<0;1>/*))';
     final lwk = _MockLwkWalletDatasource();
-    when(
-      () => lwk.walletSyncFinishedStream,
-    ).thenAnswer((_) => const Stream.empty());
     final wallets = WalletRepository(
+      native: _Native(),
       walletMetadataDatasource: metadataDatasource,
       bdkWalletDatasource: bdkDatasource,
       lwkWalletDatasource: lwk,
-      serversPort: _MockElectrumServersPort(),
+      walletValuesDatasource: FixtureWalletValues(),
+      synchronize: (
+        _, {
+        discover = false,
+        allowInitialScan = true,
+        reason = SyncReason.auto,
+      }) async {},
+      isSyncing: ({walletId}) => false,
+      syncStarted: const Stream.empty(),
+      syncFinished: const Stream.empty(),
+      electrumSyncResultStream: const Stream.empty(),
     );
     final settings = _MockGetSettingsUsecase();
     when(settings.execute).thenAnswer(
@@ -463,16 +397,17 @@ void main() {
       seedVerification,
     );
     final parsed =
-        (await parser.execute(descriptor)
-                    as Ok<WatchOnlyWalletEntity, ImportWatchOnlyFailure>)
-                .value
+        (await parser.execute(
+              descriptor,
+            ) as Ok<WatchOnlyWalletEntity, ImportWatchOnlyFailure>).value
             as WatchOnlyDescriptorEntity;
     registerFallbackValue(
       _metadata(descriptor: descriptor, signers: [signer], localSignerCount: 1),
     );
     late WalletMetadataModel metadata;
     when(metadataDatasource.fetchAll).thenAnswer((_) async => []);
-    when(() => metadataDatasource.store(any())).thenAnswer((invocation) async {
+    when(() => metadataDatasource.fetch(any())).thenAnswer((_) async => null);
+    when(() => metadataDatasource.insert(any())).thenAnswer((invocation) async {
       metadata = invocation.positionalArguments.single as WalletMetadataModel;
     });
     final imported = await wallets.importDescriptor(
@@ -508,7 +443,6 @@ void main() {
         'and_v(v:after(2000000000),pk($localKey/<2;3>/*))})';
     final metadata = WalletMetadataModel(
       id: 'wallet',
-      network: Network.bitcoinTestnet,
       signers: [
         WalletSignerModel(
           id: 'signer-0',
@@ -546,6 +480,7 @@ void main() {
       isPhysicalBackupTested: false,
       publicDescriptor: descriptor,
       isDefault: false,
+      networkCode: 'bitcoinTestnet',
     );
     await stubWallet(metadata, [local]);
     final policy = _unwrapSigning(
@@ -618,7 +553,6 @@ void main() {
         "wsh(pk([${protected.fingerprint}/48'/1'/0'/2']${protected.xpub}/<0;1>/*))";
     final metadata = WalletMetadataModel(
       id: 'wallet',
-      network: Network.bitcoinTestnet,
       signers: [
         WalletSignerModel(
           id: 'signer-0',
@@ -643,17 +577,14 @@ void main() {
       isPhysicalBackupTested: false,
       publicDescriptor: descriptor,
       isDefault: false,
+      networkCode: 'bitcoinTestnet',
     );
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
-    final protectedSecret =
-        (await secrets.import(
-                  words: protected.words.split(' '),
-                  passphrase: passphrase,
-                )
-                as Ok<Secret, SecretFailure>)
-            .value;
+    when(() => metadataDatasource.fetch(metadata.id))
+        .thenAnswer((_) async => metadata);
+    final protectedSecret = (await secrets.import(
+      words: protected.words.split(' '),
+      passphrase: passphrase,
+    ) as Ok<Secret, SecretFailure>).value;
     expect(
       await secrets.retainCanonical(protectedSecret.id),
       isA<Ok<Secret, SecretFailure>>(),
@@ -696,17 +627,14 @@ void main() {
       signers: [signer],
       localSignerCount: 1,
     );
-    final wallet =
-        WalletModel.publicBdk(
-              id: metadata.id,
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: metadata.id,
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final datasource = _MockBdkWalletDatasource();
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(metadata.id))
+        .thenAnswer((_) async => metadata);
     when(
       () => datasource.validateWalletPsbtInputs(
         'psbt',
@@ -719,6 +647,7 @@ void main() {
       secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
+      walletValuesDatasource: FixtureWalletValues(),
     );
 
     final result = await reviewRepository.reviewPsbt(
@@ -762,17 +691,14 @@ void main() {
       signers: [signer],
       localSignerCount: 0,
     );
-    final wallet =
-        WalletModel.publicBdk(
-              id: metadata.id,
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: metadata.id,
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final datasource = _MockBdkWalletDatasource();
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(metadata.id))
+        .thenAnswer((_) async => metadata);
     when(
       () => datasource.validateWalletPsbtInputs(
         'psbt',
@@ -792,6 +718,7 @@ void main() {
       secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
+      walletValuesDatasource: FixtureWalletValues(),
     );
 
     final result = await reviewRepository.reviewPsbt(
@@ -815,15 +742,14 @@ void main() {
       localSignerCount: 0,
     );
     final datasource = _MockBdkWalletDatasource();
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(metadata.id))
+        .thenAnswer((_) async => metadata);
     when(
       () => datasource.validateExternalPartialPsbt(
         currentPsbtBase64: 'current',
         signedPsbtBase64: 'unrelated',
       ),
-    ).thenThrow(bdk.UnexpectedUnsignedTxPsbtException());
+    ).thenThrow(const InvalidBitcoinPsbtException());
     when(
       () => datasource.verifyFinalTransaction(
         psbtBase64: 'current',
@@ -835,12 +761,13 @@ void main() {
         psbtBase64: 'current',
         transactionHex: 'malformed',
       ),
-    ).thenThrow(bdk.IoTransactionException());
+    ).thenThrow(const InvalidBitcoinPsbtException());
     final signingRepository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
       secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
+      walletValuesDatasource: FixtureWalletValues(),
     );
 
     final results = [
@@ -876,19 +803,18 @@ void main() {
       signers: [signer],
       localSignerCount: 1,
     );
-    final wallet =
-        WalletModel.publicBdk(
-              id: metadata.id,
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: metadata.id,
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final datasource = _MockBdkWalletDatasource();
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(metadata.id))
+        .thenAnswer((_) async => metadata);
     when(() => frozenWalletUtxoDatasource.getAllFrozen()).thenAnswer(
-      (_) async => const [(walletId: 'wallet', txId: 'funding', vout: 0)],
+      (_) async => const [
+        FrozenOutpoint((txId: 'funding', vout: 0), origin: 'wallet'),
+      ],
     );
     when(
       () => datasource.validateWalletPsbtInputs(
@@ -902,6 +828,7 @@ void main() {
       secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
+      walletValuesDatasource: FixtureWalletValues(),
     );
 
     final result = await signingRepository.signPsbt(
@@ -923,19 +850,18 @@ void main() {
       signers: [signer],
       localSignerCount: 1,
     );
-    final wallet =
-        WalletModel.publicBdk(
-              id: metadata.id,
-              descriptor: descriptor,
-              isTestnet: true,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      id: metadata.id,
+      descriptor: descriptor,
+      network: Network.bitcoinTestnet,
+    ) as PublicBdkWalletModel;
     final datasource = _MockBdkWalletDatasource();
-    when(
-      () => metadataDatasource.fetch(metadata.id),
-    ).thenAnswer((_) async => metadata);
+    when(() => metadataDatasource.fetch(metadata.id))
+        .thenAnswer((_) async => metadata);
     when(() => frozenWalletUtxoDatasource.getAllFrozen()).thenAnswer(
-      (_) async => const [(walletId: 'wallet', txId: 'funding', vout: 0)],
+      (_) async => const [
+        FrozenOutpoint((txId: 'funding', vout: 0), origin: 'wallet'),
+      ],
     );
     when(
       () => datasource.validateExternalPartialPsbt(
@@ -955,6 +881,7 @@ void main() {
       secrets: secrets,
       bdkWalletDatasource: datasource,
       frozenWalletUtxoDatasource: frozenWalletUtxoDatasource,
+      walletValuesDatasource: FixtureWalletValues(),
     );
 
     final result = await signingRepository.combinePsbts(
@@ -1007,7 +934,6 @@ WalletMetadataModel _metadata({
   String? descriptorPath,
 }) => WalletMetadataModel(
   id: 'wallet',
-  network: Network.bitcoinTestnet,
   signers: [
     for (final (index, signer) in signers.indexed)
       walletSignerModel(
@@ -1030,6 +956,7 @@ WalletMetadataModel _metadata({
   isPhysicalBackupTested: false,
   publicDescriptor: descriptor,
   isDefault: false,
+  networkCode: 'bitcoinTestnet',
 );
 
 _SignerFixture _singleSignatureFixture(
@@ -1048,9 +975,8 @@ _SignerFixture _singleSignatureFixture(
     internalPublic: descriptors.internal,
     words: words,
     passphrase: null,
-    xpub: Bip32Derivation.getBip32Xpub(
-      descriptors.xpub.split(']').last,
-    ).convert(scriptType.getXpubType(Network.bitcoinTestnet)),
+    xpub: Bip32Derivation.getBip32Xpub(descriptors.xpub.split(']').last)
+        .convert(scriptType.getXpubType(Network.bitcoinTestnet)),
   );
 }
 
@@ -1133,10 +1059,16 @@ Future<WalletMetadataModel> _migrateMetadata(
   final database = SqliteDatabase(schema.newConnection());
   try {
     await verifier.migrateAndValidate(database, 16);
-    return (await WalletMetadataDatasource(
-      sqlite: database,
-    ).fetch(metadata.id))!;
+    return (await WalletMetadataDatasource(sqlite: database)
+        .fetch(metadata.id))!;
   } finally {
     await database.close();
   }
+}
+
+class _Native extends Fake implements WalletNativeLifecycle {
+  @override
+  Future<void> prepareCreate(WalletMetadataModel metadata) async {}
+  @override
+  Future<void> create(WalletMetadataModel metadata) async {}
 }

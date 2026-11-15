@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
@@ -5,8 +7,6 @@ import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_with_seed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -102,7 +102,7 @@ class RenewBullVaultUsecase {
         return const Err(BullVaultRenewalFailure());
       }
       final timeReferenceResult = await _prepareTimeReferenceUsecase.execute(
-        isTestnet: currentRecovery.policy.network.isTestnet,
+        network: currentRecovery.policy.network.bitcoin,
       );
       late final BullVaultTimeReference timeReference;
       switch (timeReferenceResult) {

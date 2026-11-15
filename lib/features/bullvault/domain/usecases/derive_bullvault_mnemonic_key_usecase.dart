@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/utils/bip48_derivation.dart';
-import 'package:bb_mobile/core/utils/result.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:primitives/primitives.dart' show Result;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';

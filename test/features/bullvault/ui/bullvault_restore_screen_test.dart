@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/bullvault/domain/entities/bullvault_restore_result.dart';
+
 import 'dart:async';
+
 import 'package:bull_ui/bull_ui.dart' show BullSecretTextInput;
 import 'package:primitives/primitives.dart' show Err, Result;
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -10,8 +12,6 @@ import 'package:bb_mobile/features/bullvault/ui/bullvault_restore_screen.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_router.dart';
 import 'package:bb_mobile/features/bullvault/ui/bullvault_scanner_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bb_mobile/generated/l10n/localization_en.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';

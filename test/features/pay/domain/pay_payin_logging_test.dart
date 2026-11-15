@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 
 import 'dart:io';
@@ -63,7 +64,11 @@ void main() {
           );
           final usecase = BroadcastPayPayinUsecase(
             wallet: const WalletFacade(Stream.empty()),
-            send: SendFacade(bitcoin: bitcoin.execute, liquid: liquid.execute),
+            send: SendFacade(
+              watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
+              bitcoin: bitcoin.execute,
+              liquid: liquid.execute,
+            ),
           );
           final result = chain == 'bitcoin'
               ? await usecase.bitcoin(
@@ -113,3 +118,6 @@ void main() {
     }
   }
 }
+
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}

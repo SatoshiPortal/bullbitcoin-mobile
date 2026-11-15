@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/test_wallet_backup/public/test_wallet_backup_facade.dart';
 import 'package:bb_mobile/features/bullvault/domain/bullvault_failure.dart';
@@ -25,12 +26,7 @@ class CheckBullVaultMobileBackupsUsecase {
       final identity = Fingerprint.tryParse(fingerprint);
       if (identity == null) return const Err(BullVaultBackupStatusFailure());
       final status = await _backupStatus(
-        VaultContext(
-          fingerprint: identity,
-          network: network.isTestnet
-              ? BitcoinNetwork.testnet
-              : BitcoinNetwork.mainnet,
-        ),
+        VaultContext(fingerprint: identity, network: network.bitcoin),
       );
       return switch (status) {
         Ok(:final value) => Ok((

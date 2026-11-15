@@ -5,11 +5,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap, BullBorderedTile;
-import 'package:material_ui/material_ui.dart';
 
 class WalletPolicyDetailsBottomSheet extends StatelessWidget {
   final Wallet wallet;

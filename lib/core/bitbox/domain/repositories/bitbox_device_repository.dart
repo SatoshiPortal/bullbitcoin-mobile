@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart'
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_failure.dart';
 import 'package:primitives/primitives.dart' show Result;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:meta/meta.dart';
 

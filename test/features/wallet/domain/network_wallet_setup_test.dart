@@ -1,8 +1,10 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/catalog_wallet_secret_references_repository.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
 import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -71,12 +73,30 @@ void main() {
           settings.fetch,
         ).thenAnswer((_) async => regtest.copyWith(environment: environment));
         final localRow = _Row();
-        when(() => localRow.masterFingerprint).thenReturn(secret.id.hex);
-        when(() => localRow.signer).thenReturn(Signer.local);
+        when(() => localRow.signers).thenReturn([
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: secret.id.hex,
+            xpubFingerprint: '',
+            xpub: '',
+            signer: Signer.local,
+            signerDevice: null,
+          ),
+        ]);
         // A public descriptor origin has no local secret by design.
         final remoteRow = _Row();
-        when(() => remoteRow.masterFingerprint).thenReturn('deadbeef');
-        when(() => remoteRow.signer).thenReturn(Signer.remote);
+        when(() => remoteRow.signers).thenReturn([
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: 'deadbeef',
+            xpubFingerprint: '',
+            xpub: '',
+            signer: Signer.local,
+            signerDevice: null,
+          ),
+        ]);
         final metadata = _Metadata();
         when(metadata.fetchAll).thenAnswer((_) async => [remoteRow, localRow]);
         final catalog = CatalogWalletSecretReferencesRepository(metadata);

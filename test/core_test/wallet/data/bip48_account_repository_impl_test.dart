@@ -414,9 +414,8 @@ void main() {
       );
       expect(
         _account(
-          await _repository(
-            storage,
-          ).nextAvailable(seedFingerprint: fingerprint, coinType: 0),
+          await _repository(storage)
+              .nextAvailable(seedFingerprint: fingerprint, coinType: 0),
         ),
         1,
       );

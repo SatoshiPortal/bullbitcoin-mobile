@@ -5,12 +5,13 @@ import 'package:bb_mobile/core/wallet/domain/bip48_account_usage_port.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/bip48_account_usage.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
+
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart'
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart'
     show BdkDescriptorKey;
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
@@ -51,14 +52,17 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:meta/meta.dart';
 
 class WalletRepository
     implements
         SeedReferencePort,
         WalletReaderRepository,
-        BitcoinDescriptorPort {
+        BitcoinDescriptorPort,
+        WalletSignerDevicePort,
+        WalletSignerOwnershipPort,
+        WalletVisibilityPort,
+        Bip48AccountUsagePort {
   final WalletNativeLifecycle? _native;
   final _unavailable = <String, Type>{};
   int _invalidCatalogCount = 0;
@@ -161,15 +165,6 @@ class WalletRepository
     }
   }
 
-  static void _requireSupportedCreation(
-    Network network,
-    ScriptType scriptType,
-  ) {
-    if (network == Network.bitcoinRegtest && scriptType != ScriptType.bip84) {
-      throw const UnsupportedWalletScriptException();
-    }
-  }
-
   @override
   Future<List<Bip48AccountUsage>> getBip48AccountUsages() async {
     final wallets = await _walletMetadataDatasource.fetchAll();
@@ -179,19 +174,19 @@ class WalletRepository
           for (final signer in wallet.signers)
             for (final key in signer.descriptorKeys)
               if (key.derivationPath case final path?)
-              if (Bip48Derivation.account(
-                    path,
+                if (Bip48Derivation.account(
+                      path,
+                      coinType: wallet.network.coinType,
+                    )
+                    case final account?)
+                  Bip48AccountUsage(
+                    seedFingerprint: key.masterFingerprint.toLowerCase(),
+                    localSeedFingerprint: signer.localSeedFingerprint,
                     coinType: wallet.network.coinType,
-                  )
-                  case final account?)
-                Bip48AccountUsage(
-                  seedFingerprint: key.masterFingerprint.toLowerCase(),
-                  localSeedFingerprint: signer.localSeedFingerprint,
-                  coinType: wallet.network.coinType,
-                  account: account,
-                  derivationPath: path,
-                  xpub: key.xpub,
-                ),
+                    account: account,
+                    derivationPath: path,
+                    xpub: key.xpub,
+                  ),
     ];
   }
 
@@ -238,7 +233,7 @@ class WalletRepository
     if (network.isBitcoin) {
       final descriptor = _bdkWallet.parsePublicTwoPathDescriptor(
         descriptor: metadata.publicDescriptor,
-        isTestnet: network.isTestnet,
+        network: network,
       );
       try {
         await _ensureUniqueBitcoinDescriptor(
@@ -296,7 +291,7 @@ class WalletRepository
     _requireBitcoinNetwork(network);
     final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: network.isTestnet,
+      network: network,
     );
     return (
       descriptor: parsed.descriptor,
@@ -315,7 +310,7 @@ class WalletRepository
     _requireBitcoinNetwork(network);
     final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: network.isTestnet,
+      network: network,
     );
     return (
       policyKeys: _descriptorKeys(parsed.policyKeys),
@@ -336,13 +331,17 @@ class WalletRepository
     _requireBitcoinNetwork(network);
     final parsed = _bdkWallet.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: network.isTestnet,
+      network: network,
     );
     final parsedKeys = _descriptorKeys(parsed.keys);
     final metadata = WalletMetadataModel(
-      id: sha256
-          .convert(utf8.encode('${network.name}:${parsed.scriptIdentity}'))
-          .toString(),
+      id:
+          sha256
+              .convert(utf8.encode('${network.name}:${parsed.scriptIdentity}'))
+              .toString() +
+          (network == Network.bitcoinRegtest
+              ? WalletMetadataService.regtestSuffix
+              : ''),
       networkCode: WalletNetworkCodec.encode(network),
       signers: _applySignerAnnotations(
         parsedKeys,
@@ -364,7 +363,7 @@ class WalletRepository
     await _provision(metadata);
     return _walletFromMetadata(
       metadata,
-      await _getBalance(metadata, sync: sync),
+      await _readBalance(metadata, sync: sync),
     );
   }
 
@@ -386,7 +385,7 @@ class WalletRepository
       try {
         final existingDescriptor = _bdkWallet.parsePublicTwoPathDescriptor(
           descriptor: existing.publicDescriptor,
-          isTestnet: metadata.network.isTestnet,
+          network: metadata.network,
         );
         if (existingDescriptor.scriptIdentity == scriptIdentity) {
           throw WalletAlreadyExistsException(existing.id);
@@ -472,7 +471,7 @@ class WalletRepository
     final physical = metadata.latestPhysicalBackup;
     // Return the wallet entity
     return Wallet(
-      origin: metadata.id,
+      origin: WalletMetadataService.originFromId(metadata.id),
       label: metadata.label,
       network: metadata.network,
       isDefault: metadata.isDefault,
@@ -499,6 +498,7 @@ class WalletRepository
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
+    bool includeHidden = false,
     bool sync = false,
   }) async {
     try {
@@ -510,6 +510,7 @@ class WalletRepository
             onlyDefaults: onlyDefaults,
             onlyBitcoin: onlyBitcoin,
             onlyLiquid: onlyLiquid,
+            includeHidden: includeHidden,
             sync: sync,
           ),
         ),
@@ -533,8 +534,11 @@ class WalletRepository
         for (final signer in row.signers.where(
           (signer) => signer.signer == Signer.local,
         )) {
-          for (final key in signer.descriptorKeys) {
-            final fingerprint = Fingerprint.tryParse(key.masterFingerprint);
+          for (final reference in switch (signer.localSeedFingerprint) {
+            final fingerprint? => <String>[fingerprint],
+            null => signer.descriptorKeys.map((key) => key.masterFingerprint),
+          }) {
+            final fingerprint = Fingerprint.tryParse(reference);
             if (fingerprint == null) {
               return const Err(
                 WalletStorageFailure('invalid custody reference'),
@@ -599,6 +603,7 @@ class WalletRepository
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
+    bool includeHidden = false,
     bool sync = false,
   }) async {
     final metadatas = await _walletMetadataDatasource.fetchAll();
@@ -609,7 +614,8 @@ class WalletRepository
       metadatas.map((metadata) async {
         try {
           final network = metadata.network;
-          if ((environment != null &&
+          if ((!includeHidden && metadata.isHidden) ||
+              (environment != null &&
                   network.environment != environment.networkEnv) ||
               (onlyDefaults == true && !metadata.isDefault) ||
               (onlyBitcoin == true && !network.isBitcoin) ||
@@ -675,10 +681,15 @@ class WalletRepository
   }
 
   @override
-  Future<void> setHidden({required String walletId, required bool isHidden}) async {
+  Future<void> setHidden({
+    required String walletId,
+    required bool isHidden,
+  }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) throw WalletError.notFound(walletId);
-    await _walletMetadataDatasource.store(metadata.copyWith(isHidden: isHidden));
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(isHidden: isHidden),
+    );
   }
 
   @override
@@ -755,7 +766,10 @@ class WalletRepository
           registrationName: normalizedName,
         );
     if (!didUpdate) throw const WalletSignerDeviceUpdateException();
-    return _walletFromMetadata(updatedMetadata, await _getBalance(updatedMetadata));
+    return _walletFromMetadata(
+      updatedMetadata,
+      await _getBalance(updatedMetadata),
+    );
   }
 
   @override
@@ -799,7 +813,10 @@ class WalletRepository
     updatedSigners[signerIndex] = updatedSigner;
     final updatedMetadata = metadata.copyWith(signers: updatedSigners);
     await _walletMetadataDatasource.store(updatedMetadata);
-    return _walletFromMetadata(updatedMetadata, await _getBalance(updatedMetadata));
+    return _walletFromMetadata(
+      updatedMetadata,
+      await _getBalance(updatedMetadata),
+    );
   }
 
   Future<WalletBalances> getWalletBalances({required String walletId}) async {
@@ -849,15 +866,10 @@ class WalletRepository
   }
 
   Future<void> _updateWalletSyncTime(String walletId) async {
-    final metadata = await _walletMetadataDatasource.fetch(walletId);
-
-    if (metadata == null) {
-      return;
-    }
-
-    final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
-
-    await _walletMetadataDatasource.store(updatedWalletMetadata);
+    await _walletMetadataDatasource.updateSyncedAt(
+      walletId: walletId,
+      syncedAt: DateTime.now(),
+    );
   }
 
   Future<void> _provision(WalletMetadataModel metadata) async {
@@ -1005,7 +1017,8 @@ class WalletRepository
   }) {
     final annotationsByKey = {
       for (final signer in annotations)
-        for (final key in signer.descriptorKeys) key.id: signer,
+        for (final key in signer.descriptorKeys)
+          key.id: (signer: signer, key: key),
     };
     final annotationsById = {
       for (final signer in annotations) signer.id: signer,
@@ -1013,10 +1026,20 @@ class WalletRepository
     final grouped = <String, List<WalletDescriptorKey>>{};
     for (final key in keys) {
       final annotation = annotationsByKey[key.id];
-      final signerId = annotation?.id ?? key.signerId;
+      final signerId = annotation?.signer.id ?? key.signerId;
       grouped
           .putIfAbsent(signerId, () => [])
-          .add(key.copyWith(signerId: signerId));
+          .add(
+            key.copyWith(
+              signerId: signerId,
+              requiresPassphrase: annotation?.key.requiresPassphrase,
+              derivationPath:
+                  key.derivationPath ?? annotation?.key.derivationPath,
+              masterFingerprint: key.masterFingerprint.isEmpty
+                  ? annotation?.key.masterFingerprint
+                  : key.masterFingerprint,
+            ),
+          );
     }
     return [
       for (final entry in grouped.entries)
@@ -1025,13 +1048,10 @@ class WalletRepository
           signer: annotationsById[entry.key]?.signer ?? SignerEntity.none,
           signerDevice: annotationsById[entry.key]?.signerDevice,
           registrationName: annotationsById[entry.key]?.registrationName,
-          localSeedFingerprint: annotationsById[entry.key]?.localSeedFingerprint,
+          localSeedFingerprint:
+              annotationsById[entry.key]?.localSeedFingerprint,
           descriptorKeys: entry.value,
         ),
     ];
   }
-}
-
-final class UnsupportedWalletScriptException implements Exception {
-  const UnsupportedWalletScriptException();
 }

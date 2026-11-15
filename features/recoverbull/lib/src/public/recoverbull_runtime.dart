@@ -1,4 +1,5 @@
 import '../domain/entities/vault_context.dart';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:primitives/primitives.dart';

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/ledger/data/ledger_wallet_policy_adapter.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
@@ -68,106 +68,99 @@ void main() {
     },
   );
 
-  test(
-    'allocates the final solo path independently for everyday and recovery keys',
-    () {
-      final cold = _signerForRole(
-        BullVaultSignerRole.cold,
-        1,
-        deriveSignerKeys(testMnemonics[1]),
-      );
-      final secondCold = _signerForRole(
-        BullVaultSignerRole.secondCold,
-        2,
-        deriveSignerKeys(testMnemonics[2]),
-      );
-      final inheritance = _signerForRole(
-        BullVaultSignerRole.inheritance,
-        3,
-        deriveSignerKeys(_fourthMnemonic),
-      );
-      final reference = DateTime.utc(2027, 1, 15, 12);
-      for (final protection in BullVaultProtection.values) {
-        for (final useRecoveryKey in [false, true]) {
-          final everyday = _signerForRole(
-            BullVaultSignerRole.everyday,
-            0,
-            deriveSignerKeys(
-              testMnemonics[0],
-              password: useRecoveryKey ? 'vault passphrase' : '',
+  test('allocates the final solo path independently for everyday and recovery keys', () {
+    final cold = _signerForRole(
+      BullVaultSignerRole.cold,
+      1,
+      deriveSignerKeys(testMnemonics[1]),
+    );
+    final secondCold = _signerForRole(
+      BullVaultSignerRole.secondCold,
+      2,
+      deriveSignerKeys(testMnemonics[2]),
+    );
+    final inheritance = _signerForRole(
+      BullVaultSignerRole.inheritance,
+      3,
+      deriveSignerKeys(_fourthMnemonic),
+    );
+    final reference = DateTime.utc(2027, 1, 15, 12);
+    for (final protection in BullVaultProtection.values) {
+      for (final useRecoveryKey in [false, true]) {
+        final everyday = _signerForRole(
+          BullVaultSignerRole.everyday,
+          0,
+          deriveSignerKeys(
+            testMnemonics[0],
+            password: useRecoveryKey ? 'vault passphrase' : '',
+          ),
+        );
+        final recovery = useRecoveryKey
+            ? _signerForRole(
+                BullVaultSignerRole.delayedMobileRecovery,
+                0,
+                deriveSignerKeys(testMnemonics[0]),
+              )
+            : null;
+        final schedule = BullVaultSchedule.defaultsFor(
+          protection: protection,
+          includesInheritance: true,
+        ).copyWith(lastResortDelay: 7);
+        final descriptors = <String>[];
+        for (final generation in [0, 1]) {
+          final descriptor = BullVaultPolicy.descriptorTemplate(
+            vaultGeneration: generation,
+            network: Network.bitcoinTestnet,
+            protection: protection,
+            everydayKey: everyday,
+            delayedMobileRecoveryKey: recovery,
+            coldKey: cold,
+            secondColdKey: protection.usesTwoColdKeys ? secondCold : null,
+            inheritanceKey: inheritance,
+            schedule: schedule,
+            referenceTime: reference,
+          );
+          final parsed = BdkFacade.parsePublicTwoPathDescriptor(
+            descriptor: descriptor,
+            network: Network.bitcoinTestnet,
+          );
+          final finalPair = BullVaultPolicy.branchPairForOccurrence(
+            vaultGeneration: generation,
+            occurrencesPerGeneration: useRecoveryKey ? 2 : 3,
+            occurrence: useRecoveryKey ? 1 : 2,
+          );
+          final expression = (recovery ?? everyday).expression(
+            receiveBranch: finalPair.receive,
+            changeBranch: finalPair.change,
+          );
+          expect(
+            descriptor,
+            contains(
+              'and_v(v:after(${schedule.lastResortActivationTimestamp(reference)}),pk($expression))',
             ),
           );
-          final recovery = useRecoveryKey
-              ? _signerForRole(
-                  BullVaultSignerRole.delayedMobileRecovery,
-                  0,
-                  deriveSignerKeys(testMnemonics[0]),
-                )
-              : null;
-          final schedule = BullVaultSchedule.defaultsFor(
-            protection: protection,
-            includesInheritance: true,
-          ).copyWith(lastResortDelay: 7);
-          final descriptors = <String>[];
-          for (final generation in [0, 1]) {
-            final descriptor = BullVaultPolicy.descriptorTemplate(
-              vaultGeneration: generation,
-              network: Network.bitcoinTestnet,
-              protection: protection,
-              everydayKey: everyday,
-              delayedMobileRecoveryKey: recovery,
-              coldKey: cold,
-              secondColdKey: protection.usesTwoColdKeys ? secondCold : null,
-              inheritanceKey: inheritance,
-              schedule: schedule,
-              referenceTime: reference,
-            );
-            final parsed = BdkFacade.parsePublicTwoPathDescriptor(
-              descriptor: descriptor,
-              isTestnet: true,
-            );
-            final finalPair = BullVaultPolicy.branchPairForOccurrence(
-              vaultGeneration: generation,
-              occurrencesPerGeneration: useRecoveryKey ? 2 : 3,
-              occurrence: useRecoveryKey ? 1 : 2,
-            );
-            final expression = (recovery ?? everyday).expression(
-              receiveBranch: finalPair.receive,
-              changeBranch: finalPair.change,
-            );
-            expect(
-              descriptor,
-              contains(
-                'and_v(v:after(${schedule.lastResortActivationTimestamp(reference)}),pk($expression))',
-              ),
-            );
-            expect(
-              _branchPairs(descriptor, everyday),
-              hasLength(useRecoveryKey ? 1 : 3),
-            );
-            if (recovery != null) {
-              expect(_branchPairs(descriptor, recovery), hasLength(2));
-            }
-            expect(
-              parsed.externalDescriptor,
-              contains('/${finalPair.receive}/*'),
-            );
-            expect(
-              parsed.internalDescriptor,
-              contains('/${finalPair.change}/*'),
-            );
-            descriptors.add(descriptor);
+          expect(
+            _branchPairs(descriptor, everyday),
+            hasLength(useRecoveryKey ? 1 : 3),
+          );
+          if (recovery != null) {
+            expect(_branchPairs(descriptor, recovery), hasLength(2));
           }
           expect(
-            _signerBranchRoles(
-              descriptors[0],
-            ).intersection(_signerBranchRoles(descriptors[1])),
-            isEmpty,
+            parsed.externalDescriptor,
+            contains('/${finalPair.receive}/*'),
           );
+          expect(parsed.internalDescriptor, contains('/${finalPair.change}/*'));
+          descriptors.add(descriptor);
         }
+        expect(
+          _signerBranchRoles(descriptors[0])
+              .intersection(_signerBranchRoles(descriptors[1])),
+          isEmpty,
+        );
       }
-    },
-  );
+    }
+  });
 
   test('builds the policy with absolute timestamps', () {
     final keys = [
@@ -193,7 +186,7 @@ void main() {
       );
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(parsed.descriptor, startsWith('tr('));
@@ -264,7 +257,7 @@ void main() {
     );
     final expandedSecond = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: second,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
 
     expect(_branchPairs(first, keys[0]), ['<0;1>', '<2;3>']);
@@ -307,7 +300,7 @@ void main() {
     );
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
 
     expect(
@@ -370,7 +363,7 @@ void main() {
     );
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     final groupedKeys = <String, List<WalletDescriptorKey>>{};
     for (final (index, key) in parsed.keys.indexed) {
@@ -453,7 +446,7 @@ void main() {
       expect(
         BdkFacade.parsePublicTwoPathDescriptor(
           descriptor: descriptor,
-          isTestnet: true,
+          network: Network.bitcoinTestnet,
         ).descriptor,
         '$descriptor#$checksum',
       );
@@ -528,7 +521,7 @@ void main() {
       );
       final parsed = BdkFacade.parsePublicTwoPathDescriptor(
         descriptor: descriptor,
-        isTestnet: true,
+        network: Network.bitcoinTestnet,
       );
 
       expect(parsed.descriptor, '$descriptor#${profile.checksum}');
@@ -574,7 +567,7 @@ void main() {
         'after(${schedule.recoveryActivationTimestamp(referenceTime)}),pk(${everyday.expression(receiveBranch: 2, changeBranch: 3)})';
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
 
     expect(descriptor, contains(primary));
@@ -623,7 +616,7 @@ void main() {
     );
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     );
     final delayedThreshold =
         'after(${schedule.recoveryActivationTimestamp(referenceTime)}),multi_a(2,${everyday.expression(receiveBranch: 2, changeBranch: 3)},${cold.expression(receiveBranch: 2, changeBranch: 3)},${secondCold.expression(receiveBranch: 2, changeBranch: 3)},${inheritance.expression(receiveBranch: 0, changeBranch: 1)})';
@@ -732,7 +725,7 @@ void main() {
 
     final parsed = BdkFacade.parsePublicTwoPathDescriptor(
       descriptor: descriptor,
-      isTestnet: false,
+      network: Network.bitcoinMainnet,
     );
 
     expect(parsed.descriptor, startsWith('tr('));
@@ -864,9 +857,10 @@ void main() {
 }
 
 List<String> _branchPairs(String descriptor, BullVaultSignerKey signer) =>
-    RegExp(
-      '${RegExp.escape(signer.accountKey.xpub)}/(<[0-9]+;[0-9]+>)/\\*',
-    ).allMatches(descriptor).map((match) => match.group(1)!).toList();
+    RegExp('${RegExp.escape(signer.accountKey.xpub)}/(<[0-9]+;[0-9]+>)/\\*')
+        .allMatches(descriptor)
+        .map((match) => match.group(1)!)
+        .toList();
 
 Set<String> _signerBranchRoles(String descriptor) => {
   for (final match in RegExp(

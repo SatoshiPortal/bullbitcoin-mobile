@@ -12,22 +12,12 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
-import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/seed/domain/seed_verification_port.dart';
 import 'package:bb_mobile/core/seed/data/secrets_seed_verification.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/bip48_account_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bip48_account_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -44,14 +34,11 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_bip48_account_status_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_consolidation_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/set_wallet_hidden_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_visibility_port.dart';
@@ -86,10 +73,6 @@ class WalletLocator {
         ),
       ),
     );
-
-    locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
-      () => FrozenWalletUtxoDatasource(db: locator<SqliteDatabase>()),
-    );
   }
 
   static void registerRepositories(GetIt locator) {
@@ -106,7 +89,7 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         secrets: locator<Secrets>(),
-        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        frozenWalletUtxoDatasource: locator<SyncFreezesDatasource>(),
         electrumServers: locator<ElectrumServersPort>(),
       ),
     );
@@ -158,13 +141,6 @@ class WalletLocator {
     );
     locator.registerFactory<ReserveBullOwnedBip48AccountsUsecase>(
       () => ReserveBullOwnedBip48AccountsUsecase(locator(), locator()),
-    );
-    locator.registerFactory<CreateDefaultWalletsUsecase>(
-      () => CreateDefaultWalletsUsecase(
-        secrets: locator<Secrets>(),
-        settingsRepository: locator<SettingsRepository>(),
-        walletRepository: locator<WalletRepository>(),
-      ),
     );
     locator.registerFactory<GetWalletUsecase>(
       () => GetWalletUsecase(walletRepository: locator<WalletRepository>()),

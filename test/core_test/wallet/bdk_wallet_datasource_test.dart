@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -50,15 +51,11 @@ import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
-import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'bdk_wallet_test_fixture.dart';
 
 // The canonical BIP39 test mnemonic ("abandon" x11 + "about"). Public
 // knowledge, no funds, safe to hardcode.
@@ -172,7 +169,7 @@ void main() {
           .split('#')
           .first
           .replaceAll('/0/*', '/<0;1>/*'),
-      isTestnet: true,
+      network: Network.bitcoinTestnet,
     ) as PublicBdkWalletModel;
 
     // Build the wallet once here to fund it, then persist so the
@@ -274,8 +271,7 @@ void main() {
     final before = await file.readAsBytes();
     final mismatched = WalletModel.publicBdk(
       id: walletModel.id,
-      externalDescriptor: walletModel.internalDescriptor,
-      internalDescriptor: walletModel.externalDescriptor,
+      descriptor: walletModel.descriptor.replaceAll('/<0;1>/*', '/<1;0>/*'),
       network: Network.bitcoinTestnet,
     );
     await expectLater(BdkTestStore.createWallet(mismatched), throwsA(anything));
@@ -534,7 +530,7 @@ void main() {
             (txId: utxoLargeTxId, vout: 2),
           ],
         ),
-        throwsA(isA<SelectedBitcoinCoinsInsufficientException>()),
+        throwsA(isA<InsufficientFundsException>()),
       );
     },
   );
@@ -950,7 +946,12 @@ void main() {
 final class _Datasource {
   final BdkWalletDatasource _datasource;
   _Datasource(SyncSpendFixture fixture)
-    : _datasource = BdkWalletDatasource(wallet: fixture.wallet);
+    : _datasource = BdkWalletDatasource(
+        wallet: fixture.wallet,
+        walletValuesDatasource: SyncWalletValuesDatasource(
+          load: (key) => fixture.wallet(key.id),
+        ),
+      );
 
   Future<String> buildPsbt({
     required List<BitcoinTransactionRecipientModel> recipients,
