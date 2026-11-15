@@ -226,6 +226,35 @@ void main() {
     },
   );
 
+  testWidgets('the Tor phase counts down to the attempt deadline', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    tor.add(
+      TorConnecting(
+        source: TorSource.embedded,
+        transport: TorTransport.snowflake,
+        circumvention: true,
+        deadline: DateTime.now().add(const Duration(minutes: 10)),
+      ),
+    );
+    await tester.pump();
+
+    final countdown = find.byWidgetPredicate(
+      (widget) =>
+          widget is Text &&
+          RegExp(r'^(9:5\d|10:00)$').hasMatch(widget.data ?? ''),
+    );
+    expect(countdown, findsOneWidget);
+    expect(
+      find.text(
+        'Snowflake can take several minutes on a filtered network. Keep the app open.',
+      ),
+      findsOneWidget,
+    );
+    await leave(tester);
+  });
+
   test('a ready route survives a directory refresh without blockage', () async {
     build();
     final cubit = presentation.cubit;
