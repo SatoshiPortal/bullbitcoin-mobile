@@ -302,7 +302,10 @@ ifeq ($(FORMAT),aab)
 else
   CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(FLAVOR)-$(MODE).apk
   HOST_OUTPUT := ./BULL-$(HOST_NAME).apk
-  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR)
+  # APKs ship arm64 only: no supported device needs the 32-bit or x86_64
+  # libraries, and each extra ABI adds a full Rust and AOT compile. The AAB
+  # keeps every ABI because Play serves each device its own split.
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR) --target-platform android-arm64
 endif
 
 android: container-app
@@ -330,7 +333,7 @@ android: container-app
 # Check every expected ABI and Rust library in the APK against the exact pinned
 # compilers used by Native Assets. The shell verifier fails on missing ABI/lib,
 # invalid archive, absent or conflicting compiler markers, and new Rust libs.
-# A debug arm64-only APK can pass EXPECTED_ABIS=arm64-v8a explicitly.
+# APKs are arm64-only (see FLUTTER_BUILD above).
 RUST_VERSION ?= 1.100.0
 # Prevent rustup from installing unrelated declared targets during hook setup.
 # Each hook still selects its own pinned compiler for the Cargo build.
@@ -339,7 +342,7 @@ export RUSTUP_AUTO_INSTALL ?= 0
 BDK_RUST_VERSION ?= $(RUST_VERSION)
 # Official hosted Payjoin pins this compiler explicitly in native/rust-toolchain.toml.
 PAYJOIN_RUST_VERSION ?= 1.85.1
-EXPECTED_ABIS ?= armeabi-v7a arm64-v8a x86_64
+EXPECTED_ABIS ?= arm64-v8a
 verify-rustc-pins:
 	@set -e; \
 	for version in $(RUST_VERSION) $(BDK_RUST_VERSION) $(PAYJOIN_RUST_VERSION); do \
