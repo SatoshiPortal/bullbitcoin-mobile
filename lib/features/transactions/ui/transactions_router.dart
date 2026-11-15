@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_
 import 'package:bb_mobile/features/transactions/ui/screens/export_transactions_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/recent_transactions_panel.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/widgets.dart' show Widget;
@@ -40,6 +41,10 @@ class TransactionsRouter {
           );
         },
       );
+
+  static Widget recentTransactionsPanel({
+    required Widget Function(Widget) scope,
+  }) => scope(const RecentTransactionsPanel());
 
   static final exportTransactionsRoute = GoRoute(
     name: TransactionsRoute.exportTransactions.name,

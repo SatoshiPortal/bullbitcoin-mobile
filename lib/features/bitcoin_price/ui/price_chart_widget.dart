@@ -39,7 +39,14 @@ extension _CurrencyIconExtension on String {
 }
 
 class PriceChartWidget extends StatelessWidget {
-  const PriceChartWidget({super.key});
+  const PriceChartWidget({
+    super.key,
+    this.topInset = 72,
+    this.bottomInset = 40,
+  });
+
+  final double topInset;
+  final double bottomInset;
 
   @override
   Widget build(BuildContext context) {
@@ -116,12 +123,12 @@ class PriceChartWidget extends StatelessWidget {
               'CAD';
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 40.0),
+            padding: EdgeInsets.only(bottom: bottomInset),
             child: Stack(
               children: [
                 Column(
                   children: [
-                    const Gap(72),
+                    Gap(topInset),
                     if (selectedIndex != null && selectedIndex < rates.length)
                       _PriceDisplay(
                         rate: rates[selectedIndex],
@@ -133,7 +140,7 @@ class PriceChartWidget extends StatelessWidget {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 16.0),
-                        child: _Chart(
+                        child: PriceLineChart(
                           rates: rates,
                           selectedIndex: selectedIndex,
                           onTap: (index) {
@@ -273,22 +280,27 @@ class _PriceDisplay extends StatelessWidget {
   }
 }
 
-class _Chart extends StatefulWidget {
-  const _Chart({
+class PriceLineChart extends StatefulWidget {
+  const PriceLineChart({
+    super.key,
     required this.rates,
     required this.selectedIndex,
     required this.onTap,
+    this.lineColor,
   });
 
   final List<PricePoint> rates;
   final int? selectedIndex;
   final ValueChanged<int> onTap;
 
+  /// Colour of the line; defaults to the colour for the brand header.
+  final Color? lineColor;
+
   @override
-  State<_Chart> createState() => _ChartState();
+  State<PriceLineChart> createState() => _ChartState();
 }
 
-class _ChartState extends State<_Chart> with TickerProviderStateMixin {
+class _ChartState extends State<PriceLineChart> with TickerProviderStateMixin {
   int? _touchedIndex;
   late AnimationController _lineAnimationController;
   late Animation<double> _lineAnimation;
@@ -388,13 +400,13 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
           prices: prices,
           minPrice: minPrice - padding,
           maxPrice: maxPrice + padding,
-          lineColor: context.appColors.onPrimary,
+          lineColor: widget.lineColor ?? context.appColors.onPrimary,
           selectedIndex: displayIndex,
           lineAnimation: _lineAnimation,
           pulseAnimation: _pulseAnimation,
           repaint: _chartAnimations,
           dotColor: context.appColors.onTertiary,
-          borderColor: context.appColors.onPrimary,
+          borderColor: widget.lineColor ?? context.appColors.onPrimary,
         ),
       ),
     );

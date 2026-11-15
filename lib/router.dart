@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubi
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:primitives/primitives.dart' show NetworkCapability;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
@@ -52,6 +53,14 @@ import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullBreakpoints,
+        BullLayoutX,
+        BullSideNav,
+        BullSideNavItem,
+        BullSupportScope;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -62,6 +71,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
+
+  static final _modalObserver = _ModalObserver();
 
   static final _exchangeConfig = ExchangeRouterConfig(
     networkUnavailable: () => locator<ExchangeFacade>().networkUnavailable(),
@@ -80,7 +91,10 @@ class AppRouter {
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
-    observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
+    observers: [
+      SentryNavigatorObserver(enableAutoTransactions: false),
+      _modalObserver,
+    ],
     redirect: (BuildContext context, GoRouterState state) {
       final path = state.uri.path;
       // Only read the gate providers for SP routes; the decision itself lives
@@ -102,82 +116,30 @@ class AppRouter {
     routes: [
       ShellRoute(
         notifyRootObserver: true,
-        builder: (context, state, child) {
+        pageBuilder: (context, state, child) {
           final location = state.uri.toString();
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
 
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => locator<PriceChartCubit>()),
-              BlocProvider(
-                create: (_) => locator<AnnouncementsCubit>()..refresh(),
-              ),
-            ],
-            child: PopScope(
-              canPop: false,
-              onPopInvokedWithResult: (didPop, _) {
-                context.goNamed(WalletRoute.walletHome.name);
-              },
-              child: BackupWarningOverlay(
-                child: Scaffold(
-                  // The app bar of the exchange tab is rendered by the
-                  // ExchangeHomeScreen itself, as an overlay.
-                  appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
-                  extendBodyBehindAppBar: true,
-                  body: child,
-                  bottomNavigationBar: NetworkCapabilityVisibility(
-                    capability: NetworkCapability.exchange,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        BottomNavigationBar(
-                          currentIndex: tabIndex,
-                          onTap: (index) {
-                            if (index == 0) {
-                              context.goNamed(WalletRoute.walletHome.name);
-                            } else {
-                              // Exchange tab
-                              if (Platform.isIOS) {
-                                final isSuperuser =
-                                    context
-                                        .read<SettingsCubit>()
-                                        .state
-                                        .isSuperuser ??
-                                    false;
-                                if (isSuperuser) {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeHome.name,
-                                  );
-                                } else {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeLanding.name,
-                                  );
-                                }
-                              } else {
-                                context.goNamed(
-                                  ExchangeRoute.exchangeHome.name,
-                                );
-                              }
-                            }
-                          },
-                          items: [
-                            BottomNavigationBarItem(
-                              icon: const Icon(Icons.currency_bitcoin),
-                              label: context.loc.navigationTabWallet,
-                              backgroundColor: context.appColors.background,
-                            ),
-                            BottomNavigationBarItem(
-                              icon: const Icon(Icons.attach_money),
-                              label: context.loc.navigationTabExchange,
-                              backgroundColor: context.appColors.background,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+          return NoTransitionPage(
+            key: state.pageKey,
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => locator<PriceChartCubit>()),
+                BlocProvider(
+                  create: (_) => locator<AnnouncementsCubit>()..refresh(),
+                ),
+              ],
+              child: PopScope(
+                canPop: false,
+                onPopInvokedWithResult: (didPop, _) {
+                  context.goNamed(WalletRoute.walletHome.name);
+                },
+                child: BackupWarningOverlay(
+                  child: context.isDesktopLayout
+                      ? _DesktopShell(location: location, child: child)
+                      : _MobileShell(tabIndex: tabIndex, child: child),
                 ),
               ),
             ),
@@ -186,6 +148,39 @@ class AppRouter {
         routes: [
           WalletRouter.walletHomeRoute(
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
+            desktop: WalletHomeDesktopConfig(
+              buildActions: (context) => [
+                WalletHomeDesktopAction(
+                  icon: Icons.currency_bitcoin,
+                  label: context.loc.homeActionBuy,
+                  onTap: () => context.pushNamed(BuyRoute.buy.name),
+                ),
+                WalletHomeDesktopAction(
+                  icon: Icons.attach_money,
+                  label: context.loc.homeActionSell,
+                  onTap: () => context.pushNamed(SellRoute.sell.name),
+                ),
+                WalletHomeDesktopAction(
+                  icon: Icons.payments_outlined,
+                  label: context.loc.homeActionPay,
+                  onTap: () => ExchangeScope.isLoggedIn(context)
+                      ? context.pushNamed(PayRoute.pay.name)
+                      : context.goNamed(ExchangeRoute.exchangeLanding.name),
+                ),
+                WalletHomeDesktopAction(
+                  icon: Icons.swap_horiz,
+                  label: context.loc.homeActionTransfer,
+                  onTap: () => context.pushNamed(SwapRoute.swap.name),
+                ),
+              ],
+              buildExchangePanel: (_) => ExchangeRouter.homeDesktopPanel(),
+              buildRecentTransactions: (_) =>
+                  TransactionsRouter.recentTransactionsPanel(
+                    scope: (child) => ActiveNetworkScope(child: child),
+                  ),
+              onOpenTransactions: (context) =>
+                  context.pushNamed(TransactionsRoute.transactions.name),
+            ),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
@@ -257,4 +252,261 @@ class AppRouter {
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
+}
+
+class _MobileShell extends StatelessWidget {
+  const _MobileShell({required this.tabIndex, required this.child});
+
+  final int tabIndex;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // The app bar of the exchange tab is rendered by the
+      // ExchangeHomeScreen itself, as an overlay.
+      appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+      extendBodyBehindAppBar: true,
+      body: child,
+      bottomNavigationBar: NetworkCapabilityVisibility(
+        capability: NetworkCapability.exchange,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BottomNavigationBar(
+              currentIndex: tabIndex,
+              onTap: (index) {
+                if (index == 0) {
+                  context.goNamed(WalletRoute.walletHome.name);
+                } else {
+                  // Exchange tab
+                  if (Platform.isIOS) {
+                    final isSuperuser =
+                        context.read<SettingsCubit>().state.isSuperuser ??
+                        false;
+                    if (isSuperuser) {
+                      context.goNamed(ExchangeRoute.exchangeHome.name);
+                    } else {
+                      context.goNamed(ExchangeRoute.exchangeLanding.name);
+                    }
+                  } else {
+                    context.goNamed(ExchangeRoute.exchangeHome.name);
+                  }
+                }
+              },
+              items: [
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.currency_bitcoin),
+                  label: context.loc.navigationTabWallet,
+                  backgroundColor: context.appColors.background,
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.attach_money),
+                  label: context.loc.navigationTabExchange,
+                  backgroundColor: context.appColors.background,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopShell extends StatelessWidget {
+  const _DesktopShell({required this.location, required this.child});
+
+  final String location;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final isHome = location.startsWith(WalletRoute.walletHome.path);
+    return Scaffold(
+      body: isHome
+          ? child
+          : Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: BullBreakpoints.pageMaxWidth,
+                ),
+                child: child,
+              ),
+            ),
+    );
+  }
+}
+
+class _ModalObserver extends NavigatorObserver {
+  final ValueNotifier<int> depth = ValueNotifier(0);
+
+  void _change(Route<dynamic> route, int delta) {
+    if (route is! PopupRoute) return;
+    scheduleMicrotask(() => depth.value += delta);
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      _change(route, 1);
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      _change(route, -1);
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      _change(route, -1);
+}
+
+/// Keeps the side navigation next to every page on a desktop window.
+///
+/// It sits above the navigator, so a pushed page opens in the content area and
+/// the navigation stays in place.
+class AppDesktopFrame extends StatefulWidget {
+  const AppDesktopFrame({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<AppDesktopFrame> createState() => _AppDesktopFrameState();
+}
+
+class _AppDesktopFrameState extends State<AppDesktopFrame> {
+  static const _withoutNavigation = ['/onboarding', '/app-unlock'];
+
+  String _location = '';
+
+  @override
+  void initState() {
+    super.initState();
+    AppRouter.router.routerDelegate.addListener(_onRouteChanged);
+    _location = _currentLocation();
+  }
+
+  @override
+  void dispose() {
+    AppRouter.router.routerDelegate.removeListener(_onRouteChanged);
+    super.dispose();
+  }
+
+  String _currentLocation() {
+    final configuration = AppRouter.router.routerDelegate.currentConfiguration;
+    final top = configuration.lastOrNull;
+    return top is ImperativeRouteMatch
+        ? top.matches.uri.path
+        : configuration.uri.path;
+  }
+
+  void _onRouteChanged() {
+    scheduleMicrotask(() {
+      if (!mounted) return;
+      final location = _currentLocation();
+      if (location != _location) setState(() => _location = location);
+    });
+  }
+
+  void _openFromHome(String routeName) {
+    AppRouter.router.goNamed(WalletRoute.walletHome.name);
+    AppRouter.router.pushNamed(routeName);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hidden =
+        _location.isEmpty || _withoutNavigation.any(_location.startsWith);
+    if (!context.isDesktopLayout || hidden) return widget.child;
+
+    final onExchange = _location.startsWith(ExchangeRoute.exchangeHome.path);
+    final onTransactions = _location.startsWith('/transaction');
+    final onSettings = _location.startsWith(SettingsRoute.settings.path);
+    final onHome =
+        !onExchange &&
+        !onTransactions &&
+        !onSettings &&
+        _location.startsWith(WalletRoute.walletHome.path);
+
+    final navigation = NetworkCapabilityBuilder(
+      capability: NetworkCapability.exchange,
+      builder: (context, exchangeSupported) => BullSideNav(
+        header: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const TopBarBullLogo(enableSuperuserTapUnlocker: true),
+            const SizedBox(width: 12),
+            Text(
+              context.loc.onboardingBullBitcoin,
+              style: context.font.titleMedium?.copyWith(
+                color: context.appColors.onSecondaryFixed,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        items: [
+          BullSideNavItem(
+            icon: Icons.home_outlined,
+            label: context.loc.navigationHome,
+            selected: onHome,
+            onTap: () => AppRouter.router.goNamed(WalletRoute.walletHome.name),
+          ),
+          if (exchangeSupported)
+            BullSideNavItem(
+              icon: Icons.attach_money,
+              label: context.loc.navigationTabExchange,
+              selected: onExchange,
+              onTap: () => AppRouter.router.goNamed(
+                ExchangeScope.isLoggedIn(context)
+                    ? ExchangeRoute.exchangeHome.name
+                    : ExchangeRoute.exchangeLanding.name,
+              ),
+            ),
+          BullSideNavItem(
+            icon: Icons.history,
+            label: context.loc.transactionTitle,
+            selected: onTransactions,
+            onTap: () => _openFromHome(TransactionsRoute.transactions.name),
+          ),
+        ],
+        footerItems: [
+          BullSideNavItem(
+            icon: Icons.chat_bubble_outline,
+            label: context.loc.exchangeSupportChatTitle,
+            onTap: () {
+              final navigatorContext =
+                  AppRouter.rootNavigatorKey.currentContext;
+              if (navigatorContext == null) return;
+              BullSupportScope.maybeOf(context)
+                  ?.onContactSupport(navigatorContext);
+            },
+          ),
+          BullSideNavItem(
+            icon: Icons.settings_outlined,
+            label: context.loc.settingsScreenTitle,
+            selected: onSettings,
+            onTap: () => _openFromHome(SettingsRoute.settings.name),
+          ),
+        ],
+      ),
+    );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ValueListenableBuilder(
+          valueListenable: AppRouter._modalObserver.depth,
+          builder: (context, depth, child) => IgnorePointer(
+            ignoring: depth > 0,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 150),
+              opacity: depth > 0 ? 0.4 : 1,
+              child: child,
+            ),
+          ),
+          child: navigation,
+        ),
+        Expanded(child: ClipRect(child: widget.child)),
+      ],
+    );
+  }
 }

@@ -15311,5 +15311,65 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "Broadcasting on this network is not enabled in the current settings.",
   "@broadcastSignedTxErrorNetworkNotEnabled": {
     "description": "Broadcast Transaction error when the app refuses locally to broadcast on a network the settings do not enable"
+  },
+  "navigationHome": "Home",
+  "@navigationHome": {
+    "description": "Label of the home destination in the desktop side navigation"
+  },
+  "walletHomeDesktopTotalBalance": "Total balance",
+  "@walletHomeDesktopTotalBalance": {
+    "description": "Label above the total bitcoin balance on the desktop home screen"
+  },
+  "walletHomeDesktopSync": "Sync",
+  "@walletHomeDesktopSync": {
+    "description": "Button that synchronises all wallets on the desktop home screen"
+  },
+  "walletHomeDesktopWallets": "Wallets",
+  "@walletHomeDesktopWallets": {
+    "description": "Title of the wallets section on the desktop home screen"
+  },
+  "transactionRecentTitle": "Recent transactions",
+  "@transactionRecentTitle": {
+    "description": "Title of the recent transactions section on the desktop home screen"
+  },
+  "transactionRecentViewAll": "View all",
+  "@transactionRecentViewAll": {
+    "description": "Action that opens the complete transaction list"
+  },
+  "exchangeHomeDesktopOpen": "Open",
+  "@exchangeHomeDesktopOpen": {
+    "description": "Action on the exchange summary card that opens the exchange page"
+  },
+  "exchangeHomeDesktopRecurringBuy": "Recurring buy",
+  "@exchangeHomeDesktopRecurringBuy": {
+    "description": "Label of the recurring buy status on the exchange summary card"
+  },
+  "exchangeHomeDesktopAutoBuy": "Auto-buy",
+  "@exchangeHomeDesktopAutoBuy": {
+    "description": "Label of the auto-buy status on the exchange summary card"
+  },
+  "exchangeHomeDesktopStatusOn": "On",
+  "@exchangeHomeDesktopStatusOn": {
+    "description": "Status text for a feature that is active"
+  },
+  "exchangeHomeDesktopStatusOff": "Off",
+  "@exchangeHomeDesktopStatusOff": {
+    "description": "Status text for a feature that is not active"
+  },
+  "priceChartCardTitle": "Bitcoin price",
+  "@priceChartCardTitle": {
+    "description": "Title of the price card on the desktop home screen"
+  },
+  "priceChartRangeWeek": "1W",
+  "@priceChartRangeWeek": {
+    "description": "Time range selector: one week"
+  },
+  "priceChartRangeMonth": "1M",
+  "@priceChartRangeMonth": {
+    "description": "Time range selector: one month"
+  },
+  "priceChartRangeAll": "All",
+  "@priceChartRangeAll": {
+    "description": "Time range selector: all available data"
   }
 }

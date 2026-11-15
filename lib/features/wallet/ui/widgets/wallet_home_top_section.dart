@@ -127,13 +127,13 @@ class _Amounts extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Flexible(child: _BtcTotalAmt()),
+            Flexible(child: WalletHomeBtcTotal()),
             Gap(16),
             EyeToggle(),
           ],
         ),
         Gap(12),
-        _FiatAmt(),
+        WalletHomeFiatTotal(),
         Gap(8),
         _UnconfirmedIncomingBalance(),
       ],
@@ -141,8 +141,10 @@ class _Amounts extends StatelessWidget {
   }
 }
 
-class _BtcTotalAmt extends StatelessWidget {
-  const _BtcTotalAmt();
+class WalletHomeBtcTotal extends StatelessWidget {
+  const WalletHomeBtcTotal({super.key, this.style});
+
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
@@ -167,14 +169,14 @@ class _BtcTotalAmt extends StatelessWidget {
       btcTotal,
       showFiat: false,
       interactive: true,
-      style: context.font.displaySmall,
+      style: style ?? context.font.displaySmall,
       color: context.appColors.onPrimary,
     );
   }
 }
 
-class _FiatAmt extends StatelessWidget {
-  const _FiatAmt();
+class WalletHomeFiatTotal extends StatelessWidget {
+  const WalletHomeFiatTotal({super.key});
 
   @override
   Widget build(BuildContext context) {

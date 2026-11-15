@@ -211,7 +211,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                               onContactSupport: SupportFacade.contactSupport,
                               child: AppStartupWidget(
                                 app: locator<RecoverBullFeature>().withAlerts(
-                                  child,
+                                  AppDesktopFrame(child: child),
                                   onOpen: () => AppRouter.router.pushNamed(
                                     'recoverbullFlows',
                                   ),

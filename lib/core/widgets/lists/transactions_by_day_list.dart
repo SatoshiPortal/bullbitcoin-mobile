@@ -20,6 +20,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
     this.header,
     this.errorMessage,
     this.sliver = false,
+    this.embedded = false,
     this.dayLabel,
   });
 
@@ -37,6 +38,10 @@ class TransactionsByDayList<T> extends StatelessWidget {
   /// When true, returns Sliver* widgets so the list can live inside a
   /// CustomScrollView and share the parent's scroll/refresh gesture.
   final bool sliver;
+
+  /// When true, lays every group out in a plain column with no scrolling and
+  /// no side padding, for a short list inside a card.
+  final bool embedded;
 
   /// Label for a group key that is not a day; null falls back to
   /// [_transactionDayLabel].
@@ -136,6 +141,15 @@ class TransactionsByDayList<T> extends StatelessWidget {
             itemCount: itemCount,
             itemBuilder: dayBuilder,
           ),
+        );
+      }
+      if (embedded) {
+        return Column(
+          crossAxisAlignment: .stretch,
+          children: [
+            for (var index = 0; index < itemCount; index++)
+              dayBuilder(context, index),
+          ],
         );
       }
       return ListView.builder(

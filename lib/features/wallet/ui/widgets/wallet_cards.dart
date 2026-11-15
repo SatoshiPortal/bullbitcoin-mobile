@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_row.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,12 +17,16 @@ class WalletCards extends StatelessWidget {
     this.onTap,
     this.localSignersOnly = false,
     this.fiatCurrency,
+    this.dense = false,
   });
 
   final EdgeInsetsGeometry? padding;
   final bool localSignersOnly;
   final Function(Wallet wallet)? onTap;
   final String? fiatCurrency;
+
+  /// Compact rows with a divider, for a desktop panel.
+  final bool dense;
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
     final isTestnet = !wallet.network.isMainnet;
@@ -62,6 +67,45 @@ class WalletCards extends StatelessWidget {
     final isSpWalletLoading = context.select(
       (WalletBloc bloc) => bloc.state.isSpWalletLoading,
     );
+
+    if (dense) {
+      final rows = <Widget>[
+        for (final w in wallets)
+          WalletRow(
+            tagColor: cardDetails(context, w),
+            title: w.displayLabel(context),
+            description: w.balanceSat == null
+                ? context.loc.walletLoadFailed
+                : w.walletTypeString,
+            balanceSat: w.balanceSat?.toInt(),
+            isSyncing: syncStatus[w.id] ?? false,
+            fiatCurrency: fiatCurrency,
+            onTap: () => onTap?.call(w),
+          ),
+        if (showSpWallet)
+          WalletRow(
+            tagColor: context.appColors.tertiary,
+            title: context.loc.walletSpTitle,
+            description: context.loc.walletSpExperimental,
+            balanceSat: spBalanceSat,
+            isSyncing: isSpWalletLoading,
+            onTap: () => context.pushNamed(SpRoute.spWalletDetail.name),
+          ),
+      ];
+      return Padding(
+        padding: padding ?? EdgeInsets.zero,
+        child: Column(
+          crossAxisAlignment: .stretch,
+          children: [
+            for (final (index, row) in rows.indexed) ...[
+              if (index > 0)
+                Divider(height: 1, color: context.appColors.outlineVariant),
+              row,
+            ],
+          ],
+        ),
+      );
+    }
 
     return Padding(
       padding: padding ?? const EdgeInsets.all(13.0),

@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_home_desktop_config.dart';
+export 'package:bb_mobile/features/wallet/ui/wallet_home_desktop_config.dart';
 import 'package:go_router/go_router.dart';
 
 enum WalletRoute {
@@ -18,6 +20,7 @@ enum WalletRoute {
 class WalletRouter {
   static GoRoute walletHomeRoute({
     required NetworkWalletSetupCubit Function() createSetupCubit,
+    WalletHomeDesktopConfig desktop = const WalletHomeDesktopConfig(),
   }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
@@ -26,6 +29,7 @@ class WalletRouter {
         key: state.pageKey,
         child: WalletHomeScreen(
           createSetupCubit: createSetupCubit,
+          desktop: desktop,
           onEmptyMainnet: () =>
               context.goNamed(OnboardingRoute.onboarding.name),
           onImportNetworkWallet: () =>

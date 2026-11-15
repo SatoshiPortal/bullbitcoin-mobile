@@ -113,6 +113,13 @@ class AppTheme {
         scrim: colors.scrim,
         surfaceTint: colors.transparent,
       ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.linux: BullDesktopPageTransitionsBuilder(),
+          TargetPlatform.macOS: BullDesktopPageTransitionsBuilder(),
+          TargetPlatform.windows: BullDesktopPageTransitionsBuilder(),
+        },
+      ),
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
       fontFamily: fonts.fontFamily,

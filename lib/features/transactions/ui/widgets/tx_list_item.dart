@@ -18,11 +18,13 @@ class TransactionListItem extends StatelessWidget {
     Transaction tx, {
     super.key,
     required VoidCallback onDetailsClosed,
+    this.dense = false,
   }) : _tx = tx,
        // ignore: prefer_initializing_formals
        _onDetailsClosed = onDetailsClosed;
 
   final Transaction _tx;
+  final bool dense;
 
   /// Called when the details screen this row opened is closed, so the list
   /// can pick up anything edited there, labels in particular.
@@ -32,6 +34,7 @@ class TransactionListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return core.TxListItem(
       _transactionData(context, _tx),
+      dense: dense,
       key: ValueKey((
         _tx.walletTransaction?.walletId,
         _tx.walletTransaction?.txId,

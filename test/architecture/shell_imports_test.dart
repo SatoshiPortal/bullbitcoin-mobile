@@ -55,7 +55,6 @@ const _legacyImports = {
   'lib/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart -> locator.dart',
   'lib/features/tor_settings/public/tor_settings_scope.dart -> locator.dart',
   'lib/features/exchange/ui/exchange_scope.dart -> locator.dart',
-  'lib/features/exchange/ui/screens/exchange_home_screen.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_auth_screen.dart -> locator.dart',
   'lib/features/exchange/ui/screens/exchange_kyc_screen.dart -> locator.dart',
   'lib/features/default_wallets/ui/default_wallets_router.dart -> locator.dart',

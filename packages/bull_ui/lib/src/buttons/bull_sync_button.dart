@@ -11,6 +11,7 @@ class BullSyncButton extends StatefulWidget {
     required this.label,
     required this.onPressed,
     this.syncing = false,
+    this.color,
   });
 
   /// Button label (e.g. "Sync").
@@ -21,6 +22,9 @@ class BullSyncButton extends StatefulWidget {
 
   /// When true, the leading sync icon rotates continuously.
   final bool syncing;
+
+  /// Icon and label colour; defaults to the primary colour.
+  final Color? color;
 
   @override
   State<BullSyncButton> createState() => _BullSyncButtonState();
@@ -59,7 +63,7 @@ class _BullSyncButtonState extends State<BullSyncButton>
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.bull;
+    final color = widget.color ?? context.bull.primary;
     return GestureDetector(
       onTap: widget.onPressed,
       behavior: HitTestBehavior.opaque,
@@ -68,13 +72,13 @@ class _BullSyncButtonState extends State<BullSyncButton>
         children: [
           RotationTransition(
             turns: _controller,
-            child: BullIcon(BullIcons.sync, size: 16, color: colors.primary),
+            child: BullIcon(BullIcons.sync, size: 16, color: color),
           ),
           const SizedBox(width: 4),
           Text(
             widget.label,
             style: context.bullText.labelMedium?.copyWith(
-              color: colors.primary,
+              color: color,
               fontWeight: FontWeight.w600,
             ),
           ),

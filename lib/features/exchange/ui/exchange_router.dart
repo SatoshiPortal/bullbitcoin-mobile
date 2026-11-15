@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart'
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_desktop_panel.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,6 +58,8 @@ class ExchangeRouter {
           }
         },
       );
+
+  static Widget homeDesktopPanel() => const ExchangeHomeDesktopPanel();
 
   static List<RouteBase> routes(ExchangeRouterConfig config) => [
     GoRoute(

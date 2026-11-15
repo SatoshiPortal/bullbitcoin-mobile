@@ -37,10 +37,82 @@ class TxListItemData {
 class TxListItem extends StatelessWidget {
   final TxListItemData data;
 
-  const TxListItem(this.data, {super.key});
+  /// A single-line table row for a wide layout, instead of a card.
+  final bool dense;
+
+  const TxListItem(this.data, {super.key, this.dense = false});
+
+  Widget _networkBadge(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+    decoration: BoxDecoration(
+      color: data.networkColor,
+      borderRadius: BorderRadius.circular(context.bullShapes.badge),
+    ),
+    child: BBText(
+      data.networkLabel,
+      style: context.font.labelSmall?.copyWith(
+        color: context.appColors.onSurface,
+      ),
+    ),
+  );
+
+  Widget _dense(BuildContext context) {
+    return InkWell(
+      onTap: data.onTap,
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                color: data.iconBackgroundColor,
+                border: Border.all(color: data.iconBorderColor),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
+              ),
+              child: Icon(
+                data.icon,
+                size: 16,
+                color: context.appColors.onSurface,
+              ),
+            ),
+            const Gap(16.0),
+            Expanded(
+              flex: 3,
+              child: Align(alignment: Alignment.centerLeft, child: data.amount),
+            ),
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: .start,
+                mainAxisSize: .min,
+                children: data.labels,
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: _networkBadge(context),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: data.status,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (dense) return _dense(context);
     return InkWell(
       onTap: data.onTap,
       child: Container(
@@ -120,6 +192,7 @@ class StatusRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: .min,
       children: [
         BBText(
           label,
