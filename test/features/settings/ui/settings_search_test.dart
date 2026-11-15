@@ -128,7 +128,7 @@ void main() {
         'App',
         'Backup',
         'Wallet',
-        'Manage access',
+        'Exchange',
         'Price history',
         'Quick actions',
         'Map',

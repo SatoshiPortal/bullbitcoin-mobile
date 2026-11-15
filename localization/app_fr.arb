@@ -4771,7 +4771,6 @@
   "exchangeAccessReset": "Réinitialiser l’accès à la plateforme",
   "exchangeAccessLogoutIncomplete": "La déconnexion est incomplète. Terminez-la avant d’activer la plateforme.",
   "exchangeAccessRetryLogout": "Terminer la déconnexion",
-  "exchangeAccessManage": "Gérer l’accès",
   "bitcoinSettingsAutoTransferTitle": "Échange automatique",
   "passphraseOption": "J’ai une passphrase",
   "passphraseWhitespaceWarning": "Les espaces au début ou à la fin font partie de votre passphrase.",

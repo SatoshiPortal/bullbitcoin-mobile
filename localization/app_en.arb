@@ -15316,10 +15316,6 @@
   "@exchangeAccessRetryLogout": {
     "description": "Exchange access recovery and navigation"
   },
-  "exchangeAccessManage": "Manage access",
-  "@exchangeAccessManage": {
-    "description": "Exchange access settings destination"
-  },
   "walletDiscoveryButton": "Scan for missing transactions",
   "@walletDiscoveryButton": {
     "description": "Button requesting a full discovery scan of this wallet"
