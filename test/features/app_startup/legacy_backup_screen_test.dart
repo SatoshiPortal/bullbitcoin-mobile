@@ -51,4 +51,34 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();
   });
+
+  testWidgets('a revealed legacy seed shows its passphrase with the words', (
+    tester,
+  ) async {
+    messenger.setMockMethodCallHandler(channel, (_) async => true);
+    FakeSecureStoragePlatform().install();
+    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    late Secret secret;
+    await tester.runAsync(() async {
+      final imported = await secrets.import(
+        words: [...List.filled(11, 'abandon'), 'about'],
+        passphrase: 'synthetic passphrase',
+      );
+      secret = (imported as Ok<Secret, SecretFailure>).value;
+    });
+    await tester.pumpWidget(LegacyBackupApp(secrets: [secret]));
+    // The sealed view reads the keystore asynchronously behind a spinner.
+    for (var i = 0; i < 4; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 250)),
+      );
+      await tester.pump();
+    }
+
+    expect(find.byType(MnemonicView), findsOneWidget);
+    // Words alone restore a different wallet: the passphrase must be shown.
+    expect(find.text('Passphrase'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+  });
 }
