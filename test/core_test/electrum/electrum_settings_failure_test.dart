@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/add_custom_server_request.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/delete_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
@@ -186,7 +186,7 @@ void main() {
           () => statusPort.checkElectrum(
             url: any(named: 'url'),
             network: _network,
-            validateDomain: true,
+            validateDomain: false,
             timeout: any(named: 'timeout'),
             retry: 1,
             proxyEndpoint: any(named: 'proxyEndpoint'),
@@ -196,6 +196,12 @@ void main() {
         final result = await usecase.execute(request());
 
         expect(result, isA<Err>());
+        verifyNever(
+          () => serverRepo.saveCustom(
+            any(),
+            validateDomain: any(named: 'validateDomain'),
+          ),
+        );
         expect(
           (result as Err).failure,
           isA<ElectrumServerUnreachableFailure>(),
@@ -257,46 +263,47 @@ void main() {
       );
     });
 
-    test(
-      'probes with the user validateDomain setting, not a fixed one',
-      () async {
-        when(() => serverRepo.fetchByUrl(any(), network: any(named: 'network')))
-            .thenAnswer((_) async => Ok(null));
-        when(
-          () => statusPort.checkSocket(
-            url: any(named: 'url'),
-            timeout: any(named: 'timeout'),
-            proxyEndpoint: any(named: 'proxyEndpoint'),
-          ),
-        ).thenAnswer((_) async => ElectrumServerStatus.online);
-        when(() => electrumSettingsRepo.fetchByNetwork(_network))
-            .thenAnswer((_) async => Ok(_settings(validateDomain: false)));
-        when(
-          () => statusPort.checkElectrum(
-            url: any(named: 'url'),
-            network: _network,
-            validateDomain: any(named: 'validateDomain'),
-            timeout: any(named: 'timeout'),
-            retry: any(named: 'retry'),
-            proxyEndpoint: any(named: 'proxyEndpoint'),
-          ),
-        ).thenAnswer((_) async => ElectrumServerStatus.offline);
+    test('probes and saves with validation off by default', () async {
+      when(() => serverRepo.fetchByUrl(any(), network: any(named: 'network')))
+          .thenAnswer((_) async => Ok(null));
+      when(
+        () => statusPort.checkSocket(
+          url: any(named: 'url'),
+          timeout: any(named: 'timeout'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      ).thenAnswer((_) async => ElectrumServerStatus.online);
+      when(() => electrumSettingsRepo.fetchByNetwork(_network))
+          .thenAnswer((_) async => Ok(_settings()));
+      when(
+        () => statusPort.checkElectrum(
+          url: any(named: 'url'),
+          network: _network,
+          validateDomain: any(named: 'validateDomain'),
+          timeout: any(named: 'timeout'),
+          retry: any(named: 'retry'),
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      ).thenAnswer((_) async => ElectrumServerStatus.online);
+      when(() => serverRepo.saveCustom(any(), validateDomain: false))
+          .thenAnswer((_) async => const Ok(null));
 
-        final result = await usecase.execute(request());
+      final result = await usecase.execute(request());
 
-        expect(result, isA<Err>());
-        verify(
-          () => statusPort.checkElectrum(
-            url: any(named: 'url'),
-            network: _network,
-            validateDomain: false,
-            timeout: 5,
-            retry: 1,
-            proxyEndpoint: any(named: 'proxyEndpoint'),
-          ),
-        ).called(1);
-      },
-    );
+      expect(result, isA<Ok>());
+      verify(
+        () => statusPort.checkElectrum(
+          url: any(named: 'url'),
+          network: _network,
+          validateDomain: false,
+          timeout: 5,
+          retry: 1,
+          proxyEndpoint: any(named: 'proxyEndpoint'),
+        ),
+      ).called(1);
+      verify(() => serverRepo.saveCustom(any(), validateDomain: false))
+          .called(1);
+    });
 
     test(
       'propagates the load failure when electrum settings are unreadable',
@@ -352,7 +359,7 @@ void main() {
         () => statusPort.checkElectrum(
           url: 'ssl://hidden.onion:50002',
           network: _network,
-          validateDomain: true,
+          validateDomain: false,
           timeout: ElectrumConnection.onionMinimumTimeout,
           retry: 1,
           proxyEndpoint: endpoint,
@@ -376,7 +383,7 @@ void main() {
         () => statusPort.checkElectrum(
           url: 'ssl://hidden.onion:50002',
           network: _network,
-          validateDomain: true,
+          validateDomain: false,
           timeout: ElectrumConnection.onionMinimumTimeout,
           retry: 1,
           proxyEndpoint: endpoint,
@@ -391,82 +398,99 @@ void main() {
       );
     });
 
-    test('passes a ready external route to a Bitcoin probe', () async {
-      final externalRoute = TorRoute(
-        source: TorSource.external,
-        endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41200),
-        evidence: TorReadinessEvidence.externalSocksHandshake,
-      );
-      when(() => appSettingsRepository.fetch()).thenAnswer(
-        (_) async =>
-            _appSettings(useTorProxy: true, port: externalRoute.endpoint.port),
-      );
-      when(() => serverRepo.fetchByUrl(any(), network: any(named: 'network')))
-          .thenAnswer((_) async => Ok(null));
-      when(() => electrumSettingsRepo.fetchByNetwork(_network))
-          .thenAnswer((_) async => Ok(_settings()));
-      when(
-        () => torSessionPort.open(
-          network: _network,
-          serverUrl: any(named: 'serverUrl'),
-          isCustom: true,
-          externalProxyEnabled: true,
-          externalProxyPort: externalRoute.endpoint.port,
-        ),
-      ).thenAnswer(
-        (_) async => ElectrumTorRoute(externalRoute.endpoint, () async {}),
-      );
-      when(
-        () => statusPort.checkSocket(
-          url: any(named: 'url'),
-          timeout: any(named: 'timeout'),
-          proxyEndpoint: externalRoute.endpoint,
-        ),
-      ).thenAnswer((_) async => ElectrumServerStatus.online);
-      when(
-        () => statusPort.checkElectrum(
-          url: any(named: 'url'),
-          network: _network,
-          validateDomain: true,
-          timeout: 5,
-          retry: 1,
-          proxyEndpoint: externalRoute.endpoint,
-        ),
-      ).thenAnswer((_) async => ElectrumServerStatus.online);
-      when(() => serverRepo.save(any()))
-          .thenAnswer((_) async => const Ok(null));
+    test(
+      'uses the selected validation for the probe and save over external Tor',
+      () async {
+        var routeClosed = false;
+        final externalRoute = TorRoute(
+          source: TorSource.external,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 41200),
+          evidence: TorReadinessEvidence.externalSocksHandshake,
+        );
+        when(() => appSettingsRepository.fetch()).thenAnswer(
+          (_) async => _appSettings(
+            useTorProxy: true,
+            port: externalRoute.endpoint.port,
+          ),
+        );
+        when(() => serverRepo.fetchByUrl(any(), network: any(named: 'network')))
+            .thenAnswer((_) async => Ok(null));
+        when(() => electrumSettingsRepo.fetchByNetwork(_network))
+            .thenAnswer((_) async => Ok(_settings(validateDomain: false)));
+        when(
+          () => torSessionPort.open(
+            network: _network,
+            serverUrl: any(named: 'serverUrl'),
+            isCustom: true,
+            externalProxyEnabled: true,
+            externalProxyPort: externalRoute.endpoint.port,
+          ),
+        ).thenAnswer(
+          (_) async => ElectrumTorRoute(
+            externalRoute.endpoint,
+            () async => routeClosed = true,
+          ),
+        );
+        when(
+          () => statusPort.checkSocket(
+            url: any(named: 'url'),
+            timeout: any(named: 'timeout'),
+            proxyEndpoint: externalRoute.endpoint,
+          ),
+        ).thenAnswer((_) async => ElectrumServerStatus.online);
+        when(
+          () => statusPort.checkElectrum(
+            url: any(named: 'url'),
+            network: _network,
+            validateDomain: true,
+            timeout: 5,
+            retry: 1,
+            proxyEndpoint: externalRoute.endpoint,
+          ),
+        ).thenAnswer((_) async => ElectrumServerStatus.online);
+        when(() => serverRepo.saveCustom(any(), validateDomain: true))
+            .thenAnswer((_) async => const Ok(null));
 
-      final result = await usecase.execute(request());
+        final result = await usecase.execute(
+          AddCustomServerRequest(
+            server: request().server,
+            validateDomain: true,
+          ),
+        );
 
-      expect(result, isA<Ok>());
-      verify(() => appSettingsRepository.fetch()).called(greaterThan(0));
-      verify(
-        () => torSessionPort.open(
-          network: _network,
-          serverUrl: any(named: 'serverUrl'),
-          isCustom: true,
-          externalProxyEnabled: true,
-          externalProxyPort: externalRoute.endpoint.port,
-        ),
-      ).called(1);
-      verifyNever(
-        () => statusPort.checkSocket(
-          url: any(named: 'url'),
-          timeout: any(named: 'timeout'),
-          proxyEndpoint: any(named: 'proxyEndpoint'),
-        ),
-      );
-      verify(
-        () => statusPort.checkElectrum(
-          url: any(named: 'url'),
-          network: _network,
-          validateDomain: true,
-          timeout: 5,
-          retry: 1,
-          proxyEndpoint: externalRoute.endpoint,
-        ),
-      ).called(1);
-    });
+        expect(result, isA<Ok>());
+        expect(routeClosed, isTrue);
+        verify(() => serverRepo.saveCustom(any(), validateDomain: true))
+            .called(1);
+        verify(() => appSettingsRepository.fetch()).called(greaterThan(0));
+        verify(
+          () => torSessionPort.open(
+            network: _network,
+            serverUrl: any(named: 'serverUrl'),
+            isCustom: true,
+            externalProxyEnabled: true,
+            externalProxyPort: externalRoute.endpoint.port,
+          ),
+        ).called(1);
+        verifyNever(
+          () => statusPort.checkSocket(
+            url: any(named: 'url'),
+            timeout: any(named: 'timeout'),
+            proxyEndpoint: any(named: 'proxyEndpoint'),
+          ),
+        );
+        verify(
+          () => statusPort.checkElectrum(
+            url: any(named: 'url'),
+            network: _network,
+            validateDomain: true,
+            timeout: 5,
+            retry: 1,
+            proxyEndpoint: externalRoute.endpoint,
+          ),
+        ).called(1);
+      },
+    );
 
     test('fails closed when external Tor is unavailable', () async {
       when(() => appSettingsRepository.fetch())

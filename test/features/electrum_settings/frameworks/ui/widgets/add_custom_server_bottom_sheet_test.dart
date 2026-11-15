@@ -27,7 +27,10 @@ void main() {
     });
   });
 
-  testWidgets('opens Tor settings from an onion server input', (tester) async {
+  Future<void> openSheet(
+    WidgetTester tester, {
+    ValueChanged<CustomServerInput?>? onAdd,
+  }) async {
     final electrumBloc = _MockElectrumSettingsBloc();
     when(() => electrumBloc.state).thenReturn(const ElectrumSettingsState());
     when(() => electrumBloc.stream)
@@ -50,7 +53,10 @@ void main() {
           child: Scaffold(
             body: Builder(
               builder: (context) => TextButton(
-                onPressed: () => AddCustomServerBottomSheet.show(context),
+                onPressed: () async {
+                  final input = await AddCustomServerBottomSheet.show(context);
+                  onAdd?.call(input);
+                },
                 child: const Text('Open'),
               ),
             ),
@@ -61,12 +67,45 @@ void main() {
 
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
+  }
+
+  for (final validateDomain in [false, true]) {
+    testWidgets('submits domain validation set to $validateDomain', (
+      tester,
+    ) async {
+      CustomServerInput? result;
+      await openSheet(tester, onAdd: (input) => result = input);
+      final domainSwitch = find.widgetWithText(
+        SwitchListTile,
+        'Validate Domain',
+      );
+      expect(tester.widget<SwitchListTile>(domainSwitch).value, isFalse);
+      await tester.enterText(
+        find.byType(TextFormField),
+        'electrum.example.com:50002',
+      );
+      if (validateDomain) {
+        await tester.tap(domainSwitch);
+        await tester.pump();
+      }
+
+      await tester.tap(find.text('Add Server'));
+      await tester.pumpAndSettle();
+
+      expect(result?.enableSsl, isTrue);
+      expect(result?.validateDomain, validateDomain);
+    });
+  }
+
+  testWidgets('opens Tor settings from an onion server input', (tester) async {
+    await openSheet(tester);
     await tester.enterText(find.byType(TextFormField), 'hidden.onion:50002');
     await tester.pump();
 
     final sslSwitch = tester.widget<Switch>(find.byType(Switch));
     expect(sslSwitch.value, isFalse);
     expect(sslSwitch.onChanged, isNull);
+    expect(find.text('Validate Domain'), findsNothing);
     expect(find.text('Configure Tor'), findsNothing);
 
     await tester.tap(find.text('Tor'));

@@ -16,6 +16,21 @@ class ElectrumServerStorageDatasource {
     log.fine('Electrum server stored network=${server.network}');
   }
 
+  Future<void> storeCustom(
+    ElectrumServerModel server, {
+    required bool validateDomain,
+  }) => _sqlite.transaction(() async {
+    await store(server);
+    final update = _sqlite.update(_sqlite.electrumSettings)
+      ..where((row) => row.network.equalsValue(server.network));
+    final updated = await update.write(
+      ElectrumSettingsCompanion(validateDomain: Value(validateDomain)),
+    );
+    if (updated != 1) {
+      throw const FormatException('Missing Electrum settings');
+    }
+  });
+
   Future<void> storeBatch(List<ElectrumServerModel> servers) async {
     await _sqlite.batch((batch) {
       for (final server in servers) {

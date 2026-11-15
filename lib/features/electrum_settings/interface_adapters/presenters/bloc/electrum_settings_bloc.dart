@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/add_custom_server_request.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/delete_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/set_advanced_electrum_options_request.dart';
@@ -176,6 +176,7 @@ class ElectrumSettingsBloc
     final cleanUrl = parsedUrl?.cleanUrl ?? event.url;
 
     final request = AddCustomServerRequest(
+      validateDomain: event.validateDomain,
       server: ElectrumServerDto(
         url: cleanUrl,
         network: network,
@@ -193,12 +194,8 @@ class ElectrumSettingsBloc
           status: value,
           priority: priority,
         );
-        // Custom servers (self-hosted, Tailscale, etc.) commonly present a
-        // certificate that fails strict domain validation, so switching to
-        // one disables it automatically.
-        final updatedAdvancedOptions = await _setValidateDomain(
-          network: network,
-          validateDomain: false,
+        final updatedAdvancedOptions = state.advancedOptions?.copyWith(
+          validateDomain: request.validateDomain,
         );
         final hasActiveCustomBitcoinOnionServer =
             await _hasActiveCustomBitcoinOnionServerUsecase.execute();
@@ -206,7 +203,7 @@ class ElectrumSettingsBloc
           state.copyWith(
             customServers: [...state.customServers, newServer],
             isAddingCustomServer: false,
-            advancedOptions: updatedAdvancedOptions ?? state.advancedOptions,
+            advancedOptions: updatedAdvancedOptions,
             hasActiveCustomBitcoinOnionServer:
                 hasActiveCustomBitcoinOnionServer,
           ),

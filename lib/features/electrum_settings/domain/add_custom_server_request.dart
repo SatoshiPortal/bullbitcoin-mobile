@@ -4,7 +4,9 @@ import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_netw
 class AddCustomServerRequest {
   final ElectrumServerDto server;
 
-  AddCustomServerRequest({required this.server});
+  final bool validateDomain;
+
+  AddCustomServerRequest({required this.server, this.validateDomain = false});
 
   String get host => server.url.split(':').first;
   int get port => int.parse(server.url.split(':').last);

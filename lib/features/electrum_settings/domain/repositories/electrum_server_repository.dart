@@ -8,6 +8,11 @@ abstract interface class ElectrumServerRepository {
   @useResult
   Future<Result<void, ElectrumFailure>> save(ElectrumServer server);
   @useResult
+  Future<Result<void, ElectrumFailure>> saveCustom(
+    ElectrumServer server, {
+    required bool validateDomain,
+  });
+  @useResult
   Future<Result<void, ElectrumFailure>> batchSave(List<ElectrumServer> servers);
   @useResult
   Future<Result<List<ElectrumServer>, ElectrumFailure>> fetchAll({
