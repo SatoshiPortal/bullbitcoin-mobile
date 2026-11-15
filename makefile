@@ -394,10 +394,13 @@ test: unit-test integration-test
 # One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
 # Optionally bound test processes inside each package on shared machines.
 TEST_CONCURRENCY ?=
+# TEST_TOTAL_SHARDS=N TEST_SHARD_INDEX=i runs one of N disjoint shards of every member's test files (tools/unit_test_shard.sh); CI runs the shards in parallel.
+TEST_TOTAL_SHARDS ?= 1
+TEST_SHARD_INDEX ?= 0
 unit-test:
 	@echo "🏃‍ running unit tests of every workspace member"
-	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
-	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh flutter --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh dart --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the
