@@ -227,6 +227,32 @@ void main() {
     },
   );
 
+  test(
+    'a connection finishing after sign-out is closed rather than left open',
+    () async {
+      var epoch = 1;
+      when(() => access.epoch).thenAnswer((_) => epoch);
+      final pending = Completer<Result<void, ExchangeNotificationFailure>>();
+      when(repository.connect).thenAnswer((_) => pending.future);
+      when(repository.disconnect).thenReturn(null);
+      final connection = build().connect();
+      await Future<void>.delayed(Duration.zero);
+      verify(repository.connect).called(1);
+
+      // Sign-out lands before the service has started its native attempt,
+      // so its own disconnect cannot have abandoned it.
+      epoch = 2;
+      when(() => access.current).thenReturn(const ExchangeAccessDisabled());
+      pending.complete(const Ok(null));
+
+      expect(
+        _failureOf(await connection),
+        isA<ExchangeOperationStaleFailure>(),
+      );
+      verify(repository.disconnect).called(1);
+    },
+  );
+
   test('an old connection cannot close a new environment connection', () async {
     SharedPreferences.setMockInitialValues({
       'exchange_access': '{"enabled":true,"signOutPending":false}',
