@@ -14,6 +14,7 @@ export 'package:flutter/semantics.dart' show CustomSemanticsAction;
 // the list grows on demand as components need more symbols.
 export 'package:flutter/widgets.dart'
     show
+        AbsorbPointer,
         Align,
         AppLifecycleListener,
         AppLifecycleState,
@@ -38,6 +39,8 @@ export 'package:flutter/widgets.dart'
         Container,
         CrossAxisAlignment,
         Curves,
+        DragTarget,
+        DragTargetDetails,
         EdgeInsets,
         EdgeInsetsGeometry,
         Expanded,
@@ -58,6 +61,7 @@ export 'package:flutter/widgets.dart'
         Locale,
         LocalizationsDelegate,
         ListView,
+        LongPressDraggable,
         MainAxisAlignment,
         MainAxisSize,
         Navigator,
