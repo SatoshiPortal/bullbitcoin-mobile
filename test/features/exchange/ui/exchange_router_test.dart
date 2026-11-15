@@ -19,17 +19,19 @@ class _Exchange extends Mock implements ExchangeFacade {}
 class _ExchangeCubit extends MockCubit<ExchangeState>
     implements ExchangeCubit {}
 
-ExchangeRouterConfig _config({required Future<bool> Function() unavailable}) =>
-    ExchangeRouterConfig(
-      networkUnavailable: unavailable,
-      isSuperuser: (_) => false,
-      homePath: '/home',
-      buildHomeCards: () => [],
-      onHomeRefresh: () {},
-      onExit: (_) {},
-      onOpenSettings: (_) {},
-      onAction: (_, _) {},
-    );
+ExchangeRouterConfig _config({
+  required Future<bool> Function() unavailable,
+  void Function(BuildContext)? onExit,
+}) => ExchangeRouterConfig(
+  networkUnavailable: unavailable,
+  isSuperuser: (_) => false,
+  homePath: '/home',
+  buildHomeCards: () => [],
+  onHomeRefresh: () {},
+  onExit: onExit ?? (_) {},
+  onOpenSettings: (_) {},
+  onAction: (_, _) {},
+);
 
 void main() {
   testWidgets(
@@ -55,6 +57,87 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('home'), findsOneWidget);
       expect(checks, 1);
+    },
+  );
+
+  Future<
+    ({
+      StreamController<ExchangeAccess> changes,
+      void Function(ExchangeAccess) set,
+    })
+  >
+  pumpTrade(WidgetTester tester, {void Function(BuildContext)? onExit}) async {
+    final exchange = _Exchange();
+    final changes = StreamController<ExchangeAccess>.broadcast();
+    ExchangeAccess current = const ExchangeAccessEnabled(
+      ExchangeAccessSession.signedIn,
+    );
+    when(() => exchange.currentAccess).thenAnswer((_) => current);
+    when(exchange.watchAccess).thenAnswer((_) => changes.stream);
+    locator.registerSingleton<ExchangeFacade>(exchange);
+    addTearDown(() => locator.unregister<ExchangeFacade>());
+    final cubit = _ExchangeCubit();
+    when(() => cubit.state).thenReturn(const ExchangeState());
+    final router = GoRouter(
+      initialLocation: ExchangeRoute.exchangeHome.path,
+      routes: [
+        GoRoute(path: '/home', builder: (_, _) => const Text('home')),
+        ...ExchangeRouter.routes(
+          _config(unavailable: () async => false, onExit: onExit),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    addTearDown(cubit.close);
+    addTearDown(changes.close);
+    await tester.pumpWidget(
+      BlocProvider<ExchangeCubit>.value(
+        value: cubit,
+        child: MaterialApp.router(
+          theme: AppTheme.themeData(AppThemeType.light),
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    return (
+      changes: changes,
+      set: (ExchangeAccess access) {
+        current = access;
+        changes.add(access);
+      },
+    );
+  }
+
+  testWidgets(
+    'an open Trade screen returns home when sign-out turns exchange off',
+    (tester) async {
+      var exits = 0;
+      final trade = await pumpTrade(
+        tester,
+        onExit: (context) {
+          exits++;
+          context.go('/home');
+        },
+      );
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Explicit sign-out reports an incomplete cleanup, then disabled access.
+      trade.set(const ExchangeAccessSignOutIncomplete());
+      await tester.pump();
+      await tester.pump();
+      trade.set(const ExchangeAccessDisabled());
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(ExchangeLandingScreen), findsNothing);
+      expect(find.text('home'), findsOneWidget);
+      expect(exits, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
     },
   );
 
