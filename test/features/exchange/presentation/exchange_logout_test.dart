@@ -73,8 +73,28 @@ void main() {
     when(notifications.accountChanges).thenAnswer((_) => const Stream.empty());
     when(getAccount.execute).thenAnswer((_) async => const Ok(account));
     when(announcements.execute).thenAnswer((_) async => const Ok([]));
+    when(notifications.connect).thenAnswer((_) async => const Ok(null));
     addTearDown(changes.close);
   });
+
+  test(
+    'each signed-in reconciliation reopens notifications for an unchanged account',
+    () async {
+      final cubit = build();
+      addTearDown(cubit.close);
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.userSummary, account);
+      verify(notifications.connect).called(1);
+
+      // Reconciliation disconnects and emits signed in again; the account
+      // summary is unchanged, so no summary transition can reopen the socket.
+      publish(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.userSummary, account);
+      verify(notifications.connect).called(1);
+    },
+  );
 
   test(
     'signed in access loads the account; disabled access clears it',
