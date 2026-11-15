@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rustc-pins-test aot-check action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -302,7 +302,10 @@ ifeq ($(FORMAT),aab)
 else
   CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(FLAVOR)-$(MODE).apk
   HOST_OUTPUT := ./BULL-$(HOST_NAME).apk
-  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR)
+  # APKs ship arm64 only: no supported device needs the 32-bit or x86_64
+  # libraries, and each extra ABI adds a full Rust and AOT compile. The AAB
+  # keeps every ABI because Play serves each device its own split.
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR) --target-platform android-arm64
 endif
 
 android: container-app
@@ -330,7 +333,7 @@ android: container-app
 # Check every expected ABI and Rust library in the APK against the exact pinned
 # compilers used by Native Assets. The shell verifier fails on missing ABI/lib,
 # invalid archive, absent or conflicting compiler markers, and new Rust libs.
-# A debug arm64-only APK can pass EXPECTED_ABIS=arm64-v8a explicitly.
+# APKs are arm64-only (see FLUTTER_BUILD above).
 RUST_VERSION ?= 1.100.0
 # Prevent rustup from installing unrelated declared targets during hook setup.
 # Each hook still selects its own pinned compiler for the Cargo build.
@@ -339,7 +342,12 @@ export RUSTUP_AUTO_INSTALL ?= 0
 BDK_RUST_VERSION ?= $(RUST_VERSION)
 # Official hosted Payjoin pins this compiler explicitly in native/rust-toolchain.toml.
 PAYJOIN_RUST_VERSION ?= 1.85.1
-EXPECTED_ABIS ?= armeabi-v7a arm64-v8a x86_64
+EXPECTED_ABIS ?= arm64-v8a
+# The pinned Rust compilers as KEY=VALUE lines: CI loads them into $GITHUB_ENV so these variables stay their single source.
+rust-versions:
+	@echo RUST_VERSION=$(RUST_VERSION)
+	@echo BDK_RUST_VERSION=$(BDK_RUST_VERSION)
+	@echo PAYJOIN_RUST_VERSION=$(PAYJOIN_RUST_VERSION)
 verify-rustc-pins:
 	@set -e; \
 	for version in $(RUST_VERSION) $(BDK_RUST_VERSION) $(PAYJOIN_RUST_VERSION); do \
@@ -350,6 +358,9 @@ verify-rustc-pins:
 
 rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins
+
+unit-test-shard-test:
+	@python3 -m unittest tools.testing.test_unit_test_shard
 
 # Compile the app to a release AOT snapshot without the native build; catches Dart AOT compiler crashes that debug builds and tests miss. Needs generated code.
 aot-check:
@@ -395,10 +406,13 @@ test: unit-test integration-test
 # One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
 # Optionally bound test processes inside each package on shared machines.
 TEST_CONCURRENCY ?=
+# TEST_TOTAL_SHARDS=N TEST_SHARD_INDEX=i runs one of N disjoint shards of every member's test files (tools/unit_test_shard.sh); CI runs the shards in parallel.
+TEST_TOTAL_SHARDS ?= 1
+TEST_SHARD_INDEX ?= 0
 unit-test:
 	@echo "🏃‍ running unit tests of every workspace member"
-	@fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm flutter test --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
-	@fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- fvm dart test --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh flutter --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh dart --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the
