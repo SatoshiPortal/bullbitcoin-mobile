@@ -90,7 +90,7 @@ void main() {
                   child: SizedBox(
                     width: 360,
                     child: WalletHomeTopSection(
-                      actions: SizedBox(key: actionKey, height: 40),
+                      actions: SizedBox(key: actionKey, height: 100),
                     ),
                   ),
                 ),
@@ -109,6 +109,16 @@ void main() {
         greaterThanOrEqualTo(tester.getBottomLeft(unconfirmed).dy + 12),
       );
       expect(tester.getTopLeft(find.byKey(actionKey)).dy, greaterThan(224));
+      // The actions straddle the bottom edge of the background image.
+      final backgroundBottom = tester.getBottomLeft(find.byType(Image)).dy;
+      expect(
+        backgroundBottom,
+        greaterThan(tester.getTopLeft(find.byKey(actionKey)).dy),
+      );
+      expect(
+        backgroundBottom,
+        lessThan(tester.getBottomLeft(find.byKey(actionKey)).dy),
+      );
     },
   );
 }

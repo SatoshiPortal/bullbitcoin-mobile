@@ -1881,11 +1881,6 @@
   "@bip329LabelsImportSuccessSingular": {
     "description": "Success message after importing exactly 1 label"
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Obter ajuda",
   "fundExchangeCrIbanUsdLabelIban": "Número da conta IBAN (apenas dólares americanos)",
   "@fundExchangeCrIbanUsdLabelIban": {
     "description": "Label for IBAN number field for USD only"
@@ -11049,7 +11044,6 @@
   "settingsSearchLabelsKeywords": "etiquetas da carteira|etiquetas de transações|BIP329|importar etiquetas|exportar etiquetas",
   "settingsSearchTransactionHistoryKeywords": "exportar transações|exportação de transações|CSV|histórico da carteira",
   "settingsSearchAppSettingsKeywords": "preferências do aplicativo|configurações do aplicativo|configurações gerais",
-  "settingsSearchBtcMapKeywords": "BTC Map|mapa Bitcoin|mapa de comerciantes|lugares que aceitam bitcoin",
   "settingsSearchTermsOfServiceKeywords": "termos e condições|informações legais|acordo do usuário|TOS",
   "settingsSearchServicesStatusKeywords": "status dos serviços|status do sistema|online|indisponibilidade",
   "settingsSearchImportWalletKeywords": "adicionar carteira|recuperar carteira|importar mnemônico|carteira somente leitura|carteira de hardware",
@@ -11292,5 +11286,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Esta transação já está na blockchain. Não há mais nada para transmitir.",
   "broadcastSignedTxErrorRejected": "A rede rejeitou esta transação. Ela pode não estar totalmente assinada, ser inválida ou estar em conflito com outro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais."
+  "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais.",
+  "settingsDarkModeTitle": "Modo escuro",
+  "settingsSourceCodeTitle": "Código-fonte"
 }

@@ -2053,11 +2053,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "সাহায্য নিন",
   "exchangeStatisticsOrderStats": "অর্ডার পরিসংখ্যান",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11243,7 +11238,6 @@
   "settingsSearchLabelsKeywords": "ওয়ালেট লেবেল|লেনদেনের লেবেল|BIP329|লেবেল আমদানি|লেবেল রপ্তানি",
   "settingsSearchTransactionHistoryKeywords": "লেনদেন রপ্তানি|লেনদেনের ইতিহাস রপ্তানি|CSV|ওয়ালেটের ইতিহাস",
   "settingsSearchAppSettingsKeywords": "অ্যাপ পছন্দসমূহ|অ্যাপ্লিকেশন সেটিংস|সাধারণ সেটিংস",
-  "settingsSearchBtcMapKeywords": "BTC Map|বিটকয়েন মানচিত্র|ব্যবসায়ীর মানচিত্র|বিটকয়েন খরচ করার জায়গা",
   "settingsSearchTermsOfServiceKeywords": "শর্তাবলী|আইনি|ব্যবহারকারী চুক্তি|TOS",
   "settingsSearchServicesStatusKeywords": "সেবার স্বাস্থ্য|সিস্টেমের অবস্থা|অনলাইন|সেবা বন্ধ",
   "settingsSearchImportWalletKeywords": "ওয়ালেট যোগ করুন|ওয়ালেট পুনরুদ্ধার|Mnemonic আমদানি|Watch-only ওয়ালেট|হার্ডওয়্যার ওয়ালেট",
@@ -11486,5 +11480,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটি ইতিমধ্যেই ব্লকচেইনে আছে। সম্প্রচার করার মতো আর কিছু নেই।",
   "broadcastSignedTxErrorRejected": "নেটওয়ার্ক এই লেনদেনটি প্রত্যাখ্যান করেছে। এটি হয়তো সম্পূর্ণ স্বাক্ষরিত নয়, অবৈধ, অথবা অন্য একটি পেমেন্টের সাথে সাংঘর্ষিক।",
   "broadcastSignedTxErrorOutcomeUnknown": "আপনার লেনদেন সম্প্রচারিত হয়েছে কি না আমরা নিশ্চিত করতে পারিনি। আবার চেষ্টা করার আগে একটি ব্লক এক্সপ্লোরারে দেখে নিন।",
-  "broadcastSignedTxErrorNetworkNotEnabled": "বর্তমান সেটিংসে এই নেটওয়ার্কে সম্প্রচার চালু নেই।"
+  "broadcastSignedTxErrorNetworkNotEnabled": "বর্তমান সেটিংসে এই নেটওয়ার্কে সম্প্রচার চালু নেই।",
+  "settingsDarkModeTitle": "ডার্ক মোড",
+  "settingsSourceCodeTitle": "সোর্স কোড"
 }

@@ -676,8 +676,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Ottieni aiuto",
   "sellTransactionFee": "Commissioni di rete",
   "coldcardStep5": "Se hai problemi di scansione:",
   "buyExpressWithdrawal": "Invio rapido",
@@ -4381,7 +4379,6 @@
   "settingsSearchLabelsKeywords": "etichette del portafoglio|etichette delle transazioni|BIP329|importare etichette|esportare etichette",
   "settingsSearchTransactionHistoryKeywords": "esportare transazioni|esportazione transazioni|CSV|cronologia del portafoglio",
   "settingsSearchAppSettingsKeywords": "preferenze app|impostazioni applicazione|impostazioni generali",
-  "settingsSearchBtcMapKeywords": "BTC Map|mappa Bitcoin|mappa dei commercianti|luoghi dove spendere bitcoin",
   "settingsSearchTermsOfServiceKeywords": "termini e condizioni|note legali|accordo utente|TOS",
   "settingsSearchServicesStatusKeywords": "stato dei servizi|stato del sistema|online|interruzione",
   "settingsSearchImportWalletKeywords": "aggiungere portafoglio|recuperare portafoglio|importare mnemonica|portafoglio di sola lettura|hardware wallet",
@@ -4763,9 +4760,6 @@
   "settingsPayjoinExpireMinutesRangeError": "Deve essere tra {min} e {max} minuti",
   "settingsPayjoinSatsUnit": "sats",
   "settingsPayjoinMinutesUnit": "min",
-  "themeDarkDescription": "Usa il tema scuro",
-  "themeSystemDescription": "Segui l'impostazione di sistema",
-  "themeLightDescription": "Usa il tema chiaro",
   "comingSoonTitle": "Funzione in arrivo",
   "settingsWalletTitle": "Portafogli",
   "settingsWalletSettingsTitle": "Impostazioni dei portafogli",
@@ -4780,5 +4774,7 @@
   "broadcastSignedTxErrorRejected": "La rete ha rifiutato questa transazione. Potrebbe non essere firmata completamente, non essere valida o essere in conflitto con un altro pagamento.",
   "broadcastSignedTxErrorOutcomeUnknown": "Non è stato possibile confermare che la transazione sia stata trasmessa. Controlla un block explorer prima di riprovare.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La trasmissione su questa rete non è abilitata nelle impostazioni attuali.",
-  "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà."
+  "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà.",
+  "settingsDarkModeTitle": "Modalità scura",
+  "settingsSourceCodeTitle": "Codice sorgente"
 }

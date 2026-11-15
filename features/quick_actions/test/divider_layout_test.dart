@@ -101,6 +101,54 @@ void main() {
       expect(more.more, dragMore.more);
     });
 
+    test('a drop on a tile of the same zone takes that cell', () {
+      final layout = editor(
+        QuickActionSelection([map, transfer, history], more: [buy, sell]),
+      );
+      expect(layout.dropOn(map, history).actions, [transfer, history, map]);
+      expect(layout.dropOn(history, map).actions, [history, map, transfer]);
+      final more = layout.dropOn(buy, pay);
+      expect(more.actions, [map, transfer, history]);
+      expect(more.more, [sell, pay, buy, settings]);
+      expect(layout.dropOn(map, map), same(layout.move(0, 0)));
+    });
+
+    test('a drop across zones lands before the target tile', () {
+      final layout = editor(
+        QuickActionSelection([map, transfer], more: [buy, sell]),
+      );
+      final toMore = layout.dropOn(map, sell);
+      expect(toMore.actions, [transfer]);
+      expect(toMore.more, [buy, map, sell, pay, settings, history]);
+      final toHome = layout.dropOn(sell, transfer);
+      expect(toHome.actions, [map, sell, transfer]);
+      expect(toHome.more, [buy, pay, settings, history]);
+    });
+
+    test('a drop on a full Home ejects its last action into More', () {
+      final layout = editor(
+        QuickActionSelection([map, transfer, history], more: [buy, sell]),
+      );
+      final onTile = layout.dropOn(sell, map);
+      expect(onTile.actions, [sell, map, transfer]);
+      expect(onTile.more, [history, buy, pay, settings]);
+      final atEnd = layout.dropAtEnd(sell, onHome: true);
+      expect(atEnd.actions, layout.moveToHome(sell).actions);
+      expect(atEnd.more, layout.moveToHome(sell).more);
+    });
+
+    test('a drop at the end of a zone appends to it', () {
+      final layout = editor(
+        QuickActionSelection([map, transfer], more: [buy, sell]),
+      );
+      expect(layout.dropAtEnd(map, onHome: true).actions, [transfer, map]);
+      expect(layout.dropAtEnd(buy, onHome: true).actions, [map, transfer, buy]);
+      final toMore = layout.dropAtEnd(map, onHome: false);
+      expect(toMore.actions, [transfer]);
+      expect(toMore.more, [buy, sell, pay, settings, history, map]);
+      expect(layout.dropAtEnd(transfer, onHome: true), same(layout.move(1, 1)));
+    });
+
     test('unavailable actions stay in their respective partitions', () {
       final layout = QuickActionsEditorLayout(
         selection: QuickActionSelection(

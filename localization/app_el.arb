@@ -1842,11 +1842,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Λήψη βοήθειας",
   "exchangeStatisticsOrderStats": "Στατιστική",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11037,7 +11032,6 @@
   "settingsSearchLabelsKeywords": "ετικέτες πορτοφολιού|ετικέτες συναλλαγών|BIP329|εισαγωγή ετικετών|εξαγωγή ετικετών",
   "settingsSearchTransactionHistoryKeywords": "εξαγωγή συναλλαγών|εξαγωγή ιστορικού|CSV|ιστορικό πορτοφολιού",
   "settingsSearchAppSettingsKeywords": "προτιμήσεις εφαρμογής|ρυθμίσεις εφαρμογής|γενικές ρυθμίσεις",
-  "settingsSearchBtcMapKeywords": "BTC Map|χάρτης Bitcoin|χάρτης εμπόρων|μέρη που δέχονται bitcoin",
   "settingsSearchTermsOfServiceKeywords": "όροι και προϋποθέσεις|νομικά|συμφωνία χρήστη|TOS",
   "settingsSearchServicesStatusKeywords": "κατάσταση υπηρεσιών|κατάσταση συστήματος|σε σύνδεση|διακοπή λειτουργίας",
   "settingsSearchImportWalletKeywords": "προσθήκη πορτοφολιού|ανάκτηση πορτοφολιού|εισαγωγή μνημονικής φράσης|πορτοφόλι μόνο παρακολούθησης|πορτοφόλι υλικού",
@@ -11280,5 +11274,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Αυτή η συναλλαγή βρίσκεται ήδη στο blockchain. Δεν υπάρχει τίποτα άλλο προς μετάδοση.",
   "broadcastSignedTxErrorRejected": "Το δίκτυο απέρριψε αυτή τη συναλλαγή. Μπορεί να μην είναι πλήρως υπογεγραμμένη, να είναι άκυρη ή να συγκρούεται με άλλη πληρωμή.",
   "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις.",
+  "settingsDarkModeTitle": "Σκούρα λειτουργία",
+  "settingsSourceCodeTitle": "Πηγαίος κώδικας"
 }

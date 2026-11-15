@@ -40,7 +40,7 @@ void main() {
         )
         .first;
     final moreWidth = tester.getSize(button('More')).width;
-    for (final label in ['Map', 'Transfer', 'History']) {
+    for (final label in ['Map', 'Swap', 'History']) {
       expect(
         tester.getSize(button(label)).width,
         closeTo(moreWidth, .01),

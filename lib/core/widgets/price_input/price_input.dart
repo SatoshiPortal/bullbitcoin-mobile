@@ -1,10 +1,10 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullBottomSheet, Gap;
+    show BullAmountInputFormatter, BullPickerItem, BullPickerMenu, Gap;
 
 class PriceInput extends StatelessWidget {
   const PriceInput({
@@ -112,14 +112,20 @@ class PriceInput extends StatelessWidget {
               ),
             ),
             const Gap(16),
-            if (availableCurrencies.isNotEmpty && onCurrencyChanged != null)
-              InkWell(
-                onTap: () async {
-                  final selected = await _openPopup(context, currency);
-                  if (selected != null && onCurrencyChanged != null) {
-                    onCurrencyChanged!(selected);
-                  }
-                },
+            if (onCurrencyChanged case final onChanged?
+                when availableCurrencies.isNotEmpty)
+              BullPickerMenu<String>(
+                value: currency,
+                tooltip: context.loc.settingsCurrencyTitle,
+                items: [
+                  for (final code in availableCurrencies)
+                    BullPickerItem(
+                      value: code,
+                      label:
+                          '${SupportedCurrency.tryFromCode(code)?.flag ?? '₿'} $code',
+                    ),
+                ],
+                onChanged: onChanged,
                 child: Icon(
                   Icons.arrow_drop_down,
                   color: context.appColors.secondary,
@@ -138,196 +144,5 @@ class PriceInput extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Future<String?> _openPopup(BuildContext context, String selected) async {
-    final c = await BullBottomSheet.show<String?>(
-      context: context,
-      child: CurrencyBottomSheet(
-        availableCurrencies: availableCurrencies,
-        selectedValue: selected,
-      ),
-    );
-
-    return c;
-  }
-}
-
-class CurrencyBottomSheet extends StatelessWidget {
-  const CurrencyBottomSheet({
-    super.key,
-    required this.availableCurrencies,
-    required this.selectedValue,
-  });
-
-  final List<String> availableCurrencies;
-  final String selectedValue;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.8,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Gap(16),
-          Row(
-            children: [
-              const Gap(16 * 3),
-              const Spacer(),
-              Text(
-                context.loc.settingsCurrencyTitle,
-                style: context.font.headlineMedium?.copyWith(
-                  color: context.appColors.onSurface,
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                iconSize: 20,
-                onPressed: () => Navigator.pop(context),
-                color: context.appColors.onSurface,
-                icon: const Icon(Icons.close),
-              ),
-              const Gap(16),
-            ],
-          ),
-          const Gap(24),
-          Flexible(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: availableCurrencies.length,
-              itemBuilder: (context, index) {
-                final curr = availableCurrencies[index];
-                return InkWell(
-                  onTap: () => Navigator.pop(context, curr),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 24,
-                      horizontal: 40,
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 24,
-                          child: Text(
-                            curr.currencyIcon,
-                            style: context.font.headlineSmall,
-                          ),
-                        ),
-                        const Gap(16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                curr.currencyName,
-                                style: context.font.headlineSmall?.copyWith(
-                                  color: selectedValue == curr
-                                      ? context.appColors.primary
-                                      : context.appColors.onSurface,
-                                ),
-                              ),
-                              const Gap(2),
-                              Text(
-                                curr,
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.appColors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const Gap(24),
-        ],
-      ),
-    );
-  }
-}
-
-extension _CurrencyStrEx on String {
-  String get currencyIcon {
-    switch (this) {
-      case 'USD':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'US',
-        )['flag']!;
-      case 'EUR':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'EU',
-        )['flag']!;
-      case 'CAD':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'CA',
-        )['flag']!;
-      case 'INR':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'IN',
-        )['flag']!;
-      case 'CRC':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'CR',
-        )['flag']!;
-      case 'MXN':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'MX',
-        )['flag']!;
-      case 'ARS':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'AR',
-        )['flag']!;
-      case 'COP':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'CO',
-        )['flag']!;
-      case 'sats':
-      case 'BTC':
-      default:
-        return '₿';
-    }
-  }
-
-  String get currencyName {
-    switch (this) {
-      case 'USD':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'US',
-        )['name']!;
-      case 'EUR':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'EU',
-        )['name']!;
-      case 'CAD':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'CA',
-        )['name']!;
-      case 'CRC':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'CR',
-        )['name']!;
-      case 'MXN':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'MX',
-        )['name']!;
-      case 'ARS':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'AR',
-        )['name']!;
-      case 'COP':
-        return CountryConstants.countries.firstWhere(
-          (element) => element['code'] == 'CO',
-        )['name']!;
-      case 'sats':
-      case 'BTC':
-      default:
-        return this;
-    }
   }
 }

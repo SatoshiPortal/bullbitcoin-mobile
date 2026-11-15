@@ -2099,11 +2099,6 @@
       }
     }
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "सहायता प्राप्त करें",
   "exchangeStatisticsOrderStats": "आदेश सांख्यिकी",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -11224,7 +11219,6 @@
   "settingsSearchLabelsKeywords": "वॉलेट लेबल|लेनदेन लेबल|BIP329|लेबल आयात करें|लेबल निर्यात करें",
   "settingsSearchTransactionHistoryKeywords": "लेनदेन निर्यात करें|लेनदेन इतिहास निर्यात करें|CSV|वॉलेट इतिहास",
   "settingsSearchAppSettingsKeywords": "ऐप प्राथमिकताएँ|एप्लिकेशन सेटिंग्स|सामान्य सेटिंग्स",
-  "settingsSearchBtcMapKeywords": "BTC Map|बिटकॉइन मानचित्र|व्यापारियों का मानचित्र|बिटकॉइन खर्च करने की जगहें",
   "settingsSearchTermsOfServiceKeywords": "नियम और शर्तें|कानूनी|उपयोगकर्ता समझौता|TOS",
   "settingsSearchServicesStatusKeywords": "सेवाओं की स्थिति|सिस्टम की स्थिति|ऑनलाइन|सेवा बाधित",
   "settingsSearchImportWalletKeywords": "वॉलेट जोड़ें|वॉलेट पुनर्प्राप्त करें|रिकवरी वाक्यांश आयात करें|केवल देखने वाला वॉलेट|हार्डवेयर वॉलेट",
@@ -11467,5 +11461,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "यह लेनदेन पहले से ही ब्लॉकचेन में है। प्रसारित करने के लिए कुछ भी बाकी नहीं है।",
   "broadcastSignedTxErrorRejected": "नेटवर्क ने इस लेनदेन को अस्वीकार कर दिया। यह अधूरा हस्ताक्षरित, अमान्य, या किसी अन्य भुगतान से टकराव में हो सकता है।",
   "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
-  "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।"
+  "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।",
+  "settingsDarkModeTitle": "डार्क मोड",
+  "settingsSourceCodeTitle": "सोर्स कोड"
 }

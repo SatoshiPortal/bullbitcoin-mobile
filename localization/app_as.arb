@@ -23,7 +23,6 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
-  "settingsGetHelpLabel": "সহায় লওক",
   "exchangeSupportLoginChatRequired": "মানৱ সহায়তা পাবলৈ, আপুনি প্ৰথমে আপোনাৰ Bull Bitcoin একাউণ্টত লগ ইন কৰিব লাগিব। ই সম্পূৰ্ণ বিনামূলীয়া আৰু কোনো KYC প্ৰয়োজন নাই, কেৱল এটা ইমেইল ঠিকনা।",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -250,7 +249,6 @@
   "settingsAppSettingsTitle": "এপ্প ছেটিংছ",
   "settingsTermsOfServiceTitle": "সেৱাৰ চৰ্তসমূহ",
   "settingsAppVersionLabel": "এপ্প সংস্কৰণ: ",
-  "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "সেৱাৰ স্থিতি",
   "settingsLanguageTitle": "ভাষা",
   "settingsThemeTitle": "থিম",
@@ -8416,7 +8414,6 @@
   "settingsSearchLabelsKeywords": "ৱালেট লেবেল|লেনদেনৰ লেবেল|BIP329|লেবেল আমদানি|লেবেল ৰপ্তানি",
   "settingsSearchTransactionHistoryKeywords": "লেনদেন ৰপ্তানি|লেনদেনৰ ইতিহাস ৰপ্তানি|CSV|ৱালেটৰ ইতিহাস",
   "settingsSearchAppSettingsKeywords": "এপ পছন্দসমূহ|এপ্লিকেশ্যন ছেটিংছ|সাধাৰণ ছেটিংছ",
-  "settingsSearchBtcMapKeywords": "BTC Map|বিটকইন মানচিত্ৰ|ব্যৱসায়ীৰ মানচিত্ৰ|বিটকইন খৰচ কৰাৰ ঠাই",
   "settingsSearchTermsOfServiceKeywords": "চৰ্ত আৰু নিয়মাৱলী|আইনী|ব্যৱহাৰকাৰী চুক্তি|TOS",
   "settingsSearchServicesStatusKeywords": "সেৱাৰ স্বাস্থ্য|চিষ্টেমৰ স্থিতি|অনলাইন|সেৱা বন্ধ",
   "settingsSearchImportWalletKeywords": "ৱালেট যোগ কৰক|ৱালেট পুনৰুদ্ধাৰ|Mnemonic আমদানি|Watch-only ৱালেট|হাৰ্ডৱেৰ ৱালেট",
@@ -8659,5 +8656,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "এই লেনদেনটো ইতিমধ্যে ব্লকচেইনত আছে। সম্প্ৰচাৰ কৰিবলৈ একো বাকী নাই।",
   "broadcastSignedTxErrorRejected": "নেটৱৰ্কে এই লেনদেনটো নাকচ কৰিলে। ই হয়তো সম্পূৰ্ণভাৱে স্বাক্ষৰিত নহয়, অবৈধ, বা আন এটা পৰিশোধৰ সৈতে সংঘাতত আছে।",
   "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
-  "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।"
+  "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।",
+  "settingsDarkModeTitle": "আন্ধাৰ ম'ড",
+  "settingsSourceCodeTitle": "উৎস ক'ড"
 }

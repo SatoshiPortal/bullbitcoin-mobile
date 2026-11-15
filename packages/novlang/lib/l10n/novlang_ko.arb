@@ -230,5 +230,7 @@
   "app__exchangePaymentSentPastDeadline_apple": "결제가 전송되었습니다. Bull Bitcoin은 이 주문의 결제 기한이 만료되었다고 알립니다. 아래 트랜잭션 ID를 보관하고 주문이 업데이트되지 않으면 지원팀에 문의하세요.",
   "app__allSeedViewSwapMnemonicTitle_apple": "이체 니모닉",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "이체 니모닉을 삭제할까요?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "이 작업은 보안 저장소에서 이체 마스터 키를 제거합니다. 앱에서 다시 필요할 때 지갑 시드로부터 동일한 핑거프린트로 다시 파생됩니다. 진행 중인 이체에는 영향이 없습니다."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "이 작업은 보안 저장소에서 이체 마스터 키를 제거합니다. 앱에서 다시 필요할 때 지갑 시드로부터 동일한 핑거프린트로 다시 파생됩니다. 진행 중인 이체에는 영향이 없습니다.",
+  "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "quick_actions__transfer_apple": "Transfer"
 }
