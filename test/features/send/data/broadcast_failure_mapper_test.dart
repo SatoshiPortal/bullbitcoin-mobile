@@ -1,170 +1,59 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/features/send/data/broadcast_failure_mapper.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sync/sync.dart';
 
+// The native causes and the servers' replies are classified in sync
+// (packages/sync/test/chain/broadcast_replies_test.dart); this is the mapping
+// of its closed vocabulary to the categories the screens read.
 void main() {
-  AllElectrumServersFailedException fallback(List<Object> errors) =>
-      AllElectrumServersFailedException([
-        for (final error in errors)
-          ElectrumServerAttempt(
-            url: 'ssl://private.invalid',
-            isCustom: true,
-            error: error,
-          ),
-      ]);
-  final rejected = bdk.ProtocolElectrumException('{"code":-26}');
-  final connection = TimeoutException('private.invalid');
-  final cases = <(Object, BroadcastFailureCategory)>[
-    (rejected, BroadcastFailureCategory.rejected),
+  final cases = <(SyncFailure, BroadcastFailureCategory)>[
+    (const SyncBroadcastRejectedFailure(), BroadcastFailureCategory.rejected),
     (
-      bdk.ProtocolElectrumException(
-        '{"code":2,"message":"sendrawtransaction RPC error -26: refused"}',
-      ),
-      BroadcastFailureCategory.rejected,
+      const SyncAlreadyInChainFailure(),
+      BroadcastFailureCategory.alreadyInChain,
     ),
-    (connection, BroadcastFailureCategory.connection),
+    (const SyncConnectionFailure(), BroadcastFailureCategory.connection),
     (
-      const SocketException('private.invalid'),
-      BroadcastFailureCategory.connection,
-    ),
-    (
-      bdk.SharedIoExceptionElectrumException('private.invalid'),
-      BroadcastFailureCategory.connection,
-    ),
-    (
-      bdk.CouldNotCreateConnectionElectrumException('private.invalid'),
-      BroadcastFailureCategory.connection,
-    ),
-    (
-      bdk.AllAttemptsErroredElectrumException(),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      bdk.ProtocolElectrumException('{"code":-26.0}'),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      bdk.ProtocolElectrumException('{"code":"-26"}'),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      bdk.ProtocolElectrumException(
-        '{"code":2,"message":"prefix sendrawtransaction RPC error -26: refused"}',
-      ),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      bdk.ProtocolElectrumException('{"code":-25,"message":"RPC -26"}'),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      bdk.ProtocolElectrumException('not JSON'),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      bdk.ProtocolElectrumException('{"code":-26,"message":"${'x' * 4096}"}'),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (Exception('{"code":-26}'), BroadcastFailureCategory.unexpected),
-    (
-      const lwk.LwkError(
-        msg: 'ClientError(Protocol(Object {"code": Number(2), "message": String("sendrawtransaction RPC error -26: refused")}))',
-      ),
-      BroadcastFailureCategory.rejected,
-    ),
-    (
-      const lwk.LwkError(msg: 'ClientError(SharedIOError(private.invalid))'),
-      BroadcastFailureCategory.connection,
-    ),
-    (
-      const lwk.LwkError(
-        msg: 'ClientError(Protocol(Object {"code": Number(-25), "message": String("Number(-26)")}))',
-      ),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      const lwk.LwkError(msg: 'Generic("ClientError(IOError(fake))")'),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (
-      const lwk.LwkError(msg: 'ClientError(IOError('),
-      BroadcastFailureCategory.unexpected,
-    ),
-    (fallback([rejected, rejected]), BroadcastFailureCategory.rejected),
-    (fallback([connection, connection]), BroadcastFailureCategory.connection),
-    (fallback([rejected, connection]), BroadcastFailureCategory.unexpected),
-    (fallback([]), BroadcastFailureCategory.unexpected),
-    (fallback(List.filled(65, rejected)), BroadcastFailureCategory.unexpected),
-    (
-      CategorizedBroadcastException(BroadcastFailureCategory.authorization),
+      const SyncUnauthorizedNetworkFailure(),
       BroadcastFailureCategory.authorization,
     ),
+    // Mixed servers and unclassified replies: the transaction may have been
+    // relayed, so it is never read as rejected.
+    (const SyncOutcomeUnknownFailure(), BroadcastFailureCategory.unexpected),
+    (
+      const SyncInvalidTransactionFailure(),
+      BroadcastFailureCategory.unexpected,
+    ),
+    (
+      const SyncUnsupportedNetworkFailure(),
+      BroadcastFailureCategory.unexpected,
+    ),
+    (const SyncBusyFailure(), BroadcastFailureCategory.unexpected),
   ];
-  for (var i = 0; i < cases.length; i++) {
-    final (error, expected) = cases[i];
-    test('bounded classification case $i', () {
-      expect(mapBroadcastFailure(error), expected);
+  for (final (failure, expected) in cases) {
+    test('${failure.logCode} reads ${expected.name}', () {
+      expect(broadcastFailureCategory(failure), expected);
     });
   }
-  group('confirmed transaction (-27)', () {
-    // The `error` value bdk-ffi stringifies from the Electrum reply captured on
-    // electrum.blockstream.info:60002 for a confirmed testnet transaction.
-    final alreadyInChain = bdk.ProtocolElectrumException(
-      '{"code":2,"message":"sendrawtransaction RPC error -27: Transaction outputs already in utxo set"}',
-    );
-    final unexpectedCases = <String, Object>{
-      'non-integer code': bdk.ProtocolElectrumException('{"code":-27.0}'),
-      'shifted prefix': bdk.ProtocolElectrumException(
-        '{"code":2,"message":"prefix sendrawtransaction RPC error -27: x"}',
-      ),
-      'connection then -27': fallback([connection, alreadyInChain]),
-      '-27 then connection': fallback([alreadyInChain, connection]),
-      '-27 then rejected': fallback([alreadyInChain, rejected]),
-    };
 
-    test('the observed Electrum envelope', () {
+  test('a categorized exception keeps its category', () {
+    for (final category in BroadcastFailureCategory.values) {
       expect(
-        mapBroadcastFailure(alreadyInChain),
-        BroadcastFailureCategory.alreadyInChain,
+        mapBroadcastFailure(CategorizedBroadcastException(category)),
+        category,
       );
-    });
-
-    test('a bare -27 code', () {
-      expect(
-        mapBroadcastFailure(bdk.ProtocolElectrumException('{"code":-27}')),
-        BroadcastFailureCategory.alreadyInChain,
-      );
-    });
-
-    test('every fallback server answering -27', () {
-      expect(
-        mapBroadcastFailure(fallback([alreadyInChain, alreadyInChain])),
-        BroadcastFailureCategory.alreadyInChain,
-      );
-    });
-
-    for (final MapEntry(:key, :value) in unexpectedCases.entries) {
-      test('stays unexpected: $key', () {
-        expect(mapBroadcastFailure(value), BroadcastFailureCategory.unexpected);
-      });
     }
   });
 
-  test('deep or cyclic fallback data is bounded', () {
-    Object error = rejected;
-    for (var i = 0; i < 8; i++) {
-      error = fallback([error]);
+  test('anything else is unexpected, whatever its text says', () {
+    for (final error in [
+      Exception('{"code":-26}'),
+      AllElectrumServersFailedException(const []),
+      StateError('sendrawtransaction RPC error -27: '),
+    ]) {
+      expect(mapBroadcastFailure(error), BroadcastFailureCategory.unexpected);
     }
-    expect(mapBroadcastFailure(error), BroadcastFailureCategory.unexpected);
-    final attempts = <ElectrumServerAttempt>[];
-    final cyclic = AllElectrumServersFailedException(attempts);
-    attempts.add(ElectrumServerAttempt(url: '', isCustom: true, error: cyclic));
-    expect(mapBroadcastFailure(cyclic), BroadcastFailureCategory.unexpected);
   });
 }

@@ -1,13 +1,12 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart'
-    show TransactionSyncBusyFailure;
+import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show SyncBusyFailure;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:transaction_sync/transaction_sync.dart' show SyncReason;
+import 'package:sync/sync.dart' show SyncReason;
 
 import 'dart:io';
 
@@ -419,9 +418,7 @@ void main() {
             discover: any(named: 'discover'),
             reason: any(named: 'reason'),
           ),
-        ).thenThrow(
-          const WalletSnapshotException(TransactionSyncBusyFailure()),
-        );
+        ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
         final coordinator = SyncCoordinator(
           getWalletsUsecase: getWallets,
           syncWalletUsecase: single,

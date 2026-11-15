@@ -1,8 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:bitcoin_base/bitcoin_base.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:sync/sync.dart'
+    show DecodedBitcoinTransaction, decodeBitcoinPsbt, decodeBitcoinTransaction;
 
 part 'bitcoin_tx.freezed.dart';
 part 'bitcoin_tx.g.dart';
@@ -29,87 +28,48 @@ class BitcoinTx {
     required this.vout,
   });
 
-  static Future<BitcoinTx> fromBytes(List<int> bytes) async {
-    final bdkTx = bdk.Transaction(transactionBytes: Uint8List.fromList(bytes));
-
-    final txid = bdkTx.computeTxid().toString();
-    final version = bdkTx.version();
-    final vsize = bdkTx.vsize();
-    final size = bdkTx.totalSize();
-    final locktime = bdkTx.lockTime();
-    final inputs = bdkTx.input();
-    final outputs = bdkTx.output();
-
-    // ! iterate instead of map to preserve index order
-    final vout = <TxVout>[];
-    for (var i = 0; i < outputs.length; i++) {
-      final output = outputs[i];
-      vout.add(_mapOutput(output, i));
-    }
-
-    return BitcoinTx(
-      txid: txid,
-      version: version,
-      size: BigInt.from(size),
-      vsize: BigInt.from(vsize),
-      locktime: locktime,
-      vin: inputs.map(_mapInput).toList(),
-      vout: vout,
-    );
-  }
+  /// Throws [FormatException] when [bytes] are not a transaction.
+  static Future<BitcoinTx> fromBytes(List<int> bytes) async =>
+      _fromDecoded(decodeBitcoinTransaction(bytes));
 
   static Future<BitcoinTx> fromPsbt(String psbtBase64) async {
     // BDK extraction needs input metadata to compute fees, so finalized
     // PSBTs stripped of it must fall back to the bitcoin_base path, which
     // does not require that metadata (issue #2654).
     try {
-      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
-      final txBytes = psbt.extractTx().serialize();
-      return await fromBytes(txBytes);
-    } catch (_) {
-      final psbt = Psbt.fromBase64(psbtBase64);
-      final txBytes = PsbtBuilder.fromPsbt(psbt).finalizeAll().toBytes();
-      return fromBytes(txBytes);
+      return _fromDecoded(decodeBitcoinPsbt(psbtBase64));
+    } on FormatException {
+      // Fall through to bitcoin_base.
     }
+    final psbt = Psbt.fromBase64(psbtBase64);
+    final txBytes = PsbtBuilder.fromPsbt(psbt).finalizeAll().toBytes();
+    return fromBytes(txBytes);
   }
 
-  static TxVin _mapInput(bdk.TxIn input) {
-    return TxVin(
-      txid: input.previousOutput.txid.toString(),
-      vout: input.previousOutput.vout,
-      sequence: input.sequence,
-      scriptSig: TxScriptSig(bytes: input.scriptSig.toBytes()),
-    );
-  }
-
-  static TxVout _mapOutput(bdk.TxOut output, int index) {
-    return TxVout(
-      value: BigInt.from(output.value.toSat()),
-      n: index,
-      scriptPubKey: TxScriptSig(bytes: output.scriptPubkey.toBytes()),
-    );
-  }
-
-  Future<int> getAmountReceived({
-    required bool isTestnet,
-    required String address,
-  }) async {
-    int totalAmount = 0;
-    for (final output in vout) {
-      final scriptPubkey = output.scriptPubKey;
-      final outputAddress = bdk.Address.fromScript(
-        script: bdk.Script(
-          rawOutputScript: Uint8List.fromList(scriptPubkey.bytes),
+  static BitcoinTx _fromDecoded(DecodedBitcoinTransaction decoded) => BitcoinTx(
+    txid: decoded.txid,
+    version: decoded.version,
+    size: BigInt.from(decoded.size),
+    vsize: BigInt.from(decoded.vsize),
+    locktime: decoded.locktime,
+    vin: [
+      for (final input in decoded.inputDetails)
+        TxVin(
+          txid: input.outpoint.txId,
+          vout: input.outpoint.vout,
+          sequence: input.sequence,
+          scriptSig: TxScriptSig(bytes: input.scriptSig),
         ),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-      );
-      if (outputAddress.toString() == address) {
-        totalAmount += output.value.toInt();
-      }
-    }
-
-    return totalAmount;
-  }
+    ],
+    vout: [
+      for (final (index, output) in decoded.outputs.indexed)
+        TxVout(
+          value: BigInt.from(output.valueSat),
+          n: index,
+          scriptPubKey: TxScriptSig(bytes: output.scriptPubkey),
+        ),
+    ],
+  );
 }
 
 @freezed

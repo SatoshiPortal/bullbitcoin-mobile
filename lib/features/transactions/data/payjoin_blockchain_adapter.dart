@@ -1,4 +1,13 @@
-import 'package:transaction_sync/write.dart' show bitcoinPsbtTransactionId;
+import 'package:sync/sync.dart'
+    show
+        SyncBusyFailure,
+        SyncClosedFailure,
+        SyncConnectionFailure,
+        SyncInvalidTransactionFailure,
+        SyncNotFoundFailure,
+        SyncProtectedInputsFailure,
+        SyncSpendBlockedFailure,
+        SyncUnsupportedNetworkFailure;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'dart:typed_data';
@@ -13,14 +22,12 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServersPort _servers;
   final WalletFacade _wallet;
-  final String Function(String psbt) _transactionId;
 
   const AppPayjoinBlockchainAdapter(
     this._blockchain,
     this._servers,
-    this._wallet, {
-    this._transactionId = bitcoinPsbtTransactionId,
-  });
+    this._wallet,
+  );
 
   @override
   Future<void> broadcastTransaction({
@@ -32,41 +39,43 @@ final class AppPayjoinBlockchainAdapter implements PayjoinBlockchainPort {
         _blockchain.broadcastTransaction(transaction, connection: connection),
   );
 
+  /// Through `wallet.tx.broadcast`, as session [sessionId]: the only one
+  /// that may spend the inputs it reserved. The guard is held until the
+  /// receipt.
   @override
   Future<void> broadcastPsbt({
     required String walletId,
+    required String sessionId,
     required BitcoinNetwork network,
     required String psbt,
   }) async {
-    // Set on entering the network callback, before any server is contacted:
-    // a failure while it is still false provably sent nothing.
-    var reachedNetwork = false;
-    final Result<BitcoinBroadcastReceipt, WalletSpendFailure> result;
-    try {
-      final txid = _transactionId(psbt);
-      result = await _wallet.broadcastBitcoin(walletId, network, () async {
-        reachedNetwork = true;
-        await _servers.runWithFallback<String>(
-          network: ElectrumServerNetwork.fromNetworkEnv(
-            network.env,
-            isLiquid: false,
-          ),
-          operation: (connection) =>
-              _blockchain.broadcastPsbt(psbt, connection: connection),
-        );
-        return txid;
-      });
-    } catch (_) {
-      // Past the callback the outcome is unknown and stays untyped.
-      if (reachedNetwork) rethrow;
-      throw const PayjoinBroadcastNotAttemptedException();
+    final result = await _wallet.broadcastSpend(
+      walletId,
+      SignedPsbt(psbt),
+      network: network,
+      owner: SpendOwner(protocol: 'payjoin', session: sessionId),
+    );
+    switch (result) {
+      case Ok():
+        // Accepted, durably recorded or not: the guard keeps blocking
+        // further spends meanwhile. Never a failure for the fallback.
+        return;
+      case Err(failure: SyncSpendBlockedFailure()):
+        throw const PayjoinSpendBlockedException();
+      case Err(failure: SyncBusyFailure()):
+        throw const PayjoinSpendBlockedException(busy: true);
+      // Refused before any server was contacted, or no server reachable
+      // before the send: a connection lost after it is an unknown outcome.
+      case Err(failure: SyncConnectionFailure()) ||
+          Err(failure: SyncProtectedInputsFailure()) ||
+          Err(failure: SyncNotFoundFailure()) ||
+          Err(failure: SyncInvalidTransactionFailure()) ||
+          Err(failure: SyncClosedFailure()) ||
+          Err(failure: SyncUnsupportedNetworkFailure()):
+        throw const PayjoinBroadcastNotAttemptedException();
+      // A server may have relayed it: the outcome stays unknown.
+      case Err(:final failure):
+        throw StateError('Payjoin broadcast outcome: ${failure.logCode}');
     }
-    if (result case Err(failure: WalletSpendBlockedFailure(:final status))) {
-      throw PayjoinSpendBlockedException(
-        busy: status == BitcoinSpendStatus.busy,
-      );
-    }
-    // Accepted/local-record-pending remains accepted; the owner blocks further
-    // spends. Never throw a post-accept local failure into the fallback catch.
   }
 }

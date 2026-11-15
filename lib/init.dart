@@ -76,6 +76,7 @@ class Bull {
       () => loadTorDiagnosticContext(settings, locator<Tor>()),
     );
     await refreshReportingConsent(settings);
+    await prepareBackgroundWalletStores(locator);
     await configureBackgroundTasks();
 
     await Report.recordMigration();

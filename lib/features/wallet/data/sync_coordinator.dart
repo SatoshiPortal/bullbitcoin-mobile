@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart'
-    show SyncReason, TransactionSyncBusyFailure;
+import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show SyncReason, SyncBusyFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 
 import 'dart:async';
@@ -49,7 +48,7 @@ export 'package:bb_mobile/features/wallet/domain/sync_outcome.dart';
 /// Background tasks (`lib/background_bootstrap.dart`) intentionally
 /// do **not** use this coordinator — they run in a separate Dart isolate with
 /// a task-specific graph, so the lifecycle gate would actively block them.
-/// They call the writer-backed Electrum path through BackgroundWalletSync.
+/// They call the writer-backed Electrum path through BackgroundWalletSyncPort.
 class SyncCoordinator {
   SyncCoordinator({
     required GetWalletsUsecase getWalletsUsecase,
@@ -451,8 +450,7 @@ class SyncCoordinator {
 
   void _settle(_SyncPass pass, Object? error) {
     final busy =
-        error is WalletSnapshotException &&
-        error.failure is TransactionSyncBusyFailure;
+        error is WalletSnapshotException && error.failure is SyncBusyFailure;
     final walletId = pass.walletId;
     if (walletId != null && pass.isActive == null) {
       _manualPasses.remove(walletId);

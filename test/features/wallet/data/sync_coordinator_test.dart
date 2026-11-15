@@ -1,10 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart'
-    show
-        SyncReason,
-        TransactionSyncBusyFailure,
-        TransactionSyncConnectionFailure;
+import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart'
+    show SyncReason, SyncBusyFailure, SyncConnectionFailure;
 import 'package:bb_mobile/features/wallet/domain/wallet_discovery_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 
@@ -316,7 +313,7 @@ void main() {
         allowInitialScan: any(named: 'allowInitialScan'),
         reason: SyncReason.auto,
       ),
-    ).thenThrow(const WalletSnapshotException(TransactionSyncBusyFailure()));
+    ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
     await coordinator.pollWallet('a', isActive: () => true);
     final lines = (await log.readLogs()).join();
     expect(
@@ -493,9 +490,7 @@ void main() {
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
         ),
-      ).thenThrow(
-        const WalletSnapshotException(TransactionSyncConnectionFailure()),
-      );
+      ).thenThrow(const WalletSnapshotException(SyncConnectionFailure()));
       await expectLater(
         coordinator.sync(only: {SyncKind.bitcoin}),
         throwsA(isA<SyncCoordinatorException>()),
@@ -526,7 +521,7 @@ void main() {
           discover: any(named: 'discover'),
           reason: any(named: 'reason'),
         ),
-      ).thenThrow(const WalletSnapshotException(TransactionSyncBusyFailure()));
+      ).thenThrow(const WalletSnapshotException(SyncBusyFailure()));
       expect(
         await coordinator.discoverWallet(wallet.id),
         isA<Err<void, WalletDiscoveryFailure>>(),

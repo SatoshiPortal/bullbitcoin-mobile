@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+
+import 'data/frozen_utxos_freeze_store.dart';
 import 'data/broadcast_observation_follow_up.dart';
 import 'data/catalog_wallet_secret_references_repository.dart';
 import 'domain/repositories/wallet_secret_references_repository.dart';
@@ -28,13 +31,15 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
@@ -115,8 +120,8 @@ class WalletLocator {
       () => WalletFacade(
         locator<WalletNativeRuntime>().changes,
         spendStatus: locator<WalletNativeRuntime>().spendStatus,
-        broadcastBitcoin: locator<BroadcastObservationFollowUp>().wrap(
-          locator<WalletNativeRuntime>().broadcastBitcoin,
+        broadcastSpend: locator<BroadcastObservationFollowUp>().wrap(
+          locator<WalletNativeRuntime>().broadcast,
         ),
         protectObservedSpend:
             locator<WalletNativeRuntime>().protectObservedSpend,
@@ -141,28 +146,31 @@ class WalletLocator {
       () => WalletNativeRuntime(
         catalog: locator<WalletCatalogPort>(),
         reserved: locator<ReservedAddressPort>(),
+        inputReservations: locator<InputReservationPort>(),
         metadata: locator<WalletMetadataDatasource>(),
         sync: locator<ElectrumSync>(),
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
+        freezes: FrozenUtxosFreezeStore(sqlite: locator<SqliteDatabase>()),
+        connections: locator<WalletConnectionPort>(),
       ),
     );
     locator.registerLazySingleton<BdkWalletDatasource>(
-      () => BdkWalletDatasource(
-        readWallet: locator<WalletNativeRuntime>().bitcoin,
-      ),
+      () => BdkWalletDatasource(wallet: locator<WalletNativeRuntime>().wallet),
     );
     locator.registerLazySingleton<LwkWalletDatasource>(
-      () => LwkWalletDatasource(
-        readWallet: locator<WalletNativeRuntime>().liquid,
+      () => LwkWalletDatasource(wallet: locator<WalletNativeRuntime>().wallet),
+    );
+    locator.registerLazySingleton<SyncWalletValuesDatasource>(
+      () => SyncWalletValuesDatasource(
+        load: locator<WalletNativeRuntime>().loadWallet,
       ),
     );
     locator.registerLazySingleton<WalletAddressRepository>(
       () => WalletAddressRepository(
         native: locator<WalletNativeRuntime>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );
@@ -173,9 +181,10 @@ class WalletLocator {
     locator.registerLazySingleton<ElectrumSync>(
       () => ElectrumSync(
         readRevision: (key) => locator<WalletNativeRuntime>().readRevision(key),
-        connections: locator<WalletConnectionPolicy>(),
+        connections: locator<WalletConnectionPort>(),
+        collectIncoming: backgroundSyncAvailable,
         onCompletion: backgroundSyncAvailable
-            ? locator<WalletPaymentObserver>().record
+            ? locator<WalletPaymentObserver>().recordCompletion
             : null,
         documentsDirectory: () async =>
             (await getApplicationDocumentsDirectory()).path,
@@ -190,9 +199,9 @@ class WalletLocator {
         dispose: (store) => store.close(),
       );
       locator.registerLazySingleton<WalletPaymentObserver>(
-        () => WalletPaymentObserver(
+        () => WalletPaymentObserver.foreground(
           locator<PaymentNotificationStore>().open,
-          () =>
+          isForeground: () =>
               WidgetsBinding.instance.lifecycleState ==
               AppLifecycleState.resumed,
         ),
@@ -211,6 +220,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: sync.synchronize,
         isSyncing: sync.isSyncing,
         syncStarted: sync.started,
@@ -222,8 +232,7 @@ class WalletLocator {
       () => WalletTransactionRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
-        bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronize: locator<ForegroundWalletSync>().synchronize,
       ),
     );

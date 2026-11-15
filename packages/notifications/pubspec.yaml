@@ -1,5 +1,5 @@
 name: notifications
-description: Generic local notification outbox and deferred destination delivery.
+description: Local notifications with a durable store of observed events and pending aggregates.
 publish_to: "none"
 version: 0.1.0
 resolution: workspace
@@ -14,8 +14,6 @@ dependencies:
   meta: ^1.17.0
   bull_logger:
   primitives:
-  transaction_sync:
-  crypto: ^3.0.7
   sqlite3: ^3.5.2
   flutter_local_notifications: ^23.0.2
   permission_handler: ^13.0.2

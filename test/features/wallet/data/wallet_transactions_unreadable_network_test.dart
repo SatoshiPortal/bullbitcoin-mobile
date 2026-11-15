@@ -1,8 +1,7 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -14,9 +13,7 @@ class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Labels extends Mock implements LabelsFacade {}
 
-class _Bdk extends Mock implements BdkWalletDatasource {}
-
-class _Lwk extends Mock implements LwkWalletDatasource {}
+class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 WalletMetadataModel _row(String id, String networkCode) => WalletMetadataModel(
   networkCode: networkCode,
@@ -40,13 +37,13 @@ void main() {
   setUpAll(() => registerFallbackValue(WalletModel.fromMetadata(readable)));
 
   late _Metadata metadata;
-  late _Bdk bdk;
+  late _Values bdk;
   late List<WalletMetadataModel> synchronized;
   late WalletTransactionRepositoryImpl repository;
 
   setUp(() {
     metadata = _Metadata();
-    bdk = _Bdk();
+    bdk = _Values();
     synchronized = [];
     when(
       () => bdk.getTransactions(
@@ -57,8 +54,7 @@ void main() {
     repository = WalletTransactionRepositoryImpl(
       walletMetadataDatasource: metadata,
       labelsFacade: _Labels(),
-      bdkWalletTransactionDatasource: bdk,
-      lwkWalletTransactionDatasource: _Lwk(),
+      walletValuesDatasource: bdk,
       synchronize: (row) async => synchronized.add(row),
     );
   });

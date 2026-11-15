@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/labels/locator.dart';
+import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 
 import 'dart:io';
 
@@ -68,6 +69,13 @@ void main() {
       WalletLocator.registerRepositories(services);
       WalletLocator.registerUsecases(services);
       LabelsLocator.registerPorts(services);
+      // Wallet's native runtime requires the Payjoin owner's reservation port.
+      PayjoinSetup.setup(
+        services,
+        database,
+        '${directory.path}/payjoin.sqlite',
+        startRecovery: false,
+      );
       ElectrumSettingsLocator.setup(services);
       wallet.WalletLocator.setup(services);
 

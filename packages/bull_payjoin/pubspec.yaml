@@ -9,11 +9,6 @@ environment:
 resolution: workspace
 
 dependencies:
-  bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 8f0c9ca84745b08f673324259f49c9aa346f17c8
-      path: packages/bull_sdk
   crypto: ^3.0.7
   dio: ^5.9.0
   drift: ^2.35.4
@@ -26,6 +21,7 @@ dependencies:
   synchronized: ^3.4.0
 
 dev_dependencies:
+  bitcoin_base: ^7.0.0
   build_runner: ^2.7.1
   drift_dev: ^2.35.3
   fake_async: ^1.3.3

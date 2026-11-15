@@ -109,10 +109,11 @@ void main() {
           final pset = invocation.namedArguments[#pset] as String;
           return 'signed-$pset';
         });
-        when(() => broadcast.execute(any())).thenAnswer((invocation) async {
-          final signed = invocation.positionalArguments.first as String;
-          return 'txid-$signed';
-        });
+        when(() => broadcast.execute(any(), walletId: any(named: 'walletId')))
+            .thenAnswer((invocation) async {
+              final signed = invocation.positionalArguments.first as String;
+              return 'txid-$signed';
+            });
 
         final txids = await usecase.broadcast(
           walletId: walletId,
@@ -140,7 +141,9 @@ void main() {
         () => usecase.broadcast(walletId: walletId, unsignedPsets: ['pset-1']),
         throwsA(isA<ConsolidationException>()),
       );
-      verifyNever(() => broadcast.execute(any()));
+      verifyNever(
+        () => broadcast.execute(any(), walletId: any(named: 'walletId')),
+      );
     });
 
     test('wraps a broadcast failure in a ConsolidationException with an empty '
@@ -151,7 +154,7 @@ void main() {
           walletId: any(named: 'walletId'),
         ),
       ).thenAnswer((_) async => 'signed');
-      when(() => broadcast.execute(any()))
+      when(() => broadcast.execute(any(), walletId: any(named: 'walletId')))
           .thenThrow(Exception('broadcast rejected'));
 
       await expectLater(
@@ -173,13 +176,14 @@ void main() {
         final pset = invocation.namedArguments[#pset] as String;
         return 'signed-$pset';
       });
-      when(() => broadcast.execute(any())).thenAnswer((invocation) async {
-        final signed = invocation.positionalArguments.first as String;
-        if (signed == 'signed-pset-2') {
-          throw Exception('node unreachable');
-        }
-        return 'txid-$signed';
-      });
+      when(() => broadcast.execute(any(), walletId: any(named: 'walletId')))
+          .thenAnswer((invocation) async {
+            final signed = invocation.positionalArguments.first as String;
+            if (signed == 'signed-pset-2') {
+              throw Exception('node unreachable');
+            }
+            return 'txid-$signed';
+          });
 
       try {
         await usecase.broadcast(

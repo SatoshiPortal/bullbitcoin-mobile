@@ -1,10 +1,12 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+
 import 'data/wallet_native_runtime.dart';
 
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
@@ -37,19 +39,20 @@ class WalletLocator {
       () => WalletMetadataDatasource(sqlite: locator<SqliteDatabase>()),
     );
 
-    locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
-      () => FrozenWalletUtxoDatasource(db: locator<SqliteDatabase>()),
+    locator.registerLazySingleton<SyncFreezesDatasource>(
+      () => SyncFreezesDatasource(
+        sync: () => locator<WalletNativeRuntime>().foreground(),
+      ),
     );
   }
 
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
-        requireSpend: locator<WalletNativeRuntime>().requireSpend,
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         secrets: locator<Secrets>(),
-        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
       ),
     );
 
@@ -58,16 +61,16 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         secrets: locator<Secrets>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
+        freezesDatasource: locator<SyncFreezesDatasource>(),
       ),
     );
 
     locator.registerLazySingleton<WalletUtxoRepository>(
       () => WalletUtxoRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        bdkWalletDatasource: locator<BdkWalletDatasource>(),
-        lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
+        walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
+        freezesDatasource: locator<SyncFreezesDatasource>(),
         labelsFacade: locator<LabelsFacade>(),
       ),
     );
