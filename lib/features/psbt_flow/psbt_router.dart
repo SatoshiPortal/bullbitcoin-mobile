@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/features/psbt_flow/show_psbt/show_psbt_screen.dart';
@@ -17,11 +17,13 @@ class PsbtRouterConfig {
     name: PsbtFlowRoutes.show.name,
     path: PsbtFlowRoutes.show.path,
     builder: (context, state) {
-      if (state.extra case (
-        psbt: final String psbt,
-        signerDevice: final SignerDeviceEntity? signerDevice,
-        wallet: final Wallet? wallet,
-      ) when psbt.isNotEmpty) {
+      if (state.extra
+          case (
+            psbt: final String psbt,
+            signerDevice: final SignerDeviceEntity? signerDevice,
+            wallet: final Wallet? wallet,
+          )
+          when psbt.isNotEmpty) {
         return ShowPsbtScreen(
           psbt: psbt,
           signerDevice: signerDevice,

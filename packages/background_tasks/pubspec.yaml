@@ -5,21 +5,20 @@ version: 0.1.0
 resolution: workspace
 
 environment:
-  sdk: "3.12.2"
-  flutter: "3.44.9"
+  sdk: "3.14.0"
+  flutter: "3.50.0"
 
 dependencies:
   flutter:
     sdk: flutter
   workmanager: ^0.10.10
   shared_preferences: ^2.3.0
-  transaction_sync:
-  notifications:
+  sync:
   bull_logger:
   crypto: ^3.0.7
   meta: ^1.17.0
   primitives:
-  sqlite3: ^2.9.4
+  sqlite3: ^3.5.2
 
 dev_dependencies:
   shared_preferences_platform_interface: ^2.4.2

@@ -27,9 +27,8 @@ void main() {
   test(
     'emits true when the use-case reports consolidation is required',
     () async {
-      when(
-        () => check.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => true);
+      when(() => check.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => true);
 
       await cubit.reload();
 
@@ -38,9 +37,8 @@ void main() {
   );
 
   test('emits false when consolidation is not required', () async {
-    when(
-      () => check.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => false);
+    when(() => check.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => false);
 
     await cubit.reload();
 
@@ -50,15 +48,13 @@ void main() {
   test(
     'keeps the last known value (best-effort) when the use-case throws',
     () async {
-      when(
-        () => check.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => true);
+      when(() => check.execute(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => true);
       await cubit.reload();
       expect(cubit.state, isTrue);
 
-      when(
-        () => check.execute(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('read failed'));
+      when(() => check.execute(walletId: any(named: 'walletId')))
+          .thenThrow(Exception('read failed'));
       await cubit.reload();
 
       expect(cubit.state, isTrue);
@@ -66,9 +62,8 @@ void main() {
   );
 
   test('does not emit after being closed', () async {
-    when(
-      () => check.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => true);
+    when(() => check.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => true);
 
     await cubit.close();
     await cubit.reload();

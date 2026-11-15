@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/send/public/send_facade.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
@@ -40,9 +41,8 @@ void main() {
               network: Network.bitcoinTestnet,
             ),
           ).thenAnswer((_) => broadcast.future);
-          when(
-            () => liquid.execute('signed'),
-          ).thenAnswer((_) => broadcast.future);
+          when(() => liquid.execute('signed'))
+              .thenAnswer((_) => broadcast.future);
           final usecase = BroadcastSellPayinUsecase(
             wallet: facade,
             send: SendFacade(bitcoin: bitcoin.execute, liquid: liquid.execute),

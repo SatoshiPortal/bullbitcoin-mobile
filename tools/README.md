@@ -57,4 +57,18 @@ After any write command (`add`, `set`, `set-meta`, `rename`, `delete`), run
 the key set or a generated string. Run `fvm dart run tools/arb.dart help` for the
 full reference.
 
+`arb.dart` only reads `localization/app_*.arb`. The store-vocabulary overrides
+live in `packages/novlang/lib/l10n/novlang_<lang>.arb` and are validated by
+`cd packages/novlang && fvm flutter test` (manifest keys, the 27 languages,
+placeholders, no word the store forbids). `tools/novlang_bridge.dart` generates
+the override classes from the manifest; `make translations` runs it, or run
+`fvm dart tools/novlang_bridge.dart` after `gen-l10n` (use `dart <file>`, not
+`dart run`, which would build the app's native hooks).
+
 > First run is slow (cold package build hooks); subsequent runs are sub-second.
+
+## Launcher icons
+
+Run `make app-icons` from the repository root to regenerate the configured Android and iOS launcher icons. Configuration remains in the root `pubspec.yaml`, and asset and output paths remain relative to the app root. `make app-icons ICON_ARGS=--help` prints the upstream CLI help. `make app-icons-check` resolves the tool lockfile, analyzes the tool and checks CLI loading without regenerating assets.
+
+The generator is isolated in `tools/app_icons` because its `cli_util ^0.4.1` conflicts with Melos 8. Its exact version and independent lockfile preserve reproducibility without overriding either tool's constraints; it is not a workspace member or an app dependency.

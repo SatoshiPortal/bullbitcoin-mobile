@@ -46,6 +46,7 @@ final class CreateAndStoreVaultUsecase {
     required KeyServerRepository server,
     required VaultProvider provider,
     required String password,
+    bool passphraseWarningAccepted = false,
   }) async {
     if (_closed) return const Err(VaultCancelledFailure());
     if (_busy || hasPendingProviderSave) {
@@ -54,7 +55,9 @@ final class CreateAndStoreVaultUsecase {
     _busy = true;
     try {
       final ({EncryptedVault vault, VaultContext context, Uri server}) pending;
-      final created = await _create.execute();
+      final created = await _create.execute(
+        passphraseWarningAccepted: passphraseWarningAccepted,
+      );
       if (_closed) return const Err(VaultCancelledFailure());
       switch (created) {
         case Err(:final failure):

@@ -42,9 +42,9 @@ final class RecoverBullBackup {
   /// The index is random rather than sequential so two backups of the
   /// same wallet do not share a key, and so a leaked key reveals nothing
   /// about the others.
-  String newDerivationPath() => Bip85HardenedPath(
-    "${_application.number}'/0'/${_randomIndex()}'",
-  ).toString();
+  String newDerivationPath() =>
+      Bip85HardenedPath("${_application.number}'/0'/${_randomIndex()}'")
+          .toString();
 
   /// The 32-byte backup key for [path], as hex.
   String backupKey({required String masterXprv, required String path}) {
@@ -54,6 +54,26 @@ final class RecoverBullBackup {
       path: _pathSuffix(path),
     );
     return convert.hex.encode(derived.sublist(0, 32));
+  }
+
+  /// Validates the historical and current path spellings in a vault file.
+  String derivationPath(String file) {
+    final Object? decoded;
+    try {
+      decoded = json.decode(file);
+    } on FormatException {
+      throw const InvalidVault('file is not a RecoverBull vault');
+    }
+    final path = decoded is Map<String, dynamic> ? decoded[_kPath] : null;
+    if (path is! String ||
+        !RegExp(r"^(?:m/)?1608'/0'/[0-9]+'?$").hasMatch(path)) {
+      throw const InvalidVault('vault derivation path is invalid');
+    }
+    final index = int.tryParse(path.split('/').last.replaceAll("'", ''));
+    if (index == null || index > 0x7fffffff) {
+      throw const InvalidVault('vault derivation path is invalid');
+    }
+    return path;
   }
 
   /// Seals [words] together with [metadata] under [backupKey].

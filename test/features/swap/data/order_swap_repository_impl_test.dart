@@ -203,9 +203,8 @@ void main() {
         fallbackAddress: 'fallback',
       ),
     ).thenAnswer((_) async => _orderModel());
-    when(
-      () => mainnetRemote.getOrderSwapSummary('order-1'),
-    ).thenAnswer((_) async => _orderModel());
+    when(() => mainnetRemote.getOrderSwapSummary('order-1'))
+        .thenAnswer((_) async => _orderModel());
 
     final created = await repository.createOrder(
       amountSat: BigInt.from(1000),
@@ -903,9 +902,8 @@ void main() {
           fallbackAddress: 'fallback',
         ),
       ).thenAnswer((_) async => _orderModel());
-      when(
-        () => remote.getOrderSwapSummary('order-1'),
-      ).thenAnswer((_) async => _orderModel());
+      when(() => remote.getOrderSwapSummary('order-1'))
+          .thenAnswer((_) async => _orderModel());
       await _create(repository);
       now = DateTime.utc(2026, 8, 5, 12, 6);
 
@@ -935,9 +933,8 @@ void main() {
       ('Rejected', OrderSwapLocalStatus.failed),
       ('Canceled', OrderSwapLocalStatus.failed),
     ]) {
-      when(
-        () => remote.getOrderSwapSummary('order-1'),
-      ).thenAnswer((_) async => _orderModel(orderStatus: serverStatus));
+      when(() => remote.getOrderSwapSummary('order-1'))
+          .thenAnswer((_) async => _orderModel(orderStatus: serverStatus));
       await (database.update(
         database.orderSwaps,
       )..where((table) => table.localId.equals('local-1'))).write(
@@ -1004,9 +1001,8 @@ void main() {
       isPsbt: false,
     );
     final summary = Completer<OrderSwapModel>();
-    when(
-      () => remote.getOrderSwapSummary('order-1'),
-    ).thenAnswer((_) => summary.future);
+    when(() => remote.getOrderSwapSummary('order-1'))
+        .thenAnswer((_) => summary.future);
 
     final refresh = repository.refreshOrder('local-1');
     await untilCalled(() => remote.getOrderSwapSummary('order-1'));
@@ -1173,9 +1169,8 @@ void main() {
     // The settled payin amount deviates far beyond the original quote
     // tolerance (>1%), but this is a legitimate mutable settlement update
     // reported on refresh, not a new quote to validate.
-    when(
-      () => remote.getOrderSwapSummary('order-1'),
-    ).thenAnswer((_) async => _orderModel(payinAmount: '0.00010000'));
+    when(() => remote.getOrderSwapSummary('order-1'))
+        .thenAnswer((_) async => _orderModel(payinAmount: '0.00010000'));
 
     final result = await repository.refreshOrder('local-1');
 

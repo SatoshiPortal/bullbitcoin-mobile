@@ -8,8 +8,8 @@ import 'dart:typed_data';
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/domain/payjoin_ports.dart'
-    show PayjoinLogCode, PayjoinLogRole;
-import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
+    show PayjoinCodecPort, PayjoinLogCode, PayjoinLogRole;
+import 'package:bull_payjoin/src/engine/payjoin_ownership.dart';
 import 'package:bull_payjoin/src/engine/directory_poller.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' show Payjoin;
 import 'package:bull_payjoin/src/engine/payjoin_constants.dart';
@@ -28,18 +28,18 @@ import 'package:primitives/primitives.dart' show Outpoint;
 /// `fetchOhttpKeys`, which is the default implementation used in production;
 /// tests can inject a fake to exercise the relay fallback logic offline.
 /// [timeout] bounds each of the dependency's three HTTP stages.
-typedef OhttpKeysFetcher =
-    Future<OhttpKeys> Function({
-      required String ohttpRelayUrl,
-      required String directoryUrl,
-      required Duration timeout,
-    });
+typedef OhttpKeysFetcher = Future<OhttpKeys> Function({
+  required String ohttpRelayUrl,
+  required String directoryUrl,
+  required Duration timeout,
+});
 
 class PdkPayjoinDatasource {
   final List<core.Uri> _servers;
   final Random _random;
   final Dio _dio;
   final logger.PayjoinLogger _log;
+  final PayjoinCodecPort _codec;
   final OhttpKeysFetcher _fetchOhttpKeys;
   final StreamController<PayjoinReceiverModel> _payjoinRequestedController;
   final StreamController<PayjoinSenderModel> _proposalSentController;
@@ -91,6 +91,7 @@ class PdkPayjoinDatasource {
     Random? random,
     required this._dio,
     required this._log,
+    required this._codec,
     OhttpKeysFetcher ohttpKeysFetcher = fetchOhttpKeys,
     this._now = DateTime.now,
   }) : _servers = servers ?? PayjoinConstants.serverUrls,
@@ -358,20 +359,18 @@ class PdkPayjoinDatasource {
       final id = sha256.convert(utf8.encode(pjUri)).toString().substring(0, 16);
 
       // Create and store the model to keep track of the payjoin session
-      final model =
-          PayjoinModel.receiver(
-                id: id,
-                address: address,
-                isTestnet: isTestnet,
-                receiver: persister.toJson(),
-                walletId: walletId,
-                pjUri: pjUri,
-                maxFeeRateSatPerVb: maxFeeRateSatPerVb,
-                createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-                expireAfterSec: expireAfterSec,
-                isTrade: isTrade,
-              )
-              as PayjoinReceiverModel;
+      final model = PayjoinModel.receiver(
+        id: id,
+        address: address,
+        isTestnet: isTestnet,
+        receiver: persister.toJson(),
+        walletId: walletId,
+        pjUri: pjUri,
+        maxFeeRateSatPerVb: maxFeeRateSatPerVb,
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        expireAfterSec: expireAfterSec,
+        isTrade: isTrade,
+      ) as PayjoinReceiverModel;
 
       // The directory poll is not started here: the engine arms it once the
       // session row is persisted and the policy re-check has passed, the way
@@ -419,19 +418,17 @@ class PdkPayjoinDatasource {
 
     // Create the model with the data needed to keep track of the payjoin
     // session BEFORE publishing anything.
-    final model =
-        PayjoinModel.sender(
-              uri: parsedUri.asString(),
-              isTestnet: isTestnet,
-              sender: persister.toJson(),
-              walletId: walletId,
-              originalPsbt: originalPsbt,
-              originalTxId: (await BitcoinTx.fromPsbt(originalPsbt)).txid,
-              amountSat: amountSat,
-              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-              expireAfterSec: expirySec,
-            )
-            as PayjoinSenderModel;
+    final model = PayjoinModel.sender(
+      uri: parsedUri.asString(),
+      isTestnet: isTestnet,
+      sender: persister.toJson(),
+      walletId: walletId,
+      originalPsbt: originalPsbt,
+      originalTxId: _codec.decodePsbt(originalPsbt).txid,
+      amountSat: amountSat,
+      createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      expireAfterSec: expirySec,
+    ) as PayjoinSenderModel;
 
     // Write-ahead: the caller persists the session row here, before the
     // signed original reaches the directory. A crash after the POST with no
@@ -526,7 +523,7 @@ class PdkPayjoinDatasource {
     final updatedModel = receiverModel.copyWith(
       receiver: persister.toJson(),
       proposalPsbt: proposalPsbt,
-      txId: (await BitcoinTx.fromPsbt(proposalPsbt)).txid,
+      txId: _codec.decodePsbt(proposalPsbt).txid,
     );
 
     _log.fine(
@@ -998,8 +995,10 @@ class PdkPayjoinDatasource {
         persister: persister,
       );
       final originalTxBytes = maybeInputsOwned.extractTxToScheduleBroadcast();
-      final originalTx = await BitcoinTx.fromBytes(originalTxBytes);
-      final amountSat = await originalTx.getAmountReceived(
+      final originalTx = _codec.decodeTransaction(originalTxBytes);
+      final amountSat = amountReceived(
+        originalTx,
+        codec: _codec,
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
       );
@@ -1085,7 +1084,7 @@ class PdkPayjoinDatasource {
         return const DirectoryPollResult(DirectoryPollOutcome.empty);
       }
 
-      final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+      final txId = _codec.decodePsbt(proposalPsbt).txid;
       _pollRecovered(senderModel, PayjoinLogRole.sender);
       return DirectoryPollResult.found(
         senderModel.copyWith(
@@ -1277,7 +1276,7 @@ class _IsScriptOwned implements IsScriptOwned {
 ///
 /// The crate hands an OutPoint rather than a script precisely so the answer
 /// cannot be steered by the sender's PSBT — see
-/// PayjoinWalletPort.createOutpointOwnershipChecker.
+/// PayjoinWalletOwnership.ownsOutpoint.
 class _IsInputOwned implements IsInputOwned {
   final bool Function(Outpoint) _fn;
   _IsInputOwned(this._fn);

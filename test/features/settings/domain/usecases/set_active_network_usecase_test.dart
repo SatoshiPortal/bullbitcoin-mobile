@@ -49,9 +49,8 @@ void main() {
               isDevModeEnabled: developer,
             ),
           );
-          when(
-            () => repository.setEnvironment(environment),
-          ).thenAnswer((_) async => const Ok(null));
+          when(() => repository.setEnvironment(environment))
+              .thenAnswer((_) async => const Ok(null));
           final result = await usecase.execute(network);
           expect(
             result is Ok<void, SettingsFailure>,
@@ -72,9 +71,8 @@ void main() {
   }
 
   test('mainnet return does not require developer flags', () async {
-    when(
-      () => repository.setEnvironment(Environment.mainnet),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.setEnvironment(Environment.mainnet))
+        .thenAnswer((_) async => const Ok(null));
     expect(
       await usecase.execute(NetworkEnv.mainnet),
       isA<Ok<void, SettingsFailure>>(),

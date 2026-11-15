@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:sync/sync.dart' show Keychain, bitcoinPublicDescriptor;
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 import 'package:secrets/secrets.dart';
@@ -51,9 +51,8 @@ class WalletMetadataService {
     String account,
   })
   decodeOrigin({required String origin}) {
-    final match = RegExp(
-      r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
-    ).firstMatch(origin);
+    final match = RegExp(r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]')
+        .firstMatch(origin);
 
     if (match == null) throw 'Invalid origin format';
 
@@ -107,9 +106,9 @@ class WalletMetadataService {
   /// deliberately remains unattributed between testnet and regtest here.
   static String canonicalBip329Origin(String keyOrigin) {
     final derivation = parseOrigin(origin: keyOrigin);
-    final coinType = RegExp(
-      r'\[[a-fA-F0-9]+/\d+h/(\d+h)/\d+h\]',
-    ).firstMatch(keyOrigin)?.group(1);
+    final coinType = RegExp(r'\[[a-fA-F0-9]+/\d+h/(\d+h)/\d+h\]')
+        .firstMatch(keyOrigin)
+        ?.group(1);
     if (coinType != '0h' && coinType != '1h' && coinType != '1776h') {
       throw const FormatException('Unsupported derivation coin type');
     }
@@ -151,9 +150,8 @@ class WalletMetadataService {
   static ({String fingerprint, ScriptType script, String account}) parseOrigin({
     required String origin,
   }) {
-    final match = RegExp(
-      r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
-    ).firstMatch(origin);
+    final match = RegExp(r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]')
+        .firstMatch(origin);
     final fingerprint = match?.group(1);
     final purpose = match?.group(2);
     final account = match?.group(4);
@@ -265,29 +263,23 @@ class WalletMetadataService {
     );
     final pubkeyFingerprint = bip32Xpub.fingerprintHex;
 
-    final descriptor =
-        await _DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
-          xpubBase58,
-          fingerprint: pubkeyFingerprint,
-          scriptType: scriptType,
-          isTestnet: switch (network) {
-            Network.bitcoinMainnet => false,
-            Network.bitcoinTestnet || Network.bitcoinRegtest => true,
-            _ => throw const FormatException('Unsupported xpub network'),
-          },
-        );
-    final changeDescriptor =
-        await _DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
-          xpubBase58,
-          fingerprint: pubkeyFingerprint,
-          scriptType: scriptType,
-          isTestnet: switch (network) {
-            Network.bitcoinMainnet => false,
-            Network.bitcoinTestnet || Network.bitcoinRegtest => true,
-            _ => throw const FormatException('Unsupported xpub network'),
-          },
-          isInternalKeychain: true,
-        );
+    if (network != Network.bitcoinMainnet &&
+        network != Network.bitcoinTestnet &&
+        network != Network.bitcoinRegtest) {
+      throw const FormatException('Unsupported xpub network');
+    }
+    String derive(Keychain keychain) => switch (bitcoinPublicDescriptor(
+      xpub: xpubBase58,
+      fingerprint: pubkeyFingerprint,
+      scriptType: scriptType.shared,
+      keychain: keychain,
+      network: network.bitcoin,
+    )) {
+      Ok(:final value) => value,
+      Err() => throw const FormatException('Invalid account key'),
+    };
+    final descriptor = derive(Keychain.external);
+    final changeDescriptor = derive(Keychain.internal);
 
     return WalletMetadataModel(
       networkCode: WalletNetworkCodec.encode(network),
@@ -340,48 +332,4 @@ class WalletMetadataService {
 
 class MnemonicSeedNeededException extends BullException {
   MnemonicSeedNeededException(super.message);
-}
-
-class _DescriptorDerivation {
-  static Future<String> deriveBitcoinDescriptorFromXpub(
-    String xpub, {
-    required String fingerprint,
-    required ScriptType scriptType,
-    required bool isTestnet,
-    bool isInternalKeychain = false,
-  }) async {
-    final publicKey = bdk.DescriptorPublicKey.fromString(publicKey: xpub);
-    final networkKind = isTestnet ? bdk.NetworkKind.test : bdk.NetworkKind.main;
-    final keychain = isInternalKeychain
-        ? bdk.KeychainKind.internal
-        : bdk.KeychainKind.external_;
-
-    bdk.Descriptor descriptor;
-
-    switch (scriptType) {
-      case ScriptType.bip84:
-        descriptor = bdk.Descriptor.newBip84Public(
-          publicKey: publicKey,
-          fingerprint: fingerprint,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip49:
-        descriptor = bdk.Descriptor.newBip49Public(
-          publicKey: publicKey,
-          fingerprint: fingerprint,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        );
-      case ScriptType.bip44:
-        descriptor = bdk.Descriptor.newBip44Public(
-          publicKey: publicKey,
-          fingerprint: fingerprint,
-          keychainKind: keychain,
-          networkKind: networkKind,
-        );
-    }
-
-    return descriptor.toString();
-  }
 }

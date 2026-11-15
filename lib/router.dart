@@ -1,11 +1,11 @@
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
+import 'package:bb_mobile/features/support/public/support_facade.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
-import 'package:primitives/primitives.dart' show NetworkCapability;
-import 'dart:io';
 
-import 'package:bb_mobile/core/screens/route_error_screen.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/announcements/presentation/announcements_cubit.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
@@ -51,7 +51,7 @@ import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -71,10 +71,45 @@ class AppRouter {
     onHomeRefresh: () => locator<LimitOrdersFacade>().refreshDashboard(),
     onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
     onOpenSettings: (context) => context.pushNamed(SettingsRoute.settings.name),
+    onAction: (context, action) => _openQuickAction(context, switch (action) {
+      ExchangeHomeAction.buy => QuickAction.buy,
+      ExchangeHomeAction.sell => QuickAction.sell,
+      ExchangeHomeAction.pay => QuickAction.pay,
+      ExchangeHomeAction.transfer => QuickAction.transfer,
+    }),
   );
+
+  static void _openQuickAction(BuildContext context, QuickAction action) {
+    switch (action) {
+      case QuickAction.map:
+        context.pushNamed(SettingsRoute.btcMap.name);
+      case QuickAction.transfer:
+        context.pushNamed(SwapRoute.swap.name);
+      case QuickAction.history:
+        context.pushNamed(TransactionsRoute.transactions.name);
+      case QuickAction.settings:
+        context.pushNamed(SettingsRoute.settings.name);
+      case QuickAction.support:
+        SupportFacade.contactSupport(context);
+      case QuickAction.priceHistory:
+        context.pushNamed(SettingsRoute.priceHistory.name);
+      case QuickAction.buy:
+        context.pushNamed(BuyRoute.buy.name);
+      case QuickAction.sell:
+        context.pushNamed(SellRoute.sell.name);
+      case QuickAction.pay:
+        context.pushNamed(PayRoute.pay.name);
+      case QuickAction.exchange:
+        context.pushNamed(ExchangeRoute.exchangeHome.name);
+    }
+  }
 
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
+    onEnter: ExchangeTradingGuard(
+      locator<ExchangeFacade>(),
+      rootNavigatorKey,
+    ).onEnter,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
@@ -126,57 +161,6 @@ class AppRouter {
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
-                  bottomNavigationBar: NetworkCapabilityVisibility(
-                    capability: NetworkCapability.exchange,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        BottomNavigationBar(
-                          currentIndex: tabIndex,
-                          onTap: (index) {
-                            if (index == 0) {
-                              context.goNamed(WalletRoute.walletHome.name);
-                            } else {
-                              // Exchange tab
-                              if (Platform.isIOS) {
-                                final isSuperuser =
-                                    context
-                                        .read<SettingsCubit>()
-                                        .state
-                                        .isSuperuser ??
-                                    false;
-                                if (isSuperuser) {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeHome.name,
-                                  );
-                                } else {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeLanding.name,
-                                  );
-                                }
-                              } else {
-                                context.goNamed(
-                                  ExchangeRoute.exchangeHome.name,
-                                );
-                              }
-                            }
-                          },
-                          items: [
-                            BottomNavigationBarItem(
-                              icon: const Icon(Icons.currency_bitcoin),
-                              label: context.loc.navigationTabWallet,
-                              backgroundColor: context.appColors.background,
-                            ),
-                            BottomNavigationBarItem(
-                              icon: const Icon(Icons.attach_money),
-                              label: context.loc.navigationTabExchange,
-                              backgroundColor: context.appColors.background,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
@@ -184,11 +168,16 @@ class AppRouter {
         },
         routes: [
           WalletRouter.walletHomeRoute(
+            quickActions: locator<QuickActionsCubit>(),
+            onQuickAction: _openQuickAction,
+            onCustomizeQuickActions: (context) =>
+                context.pushNamed(SettingsRoute.quickActions.name),
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
       ),
+      ExchangeRouter.authRoute(_exchangeConfig),
       ExchangeRouter.supportChatRoute(_exchangeConfig),
       OnboardingRouter.route,
       AppUnlockRouter.route,
@@ -197,7 +186,10 @@ class AppRouter {
             context.pushNamed<void>(CoinsRoute.coins.name, extra: wallet),
       ),
       ConsolidationRouter.route,
-      SettingsRouter.route,
+      SettingsRouter.route(
+        buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
+            .buildHistory(onBack: () => context.pop()),
+      ),
       TransactionsRouter.transactionsRoute(
         scope: (child) => ActiveNetworkScope(child: child),
       ),

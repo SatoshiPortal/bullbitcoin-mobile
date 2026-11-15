@@ -9,8 +9,6 @@ extension NetworkWalletSetupFailureL10n on NetworkWalletSetupFailure {
     NetworkWalletSetupSecretFailure(:final reason) => switch (reason) {
       DefaultWalletSecretRefusal.nonMnemonic =>
         context.loc.mnemonicDefaultEnglishOnly,
-      DefaultWalletSecretRefusal.passphrase =>
-        context.loc.networkFeatureUnavailable,
     },
     NetworkWalletSetupContextFailure() => context.loc.networkFeatureUnavailable,
     NetworkWalletSetupReadFailure(:final failure) => failure.toTranslated(

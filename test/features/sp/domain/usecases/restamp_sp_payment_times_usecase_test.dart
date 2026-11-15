@@ -16,9 +16,8 @@ void main() {
   });
 
   test('restamps through the repository', () {
-    when(
-      () => repository.restampMissingTimestamps(),
-    ).thenReturn(const Ok<void, SpFailure>(null));
+    when(() => repository.restampMissingTimestamps())
+        .thenReturn(const Ok<void, SpFailure>(null));
 
     final result = usecase.execute();
 
@@ -27,9 +26,8 @@ void main() {
   });
 
   test('forwards a repository failure', () {
-    when(
-      () => repository.restampMissingTimestamps(),
-    ).thenReturn(const Err<void, SpFailure>(SpUnexpected('lock poisoned')));
+    when(() => repository.restampMissingTimestamps())
+        .thenReturn(const Err<void, SpFailure>(SpUnexpected('lock poisoned')));
 
     final result = usecase.execute();
 

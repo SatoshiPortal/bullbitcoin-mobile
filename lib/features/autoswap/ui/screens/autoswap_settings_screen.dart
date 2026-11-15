@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_failure_l10n.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
@@ -47,7 +47,6 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
         body: SafeArea(
           child: BBKeyboardActions(
             disableScroll: true,
-            focusNodes: [_amountNode, _triggerNode, _feeNode],
             child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
               builder: (context, state) {
                 final enabled = state.enabledToggle;

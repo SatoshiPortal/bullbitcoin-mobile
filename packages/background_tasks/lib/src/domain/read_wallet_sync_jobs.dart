@@ -1,0 +1,43 @@
+import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart';
+
+/// Catalog membership is independent of whether a wallet is ready to sync.
+final class WalletSyncJobSelection {
+  final List<WalletRevision> ready;
+  final List<WalletKey> unavailable;
+
+  WalletSyncJobSelection(
+    Iterable<WalletRevision> ready,
+    Iterable<WalletKey> unavailable,
+  ) : ready = List.unmodifiable(ready),
+      unavailable = List.unmodifiable(unavailable);
+}
+
+Future<Result<WalletSyncJobSelection, SyncFailure>> readWalletSyncJobs(
+  Iterable<WalletKey> keys,
+  WalletRevisionReaderPort revisions,
+) async {
+  final jobs = <WalletRevision>[];
+  final unavailable = <WalletKey>[];
+  for (final key in keys) {
+    switch (await revisions.read(key)) {
+      case Err(failure: SyncNotFoundFailure() || SyncBusyFailure()):
+        unavailable.add(key);
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (value.stamp.key != key) {
+          return const Err(SyncInvalidCatalogFailure());
+        }
+        switch (value.lifecycle) {
+          case WalletLifecycle.active:
+            jobs.add(value.stamp);
+          case WalletLifecycle.pendingWrite:
+            unavailable.add(key);
+          case WalletLifecycle.deleted:
+            break;
+        }
+    }
+  }
+  return Ok(WalletSyncJobSelection(jobs, unavailable));
+}

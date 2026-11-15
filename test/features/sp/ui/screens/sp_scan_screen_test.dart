@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -6,19 +7,20 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_scan_screen.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../sp_cubit_harness.dart';
 import '../../sp_test_streams.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 Widget _buildPage(SpCubit cubit) => MaterialApp(
   theme: AppTheme.themeData(AppThemeType.light),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: BlocProvider<SpCubit>.value(value: cubit, child: const SpScanScreen()),
 );
@@ -38,16 +40,13 @@ void main() {
     scanUsecase = harness.scanUsecase;
     watchUsecase = harness.watchUsecase;
 
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(spWalletData()));
+    when(() => loadUsecase.execute())
+        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(spWalletData()));
     when(() => stopUsecase.execute()).thenAnswer((_) async => const Ok(null));
-    when(
-      () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
-    ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
-    when(
-      () => watchUsecase.execute(),
-    ).thenAnswer((_) => openSpNotificationStream());
+    when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
+        .thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    when(() => watchUsecase.execute())
+        .thenAnswer((_) => openSpNotificationStream());
 
     cubit = harness.build();
   });
@@ -55,9 +54,8 @@ void main() {
   tearDown(() => cubit.close());
 
   Future<void> loadWith(WidgetTester tester, SpWalletData data) async {
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(data));
+    when(() => loadUsecase.execute())
+        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(data));
     await cubit.load();
     await tester.pumpWidget(_buildPage(cubit));
     await tester.pump();

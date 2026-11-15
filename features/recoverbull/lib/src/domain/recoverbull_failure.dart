@@ -4,6 +4,14 @@ sealed class RecoverBullFailure extends Failure {
   const RecoverBullFailure();
 }
 
+final class VaultPassphraseRequiredFailure extends RecoverBullFailure {
+  const VaultPassphraseRequiredFailure();
+}
+
+final class VaultPassphraseAcknowledgementFailure extends RecoverBullFailure {
+  const VaultPassphraseAcknowledgementFailure();
+}
+
 final class VaultInvalidFailure extends RecoverBullFailure {
   const VaultInvalidFailure();
 }

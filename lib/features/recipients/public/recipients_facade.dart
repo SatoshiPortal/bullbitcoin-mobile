@@ -8,8 +8,10 @@ import 'package:meta/meta.dart';
 
 export '../domain/value_objects/confidential_sepa_availability.dart';
 export '../domain/value_objects/recipient_type.dart' show RecipientType;
+
 export 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
 export 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
+
 export 'recipient_filter_criteria.dart' show RecipientFilterCriteria;
 export 'recipient_selection.dart' show RecipientSelection;
 export 'recipient_view_model.dart';

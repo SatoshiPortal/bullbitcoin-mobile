@@ -5,8 +5,6 @@ import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dar
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/import_wallet/router.dart';
 import 'package:bb_mobile/features/labels/router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -20,7 +18,7 @@ import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart'
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,6 +26,9 @@ import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 enum SettingsItemId {
   exchange,
+  exchangeAccountSettings,
+  quickActions,
+  priceHistory,
   backup,
   startBackup,
   recoverbull,
@@ -138,7 +139,10 @@ extension SettingsItemsX on Iterable<SettingsItem> {
 /// gating and the platform-dependent exchange title are decided in exactly one
 /// place. Search depends on that: it surfaces items from every section at once,
 /// so a screen-local approximation of these flags would show the wrong rows.
-List<SettingsItem> settingsItemsOf(BuildContext context) {
+List<SettingsItem> settingsItemsOf(
+  BuildContext context, {
+  bool accountReady = false,
+}) {
   final isSuperuser = context.select(
     (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
   );
@@ -155,6 +159,7 @@ List<SettingsItem> settingsItemsOf(BuildContext context) {
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
+    accountReady: accountReady,
     environment: context.select(
       (SettingsCubit cubit) =>
           cubit.state.storedSettings?.activeNetwork ?? NetworkEnv.mainnet,
@@ -167,6 +172,7 @@ List<SettingsItem> buildSettingsItems({
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
   bool isSpWalletSetup = false,
+  bool accountReady = false,
   NetworkEnv environment = NetworkEnv.mainnet,
 }) {
   final english = AppLocalizationsEn();
@@ -174,7 +180,6 @@ List<SettingsItem> buildSettingsItems({
   final backupSection = localization.settingsBackupTitle;
   final walletSection = localization.settingsWalletTitle;
   final appSection = localization.settingsAppTitle;
-  final exchangeSection = localization.settingsExchangeTitle;
 
   List<String> path(SettingsItemSection section, String title) =>
       switch (section) {
@@ -296,17 +301,10 @@ List<SettingsItem> buildSettingsItems({
     SettingsItem(
       id: SettingsItemId.exchange,
       section: SettingsItemSection.root,
-      title: exchangeSection,
-      path: path(SettingsItemSection.root, exchangeSection),
+      title: localization.exchangeAccessManage,
+      path: path(SettingsItemSection.root, localization.exchangeAccessManage),
       icon: Icons.currency_exchange,
-      open: (context) {
-        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
-        if (notLoggedIn) {
-          context.goNamed(ExchangeRoute.exchangeLanding.name);
-        } else {
-          context.pushNamed(SettingsRoute.exchangeSettings.name);
-        }
-      },
+      open: (context) => context.pushNamed(SettingsRoute.exchangeAccess.name),
       keywords: _keywords(
         localization.settingsSearchExchangeKeywords,
         english.settingsSearchExchangeKeywords,
@@ -316,6 +314,47 @@ List<SettingsItem> buildSettingsItems({
           english.settingsAccountSettingsTitle,
         ],
       ),
+    ),
+    if (accountReady)
+      SettingsItem(
+        id: SettingsItemId.exchangeAccountSettings,
+        section: SettingsItemSection.root,
+        title: localization.settingsAccountSettingsTitle,
+        path: path(
+          SettingsItemSection.root,
+          localization.settingsAccountSettingsTitle,
+        ),
+        icon: Icons.account_circle_outlined,
+        open: (context) =>
+            context.pushNamed(SettingsRoute.exchangeSettings.name),
+        keywords: [
+          localization.settingsAccountSettingsTitle,
+          english.settingsAccountSettingsTitle,
+        ],
+      ),
+    SettingsItem(
+      id: SettingsItemId.priceHistory,
+      section: SettingsItemSection.root,
+      title: localization.priceHistoryTitle,
+      path: path(SettingsItemSection.root, localization.priceHistoryTitle),
+      icon: Icons.show_chart,
+      open: (context) => context.pushNamed(SettingsRoute.priceHistory.name),
+      keywords: [localization.priceHistoryTitle, english.priceHistoryTitle],
+    ),
+    SettingsItem(
+      id: SettingsItemId.quickActions,
+      section: SettingsItemSection.root,
+      title: localization.quickActionsSettingsTitle,
+      path: path(
+        SettingsItemSection.root,
+        localization.quickActionsSettingsTitle,
+      ),
+      icon: Icons.tune,
+      open: (context) => context.pushNamed(SettingsRoute.quickActions.name),
+      keywords: [
+        localization.quickActionsSettingsTitle,
+        english.quickActionsSettingsTitle,
+      ],
     ),
     SettingsItem(
       id: SettingsItemId.btcMap,
@@ -693,6 +732,7 @@ List<SettingsItem> buildSettingsItems({
   ].where((item) {
     final capability = switch (item.id) {
       SettingsItemId.exchange ||
+      SettingsItemId.exchangeAccountSettings ||
       SettingsItemId.testnetCredentials => NetworkCapability.exchange,
       SettingsItemId.autoswap => NetworkCapability.swaps,
       SettingsItemId.payjoin => NetworkCapability.payjoin,

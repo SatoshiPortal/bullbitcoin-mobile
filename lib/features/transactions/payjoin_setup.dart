@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
@@ -6,19 +7,23 @@ import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart'
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/storage/payjoin_legacy_data_adapter.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_blockchain_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_codec_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_fees_adapter.dart';
+import 'package:bb_mobile/features/transactions/data/payjoin_input_reservation_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_log_adapter.dart';
 import 'package:bb_mobile/features/transactions/data/payjoin_transaction_adapter.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:get_it/get_it.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart' show InputReservationPort;
 
 abstract final class PayjoinSetup {
   static void setup(
@@ -32,9 +37,10 @@ abstract final class PayjoinSetup {
         databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
-          locator<BdkWalletDatasource>(),
+          locator<WalletNativeRuntime>().wallet,
+          locator<WalletNativeRuntime>().spendStatus,
+          locator<SyncWalletValuesDatasource>(),
           locator<WalletMetadataDatasource>(),
-          locator<WalletFacade>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
           locator<BdkBitcoinBlockchainDatasource>(),
@@ -52,6 +58,7 @@ abstract final class PayjoinSetup {
         labels: locator<LabelsFacade>().payjoinLabels(),
         legacyData: PayjoinLegacyDataAdapter(database),
         log: const AppPayjoinLogAdapter(),
+        codec: const AppPayjoinCodecAdapter(),
       );
     });
     _registerRoles(locator, runtime.payjoin);
@@ -79,5 +86,9 @@ abstract final class PayjoinSetup {
     locator.registerSingleton<PayjoinSessions>(payjoin.sessions);
     locator.registerSingleton<PayjoinPolicyAccess>(payjoin.policy);
     locator.registerSingleton<PayjoinDiagnostics>(payjoin.diagnostics);
+    // Sync reads the reservations through the owner's own sessions role.
+    locator.registerSingleton<InputReservationPort>(
+      PayjoinInputReservationAdapter(payjoin.sessions),
+    );
   }
 }

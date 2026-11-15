@@ -56,9 +56,8 @@ void main() {
   setUp(() {
     getAttachmentUsecase = _MockGetAttachmentUsecase();
     final notificationService = _MockNotificationService();
-    when(
-      () => notificationService.messageStream,
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => notificationService.messageStream)
+        .thenAnswer((_) => const Stream.empty());
 
     tempDir = Directory.systemTemp.createTempSync('support_chat_test');
     PathProviderPlatform.instance = _FakePathProviderPlatform(tempDir.path);

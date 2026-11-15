@@ -6,9 +6,8 @@ void main() {
   test(
     'Payjoin setup accepts the database path chosen by the composition root',
     () {
-      final source = File(
-        'lib/features/transactions/payjoin_setup.dart',
-      ).readAsStringSync();
+      final source = File('lib/features/transactions/payjoin_setup.dart')
+          .readAsStringSync();
 
       expect(
         source,
@@ -21,7 +20,7 @@ void main() {
   test('the canonical Drift target includes the Payjoin package schema', () {
     final makefile = File('makefile').readAsStringSync();
     final start = makefile.indexOf('drift-migrations:');
-    final end = makefile.indexOf('\nios-pod-update:', start);
+    final end = makefile.indexOf('\nios-simulator:', start);
     final target = makefile.substring(start, end);
 
     expect(

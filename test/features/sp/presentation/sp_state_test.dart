@@ -93,9 +93,8 @@ void main() {
 
     test('groups by local calendar day, newest day first', () {
       // Deliberately out of order: the getter owns the sorting.
-      final grouped = SpState(
-        history: [morning, nextDay, pending, evening],
-      ).historyByDay;
+      final grouped = SpState(history: [morning, nextDay, pending, evening])
+          .historyByDay;
 
       expect(grouped.keys.toList(), [
         spPendingGroupKey,
@@ -144,9 +143,8 @@ void main() {
           payment('${status.index}' * 64, null, status: status, height: 800),
       ];
 
-      final grouped = SpState(
-        history: [nextDay, ...undated, pending],
-      ).historyByDay;
+      final grouped = SpState(history: [nextDay, ...undated, pending])
+          .historyByDay;
 
       expect(grouped.keys.toList(), [
         spPendingGroupKey,

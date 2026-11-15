@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/exchange/domain/usecases/resolve_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/enable_exchange_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/sign_out_exchange_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/watch_exchange_access_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/usecases/guard_exchange_trading_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
@@ -11,6 +16,16 @@ class _MockGetExchangeAccountUsecase extends Mock
 
 class _MockSaveExchangePreferencesUsecase extends Mock
     implements SaveExchangePreferencesUsecase {}
+
+class _Resolve extends Mock implements ResolveExchangeAccessUsecase {}
+
+class _Enable extends Mock implements EnableExchangeUsecase {}
+
+class _SignOut extends Mock implements SignOutExchangeUsecase {}
+
+class _Watch extends Mock implements WatchExchangeAccessUsecase {}
+
+class _Guard extends Mock implements GuardExchangeTradingUsecase {}
 
 class _MockWebSettings extends Mock implements GetExchangeWebSettingsUsecase {}
 
@@ -28,6 +43,11 @@ void main() {
       getExchangeWebSettingsUsecase: webSettings,
       getExchangeAccountUsecase: getAccount,
       saveExchangePreferencesUsecase: savePreferences,
+      resolveAccess: _Resolve(),
+      enable: _Enable(),
+      signOut: _SignOut(),
+      watchAccess: _Watch(),
+      tradingGuard: _Guard(),
     );
   });
 
@@ -36,9 +56,8 @@ void main() {
       webSettings.execute,
     ).thenAnswer((_) async => const Err(ExchangeUnsupportedNetworkFailure()));
     expect(await facade.networkUnavailable(), isTrue);
-    when(
-      webSettings.execute,
-    ).thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
+    when(webSettings.execute)
+        .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
     expect(await facade.networkUnavailable(), isFalse);
   });
 

@@ -1,6 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, NetworkCapabilities, NetworkCapability, NetworkEnv;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';

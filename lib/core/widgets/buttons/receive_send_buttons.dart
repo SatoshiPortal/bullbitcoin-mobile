@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The paired receive/send row pinned to the bottom of a wallet screen.
 /// Labels and actions come from the caller so each feature keeps its own

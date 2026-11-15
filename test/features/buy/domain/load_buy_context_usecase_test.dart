@@ -115,9 +115,8 @@ void main() {
       createdAt: DateTime(2026),
       updatedAt: DateTime(2026),
     );
-    when(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => address);
+    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => address);
 
     final result = await usecase.receiveAddress(walletId: 'wallet-1');
 
@@ -125,9 +124,8 @@ void main() {
   });
 
   test('a failed address derivation is sanitized, never raw', () async {
-    when(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-    ).thenThrow(Exception(_rawReason));
+    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
+        .thenThrow(Exception(_rawReason));
 
     final result = await usecase.receiveAddress(walletId: 'wallet-1');
 
@@ -141,9 +139,8 @@ void main() {
 
   test('returns the network fees', () async {
     final fees = _MockFeeOptions();
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => fees);
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => fees);
 
     final result = await usecase.networkFees(isLiquid: false);
 
@@ -151,9 +148,8 @@ void main() {
   });
 
   test('a failed fee read is sanitized', () async {
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenThrow(Exception(_rawReason));
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenThrow(Exception(_rawReason));
 
     expect(
       await usecase.networkFees(isLiquid: false),
@@ -191,9 +187,8 @@ void main() {
     });
 
     test('asks the testnet price in the testnet environment', () async {
-      when(
-        getSettings.execute,
-      ).thenAnswer((_) async => _settings(environment: Environment.testnet));
+      when(getSettings.execute)
+          .thenAnswer((_) async => _settings(environment: Environment.testnet));
 
       final result = await usecase.satsToCurrency();
 

@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
+    show ExchangeAvailability, ExchangeAccessResolving;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -9,8 +13,11 @@ import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_cho
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:novlang/novlang.dart';
 
 /// Standalone app shown before `Bull.init` runs to every user whose
 /// stored wizard version is below `kCurrentWizardVersion`. Intentionally
@@ -76,9 +83,20 @@ class _WizardAppView extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.themeData(appThemeType),
           locale: state.choices.language.locale,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          // The wizard runs before the main app and its settings exist: the
+          // store constraint of the platform applies (superuser unknown).
+          localizationsDelegates: novlangLocalizationsDelegates(
+            resolveNovlangPolicy(defaultTargetPlatform, null),
+          ),
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const WizardScreen(),
+          home: WizardScreen(
+            exchangeAllowed:
+                ExchangeAvailability.resolve(
+                  platformAllowed: !Platform.isIOS,
+                  access: const ExchangeAccessResolving(),
+                ) !=
+                ExchangeAvailability.hidden,
+          ),
         );
       },
     );

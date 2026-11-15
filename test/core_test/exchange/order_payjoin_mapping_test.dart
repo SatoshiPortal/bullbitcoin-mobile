@@ -79,9 +79,8 @@ void main() {
       });
 
       test('maps to null when the exchange reports no payjoin', () {
-        final order = OrderModel.fromJson(
-          orderJson(type: type),
-        ).toEntity(isTestnet: true);
+        final order = OrderModel.fromJson(orderJson(type: type))
+            .toEntity(isTestnet: true);
 
         final payjoin = payjoinOf(order);
         expect(payjoin.uri, isNull);

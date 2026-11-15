@@ -1,35 +1,46 @@
 import 'package:background_tasks/background_tasks.dart';
+import 'package:background_tasks/src/data/sqlite_wallet_sync_job_queue_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:sqlite3/sqlite3.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+
+import 'dart:io';
+
+import 'package:sync/sync.dart';
 
 void main() {
   for (final changeGeneration in [false, true]) {
     test(
       'reader stamp re-enables repair failure (generation=$changeGeneration)',
       () async {
-        final database = sqlite3.openInMemory();
-        final queue = SqliteWalletSyncJobQueue(database: database);
+        final directory = Directory.systemTemp.createTempSync('read_jobs_');
+        final queue = switch (SqliteWalletSyncJobQueueRepository.openForeground(
+          '${directory.path}/queue.sqlite',
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('$failure'),
+        };
         addTearDown(() async {
           await queue.close();
-          database.dispose();
+          directory.deleteSync(recursive: true);
         });
         final reader = _Revisions();
         Future<List<WalletSyncJobClaim>> claim() async {
           final jobs = await readWalletSyncJobs([reader.key], reader);
           return switch (jobs) {
-            Ok(:final value) => queue.reconcileAndClaim(
+            Ok(:final value) => switch (await queue.reconcileAndClaim(
               value.ready,
               unavailable: value.unavailable,
               chain: WalletSyncChain.bitcoin,
-            ),
+            )) {
+              Ok(:final value) => value,
+              Err(:final failure) => fail('$failure'),
+            },
             Err() => <WalletSyncJobClaim>[],
           };
         }
 
         final failed = (await claim()).single;
-        await queue.completeFailure(failed, permanent: true);
+        expect(await queue.completeFailure(failed, permanent: true), isA<Ok>());
         expect(await claim(), isEmpty);
         reader.available = false;
         expect(await claim(), isEmpty);
@@ -51,7 +62,7 @@ void main() {
       final reader = _Revisions()..lifecycle = WalletLifecycle.pendingWrite;
       expect(
         await readWalletSyncJobs([reader.key], reader),
-        isA<Ok<WalletSyncJobSelection, TransactionSyncFailure>>().having(
+        isA<Ok<WalletSyncJobSelection, SyncFailure>>().having(
           (r) => r.value.unavailable,
           'unavailable',
           [reader.key],
@@ -60,16 +71,14 @@ void main() {
       reader.lifecycle = WalletLifecycle.deleted;
       final jobs = await readWalletSyncJobs([reader.key], reader);
       expect(
-        (jobs as Ok<WalletSyncJobSelection, TransactionSyncFailure>)
-            .value
-            .ready,
+        (jobs as Ok<WalletSyncJobSelection, SyncFailure>).value.ready,
         isEmpty,
       );
     },
   );
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   final key = WalletKey(id: 'wallet', network: BitcoinNetwork.testnet);
   var generation = 1;
   var revision = 1;
@@ -77,9 +86,8 @@ final class _Revisions implements WalletRevisionReader {
   var lifecycle = WalletLifecycle.active;
 
   @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async => available
+  Future<Result<WalletRevisionState, SyncFailure>> read(WalletKey key) async =>
+      available
       ? Ok(
           WalletRevisionState(
             stamp: WalletRevision(
@@ -90,7 +98,7 @@ final class _Revisions implements WalletRevisionReader {
             lifecycle: lifecycle,
           ),
         )
-      : const Err(TransactionSyncStorageFailure());
+      : const Err(SyncStorageFailure());
 
   @override
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();

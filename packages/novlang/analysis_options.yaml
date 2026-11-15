@@ -1,0 +1,13 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    - lib/generated/**
+    - build/**
+
+linter:
+  rules:
+    - implementation_imports
+    - prefer_final_locals
+    - require_trailing_commas
+    - use_super_parameters

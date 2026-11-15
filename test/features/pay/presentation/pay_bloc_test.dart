@@ -1,6 +1,9 @@
 import 'package:bb_mobile/features/pay/domain/retry_payjoin_proposal_usecase.dart';
+
 import 'dart:io';
+
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -295,9 +298,8 @@ void main() {
         isToSelf: false,
       )),
     );
-    when(
-      () => calculateBitcoinFees.bitcoin(psbt: any(named: 'psbt')),
-    ).thenAnswer((_) async => const Ok<int, PayFailure>(200));
+    when(() => calculateBitcoinFees.bitcoin(psbt: any(named: 'psbt')))
+        .thenAnswer((_) async => const Ok<int, PayFailure>(200));
     when(
       () => signPayPayin.bitcoin(
         psbt: any(named: 'psbt'),
@@ -317,20 +319,16 @@ void main() {
         network: app.Network.bitcoinMainnet,
       ),
     ).thenAnswer((_) async => Ok<String, PayFailure>(expectedTxid));
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => Ok<FeeOptions, PayFailure>(feeOptions));
-    when(
-      () => getOrder.execute(orderId: any(named: 'orderId')),
-    ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
-    when(
-      () => watchPayjoin.execute(any()),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => Ok<FeeOptions, PayFailure>(feeOptions));
+    when(() => getOrder.execute(orderId: any(named: 'orderId')))
+        .thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
+    when(() => watchPayjoin.execute(any()))
+        .thenAnswer((_) => const Stream.empty());
     getPayjoin = _MockGetPayjoin();
     getVisiblePayjoinTransaction = _MockGetVisiblePayjoinTransaction();
-    when(
-      () => getVisiblePayjoinTransaction.execute(any()),
-    ).thenAnswer((_) async => null);
+    when(() => getVisiblePayjoinTransaction.execute(any()))
+        .thenAnswer((_) async => null);
     retryPayjoin = _MockRetryPayjoin();
     when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
 
@@ -367,46 +365,43 @@ void main() {
   });
 
   group('Pay preparation lifecycle', () {
-    test(
-      'opens preparation before the dependency finishes and ignores duplicate selection',
-      () async {
-        bloc.seed(
-          PayWalletSelectionState(
-            selectedRecipient: recipient,
-            userSummary: userSummary,
-            amount: const FiatAmount(50),
-          ),
-        );
-        final response = Completer<Result<PayPayinFeeEstimate, PayFailure>>();
-        when(
-          () => estimatePayPayinFees.execute(
-            wallet: wallet,
-            fiatAmount: 50,
-            currencyCode: 'CAD',
-          ),
-        ).thenAnswer((_) => response.future);
-        final opened = bloc.stream.firstWhere(
-          (s) => s is PayPreparingPaymentState,
-        );
-        bloc.add(PayEvent.walletSelected(wallet: wallet));
-        final preparing = await opened as PayPreparingPaymentState;
-        expect(preparing.selectedWallet, same(wallet));
-        bloc.add(PayEvent.walletSelected(wallet: wallet));
-        await Future<void>.delayed(Duration.zero);
-        verify(
-          () => estimatePayPayinFees.execute(
-            wallet: wallet,
-            fiatAmount: 50,
-            currencyCode: 'CAD',
-          ),
-        ).called(1);
-        final failed = bloc.stream.firstWhere(
-          (s) => s is PayPreparingPaymentState && s.error != null,
-        );
-        response.complete(const Err(PayUnexpectedFailure('dependency failed')));
-        expect((await failed as PayPreparingPaymentState).error, isNotNull);
-      },
-    );
+    test('opens preparation before the dependency finishes and ignores duplicate selection', () async {
+      bloc.seed(
+        PayWalletSelectionState(
+          selectedRecipient: recipient,
+          userSummary: userSummary,
+          amount: const FiatAmount(50),
+        ),
+      );
+      final response = Completer<Result<PayPayinFeeEstimate, PayFailure>>();
+      when(
+        () => estimatePayPayinFees.execute(
+          wallet: wallet,
+          fiatAmount: 50,
+          currencyCode: 'CAD',
+        ),
+      ).thenAnswer((_) => response.future);
+      final opened = bloc.stream.firstWhere(
+        (s) => s is PayPreparingPaymentState,
+      );
+      bloc.add(PayEvent.walletSelected(wallet: wallet));
+      final preparing = await opened as PayPreparingPaymentState;
+      expect(preparing.selectedWallet, same(wallet));
+      bloc.add(PayEvent.walletSelected(wallet: wallet));
+      await Future<void>.delayed(Duration.zero);
+      verify(
+        () => estimatePayPayinFees.execute(
+          wallet: wallet,
+          fiatAmount: 50,
+          currencyCode: 'CAD',
+        ),
+      ).called(1);
+      final failed = bloc.stream.firstWhere(
+        (s) => s is PayPreparingPaymentState && s.error != null,
+      );
+      response.complete(const Err(PayUnexpectedFailure('dependency failed')));
+      expect((await failed as PayPreparingPaymentState).error, isNotNull);
+    });
 
     test(
       'back discards a late failure without reopening confirmation',
@@ -503,9 +498,8 @@ void main() {
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
       when(() => payOrder.bip21URI).thenReturn(bip21);
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
       PayjoinSenderSession session(PayjoinStatus status) =>
           PayjoinSenderSession(
             status: status,
@@ -539,9 +533,8 @@ void main() {
       );
       // The expiry fallback reached the network but its bookkeeping did
       // not: the engine recorded `expired`, the chain holds the original.
-      when(
-        () => getVisiblePayjoinTransaction.execute(bip21),
-      ).thenAnswer((_) async => expectedTxid);
+      when(() => getVisiblePayjoinTransaction.execute(bip21))
+          .thenAnswer((_) async => expectedTxid);
 
       bloc.add(const PayEvent.sendPaymentConfirmed());
       final latched = await bloc.stream.firstWhere(
@@ -553,77 +546,70 @@ void main() {
       expect(latched.error, isNull);
     });
 
-    test(
-      'does not report success while a Payjoin is only requested',
-      () async {
-        const bip21 =
-            'bitcoin:bc1q0000000000000000000000000000000000000'
-            '?amount=0.001&pj=https://payjo.in/session';
-        when(() => payOrder.bip21URI).thenReturn(bip21);
-        when(
-          () => payOrder.confirmationDeadline,
-        ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
-        when(
-          () => sendWithPayjoin.execute(
-            walletId: any(named: 'walletId'),
-            network: any(named: 'network'),
-            bip21: any(named: 'bip21'),
-            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
-            amountSat: any(named: 'amountSat'),
-            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
-            expireAfterSec: any(named: 'expireAfterSec'),
+    test('does not report success while a Payjoin is only requested', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => payOrder.bip21URI).thenReturn(bip21);
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<PayjoinSenderSession, PayFailure>(
+          PayjoinSenderSession(
+            status: PayjoinStatus.requested,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
           ),
-        ).thenAnswer(
-          (_) async => Ok<PayjoinSenderSession, PayFailure>(
-            PayjoinSenderSession(
-              status: PayjoinStatus.requested,
-              uri: bip21,
-              network: BitcoinNetwork.mainnet,
-              walletId: 'wallet-1',
-              originalTransactionId: expectedTxid,
-              amount: Sats.fromInt(100000),
-              createdAt: DateTime(2026),
-              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-            ),
+        ),
+      );
+      final updates = StreamController<Result<PayjoinSession, PayFailure>>();
+      addTearDown(updates.close);
+      when(() => watchPayjoin.execute(bip21)).thenAnswer((_) => updates.stream);
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await untilCalled(() => watchPayjoin.execute(bip21));
+      await Future<void>.delayed(const Duration(seconds: 6));
+
+      expect(bloc.state, isA<PayPaymentState>());
+      expect((bloc.state as PayPaymentState).payinBroadcastTxid, isNull);
+      expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
+
+      updates.add(
+        Ok<PayjoinSession, PayFailure>(
+          PayjoinSenderSession(
+            status: PayjoinStatus.expired,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
           ),
-        );
-        final updates = StreamController<Result<PayjoinSession, PayFailure>>();
-        addTearDown(updates.close);
-        when(
-          () => watchPayjoin.execute(bip21),
-        ).thenAnswer((_) => updates.stream);
+        ),
+      );
+      await pumpEventQueue();
 
-        bloc.add(const PayEvent.sendPaymentConfirmed());
-        await untilCalled(() => watchPayjoin.execute(bip21));
-        await Future<void>.delayed(const Duration(seconds: 6));
-
-        expect(bloc.state, isA<PayPaymentState>());
-        expect((bloc.state as PayPaymentState).payinBroadcastTxid, isNull);
-        expect((bloc.state as PayPaymentState).isConfirmingPayment, isTrue);
-
-        updates.add(
-          Ok<PayjoinSession, PayFailure>(
-            PayjoinSenderSession(
-              status: PayjoinStatus.expired,
-              uri: bip21,
-              network: BitcoinNetwork.mainnet,
-              walletId: 'wallet-1',
-              originalTransactionId: expectedTxid,
-              amount: Sats.fromInt(100000),
-              createdAt: DateTime(2026),
-              expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
-            ),
-          ),
-        );
-        await pumpEventQueue();
-
-        final expired = bloc.state as PayPaymentState;
-        expect(expired.payinBroadcastTxid, isNull);
-        expect(expired.isConfirmingPayment, isFalse);
-        expect(expired.error, isNull);
-      },
-      timeout: const Timeout(Duration(seconds: 10)),
-    );
+      final expired = bloc.state as PayPaymentState;
+      expect(expired.payinBroadcastTxid, isNull);
+      expect(expired.isConfirmingPayment, isFalse);
+      expect(expired.error, isNull);
+    }, timeout: const Timeout(Duration(seconds: 10)));
 
     test('a failed Payjoin start whose session persisted is adopted, '
         'not surfaced as a retryable error', () async {
@@ -631,9 +617,8 @@ void main() {
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
       when(() => payOrder.bip21URI).thenReturn(bip21);
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
       // The engine persists the session (signed original included) before
       // posting to the directory; a post failure throws AFTER that persist.
       when(
@@ -697,9 +682,8 @@ void main() {
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
       when(() => payOrder.bip21URI).thenReturn(bip21);
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
@@ -733,9 +717,8 @@ void main() {
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
       when(() => payOrder.bip21URI).thenReturn(bip21);
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
@@ -795,50 +778,46 @@ void main() {
       ).called(1);
     });
 
-    test(
-      'a post-broadcast failure never allows a second broadcast',
-      () async {
-        when(() => getOrder.execute(orderId: any(named: 'orderId'))).thenAnswer(
-          (_) async => const Err<FiatPaymentOrder, PayFailure>(
-            PayUnexpectedFailure('backend unavailable'),
-          ),
-        );
+    test('a post-broadcast failure never allows a second broadcast', () async {
+      when(() => getOrder.execute(orderId: any(named: 'orderId'))).thenAnswer(
+        (_) async => const Err<FiatPaymentOrder, PayFailure>(
+          PayUnexpectedFailure('backend unavailable'),
+        ),
+      );
 
-        bloc.add(const PayEvent.sendPaymentConfirmed());
-        await bloc.stream.firstWhere(
-          (state) => state is PayPaymentState && state.isPayinBroadcast,
-        );
-        await Future<void>.delayed(const Duration(seconds: 6));
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere(
+        (state) => state is PayPaymentState && state.isPayinBroadcast,
+      );
+      await Future<void>.delayed(const Duration(seconds: 6));
 
-        final latched = bloc.state as PayPaymentState;
-        expect(latched.payinBroadcastTxid, expectedTxid);
-        expect(latched.isConfirmingPayment, isTrue);
-        expect(latched.error, isNull);
+      final latched = bloc.state as PayPaymentState;
+      expect(latched.payinBroadcastTxid, expectedTxid);
+      expect(latched.isConfirmingPayment, isTrue);
+      expect(latched.error, isNull);
 
-        bloc.add(const PayEvent.sendPaymentConfirmed());
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
-        verify(
-          () => broadcastPayPayin.bitcoin(
-            any(),
-            walletId: any(named: 'walletId'),
-            isPsbt: any(named: 'isPsbt'),
-            network: app.Network.bitcoinMainnet,
-          ),
-        ).called(1);
-        verify(
-          () => preparePayBitcoinPayin.execute(
-            walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-            amountSat: any(named: 'amountSat'),
-            networkFee: any(named: 'networkFee'),
-            selectedInputs: any(named: 'selectedInputs'),
-            replaceByFee: any(named: 'replaceByFee'),
-          ),
-        ).called(1);
-      },
-      timeout: const Timeout(Duration(seconds: 20)),
-    );
+      verify(
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          walletId: any(named: 'walletId'),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
+      ).called(1);
+      verify(
+        () => preparePayBitcoinPayin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+          amountSat: any(named: 'amountSat'),
+          networkFee: any(named: 'networkFee'),
+          selectedInputs: any(named: 'selectedInputs'),
+          replaceByFee: any(named: 'replaceByFee'),
+        ),
+      ).called(1);
+    }, timeout: const Timeout(Duration(seconds: 20)));
 
     test('simultaneous confirmations start one send only', () async {
       final build = Completer<Result<PreparedPayBitcoinPayin, PayFailure>>();
@@ -917,19 +896,16 @@ void main() {
 
     test('an order poll spanning broadcast preserves the latch', () async {
       final poll = Completer<Result<FiatPaymentOrder, PayFailure>>();
-      when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) => poll.future);
-      when(
-        () => payOrder.payinStatus,
-      ).thenReturn(OrderPayinStatus.awaitingPayment);
+      when(() => getOrder.execute(orderId: any(named: 'orderId')))
+          .thenAnswer((_) => poll.future);
+      when(() => payOrder.payinStatus)
+          .thenReturn(OrderPayinStatus.awaitingPayment);
 
       bloc.add(const PayEvent.pollOrderStatus());
       await Future<void>.delayed(const Duration(milliseconds: 50));
       bloc.seed(
-        paymentState(
-          isConfirmingPayment: true,
-        ).copyWith(payinBroadcastTxid: expectedTxid),
+        paymentState(isConfirmingPayment: true)
+            .copyWith(payinBroadcastTxid: expectedTxid),
       );
       poll.complete(Ok<FiatPaymentOrder, PayFailure>(payOrder));
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -941,12 +917,10 @@ void main() {
 
     test('an old order poll cannot overwrite a replacement order', () async {
       final poll = Completer<Result<FiatPaymentOrder, PayFailure>>();
-      when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) => poll.future);
-      when(
-        () => payOrder.payinStatus,
-      ).thenReturn(OrderPayinStatus.awaitingPayment);
+      when(() => getOrder.execute(orderId: any(named: 'orderId')))
+          .thenAnswer((_) => poll.future);
+      when(() => payOrder.payinStatus)
+          .thenReturn(OrderPayinStatus.awaitingPayment);
       final replacementOrder = _MockPayOrder();
       when(() => replacementOrder.orderId).thenReturn('order-2');
       when(() => replacementOrder.toAddress).thenReturn(payinAddress);
@@ -964,12 +938,11 @@ void main() {
     test('poll and screen update share one in-flight order request', () async {
       final request = Completer<Result<FiatPaymentOrder, PayFailure>>();
       var requestCount = 0;
-      when(() => getOrder.execute(orderId: any(named: 'orderId'))).thenAnswer((
-        _,
-      ) {
-        requestCount++;
-        return request.future;
-      });
+      when(() => getOrder.execute(orderId: any(named: 'orderId')))
+          .thenAnswer((_) {
+            requestCount++;
+            return request.future;
+          });
 
       bloc.add(const PayEvent.pollOrderStatus());
       await untilCalled(() => getOrder.execute(orderId: any(named: 'orderId')));
@@ -995,9 +968,8 @@ void main() {
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
       when(() => payOrder.bip21URI).thenReturn(bip21);
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
       PayjoinSenderSession session(PayjoinStatus status) =>
           PayjoinSenderSession(
             status: status,
@@ -1065,9 +1037,8 @@ void main() {
               'bitcoin:bc1q0000000000000000000000000000000000000'
               '?amount=0.001&pj=https://payjo.in/session';
           when(() => payOrder.bip21URI).thenReturn(bip21);
-          when(
-            () => payOrder.confirmationDeadline,
-          ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+          when(() => payOrder.confirmationDeadline)
+              .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
           PayjoinSenderSession session(PayjoinStatus status) =>
               PayjoinSenderSession(
                 status: status,
@@ -1103,13 +1074,11 @@ void main() {
           final updates =
               StreamController<Result<PayjoinSession, PayFailure>>();
           addTearDown(updates.close);
-          when(
-            () => watchPayjoin.execute(bip21),
-          ).thenAnswer((_) => updates.stream);
+          when(() => watchPayjoin.execute(bip21))
+              .thenAnswer((_) => updates.stream);
           final retry = Completer<Result<PayjoinSession, PayFailure>>();
-          when(
-            () => retryPayjoin.execute(bip21),
-          ).thenAnswer((_) => retry.future);
+          when(() => retryPayjoin.execute(bip21))
+              .thenAnswer((_) => retry.future);
           bloc.seed(paymentState());
 
           bloc.add(const PayEvent.sendPaymentConfirmed());
@@ -1122,8 +1091,7 @@ void main() {
           expect(
             paused.error,
             isA<PayPayjoinPausedFailure>(),
-            reason:
-                'A paused retained proposal must expose localized recoverable feedback rather than an indefinite confirming spinner',
+            reason: 'A paused retained proposal must expose localized recoverable feedback rather than an indefinite confirming spinner',
           );
 
           expect(paused.pausedPayjoinSession?.id, bip21);
@@ -1194,12 +1162,10 @@ void main() {
           'bitcoin:bc1q0000000000000000000000000000000000000'
           '?amount=0.001&pj=https://payjo.in/session';
       when(() => payOrder.bip21URI).thenReturn(bip21);
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
-      when(
-        () => calculateBitcoinFees.bitcoin(psbt: any(named: 'psbt')),
-      ).thenAnswer((_) async => const Ok<int, PayFailure>(1100));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => calculateBitcoinFees.bitcoin(psbt: any(named: 'psbt')))
+          .thenAnswer((_) async => const Ok<int, PayFailure>(1100));
       when(
         () => sendWithPayjoin.execute(
           walletId: any(named: 'walletId'),
@@ -1270,9 +1236,8 @@ void main() {
 
   group('PayBloc — order deadline', () {
     test('a quote past its deadline is never paid', () async {
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().subtract(const Duration(seconds: 1)));
       when(
         () => refreshPayOrder.execute(
           orderId: any(named: 'orderId'),
@@ -1312,12 +1277,10 @@ void main() {
         );
 
     setUp(() {
-      when(
-        () => payOrder.confirmationDeadline,
-      ).thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
-      when(
-        refreshCall,
-      ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().subtract(const Duration(minutes: 1)));
+      when(refreshCall)
+          .thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
     });
 
     // The scheduler's timers must be born inside the fake zone, so the bloc
@@ -1379,9 +1342,8 @@ void main() {
       final replacement = _MockPayOrder();
       when(() => replacement.orderId).thenReturn('order-2');
       when(() => replacement.payinAmount).thenReturn(0.002);
-      when(
-        () => replacement.confirmationDeadline,
-      ).thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      when(() => replacement.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
       bloc.seed(
         (bloc.state as PayPaymentState).copyWith(payOrder: replacement),
       );
@@ -1408,9 +1370,8 @@ void main() {
         final replacement = _MockPayOrder();
         when(() => replacement.orderId).thenReturn('order-2');
         when(() => replacement.payinAmount).thenReturn(0.002);
-        when(
-          () => replacement.confirmationDeadline,
-        ).thenReturn(clock.now().subtract(const Duration(seconds: 1)));
+        when(() => replacement.confirmationDeadline)
+            .thenReturn(clock.now().subtract(const Duration(seconds: 1)));
         bloc.seed(
           (bloc.state as PayPaymentState).copyWith(payOrder: replacement),
         );
@@ -1438,9 +1399,8 @@ void main() {
     });
 
     test('a failed refresh has a deferred successor', () {
-      when(
-        refreshCall,
-      ).thenAnswer((_) async => const Err(PayUnexpectedFailure('offline')));
+      when(refreshCall)
+          .thenAnswer((_) async => const Err(PayUnexpectedFailure('offline')));
       return inFakeTime((time) {
         bloc.add(const PayEvent.orderRefreshTimePassed());
         time.flushMicrotasks();
@@ -1455,9 +1415,8 @@ void main() {
       // The countdown widget fires up to a second early; the bloc no longer
       // listens to it and arms its own timer at the instant the lock lapses.
       return inFakeTime((time) {
-        when(
-          () => payOrder.confirmationDeadline,
-        ).thenReturn(clock.now().add(const Duration(milliseconds: 500)));
+        when(() => payOrder.confirmationDeadline)
+            .thenReturn(clock.now().add(const Duration(milliseconds: 500)));
         bloc.add(const PayEvent.orderRefreshTimePassed());
         time.flushMicrotasks();
         verify(refreshCall).called(1);
@@ -1517,9 +1476,8 @@ void main() {
     }
 
     void seedBroadcast() => bloc.seed(
-      paymentState(
-        isConfirmingPayment: true,
-      ).copyWith(payinBroadcastTxid: expectedTxid),
+      paymentState(isConfirmingPayment: true)
+          .copyWith(payinBroadcastTxid: expectedTxid),
     );
 
     test('an expired order after the payin lets the user leave without '
@@ -1560,9 +1518,8 @@ void main() {
       () async {
         seedBroadcast();
         final read = Completer<Result<FiatPaymentOrder, PayFailure>>();
-        when(
-          () => getOrder.execute(orderId: any(named: 'orderId')),
-        ).thenAnswer((_) => read.future);
+        when(() => getOrder.execute(orderId: any(named: 'orderId')))
+            .thenAnswer((_) => read.future);
         final replacementOrder = _MockPayOrder();
         when(() => replacementOrder.orderId).thenReturn('order-2');
 
@@ -1656,9 +1613,8 @@ void main() {
     Future<Completer<Result<FeeOptions, PayFailure>>>
     recalculationParkedPastSuccess() async {
       final feeFetch = Completer<Result<FeeOptions, PayFailure>>();
-      when(
-        () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-      ).thenAnswer((_) => feeFetch.future);
+      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+          .thenAnswer((_) => feeFetch.future);
 
       bloc.add(const PayEvent.feeOptionSelected(FeeSelection.slow));
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -1762,58 +1718,50 @@ void main() {
       expect(cache.custom.feeSat, isNull);
     });
 
-    test(
-      'the payin is built at the selected preset, not Fastest',
-      () async {
-        bloc.add(const PayEvent.feeOptionSelected(FeeSelection.slow));
-        final recalculated = await awaitRecalculatedFee();
-        expect(recalculated.selectedFeeOption, FeeSelection.slow);
+    test('the payin is built at the selected preset, not Fastest', () async {
+      bloc.add(const PayEvent.feeOptionSelected(FeeSelection.slow));
+      final recalculated = await awaitRecalculatedFee();
+      expect(recalculated.selectedFeeOption, FeeSelection.slow);
 
-        bloc.add(const PayEvent.sendPaymentConfirmed());
-        await bloc.stream.firstWhere((state) => state is PaySuccessState);
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere((state) => state is PaySuccessState);
 
-        // Both the estimate rebuild and the broadcast build used Slow; the
-        // hardcoded Fastest rate must appear nowhere.
-        expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
-        verify(
-          () => broadcastPayPayin.bitcoin(
-            any(),
-            walletId: any(named: 'walletId'),
-            isPsbt: any(named: 'isPsbt'),
-            network: app.Network.bitcoinMainnet,
-          ),
-        ).called(1);
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
+      // Both the estimate rebuild and the broadcast build used Slow; the
+      // hardcoded Fastest rate must appear nowhere.
+      expect(capturedBuildFees(), everyElement(equals(feeOptions.slow)));
+      verify(
+        () => broadcastPayPayin.bitcoin(
+          any(),
+          walletId: any(named: 'walletId'),
+          isPsbt: any(named: 'isPsbt'),
+          network: app.Network.bitcoinMainnet,
+        ),
+      ).called(1);
+    }, timeout: const Timeout(Duration(seconds: 60)));
 
-    test(
-      'a typed custom rate is committed on dismissal and paid',
-      () async {
-        final customFee = NetworkFee.relativeFromSatPerVbyte(3);
+    test('a typed custom rate is committed on dismissal and paid', () async {
+      final customFee = NetworkFee.relativeFromSatPerVbyte(3);
 
-        // Typing arms the rate without rebuilding; dismissing the modal is what
-        // applies it.
-        bloc.add(PayEvent.customFeeArmed(customFee));
-        await bloc.stream.firstWhere(
-          (state) =>
-              state is PayPaymentState &&
-              state.selectedFeeOption == FeeSelection.custom,
-        );
-        verifyNoBuilds();
+      // Typing arms the rate without rebuilding; dismissing the modal is what
+      // applies it.
+      bloc.add(PayEvent.customFeeArmed(customFee));
+      await bloc.stream.firstWhere(
+        (state) =>
+            state is PayPaymentState &&
+            state.selectedFeeOption == FeeSelection.custom,
+      );
+      verifyNoBuilds();
 
-        bloc.add(const PayEvent.customFeeFinalized());
-        final committed = await awaitRecalculatedFee();
-        expect(committed.customFee, customFee);
-        expect(committed.armPriorSelection, isNull);
+      bloc.add(const PayEvent.customFeeFinalized());
+      final committed = await awaitRecalculatedFee();
+      expect(committed.customFee, customFee);
+      expect(committed.armPriorSelection, isNull);
 
-        bloc.add(const PayEvent.sendPaymentConfirmed());
-        await bloc.stream.firstWhere((state) => state is PaySuccessState);
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      await bloc.stream.firstWhere((state) => state is PaySuccessState);
 
-        expect(capturedBuildFees(), everyElement(equals(customFee)));
-      },
-      timeout: const Timeout(Duration(seconds: 60)),
-    );
+      expect(capturedBuildFees(), everyElement(equals(customFee)));
+    }, timeout: const Timeout(Duration(seconds: 60)));
 
     test(
       'a custom rate below the relay floor rolls back on dismissal',
@@ -1988,9 +1936,8 @@ void main() {
       when(() => order.orderId).thenReturn('order-1');
       when(() => order.payinAmount).thenReturn(0.001);
       when(() => order.payoutCurrency).thenReturn('CAD');
-      when(
-        () => order.toAddress,
-      ).thenReturn('bc1qattacker00000000000000000000000000000');
+      when(() => order.toAddress)
+          .thenReturn('bc1qattacker00000000000000000000000000000');
       return order;
     }
 
@@ -2057,12 +2004,10 @@ void main() {
       // The periodic order poll is a second adoption path for a tampered
       // order: it merges the fetched order into the live payment state.
       final tampered = tamperedOrder();
-      when(
-        () => tampered.payinStatus,
-      ).thenReturn(OrderPayinStatus.awaitingPayment);
-      when(
-        () => getOrder.execute(orderId: any(named: 'orderId')),
-      ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(tampered));
+      when(() => tampered.payinStatus)
+          .thenReturn(OrderPayinStatus.awaitingPayment);
+      when(() => getOrder.execute(orderId: any(named: 'orderId')))
+          .thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(tampered));
 
       bloc.add(const PayEvent.pollOrderStatus());
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -2076,9 +2021,8 @@ void main() {
       'a changed address is refused even when the poll reports progress',
       () async {
         final tampered = tamperedOrder();
-        when(
-          () => tampered.payinStatus,
-        ).thenReturn(OrderPayinStatus.inProgress);
+        when(() => tampered.payinStatus)
+            .thenReturn(OrderPayinStatus.inProgress);
         when(
           () => getOrder.execute(orderId: any(named: 'orderId')),
         ).thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(tampered));

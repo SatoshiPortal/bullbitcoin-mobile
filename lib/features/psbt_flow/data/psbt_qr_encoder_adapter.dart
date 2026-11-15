@@ -5,7 +5,6 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/psbt_flow/domain/psbt_flow_failure.dart';
 import 'package:bb_mobile/features/psbt_flow/domain/psbt_qr_encoder_port.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
 
 /// The data boundary of the flow: the only place that catches what the BBQr and
 /// UR encoders throw, and the only place that names their exception types.
@@ -39,14 +38,11 @@ class PsbtQrEncoderAdapter implements PsbtQrEncoderPort {
       return Ok(parts);
     } on FormatException catch (e, st) {
       // Deliberately not `e.toString()`: it embeds a window of the source,
-      // which here is the PSBT.
+      // which here is the PSBT. Sync's decoder refusal arrives here too.
       log.warning(
-        'PSBT is not valid base64: ${e.message} at offset ${e.offset}',
+        'PSBT is not readable: ${e.message} at offset ${e.offset}',
         trace: st,
       );
-      return const Err(PsbtFlowInvalidPsbtFailure());
-    } on bdk.PsbtParseException catch (e, st) {
-      log.warning('PSBT rejected by the parser', error: e, trace: st);
       return const Err(PsbtFlowInvalidPsbtFailure());
     } catch (e, st) {
       // Anything else that goes wrong here still leaves the user with no QR,

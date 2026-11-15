@@ -164,7 +164,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
             environment: orderEnvironment,
             sourceWalletId: liquidWallet.id,
             destinationWalletId: recipientWallet.id,
-            note: 'Auto-Transfer',
+            note: LabelSystem.autoSwap.label,
             quotedCounterpartAmountSat: quote.outAmountSat,
           );
 
@@ -172,9 +172,8 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       // The quote just used the rate-limit slot, so this call is the one that
       // gets refused. Nothing was created server-side, so one retry is safe.
       // Keep the wait short: the quote it submits goes stale.
-      if (createResult case Err(
-        :final failure,
-      ) when failure is SwapRateLimitedFailure) {
+      if (createResult case Err(:final failure)
+          when failure is SwapRateLimitedFailure) {
         final wait = failure.retryAfter ?? _createRetryDelay;
         if (wait <= _maxCreateRetryDelay) {
           await _delay(wait);
@@ -325,7 +324,7 @@ class ExchangeAutoswapProvider implements AutoswapProviderPort {
       NewLabel.tx(
         transactionId: txid,
         origin: wallet.id,
-        label: 'Auto-Transfer',
+        label: LabelSystem.autoSwap.label,
       ),
     );
     return Ok(record.localId);

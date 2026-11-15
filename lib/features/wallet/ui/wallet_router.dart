@@ -1,3 +1,4 @@
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter/widgets.dart';
@@ -17,6 +18,9 @@ enum WalletRoute {
 
 class WalletRouter {
   static GoRoute walletHomeRoute({
+    required QuickActionsCubit quickActions,
+    required void Function(BuildContext, QuickAction) onQuickAction,
+    required void Function(BuildContext) onCustomizeQuickActions,
     required NetworkWalletSetupCubit Function() createSetupCubit,
   }) => GoRoute(
     name: WalletRoute.walletHome.name,
@@ -30,6 +34,9 @@ class WalletRouter {
               context.goNamed(OnboardingRoute.onboarding.name),
           onImportNetworkWallet: () =>
               context.pushNamed(OnboardingRoute.recoverFromPhysical.name),
+          quickActions: quickActions,
+          onQuickAction: onQuickAction,
+          onCustomizeQuickActions: onCustomizeQuickActions,
         ),
       );
     },

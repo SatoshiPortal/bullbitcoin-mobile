@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/replace_by_fee_failure_l10n.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullShapesX, BullSupportButton, BullText, Gap;
@@ -53,7 +53,6 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
       ),
       body: BBKeyboardActions(
         disableScroll: true,
-        focusNodes: [_feeNode],
         child: BlocBuilder<ReplaceByFeeCubit, ReplaceByFeeState>(
           builder: (context, state) {
             final cubit = context.read<ReplaceByFeeCubit>();

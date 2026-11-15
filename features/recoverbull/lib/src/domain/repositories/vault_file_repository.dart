@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+
 import '../entities/encrypted_vault.dart';
 import '../recoverbull_failure.dart';
 

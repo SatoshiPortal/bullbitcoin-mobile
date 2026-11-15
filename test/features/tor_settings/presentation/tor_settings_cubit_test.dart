@@ -253,9 +253,8 @@ void main() {
       );
 
       expect(connection, isA<TorReady>());
-      verify(
-        () => settingsRepository.setTorProxy(enabled: true, port: 9050),
-      ).called(1);
+      verify(() => settingsRepository.setTorProxy(enabled: true, port: 9050))
+          .called(1);
     },
   );
 
@@ -404,9 +403,8 @@ void main() {
     externalPort.releaseVerification.complete();
     await activation;
 
-    verify(
-      () => settingsRepository.setTorProxy(enabled: false, port: 9050),
-    ).called(1);
+    verify(() => settingsRepository.setTorProxy(enabled: false, port: 9050))
+        .called(1);
     verifyNever(
       () => settingsRepository.setTorProxy(enabled: true, port: 9050),
     );
@@ -573,13 +571,12 @@ void main() {
       ),
     );
     final settingsRepository = _MockSettingsRepository();
-    when(
-      () => settingsRepository.setTorProxy(enabled: false, port: 9050),
-    ).thenAnswer(
-      // The repository is the boundary now: it catches, logs the raw reason
-      // and hands back a sanitized failure.
-      (_) async => const Err(SettingsStoreWriteFailure('settings secret')),
-    );
+    when(() => settingsRepository.setTorProxy(enabled: false, port: 9050))
+        .thenAnswer(
+          // The repository is the boundary now: it catches, logs the raw reason
+          // and hands back a sanitized failure.
+          (_) async => const Err(SettingsStoreWriteFailure('settings secret')),
+        );
     final externalPort = _FakeExternalTorPort();
     final watchTor = _MockWatchTorConnectionUsecase();
     when(() => watchTor.execute()).thenAnswer((_) => const Stream.empty());

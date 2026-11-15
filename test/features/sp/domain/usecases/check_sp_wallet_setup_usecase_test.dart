@@ -41,12 +41,10 @@ void main() {
     when(() => configRepo.fetch()).thenAnswer(
       (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
     );
-    when(
-      () => accountRepo.hasRevokedSentinel(),
-    ).thenAnswer((_) async => const Ok(false));
-    when(
-      () => configRepo.setIsSetUpNow(isSetUp: any(named: 'isSetUp')),
-    ).thenReturn(null);
+    when(() => accountRepo.hasRevokedSentinel())
+        .thenAnswer((_) async => const Ok(false));
+    when(() => configRepo.setIsSetUpNow(isSetUp: any(named: 'isSetUp')))
+        .thenReturn(null);
     usecase = CheckSpWalletSetupUsecase(
       configRepository: configRepo,
       files: accountRepo,
@@ -61,9 +59,8 @@ void main() {
     });
 
     test('refreshes the synchronous mirror to false', () async {
-      when(
-        () => accountRepo.hasRevokedSentinel(),
-      ).thenAnswer((_) async => Ok(true));
+      when(() => accountRepo.hasRevokedSentinel())
+          .thenAnswer((_) async => Ok(true));
 
       expect((await usecase.execute() as Ok<bool, SpFailure>).value, isFalse);
 
@@ -71,9 +68,8 @@ void main() {
     });
 
     test('a failed read leaves the mirror alone', () async {
-      when(
-        () => accountRepo.hasRevokedSentinel(),
-      ).thenAnswer((_) async => const Err(SpUnexpected('sentinel read')));
+      when(() => accountRepo.hasRevokedSentinel())
+          .thenAnswer((_) async => const Err(SpUnexpected('sentinel read')));
 
       expect(await usecase.execute(), isA<Err<bool, SpFailure>>());
 
@@ -85,9 +81,8 @@ void main() {
 
   group('CheckSpWalletSetupUsecase', () {
     test('returns false when no backend config is stored', () async {
-      when(
-        () => configRepo.fetch(),
-      ).thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
+      when(() => configRepo.fetch())
+          .thenAnswer((_) async => const Ok<SpBackendConfig?, SpFailure>(null));
 
       final result = await usecase.execute();
 
@@ -101,9 +96,8 @@ void main() {
     });
 
     test('returns false when the .revoked sentinel is present', () async {
-      when(
-        () => accountRepo.hasRevokedSentinel(),
-      ).thenAnswer((_) async => Ok(true));
+      when(() => accountRepo.hasRevokedSentinel())
+          .thenAnswer((_) async => Ok(true));
 
       final result = await usecase.execute();
 
@@ -148,52 +142,45 @@ void main() {
     });
   });
 
-  group(
-    'gate consistency (CheckSpWalletSetupUsecase vs GetSpWalletUsecase)',
-    () {
-      test('with .revoked sentinel present, BOTH usecases treat the wallet as '
-          'not-set-up', () async {
-        // Partially-revoked state: config still stored + sentinel present.
-        when(
-          () => accountRepo.hasRevokedSentinel(),
-        ).thenAnswer((_) async => Ok(true));
+  group('gate consistency (CheckSpWalletSetupUsecase vs GetSpWalletUsecase)', () {
+    test('with .revoked sentinel present, BOTH usecases treat the wallet as '
+        'not-set-up', () async {
+      // Partially-revoked state: config still stored + sentinel present.
+      when(() => accountRepo.hasRevokedSentinel())
+          .thenAnswer((_) async => Ok(true));
 
-        final checkUsecase = CheckSpWalletSetupUsecase(
-          configRepository: configRepo,
-          files: accountRepo,
-        );
-        // GetSpWalletUsecase establishes the session via EnsureSpSessionUsecase,
-        // which honours the sentinel veto. Mirror that here: with the sentinel
-        // present, ensure returns null.
-        final settingsRepo = MockSettingsRepository();
-        when(
-          () => settingsRepo.fetch(),
-        ).thenAnswer((_) async => _makeSettings());
-        final ensureSpSession = MockEnsureSpSessionUsecase();
-        when(
-          () => ensureSpSession.execute(),
-        ).thenAnswer((_) async => const Ok(null));
-        final getUsecase = GetSpWalletUsecase(
-          ensureSpSessionUsecase: ensureSpSession,
-          getSpFeatureGateUsecase: GetSpFeatureGateUsecase(
-            settingsRepository: settingsRepo,
-          ),
-        );
+      final checkUsecase = CheckSpWalletSetupUsecase(
+        configRepository: configRepo,
+        files: accountRepo,
+      );
+      // GetSpWalletUsecase establishes the session via EnsureSpSessionUsecase,
+      // which honours the sentinel veto. Mirror that here: with the sentinel
+      // present, ensure returns null.
+      final settingsRepo = MockSettingsRepository();
+      when(() => settingsRepo.fetch()).thenAnswer((_) async => _makeSettings());
+      final ensureSpSession = MockEnsureSpSessionUsecase();
+      when(() => ensureSpSession.execute())
+          .thenAnswer((_) async => const Ok(null));
+      final getUsecase = GetSpWalletUsecase(
+        ensureSpSessionUsecase: ensureSpSession,
+        getSpFeatureGateUsecase: GetSpFeatureGateUsecase(
+          settingsRepository: settingsRepo,
+        ),
+      );
 
-        final isSetUp = await checkUsecase.execute();
-        final wallet = await getUsecase.execute();
+      final isSetUp = await checkUsecase.execute();
+      final wallet = await getUsecase.execute();
 
-        expect(
-          (isSetUp as Ok<bool, SpFailure>).value,
-          isFalse,
-          reason: 'CheckSpWalletSetupUsecase must honour sentinel',
-        );
-        expect(
-          (wallet as Ok<SpWallet?, SpFailure>).value,
-          isNull,
-          reason: 'GetSpWalletUsecase must honour sentinel',
-        );
-      });
-    },
-  );
+      expect(
+        (isSetUp as Ok<bool, SpFailure>).value,
+        isFalse,
+        reason: 'CheckSpWalletSetupUsecase must honour sentinel',
+      );
+      expect(
+        (wallet as Ok<SpWallet?, SpFailure>).value,
+        isNull,
+        reason: 'GetSpWalletUsecase must honour sentinel',
+      );
+    });
+  });
 }

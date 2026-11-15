@@ -128,12 +128,10 @@ void main() {
 
     wallet = _MockWallet();
     when(() => wallet.network).thenReturn(Network.bitcoinTestnet);
-    when(
-      () => wallets.getWallet(_walletId, sync: any(named: 'sync')),
-    ).thenAnswer((_) async => Ok(wallet));
-    when(
-      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
-    ).thenAnswer((_) async => null);
+    when(() => wallets.getWallet(_walletId, sync: any(named: 'sync')))
+        .thenAnswer((_) async => Ok(wallet));
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async => null);
   });
 
   test('structured events preserve the exported TSV contract', () async {
@@ -449,9 +447,8 @@ void main() {
   });
 
   test('answers from the wallet when no refresh is asked', () async {
-    when(
-      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
-    ).thenAnswer((_) async => _transaction());
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async => _transaction());
 
     final visible = await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -468,9 +465,8 @@ void main() {
   });
 
   test('a refresh trusts the server over a pending wallet copy', () async {
-    when(
-      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
-    ).thenAnswer((_) async => _transaction());
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async => _transaction());
     when(
       () => blockchain.isTransactionKnown(
         _txId,
@@ -520,9 +516,8 @@ void main() {
       synced = true;
       return Ok(wallet);
     });
-    when(
-      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
-    ).thenAnswer((_) async => synced ? _transaction() : null);
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async => synced ? _transaction() : null);
 
     final visible = await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -557,9 +552,8 @@ void main() {
       return syncs == 1 ? const Err(WalletStorageFailure('busy')) : Ok(wallet);
     });
     // The second sync joined a pass that started before the broadcast.
-    when(
-      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
-    ).thenAnswer((_) async => syncs >= 3 ? _transaction() : null);
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async => syncs >= 3 ? _transaction() : null);
 
     await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -578,9 +572,8 @@ void main() {
         connection: any(named: 'connection'),
       ),
     ).thenAnswer((_) async => true);
-    when(
-      () => wallets.getWallet(_walletId, sync: true),
-    ).thenAnswer((_) async => const Err(WalletStorageFailure('busy')));
+    when(() => wallets.getWallet(_walletId, sync: true))
+        .thenAnswer((_) async => const Err(WalletStorageFailure('busy')));
 
     await adapter.isTransactionVisible(
       walletId: _walletId,
@@ -599,17 +592,15 @@ void main() {
         connection: any(named: 'connection'),
       ),
     ).thenAnswer((_) async => true);
-    when(
-      () => wallets.getWallet(_walletId, sync: true),
-    ).thenAnswer((_) async => Ok(wallet));
+    when(() => wallets.getWallet(_walletId, sync: true))
+        .thenAnswer((_) async => Ok(wallet));
     var reads = 0;
-    when(
-      () => transactions.getWalletTransaction(_txId, walletId: _walletId),
-    ).thenAnswer((_) async {
-      reads++;
-      if (reads == 1) throw Exception('database locked');
-      return _transaction();
-    });
+    when(() => transactions.getWalletTransaction(_txId, walletId: _walletId))
+        .thenAnswer((_) async {
+          reads++;
+          if (reads == 1) throw Exception('database locked');
+          return _transaction();
+        });
 
     await adapter.isTransactionVisible(
       walletId: _walletId,

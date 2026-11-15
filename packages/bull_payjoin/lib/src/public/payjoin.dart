@@ -98,6 +98,10 @@ final class _UnavailablePayjoinSessions implements PayjoinSessions {
       Err(_failure);
 
   @override
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations() async => Err(_failure);
+
+  @override
   Stream<Result<PayjoinSession, PayjoinFailure>> watch({
     Set<String>? sessionIds,
   }) => Stream.value(Err(_failure));

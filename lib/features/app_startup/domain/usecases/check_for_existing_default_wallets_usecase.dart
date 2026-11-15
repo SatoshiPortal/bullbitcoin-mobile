@@ -75,8 +75,7 @@ class CheckForExistingDefaultWalletsUsecase {
     if (!hasBitcoin || (needsLiquid && !hasLiquid)) {
       final missing = !hasBitcoin ? 'bitcoin' : 'liquid';
       log.severe(
-        message:
-            'CheckForExistingDefaultWalletsUsecase: partial default set at cold start',
+        message: 'CheckForExistingDefaultWalletsUsecase: partial default set at cold start',
         error: StateError('missing $missing default wallet'),
         trace: StackTrace.current,
       );
@@ -145,8 +144,25 @@ class CheckForExistingDefaultWalletsUsecase {
             error: 'SecretNotFoundFailure',
             trace: StackTrace.current,
           );
+          final bitcoinDefaults = defaultWallets
+              .where(
+                (candidate) =>
+                    candidate.isBitcoin &&
+                    candidate.masterFingerprint == wallet.masterFingerprint,
+              )
+              .toList();
+          if (bitcoinDefaults.length != 1) {
+            return const Err(
+              AppStartupWalletCheckFailure(
+                'matching Bitcoin default unavailable or ambiguous',
+              ),
+            );
+          }
           return Err(
-            AppStartupMissingDefaultSecretFailure(wallet.masterFingerprint),
+            AppStartupMissingDefaultSecretFailure(
+              wallet.masterFingerprint,
+              walletId: bitcoinDefaults.single.id,
+            ),
           );
         case Err(:final failure):
           log.severe(

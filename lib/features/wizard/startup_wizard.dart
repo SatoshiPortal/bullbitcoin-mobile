@@ -16,9 +16,8 @@ WizardRepository _buildPreInitWizardRepository() =>
 /// Collects consent before migrations or network initialization can run.
 Future<void> runStartupWizard() async {
   final repository = _buildPreInitWizardRepository();
-  final isComplete = await IsWizardCompleteUsecase(
-    repository: repository,
-  ).execute();
+  final isComplete = await IsWizardCompleteUsecase(repository: repository)
+      .execute();
   if (!isComplete) {
     final completer = Completer<void>();
     runApp(WizardApp(onDone: (_) => completer.complete()));

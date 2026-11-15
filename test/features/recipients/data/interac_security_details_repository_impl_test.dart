@@ -25,15 +25,12 @@ void main() {
       recipientsGateway,
       settingsRepository,
     );
-    details =
-        (InteracSecurityDetails.create(
-                  recipientId: 'recipient-1',
-                  email: 'person@example.com',
-                  securityQuestion: 'Favourite city?',
-                  securityAnswer: 'Montreal',
-                )
-                as Ok<InteracSecurityDetails, RecipientsFailure>)
-            .value;
+    details = (InteracSecurityDetails.create(
+      recipientId: 'recipient-1',
+      email: 'person@example.com',
+      securityQuestion: 'Favourite city?',
+      securityAnswer: 'Montreal',
+    ) as Ok<InteracSecurityDetails, RecipientsFailure>).value;
   });
 
   test('regtest refuses before updating recipient security details', () async {

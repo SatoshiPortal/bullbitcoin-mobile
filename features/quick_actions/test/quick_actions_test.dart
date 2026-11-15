@@ -1,0 +1,210 @@
+import 'dart:convert';
+
+import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  const all = QuickAction.values;
+  const defaults = [
+    QuickAction.map,
+    QuickAction.transfer,
+    QuickAction.history,
+    QuickAction.settings,
+  ];
+
+  test('automatic layout uses defaults and canonical complement', () {
+    final layout = QuickActionsLayout.resolve(available: all.toSet());
+    expect(layout.primary, defaults.take(3));
+    expect(layout.more, [
+      QuickAction.buy,
+      QuickAction.sell,
+      QuickAction.pay,
+      QuickAction.exchange,
+      QuickAction.settings,
+      QuickAction.support,
+      QuickAction.priceHistory,
+    ]);
+    final disabled = QuickActionsLayout.resolve(available: defaults.toSet());
+    expect(disabled.primary, defaults.take(3));
+    expect(disabled.more, [QuickAction.settings]);
+  });
+
+  test('unavailable custom actions retain their position when restored', () {
+    final selection = QuickActionSelection([
+      QuickAction.buy,
+      QuickAction.transfer,
+      QuickAction.map,
+    ]);
+    final unavailable = QuickActionsLayout.resolve(
+      available: defaults.toSet(),
+
+      selection: selection,
+    );
+    expect(unavailable.primary, [QuickAction.transfer, QuickAction.map]);
+    expect(unavailable.more, [QuickAction.settings, QuickAction.history]);
+    final restored = QuickActionsLayout.resolve(
+      available: all.toSet(),
+
+      selection: selection,
+    );
+    expect(restored.primary, [
+      QuickAction.buy,
+      QuickAction.transfer,
+      QuickAction.map,
+    ]);
+  });
+
+  test(
+    'reordered hidden favorites retain their new positions when available',
+    () {
+      final reordered = QuickActionSelection([
+        QuickAction.transfer,
+        QuickAction.sell,
+        QuickAction.map,
+        QuickAction.buy,
+      ]);
+      final hidden = QuickActionsLayout.resolve(
+        available: defaults.toSet(),
+
+        selection: reordered,
+      );
+      expect(hidden.primary, [QuickAction.transfer, QuickAction.map]);
+      expect(reordered.actions, [
+        QuickAction.transfer,
+        QuickAction.sell,
+        QuickAction.map,
+        QuickAction.buy,
+      ]);
+      final restored = QuickActionsLayout.resolve(
+        available: reordered.actions.toSet(),
+
+        selection: reordered,
+      );
+      expect(restored.primary, reordered.actions.take(3));
+      expect(restored.more, [QuickAction.buy]);
+    },
+  );
+
+  test('empty custom selection is distinct from automatic', () {
+    final layout = QuickActionsLayout.resolve(
+      available: defaults.toSet(),
+
+      selection: QuickActionSelection([]),
+    );
+    expect(layout.primary, [QuickAction.settings]);
+    expect(layout.more, [
+      QuickAction.map,
+      QuickAction.transfer,
+      QuickAction.history,
+    ]);
+  });
+
+  test('more includes overflow favorites in canonical order', () {
+    final selected = QuickActionSelection([
+      QuickAction.exchange,
+      QuickAction.buy,
+      QuickAction.map,
+      QuickAction.settings,
+      QuickAction.sell,
+    ]);
+    final layout = QuickActionsLayout.resolve(
+      available: selected.actions.toSet(),
+
+      selection: selected,
+    );
+    expect(layout.primary, [
+      QuickAction.exchange,
+      QuickAction.buy,
+      QuickAction.map,
+    ]);
+    expect(layout.more, [QuickAction.sell, QuickAction.settings]);
+    expect(selected.actions, hasLength(5));
+  });
+
+  test('selection rejects duplicates while allowing more than four', () {
+    expect(
+      () => QuickActionSelection([QuickAction.buy, QuickAction.buy]),
+      throwsArgumentError,
+    );
+    expect(QuickActionSelection(all.take(5)).actions, hasLength(5));
+  });
+
+  test(
+    'preference ignores unknown IDs without rewriting and reset removes it',
+    () async {
+      final storage = MemoryStorage()
+        ..value = jsonEncode({
+          'home': ['buy', 'future', 'map'],
+          'more': [],
+        });
+      final facade = createQuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
+      expect((await facade.load())?.actions, [
+        QuickAction.buy,
+        QuickAction.map,
+      ]);
+      expect(
+        storage.value,
+        jsonEncode({
+          'home': ['buy', 'future', 'map'],
+          'more': [],
+        }),
+      );
+      expect(await facade.reset(), isA<Ok<void, QuickActionsFailure>>());
+      expect(storage.value, isNull);
+    },
+  );
+
+  test('invalid preference falls back without rewriting and warns', () async {
+    final storage = MemoryStorage()..value = '{';
+    final warnings = <String>[];
+    final facade = createQuickActionsCubit(
+      storage: storage,
+      warning: warnings.add,
+      exchangeVisible: Stream.value(true),
+    );
+    expect(await facade.load(), isNull);
+    expect(storage.value, '{');
+    expect(warnings, hasLength(1));
+  });
+
+  test(
+    'save failure is a value and leaves existing preference intact',
+    () async {
+      final storage = MemoryStorage()
+        ..value = 'existing'
+        ..failWrite = true;
+      final facade = createQuickActionsCubit(
+        storage: storage,
+        warning: (_) {},
+        exchangeVisible: Stream.value(true),
+      );
+      expect(
+        await facade.save(QuickActionSelection([])),
+        isA<Err<void, QuickActionsFailure>>(),
+      );
+      expect(storage.value, 'existing');
+    },
+  );
+}
+
+class MemoryStorage implements QuickActionsStorage {
+  String? value;
+  bool failWrite = false;
+
+  @override
+  Future<String?> read(String key) async => value;
+  @override
+  Future<void> remove(String key) async {
+    value = null;
+  }
+
+  @override
+  Future<void> write(String key, String value) async {
+    if (failWrite) throw Exception('write failed');
+    this.value = value;
+  }
+}

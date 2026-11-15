@@ -4,11 +4,15 @@ import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_bitcoin_pri
 import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_price_history_usecase.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:get_it/get_it.dart';
 
 class BitcoinPriceLocator {
   static void setup(GetIt locator) {
+    locator.registerLazySingleton<BitcoinPriceFacade>(
+      () => BitcoinPriceFacade(locator),
+    );
     // Use cases
     locator.registerFactory<GetBitcoinPriceUsecase>(
       () => GetBitcoinPriceUsecase(

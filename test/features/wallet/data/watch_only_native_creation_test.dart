@@ -4,9 +4,13 @@ import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'freezes_only_sync.dart' show NoConnections;
+
 import 'package:primitives/primitives.dart' as p;
-import 'package:transaction_sync/transaction_sync.dart';
-import 'package:transaction_sync/write.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 // Published BIP84 test account, shared with wallet_identity_pins_test.dart.
 const _vpub =
@@ -16,17 +20,17 @@ class _Catalog implements WalletCatalogPort {
   PublicWalletDescriptor descriptor;
   _Catalog(this.descriptor);
   @override
-  Future<p.Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<p.Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async => p.Ok(descriptor);
   @override
-  Future<p.Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async => p.Ok([descriptor]);
+  Future<p.Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      p.Ok([descriptor]);
 }
 
 class _Reserved implements ReservedAddressPort {
   @override
-  Future<p.Result<bool, TransactionSyncFailure>> isReserved(
+  Future<p.Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async => const p.Ok(false);
@@ -35,8 +39,7 @@ class _Reserved implements ReservedAddressPort {
 void main() {
   test('mainnet descriptor retains BIP32 mainnet key version', () async {
     final metadata = await WalletMetadataService.deriveFromXpub(
-      xpub:
-          'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
+      xpub: 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
       network: Network.bitcoinMainnet,
       scriptType: ScriptType.bip84,
     );
@@ -50,25 +53,26 @@ void main() {
         final directory = Directory.systemTemp.createTempSync(
           'watch-only-native-',
         );
-        final revisions = RevisionStore('${directory.path}/revisions.sqlite');
+        ForegroundStores? stores;
         try {
           final metadata = await WalletMetadataService.deriveFromXpub(
             xpub: _vpub,
             network: Network.bitcoinTestnet,
             scriptType: ScriptType.bip84,
           );
-          final descriptor =
-              (WalletCatalogPortImpl.descriptorFromMetadata(metadata)
-                      as p.Ok<PublicWalletDescriptor, TransactionSyncFailure>)
-                  .value;
+          final descriptor = (WalletCatalogPortImpl.descriptorFromMetadata(
+            metadata,
+          ) as p.Ok<PublicWalletDescriptor, SyncFailure>).value;
           final catalog = _Catalog(descriptor);
-          final writer = NativeWalletWriter(
-            lockDirectory: '${directory.path}/locks',
-            revisions: revisions,
+          final opened = stores = openForeground(
             documentsDirectory: directory.path,
             catalog: catalog,
             reservedAddresses: _Reserved(),
+            freezes: MemoryFreezeStore(),
+            inputReservations: _NoInputReservations(),
+            connections: const NoConnections(),
           );
+          final writer = opened.writer;
           if (interrupted) {
             catalog.descriptor = BitcoinWalletDescriptor(
               key: descriptor.key,
@@ -91,8 +95,8 @@ void main() {
             isA<p.Ok>(),
           );
           expect(
-            await revisions.read(descriptor.key),
-            isA<p.Ok<WalletRevisionState, TransactionSyncFailure>>().having(
+            await opened.revisions.read(descriptor.key),
+            isA<p.Ok<WalletRevisionState, SyncFailure>>().having(
               (result) => result.value.lifecycle,
               'lifecycle',
               WalletLifecycle.active,
@@ -103,10 +107,16 @@ void main() {
             isA<p.Ok>(),
           );
         } finally {
-          await revisions.close();
+          await stores?.close();
           directory.deleteSync(recursive: true);
         }
       },
     );
   }
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<p.Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const p.Ok([]);
 }

@@ -1,7 +1,7 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-final class _Logger implements BackgroundTaskLogger {
+final class _Logger implements BackgroundTaskLoggerPort {
   final messages = <String>[];
   var flushes = 0;
   bool throwOnFlush = false;
@@ -18,36 +18,6 @@ final class _Logger implements BackgroundTaskLogger {
     flushedAfter = messages.length;
     if (throwOnFlush) throw StateError('flush failure');
   }
-}
-
-final class _Scheduler implements BackgroundTaskScheduler {
-  BackgroundTaskDispatcher? dispatcher;
-  final cancelled = <String>[];
-  final registrations =
-      <({String name, String task, bool network, Duration frequency})>[];
-
-  @override
-  Future<void> initialize(BackgroundTaskDispatcher dispatcher) async {
-    this.dispatcher = dispatcher;
-  }
-
-  @override
-  Future<void> cancelByUniqueName(String uniqueName) async =>
-      cancelled.add(uniqueName);
-
-  @override
-  Future<void> registerPeriodic({
-    required String uniqueName,
-    required String taskName,
-    required Duration frequency,
-    required bool requiresNetwork,
-    Duration? initialDelay,
-  }) async => registrations.add((
-    name: uniqueName,
-    task: taskName,
-    network: requiresNetwork,
-    frequency: frequency,
-  ));
 }
 
 BackgroundTaskExecutionResult _resultFor(
@@ -233,39 +203,4 @@ void main() {
       );
     },
   );
-
-  test('keeps scheduling generic and hides WorkManager details', () async {
-    final scheduler = _Scheduler();
-    final adapter = BackgroundTaskWorkmanagerAdapter(scheduler: scheduler);
-
-    await adapter.initialize(() {});
-    await adapter.cancelByUniqueName('legacy-swaps');
-    await adapter.registerPeriodicTask(
-      uniqueName: 'bitcoin',
-      taskName: 'bitcoin-sync',
-      requiresNetwork: true,
-    );
-    await adapter.registerPeriodicTask(
-      uniqueName: 'logs',
-      taskName: 'logs-prune',
-      frequency: const Duration(days: 1),
-    );
-
-    expect(scheduler.dispatcher, isNotNull);
-    expect(scheduler.cancelled, ['legacy-swaps']);
-    expect(scheduler.registrations, [
-      (
-        name: 'bitcoin',
-        task: 'bitcoin-sync',
-        network: true,
-        frequency: const Duration(hours: 1),
-      ),
-      (
-        name: 'logs',
-        task: 'logs-prune',
-        network: false,
-        frequency: const Duration(days: 1),
-      ),
-    ]);
-  });
 }

@@ -58,9 +58,8 @@ void main() {
         serverRepository: repo,
         environmentPort: env,
       );
-      when(
-        () => env.getEnvironment(),
-      ).thenAnswer((_) async => const Ok(Environment.mainnet));
+      when(() => env.getEnvironment())
+          .thenAnswer((_) async => const Ok(Environment.mainnet));
     });
 
     test('propagates the sanitized delete failure', () async {
@@ -110,13 +109,11 @@ void main() {
         validator: validator,
         environmentPort: env,
       );
-      when(
-        () => env.getEnvironment(),
-      ).thenAnswer((_) async => const Ok(Environment.mainnet));
+      when(() => env.getEnvironment())
+          .thenAnswer((_) async => const Ok(Environment.mainnet));
       // Default fetch fails → use-case folds it to null → comparison skipped.
-      when(
-        () => repo.fetchDefaultServer(any()),
-      ).thenAnswer((_) async => const Err(MempoolLoadFailure()));
+      when(() => repo.fetchDefaultServer(any()))
+          .thenAnswer((_) async => const Err(MempoolLoadFailure()));
     });
 
     test('propagates the validation failure as a typed variant', () async {
@@ -170,30 +167,24 @@ void main() {
       expect((result as Err).failure, isA<MempoolSaveFailure>());
     });
 
-    test(
-      'returns SameAsDefault failure when custom URL matches the default',
-      () async {
-        // Return the same URL as the one in request() so the comparison triggers.
-        when(() => repo.fetchDefaultServer(any())).thenAnswer(
-          (_) async => Ok(
-            MempoolServer.existing(
-              url: 'mempool.example.com',
-              network: MempoolServerNetwork.bitcoinMainnet,
-              isCustom: false,
-            ),
+    test('returns SameAsDefault failure when custom URL matches the default', () async {
+      // Return the same URL as the one in request() so the comparison triggers.
+      when(() => repo.fetchDefaultServer(any())).thenAnswer(
+        (_) async => Ok(
+          MempoolServer.existing(
+            url: 'mempool.example.com',
+            network: MempoolServerNetwork.bitcoinMainnet,
+            isCustom: false,
           ),
-        );
+        ),
+      );
 
-        final result = await usecase.execute(request());
+      final result = await usecase.execute(request());
 
-        expect(result, isA<Err>());
-        expect(
-          (result as Err).failure,
-          isA<MempoolServerSameAsDefaultFailure>(),
-        );
-        verifyNever(() => repo.save(any()));
-      },
-    );
+      expect(result, isA<Err>());
+      expect((result as Err).failure, isA<MempoolServerSameAsDefaultFailure>());
+      verifyNever(() => repo.save(any()));
+    });
   });
 
   group('LoadMempoolServerDataUsecase', () {
@@ -217,21 +208,18 @@ void main() {
         settingsRepository: settingsRepo,
         environmentPort: env,
       );
-      when(
-        () => env.getEnvironment(),
-      ).thenAnswer((_) async => const Ok(Environment.mainnet));
+      when(() => env.getEnvironment())
+          .thenAnswer((_) async => const Ok(Environment.mainnet));
     });
 
     test('propagates the failure when fetchDefaultServer fails', () async {
       when(
         () => repo.fetchDefaultServer(any()),
       ).thenAnswer((_) async => const Err(MempoolLoadFailure('raw db error')));
-      when(
-        () => repo.fetchCustomServer(any()),
-      ).thenAnswer((_) async => const Ok(null));
-      when(
-        () => settingsRepo.fetchByNetwork(any()),
-      ).thenAnswer((_) async => const Err(MempoolLoadFailure()));
+      when(() => repo.fetchCustomServer(any()))
+          .thenAnswer((_) async => const Ok(null));
+      when(() => settingsRepo.fetchByNetwork(any()))
+          .thenAnswer((_) async => const Err(MempoolLoadFailure()));
 
       final result = await usecase.execute(
         LoadMempoolServerDataRequest(isLiquid: false),
@@ -242,15 +230,13 @@ void main() {
     });
 
     test('propagates the failure when fetchCustomServer fails', () async {
-      when(
-        () => repo.fetchDefaultServer(any()),
-      ).thenAnswer((_) async => Ok(defaultServer));
+      when(() => repo.fetchDefaultServer(any()))
+          .thenAnswer((_) async => Ok(defaultServer));
       when(() => repo.fetchCustomServer(any())).thenAnswer(
         (_) async => const Err(MempoolLoadFailure('custom server error')),
       );
-      when(
-        () => settingsRepo.fetchByNetwork(any()),
-      ).thenAnswer((_) async => const Err(MempoolLoadFailure()));
+      when(() => settingsRepo.fetchByNetwork(any()))
+          .thenAnswer((_) async => const Err(MempoolLoadFailure()));
 
       final result = await usecase.execute(
         LoadMempoolServerDataRequest(isLiquid: false),
@@ -263,12 +249,10 @@ void main() {
     test(
       'propagates the failure when fetchByNetwork (settings) fails',
       () async {
-        when(
-          () => repo.fetchDefaultServer(any()),
-        ).thenAnswer((_) async => Ok(defaultServer));
-        when(
-          () => repo.fetchCustomServer(any()),
-        ).thenAnswer((_) async => const Ok(null));
+        when(() => repo.fetchDefaultServer(any()))
+            .thenAnswer((_) async => Ok(defaultServer));
+        when(() => repo.fetchCustomServer(any()))
+            .thenAnswer((_) async => const Ok(null));
         when(() => settingsRepo.fetchByNetwork(any())).thenAnswer(
           (_) async => const Err(MempoolLoadFailure('settings error')),
         );
@@ -293,9 +277,8 @@ void main() {
           settingsRepository: settingsRepo,
           environmentPort: env,
         );
-        when(
-          () => env.getEnvironment(),
-        ).thenAnswer((_) async => const Ok(Environment.mainnet));
+        when(() => env.getEnvironment())
+            .thenAnswer((_) async => const Ok(Environment.mainnet));
         when(() => settingsRepo.fetchByNetwork(any())).thenAnswer(
           (_) async => const Err(MempoolLoadFailure('raw db error')),
         );
@@ -321,9 +304,8 @@ void main() {
           settingsRepository: settingsRepo,
           environmentPort: env,
         );
-        when(
-          () => env.getEnvironment(),
-        ).thenAnswer((_) async => const Ok(Environment.mainnet));
+        when(() => env.getEnvironment())
+            .thenAnswer((_) async => const Ok(Environment.mainnet));
         when(() => settingsRepo.fetchByNetwork(any())).thenAnswer(
           (_) async => Ok(
             MempoolSettings.existing(

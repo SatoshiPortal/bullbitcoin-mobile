@@ -12,24 +12,23 @@ class _MockPayjoinReceiver extends Mock implements PayjoinReceiver {}
 
 BuyOrder _order({required OrderPayinStatus payinStatus, String? bip21URI}) =>
     Order.buy(
-          orderId: 'order-1',
-          orderType: OrderType.buy,
-          message: OrderMessage(code: '', message: ''),
-          orderNumber: 1,
-          payinAmount: 100,
-          payinCurrency: 'CAD',
-          payoutAmount: 0.001,
-          payoutCurrency: 'BTC',
-          payinMethod: OrderPaymentMethod.bankTransfer,
-          payoutMethod: OrderPaymentMethod.bitcoin,
-          orderStatus: OrderStatus.awaitingConfirmation,
-          payinStatus: payinStatus,
-          payoutStatus: OrderPayoutStatus.notStarted,
-          createdAt: DateTime(2026),
-          bip21URI: bip21URI,
-          isTestnet: false,
-        )
-        as BuyOrder;
+      orderId: 'order-1',
+      orderType: OrderType.buy,
+      message: OrderMessage(code: '', message: ''),
+      orderNumber: 1,
+      payinAmount: 100,
+      payinCurrency: 'CAD',
+      payoutAmount: 0.001,
+      payoutCurrency: 'BTC',
+      payinMethod: OrderPaymentMethod.bankTransfer,
+      payoutMethod: OrderPaymentMethod.bitcoin,
+      orderStatus: OrderStatus.awaitingConfirmation,
+      payinStatus: payinStatus,
+      payoutStatus: OrderPayoutStatus.notStarted,
+      createdAt: DateTime(2026),
+      bip21URI: bip21URI,
+      isTestnet: false,
+    ) as BuyOrder;
 
 void main() {
   const uri =
@@ -60,9 +59,8 @@ void main() {
       expiresAt: DateTime(2026).add(const Duration(hours: 24)),
     );
     when(() => sessions.list(any())).thenAnswer((_) async => Ok([session]));
-    when(
-      () => receiver.cancel('receiver-1'),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => receiver.cancel('receiver-1'))
+        .thenAnswer((_) async => const Ok(null));
 
     expect(
       await usecase.execute(
@@ -146,9 +144,8 @@ void main() {
         expiresAt: DateTime(2026).add(const Duration(hours: 24)),
       );
       when(() => sessions.list(any())).thenAnswer((_) async => Ok([session]));
-      when(
-        () => receiver.cancel('receiver-1'),
-      ).thenAnswer((_) async => const Ok(null));
+      when(() => receiver.cancel('receiver-1'))
+          .thenAnswer((_) async => const Ok(null));
 
       expect(
         await usecase.execute(

@@ -67,6 +67,12 @@ abstract interface class PayjoinSessions {
   /// bookkeeping did not" before offering the payment again.
   @useResult
   Future<Result<String?, PayjoinFailure>> visibleTransaction(String sessionId);
+
+  /// Every input an unfinished session holds, with its owning session. A
+  /// failed read is an error, never an empty list.
+  @useResult
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations();
 }
 
 abstract interface class PayjoinPolicyAccess {

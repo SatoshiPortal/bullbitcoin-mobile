@@ -9,7 +9,7 @@
 // padded canvas. Knobs drive the interesting variants.
 
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart' as m;
+import 'package:material_ui/material_ui.dart' as m;
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -660,8 +660,7 @@ m.Widget bullCopyFieldUseCase(m.BuildContext context) {
       child: BullCopyField(
         text: context.knobs.string(
           label: 'text',
-          initialValue:
-              '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
+          initialValue: '4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
         ),
         copiedMessage: 'Copied to clipboard',
         maxLines: 1,

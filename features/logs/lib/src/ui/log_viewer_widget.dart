@@ -5,9 +5,11 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_logs/src/domain/log_entry.dart';
 import 'package:bull_logs/src/presentation/logs_cubit.dart';
 import 'package:bull_logs/src/presentation/logs_state.dart';
+
 import '../presentation/logs_failure_l10n.dart';
+
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -74,9 +76,8 @@ class _LogsViewerWidgetState extends State<LogsViewerWidget> {
                       state.visibleEntries.length,
                       state.entries.length,
                     ),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: context.bull.textMuted,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: context.bull.textMuted),
                   ),
                 ),
                 BullViewerActionButton(
@@ -112,9 +113,8 @@ class _LogsViewerWidgetState extends State<LogsViewerWidget> {
                   state.entries.isEmpty
                       ? LogsLocalizations.of(context).logsViewerEmpty
                       : LogsLocalizations.of(context).logsViewerNoMatches,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: context.bull.textMuted,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium
+                      ?.copyWith(color: context.bull.textMuted),
                   textAlign: TextAlign.center,
                 ),
               );
@@ -235,9 +235,8 @@ final class _LogsFilterSheetState extends State<_LogsFilterSheet> {
                   if (state.startDate != null || state.endDate != null) ...[
                     const Gap(4),
                     IconButton(
-                      tooltip: LogsLocalizations.of(
-                        context,
-                      ).logsViewerClearFilter,
+                      tooltip: LogsLocalizations.of(context)
+                          .logsViewerClearFilter,
                       onPressed: () =>
                           context.read<LogsCubit>().setDateRange(null, null),
                       icon: Icon(Icons.clear, color: context.bull.primary),
@@ -485,16 +484,14 @@ Future<void> showConfirmDeleteLogsBottomSheet(BuildContext context) async {
             const Gap(16),
             Text(
               LogsLocalizations.of(context).logsViewerDeleteTitle,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: context.bull.onSurface,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium
+                  ?.copyWith(color: context.bull.onSurface),
             ),
             const Gap(16),
             Text(
               LogsLocalizations.of(context).logsViewerDeleteConfirmation,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: context.bull.onSurface),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: context.bull.onSurface),
             ),
             const Gap(16),
             Row(
@@ -509,9 +506,8 @@ Future<void> showConfirmDeleteLogsBottomSheet(BuildContext context) async {
                       case Ok():
                         BullSnackBar.show(
                           context,
-                          message: LogsLocalizations.of(
-                            context,
-                          ).logsDeletedMessage,
+                          message: LogsLocalizations.of(context)
+                              .logsDeletedMessage,
                         );
                       case Err(:final failure):
                         BullSnackBar.show(

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -7,7 +8,7 @@ import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportButton, Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,7 +30,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ExchangeAccessBuilder(
+    builder: (context, access) => _build(context, access),
+  );
+
+  Widget _build(BuildContext context, ExchangeAccess access) {
     final theme = Theme.of(context);
 
     final appVersion = context.select(
@@ -44,7 +49,8 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
-    final items = settingsItemsOf(context);
+    final ready = ExchangeAvailability.canManageAccount(access);
+    final items = settingsItemsOf(context, accountReady: ready);
 
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),

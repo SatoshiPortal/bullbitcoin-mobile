@@ -47,9 +47,8 @@ void main() {
     test(
       'returns NoDefaultWalletFailure when no wallet is the default',
       () async {
-        when(
-          () => getWalletsUsecase.execute(),
-        ).thenAnswer((_) async => Ok([walletWith(isDefault: false)]));
+        when(() => getWalletsUsecase.execute())
+            .thenAnswer((_) async => Ok([walletWith(isDefault: false)]));
 
         final result = await usecase.execute();
 
@@ -80,9 +79,8 @@ void main() {
 
     test('maps an unexpected GetWalletsUsecase failure to a sanitized failure '
         'without leaking the raw reason', () async {
-      when(
-        () => getWalletsUsecase.execute(),
-      ).thenThrow(Exception('electrum: connection reset by 1.2.3.4'));
+      when(() => getWalletsUsecase.execute())
+          .thenThrow(Exception('electrum: connection reset by 1.2.3.4'));
 
       final result = await usecase.execute();
 

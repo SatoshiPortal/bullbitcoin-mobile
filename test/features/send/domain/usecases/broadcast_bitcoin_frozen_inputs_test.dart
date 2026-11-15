@@ -1,4 +1,7 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+
 import 'dart:io';
+
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -6,10 +9,7 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -18,7 +18,10 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
-import 'package:drift/native.dart';
+import 'package:sync/sync.dart' show FrozenOutpoint, Sync;
+
+import '../../../wallet/data/freezes_only_sync.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -33,9 +36,7 @@ class _MockWalletMetadataDatasource extends Mock
 
 class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
-class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
-
-class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -55,8 +56,8 @@ void main() {
 
   setUpAll(() => registerFallbackValue(<int>[]));
 
-  late SqliteDatabase db;
-  late FrozenWalletUtxoDatasource frozenStore;
+  late Directory dir;
+  late Sync sync;
   late _MockBlockchain blockchain;
   late _MockSettings settings;
 
@@ -70,20 +71,19 @@ void main() {
         WalletUtxoRepositoryImpl(
           walletMetadataDatasource: _MockWalletMetadataDatasource(),
           labelsFacade: _MockLabelsFacade(),
-          bdkWalletDatasource: _MockBdkWalletDatasource(),
-          lwkWalletDatasource: _MockLwkWalletDatasource(),
-          frozenWalletUtxoDatasource: frozenStore,
+          walletValuesDatasource: _MockValues(),
+          freezesDatasource: SyncFreezesDatasource(sync: () async => sync),
         ),
   );
 
-  Future<void> freeze(String txId, int vout) => frozenStore.freezeOutpoints(
-    walletId: 'wallet',
-    outpoints: [(txId: txId, vout: vout)],
-  );
+  Future<void> freeze(String txId, int vout) =>
+      SyncFreezesDatasource(sync: () async => sync).freezeAttributed([
+        FrozenOutpoint((txId: txId, vout: vout), origin: 'wallet'),
+      ]);
 
   setUp(() {
-    db = SqliteDatabase(NativeDatabase.memory());
-    frozenStore = FrozenWalletUtxoDatasource(db: db);
+    dir = Directory.systemTemp.createTempSync('broadcast-frozen-');
+    sync = freezesOnlySync(dir.path);
     blockchain = _MockBlockchain();
     settings = _MockSettings();
     when(() => settings.fetch()).thenAnswer(
@@ -93,9 +93,8 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
-    when(
-      () => blockchain.broadcastPsbt(any(), network: Network.bitcoinMainnet),
-    ).thenAnswer((_) async => 'txid');
+    when(() => blockchain.broadcastPsbt(any(), network: Network.bitcoinMainnet))
+        .thenAnswer((_) async => 'txid');
     when(
       () => blockchain.broadcastTransaction(
         any(),
@@ -104,7 +103,10 @@ void main() {
     ).thenAnswer((_) async => 'txid');
   });
 
-  tearDown(() => db.close());
+  tearDown(() async {
+    await sync.close();
+    dir.deleteSync(recursive: true);
+  });
 
   void verifyNothingBroadcast() {
     verifyNever(
@@ -195,14 +197,12 @@ void main() {
 
     test('refuses when the frozen store cannot be read', () async {
       final failing = _MockWalletUtxoRepository();
-      when(
-        failing.getAllFrozenOutpoints,
-      ).thenThrow(const FileSystemException('store unavailable'));
+      when(failing.getAllFrozenOutpoints)
+          .thenThrow(const FileSystemException('store unavailable'));
 
       await expectLater(
-        usecase(
-          walletUtxoRepository: failing,
-        ).execute(psbt, isPsbt: true, network: Network.bitcoinMainnet),
+        usecase(walletUtxoRepository: failing)
+            .execute(psbt, isPsbt: true, network: Network.bitcoinMainnet),
         throwsA(isA<BroadcastTransactionException>()),
       );
       verifyNothingBroadcast();

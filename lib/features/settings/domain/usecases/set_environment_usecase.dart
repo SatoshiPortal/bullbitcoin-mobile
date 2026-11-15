@@ -12,8 +12,7 @@ class SetEnvironmentUsecase {
 
   @useResult
   Future<Result<void, SettingsFailure>> execute(Environment environment) async {
-    return SetActiveNetworkUsecase(
-      settingsRepository: _settingsRepository,
-    ).execute(environment.networkEnv);
+    return SetActiveNetworkUsecase(settingsRepository: _settingsRepository)
+        .execute(environment.networkEnv);
   }
 }

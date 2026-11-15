@@ -16,6 +16,7 @@ final class TestVaultUsecase {
   Future<Result<VaultContext, RecoverBullFailure>> execute({
     required EncryptedVault vault,
     required VaultKey key,
+    String passphrase = '',
   }) async {
     final VaultContext context;
     switch (await _wallets.currentDefault()) {
@@ -26,7 +27,7 @@ final class TestVaultUsecase {
       case Ok(value: final value?):
         context = value;
     }
-    switch (await _vaults.fingerprint(vault, key)) {
+    switch (await _vaults.fingerprint(vault, key, passphrase: passphrase)) {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
