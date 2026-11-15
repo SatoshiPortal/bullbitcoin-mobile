@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 import 'package:bull_tor/src/data/tor_repository_impl.dart';
 import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
 import 'package:bull_tor/src/domain/ports/external_tor_port.dart';
+import 'package:bull_tor/src/domain/ports/network_presence_port.dart';
 import 'package:bull_tor/src/domain/tor_repository.dart';
 import 'package:bull_tor/src/domain/usecases/set_tor_dormant_usecase.dart';
 import 'package:bull_tor/tor.dart';
@@ -241,6 +242,129 @@ void main() {
       expect(state.route.transport, TorTransport.snowflake);
     });
 
+    group('on a network that blocks Tor relays', () {
+      late _FakeNetwork network;
+
+      setUp(() async {
+        await repository.close();
+        embedded = _FakeEmbeddedTor();
+        network = _FakeNetwork();
+        repository = TorRepositoryImpl(
+          embedded,
+          network: network,
+          censorshipFallbackAfter: const Duration(milliseconds: 20),
+        );
+      });
+
+      test(
+        'an offline verdict with a device network suggests censorship',
+        () async {
+          final states = <TorConnectionState>[];
+          final subscription = repository.watch().listen(states.add);
+          addTearDown(subscription.cancel);
+          unawaited(repository.ensureReady());
+          await Future<void>.delayed(Duration.zero);
+
+          embedded.events.add(
+            const EmbeddedTorConnecting(
+              progress: 0,
+              transport: TorTransport.direct,
+              diagnostic: TorDiagnostic.offline,
+            ),
+          );
+
+          await Future<void>.delayed(Duration.zero);
+          final connecting = states.whereType<TorConnecting>().last;
+          expect(connecting.diagnostic?.suggestsCensorship, isTrue);
+        },
+      );
+
+      test(
+        'an offline verdict without a device network stays offline',
+        () async {
+          network.present = false;
+          final states = <TorConnectionState>[];
+          final subscription = repository.watch().listen(states.add);
+          addTearDown(subscription.cancel);
+          unawaited(repository.ensureReady());
+          await Future<void>.delayed(Duration.zero);
+
+          embedded.events.add(
+            const EmbeddedTorConnecting(
+              progress: 0,
+              transport: TorTransport.direct,
+              diagnostic: TorDiagnostic.offline,
+            ),
+          );
+          await Future<void>.delayed(const Duration(milliseconds: 60));
+
+          expect(
+            states.whereType<TorConnecting>().last.diagnostic,
+            TorDiagnostic.offline,
+          );
+          expect(embedded.startedTransports, [TorTransport.direct]);
+        },
+      );
+
+      test('persistent censorship switches to Snowflake and announces it', () async {
+        final states = <TorConnectionState>[];
+        final subscription = repository.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        final pending = repository.ensureReady();
+        await Future<void>.delayed(Duration.zero);
+
+        embedded.events.add(
+          const EmbeddedTorConnecting(
+            progress: 0,
+            transport: TorTransport.direct,
+            diagnostic: TorDiagnostic.offline,
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+
+        // The direct bootstrap never finished: the switch did not wait for it.
+        expect(embedded.starts.first.isCompleted, isFalse);
+        expect(embedded.stopCalls, 1);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+        ]);
+        final snowflake = states.whereType<TorConnecting>().last;
+        expect(snowflake.transport, TorTransport.snowflake);
+        expect(snowflake.circumvention, isTrue);
+
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41003),
+        );
+        final state = await pending as TorReady;
+        expect(state.route.transport, TorTransport.snowflake);
+      });
+
+      test('a passing diagnostic does not switch transport', () async {
+        unawaited(repository.ensureReady());
+        await Future<void>.delayed(Duration.zero);
+
+        embedded.events
+          ..add(
+            const EmbeddedTorConnecting(
+              progress: 0,
+              transport: TorTransport.direct,
+              diagnostic: TorDiagnostic.offline,
+            ),
+          )
+          ..add(
+            const EmbeddedTorConnecting(
+              progress: 0.4,
+              transport: TorTransport.direct,
+            ),
+          );
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+
+        expect(embedded.startedTransports, [TorTransport.direct]);
+        expect(embedded.stopCalls, 0);
+      });
+    });
+
     test('automatic mode remembers Snowflake without downgrading', () async {
       final first = repository.ensureReady();
       await Future<void>.delayed(Duration.zero);
@@ -403,6 +527,13 @@ final class _FakeExternalTor implements ExternalTorPort {
     final error = failure;
     if (error != null) throw error;
   }
+}
+
+final class _FakeNetwork implements NetworkPresencePort {
+  bool present = true;
+
+  @override
+  bool get hasNetwork => present;
 }
 
 final class _FakeEmbeddedTor implements EmbeddedTorPort {
