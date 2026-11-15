@@ -90,9 +90,8 @@ void main() {
       watcher = _MockSwapWatcher();
       environments = StreamController<settings.Environment>.broadcast();
       builds = [];
-      when(
-        () => settingsRepository.environmentChangeStream,
-      ).thenAnswer((_) => environments.stream);
+      when(() => settingsRepository.environmentChangeStream)
+          .thenAnswer((_) => environments.stream);
       when(() => watcher.stop()).thenAnswer((_) async {});
       when(() => watcher.start()).thenAnswer((_) async {});
       switcher = SwapEngineSwitcher(

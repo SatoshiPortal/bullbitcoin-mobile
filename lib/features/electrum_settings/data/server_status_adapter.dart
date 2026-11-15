@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:isolate';
 
 import 'package:bb_mobile/core/electrum/data/electrum_socket_connector.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
@@ -7,18 +6,18 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:primitives/primitives.dart' show Err;
+import 'package:sync/sync.dart' show WalletConnection, probeBitcoinServer;
 import 'package:bull_tor/tor.dart';
 
-typedef BdkElectrumProbe =
-    Future<void> Function({
-      required String url,
-      required String? socks5,
-      required int timeout,
-      required int retry,
-      required bool validateDomain,
-      required bool isMainnet,
-    });
+typedef BdkElectrumProbe = Future<void> Function({
+  required String url,
+  required String? socks5,
+  required int timeout,
+  required int retry,
+  required bool validateDomain,
+  required bool isMainnet,
+});
 
 class ServerStatusAdapter implements ServerStatusPort {
   /// Bitcoin pizza day — first real-world BTC purchase, May 22 2010.
@@ -203,36 +202,27 @@ Future<void> _runBdkProbe({
   required int retry,
   required bool validateDomain,
   required bool isMainnet,
-}) => Isolate.run(() {
-  bdk.ElectrumClient buildClient() => bdk.ElectrumClient(
-    url: url,
-    socks5: socks5,
-    timeout: timeout.clamp(0, 255),
-    retry: retry.clamp(0, 255),
-    validateDomain: validateDomain,
+}) async {
+  final result = await probeBitcoinServer(
+    WalletConnection(
+      url: url,
+      timeout: Duration(seconds: timeout),
+      retry: retry,
+      stopGap: 0,
+      validateDomain: validateDomain,
+      socks5: socks5,
+    ),
+    knownTxid: isMainnet ? ServerStatusAdapter._bitcoinMainnetProbeTxid : null,
   );
+  if (result case Err(:final failure)) throw _ProbeFailed(failure.logCode);
+}
 
-  late final bdk.ElectrumClient client;
-  try {
-    client = buildClient();
-  } on bdk.CouldNotCreateConnectionElectrumException catch (error) {
-    if (!error.errorMessage.contains('Failed to install CryptoProvider')) {
-      rethrow;
-    }
-    // Concurrent BDK isolates can race while installing rustls' global
-    // provider. The winner has installed it by the time this retry runs.
-    client = buildClient();
-  }
-  try {
-    client.blockHeadersSubscribe();
-    if (isMainnet) {
-      client.fetchTx(
-        txid: bdk.Txid.fromString(
-          hex: ServerStatusAdapter._bitcoinMainnetProbeTxid,
-        ),
-      );
-    }
-  } finally {
-    client.dispose();
-  }
-});
+/// Caught by [ServerStatusAdapter.checkElectrum], which reports the server
+/// offline.
+final class _ProbeFailed implements Exception {
+  final String category;
+  const _ProbeFailed(this.category);
+
+  @override
+  String toString() => 'Electrum probe failed category=$category';
+}

@@ -127,9 +127,8 @@ void main() {
       // LabelValidationException. That is not a LabelsImportException, so it
       // used to fall past the typed handler into the catch-all and read
       // "Oops something went wrong".
-      when(
-        () => repository.storeAll(any()),
-      ).thenThrow(LabelValidationException('Invalid txid: not-a-txid'));
+      when(() => repository.storeAll(any()))
+          .thenThrow(LabelValidationException('Invalid txid: not-a-txid'));
 
       final result = await import(_validLine());
 
@@ -165,9 +164,8 @@ void main() {
 
   test('a store failure is the catch-all, and carries no reason: the label '
       'content is the user\'s own words', () async {
-    when(
-      () => repository.storeAll(any()),
-    ).thenThrow(Exception('drift: rent to Alice Smith'));
+    when(() => repository.storeAll(any()))
+        .thenThrow(Exception('drift: rent to Alice Smith'));
 
     final result = await import(_validLine());
 

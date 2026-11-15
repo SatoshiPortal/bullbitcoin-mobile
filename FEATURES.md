@@ -11,23 +11,26 @@ graph TB
     %% Core infrastructure
     CORE[Core<br/>---<br/>Database, Secure Storage,<br/>API Clients, Tor Adapters, UI Kit,<br/>DI & Router setup,<br/>PIN encrypted storage,<br/>Domain Primitives/Value Objects]
     PRIMITIVES[Primitives Package]
-    TRANSACTION_SYNC[Transaction Sync Package<br/>Electrum sync, contracts and owner ports]
+    SYNC[Sync Package<br/>Electrum sync, codecs, chain access,<br/>contracts and owner ports]
     NOTIFICATIONS[Notifications Package]
-    BG_TASKS --> TRANSACTION_SYNC
-    BG_TASKS --> NOTIFICATIONS
+    BG_TASKS --> SYNC
     WALLETS --> NOTIFICATIONS
     WALLETS --> BG_TASKS
-    NOTIFICATIONS --> TRANSACTION_SYNC
     NOTIFICATIONS --> PRIMITIVES
     BG_TASKS --> PRIMITIVES
     BG_TASKS --> BULL_LOGGER
     SETTINGS --> BG_TASKS
     SETTINGS --> NOTIFICATIONS
-    TRANSACTION_SYNC --> PRIMITIVES
-    TRANSACTION_SYNC --> BULL_LOGGER
-    ELECTRUM_SETTINGS --> TRANSACTION_SYNC
-    LABELS --> TRANSACTION_SYNC
-    WALLETS --> TRANSACTION_SYNC
+    SYNC --> PRIMITIVES
+    SYNC --> BULL_LOGGER
+    ELECTRUM_SETTINGS --> SYNC
+    LABELS --> SYNC
+    WALLETS --> SYNC
+    CORE --> SYNC
+    SEND --> SYNC
+    FEES --> SYNC
+    SELL --> SYNC
+    BROADCAST_SIGNED_TX --> SYNC
     WALLETS --> LABELS
     BULL_REPORTING[Bull Reporting Package]
     BULL_REPORTING --> BULL_LOGGER
@@ -46,6 +49,8 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
+    QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
+    WIZARD[Wizard]
     IMPORT_MNEMONIC[Mnemonic Import]
     ONBOARDING[Onboarding]
     SETTINGS[Settings]
@@ -138,8 +143,15 @@ graph TB
     SCREEN_AWAKE --> BULL_LOGGER
     SCREEN_AWAKE --> WAKELOCK_PLUS
 
+    %% Optional exchange access and wallet quick actions
+    WIZARD --> EXCHANGE
+    SETTINGS --> QUICK_ACTIONS
+    WALLETS --> QUICK_ACTIONS
+    QUICK_ACTIONS --> BULL_UI
+    QUICK_ACTIONS --> PRIMITIVES
     IMPORT_MNEMONIC --> WALLETS
     ONBOARDING --> IMPORT_MNEMONIC
+    ONBOARDING --> WALLETS
     APP_STARTUP --> IMPORT_MNEMONIC
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
@@ -164,6 +176,8 @@ graph TB
     WALLETS --> RECOVERBULL
     STATUS --> RECOVERBULL
     BACKUPS --> RECOVERBULL
+    BACKUPS --> SECRETS
+    BACKUPS --> APP_UNLOCK
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     BTC_PRICE --> SETTINGS
@@ -197,7 +211,6 @@ graph TB
     PAY -->|public protected broadcast| SEND
     PAY --> EXCHANGE
     TX_HISTORY --> EXCHANGE
-    WALLETS --> EXCHANGE
     WITHDRAWAL --> EXCHANGE
     LIMIT_ORDERS --> DEFAULT_WALLETS
     LIMIT_ORDERS --> FUNDING
@@ -313,7 +326,6 @@ graph TB
     REPLACE_BY_FEE --> SEND
     SELL --> FEES
     SELL --> SETTINGS
-    SEND --> ELECTRUM_SETTINGS
     SEND --> SETTINGS
     STATUS --> ELECTRUM_SETTINGS
     STATUS --> WALLETS
@@ -432,6 +444,12 @@ To verify no cyclic dependencies exist, you can:
 - Add dependency cardinality (required vs optional dependencies)
 - Include compile-time vs runtime dependency distinction
 - Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
+
+## Optional exchange access and quick actions
+
+`exchange` owns access, authentication, policy and cleanup behind its public facade. Its repository serializes credential and socket operations, publishes a sealed access state, and invalidates stale work with one internal epoch. The installation-wide exchange_access preference contains only enabled and signOutPending; session is derived from environment-scoped credentials. A current server 401 expires the captured environment while keeping exchange enabled. Explicit sign-out journals cleanup and attempts both keys and cookies; unreadable preferences never prevent Reset. Wizard choices apply only before a newer explicit decision. iOS platform restrictions hide activation and trading, while support authentication and authenticated account management remain available. Initial unresolved access stays hidden on Home; reconciliation keeps the resolved view and the trading guard waits for the lifecycle queue. Inferred activation and 401 expiration persist enabled=true before credential loss. No Drift migration is added.
+
+`features/quick_actions` owns the catalogue, defaults, Home/More layout, drag editor and a shared QuickActionsCubit. Thin Load/Save/Reset use cases separate the cubit from persistence, and the module composition constructs their repository. Settings supplies its storage adapter and an exchangeVisible stream derived from the public exchange availability policy and platform changes. Wallet and the settings editor share that cubit and receive navigation callbacks from the shell. The package depends on bull_ui, primitives and the existing bloc library; it imports no exchange, settings or routing implementation. Home contains at most three actions plus More whenever another available action is hidden, with Settings as a display-only fallback. Immediate writes are serialized, failures restore the draft, and Restore defaults offers revision-scoped Undo. Known unavailable choices remain stored. Only the unversioned {home, more} preference format is read and written, under quick_actions; intermediate debug formats are not migrated. Bull components own button, stream-value and drag-list presentation. The exchange identifier is displayed as Trade. Public price history remains independent; WalletHome has no bottom tabs or top action buttons.
 
 The mnemonic import feature currently imports Wallets internals. Replace that dependency with the Wallets public facade in a scoped follow-up; the graph records the existing dependency rather than implying facade compliance.
 

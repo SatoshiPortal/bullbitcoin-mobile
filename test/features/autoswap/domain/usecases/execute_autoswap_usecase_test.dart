@@ -44,12 +44,10 @@ void main() {
     );
     when(() => getSettings.execute()).thenAnswer((_) async => valid);
     when(() => swapFacade.getRoute()).thenAnswer((_) async => SwapRoute.boltz);
-    when(
-      () => boltz.execute(any()),
-    ).thenAnswer((_) async => const Ok('boltz-swap'));
-    when(
-      () => exchange.execute(any()),
-    ).thenAnswer((_) async => const Ok('exchange-order'));
+    when(() => boltz.execute(any()))
+        .thenAnswer((_) async => const Ok('boltz-swap'));
+    when(() => exchange.execute(any()))
+        .thenAnswer((_) async => const Ok('exchange-order'));
   });
 
   String? okValue(Result<String, AutoswapFailure> result) => switch (result) {
@@ -63,18 +61,16 @@ void main() {
   });
 
   test('runs the exchange when the route is exchange-only', () async {
-    when(
-      () => swapFacade.getRoute(),
-    ).thenAnswer((_) async => SwapRoute.exchange);
+    when(() => swapFacade.getRoute())
+        .thenAnswer((_) async => SwapRoute.exchange);
 
     expect(okValue(await usecase.execute()), 'exchange-order');
     verifyNever(() => boltz.execute(any()));
   });
 
   test('Boltz unreachable without the fallback stays a failure', () async {
-    when(
-      () => boltz.execute(any()),
-    ).thenAnswer((_) async => const Err(AutoswapBoltzUnavailableFailure()));
+    when(() => boltz.execute(any()))
+        .thenAnswer((_) async => const Err(AutoswapBoltzUnavailableFailure()));
 
     final result = await usecase.execute();
 
@@ -84,9 +80,8 @@ void main() {
 
   test('falls back to the exchange when Boltz cannot take the transfer '
       'and the fallback is on', () async {
-    when(
-      () => swapFacade.getRoute(),
-    ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+    when(() => swapFacade.getRoute())
+        .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
     for (final failure in const <AutoswapFailure>[
       AutoswapBoltzUnavailableFailure(),
       AutoswapAmountOutOfBoundsFailure(),
@@ -98,9 +93,8 @@ void main() {
   });
 
   test('never falls back once Boltz has created a swap', () async {
-    when(
-      () => swapFacade.getRoute(),
-    ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+    when(() => swapFacade.getRoute())
+        .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
     for (final failure in const <AutoswapFailure>[
       AutoswapPendingFailure(),
       AutoswapPayinMismatchFailure(),
@@ -117,9 +111,8 @@ void main() {
   });
 
   test('does not call a provider while consent is pending', () async {
-    when(
-      () => getSettings.execute(),
-    ).thenAnswer((_) async => valid.copyWith(showWarning: true));
+    when(() => getSettings.execute())
+        .thenAnswer((_) async => valid.copyWith(showWarning: true));
 
     final result = await usecase.execute();
 
@@ -129,9 +122,8 @@ void main() {
   });
 
   test('does not call a provider with invalid settings', () async {
-    when(
-      () => getSettings.execute(),
-    ).thenAnswer((_) async => valid.copyWith(recipientWalletId: null));
+    when(() => getSettings.execute())
+        .thenAnswer((_) async => valid.copyWith(recipientWalletId: null));
 
     final result = await usecase.execute();
 

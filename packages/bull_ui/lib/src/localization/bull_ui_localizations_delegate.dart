@@ -1,5 +1,4 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../generated/l10n/bull_ui_localizations.dart';
 
@@ -9,9 +8,7 @@ const LocalizationsDelegate<BullUiLocalizations> bullUiLocalizationsDelegate =
 
 const bullUiLocalizationsDelegates = <LocalizationsDelegate<dynamic>>[
   bullUiLocalizationsDelegate,
-  GlobalMaterialLocalizations.delegate,
-  GlobalWidgetsLocalizations.delegate,
-  GlobalCupertinoLocalizations.delegate,
+  ...GlobalMaterialLocalizations.delegates,
 ];
 
 class _BullUiLocalizationsDelegate

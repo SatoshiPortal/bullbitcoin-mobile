@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -28,6 +26,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:swaps/swaps.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sync/sync.dart' show WalletConnectionPort;
 import 'package:secrets/secrets.dart';
 
 /// Wires the self-contained `swaps` engine package to the app: storage
@@ -138,15 +137,10 @@ class SwapsLocator {
       storage: locator<SwapStorage>(),
       isTestnet: isTestnet,
       electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
-      lockupChain: AppLockupChain(
-        locator<ElectrumServersPort>(),
-        locator<BdkBitcoinBlockchainDatasource>(),
-        locator<LwkLiquidBlockchainDatasource>(),
-      ),
+      lockupChain: AppLockupChain(locator<WalletConnectionPort>()),
       newAddressFor: (walletId) async =>
-          (await addresses.generateNewReceiveAddress(
-            walletId: walletId,
-          )).address,
+          (await addresses.generateNewReceiveAddress(walletId: walletId))
+              .address,
       walletTx: (txid, {required walletId}) async {
         final tx = await walletTxs.getWalletTransaction(
           txid,

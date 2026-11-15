@@ -48,8 +48,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   /// never held in state; the result is returned so the entry screen can say
   /// why a phrase was refused.
   Future<Result<void, AppStartupFailure>> restoreDefaultSecret(
-    List<String> words,
-  ) async {
+    List<String> words, {
+    String passphrase = '',
+  }) async {
     final failure = switch (state) {
       AppStartupFailureState(
         :final AppStartupMissingDefaultSecretFailure failure,
@@ -62,7 +63,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     }
     final result = await _restoreMissingDefaultSecretUsecase.execute(
       expectedFingerprint: failure.masterFingerprint,
+      expectedWalletId: failure.walletId,
       words: words,
+      passphrase: passphrase,
     );
     if (result is Ok) add(const AppStartupStarted());
     return result;

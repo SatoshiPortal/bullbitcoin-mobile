@@ -1,9 +1,11 @@
 import '../../../frozen_outpoints_fixture.dart';
+
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
 import 'package:bb_mobile/features/send/public/send_facade.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -64,12 +66,11 @@ import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_confirm_error.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart'
+import 'package:material_ui/material_ui.dart'
     show MaterialApp, Builder, SizedBox, Locale;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' as primitives;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
 
@@ -321,9 +322,8 @@ void main() {
     recordLockup = _MockRecordLockup();
     recordPendingLockup = _MockRecordPendingLockup();
     dropPendingLockup = _MockDropPendingLockup();
-    when(
-      () => dropPendingLockup.execute(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => dropPendingLockup.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
     when(
       () => recordPendingLockup.execute(
         swapId: any(named: 'swapId'),
@@ -333,32 +333,28 @@ void main() {
     watchSwap = _MockWatchSwap();
     detectBitcoin = _MockDetectBitcoin();
     prepared = _prepared();
-    when(
-      () => getSwapRoute.execute(),
-    ).thenAnswer((_) async => SwapRoute.exchange);
-    when(
-      () => watchSwap.execute(any()),
-    ).thenAnswer((_) => const Stream<Swap>.empty());
-    when(
-      () => getWallet.execute('wallet-1', sync: true),
-    ).thenAnswer((_) async => _wallet());
+    when(() => getSwapRoute.execute())
+        .thenAnswer((_) async => SwapRoute.exchange);
+    when(() => watchSwap.execute(any()))
+        .thenAnswer((_) => const Stream<Swap>.empty());
+    when(() => getWallet.execute('wallet-1', sync: true))
+        .thenAnswer((_) async => _wallet());
     when(
       () => validateBitcoinSelection.execute(
         walletId: any(named: 'walletId'),
         selectedInputs: any(named: 'selectedInputs'),
       ),
     ).thenAnswer((_) async => []);
-    when(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-2',
-        index: 0,
-        address: 'destination',
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) async => WalletAddress(
+            walletId: 'wallet-2',
+            index: 0,
+            address: 'destination',
+            createdAt: DateTime.utc(2026),
+            updatedAt: DateTime.utc(2026),
+          ),
+        );
 
     bloc = buildBloc();
   });
@@ -383,12 +379,19 @@ void main() {
         var broadcasts = 0;
         final wallet = WalletFacade(
           const Stream.empty(),
-          broadcastBitcoin: (id, network, broadcast) async {
-            expect(id, 'wallet-1');
-            expect(network, primitives.BitcoinNetwork.testnet);
-            broadcasts++;
-            return Ok(BitcoinBroadcastReceipt('a' * 64, durable: true));
-          },
+          broadcastSpend:
+              (
+                id,
+                transaction, {
+                required network,
+                built,
+                owner,
+                replacing,
+              }) async {
+                expect(id, 'wallet-1');
+                broadcasts++;
+                return Ok(SpendReceipt('a' * 64, durable: true, guarded: true));
+              },
         );
         await bloc.close();
         bloc = buildBloc(
@@ -481,7 +484,7 @@ void main() {
         String? message;
         await tester.pumpWidget(
           MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: Builder(
               builder: (context) {
@@ -566,17 +569,16 @@ void main() {
   void stubLiquidCreation(
     Future<Result<String, SendFailure>> Function() prepare,
   ) {
-    when(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer(
-      (_) async => WalletAddress(
-        walletId: 'wallet-1',
-        address: 'destination',
-        index: 0,
-        createdAt: DateTime.utc(2026),
-        updatedAt: DateTime.utc(2026),
-      ),
-    );
+    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
+        .thenAnswer(
+          (_) async => WalletAddress(
+            walletId: 'wallet-1',
+            address: 'destination',
+            index: 0,
+            createdAt: DateTime.utc(2026),
+            updatedAt: DateTime.utc(2026),
+          ),
+        );
     when(
       () => getQuote.execute(
         environment: OrderSwapEnvironment.testnet,
@@ -719,12 +721,10 @@ void main() {
           walletId: 'wallet-1',
         ),
       ).thenAnswer((_) async {});
-      when(
-        () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'edited'),
-      ).thenAnswer((_) async => (signedPsbt: 'edited-signed', txSize: 100));
-      when(
-        () => calculateBitcoin.execute(psbt: 'edited-signed'),
-      ).thenAnswer((_) async => 1200);
+      when(() => signBitcoin.execute(walletId: 'wallet-1', psbt: 'edited'))
+          .thenAnswer((_) async => (signedPsbt: 'edited-signed', txSize: 100));
+      when(() => calculateBitcoin.execute(psbt: 'edited-signed'))
+          .thenAnswer((_) async => 1200);
       when(
         () => replacePrepared.execute(
           localId: 'local-1',
@@ -973,12 +973,10 @@ void main() {
         status: OrderSwapLocalStatus.payinBroadcast,
         transactionId: 'txid-1',
       );
-      when(
-        () => markUnknown.execute('local-1'),
-      ).thenAnswer((_) async => Ok(broadcasting));
-      when(
-        () => refreshOrder.execute('local-1'),
-      ).thenAnswer((_) async => Ok(broadcasting));
+      when(() => markUnknown.execute('local-1'))
+          .thenAnswer((_) async => Ok(broadcasting));
+      when(() => refreshOrder.execute('local-1'))
+          .thenAnswer((_) async => Ok(broadcasting));
       when(
         () => broadcastBitcoin.execute(
           'signed-psbt',
@@ -1059,9 +1057,8 @@ void main() {
         recipientAmountsSat: [Sats.fromInt(28800)],
       )),
     );
-    when(
-      () => calculateBitcoin.execute(psbt: 'psbt'),
-    ).thenAnswer((_) async => 1200);
+    when(() => calculateBitcoin.execute(psbt: 'psbt'))
+        .thenAnswer((_) async => 1200);
     bloc.emit(
       TransferState(
         fromWallet: _wallet(balanceSat: BigInt.from(130000)),
@@ -1119,9 +1116,8 @@ void main() {
         recipientAmountsSat: [Sats.fromInt(28800)],
       )),
     );
-    when(
-      () => calculateBitcoin.execute(psbt: 'psbt'),
-    ).thenAnswer((_) async => 1200);
+    when(() => calculateBitcoin.execute(psbt: 'psbt'))
+        .thenAnswer((_) async => 1200);
     bloc.emit(
       TransferState(
         fromWallet: _wallet(balanceSat: BigInt.from(130000)),
@@ -1176,9 +1172,8 @@ void main() {
           recipientAmountsSat: [Sats.fromInt(0)],
         )),
       );
-      when(
-        () => calculateBitcoin.execute(psbt: 'psbt'),
-      ).thenAnswer((_) async => 1200);
+      when(() => calculateBitcoin.execute(psbt: 'psbt'))
+          .thenAnswer((_) async => 1200);
       bloc.emit(
         TransferState(
           fromWallet: _wallet(balanceSat: BigInt.from(130000)),
@@ -1262,9 +1257,8 @@ void main() {
       address: 'tb1qselected',
     );
     final frozen = selected.copyWith(isFrozen: true);
-    when(
-      () => getUtxos.execute(walletId: 'wallet-1'),
-    ).thenAnswer((_) async => [frozen]);
+    when(() => getUtxos.execute(walletId: 'wallet-1'))
+        .thenAnswer((_) async => [frozen]);
     bloc.emit(
       TransferState(
         fromWallet: _wallet(),
@@ -1383,174 +1377,158 @@ void main() {
     },
   );
 
-  test(
-    'an in-flight old amount rebuild cannot repopulate signedPsbt after amountChanged',
-    () async {
-      final prepareStarted = Completer<void>();
-      final prepareCompleter =
-          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
-      when(
-        () => prepareBitcoin.execute(
-          walletId: 'wallet-1',
-          recipients: any(named: 'recipients'),
-          networkFee: any(named: 'networkFee'),
-          selectedInputs: any(named: 'selectedInputs'),
-          replaceByFee: true,
-        ),
-      ).thenAnswer((_) {
-        prepareStarted.complete();
-        return prepareCompleter.future;
-      });
-      bloc.emit(
-        TransferState(
-          fromWallet: _wallet(),
-          toWallet: _destinationWallet(),
-          receiveAddress: 'tb1qreceive',
-          amount: '1000',
-          bitcoinNetworkFees: _feeOptions(),
-          signedPsbt: 'previous-psbt',
-        ),
-      );
+  test('an in-flight old amount rebuild cannot repopulate signedPsbt after amountChanged', () async {
+    final prepareStarted = Completer<void>();
+    final prepareCompleter =
+        Completer<Result<PreparedBitcoinSend, WalletFailure>>();
+    when(
+      () => prepareBitcoin.execute(
+        walletId: 'wallet-1',
+        recipients: any(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        selectedInputs: any(named: 'selectedInputs'),
+        replaceByFee: true,
+      ),
+    ).thenAnswer((_) {
+      prepareStarted.complete();
+      return prepareCompleter.future;
+    });
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(),
+        toWallet: _destinationWallet(),
+        receiveAddress: 'tb1qreceive',
+        amount: '1000',
+        bitcoinNetworkFees: _feeOptions(),
+        signedPsbt: 'previous-psbt',
+      ),
+    );
 
-      bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.economic));
-      await prepareStarted.future;
-      bloc.add(const TransferEvent.amountChanged('2000'));
-      prepareCompleter.complete(
-        Ok((
-          unsignedPsbt: 'old-unsigned-psbt',
-          txSize: 100,
-          isToSelf: true,
-          recipientAmountsSat: [Sats.fromInt(1000)],
-        )),
-      );
-      await pumpEventQueue();
+    bloc.add(const TransferEvent.feeOptionSelected(FeeSelection.economic));
+    await prepareStarted.future;
+    bloc.add(const TransferEvent.amountChanged('2000'));
+    prepareCompleter.complete(
+      Ok((
+        unsignedPsbt: 'old-unsigned-psbt',
+        txSize: 100,
+        isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
+      )),
+    );
+    await pumpEventQueue();
 
-      expect(bloc.state.amount, '2000');
-      expect(bloc.state.signedPsbt, isEmpty);
-      verifyNever(
-        () => signBitcoin.execute(
-          walletId: 'wallet-1',
-          psbt: 'old-unsigned-psbt',
-        ),
-      );
-    },
-  );
+    expect(bloc.state.amount, '2000');
+    expect(bloc.state.signedPsbt, isEmpty);
+    verifyNever(
+      () =>
+          signBitcoin.execute(walletId: 'wallet-1', psbt: 'old-unsigned-psbt'),
+    );
+  });
 
-  test(
-    'an in-flight swap creation cannot repopulate signedPsbt after amountChanged',
-    () async {
-      final prepareStarted = Completer<void>();
-      final prepareCompleter =
-          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
-      when(
-        () => prepareBitcoin.execute(
-          walletId: 'wallet-1',
-          recipients: any(named: 'recipients'),
-          networkFee: any(named: 'networkFee'),
-          selectedInputs: any(named: 'selectedInputs'),
-          replaceByFee: true,
-        ),
-      ).thenAnswer((_) {
-        prepareStarted.complete();
-        return prepareCompleter.future;
-      });
-      when(
-        () => signBitcoin.execute(
-          walletId: 'wallet-1',
-          psbt: 'old-unsigned-psbt',
-        ),
-      ).thenAnswer((_) async => (signedPsbt: 'old-signed-psbt', txSize: 100));
-      when(
-        () => calculateBitcoin.execute(psbt: 'old-signed-psbt'),
-      ).thenAnswer((_) async => 1200);
-      bloc.emit(
-        TransferState(
-          fromWallet: _wallet(balanceSat: BigInt.from(100000)),
-          toWallet: _destinationWallet(),
-          receiveAddress: 'tb1qreceive',
-          amount: '1000',
-          bitcoinNetworkFees: _feeOptions(),
-        ),
-      );
+  test('an in-flight swap creation cannot repopulate signedPsbt after amountChanged', () async {
+    final prepareStarted = Completer<void>();
+    final prepareCompleter =
+        Completer<Result<PreparedBitcoinSend, WalletFailure>>();
+    when(
+      () => prepareBitcoin.execute(
+        walletId: 'wallet-1',
+        recipients: any(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        selectedInputs: any(named: 'selectedInputs'),
+        replaceByFee: true,
+      ),
+    ).thenAnswer((_) {
+      prepareStarted.complete();
+      return prepareCompleter.future;
+    });
+    when(
+      () =>
+          signBitcoin.execute(walletId: 'wallet-1', psbt: 'old-unsigned-psbt'),
+    ).thenAnswer((_) async => (signedPsbt: 'old-signed-psbt', txSize: 100));
+    when(() => calculateBitcoin.execute(psbt: 'old-signed-psbt'))
+        .thenAnswer((_) async => 1200);
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+        toWallet: _destinationWallet(),
+        receiveAddress: 'tb1qreceive',
+        amount: '1000',
+        bitcoinNetworkFees: _feeOptions(),
+      ),
+    );
 
-      bloc.add(const TransferEvent.swapCreated('1000'));
-      await prepareStarted.future;
-      bloc.add(const TransferEvent.amountChanged('2000'));
-      prepareCompleter.complete(
-        Ok((
-          unsignedPsbt: 'old-unsigned-psbt',
-          txSize: 100,
-          isToSelf: true,
-          recipientAmountsSat: [Sats.fromInt(1000)],
-        )),
-      );
-      await pumpEventQueue();
+    bloc.add(const TransferEvent.swapCreated('1000'));
+    await prepareStarted.future;
+    bloc.add(const TransferEvent.amountChanged('2000'));
+    prepareCompleter.complete(
+      Ok((
+        unsignedPsbt: 'old-unsigned-psbt',
+        txSize: 100,
+        isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
+      )),
+    );
+    await pumpEventQueue();
 
-      expect(bloc.state.amount, '2000');
-      expect(bloc.state.signedPsbt, isEmpty);
-    },
-  );
+    expect(bloc.state.amount, '2000');
+    expect(bloc.state.signedPsbt, isEmpty);
+  });
 
-  test(
-    'an in-flight swap creation cannot repopulate after destination wallet changes',
-    () async {
-      final prepareStarted = Completer<void>();
-      final prepareCompleter =
-          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
-      final destination = _destinationWallet();
-      final replacementDestination = _destinationWallet(id: 'wallet-3');
-      when(
-        () => prepareBitcoin.execute(
-          walletId: 'wallet-1',
-          recipients: any(named: 'recipients'),
-          networkFee: any(named: 'networkFee'),
-          selectedInputs: any(named: 'selectedInputs'),
-          replaceByFee: true,
-        ),
-      ).thenAnswer((_) {
-        prepareStarted.complete();
-        return prepareCompleter.future;
-      });
-      bloc.emit(
-        TransferState(
-          fromWallet: _wallet(balanceSat: BigInt.from(100000)),
-          toWallet: destination,
-          receiveAddress: 'tb1qreceive',
-          amount: '1000',
-          bitcoinNetworkFees: _feeOptions(),
-        ),
-      );
+  test('an in-flight swap creation cannot repopulate after destination wallet changes', () async {
+    final prepareStarted = Completer<void>();
+    final prepareCompleter =
+        Completer<Result<PreparedBitcoinSend, WalletFailure>>();
+    final destination = _destinationWallet();
+    final replacementDestination = _destinationWallet(id: 'wallet-3');
+    when(
+      () => prepareBitcoin.execute(
+        walletId: 'wallet-1',
+        recipients: any(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        selectedInputs: any(named: 'selectedInputs'),
+        replaceByFee: true,
+      ),
+    ).thenAnswer((_) {
+      prepareStarted.complete();
+      return prepareCompleter.future;
+    });
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+        toWallet: destination,
+        receiveAddress: 'tb1qreceive',
+        amount: '1000',
+        bitcoinNetworkFees: _feeOptions(),
+      ),
+    );
 
-      bloc.add(const TransferEvent.swapCreated('1000'));
-      await prepareStarted.future;
-      bloc.add(
-        TransferEvent.walletsChanged(
-          fromWallet: _wallet(balanceSat: BigInt.from(100000)),
-          toWallet: replacementDestination,
-        ),
-      );
-      prepareCompleter.complete(
-        Ok((
-          unsignedPsbt: 'old-unsigned-psbt',
-          txSize: 100,
-          isToSelf: true,
-          recipientAmountsSat: [Sats.fromInt(1000)],
-        )),
-      );
-      await pumpEventQueue();
+    bloc.add(const TransferEvent.swapCreated('1000'));
+    await prepareStarted.future;
+    bloc.add(
+      TransferEvent.walletsChanged(
+        fromWallet: _wallet(balanceSat: BigInt.from(100000)),
+        toWallet: replacementDestination,
+      ),
+    );
+    prepareCompleter.complete(
+      Ok((
+        unsignedPsbt: 'old-unsigned-psbt',
+        txSize: 100,
+        isToSelf: true,
+        recipientAmountsSat: [Sats.fromInt(1000)],
+      )),
+    );
+    await pumpEventQueue();
 
-      expect(bloc.state.toWallet, replacementDestination);
-      expect(bloc.state.signedPsbt, isEmpty);
-      expect(bloc.state.isCreatingSwap, isFalse);
-      expect(bloc.state.continueClicked, isFalse);
-      verifyNever(
-        () => signBitcoin.execute(
-          walletId: 'wallet-1',
-          psbt: 'old-unsigned-psbt',
-        ),
-      );
-    },
-  );
+    expect(bloc.state.toWallet, replacementDestination);
+    expect(bloc.state.signedPsbt, isEmpty);
+    expect(bloc.state.isCreatingSwap, isFalse);
+    expect(bloc.state.continueClicked, isFalse);
+    verifyNever(
+      () =>
+          signBitcoin.execute(walletId: 'wallet-1', psbt: 'old-unsigned-psbt'),
+    );
+  });
 
   test(
     'same selected outpoints do not invalidate in-flight swap creation',
@@ -1574,9 +1552,8 @@ void main() {
       when(
         () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'unsigned-psbt'),
       ).thenAnswer((_) async => (signedPsbt: 'signed-psbt', txSize: 100));
-      when(
-        () => calculateBitcoin.execute(psbt: 'signed-psbt'),
-      ).thenAnswer((_) async => 1200);
+      when(() => calculateBitcoin.execute(psbt: 'signed-psbt'))
+          .thenAnswer((_) async => 1200);
       bloc.emit(
         TransferState(
           fromWallet: _wallet(balanceSat: BigInt.from(100000)),
@@ -1628,26 +1605,23 @@ void main() {
     expect(bloc.state.continueClicked, isFalse);
   });
 
-  test(
-    'send-to-external changes drop the receive address of the previous transfer',
-    () async {
-      bloc.emit(
-        TransferState(
-          fromWallet: _wallet(),
-          toWallet: _destinationWallet(),
-          sendToExternal: true,
-          externalAddress: 'tb1qexternal',
-          receiveAddress: 'tb1qexternal',
-        ),
-      );
+  test('send-to-external changes drop the receive address of the previous transfer', () async {
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(),
+        toWallet: _destinationWallet(),
+        sendToExternal: true,
+        externalAddress: 'tb1qexternal',
+        receiveAddress: 'tb1qexternal',
+      ),
+    );
 
-      bloc.add(const TransferEvent.sendToExternalToggled(false));
-      await pumpEventQueue();
+    bloc.add(const TransferEvent.sendToExternalToggled(false));
+    await pumpEventQueue();
 
-      expect(bloc.state.sendToExternal, isFalse);
-      expect(bloc.state.receiveAddress, isNull);
-    },
-  );
+    expect(bloc.state.sendToExternal, isFalse);
+    expect(bloc.state.receiveAddress, isNull);
+  });
 
   test('a same-chain transfer pays the current destination wallet, never a '
       'receive address left by an earlier transfer', () async {
@@ -1676,12 +1650,10 @@ void main() {
         recipientAmountsSat: [Sats.fromInt(1000)],
       )),
     );
-    when(
-      () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'unsigned-psbt'),
-    ).thenAnswer((_) async => (signedPsbt: 'signed-psbt', txSize: 100));
-    when(
-      () => calculateBitcoin.execute(psbt: 'signed-psbt'),
-    ).thenAnswer((_) async => 250);
+    when(() => signBitcoin.execute(walletId: 'wallet-1', psbt: 'unsigned-psbt'))
+        .thenAnswer((_) async => (signedPsbt: 'signed-psbt', txSize: 100));
+    when(() => calculateBitcoin.execute(psbt: 'signed-psbt'))
+        .thenAnswer((_) async => 250);
     bloc.emit(
       TransferState(
         fromWallet: _wallet(balanceSat: BigInt.from(100000)),
@@ -1761,9 +1733,8 @@ void main() {
           psbt: 'new-unsigned-psbt',
         ),
       ).thenAnswer((_) async => (signedPsbt: 'new-signed-psbt', txSize: 100));
-      when(
-        () => calculateBitcoin.execute(psbt: 'new-signed-psbt'),
-      ).thenAnswer((_) async => 1200);
+      when(() => calculateBitcoin.execute(psbt: 'new-signed-psbt'))
+          .thenAnswer((_) async => 1200);
       when(
         () => replacePrepared.execute(
           localId: 'local-1',
@@ -1829,9 +1800,8 @@ void main() {
       () =>
           signBitcoin.execute(walletId: 'wallet-1', psbt: 'new-unsigned-psbt'),
     ).thenAnswer((_) async => (signedPsbt: 'new-signed-psbt', txSize: 100));
-    when(
-      () => calculateBitcoin.execute(psbt: 'new-signed-psbt'),
-    ).thenAnswer((_) async => 1200);
+    when(() => calculateBitcoin.execute(psbt: 'new-signed-psbt'))
+        .thenAnswer((_) async => 1200);
     when(
       () => replacePrepared.execute(
         localId: 'local-1',
@@ -1873,12 +1843,10 @@ void main() {
       status: OrderSwapLocalStatus.payinBroadcast,
       transactionId: 'txid-1',
     );
-    when(
-      () => getWallet.execute('wallet-1', sync: true),
-    ).thenAnswer((_) => syncCompleter.future);
-    when(
-      () => markUnknown.execute('local-1'),
-    ).thenAnswer((_) async => Ok(broadcasting));
+    when(() => getWallet.execute('wallet-1', sync: true))
+        .thenAnswer((_) => syncCompleter.future);
+    when(() => markUnknown.execute('local-1'))
+        .thenAnswer((_) async => Ok(broadcasting));
     when(
       () => broadcastBitcoin.execute(
         'signed-psbt',
@@ -1914,21 +1882,16 @@ void main() {
       currencyCode: 'USD',
     );
     when(() => getSettings.execute()).thenAnswer((_) async => settings);
-    when(
-      () => getPendingOrders.execute(),
-    ).thenAnswer((_) async => Ok([prepared]));
-    when(
-      () => getWallets.execute(),
-    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => _feeOptions());
-    when(
-      () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => const Ok(1.0));
-    when(
-      () => watchOrder.execute('local-1'),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => getPendingOrders.execute())
+        .thenAnswer((_) async => Ok([prepared]));
+    when(() => getWallets.execute())
+        .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => _feeOptions());
+    when(() => getExchangeRate.execute(currencyCode: 'USD'))
+        .thenAnswer((_) async => const Ok(1.0));
+    when(() => watchOrder.execute('local-1'))
+        .thenAnswer((_) => const Stream.empty());
 
     bloc.add(const TransferEvent.started());
     await bloc.stream.firstWhere((state) => !state.isStarting);
@@ -1945,21 +1908,16 @@ void main() {
       currencyCode: 'USD',
     );
     when(() => getSettings.execute()).thenAnswer((_) async => settings);
-    when(
-      () => getPendingOrders.execute(),
-    ).thenAnswer((_) async => Ok([prepared]));
-    when(
-      () => getWallets.execute(),
-    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => _feeOptions());
-    when(
-      () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => const Ok(1.0));
-    when(
-      () => watchOrder.execute('local-1'),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => getPendingOrders.execute())
+        .thenAnswer((_) async => Ok([prepared]));
+    when(() => getWallets.execute())
+        .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => _feeOptions());
+    when(() => getExchangeRate.execute(currencyCode: 'USD'))
+        .thenAnswer((_) async => const Ok(1.0));
+    when(() => watchOrder.execute('local-1'))
+        .thenAnswer((_) => const Stream.empty());
 
     bloc.add(const TransferEvent.started());
     await bloc.stream.firstWhere((state) => !state.isStarting);
@@ -1975,21 +1933,16 @@ void main() {
       currencyCode: 'USD',
     );
     when(() => getSettings.execute()).thenAnswer((_) async => settings);
-    when(
-      () => getPendingOrders.execute(),
-    ).thenAnswer((_) async => Ok([prepared]));
-    when(
-      () => getWallets.execute(),
-    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => _feeOptions());
-    when(
-      () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => const Err(SwapPriceUnavailableFailure()));
-    when(
-      () => watchOrder.execute('local-1'),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => getPendingOrders.execute())
+        .thenAnswer((_) async => Ok([prepared]));
+    when(() => getWallets.execute())
+        .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => _feeOptions());
+    when(() => getExchangeRate.execute(currencyCode: 'USD'))
+        .thenAnswer((_) async => const Err(SwapPriceUnavailableFailure()));
+    when(() => watchOrder.execute('local-1'))
+        .thenAnswer((_) => const Stream.empty());
 
     bloc.add(const TransferEvent.started());
     await bloc.stream.firstWhere((state) => !state.isStarting);
@@ -2006,21 +1959,16 @@ void main() {
       currencyCode: 'USD',
     );
     when(() => getSettings.execute()).thenAnswer((_) async => settings);
-    when(
-      () => getPendingOrders.execute(),
-    ).thenAnswer((_) async => Ok([prepared]));
-    when(
-      () => getWallets.execute(),
-    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => _feeOptions());
-    when(
-      () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => const Err(SwapUnexpectedFailure('settings')));
-    when(
-      () => watchOrder.execute('local-1'),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => getPendingOrders.execute())
+        .thenAnswer((_) async => Ok([prepared]));
+    when(() => getWallets.execute())
+        .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => _feeOptions());
+    when(() => getExchangeRate.execute(currencyCode: 'USD'))
+        .thenAnswer((_) async => const Err(SwapUnexpectedFailure('settings')));
+    when(() => watchOrder.execute('local-1'))
+        .thenAnswer((_) => const Stream.empty());
 
     bloc.add(const TransferEvent.started());
     await bloc.stream.firstWhere((state) => !state.isStarting);
@@ -2037,9 +1985,8 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => getPendingOrders.execute(),
-    ).thenAnswer((_) async => Ok([prepared]));
+    when(() => getPendingOrders.execute())
+        .thenAnswer((_) async => Ok([prepared]));
     when(() => getWallets.execute()).thenAnswer(
       (_) async => Ok<List<Wallet>, WalletFailure>([
         _liquidWallet(id: 'default-liquid', isDefault: true),
@@ -2048,15 +1995,12 @@ void main() {
         _destinationWallet(),
       ]),
     );
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => _feeOptions());
-    when(
-      () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => const Ok(1.0));
-    when(
-      () => watchOrder.execute('local-1'),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => _feeOptions());
+    when(() => getExchangeRate.execute(currencyCode: 'USD'))
+        .thenAnswer((_) async => const Ok(1.0));
+    when(() => watchOrder.execute('local-1'))
+        .thenAnswer((_) => const Stream.empty());
 
     bloc.add(const TransferEvent.started());
     await bloc.stream.firstWhere((state) => !state.isStarting);
@@ -2074,18 +2018,14 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => getPendingOrders.execute(),
-    ).thenAnswer((_) async => Ok([prepared]));
-    when(
-      () => getWallets.execute(),
-    ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-    when(
-      () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-    ).thenAnswer((_) async => _feeOptions());
-    when(
-      () => getExchangeRate.execute(currencyCode: 'USD'),
-    ).thenAnswer((_) async => const Ok(1.0));
+    when(() => getPendingOrders.execute())
+        .thenAnswer((_) async => Ok([prepared]));
+    when(() => getWallets.execute())
+        .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => _feeOptions());
+    when(() => getExchangeRate.execute(currencyCode: 'USD'))
+        .thenAnswer((_) async => const Ok(1.0));
     when(() => watchOrder.execute('local-1')).thenAnswer(
       (_) =>
           Stream.value(const Err(SwapStorageFailure('database unavailable'))),
@@ -2105,9 +2045,8 @@ void main() {
         status: OrderSwapLocalStatus.payoutInProgress,
         payinStatus: 'Completed',
       );
-      when(
-        () => refreshOrder.execute('local-1'),
-      ).thenAnswer((_) async => Ok(refreshed));
+      when(() => refreshOrder.execute('local-1'))
+          .thenAnswer((_) async => Ok(refreshed));
       bloc.emit(
         TransferState(
           orderSwap: unknown,
@@ -2148,18 +2087,14 @@ void main() {
           currencyCode: 'USD',
         ),
       );
-      when(
-        () => getPendingOrders.execute(),
-      ).thenAnswer((_) async => Ok([expired]));
-      when(
-        () => getWallets.execute(),
-      ).thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
-      when(
-        () => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')),
-      ).thenAnswer((_) async => _feeOptions());
-      when(
-        () => getExchangeRate.execute(currencyCode: 'USD'),
-      ).thenAnswer((_) async => const Ok(1.0));
+      when(() => getPendingOrders.execute())
+          .thenAnswer((_) async => Ok([expired]));
+      when(() => getWallets.execute())
+          .thenAnswer((_) async => Ok([_liquidWallet(), _destinationWallet()]));
+      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+          .thenAnswer((_) async => _feeOptions());
+      when(() => getExchangeRate.execute(currencyCode: 'USD'))
+          .thenAnswer((_) async => const Ok(1.0));
 
       bloc.add(const TransferEvent.started());
       await bloc.stream.firstWhere((state) => !state.isStarting);
@@ -2183,9 +2118,8 @@ void main() {
   test(
     'surfaces a broadcast network failure without raw exception text',
     () async {
-      when(
-        () => markUnknown.execute('local-1'),
-      ).thenAnswer((_) async => Ok(prepared));
+      when(() => markUnknown.execute('local-1'))
+          .thenAnswer((_) async => Ok(prepared));
       when(
         () => broadcastBitcoin.execute(
           'signed-psbt',
@@ -2217,9 +2151,8 @@ void main() {
   );
 
   test('preserves a typed swap failure while confirming', () async {
-    when(
-      () => markUnknown.execute('local-1'),
-    ).thenAnswer((_) async => const Err(SwapOrderExpiredFailure('expired')));
+    when(() => markUnknown.execute('local-1'))
+        .thenAnswer((_) async => const Err(SwapOrderExpiredFailure('expired')));
     bloc.emit(
       TransferState(
         orderSwap: prepared,
@@ -2284,15 +2217,13 @@ void main() {
         () =>
             signBitcoin.execute(walletId: 'wallet-1', psbt: 'lockup-unsigned'),
       ).thenAnswer((_) async => (signedPsbt: 'lockup-signed', txSize: 100));
-      when(
-        () => calculateBitcoin.execute(psbt: 'lockup-signed'),
-      ).thenAnswer((_) async => 1200);
+      when(() => calculateBitcoin.execute(psbt: 'lockup-signed'))
+          .thenAnswer((_) async => 1200);
     }
 
     test('creates a Boltz chain swap and signs its verified lockup', () async {
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
       stubCreateChain(Ok(_swap()));
       stubLockupBuild();
       bloc.emit(crossChain());
@@ -2337,9 +2268,8 @@ void main() {
           );
 
       setUp(() {
-        when(
-          () => getSwapRoute.execute(),
-        ).thenAnswer((_) async => SwapRoute.boltz);
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
       });
 
       test('a known consolidation need creates no swap', () async {
@@ -2402,9 +2332,9 @@ void main() {
         externalAddressError: error,
       );
 
-      void stubDetected(PaymentRequest request) => when(
-        () => detectBitcoin.execute(data: 'destination'),
-      ).thenAnswer((_) async => request);
+      void stubDetected(PaymentRequest request) =>
+          when(() => detectBitcoin.execute(data: 'destination'))
+              .thenAnswer((_) async => request);
 
       void verifyNoSwap() {
         verifyNever(
@@ -2424,9 +2354,8 @@ void main() {
       }
 
       setUp(() {
-        when(
-          () => getSwapRoute.execute(),
-        ).thenAnswer((_) async => SwapRoute.boltz);
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
       });
 
       test('an address the screen flagged never gets a swap', () async {
@@ -2501,9 +2430,8 @@ void main() {
     });
 
     test('Boltz unavailable without the opt-in surfaces a failure', () async {
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
       stubCreateChain(const Err(SwapsBoltzUnavailableFailure()));
       bloc.emit(crossChain());
 
@@ -2523,25 +2451,23 @@ void main() {
     });
 
     test('falls back to the exchange when the user opted in', () async {
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
       stubCreateChain(
         const Err(
           SwapsAmountOutOfLimitsFailure(minSat: 25000, maxSat: 1000000),
         ),
       );
-      when(
-        () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => WalletAddress(
-          walletId: 'wallet-2',
-          index: 0,
-          address: 'lq1destination',
-          createdAt: DateTime.utc(2026),
-          updatedAt: DateTime.utc(2026),
-        ),
-      );
+      when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
+          .thenAnswer(
+            (_) async => WalletAddress(
+              walletId: 'wallet-2',
+              index: 0,
+              address: 'lq1destination',
+              createdAt: DateTime.utc(2026),
+              updatedAt: DateTime.utc(2026),
+            ),
+          );
       when(
         () => getQuote.execute(
           environment: any(named: 'environment'),
@@ -2568,9 +2494,8 @@ void main() {
     });
 
     test('a Boltz refusal never falls back', () async {
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
       stubCreateChain(const Err(SwapsBoltzRejectedFailure()));
       bloc.emit(crossChain());
 
@@ -2590,9 +2515,8 @@ void main() {
     });
 
     test('exact receive pays the amount plus Boltz fees', () async {
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
       when(() => getLimitsAndFees.execute(SwapType.bitcoinToLiquid)).thenAnswer(
         (_) async => const Ok((
           SwapLimits(min: 100, max: 1000000),
@@ -2621,9 +2545,8 @@ void main() {
     });
 
     test('a max transfer is priced against a Taproot lockup', () async {
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -2644,9 +2567,8 @@ void main() {
           recipientAmountsSat: const <Sats>[],
         )),
       );
-      when(
-        () => calculateBitcoin.execute(psbt: 'max-psbt'),
-      ).thenAnswer((_) async => 500);
+      when(() => calculateBitcoin.execute(psbt: 'max-psbt'))
+          .thenAnswer((_) async => 500);
       stubCreateChain(const Err(SwapsBoltzRejectedFailure()));
       bloc.emit(crossChain().copyWith(maxAmountSat: 99000));
 
@@ -2821,9 +2743,8 @@ void main() {
 
       test('a lockup still being confirmed refuses a rebuild', () async {
         bloc.emit(
-          confirming(
-            swap: _swap().copyWith(pendingLockupTx: 'lockup-signed'),
-          ).copyWith(amount: '1000'),
+          confirming(swap: _swap().copyWith(pendingLockupTx: 'lockup-signed'))
+              .copyWith(amount: '1000'),
         );
 
         bloc.add(const TransferEvent.replaceByFeeChanged(false));
@@ -2845,12 +2766,10 @@ void main() {
     test('watched Boltz updates move the in-progress swap', () async {
       final controller = StreamController<Swap>();
       addTearDown(controller.close);
-      when(
-        () => watchSwap.execute('swap-1'),
-      ).thenAnswer((_) => controller.stream);
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltz);
+      when(() => watchSwap.execute('swap-1'))
+          .thenAnswer((_) => controller.stream);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
       stubCreateChain(Ok(_swap()));
       stubLockupBuild();
       bloc.emit(crossChain());
@@ -2917,19 +2836,17 @@ OrderSwap _order({String payinStatus = 'In progress', DateTime? deadline}) =>
           deadline ?? DateTime.now().toUtc().add(const Duration(days: 365)),
     );
 
-ChainSwap _swap() =>
-    Swap.chain(
-          id: 'swap-1',
-          keyIndex: 0,
-          type: SwapType.bitcoinToLiquid,
-          status: SwapStatus.pending,
-          environment: swaps.Environment.testnet,
-          creationTime: DateTime.utc(2026),
-          sendWalletId: 'wallet-1',
-          paymentAddress: 'payin-address',
-          paymentAmount: 1000,
-        )
-        as ChainSwap;
+ChainSwap _swap() => Swap.chain(
+  id: 'swap-1',
+  keyIndex: 0,
+  type: SwapType.bitcoinToLiquid,
+  status: SwapStatus.pending,
+  environment: swaps.Environment.testnet,
+  creationTime: DateTime.utc(2026),
+  sendWalletId: 'wallet-1',
+  paymentAddress: 'payin-address',
+  paymentAmount: 1000,
+) as ChainSwap;
 
 Wallet _wallet({BigInt? balanceSat}) => Wallet(
   origin: 'wallet-1',

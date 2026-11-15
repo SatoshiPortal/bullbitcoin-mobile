@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
@@ -25,9 +26,8 @@ void main() {
     watchUsecase = _MockWatchSpUpdatesUsecase();
     syncUsecase = _MockSyncSpWalletUsecase();
     when(() => watchUsecase.execute()).thenAnswer((_) => updates.stream);
-    when(
-      () => syncUsecase.execute(),
-    ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    when(() => syncUsecase.execute())
+        .thenAnswer((_) async => const Ok<void, SpFailure>(null));
     watcher = SpTipWatcher(
       watchSpUpdatesUsecase: watchUsecase,
       syncSpWalletUsecase: syncUsecase,

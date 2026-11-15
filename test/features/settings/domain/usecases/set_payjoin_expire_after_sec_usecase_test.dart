@@ -15,18 +15,16 @@ void main() {
 
   setUp(() {
     policy = _MockPayjoinPolicyAccess();
-    when(
-      () => policy.setSessionLifetime(any()),
-    ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+    when(() => policy.setSessionLifetime(any()))
+        .thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
     usecase = SetPayjoinExpireAfterSecUsecase(payjoinPolicy: policy);
   });
 
   test('persists a value within bounds', () async {
     expect(await usecase.execute(3600), isA<Ok<void, SettingsFailure>>());
 
-    verify(
-      () => policy.setSessionLifetime(const Duration(seconds: 3600)),
-    ).called(1);
+    verify(() => policy.setSessionLifetime(const Duration(seconds: 3600)))
+        .called(1);
   });
 
   test('throws and never persists below the minimum bound', () async {

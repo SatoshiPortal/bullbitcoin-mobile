@@ -45,13 +45,11 @@ void main() {
     updates = StreamController<Swap>.broadcast();
     when(() => resolver.updates).thenAnswer((_) => updates.stream);
     when(() => store.ongoing()).thenAnswer((_) async => const Ok([]));
-    when(
-      () => resolver.verifyCompletions(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => resolver.verifyCompletions())
+        .thenAnswer((_) async => const Ok(null));
     when(() => resolver.listen(any())).thenAnswer((_) {});
-    when(
-      () => resolver.reconcile(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => resolver.reconcile(any()))
+        .thenAnswer((_) async => const Ok(null));
     when(() => resolver.resolve(any())).thenAnswer(resolved);
     when(() => resolver.resolveScriptPath(any())).thenAnswer(resolved);
     watcher = SwapWatcher(
@@ -85,9 +83,8 @@ void main() {
   );
 
   test('an unreadable store drives nothing', () async {
-    when(
-      () => store.ongoing(),
-    ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('db')));
+    when(() => store.ongoing())
+        .thenAnswer((_) async => const Err(SwapsUnexpectedFailure('db')));
 
     await watcher.start();
 
@@ -96,9 +93,8 @@ void main() {
   });
 
   test('a failed resolution backs off instead of hot-looping', () async {
-    when(
-      () => resolver.resolve(any()),
-    ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('electrum')));
+    when(() => resolver.resolve(any()))
+        .thenAnswer((_) async => const Err(SwapsUnexpectedFailure('electrum')));
     final swap = chainSwap(SwapStatus.refundable);
 
     await watcher.processSwap(swap);
@@ -110,12 +106,10 @@ void main() {
   test(
     'heartbeat retries resolution even when the Boltz backend is down',
     () async {
-      when(
-        () => resolver.reconcile(any()),
-      ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('boltz')));
-      when(
-        () => store.ongoing(),
-      ).thenAnswer((_) async => Ok([chainSwap(SwapStatus.refundable)]));
+      when(() => resolver.reconcile(any()))
+          .thenAnswer((_) async => const Err(SwapsUnexpectedFailure('boltz')));
+      when(() => store.ongoing())
+          .thenAnswer((_) async => Ok([chainSwap(SwapStatus.refundable)]));
       watcher = SwapWatcher(
         store: store,
         resolvers: {SwapProvider.boltz: resolver},

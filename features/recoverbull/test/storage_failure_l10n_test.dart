@@ -1,7 +1,8 @@
+import 'package:bull_recoverbull/bull_recoverbull.dart' show RecoverBullFeature;
 import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/presentation/recoverbull_failure_l10n.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -13,8 +14,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           locale: Locale(locale),
-          localizationsDelegates:
-              RecoverBullLocalizations.localizationsDelegates,
+          localizationsDelegates: RecoverBullFeature.localizationsDelegates,
           supportedLocales: RecoverBullLocalizations.supportedLocales,
           home: Builder(
             builder: (context) {

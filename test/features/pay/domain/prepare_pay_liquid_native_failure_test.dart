@@ -1,8 +1,10 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -16,10 +18,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show SyncStorageFailure;
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
-class _Frozen extends Mock implements FrozenWalletUtxoDatasource {}
+class _Frozen extends Mock implements SyncFreezesDatasource {}
 
 class _Sdk extends Mock implements BullSdkApi {}
 
@@ -27,12 +31,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const walletId = 'elwpkh([73c5da0a/84h/1h/0h])';
   const channel = MethodChannel('plugins.flutter.io/path_provider');
-  const nativeFailure = lwk.LwkError(msg: 'cache read failed');
   late LiquidWalletRepository repository;
   final sdk = _Sdk();
 
   setUpAll(() {
-    registerFallbackValue(const lwk.Descriptor(ctDescriptor: 'descriptor'));
     BullSdk.initMock(api: sdk);
   });
 
@@ -40,9 +42,8 @@ void main() {
     final metadata = _Metadata();
     final frozen = _Frozen();
     reset(sdk);
-    when(
-      () => sdk.lwkApiTypesAddressValidate(addressString: 'recipient'),
-    ).thenAnswer((_) async => lwk.LiquidNetwork.testnet);
+    when(() => sdk.lwkApiTypesAddressValidate(addressString: 'recipient'))
+        .thenAnswer((_) async => lwk.LiquidNetwork.testnet);
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           channel,
@@ -63,27 +64,21 @@ void main() {
         isDefault: false,
       ),
     );
-    when(() => frozen.getAllFrozen()).thenAnswer((_) async => []);
-    // Only the native call is substituted: the reader capability and real
-    // LwkWalletDatasource must propagate its failure through the repository.
-    when(
-      () => sdk.lwkApiWalletWalletInit(
-        network: lwk.LiquidNetwork.testnet,
-        dbpath: any(named: 'dbpath'),
-        descriptor: any(named: 'descriptor'),
-      ),
-    ).thenAnswer((_) async => throw nativeFailure);
+    when(() => frozen.getFrozenOutpoints()).thenAnswer((_) async => {});
     repository = LiquidWalletRepository(
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => Directory.systemTemp.path),
+      // Sync cannot open the wallet: the real LwkWalletDatasource must
+      // propagate its failure through the repository.
       lwkWalletDatasource: LwkWalletDatasource(
-        readWallet: (_) => lwk.Wallet.init(
-          network: lwk.LiquidNetwork.testnet,
-          dbpath: Directory.systemTemp.path,
-          descriptor: const lwk.Descriptor(ctDescriptor: 'descriptor'),
-        ),
+        wallet: (_) async =>
+            throw const WalletSnapshotException(SyncStorageFailure()),
       ),
-      frozenWalletUtxoDatasource: frozen,
+      // No coin is read: nothing is frozen and no input is selected.
+      walletValuesDatasource: SyncWalletValuesDatasource(
+        load: (_) async => throw StateError('no value read expected'),
+      ),
+      freezesDatasource: frozen,
     );
   });
 

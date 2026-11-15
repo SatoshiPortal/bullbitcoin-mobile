@@ -7,15 +7,12 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_secure_storage_linux
   no_screenshot
   sentry_flutter
-  sqlite3_flutter_libs
   url_launcher_linux
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
   flutter_zxing
   jni
-  onion
-  rust_lib_bull_sdk
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

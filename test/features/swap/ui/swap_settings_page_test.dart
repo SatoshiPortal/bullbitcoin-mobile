@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_settings_page.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -21,9 +21,8 @@ void main() {
       () => cubit.stream,
     ).thenAnswer((_) => StreamController<SwapSettingsState>.broadcast().stream);
     when(() => cubit.close()).thenAnswer((_) async {});
-    when(
-      () => cubit.setExchangeFallbackEnabled(any()),
-    ).thenAnswer((_) async {});
+    when(() => cubit.setExchangeFallbackEnabled(any()))
+        .thenAnswer((_) async {});
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),

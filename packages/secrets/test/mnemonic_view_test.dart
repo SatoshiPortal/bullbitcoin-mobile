@@ -54,8 +54,9 @@ void main() {
   Future<Secret> store(WidgetTester tester, List<String> words) async {
     late Secret secret;
     await tester.runAsync(() async {
-      secret = (await secrets.import(words: words) as Ok<Secret, SecretFailure>)
-          .value;
+      secret = (await secrets.import(
+        words: words,
+      ) as Ok<Secret, SecretFailure>).value;
     });
     return secret;
   }
@@ -91,6 +92,50 @@ void main() {
 
     expect(sealed(wordsA.join(' ')), findsOneWidget);
     expect(find.byType(PaintedMnemonic), findsOneWidget);
+  });
+
+  testWidgets('the passphrase is hidden by default', (tester) async {
+    late Secret secret;
+    await tester.runAsync(() async {
+      secret = (await secrets.import(
+        words: wordsA,
+        passphrase: 'synthetic',
+      ) as Ok<Secret, SecretFailure>).value;
+    });
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: secret.widgets.mnemonicView(
+          failureBuilder: (_, _, _) => const SizedBox(),
+        ),
+      ),
+    );
+    await settle(tester);
+    expect(find.byType(PaintedMnemonic), findsOneWidget);
+    expect(find.byType(PaintedPassphrase), findsNothing);
+    final reads = storage.reads;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: secret.widgets.mnemonicView(
+          showPassphrase: true,
+          failureBuilder: (_, _, _) => const SizedBox(),
+        ),
+      ),
+    );
+    expect(find.byType(PaintedPassphrase), findsOneWidget);
+    expect(storage.reads, reads);
+    expect(find.text('synthetic'), findsNothing);
+    expect(find.bySemanticsLabel('synthetic'), findsNothing);
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: secret.widgets.mnemonicView(
+          failureBuilder: (_, _, _) => const SizedBox(),
+        ),
+      ),
+    );
+    expect(find.byType(PaintedPassphrase), findsNothing);
   });
 
   testWidgets('the words stay out of the semantics tree', (tester) async {
@@ -173,17 +218,19 @@ void main() {
     // in a host's own word cells alike.
     late Secret secret;
     await tester.runAsync(() async {
-      secret =
-          (await secrets.import(words: wordsA, passphrase: 'hunter2')
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      secret = (await secrets.import(
+        words: wordsA,
+        passphrase: 'hunter2',
+      ) as Ok<Secret, SecretFailure>).value;
     });
     for (final view in [
       secret.widgets.mnemonicView(
         failureBuilder: (_, _, _) => const SizedBox(),
+        showPassphrase: true,
       ),
       secret.widgets.mnemonicView(
         failureBuilder: (_, _, _) => const SizedBox(),
+        showPassphrase: true,
         wordBuilder: (context, number, word) =>
             Row(children: [Text('$number.'), word]),
         layoutBuilder: (context, words) => Column(children: words),

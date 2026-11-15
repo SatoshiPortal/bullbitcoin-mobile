@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../sp_cubit_harness.dart';
+
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 void main() {
@@ -24,12 +25,10 @@ void main() {
   setUp(() {
     harness = SpCubitHarness();
     notifications = StreamController<SpNotification>.broadcast();
-    when(
-      () => harness.watchUsecase.execute(),
-    ).thenAnswer((_) => notifications.stream);
-    when(
-      () => harness.loadUsecase.execute(),
-    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(spWalletData()));
+    when(() => harness.watchUsecase.execute())
+        .thenAnswer((_) => notifications.stream);
+    when(() => harness.loadUsecase.execute())
+        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(spWalletData()));
     cubit = harness.build();
   });
 

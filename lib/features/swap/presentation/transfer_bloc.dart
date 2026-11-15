@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/send/public/send_facade.dart'
         SendInsufficientFundsForFeesFailure;
 import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, BitcoinUnit, Err, Ok, Result, Sats;
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
@@ -370,32 +371,29 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final isExpired =
         record.localStatus == OrderSwapLocalStatus.expired ||
         !order.confirmationDeadline.isAfter(DateTime.now());
-    final displaySwap =
-        Swap.chain(
-              id: record.localId,
-              keyIndex: 0,
-              type: fromWallet.isLiquid
-                  ? SwapType.liquidToBitcoin
-                  : SwapType.bitcoinToLiquid,
-              status: isExpired
-                  ? SwapStatus.expired
-                  : transferSwapStatusForOrderSwap(record.localStatus),
-              environment: record.environment == OrderSwapEnvironment.testnet
-                  ? SwapEnvironment.testnet
-                  : SwapEnvironment.mainnet,
-              creationTime: record.createdAt,
-              sendWalletId: fromWallet.id,
-              paymentAddress: order.payinAddress,
-              paymentAmount: order.payinAmountSat.toInt(),
-              receiveWalletId: state.toWallet?.id,
-              receiveAddress: record.destination,
-              refundAddress: record.fallback,
-              fees: SwapFees(
-                boltzFee: (order.payinAmountSat - order.payoutAmountSat)
-                    .toInt(),
-              ),
-            )
-            as ChainSwap;
+    final displaySwap = Swap.chain(
+      id: record.localId,
+      keyIndex: 0,
+      type: fromWallet.isLiquid
+          ? SwapType.liquidToBitcoin
+          : SwapType.bitcoinToLiquid,
+      status: isExpired
+          ? SwapStatus.expired
+          : transferSwapStatusForOrderSwap(record.localStatus),
+      environment: record.environment == OrderSwapEnvironment.testnet
+          ? SwapEnvironment.testnet
+          : SwapEnvironment.mainnet,
+      creationTime: record.createdAt,
+      sendWalletId: fromWallet.id,
+      paymentAddress: order.payinAddress,
+      paymentAmount: order.payinAmountSat.toInt(),
+      receiveWalletId: state.toWallet?.id,
+      receiveAddress: record.destination,
+      refundAddress: record.fallback,
+      fees: SwapFees(
+        boltzFee: (order.payinAmountSat - order.payoutAmountSat).toInt(),
+      ),
+    ) as ChainSwap;
 
     if (isExpired) {
       emit(
@@ -414,9 +412,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         signedPsbt: record.signedPayinTransaction!,
         amount: state.bitcoinUnit == BitcoinUnit.sats
             ? record.requestedAmountSat.toString()
-            : ConvertAmount.satsToBtc(
-                record.requestedAmountSat.toInt(),
-              ).toString(),
+            : ConvertAmount.satsToBtc(record.requestedAmountSat.toInt())
+                  .toString(),
         receiveAddress: record.destination,
       ),
     );
@@ -1098,31 +1095,27 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     final created = (createResult as Ok<OrderSwapRecord, SwapFailure>).value;
     final order = created.order!;
     final exchangeFeeSat = order.payinAmountSat - order.payoutAmountSat;
-    final displaySwap =
-        Swap.chain(
-              id: created.localId,
-              keyIndex: 0,
-              type: fromWallet.isLiquid
-                  ? SwapType.liquidToBitcoin
-                  : SwapType.bitcoinToLiquid,
-              status: SwapStatus.pending,
-              environment: fromWallet.network.requireHistoricalTestnet()
-                  ? SwapEnvironment.testnet
-                  : SwapEnvironment.mainnet,
-              creationTime: created.createdAt,
-              sendWalletId: fromWallet.id,
-              paymentAddress: order.payinAddress,
-              paymentAmount: order.payinAmountSat.toInt(),
-              receiveWalletId: destinationWallet?.id,
-              receiveAddress: destinationAddress,
-              refundAddress: fallbackAddress,
-              fees: SwapFees(
-                boltzFee: exchangeFeeSat > BigInt.zero
-                    ? exchangeFeeSat.toInt()
-                    : 0,
-              ),
-            )
-            as ChainSwap;
+    final displaySwap = Swap.chain(
+      id: created.localId,
+      keyIndex: 0,
+      type: fromWallet.isLiquid
+          ? SwapType.liquidToBitcoin
+          : SwapType.bitcoinToLiquid,
+      status: SwapStatus.pending,
+      environment: fromWallet.network.requireHistoricalTestnet()
+          ? SwapEnvironment.testnet
+          : SwapEnvironment.mainnet,
+      creationTime: created.createdAt,
+      sendWalletId: fromWallet.id,
+      paymentAddress: order.payinAddress,
+      paymentAmount: order.payinAmountSat.toInt(),
+      receiveWalletId: destinationWallet?.id,
+      receiveAddress: destinationAddress,
+      refundAddress: fallbackAddress,
+      fees: SwapFees(
+        boltzFee: exchangeFeeSat > BigInt.zero ? exchangeFeeSat.toInt() : 0,
+      ),
+    ) as ChainSwap;
 
     final String signedPayin;
     final bool isPsbt;
@@ -2478,10 +2471,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         'bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4',
       Network.bitcoinTestnet =>
         'tb1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskqjfymf6',
-      Network.liquidMainnet =>
-        'lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24',
-      Network.liquidTestnet =>
-        'tlq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0w78z5h5l8mzyz',
+      Network.liquidMainnet => 'lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24',
+      Network.liquidTestnet => 'tlq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0w78z5h5l8mzyz',
       Network.bitcoinRegtest || Network.liquidRegtest => null,
     };
     if (lockupAddress == null) return null;

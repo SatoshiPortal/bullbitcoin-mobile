@@ -64,7 +64,11 @@ void main() {
     });
 
     test('includes nested backup and superuser settings', () {
-      final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
+      final items = _englishItems(
+        isSuperuser: true,
+        isDevModeEnabled: true,
+        accountReady: true,
+      );
       final expectedIds = {
         'dev mode': SettingsItemId.devMode,
         'testnet user credentials': SettingsItemId.testnetCredentials,
@@ -115,6 +119,8 @@ void main() {
         SettingsItemId.backup,
         SettingsItemId.walletSettings,
         SettingsItemId.exchange,
+        SettingsItemId.priceHistory,
+        SettingsItemId.quickActions,
         SettingsItemId.btcMap,
         SettingsItemId.termsOfService,
         SettingsItemId.servicesStatus,
@@ -124,7 +130,9 @@ void main() {
         'App',
         'Backup',
         'Wallet',
-        'Exchange',
+        'Manage access',
+        'Price history',
+        'Quick actions',
         'Map',
         'Terms of Service',
         'Service Status',
@@ -133,6 +141,22 @@ void main() {
       expect(items.byId(SettingsItemId.autoswap).title, 'Auto Swap');
       expect(items.byId(SettingsItemId.electrum).title, 'Electrum Server');
       expect(items.byId(SettingsItemId.mempool).title, 'Mempool Server');
+    });
+
+    test('account settings is listed only when exchange is ready', () {
+      final hidden = buildSettingsItems(localization: AppLocalizationsEn());
+      final ready = buildSettingsItems(
+        localization: AppLocalizationsEn(),
+        accountReady: true,
+      );
+      expect(
+        hidden.map((item) => item.id),
+        isNot(contains(SettingsItemId.exchangeAccountSettings)),
+      );
+      expect(
+        ready.byId(SettingsItemId.exchangeAccountSettings).title,
+        'Account Settings',
+      );
     });
 
     test('groups developer controls at the bottom of App Settings', () {
@@ -157,7 +181,11 @@ void main() {
     });
 
     test('supports dedicated semantic aliases across the registry', () {
-      final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
+      final items = _englishItems(
+        isSuperuser: true,
+        isDevModeEnabled: true,
+        accountReady: true,
+      );
       final expectedIds = {
         'trading': SettingsItemId.exchange,
         'seed backup': SettingsItemId.backup,
@@ -225,9 +253,8 @@ void main() {
     });
 
     test('testnet credentials is not marked as a superuser item', () {
-      final credentials = _englishItems(
-        isDevModeEnabled: true,
-      ).byId(SettingsItemId.testnetCredentials);
+      final credentials = _englishItems(isDevModeEnabled: true)
+          .byId(SettingsItemId.testnetCredentials);
 
       expect(credentials.isSuperuser, isFalse);
     });
@@ -296,7 +323,11 @@ void main() {
     });
 
     test('every item id has one authoritative registry entry', () {
-      final items = _englishItems(isSuperuser: true, isDevModeEnabled: true);
+      final items = _englishItems(
+        isSuperuser: true,
+        isDevModeEnabled: true,
+        accountReady: true,
+      );
 
       expect(
         items.map((item) => item.id).toSet(),
@@ -310,12 +341,14 @@ void main() {
 List<SettingsItem> _englishItems({
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
+  bool accountReady = false,
 }) {
   final localization = AppLocalizationsEn();
   return buildSettingsItems(
     localization: localization,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
+    accountReady: accountReady,
   );
 }
 

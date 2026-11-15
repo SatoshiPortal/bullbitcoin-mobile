@@ -1,4 +1,5 @@
 import '../wallet_spend_failure.dart';
+
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';

@@ -44,8 +44,7 @@ final class LiquidDeriver {
 /// the words in their own language with its passphrase, as for Bitcoin and
 /// the swap key.
 ///
-/// Every existing Liquid wallet is a default wallet, and default wallets
-/// have never carried a passphrase, so this is the seed lwk's word-based
+/// Legacy passphrase-less Liquid defaults keep the seed lwk's word-based
 /// signer derived for them (`to_seed("")`): the same keys.
 ///
 /// A copy, so the caller can wipe it once lwk has it without touching the

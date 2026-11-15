@@ -45,9 +45,8 @@ void main() {
 
     test('forwards the swap on success', () async {
       final swap = _swap();
-      when(
-        () => getSwap.execute(swapId: 'swap-1'),
-      ).thenAnswer((_) async => Ok(swap));
+      when(() => getSwap.execute(swapId: 'swap-1'))
+          .thenAnswer((_) async => Ok(swap));
 
       expect(_valueOf(await usecase.execute('swap-1')), swap);
     });
@@ -80,9 +79,8 @@ void main() {
 
     test('wraps each event in Ok', () async {
       final swap = _swap();
-      when(
-        () => watchSwap.execute('swap-1'),
-      ).thenAnswer((_) => Stream.value(swap));
+      when(() => watchSwap.execute('swap-1'))
+          .thenAnswer((_) => Stream.value(swap));
 
       final emitted = await usecase.execute('swap-1').toList();
 
@@ -102,9 +100,8 @@ void main() {
     });
 
     test('turns a throw on subscribe into a failure value', () async {
-      when(
-        () => watchSwap.execute('swap-1'),
-      ).thenThrow(SwapsException('no such swap'));
+      when(() => watchSwap.execute('swap-1'))
+          .thenThrow(SwapsException('no such swap'));
 
       final emitted = await usecase.execute('swap-1').toList();
 

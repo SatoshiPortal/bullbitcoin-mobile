@@ -120,9 +120,8 @@ void main() {
       ),
     ).thenAnswer((_) async => Ok(transaction));
 
-    final result = await PrepareSendBitcoinTransactionUsecase(
-      prepare,
-    ).execute(walletId: 'wallet-1', recipients: recipients, networkFee: fee);
+    final result = await PrepareSendBitcoinTransactionUsecase(prepare)
+        .execute(walletId: 'wallet-1', recipients: recipients, networkFee: fee);
 
     expect(
       result,

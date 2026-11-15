@@ -27,9 +27,8 @@ void main() {
 
   test('labels a completed order', () async {
     final order = orderWith(OrderStatus.completed);
-    when(
-      () => facade.labelCompletedExchangeOrders(any()),
-    ).thenAnswer((_) async {});
+    when(() => facade.labelCompletedExchangeOrders(any()))
+        .thenAnswer((_) async {});
 
     final result = await usecase.execute(order: order);
 
@@ -56,9 +55,8 @@ void main() {
 
   test('a labelling failure is reported, not thrown', () async {
     final order = orderWith(OrderStatus.completed);
-    when(
-      () => facade.labelCompletedExchangeOrders(any()),
-    ).thenThrow(Exception('label store unavailable'));
+    when(() => facade.labelCompletedExchangeOrders(any()))
+        .thenThrow(Exception('label store unavailable'));
 
     final result = await usecase.execute(order: order);
 

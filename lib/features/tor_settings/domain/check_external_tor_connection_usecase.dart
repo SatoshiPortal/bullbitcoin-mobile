@@ -30,7 +30,7 @@ final class CheckExternalTorConnectionUsecase {
           failure: TorExternalProxyUnavailableFailure(),
         );
       }
-      return _tor.external.verify(endpoint);
+      return await _tor.external.verify(endpoint);
     } on Exception {
       return const TorUnavailable(
         source: TorSource.external,

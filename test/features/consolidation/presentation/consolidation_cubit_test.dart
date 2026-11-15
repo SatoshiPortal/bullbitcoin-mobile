@@ -30,16 +30,14 @@ void main() {
 
   group('load()', () {
     test('populates utxoCount and the preview on success', () async {
-      when(
-        () => check.count(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => 9);
+      when(() => check.count(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => 9);
       const preview = ConsolidationPreview(
         unsignedPsets: ['pset-1'],
         totalFeeSat: 50,
       );
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => preview);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => preview);
 
       await cubit.load();
 
@@ -53,12 +51,10 @@ void main() {
         '"—") without throwing past load() — the fix closes the previous '
         'silent-discard so the failure is at least logged, not just '
         'invisible', () async {
-      when(
-        () => check.count(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => 9);
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('consolidate build failed'));
+      when(() => check.count(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => 9);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenThrow(Exception('consolidate build failed'));
 
       await cubit.load();
 
@@ -69,15 +65,13 @@ void main() {
     });
 
     test('a count() failure (returns null) leaves utxoCount unset', () async {
-      when(
-        () => check.count(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => null);
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async =>
-            const ConsolidationPreview(unsignedPsets: [], totalFeeSat: 0),
-      );
+      when(() => check.count(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => null);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenAnswer(
+            (_) async =>
+                const ConsolidationPreview(unsignedPsets: [], totalFeeSat: 0),
+          );
 
       await cubit.load();
 
@@ -92,9 +86,8 @@ void main() {
         unsignedPsets: ['pset-1', 'pset-2'],
         totalFeeSat: 100,
       );
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => preview);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => preview);
       when(
         () => consolidate.broadcast(
           walletId: any(named: 'walletId'),
@@ -115,16 +108,14 @@ void main() {
     });
 
     test('reuses an already-loaded preview instead of rebuilding it', () async {
-      when(
-        () => check.count(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => 9);
+      when(() => check.count(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => 9);
       const preview = ConsolidationPreview(
         unsignedPsets: ['pset-1'],
         totalFeeSat: 50,
       );
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => preview);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => preview);
       await cubit.load();
       clearInteractions(consolidate);
 
@@ -146,9 +137,8 @@ void main() {
       'user-friendly-error acceptance criterion, and the previously '
       'silent catch now at least logs the cause (see ConsolidationCubit)',
       () async {
-        when(
-          () => consolidate.prepare(walletId: any(named: 'walletId')),
-        ).thenThrow(Exception('lwk build failed'));
+        when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+            .thenThrow(Exception('lwk build failed'));
 
         await cubit.consolidate();
 
@@ -165,9 +155,8 @@ void main() {
       );
       // First attempt: prepare succeeds, broadcast fails partway through
       // (batch 1 already broadcast, carried on the exception).
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => preview);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => preview);
       when(
         () => consolidate.broadcast(
           walletId: any(named: 'walletId'),
@@ -183,9 +172,8 @@ void main() {
       // Retry: since preview is now null, it must call prepare() again —
       // never resubmit the stale `preview` from the failed attempt.
       clearInteractions(consolidate);
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => preview);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => preview);
       when(
         () => consolidate.broadcast(
           walletId: any(named: 'walletId'),
@@ -206,9 +194,8 @@ void main() {
         unsignedPsets: ['pset-1'],
         totalFeeSat: 50,
       );
-      when(
-        () => consolidate.prepare(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => preview);
+      when(() => consolidate.prepare(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => preview);
       when(
         () => consolidate.broadcast(
           walletId: any(named: 'walletId'),

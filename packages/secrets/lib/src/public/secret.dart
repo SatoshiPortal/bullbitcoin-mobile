@@ -6,6 +6,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:secrets/src/crypto/crypto.dart';
+import 'package:unorm_dart/unorm_dart.dart' show nfkd;
 
 /// An entry found in the keystore, either usable or individually unreadable.
 sealed class SecretEntry {
@@ -179,7 +180,7 @@ final class Secret extends SecretEntry {
 
   /// Signs a PSET.
   ///
-  /// ⚠️ **A passphrase is ignored here**, as in [liquidDescriptor] — consistently, which keeps the signature matching the descriptor. See doc/design.md, § Passphrase.
+  /// The full BIP39 seed, including the passphrase, matches the seed used by [liquidDescriptor].
   @internal
   Future<Result<String, SecretFailure>> signPset(
     String pset, {
@@ -196,11 +197,9 @@ final class Secret extends SecretEntry {
 
   // ------------------------------------------------------- silent payments
 
-  /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and disposes it when the session ends.
+  /// Opens this secret's Silent Payments account (BIP352, account 0) in bwk, which scans and signs for it while the returned account lives. The caller owns it and calls `dispose()` then `release()` when the session ends.
   ///
-  /// ⚠️ **The words reach bwk.** bwk-dart opens an account from a mnemonic only, and its returned account retains keys after this call; they never reach the app, and the account holds the keys until it is disposed.
-  ///
-  /// ⚠️ **A passphrase cannot be honoured** — bwk derives from the words alone — so a secret that has one is refused with `PassphraseUnsupportedFailure` rather than opening the passphrase-less sibling's wallet.
+  /// The full BIP39 seed, including the stored language and passphrase, reaches bwk inside this package. The returned native account retains signing capability until disposed and released. The temporary Dart copy is wiped after the call; erasure of all bridge and native copies cannot be guaranteed.
   @internal
   Future<Result<SpAccount, SecretFailure>> silentPaymentsAccount({
     required String name,
@@ -234,7 +233,7 @@ final class Secret extends SecretEntry {
   ///
   /// [metadata] is returned by `secrets.recoverbull.restore`; it must not contain `mnemonic` or `mnemonicLanguage` entries; `language` stays free for the caller. Each backup derives its key at a fresh random BIP85 index. No network.
   ///
-  /// The vault contains the words and their language, without the passphrase. Its encryption key derives from the original seed, including the passphrase. Restoring a passphrase-protected Bitcoin wallet also requires its passphrase; the app's default wallets never have one.
+  /// The vault contains the words and their language, without the passphrase. Its encryption key derives from the original seed, including the passphrase. Restoring a passphrase-protected wallet requires that passphrase separately.
   @internal
   Future<Result<({EncryptedVault vault, VaultKey key}), SecretFailure>>
   backupRecoverbull({Map<String, dynamic> metadata = const {}}) async {
@@ -321,6 +320,19 @@ final class Secret extends SecretEntry {
       return match;
     });
   }
+
+  /// Compares the BIP39-normalized passphrase without revealing the stored one.
+  @internal
+  Future<Result<bool, SecretFailure>> verifyPassphrase(String candidate) =>
+      _repository.useMnemonic(info, (m) {
+        final stored = nfkd(m.passphrase).codeUnits;
+        final supplied = nfkd(candidate).codeUnits;
+        var difference = stored.length ^ supplied.length;
+        for (var i = 0; i < stored.length && i < supplied.length; i++) {
+          difference |= stored[i] ^ supplied[i];
+        }
+        return difference == 0;
+      });
 
   /// Compares every seed byte, including the stored passphrase for a mnemonic.
   @internal

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -61,15 +62,13 @@ void main() {
       await log.flush();
       await directory.delete(recursive: true);
     });
-    when(
-      () => repository.setIsDevMode(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.setIsDevMode(any()))
+        .thenAnswer((_) async => const Ok(null));
     final usecase = SetIsDevModeUsecase(settingsRepository: repository);
     expect(await usecase.execute(true), isA<Ok>());
     expect(await usecase.execute(false), isA<Ok>());
-    when(
-      () => repository.setIsDevMode(any()),
-    ).thenAnswer((_) async => const Err(_sanitized));
+    when(() => repository.setIsDevMode(any()))
+        .thenAnswer((_) async => const Err(_sanitized));
     expect(await usecase.execute(true), isA<Err>());
     expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
       'Developer mode saved enabled=true',
@@ -106,93 +105,93 @@ void main() {
 
   expectsLift(
     'setBitcoinUnit',
-    () => when(
-      () => repository.setBitcoinUnit(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
-    () => SetBitcoinUnitUsecase(
-      settingsRepository: repository,
-    ).execute(BitcoinUnit.sats),
+    () =>
+        when(() => repository.setBitcoinUnit(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetBitcoinUnitUsecase(settingsRepository: repository)
+            .execute(BitcoinUnit.sats),
   );
 
   expectsLift(
     'setLanguage',
-    () => when(
-      () => repository.setLanguage(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
-    () => SetLanguageUsecase(
-      settingsRepository: repository,
-    ).execute(Language.unitedStatesEnglish),
+    () =>
+        when(() => repository.setLanguage(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetLanguageUsecase(settingsRepository: repository)
+            .execute(Language.unitedStatesEnglish),
   );
 
   expectsLift(
     'setCurrency',
-    () => when(
-      () => repository.setCurrency(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        when(() => repository.setCurrency(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
     () => SetCurrencyUsecase(settingsRepository: repository).execute('CAD'),
   );
 
   expectsLift(
     'setEnvironment',
-    () => when(
-      () => repository.setEnvironment(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
-    () => SetEnvironmentUsecase(
-      settingsRepository: repository,
-    ).execute(Environment.testnet),
+    () =>
+        when(() => repository.setEnvironment(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetEnvironmentUsecase(settingsRepository: repository)
+            .execute(Environment.testnet),
   );
 
   expectsLift(
     'setThemeMode',
-    () => when(
-      () => repository.setThemeMode(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
-    () => SetThemeModeUsecase(
-      settingsRepository: repository,
-    ).execute(AppThemeMode.dark),
+    () =>
+        when(() => repository.setThemeMode(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetThemeModeUsecase(settingsRepository: repository)
+            .execute(AppThemeMode.dark),
   );
 
   expectsLift(
     'setHideAmounts',
-    () => when(
-      () => repository.setHideAmounts(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        when(() => repository.setHideAmounts(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
     () => SetHideAmountsUsecase(settingsRepository: repository).execute(true),
   );
 
   expectsLift(
     'setIsSuperuser',
-    () => when(
-      () => repository.setIsSuperuser(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        when(() => repository.setIsSuperuser(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
     () => SetIsSuperuserUsecase(settingsRepository: repository).execute(true),
   );
 
   expectsLift(
     'setIsDevMode',
-    () => when(
-      () => repository.setIsDevMode(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        when(() => repository.setIsDevMode(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
     () => SetIsDevModeUsecase(settingsRepository: repository).execute(true),
   );
 
   expectsLift(
     'setErrorReportingEnabled',
-    () => when(
-      () => repository.setErrorReportingEnabled(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        when(() => repository.setErrorReportingEnabled(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
     () =>
         SetErrorReportingUsecase(settingsRepository: repository).execute(true),
   );
 
   expectsLift(
     'setScreenCaptureProtectionEnabled',
-    () => when(
-      () => repository.setScreenCaptureProtectionEnabled(any()),
-    ).thenAnswer((_) async => const Err(_sanitized)),
-    () => SetScreenCaptureProtectionUsecase(
-      settingsRepository: repository,
-    ).execute(false),
+    () =>
+        when(() => repository.setScreenCaptureProtectionEnabled(any()))
+            .thenAnswer((_) async => const Err(_sanitized)),
+    () =>
+        SetScreenCaptureProtectionUsecase(settingsRepository: repository)
+            .execute(false),
   );
 
   expectsLift(
@@ -203,15 +202,14 @@ void main() {
         password: any(named: 'password'),
       ),
     ).thenAnswer((_) async => const Err(_sanitized)),
-    () => SetExchangeTestnetBasicAuthUsecase(
-      settingsRepository: repository,
-    ).execute(username: 'u', password: 'p'),
+    () =>
+        SetExchangeTestnetBasicAuthUsecase(settingsRepository: repository)
+            .execute(username: 'u', password: 'p'),
   );
 
   test('a successful write is forwarded as Ok', () async {
-    when(
-      () => repository.setCurrency(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => repository.setCurrency(any()))
+        .thenAnswer((_) async => const Ok(null));
 
     expect(
       await SetCurrencyUsecase(settingsRepository: repository).execute('EUR'),

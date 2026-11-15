@@ -166,9 +166,8 @@ void main() {
 
   test('refuses to enable AutoBuy on a funding-restricted account', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
-    when(
-      () => getUserSummary.execute(),
-    ).thenAnswer((_) async => _restrictedSummary);
+    when(() => getUserSummary.execute())
+        .thenAnswer((_) async => _restrictedSummary);
 
     final result = await usecase.execute(enabled: true);
 
@@ -180,9 +179,8 @@ void main() {
   });
 
   test('still allows disabling AutoBuy on a restricted account', () async {
-    when(
-      () => getUserSummary.execute(),
-    ).thenAnswer((_) async => _restrictedSummary);
+    when(() => getUserSummary.execute())
+        .thenAnswer((_) async => _restrictedSummary);
     stubSaveSucceeds();
 
     final result = await usecase.execute(enabled: false);
@@ -219,9 +217,8 @@ void main() {
   });
 
   test('maps an unreadable default wallet list to the catch-all', () async {
-    when(
-      () => getDefaultWallets.execute(),
-    ).thenThrow(Exception('recipient request failed'));
+    when(() => getDefaultWallets.execute())
+        .thenThrow(Exception('recipient request failed'));
 
     final result = await usecase.execute(enabled: true);
 
@@ -234,9 +231,8 @@ void main() {
 
   test('maps an unavailable account to a typed failure', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(GetExchangeUserSummaryException('account request failed'));
+    when(() => getUserSummary.execute())
+        .thenThrow(GetExchangeUserSummaryException('account request failed'));
 
     final result = await usecase.execute(enabled: true);
 
@@ -249,9 +245,8 @@ void main() {
 
   test('maps an unclassified account error to the catch-all', () async {
     when(() => getDefaultWallets.execute()).thenAnswer((_) async => _wallets);
-    when(
-      () => getUserSummary.execute(),
-    ).thenThrow(Exception('something nobody classified'));
+    when(() => getUserSummary.execute())
+        .thenThrow(Exception('something nobody classified'));
 
     final result = await usecase.execute(enabled: true);
 

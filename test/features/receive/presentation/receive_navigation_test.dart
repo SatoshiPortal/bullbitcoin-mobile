@@ -25,18 +25,16 @@ void main() {
       inputAmount: '1000',
       inputAmountCurrencyCode: 'sats',
       confirmedAmountSat: 1000,
-      lightningSwap:
-          Swap.lnReceive(
-                id: 'boltz-1',
-                keyIndex: 0,
-                type: SwapType.lightningToLiquid,
-                status: status,
-                environment: Environment.testnet,
-                creationTime: DateTime.utc(2026),
-                receiveWalletId: 'wallet-1',
-                invoice: 'lntb-invoice',
-              )
-              as LnReceiveSwap,
+      lightningSwap: Swap.lnReceive(
+        id: 'boltz-1',
+        keyIndex: 0,
+        type: SwapType.lightningToLiquid,
+        status: status,
+        environment: Environment.testnet,
+        creationTime: DateTime.utc(2026),
+        receiveWalletId: 'wallet-1',
+        invoice: 'lntb-invoice',
+      ) as LnReceiveSwap,
     );
 
     expect(

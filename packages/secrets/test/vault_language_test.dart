@@ -59,16 +59,14 @@ void main() {
           );
           expect(opened.language, language);
           expect(opened.metadata, {'label': 'published vector'});
-          final plaintext =
-              jsonDecode(
-                    utf8.decode(
-                      RecoverBull.restoreBackup(
-                        backup: BullBackup.fromJson(backup.vault.json),
-                        backupKey: convert.hex.decode(backup.key.hex),
-                      ),
-                    ),
-                  )
-                  as Map<String, dynamic>;
+          final plaintext = jsonDecode(
+            utf8.decode(
+              RecoverBull.restoreBackup(
+                backup: BullBackup.fromJson(backup.vault.json),
+                backupKey: convert.hex.decode(backup.key.hex),
+              ),
+            ),
+          ) as Map<String, dynamic>;
           if (language == bip39.Language.english) {
             const golden =
                 '{"label":"published vector","mnemonic":["abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","about"],"mnemonicLanguage":"english"}';
@@ -90,6 +88,7 @@ void main() {
             await secrets.recoverbull.fingerprint(
               vault: backup.vault,
               key: backup.key,
+              passphrase: passphrase,
             ),
           );
           storage.locked = false;
@@ -111,7 +110,7 @@ void main() {
             ),
             isTrue,
           );
-          if (passphrase.isEmpty) expect(inspected, secret.id);
+          expect(inspected, secret.id);
           final raw = Map<String, String>.of(storage.entries);
           final again = ok(
             await secrets.recoverbull.restore(
@@ -217,15 +216,22 @@ void main() {
     final english = [...List.filled(11, 'abandon'), 'about'];
     for (final callerValue in ['fr', 'japanese', null, 42]) {
       storage.entries.clear();
-      final vault = EncryptedVault(
-        json: RecoverBull.createBackup(
+      final secret = ok(await secrets.import(words: english));
+      final backup = ok(await secret.backup.recoverbull());
+      final path =
+          (jsonDecode(backup.vault.json) as Map<String, dynamic>)['path'];
+      ok(await secrets.trash(secret.id));
+      final file = jsonDecode(
+        RecoverBull.createBackup(
           secret: utf8.encode(
             jsonEncode({'language': callerValue, 'mnemonic': english}),
           ),
-          backupKey: List<int>.filled(32, 0),
+          backupKey: convert.hex.decode(backup.key.hex),
         ).toJson(),
-      );
-      final key = VaultKey('00' * 32);
+      ) as Map<String, dynamic>;
+      file['path'] = path;
+      final vault = EncryptedVault(json: jsonEncode(file));
+      final key = backup.key;
       final restored = ok(
         await secrets.recoverbull.restore(vault: vault, key: key),
       );
@@ -250,17 +256,19 @@ void main() {
         await secrets.import(words: shared, language: bip39.Language.french),
       );
       final raw = Map<String, String>.of(storage.entries);
-      final vault = EncryptedVault(
-        json: RecoverBull.createBackup(
+      final backup = ok(await french.backup.recoverbull());
+      final path =
+          (jsonDecode(backup.vault.json) as Map<String, dynamic>)['path'];
+      final file = jsonDecode(
+        RecoverBull.createBackup(
           secret: utf8.encode(jsonEncode({'mnemonic': shared})),
-          backupKey: List<int>.filled(32, 0),
+          backupKey: convert.hex.decode(backup.key.hex),
         ).toJson(),
-      );
+      ) as Map<String, dynamic>;
+      file['path'] = path;
+      final vault = EncryptedVault(json: jsonEncode(file));
       final restored = ok(
-        await secrets.recoverbull.restore(
-          vault: vault,
-          key: VaultKey('00' * 32),
-        ),
+        await secrets.recoverbull.restore(vault: vault, key: backup.key),
       );
       expect(restored.secret.id, french.id);
       expect(restored.secret.info.language, bip39.Language.french);

@@ -16,6 +16,12 @@ final class ExchangeNotAuthenticatedFailure extends ExchangeFailure {
   const ExchangeNotAuthenticatedFailure([super.logMessage]);
 }
 
+/// A server HTTP 401 rejected the active request's credential.
+/// Only this failure may expire a session automatically.
+final class ExchangeSessionRejectedFailure extends ExchangeFailure {
+  const ExchangeSessionRejectedFailure([super.logMessage]);
+}
+
 /// The signed-in account could not be read, so balances, KYC level and
 /// preferences are all unknown.
 final class ExchangeAccountUnavailableFailure extends ExchangeFailure {
@@ -76,6 +82,11 @@ final class ExchangeNetworkFailure extends ExchangeFailure {
 /// the presentation extension returns the shared generic string.
 final class ExchangeUnexpectedFailure extends ExchangeFailure {
   const ExchangeUnexpectedFailure([super.logMessage]);
+}
+
+/// A completion belongs to an access epoch that has already ended.
+final class ExchangeOperationStaleFailure extends ExchangeFailure {
+  const ExchangeOperationStaleFailure();
 }
 
 /// This environment has no supported exchange backend.

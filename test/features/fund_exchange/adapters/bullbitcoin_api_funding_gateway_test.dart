@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_me
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+
 import '../result_helpers.dart';
 
 /// The IBAN the API echoes back in `messageData` for ERR_ORD_CSRCP400.

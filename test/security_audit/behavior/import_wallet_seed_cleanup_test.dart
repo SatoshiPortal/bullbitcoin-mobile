@@ -60,9 +60,8 @@ void main() {
 
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
-    final fallback = await Secrets(
-      scratchDirectory: () async => '/tmp',
-    ).import(words: words);
+    final fallback = await Secrets(scratchDirectory: () async => '/tmp')
+        .import(words: words);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(Network.bitcoinMainnet);
@@ -87,13 +86,11 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => checkDuplicate.isReferenced(any(), any()),
-    ).thenAnswer((_) async => false);
+    when(() => checkDuplicate.isReferenced(any(), any()))
+        .thenAnswer((_) async => false);
     // No wallet references any seed unless a test says so.
-    when(
-      () => walletRepository.getWallets(),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
+    when(() => walletRepository.getWallets())
+        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([]));
   });
 
   void failCreateWalletWith(Object error) {
@@ -210,9 +207,8 @@ void main() {
           await secrets.import(words: words),
           isA<Ok<Secret, SecretFailure>>(),
         );
-        when(
-          () => settingsRepository.fetch(),
-        ).thenThrow(Exception('settings unavailable'));
+        when(() => settingsRepository.fetch())
+            .thenThrow(Exception('settings unavailable'));
 
         final result = await usecase.execute(mnemonicWords: words);
 
@@ -247,9 +243,8 @@ void main() {
         // The race Codex reproduced (2026-09-16): another import of the same
         // words finished first and built its wallet on this seed. This
         // import created the entry, but it is not an orphan any more.
-        when(
-          () => settingsRepository.fetch(),
-        ).thenAnswer((_) async => settings);
+        when(() => settingsRepository.fetch())
+            .thenAnswer((_) async => settings);
         when(() => walletRepository.getWallets()).thenAnswer(
           (_) async => Ok<List<Wallet>, WalletFailure>([
             Wallet(
@@ -285,9 +280,8 @@ void main() {
     test(
       'retains a newly imported secret after native provisioning fails',
       () async {
-        when(
-          () => settingsRepository.fetch(),
-        ).thenAnswer((_) async => settings);
+        when(() => settingsRepository.fetch())
+            .thenAnswer((_) async => settings);
         failCreateWalletWith(Exception('electrum unreachable'));
 
         final result = await usecase.execute(mnemonicWords: words);

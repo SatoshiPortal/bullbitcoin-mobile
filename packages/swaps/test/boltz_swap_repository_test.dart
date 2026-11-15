@@ -127,12 +127,11 @@ void main() {
     walletTx: (txid, {required walletId}) async => walletTxs[txid],
     walletTxs: (walletId, {bool sync = false}) async =>
         walletTxs.values.toList(),
-    fastestFee:
-        ({
-          required int txSize,
-          required bool isLiquid,
-          required bool isTestnet,
-        }) async => fastest,
+    fastestFee: ({
+      required int txSize,
+      required bool isLiquid,
+      required bool isTestnet,
+    }) async => fastest,
     wallets: ({required bool isTestnet}) async => wallets,
     swapMasterKeySource: ({required bool isTestnet}) async =>
         const DerivedSwapMasterKey(
@@ -223,18 +222,16 @@ void main() {
     ];
 
     test('refuses a wallet on the other side of the swap', () async {
-      final result = await repo(
-        wallets: wallets,
-      ).rescue(claimToLiquid, walletId: 'w-btc');
+      final result = await repo(wallets: wallets)
+          .rescue(claimToLiquid, walletId: 'w-btc');
 
       expect(result, isA<Err<Swap, SwapsFailure>>());
       verifyNever(() => storage.store(any()));
     });
 
     test('refuses a wallet it does not know', () async {
-      final result = await repo(
-        wallets: wallets,
-      ).rescue(claimToLiquid, walletId: 'w-gone');
+      final result = await repo(wallets: wallets)
+          .rescue(claimToLiquid, walletId: 'w-gone');
 
       expect(result, isA<Err<Swap, SwapsFailure>>());
       verifyNever(() => storage.store(any()));
@@ -423,9 +420,8 @@ void main() {
       ).thenAnswer((_) async => 200);
       stubClaimBroadcast();
 
-      final txid = await repo(
-        fastest: 900,
-      ).claim(chainSwap(status: 'claimable', claimFees: 300));
+      final txid = await repo(fastest: 900)
+          .claim(chainSwap(status: 'claimable', claimFees: 300));
 
       expect(txid, 'claim-txid');
       expect(claimedFee(), 900);
@@ -501,9 +497,8 @@ void main() {
         ).thenThrow(Exception('sizing failed'));
         stubClaimBroadcast();
 
-        await repo(
-          fastest: 900,
-        ).claim(chainSwap(status: 'claimable', claimFees: 300));
+        await repo(fastest: 900)
+            .claim(chainSwap(status: 'claimable', claimFees: 300));
 
         expect(claimedFee(), 300);
       },
@@ -767,12 +762,11 @@ void main() {
             if (sync) syncRequested = true;
             return const [SwapWalletTx(txId: 'claim-txid', isIncoming: true)];
           },
-          fastestFee:
-              ({
-                required int txSize,
-                required bool isLiquid,
-                required bool isTestnet,
-              }) async => 50,
+          fastestFee: ({
+            required int txSize,
+            required bool isLiquid,
+            required bool isTestnet,
+          }) async => 50,
           wallets: ({required bool isTestnet}) async => const [],
           swapMasterKeySource: ({required bool isTestnet}) async => null,
         );
@@ -831,9 +825,8 @@ void main() {
           isTestnet: any(named: 'isTestnet'),
         ),
       ).thenAnswer((_) async => [chainModel(status: 'completed')]);
-      when(
-        () => storage.fetch(any()),
-      ).thenAnswer((_) async => chainModel(status: 'completed'));
+      when(() => storage.fetch(any()))
+          .thenAnswer((_) async => chainModel(status: 'completed'));
 
       await repo().verifyCompletions();
 
@@ -1025,9 +1018,8 @@ void main() {
     );
 
     void stubSummaries(frb.RestoredSwapSummary s) {
-      when(
-        () => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => masterKey);
+      when(() => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')))
+          .thenAnswer((_) async => masterKey);
       when(
         () => boltz.restoreSwapSummaries(
           swapMasterKey: any(named: 'swapMasterKey'),
@@ -1162,15 +1154,12 @@ void main() {
     );
 
     void stubCreation({required int? storedCounter, required int localTop}) {
-      when(
-        () => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => masterKey);
-      when(
-        () => storage.getSwapKeyIndex(any()),
-      ).thenAnswer((_) async => storedCounter);
-      when(
-        () => storage.setSwapKeyIndex(any(), any()),
-      ).thenAnswer((_) async {});
+      when(() => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')))
+          .thenAnswer((_) async => masterKey);
+      when(() => storage.getSwapKeyIndex(any()))
+          .thenAnswer((_) async => storedCounter);
+      when(() => storage.setSwapKeyIndex(any(), any()))
+          .thenAnswer((_) async {});
       when(
         () => storage.fetchAll(
           walletId: any(named: 'walletId'),
@@ -1187,12 +1176,10 @@ void main() {
           isTestnet: any(named: 'isTestnet'),
         ),
       ).thenAnswer((_) async => true);
-      when(
-        () => boltz.getBtcToLbtcChainSwapLimits(),
-      ).thenAnswer((_) async => (25000, 1000000));
-      when(
-        () => boltz.getSwapFees(SwapType.bitcoinToLiquid),
-      ).thenAnswer((_) async => const SwapFees());
+      when(() => boltz.getBtcToLbtcChainSwapLimits())
+          .thenAnswer((_) async => (25000, 1000000));
+      when(() => boltz.getSwapFees(SwapType.bitcoinToLiquid))
+          .thenAnswer((_) async => const SwapFees());
       when(
         () => boltz.createBtcToLbtcChainSwap(
           sendWalletId: any(named: 'sendWalletId'),
@@ -1264,9 +1251,8 @@ void main() {
       'an unreadable counter refuses the swap instead of reseeding',
       () async {
         stubCreation(storedCounter: null, localTop: 7);
-        when(
-          () => storage.getSwapKeyIndex(any()),
-        ).thenThrow(Exception('keychain locked'));
+        when(() => storage.getSwapKeyIndex(any()))
+            .thenThrow(Exception('keychain locked'));
 
         final created = await repo(wallets: chainWallets)
             .createBitcoinToLiquidSwap(
@@ -1353,15 +1339,12 @@ void main() {
 
     test('reuses the pending swap for the same invoice', () async {
       final pending = lnSend('pendingSwap1');
-      when(
-        () => storage.fetchAll(walletId: 'w-btc'),
-      ).thenAnswer((_) async => [pending]);
-      when(
-        () => boltz.reconcileSwaps(['pendingSwap1']),
-      ).thenAnswer((_) async {});
-      when(
-        () => storage.fetch('pendingSwap1'),
-      ).thenAnswer((_) async => pending);
+      when(() => storage.fetchAll(walletId: 'w-btc'))
+          .thenAnswer((_) async => [pending]);
+      when(() => boltz.reconcileSwaps(['pendingSwap1']))
+          .thenAnswer((_) async {});
+      when(() => storage.fetch('pendingSwap1'))
+          .thenAnswer((_) async => pending);
 
       final created = await repo(wallets: btcWallets)
           .createBitcoinToLightningSwap(
@@ -1382,15 +1365,12 @@ void main() {
     });
 
     test('refuses while the invoice\'s swap turns out funded', () async {
-      when(
-        () => storage.fetchAll(walletId: 'w-btc'),
-      ).thenAnswer((_) async => [lnSend('pendingSwap1')]);
-      when(
-        () => boltz.reconcileSwaps(['pendingSwap1']),
-      ).thenAnswer((_) async {});
-      when(
-        () => storage.fetch('pendingSwap1'),
-      ).thenAnswer((_) async => lnSend('pendingSwap1', status: 'paid'));
+      when(() => storage.fetchAll(walletId: 'w-btc'))
+          .thenAnswer((_) async => [lnSend('pendingSwap1')]);
+      when(() => boltz.reconcileSwaps(['pendingSwap1']))
+          .thenAnswer((_) async {});
+      when(() => storage.fetch('pendingSwap1'))
+          .thenAnswer((_) async => lnSend('pendingSwap1', status: 'paid'));
 
       final created = await repo(wallets: btcWallets)
           .createBitcoinToLightningSwap(
@@ -1403,18 +1383,14 @@ void main() {
     });
 
     test('refuses an invoice outside the submarine limits', () async {
-      when(
-        () => storage.fetchAll(walletId: 'w-btc'),
-      ).thenAnswer((_) async => []);
-      when(
-        () => boltz.decodeInvoice('lnbc1invoice'),
-      ).thenAnswer((_) async => (2000000, false, null, null));
-      when(
-        () => boltz.getBtcSubmarineSwapLimits(),
-      ).thenAnswer((_) async => (25000, 1000000));
-      when(
-        () => boltz.getSwapFees(SwapType.bitcoinToLightning),
-      ).thenAnswer((_) async => const SwapFees());
+      when(() => storage.fetchAll(walletId: 'w-btc'))
+          .thenAnswer((_) async => []);
+      when(() => boltz.decodeInvoice('lnbc1invoice'))
+          .thenAnswer((_) async => (2000000, false, null, null));
+      when(() => boltz.getBtcSubmarineSwapLimits())
+          .thenAnswer((_) async => (25000, 1000000));
+      when(() => boltz.getSwapFees(SwapType.bitcoinToLightning))
+          .thenAnswer((_) async => const SwapFees());
 
       final created = await repo(wallets: btcWallets)
           .createBitcoinToLightningSwap(

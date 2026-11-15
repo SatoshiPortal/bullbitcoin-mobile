@@ -103,9 +103,8 @@ void main() {
     });
 
     test('a storage failure is a failure, not an empty list', () async {
-      when(
-        () => storage.fetchAll(isTestnet: false),
-      ).thenThrow(Exception('locked'));
+      when(() => storage.fetchAll(isTestnet: false))
+          .thenThrow(Exception('locked'));
 
       final result = await store.ongoing();
 

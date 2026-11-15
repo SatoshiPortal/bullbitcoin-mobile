@@ -25,12 +25,10 @@ void main() {
     required Result<bool, SwapFailure> fallback,
     required Result<SwapRouteOverride, SwapFailure> override,
   }) {
-    when(
-      () => routeSettings.isExchangeFallbackEnabled(),
-    ).thenAnswer((_) async => fallback);
-    when(
-      () => routeSettings.getRouteOverride(),
-    ).thenAnswer((_) async => override);
+    when(() => routeSettings.isExchangeFallbackEnabled())
+        .thenAnswer((_) async => fallback);
+    when(() => routeSettings.getRouteOverride())
+        .thenAnswer((_) async => override);
   }
 
   setUp(() {

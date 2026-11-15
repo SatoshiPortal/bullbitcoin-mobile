@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 /// Reads the existing Drift catalog. Never opens native stores or secrets.
 final class WalletCatalogPortImpl implements WalletCatalogPort {
@@ -14,8 +14,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
   WalletCatalogPortImpl(this._metadata);
 
   @override
-  Future<Result<List<PublicWalletDescriptor>, TransactionSyncFailure>>
-  list() async {
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async {
     try {
       final descriptors = <PublicWalletDescriptor>[];
       var invalid = 0;
@@ -33,29 +32,30 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
       }
       return Ok(List.unmodifiable(descriptors));
     } on Exception {
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     }
   }
 
   @override
-  Future<Result<PublicWalletDescriptor, TransactionSyncFailure>> find(
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
     WalletKey key,
   ) async {
     try {
       final row = await _metadata.fetch(key.id);
-      if (row == null) return const Err(TransactionSyncNotFoundFailure());
+      if (row == null) return const Err(SyncNotFoundFailure());
       final result = descriptorFromMetadata(row);
       if (result case Ok(:final value) when value.key != key) {
-        return const Err(TransactionSyncNotFoundFailure());
+        return const Err(SyncNotFoundFailure());
       }
       return result;
     } on Exception {
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     }
   }
 
-  static Result<PublicWalletDescriptor, TransactionSyncFailure>
-  descriptorFromMetadata(WalletMetadataModel row) {
+  static Result<PublicWalletDescriptor, SyncFailure> descriptorFromMetadata(
+    WalletMetadataModel row,
+  ) {
     // Legacy origin decoding throws strings. Contain only that legacy boundary;
     // programmer Errors from the datasource or this mapper must still surface.
     final Network network;
@@ -65,16 +65,16 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
       network = row.network.shared;
       script = origin.script.shared;
       if (row.origin.startsWith('el') != (network is LiquidNetwork)) {
-        return const Err(TransactionSyncInvalidCatalogFailure());
+        return const Err(SyncInvalidCatalogFailure());
       }
       final hasSuffix = row.id.endsWith(WalletMetadataService.regtestSuffix);
       if (hasSuffix != (network.env == NetworkEnv.regtest)) {
-        return const Err(TransactionSyncInvalidCatalogFailure());
+        return const Err(SyncInvalidCatalogFailure());
       }
     } on String {
-      return const Err(TransactionSyncInvalidCatalogFailure());
+      return const Err(SyncInvalidCatalogFailure());
     } on FormatException {
-      return const Err(TransactionSyncInvalidCatalogFailure());
+      return const Err(SyncInvalidCatalogFailure());
     }
     final external = row.externalPublicDescriptor;
     final internal = row.internalPublicDescriptor;
@@ -83,7 +83,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
       case BitcoinNetwork():
         if (!BitcoinWalletDescriptor.isPublicDescriptor(external) ||
             !BitcoinWalletDescriptor.isPublicDescriptor(internal)) {
-          return const Err(TransactionSyncInvalidCatalogFailure());
+          return const Err(SyncInvalidCatalogFailure());
         }
         return Ok(
           BitcoinWalletDescriptor(
@@ -97,7 +97,7 @@ final class WalletCatalogPortImpl implements WalletCatalogPort {
       case LiquidNetwork():
         // Liquid uses only the external descriptor, as WalletModel.fromMetadata does.
         if (!LiquidWalletDescriptor.isConfidentialDescriptor(external)) {
-          return const Err(TransactionSyncInvalidCatalogFailure());
+          return const Err(SyncInvalidCatalogFailure());
         }
         return Ok(
           LiquidWalletDescriptor(

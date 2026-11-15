@@ -7,7 +7,6 @@ import 'package:bull_payjoin/src/data/payjoin_database.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
-import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as internal;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
@@ -16,6 +15,8 @@ import 'package:drift/native.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+
+import 'support/test_codec.dart';
 
 class _MockPdkPayjoinDatasource extends Mock implements PdkPayjoinDatasource {}
 
@@ -121,41 +122,37 @@ void main() {
     String? proposalPsbt,
     String? transactionId,
     bool isTrade = false,
-  }) =>
-      PayjoinModel.receiver(
-            id: id,
-            address: 'tb1qreceiver',
-            isTestnet: true,
-            receiver: '[]',
-            walletId: 'wallet-1',
-            pjUri: 'bitcoin:tb1qreceiver?pj=https://payjo.in/$id',
-            maxFeeRateSatPerVb: BigInt.from(10000),
-            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            expireAfterSec: 3600,
-            originalTxBytes: originalTransaction,
-            originalTxId: originalTransactionId,
-            amountSat: 50000,
-            proposalPsbt: proposalPsbt,
-            txId: transactionId,
-            isTrade: isTrade,
-          )
-          as PayjoinReceiverModel;
+  }) => PayjoinModel.receiver(
+    id: id,
+    address: 'tb1qreceiver',
+    isTestnet: true,
+    receiver: '[]',
+    walletId: 'wallet-1',
+    pjUri: 'bitcoin:tb1qreceiver?pj=https://payjo.in/$id',
+    maxFeeRateSatPerVb: BigInt.from(10000),
+    createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+    expireAfterSec: 3600,
+    originalTxBytes: originalTransaction,
+    originalTxId: originalTransactionId,
+    amountSat: 50000,
+    proposalPsbt: proposalPsbt,
+    txId: transactionId,
+    isTrade: isTrade,
+  ) as PayjoinReceiverModel;
 
-  PayjoinSenderModel sender() =>
-      PayjoinModel.sender(
-            uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
-            isTestnet: true,
-            sender: '[]',
-            walletId: 'wallet-1',
-            originalPsbt: 'cHNidP8=',
-            originalTxId: 'original-tx',
-            amountSat: 50000,
-            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-            expireAfterSec: 3600,
-          )
-          as PayjoinSenderModel;
+  PayjoinSenderModel sender() => PayjoinModel.sender(
+    uri: 'bitcoin:tb1qsender?pj=https://payjo.in',
+    isTestnet: true,
+    sender: '[]',
+    walletId: 'wallet-1',
+    originalPsbt: 'cHNidP8=',
+    originalTxId: 'original-tx',
+    amountSat: 50000,
+    createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+    expireAfterSec: 3600,
+  ) as PayjoinSenderModel;
 
-  // Single-input, single-output unsigned PSBT. Real enough for BitcoinTx to
+  // Single-input, single-output unsigned PSBT. Real enough for the codec to
   // extract the spent outpoint, which is what the freeze reads.
   const oneInputPsbt =
       'cHNidP8BAFICAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
@@ -168,21 +165,19 @@ void main() {
     String uri = 'bitcoin:tb1qsender?pj=https://payjo.in',
     String? proposalPsbt,
     String? transactionId,
-  }) =>
-      PayjoinModel.sender(
-            uri: uri,
-            isTestnet: true,
-            sender: '[]',
-            walletId: 'wallet-1',
-            originalPsbt: oneInputPsbt,
-            originalTxId: 'original-tx',
-            amountSat: 50000,
-            createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
-            expireAfterSec: 3600,
-            proposalPsbt: proposalPsbt,
-            txId: transactionId,
-          )
-          as PayjoinSenderModel;
+  }) => PayjoinModel.sender(
+    uri: uri,
+    isTestnet: true,
+    sender: '[]',
+    walletId: 'wallet-1',
+    originalPsbt: oneInputPsbt,
+    originalTxId: 'original-tx',
+    amountSat: 50000,
+    createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
+    expireAfterSec: 3600,
+    proposalPsbt: proposalPsbt,
+    txId: transactionId,
+  ) as PayjoinSenderModel;
 
   setUp(() async {
     database = PayjoinDatabase.forTesting(NativeDatabase.memory());
@@ -220,9 +215,8 @@ void main() {
     when(() => pdk.expiredPayjoins).thenAnswer((_) => const Stream.empty());
     when(() => pdk.dispose()).thenAnswer((_) async {});
     when(() => pdk.stopPolling(any())).thenReturn(null);
-    when(
-      () => transactions.watchWallet(any()),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => transactions.watchWallet(any()))
+        .thenAnswer((_) => const Stream.empty());
     when(
       () => transactions.isTransactionVisible(
         walletId: any(named: 'walletId'),
@@ -233,6 +227,7 @@ void main() {
     when(() => transactions.refreshWallet(any())).thenAnswer((_) async {});
     logs = _CaptureLogPort();
     engine = PayjoinRepositoryImpl(
+      codec: const TestPayjoinCodec(),
       localPayjoinDatasource: local,
       pdkPayjoinDatasource: pdk,
       log: PayjoinLogger(logs),
@@ -256,6 +251,7 @@ void main() {
     await engine.dispose();
     final gated = _GatedLocalPayjoinDatasource(db: database);
     engine = PayjoinRepositoryImpl(
+      codec: const TestPayjoinCodec(),
       localPayjoinDatasource: gated,
       pdkPayjoinDatasource: pdk,
       log: PayjoinLogger.silent,
@@ -504,6 +500,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -527,6 +524,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -570,6 +568,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -587,6 +586,7 @@ void main() {
       'broadcast failure', () async {
     final failing = _FailingAbortLocal(db: database);
     final failingEngine = PayjoinRepositoryImpl(
+      codec: const TestPayjoinCodec(),
       localPayjoinDatasource: failing,
       pdkPayjoinDatasource: pdk,
       log: PayjoinLogger(logs),
@@ -601,6 +601,7 @@ void main() {
     when(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -807,6 +808,7 @@ void main() {
           ),
         ).thenAnswer((_) async => []);
         engine = PayjoinRepositoryImpl(
+          codec: const TestPayjoinCodec(),
           localPayjoinDatasource: local,
           pdkPayjoinDatasource: pdk,
           log: PayjoinLogger.silent,
@@ -981,6 +983,64 @@ void main() {
     expect((await local.fetchSender(posted.id))?.sender, posted.sender);
   });
 
+  test('a delivered original is recorded as network evidence', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    final posted = prePost.copyWith(sender: '["posted"]');
+    stubCreateSender(prePost, posted);
+
+    await engine.createPayjoinSender(
+      walletId: posted.walletId,
+      isTestnet: true,
+      bip21: posted.id,
+      originalPsbt: posted.originalPsbt,
+      amountSat: posted.amountSat,
+      networkFeesSatPerVb: 1,
+    );
+
+    // The receiver now holds a signed, broadcastable original that this
+    // device cannot revoke: the row must never be released on expiry.
+    expect((await local.fetchSender(posted.id))?.hasNetworkEvidence, isTrue);
+  });
+
+  test('a post that failed after the write-ahead leaves no evidence', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenAnswer((inv) async {
+      final persist =
+          inv.namedArguments[#persistBeforePost]
+              as Future<void> Function(PayjoinSenderModel);
+      await persist(prePost);
+      throw SendCreationException('relay down');
+    });
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: prePost.walletId,
+        isTestnet: true,
+        bip21: prePost.id,
+        originalPsbt: prePost.originalPsbt,
+        amountSat: prePost.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<SendCreationException>()),
+    );
+
+    // Nobody but this device holds the original: expiry may still release it.
+    final row = await local.fetchSender(prePost.id);
+    expect(row, isNotNull);
+    expect(row?.hasNetworkEvidence, isFalse);
+  });
+
   test('a new sender replaces any poll a resume armed meanwhile', () async {
     final prePost = sender().copyWith(sender: '["pre-post"]');
     final posted = prePost.copyWith(sender: '["posted"]');
@@ -1080,22 +1140,15 @@ void main() {
         ],
       );
       when(
-        () => wallet.createOwnershipChecker(
+        () => wallet.captureOwnership(
           walletId: model.walletId,
           network: BitcoinNetwork.testnet,
         ),
       ).thenAnswer(
-        (_) async =>
-            (Uint8List _) => true,
-      );
-      when(
-        () => wallet.createOutpointOwnershipChecker(
-          walletId: model.walletId,
-          network: BitcoinNetwork.testnet,
+        (_) async => PayjoinWalletOwnership(
+          ownsScript: (_) => true,
+          ownsOutpoint: (_) => true,
         ),
-      ).thenAnswer(
-        (_) async =>
-            (Outpoint _) => true,
       );
       when(
         () => pdk.proposePayjoin(
@@ -1414,6 +1467,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1429,6 +1483,7 @@ void main() {
     void originalFailsWith(Object error) => when(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -1455,10 +1510,33 @@ void main() {
       verify(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
       ).called(1);
+    });
+
+    test('stays reserved when its original was delivered to the receiver '
+        'and the fallback provably sent nothing', () async {
+      final model = expiredSender().copyWith(hasNetworkEvidence: true);
+      await local.storeSender(model);
+      originalFailsWith(const PayjoinBroadcastNotAttemptedException());
+
+      await engine.resumePayjoinsOnStartup();
+
+      // The receiver holds a signed original it may broadcast at any time
+      // (BIP 77): releasing these inputs would let a rebuilt payment confirm
+      // alongside it.
+      final row = await local.fetchSender(model.id);
+      expect(row?.hasNetworkEvidence, isTrue);
+      expect(row?.isExpired, isFalse);
+      expect(row?.isAborted, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
+      expect(
+        engine.proposalSpendFailure(model.id),
+        isA<PayjoinSpendBlockedFailure>(),
+      );
     });
 
     test('stays reserved when the fallback failed with an unknown '
@@ -1486,12 +1564,14 @@ void main() {
     List<String> sentPsbts() => verify(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: captureAny(named: 'psbt'),
       ),
     ).captured.cast<String>();
 
     PayjoinRepositoryImpl coldStart() => PayjoinRepositoryImpl(
+      codec: const TestPayjoinCodec(),
       localPayjoinDatasource: local,
       pdkPayjoinDatasource: pdk,
       log: PayjoinLogger(logs),
@@ -1521,8 +1601,11 @@ void main() {
       final sent = sentPsbts();
       expect(sent, [model.originalPsbt, model.originalPsbt]);
       expect(
-        {for (final psbt in sent) (await BitcoinTx.fromPsbt(psbt)).txid},
-        {(await BitcoinTx.fromPsbt(model.originalPsbt)).txid},
+        {
+          for (final psbt in sent)
+            const TestPayjoinCodec().decodePsbt(psbt).txid,
+        },
+        {const TestPayjoinCodec().decodePsbt(model.originalPsbt).txid},
       );
       final row = await local.fetchSender(model.id);
       expect(row?.originalPsbt, model.originalPsbt);
@@ -1557,6 +1640,7 @@ void main() {
       verify(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1567,6 +1651,7 @@ void main() {
         'reserved', () async {
       final failing = _FailingAbortLocal(db: database);
       final failingEngine = PayjoinRepositoryImpl(
+        codec: const TestPayjoinCodec(),
         localPayjoinDatasource: failing,
         pdkPayjoinDatasource: pdk,
         log: PayjoinLogger(logs),
@@ -1582,6 +1667,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1609,6 +1695,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -1669,6 +1756,7 @@ void main() {
         verifyNever(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -1699,6 +1787,7 @@ void main() {
           verifyNever(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
@@ -1724,6 +1813,7 @@ void main() {
       verifyNever(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1741,6 +1831,7 @@ void main() {
       verifyNever(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -1784,15 +1875,16 @@ void main() {
       //  the watcher, so the session reconciles to COMPLETED on the real
       //  payjoin txid instead of being stranded forever showing the
       //  never-broadcast original.
-      final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final payjoinTxId = const TestPayjoinCodec()
+          .decodePsbt(oneInputPsbt)
+          .txid;
       final stranded = expiredSender(proposalPsbt: oneInputPsbt);
       await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
 
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       when(
         () => transactions.isTransactionVisible(
           walletId: any(named: 'walletId'),
@@ -1845,7 +1937,9 @@ void main() {
       // The live broadcast path labels the sender's payjoin itself. A sender
       //  reconciled by the watcher never goes through it, so the payment would
       //  otherwise show in history without the payjoin label.
-      final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final payjoinTxId = const TestPayjoinCodec()
+          .decodePsbt(oneInputPsbt)
+          .txid;
       final stranded = expiredSender(proposalPsbt: oneInputPsbt);
       await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
 
@@ -1860,9 +1954,8 @@ void main() {
       });
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       when(
         () => transactions.isTransactionVisible(
           walletId: any(named: 'walletId'),
@@ -1896,9 +1989,8 @@ void main() {
 
         final walletEvents = StreamController<void>.broadcast();
         addTearDown(walletEvents.close);
-        when(
-          () => transactions.watchWallet(any()),
-        ).thenAnswer((_) => walletEvents.stream);
+        when(() => transactions.watchWallet(any()))
+            .thenAnswer((_) => walletEvents.stream);
         when(
           () => transactions.isTransactionVisible(
             walletId: any(named: 'walletId'),
@@ -1925,15 +2017,16 @@ void main() {
       //  attempt's payjoin then lands, the payment is made: the retried session
       //  must complete on it, which also stops its own fallback from
       //  broadcasting a second payment on possibly different inputs.
-      final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final payjoinTxId = const TestPayjoinCodec()
+          .decodePsbt(oneInputPsbt)
+          .txid;
       final stranded = expiredSender(proposalPsbt: oneInputPsbt);
       await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
 
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       await engine.resumePayjoinsOnStartup();
 
       final retried = sender().copyWith(originalTxId: 'retried-tx');
@@ -1990,7 +2083,7 @@ void main() {
   test(
     'transient spend refusal resumes the same proposal on wallet refresh',
     () async {
-      final txid = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+      final txid = const TestPayjoinCodec().decodePsbt(oneInputPsbt).txid;
       final live = sender().copyWith(
         originalPsbt: oneInputPsbt,
         proposalPsbt: oneInputPsbt,
@@ -1999,9 +2092,8 @@ void main() {
       await local.storeSender(live);
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       var blocked = true;
       var attempts = 0;
       when(
@@ -2018,6 +2110,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -2042,6 +2135,7 @@ void main() {
       verify(
         () => blockchain.broadcastPsbt(
           walletId: live.walletId,
+          sessionId: any(named: 'sessionId'),
           network: BitcoinNetwork.testnet,
           psbt: oneInputPsbt,
         ),
@@ -2067,11 +2161,10 @@ void main() {
       model = sender().copyWith(
         originalPsbt: oneInputPsbt,
         proposalPsbt: oneInputPsbt,
-        txId: (await BitcoinTx.fromPsbt(oneInputPsbt)).txid,
+        txId: const TestPayjoinCodec().decodePsbt(oneInputPsbt).txid,
       );
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       when(
         () => wallet.signPsbt(
           walletId: any(named: 'walletId'),
@@ -2087,6 +2180,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -2113,27 +2207,24 @@ void main() {
       );
     }
 
-    test(
-      'budget survives refresh bursts and foreground; explicit retry uses same proposal',
-      () async {
-        await local.storeSender(model);
-        await engine.resumePayjoinsOnStartup();
-        for (var i = 0; i < 8; i++) {
-          await refresh();
-        }
-        expect(attempts, PayjoinRepositoryImpl.proposalRetryLimit);
-        await expectReserved();
-        blocked = false;
-        await engine.resumePayjoinsOnStartup();
+    test('budget survives refresh bursts and foreground; explicit retry uses same proposal', () async {
+      await local.storeSender(model);
+      await engine.resumePayjoinsOnStartup();
+      for (var i = 0; i < 8; i++) {
         await refresh();
-        expect(broadcasts, 0);
-        final result = await engine.retryProposal(model.id);
-        expect(result, isA<Ok<internal.Payjoin, PayjoinFailure>>());
-        expect(broadcasts, 1);
-        expect((await local.fetchSender(model.id))?.isCompleted, isTrue);
-        expect(engine.proposalSpendFailure(model.id), isNull);
-      },
-    );
+      }
+      expect(attempts, PayjoinRepositoryImpl.proposalRetryLimit);
+      await expectReserved();
+      blocked = false;
+      await engine.resumePayjoinsOnStartup();
+      await refresh();
+      expect(broadcasts, 0);
+      final result = await engine.retryProposal(model.id);
+      expect(result, isA<Ok<internal.Payjoin, PayjoinFailure>>());
+      expect(broadcasts, 1);
+      expect((await local.fetchSender(model.id))?.isCompleted, isTrue);
+      expect(engine.proposalSpendFailure(model.id), isNull);
+    });
 
     Future<void> expectReleased() async {
       final row = await local.fetchSender(model.id);
@@ -2144,22 +2235,19 @@ void main() {
       expect(engine.proposalSpendFailure(model.id), isNull);
     }
 
-    test(
-      'proposal received at expiry is recorded, then released without any broadcast',
-      () async {
-        final expired = expiredSender();
-        await local.storeSender(expired);
-        model = expired.copyWith(proposalPsbt: oneInputPsbt, txId: model.txId);
-        proposals.add(model);
-        await pumpEventQueue(times: 40);
-        expect((await local.fetchSender(model.id))?.proposalPsbt, oneInputPsbt);
-        await expectReserved();
-        await engine.resumePayjoinsOnStartup();
-        expect(attempts, 0);
-        expect(broadcasts, 0);
-        await expectReleased();
-      },
-    );
+    test('proposal received at expiry is recorded, then released without any broadcast', () async {
+      final expired = expiredSender();
+      await local.storeSender(expired);
+      model = expired.copyWith(proposalPsbt: oneInputPsbt, txId: model.txId);
+      proposals.add(model);
+      await pumpEventQueue(times: 40);
+      expect((await local.fetchSender(model.id))?.proposalPsbt, oneInputPsbt);
+      await expectReserved();
+      await engine.resumePayjoinsOnStartup();
+      expect(attempts, 0);
+      expect(broadcasts, 0);
+      await expectReleased();
+    });
 
     test('deadline stops retries without releasing inputs', () async {
       engine.proposalRetryWindow = const Duration(milliseconds: 20);
@@ -2272,29 +2360,26 @@ void main() {
       expect(broadcasts, 0);
     });
 
-    test(
-      'a paused proposal stays reserved until the session expires, then is released',
-      () async {
-        // Expires between one and two seconds from now.
-        model = model.copyWith(
-          createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 3598,
-        );
-        engine.proposalRetryWindow = const Duration(milliseconds: 20);
-        await local.storeSender(model);
-        await engine.resumePayjoinsOnStartup();
-        await Future<void>.delayed(const Duration(milliseconds: 40));
-        await engine.resumePayjoinsOnStartup();
-        expect(attempts, 1);
-        await expectReserved();
-        await Future<void>.delayed(const Duration(milliseconds: 2100));
-        await pumpEventQueue(times: 40);
-        blocked = false;
-        await refresh();
-        expect(attempts, 1);
-        expect(broadcasts, 0);
-        await expectReleased();
-      },
-    );
+    test('a paused proposal stays reserved until the session expires, then is released', () async {
+      // Expires between one and two seconds from now.
+      model = model.copyWith(
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 3598,
+      );
+      engine.proposalRetryWindow = const Duration(milliseconds: 20);
+      await local.storeSender(model);
+      await engine.resumePayjoinsOnStartup();
+      await Future<void>.delayed(const Duration(milliseconds: 40));
+      await engine.resumePayjoinsOnStartup();
+      expect(attempts, 1);
+      await expectReserved();
+      await Future<void>.delayed(const Duration(milliseconds: 2100));
+      await pumpEventQueue(times: 40);
+      blocked = false;
+      await refresh();
+      expect(attempts, 1);
+      expect(broadcasts, 0);
+      await expectReleased();
+    });
 
     test('an expired session whose payjoin is on the network completes '
         'instead of expiring', () async {
@@ -2359,6 +2444,7 @@ void main() {
           'expired', () async {
         final failing = _FailingCompleteLocal(db: database);
         final failingEngine = PayjoinRepositoryImpl(
+          codec: const TestPayjoinCodec(),
           localPayjoinDatasource: failing,
           pdkPayjoinDatasource: pdk,
           log: PayjoinLogger(logs),
@@ -2412,6 +2498,7 @@ void main() {
           when(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
@@ -2434,6 +2521,7 @@ void main() {
           when(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
@@ -2467,6 +2555,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -2500,13 +2589,13 @@ void main() {
           when(
             () => blockchain.broadcastPsbt(
               walletId: any(named: 'walletId'),
+              sessionId: any(named: 'sessionId'),
               network: any(named: 'network'),
               psbt: any(named: 'psbt'),
             ),
           ).thenAnswer((_) async {
-            evidenceAtWire = (await local.fetchSender(
-              unproposed.id,
-            ))?.hasNetworkEvidence;
+            evidenceAtWire = (await local.fetchSender(unproposed.id))
+                ?.hasNetworkEvidence;
             throw Exception('unknown original outcome');
           });
           await send(unproposed);
@@ -2630,15 +2719,16 @@ void main() {
     /// Strands a sender on [oneInputPsbt], resumes it so its payjoin is
     /// watched, then retries the payment under the same id.
     Future<PayjoinSenderModel> strandAndRetry() async {
-      supersededTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
-      retriedTxId = (await BitcoinTx.fromPsbt(retriedProposalPsbt)).txid;
+      supersededTxId = const TestPayjoinCodec().decodePsbt(oneInputPsbt).txid;
+      retriedTxId = const TestPayjoinCodec()
+          .decodePsbt(retriedProposalPsbt)
+          .txid;
       final stranded = expiredSender(proposalPsbt: oneInputPsbt);
       await local.storeSender(stranded.copyWith(isExpired: true, txId: null));
       walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
       await engine.resumePayjoinsOnStartup();
 
       final retried = sender().copyWith(originalTxId: 'retried-tx');
@@ -2708,6 +2798,7 @@ void main() {
       when(
         () => blockchain.broadcastPsbt(
           walletId: any(named: 'walletId'),
+          sessionId: any(named: 'sessionId'),
           network: any(named: 'network'),
           psbt: any(named: 'psbt'),
         ),
@@ -2751,7 +2842,7 @@ void main() {
     //  network while our broadcast reports an error is our own broadcast that
     //  got through (a dropped Tor circuit, an Electrum timeout). The original
     //  can only be a losing conflict then, and the session must not expire.
-    final payjoinTxId = (await BitcoinTx.fromPsbt(oneInputPsbt)).txid;
+    final payjoinTxId = const TestPayjoinCodec().decodePsbt(oneInputPsbt).txid;
     final live = sender().copyWith(
       proposalPsbt: oneInputPsbt,
       txId: payjoinTxId,
@@ -2768,6 +2859,7 @@ void main() {
     when(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: any(named: 'psbt'),
       ),
@@ -2797,6 +2889,7 @@ void main() {
     verifyNever(
       () => blockchain.broadcastPsbt(
         walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
         network: any(named: 'network'),
         psbt: live.originalPsbt,
       ),
@@ -2857,6 +2950,7 @@ void main() {
         when(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: any(named: 'psbt'),
           ),
@@ -2873,6 +2967,7 @@ void main() {
         final captured = verify(
           () => blockchain.broadcastPsbt(
             walletId: any(named: 'walletId'),
+            sessionId: any(named: 'sessionId'),
             network: any(named: 'network'),
             psbt: captureAny(named: 'psbt'),
           ),
@@ -2914,9 +3009,8 @@ void main() {
       });
       final walletEvents = StreamController<void>.broadcast();
       addTearDown(walletEvents.close);
-      when(
-        () => transactions.watchWallet(any()),
-      ).thenAnswer((_) => walletEvents.stream);
+      when(() => transactions.watchWallet(any()))
+          .thenAnswer((_) => walletEvents.stream);
 
       await engine.createPayjoinSender(
         walletId: first.walletId,
@@ -3041,5 +3135,46 @@ void main() {
         expect(persisted!.sender, model.sender);
       },
     );
+  });
+
+  group('input reservations', () {
+    test('name the session, wallet and network holding each input', () async {
+      await local.storeReceiver(receiver(proposalPsbt: oneInputPsbt));
+      final sender = expiredSender(
+        uri: 'bitcoin:tb1qother?pj=https://payjo.in',
+      );
+      await local.storeSender(sender);
+
+      final reservations = await engine.getInputReservations();
+
+      expect(reservations, hasLength(2));
+      final byRole = {for (final held in reservations) held.role: held};
+      final recipient = byRole[PayjoinParty.recipient];
+      expect(recipient?.sessionId, 'receiver-1');
+      expect(recipient?.status, PayjoinStatus.proposed);
+      final paying = byRole[PayjoinParty.sender];
+      expect(paying?.sessionId, sender.id);
+      expect(paying?.status, PayjoinStatus.requested);
+      for (final held in reservations) {
+        expect(held.outpoint, (txId: '11' * 32, vout: 0));
+        expect(held.walletId, 'wallet-1');
+        expect(held.network, BitcoinNetwork.testnet);
+      }
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), [
+        for (final held in reservations) held.outpoint,
+      ]);
+    });
+
+    test('a receiver without a proposal holds nothing yet', () async {
+      await local.storeReceiver(receiver());
+
+      expect(await engine.getInputReservations(), isEmpty);
+    });
+
+    test('an undecodable session is a failure, never no reservation', () async {
+      await local.storeSender(sender());
+
+      expect(engine.getInputReservations(), throwsFormatException);
+    });
   });
 }

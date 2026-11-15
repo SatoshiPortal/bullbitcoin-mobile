@@ -1,28 +1,23 @@
+import 'dart:async';
+
+import 'package:bb_mobile/features/exchange/domain/exchange_access.dart';
+import 'package:bb_mobile/features/exchange/domain/repositories/exchange_access_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_settings_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/exchange/domain/exchange_api_key_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_support_chat_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/exchange_user_failure.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/exchange/domain/exchange_failure.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/clear_exchange_session_usecase.dart';
-import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_account_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_announcements_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/request_exchange_account_deletion_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_exchange_preferences_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
-/// What the repository boundary already sanitized it to: a type name, no
-/// payload. If a use-case ever widened this, the assertions below would catch
-/// it.
-const _sanitized = 'getUserSummary failed: DioException';
 
 /// The failure an [Err] carries, typed by the [Result]; an [Ok] fails the test.
 F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
@@ -32,7 +27,7 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 
 class _MockUserRepository extends Mock implements ExchangeUserRepository {}
 
-class _MockApiKeyRepository extends Mock implements ExchangeApiKeyRepository {}
+class _MockAccess extends Mock implements ExchangeAccessRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -48,17 +43,20 @@ SettingsEntity _settings(Environment environment) => SettingsEntity(
 void main() {
   late _MockUserRepository mainnetUsers;
   late _MockUserRepository testnetUsers;
-  late _MockApiKeyRepository apiKeys;
   late _MockSettingsRepository settings;
+  late _MockAccess access;
 
   setUp(() {
     mainnetUsers = _MockUserRepository();
     testnetUsers = _MockUserRepository();
-    apiKeys = _MockApiKeyRepository();
     settings = _MockSettingsRepository();
+    access = _MockAccess();
     when(
-      settings.fetch,
-    ).thenAnswer((_) async => _settings(Environment.mainnet));
+      () => access.current,
+    ).thenReturn(const ExchangeAccessEnabled(ExchangeAccessSession.signedIn));
+    when(() => access.epoch).thenReturn(1);
+    when(settings.fetch)
+        .thenAnswer((_) async => _settings(Environment.mainnet));
   });
 
   // SettingsRepository is shared core and still throws. These use-cases
@@ -71,26 +69,13 @@ void main() {
       when(settings.fetch).thenThrow(Exception('database is locked'));
     });
 
-    test('GetExchangeAccountUsecase', () async {
-      final failure = _failureOf(
-        await GetExchangeAccountUsecase(
-          mainnetExchangeUserRepository: mainnetUsers,
-          testnetExchangeUserRepository: testnetUsers,
-          settingsRepository: settings,
-        ).execute(),
-      );
-
-      expect(failure, isA<ExchangeAccountUnavailableFailure>());
-      expect(failure.logMessage, reason);
-      verifyZeroInteractions(mainnetUsers);
-    });
-
     test('SaveExchangePreferencesUsecase', () async {
       final failure = _failureOf(
         await SaveExchangePreferencesUsecase(
           mainnetExchangeUserRepository: mainnetUsers,
           testnetExchangeUserRepository: testnetUsers,
           settingsRepository: settings,
+          access: access,
         ).execute(language: 'en'),
       );
 
@@ -104,76 +89,36 @@ void main() {
           mainnetExchangeUserRepository: mainnetUsers,
           testnetExchangeUserRepository: testnetUsers,
           settingsRepository: settings,
+          access: access,
         ).execute(),
       );
 
       expect(failure, isA<ExchangeAnnouncementsUnavailableFailure>());
       expect(failure.logMessage, reason);
     });
-
-    test('ClearExchangeSessionUsecase deletes both keys and clears the '
-        'cookies', () async {
-      when(
-        () => apiKeys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Ok(null));
-      var cleared = false;
-
-      final failure = _failureOf(
-        await ClearExchangeSessionUsecase(
-          exchangeApiKeyRepository: apiKeys,
-          settingsRepository: settings,
-          clearCookies: () async => cleared = true,
-        ).execute(),
-      );
-
-      expect(failure, isA<ExchangeSessionClearFailure>());
-      expect(failure.logMessage, reason);
-      expect(
-        cleared,
-        isTrue,
-        reason: 'sign-out must remove as much of the session as it can',
-      );
-      // The environment is unknown, so neither key can be singled out:
-      // deleting both is safer than deleting neither.
-      verify(() => apiKeys.deleteApiKey(isTestnet: false)).called(1);
-      verify(() => apiKeys.deleteApiKey(isTestnet: true)).called(1);
-    });
   });
 
   test(
     'regtest refuses exchange operations without historical side effects',
     () async {
-      when(
-        settings.fetch,
-      ).thenAnswer((_) async => _settings(Environment.regtest));
+      when(settings.fetch)
+          .thenAnswer((_) async => _settings(Environment.regtest));
       final support = _MockSendSupportChat();
-      var clearedCookies = false;
       final results = [
-        await GetExchangeAccountUsecase(
-          mainnetExchangeUserRepository: mainnetUsers,
-          testnetExchangeUserRepository: testnetUsers,
-          settingsRepository: settings,
-        ).execute(),
         await GetExchangeAnnouncementsUsecase(
           mainnetExchangeUserRepository: mainnetUsers,
           testnetExchangeUserRepository: testnetUsers,
           settingsRepository: settings,
+          access: access,
         ).execute(),
         await SaveExchangePreferencesUsecase(
           mainnetExchangeUserRepository: mainnetUsers,
           testnetExchangeUserRepository: testnetUsers,
           settingsRepository: settings,
+          access: access,
         ).execute(language: 'fr'),
-        await ClearExchangeSessionUsecase(
-          exchangeApiKeyRepository: apiKeys,
-          settingsRepository: settings,
-          clearCookies: () async {
-            clearedCookies = true;
-          },
-        ).execute(),
-        await GetExchangeWebSettingsUsecase(
-          settingsRepository: settings,
-        ).execute(),
+        await GetExchangeWebSettingsUsecase(settingsRepository: settings)
+            .execute(),
         await RequestExchangeAccountDeletionUsecase(
           sendSupportChatMessageUsecase: support,
           settingsRepository: settings,
@@ -184,97 +129,9 @@ void main() {
       }
       verifyZeroInteractions(mainnetUsers);
       verifyZeroInteractions(testnetUsers);
-      verifyZeroInteractions(apiKeys);
       verifyZeroInteractions(support);
-      expect(clearedCookies, isFalse);
     },
   );
-
-  group('GetExchangeAccountUsecase', () {
-    GetExchangeAccountUsecase build() => GetExchangeAccountUsecase(
-      mainnetExchangeUserRepository: mainnetUsers,
-      testnetExchangeUserRepository: testnetUsers,
-      settingsRepository: settings,
-    );
-
-    test('a repository failure is lifted into the feature family', () async {
-      when(mainnetUsers.getUserSummary).thenAnswer(
-        (_) async =>
-            const Err(ExchangeUserSummaryUnavailableFailure(_sanitized)),
-      );
-
-      final failure = _failureOf(await build().execute());
-
-      expect(failure, isA<ExchangeAccountUnavailableFailure>());
-      expect(
-        failure,
-        isNot(isA<ExchangeUserFailure>()),
-        reason: 'the core family must not escape into the cubit',
-      );
-      expect(failure.logMessage, _sanitized);
-    });
-
-    // "No session" is a different user story from "the call failed": one says
-    // log in, the other says retry.
-    test('an unreachable API becomes the network failure', () async {
-      when(mainnetUsers.getUserSummary).thenAnswer(
-        (_) async => const Err(
-          ExchangeUserNetworkFailure(
-            'getUserSummary unreachable: connectionError',
-          ),
-        ),
-      );
-
-      final failure = _failureOf(await build().execute());
-
-      expect(failure, isA<ExchangeNetworkFailure>());
-    });
-
-    test('not-authenticated keeps its own meaning', () async {
-      when(mainnetUsers.getUserSummary).thenAnswer(
-        (_) async => const Err(ExchangeUserNotAuthenticatedFailure()),
-      );
-
-      final failure = _failureOf(await build().execute());
-
-      expect(failure, isA<ExchangeNotAuthenticatedFailure>());
-    });
-
-    test('a success is forwarded', () async {
-      when(mainnetUsers.getUserSummary).thenAnswer(
-        (_) async => const Ok(
-          UserSummary(
-            userNumber: 1,
-            groups: [],
-            profile: UserProfile(firstName: 'Sat', lastName: 'Oshi'),
-            email: 'sat@example.com',
-            balances: [],
-            dca: UserDca(isActive: false),
-            autoBuy: UserAutoBuy(
-              isActive: false,
-              addresses: UserAutoBuyAddresses(),
-            ),
-          ),
-        ),
-      );
-
-      expect(await build().execute(), isA<Ok<UserSummary, ExchangeFailure>>());
-    });
-
-    // A sanitized failure is no good if it came from the wrong network.
-    test('testnet settings route to the testnet repository', () async {
-      when(
-        settings.fetch,
-      ).thenAnswer((_) async => _settings(Environment.testnet));
-      when(testnetUsers.getUserSummary).thenAnswer(
-        (_) async => const Err(ExchangeUserSummaryUnavailableFailure()),
-      );
-
-      expect(await build().execute(), isA<Err<UserSummary, ExchangeFailure>>());
-      verify(testnetUsers.getUserSummary).called(1);
-      verifyNever(mainnetUsers.getUserSummary);
-    });
-  });
 
   group('SaveExchangePreferencesUsecase', () {
     // An account whose stored preferences all differ from the test inputs,
@@ -295,12 +152,12 @@ void main() {
       mainnetExchangeUserRepository: mainnetUsers,
       testnetExchangeUserRepository: testnetUsers,
       settingsRepository: settings,
+      access: access,
     );
 
     test('a repository failure is lifted into the feature family', () async {
-      when(
-        mainnetUsers.getUserSummary,
-      ).thenAnswer((_) async => const Ok(summary));
+      when(mainnetUsers.getUserSummary)
+          .thenAnswer((_) async => const Ok(summary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -322,9 +179,8 @@ void main() {
     // leaves out must be carried over from a fresh summary.
     test('fields the caller leaves out are filled from a fresh '
         'summary', () async {
-      when(
-        mainnetUsers.getUserSummary,
-      ).thenAnswer((_) async => const Ok(summary));
+      when(mainnetUsers.getUserSummary)
+          .thenAnswer((_) async => const Ok(summary));
       when(
         () => mainnetUsers.saveUserPreference(
           language: any(named: 'language'),
@@ -374,6 +230,7 @@ void main() {
       mainnetExchangeUserRepository: mainnetUsers,
       testnetExchangeUserRepository: testnetUsers,
       settingsRepository: settings,
+      access: access,
     );
 
     test('a repository failure is lifted into the feature family', () async {
@@ -388,9 +245,8 @@ void main() {
     });
 
     test('a successful load is forwarded', () async {
-      when(
-        mainnetUsers.listAnnouncements,
-      ).thenAnswer((_) async => const Ok(<Announcement>[]));
+      when(mainnetUsers.listAnnouncements)
+          .thenAnswer((_) async => const Ok(<Announcement>[]));
 
       expect(
         await build().execute(),
@@ -399,56 +255,48 @@ void main() {
     });
   });
 
-  group('ClearExchangeSessionUsecase', () {
-    ClearExchangeSessionUsecase build(Future<void> Function() clearCookies) =>
-        ClearExchangeSessionUsecase(
-          exchangeApiKeyRepository: apiKeys,
-          settingsRepository: settings,
-          clearCookies: clearCookies,
-        );
+  test('a late announcement failure is stale after an access change', () async {
+    var epoch = 1;
+    when(() => access.epoch).thenAnswer((_) => epoch);
+    final pending =
+        Completer<Result<List<Announcement>, ExchangeUserFailure>>();
+    when(mainnetUsers.listAnnouncements).thenAnswer((_) => pending.future);
+    final operation = GetExchangeAnnouncementsUsecase(
+      mainnetExchangeUserRepository: mainnetUsers,
+      testnetExchangeUserRepository: testnetUsers,
+      settingsRepository: settings,
+      access: access,
+    ).execute();
+    await Future<void>.delayed(Duration.zero);
+    epoch++;
+    pending.complete(const Err(ExchangeUserAnnouncementsUnavailableFailure()));
+    expect(_failureOf(await operation), isA<ExchangeOperationStaleFailure>());
+  });
 
-    test('cookies are still cleared when key deletion fails', () async {
-      when(
-        () => apiKeys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Err(ExchangeApiKeyDeleteFailure('nope')));
-      var cleared = false;
-
-      final result = await build(() async => cleared = true).execute();
-
-      expect(
-        cleared,
-        isTrue,
-        reason: 'leaving cookies behind after sign-out is the worse outcome',
-      );
-      expect(_failureOf(result), isA<ExchangeSessionClearFailure>());
-    });
-
-    // The cookie manager is a platform call with no repository beneath it, so
-    // this use-case is legitimately its boundary.
-    test('a throwing cookie clear is caught and sanitized', () async {
-      when(
-        () => apiKeys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Ok(null));
-
-      final result = await build(
-        () async => throw Exception('PlatformException: bbk_live_7f3a9c2e'),
-      ).execute();
-      final failure = _failureOf(result);
-
-      expect(failure, isA<ExchangeSessionClearFailure>());
-      expect(failure.logMessage, isNot(contains('bbk_live_7f3a9c2e')));
-    });
-
-    test('both succeeding is Ok', () async {
-      when(
-        () => apiKeys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Ok(null));
-
-      expect(
-        await build(() async {}).execute(),
-        isA<Ok<void, ExchangeFailure>>(),
-      );
-    });
+  test('a late summary failure cannot affect a newer session', () async {
+    var epoch = 1;
+    when(() => access.epoch).thenAnswer((_) => epoch);
+    final pending = Completer<Result<UserSummary, ExchangeUserFailure>>();
+    when(mainnetUsers.getUserSummary).thenAnswer((_) => pending.future);
+    final operation = SaveExchangePreferencesUsecase(
+      mainnetExchangeUserRepository: mainnetUsers,
+      testnetExchangeUserRepository: testnetUsers,
+      settingsRepository: settings,
+      access: access,
+    ).execute(currency: 'EUR');
+    await Future<void>.delayed(Duration.zero);
+    epoch++;
+    pending.complete(const Err(ExchangeUserNetworkFailure()));
+    expect(_failureOf(await operation), isA<ExchangeOperationStaleFailure>());
+    verifyNever(
+      () => mainnetUsers.saveUserPreference(
+        language: any(named: 'language'),
+        currency: any(named: 'currency'),
+        dcaEnabled: any(named: 'dcaEnabled'),
+        autoBuyEnabled: any(named: 'autoBuyEnabled'),
+        emailNotificationsEnabled: any(named: 'emailNotificationsEnabled'),
+      ),
+    );
   });
 
   group('RequestExchangeAccountDeletionUsecase', () {

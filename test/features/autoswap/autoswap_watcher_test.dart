@@ -49,9 +49,8 @@ void main() {
   });
 
   test('runs only after a Liquid wallet sync', () async {
-    when(
-      () => executeAutoswap.execute(),
-    ).thenAnswer((_) async => const Ok('order'));
+    when(() => executeAutoswap.execute())
+        .thenAnswer((_) async => const Ok('order'));
 
     syncs.add(_wallet(liquid: false));
     await pumpEventQueue();

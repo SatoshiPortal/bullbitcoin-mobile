@@ -38,10 +38,12 @@ class ExecuteAutoswapUsecase {
     final route = await _swapFacade.getRoute();
     if (!route.startsWithBoltz) return _exchangeProvider.execute(settings);
     final result = await _boltzProvider.execute(settings);
-    if (result case Err(
-      failure: AutoswapBoltzUnavailableFailure() ||
-          AutoswapAmountOutOfBoundsFailure(),
-    ) when route == SwapRoute.boltzWithExchangeFallback) {
+    if (result
+        case Err(
+          failure: AutoswapBoltzUnavailableFailure() ||
+              AutoswapAmountOutOfBoundsFailure(),
+        )
+        when route == SwapRoute.boltzWithExchangeFallback) {
       log.fine('[Autoswap] Boltz cannot take the transfer, using the exchange');
       return _exchangeProvider.execute(settings);
     }

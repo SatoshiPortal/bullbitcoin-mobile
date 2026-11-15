@@ -25,32 +25,37 @@ typedef NewAddressFor = Future<String> Function(String walletId);
 /// current view — the caller is responsible for any freshening it needs
 /// (app-level syncs converge; the outspend recovery reads whatever the
 /// wallet knows at that moment and fails closed on absence).
-typedef WalletTxLookup =
-    Future<SwapWalletTx?> Function(String txid, {required String walletId});
+typedef WalletTxLookup = Future<SwapWalletTx?> Function(
+  String txid, {
+  required String walletId,
+});
 
 /// All of a wallet's transactions. [sync] freshens the wallet first;
 /// implementations must throw — not return stale data — when freshening was
 /// requested but failed.
-typedef WalletTxsLookup =
-    Future<List<SwapWalletTx>> Function(String walletId, {bool sync});
+typedef WalletTxsLookup = Future<List<SwapWalletTx>> Function(
+  String walletId, {
+  bool sync,
+});
 
 /// Fastest-confirmation absolute fee for [txSize] vbytes; throws when the
 /// estimate is unavailable (the engine falls back to the relay floor).
-typedef FastestFee =
-    Future<int> Function({
-      required int txSize,
-      required bool isLiquid,
-      required bool isTestnet,
-    });
+typedef FastestFee = Future<int> Function({
+  required int txSize,
+  required bool isLiquid,
+  required bool isTestnet,
+});
 
-typedef WalletsList =
-    Future<List<SwapWalletInfo>> Function({required bool isTestnet});
+typedef WalletsList = Future<List<SwapWalletInfo>> Function({
+  required bool isTestnet,
+});
 
 /// The swap master key derived from the default bitcoin wallet by the app's
 /// secrets layer; null when unavailable (watch-only / hardware-only /
 /// pre-onboarding). Only invoked when no key is stored yet.
-typedef SwapMasterKeySource =
-    Future<DerivedSwapMasterKey?> Function({required bool isTestnet});
+typedef SwapMasterKeySource = Future<DerivedSwapMasterKey?> Function({
+  required bool isTestnet,
+});
 
 class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   final BoltzDatasource _boltz;
@@ -495,7 +500,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       // pending->paid, so an already-expired/failed row keeps its status
       // while gaining the sendTxid the refund path requires.
       await updatePaidSendSwap(swapId: swap.id, txid: lockupTxid);
-      return getSwap(swapId: swap.id);
+      return await getSwap(swapId: swap.id);
     } catch (e) {
       swapsLog.warning('SWAPS: ${swap.id} lockup-txid backfill skipped: $e');
       return swap;

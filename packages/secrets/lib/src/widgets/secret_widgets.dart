@@ -16,7 +16,7 @@ extension type const SecretWidgets._(Secret _secret) {
   @internal
   const SecretWidgets(Secret secret) : this._(secret);
 
-  /// Shows the words, and the passphrase when there is one. See [MnemonicView].
+  /// Shows the words. The passphrase is painted only when explicitly requested.
   MnemonicView mnemonicView({
     Key? key,
     required Widget Function(BuildContext, SecretFailure, VoidCallback retry)
@@ -24,6 +24,7 @@ extension type const SecretWidgets._(Secret _secret) {
     TextStyle? style,
     String? passphraseLabel,
     TextStyle? passphraseLabelStyle,
+    bool showPassphrase = false,
     Widget placeholder = const SizedBox.shrink(),
     Widget Function(BuildContext context, int number, Widget word)? wordBuilder,
     Widget Function(BuildContext context, List<Widget> words)? layoutBuilder,
@@ -34,6 +35,7 @@ extension type const SecretWidgets._(Secret _secret) {
     style: style,
     passphraseLabel: passphraseLabel,
     passphraseLabelStyle: passphraseLabelStyle,
+    showPassphrase: showPassphrase,
     placeholder: placeholder,
     wordBuilder: wordBuilder,
     layoutBuilder: layoutBuilder,

@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../sp_cubit_harness.dart';
+
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet_data.dart';
 
 void main() {
@@ -49,15 +50,12 @@ void main() {
     stopUsecase = harness.stopUsecase;
     notifController = StreamController<SpNotification>.broadcast();
 
-    when(
-      () => loadUsecase.execute(),
-    ).thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
-    when(
-      () => watchUsecase.execute(),
-    ).thenAnswer((_) => notifController.stream);
-    when(
-      () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
-    ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    when(() => loadUsecase.execute())
+        .thenAnswer((_) async => Ok<SpWalletData, SpFailure>(buildData()));
+    when(() => watchUsecase.execute())
+        .thenAnswer((_) => notifController.stream);
+    when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
+        .thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
     cubit = harness.build();
   });
@@ -269,24 +267,27 @@ void main() {
     });
   });
 
-  test('coin notification during scan defers reload to ScanCompleted', () async {
-    await cubit.load();
-    notifController.add(const SpScanStarted(1, 10));
-    await Future.delayed(Duration.zero);
+  test(
+    'coin notification during scan defers reload to ScanCompleted',
+    () async {
+      await cubit.load();
+      notifController.add(const SpScanStarted(1, 10));
+      await Future.delayed(Duration.zero);
 
-    // Ignore the initial load() call; assert only what happens during scan.
-    clearInteractions(loadUsecase);
+      // Ignore the initial load() call; assert only what happens during scan.
+      clearInteractions(loadUsecase);
 
-    notifController.add(SpNewOutput('o:0', Sats.fromInt(1)));
-    await Future.delayed(Duration.zero);
-    // Still scanning: defer the reload (avoid churn during the background scan).
-    verifyNever(() => loadUsecase.execute());
+      notifController.add(SpNewOutput('o:0', Sats.fromInt(1)));
+      await Future.delayed(Duration.zero);
+      // Still scanning: defer the reload (avoid churn during the background scan).
+      verifyNever(() => loadUsecase.execute());
 
-    notifController.add(const SpScanCompleted());
-    await Future.delayed(Duration.zero);
-    // ScanCompleted reloads exactly once.
-    verify(() => loadUsecase.execute()).called(1);
-  });
+      notifController.add(const SpScanCompleted());
+      await Future.delayed(Duration.zero);
+      // ScanCompleted reloads exactly once.
+      verify(() => loadUsecase.execute()).called(1);
+    },
+  );
 
   test(
     'scan() invokes ScanSpWalletUsecase.execute once while a scan is active',
@@ -310,9 +311,8 @@ void main() {
   });
 
   test('scan(startHeight) forwards the chosen height to the usecase', () async {
-    when(
-      () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
-    ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+    when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
+        .thenAnswer((_) async => const Ok<void, SpFailure>(null));
     await cubit.load();
 
     await cubit.scan(startHeight: 800000);
@@ -323,12 +323,11 @@ void main() {
   test(
     'scan() sets error and leaves isScanning false when execute throws',
     () async {
-      when(
-        () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
-      ).thenAnswer(
-        (_) async =>
-            const Err<void, SpFailure>(SpUnexpected('scan start failed')),
-      );
+      when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
+          .thenAnswer(
+            (_) async =>
+                const Err<void, SpFailure>(SpUnexpected('scan start failed')),
+          );
       await cubit.load();
 
       await cubit.scan();
@@ -374,9 +373,8 @@ void main() {
       // Hold the first scan open so the second tap lands inside the window
       // before ScanStarted would flip state.isScanning.
       final gate = Completer<Result<void, SpFailure>>();
-      when(
-        () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
-      ).thenAnswer((_) => gate.future);
+      when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
+          .thenAnswer((_) => gate.future);
       await cubit.load();
 
       final first = cubit.scan();
@@ -391,15 +389,14 @@ void main() {
       // The scan really starts (ScanStarted sets isScanning=true) while the
       // execute future is still pending, then reports busy. The catch must not
       // flip isScanning off and wedge the Stop button.
-      when(
-        () => scanUsecase.execute(startHeight: any(named: 'startHeight')),
-      ).thenAnswer((_) async {
-        notifController.add(const SpScanStarted(1, 10));
-        await Future.delayed(Duration.zero);
-        return const Err<void, SpFailure>(
-          SpScanBusy('scanner already running'),
-        );
-      });
+      when(() => scanUsecase.execute(startHeight: any(named: 'startHeight')))
+          .thenAnswer((_) async {
+            notifController.add(const SpScanStarted(1, 10));
+            await Future.delayed(Duration.zero);
+            return const Err<void, SpFailure>(
+              SpScanBusy('scanner already running'),
+            );
+          });
       await cubit.load();
 
       await cubit.scan();
@@ -481,47 +478,43 @@ void main() {
       },
     );
 
-    test(
-      'self-heals when its notification stream closes: the watcher '
-      're-establishes and the cubit reloads (session-recycle regression)',
-      () async {
-        // A re-establish finds a live wallet, so the watcher re-subscribes and
-        // signals reconnect (which reloads the wallet data).
-        when(
-          () => harness.ensureUsecase.execute(),
-        ).thenAnswer((_) async => Ok(buildData().wallet));
+    test('self-heals when its notification stream closes: the watcher '
+        're-establishes and the cubit reloads (session-recycle regression)', () async {
+      // A re-establish finds a live wallet, so the watcher re-subscribes and
+      // signals reconnect (which reloads the wallet data).
+      when(() => harness.ensureUsecase.execute())
+          .thenAnswer((_) async => Ok(buildData().wallet));
 
-        await cubit.load();
+      await cubit.load();
 
-        // After the session is recycled, watching yields a fresh (open) stream;
-        // mirror the real adapter, which establishes a new broadcast stream for
-        // the new session. Left open so re-subscription does not loop.
-        final freshController = StreamController<SpNotification>.broadcast();
-        addTearDown(freshController.close);
-        // Subscribing to the fresh stream is the deterministic re-establish
-        // signal, so the wait does not depend on machine load.
-        final resubscribed = Completer<void>();
-        when(() => watchUsecase.execute()).thenAnswer((_) {
-          if (!resubscribed.isCompleted) resubscribed.complete();
-          return freshController.stream;
-        });
+      // After the session is recycled, watching yields a fresh (open) stream;
+      // mirror the real adapter, which establishes a new broadcast stream for
+      // the new session. Left open so re-subscription does not loop.
+      final freshController = StreamController<SpNotification>.broadcast();
+      addTearDown(freshController.close);
+      // Subscribing to the fresh stream is the deterministic re-establish
+      // signal, so the wait does not depend on machine load.
+      final resubscribed = Completer<void>();
+      when(() => watchUsecase.execute()).thenAnswer((_) {
+        if (!resubscribed.isCompleted) resubscribed.complete();
+        return freshController.stream;
+      });
 
-        // Simulate the singleton session being disposed out from under the cubit
-        // (e.g. a wallet-side full refresh after a network change): its stream
-        // completes.
-        await notifController.close();
-        await resubscribed.future.timeout(
-          const Duration(seconds: 5),
-          onTimeout: () => fail('the watcher never re-subscribed'),
-        );
-        await pumpEventQueue();
+      // Simulate the singleton session being disposed out from under the cubit
+      // (e.g. a wallet-side full refresh after a network change): its stream
+      // completes.
+      await notifController.close();
+      await resubscribed.future.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => fail('the watcher never re-subscribed'),
+      );
+      await pumpEventQueue();
 
-        // The watcher re-established (watched a fresh stream) and the reconnect
-        // reloaded the wallet data once. Pinned exactly, so a self-heal loop
-        // firing repeatedly fails here instead of passing.
-        verify(() => loadUsecase.execute()).called(2);
-        verify(() => watchUsecase.execute()).called(2);
-      },
-    );
+      // The watcher re-established (watched a fresh stream) and the reconnect
+      // reloaded the wallet data once. Pinned exactly, so a self-heal loop
+      // firing repeatedly fails here instead of passing.
+      verify(() => loadUsecase.execute()).called(2);
+      verify(() => watchUsecase.execute()).called(2);
+    });
   });
 }

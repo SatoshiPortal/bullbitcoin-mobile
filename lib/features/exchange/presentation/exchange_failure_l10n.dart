@@ -11,7 +11,8 @@ extension ExchangeFailureL10n on ExchangeFailure {
       context.loc.networkFeatureUnavailable,
     ExchangeAccountUnavailableFailure() =>
       context.loc.exchangeAccountInfoLoadErrorMessage,
-    ExchangeNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
+    ExchangeNotAuthenticatedFailure() ||
+    ExchangeSessionRejectedFailure() => context.loc.exchangeAuthErrorMessage,
     ExchangeAuthenticationDeferredFailure() =>
       context.loc.exchangeAuthErrorMessage,
     ExchangeAuthenticationFailure() => context.loc.exchangeAuthErrorMessage,
@@ -31,6 +32,7 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeNetworkFailure() => context.loc.exchangeErrorNetwork,
     // Never `logMessage`. The legacy `BullException` chain interpolated the
     // raw `'$e'` into its message, so that field can carry anything.
-    ExchangeUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
+    ExchangeUnexpectedFailure() ||
+    ExchangeOperationStaleFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

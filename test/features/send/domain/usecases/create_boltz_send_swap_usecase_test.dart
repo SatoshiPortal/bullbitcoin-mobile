@@ -32,15 +32,13 @@ Wallet _liquidWallet() => Wallet(
   balanceSat: BigInt.from(100000),
 );
 
-const _invoice =
-    PaymentRequest.bolt11(
-          invoice: 'lnbc1-invoice',
-          amountSat: 50000,
-          paymentHash: 'hash',
-          expiresAt: 0,
-          isTestnet: false,
-        )
-        as Bolt11PaymentRequest;
+const _invoice = PaymentRequest.bolt11(
+  invoice: 'lnbc1-invoice',
+  amountSat: 50000,
+  paymentHash: 'hash',
+  expiresAt: 0,
+  isTestnet: false,
+) as Bolt11PaymentRequest;
 
 void main() {
   test('creates the swap on the pair of the wallet chain', () async {
@@ -71,9 +69,8 @@ void main() {
 
   test('reads the swap route from the swap feature', () async {
     final facade = _MockSwapFacade();
-    when(
-      () => facade.getRoute(),
-    ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+    when(() => facade.getRoute())
+        .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
 
     expect(
       await GetSendSwapRouteUsecase(facade).execute(),
@@ -95,9 +92,9 @@ void main() {
     });
 
     test('above the maximum reports the maximum', () {
-      final failure =
-          limits.toSendFailure(amountSat: 3000000)
-              as SendAmountOutOfBoundsFailure;
+      final failure = limits.toSendFailure(
+        amountSat: 3000000,
+      ) as SendAmountOutOfBoundsFailure;
       expect(failure.minimumSat, isNull);
       expect(failure.maximumSat, BigInt.from(2000000));
     });

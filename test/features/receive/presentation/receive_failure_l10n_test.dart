@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A raw reason of the shape a foreign SDK or a driver would produce. Every
@@ -63,7 +63,7 @@ Future<String> _translate(WidgetTester tester, ReceiveFailure failure) async {
   late String message;
   await tester.pumpWidget(
     MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {

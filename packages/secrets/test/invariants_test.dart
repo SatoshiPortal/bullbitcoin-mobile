@@ -207,9 +207,9 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
           );
         }
       }
-      final imports = RegExp(
-        r"import 'package:([a-z_0-9]+)",
-      ).allMatches(code(file.readAsStringSync())).map((m) => m.group(1)!);
+      final imports = RegExp(r"import 'package:([a-z_0-9]+)")
+          .allMatches(code(file.readAsStringSync()))
+          .map((m) => m.group(1)!);
       for (final dep in imports) {
         // Prefix match: `flutter_secure_storage_darwin` and its four federated
         // siblings are the keystore too, and belong where it does.
@@ -316,9 +316,10 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'FetchSecretFailure',
       'StoreSecretFailure', 'TrashSecretFailure', 'KeystoreLockedFailure',
       'DatabaseKeyCorruptFailure', 'MnemonicRequiredFailure',
-      'InvalidMnemonicFailure', 'InvalidVaultFailure',
+      'InvalidMnemonicFailure',
+      'InvalidVaultFailure',
+      'VaultIdentityMismatchFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
-      'PassphraseUnsupportedFailure', 'LanguageUnsupportedFailure',
       'UseSecretFailure',
     };
 
@@ -354,9 +355,8 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     final sealed = code(read('lib/src/widgets/painted_text.dart'));
 
     expect(
-      RegExp(
-        r'Function\(BuildContext context, int number, Widget word\)',
-      ).hasMatch(view),
+      RegExp(r'Function\(BuildContext context, int number, Widget word\)')
+          .hasMatch(view),
       isTrue,
       reason: 'wordBuilder must receive the word as a widget',
     );
@@ -390,6 +390,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'signPsbt': 'derived',
       'signPset': 'derived',
       'verifyWords': 'derived',
+      'verifyPassphrase': 'derived',
       'verifySeed': 'derived',
       // material by design: children this feature was asked to create, for use elsewhere
       'bip85Hex': 'material',
@@ -398,7 +399,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       // material: the stored secret itself, and `@internal` — only the
       // package's own sealed widgets may call it
       'revealMnemonic': 'material',
-      // a bwk account that scans and signs; bwk holds the words while it lives
+      // a bwk account that scans and signs; bwk holds signing capability while it lives
       'silentPaymentsAccount': 'capability',
       // ciphertext plus the key that opens it
       'backupRecoverbull': 'ciphertext',
@@ -469,8 +470,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
     expect(
       operations.keys.toSet(),
       inventory.keys.toSet(),
-      reason:
-          'every public member of Secret is an operation and belongs in the inventory above, with its verdict — whatever it returns',
+      reason: 'every public member of Secret is an operation and belongs in the inventory above, with its verdict — whatever it returns',
     );
     for (final MapEntry(key: name, value: type) in operations.entries) {
       expect(

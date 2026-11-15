@@ -5,7 +5,9 @@ library;
 
 export 'package:swaps/src/data/models/boltz_network.dart';
 export 'package:swaps/src/data/boltz_swap_repository.dart';
+
 export 'src/log.dart';
+
 export 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 export 'package:swaps/src/domain/entities/restored_swap.dart';
 export 'package:swaps/src/domain/entities/swap.dart';
@@ -20,6 +22,7 @@ export 'package:swaps/src/data/swap_status_mapper.dart';
 export 'package:swaps/src/data/swap_storage.dart';
 export 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
 export 'package:swaps/src/domain/swap_watcher.dart';
+
 export 'src/domain/usecases/create_bitcoin_to_lightning_swap_usecase.dart';
 export 'src/domain/usecases/create_bitcoin_to_liquid_swap_usecase.dart';
 export 'src/domain/usecases/create_lightning_to_bitcoin_swap_usecase.dart';

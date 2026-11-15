@@ -9,7 +9,7 @@ publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: "3.12.2"
+  sdk: "3.14.0"
 
 resolution: workspace
 
@@ -17,12 +17,12 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      ref: 8f0c9ca84745b08f673324259f49c9aa346f17c8
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      ref: 8f0c9ca84745b08f673324259f49c9aa346f17c8
       path: packages/boltz-stream
   bolt11_decoder:
     git:
@@ -30,7 +30,7 @@ dependencies:
       ref: f5deec21fb0ac2ee507de1f683344b03f8cc92a3
   crypto: ^3.0.7
   dio: ^5.9.0
-  drift: ^2.29.0
+  drift: ^2.35.4
   freezed_annotation: ^3.1.0
   json_annotation: ^4.12.0
   meta: ^1.17.0
@@ -38,10 +38,10 @@ dependencies:
   synchronized: ^3.4.0
 
 dev_dependencies:
-  build_runner: ^2.7.1
-  drift_dev: ^2.29.0
-  freezed: ^3.2.3
-  json_serializable: ^6.11.1
+  build_runner: ^2.10.4
+  drift_dev: ^2.35.3
+  freezed: ^4.0.0
+  json_serializable: ^6.11.2
   lints: ^6.0.0
   mocktail: ^1.0.4
   test: ^1.26.3

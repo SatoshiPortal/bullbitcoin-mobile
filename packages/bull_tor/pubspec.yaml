@@ -5,8 +5,8 @@ version: 0.0.1
 resolution: workspace
 
 environment:
-  sdk: "3.12.2"
-  flutter: "3.44.9"
+  sdk: "3.14.0"
+  flutter: "3.50.0"
 
 dependencies:
   flutter:
@@ -14,7 +14,7 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: e538cbc6fe51a9a6ce425d2513e0c1422ca89132
+      ref: 8f0c9ca84745b08f673324259f49c9aa346f17c8
       path: packages/bull_sdk
   get_it: ^9.1.1
   meta: ^1.17.0

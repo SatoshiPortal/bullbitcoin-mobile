@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -71,7 +71,10 @@ Future<void> main({bool isInitialized = false}) async {
       case Err(:final failure):
         fail('import failed: ${failure.runtimeType}');
     }
-    await createDefaultWalletsUsecase.execute(secret: secret);
+    expect(
+      await createDefaultWalletsUsecase.execute(secret: secret),
+      isA<Ok>(),
+    );
   });
 
   setUp(() async {
@@ -107,9 +110,8 @@ Future<void> main({bool isInitialized = false}) async {
 
         // Get the xprv from the default-wallet seed (the outer `mnemonic`),
         // i.e. the same seed the usecase derives from — NOT the derived result.
-        final xprv = bip32.Bip32Keys.fromSeed(
-          Uint8List.fromList(mnemonic.seed),
-        ).toBase58();
+        final xprv = bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
+            .toBase58();
 
         // Now generate the same derivation using BIP85 library directly
         final directBip85Mnemonic = bip85.Bip85Entropy.deriveMnemonic(
@@ -141,9 +143,8 @@ Future<void> main({bool isInitialized = false}) async {
         final (derivation: _, mnemonic: bMnemonic) = (bResult as Ok).value;
 
         // Get the xprv from the seed
-        final xprv = bip32.Bip32Keys.fromSeed(
-          Uint8List.fromList(mnemonic.seed),
-        ).toBase58();
+        final xprv = bip32.Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
+            .toBase58();
 
         // Verify database has both derivations stored
         final storedDerivations = await bip85Datasource.fetchAll();

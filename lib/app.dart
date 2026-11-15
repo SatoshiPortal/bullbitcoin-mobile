@@ -1,7 +1,9 @@
+import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -15,8 +17,8 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -26,7 +28,7 @@ import 'package:bull_tor/tor_adapter.dart' as tor;
 import 'package:bull_ui/bull_ui.dart'
     show BullSupportScope, bullUiLocalizationsDelegate;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:novlang/novlang.dart';
@@ -119,20 +121,11 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   previous != current &&
                   current is AppStartupSuccess &&
                   current.hasDefaultWallets,
-              listener: (context, settings) {
+              listener: (context, settings) async {
                 // If wallets exist and the app has started successfully,
                 // we can start the wallet bloc to fetch the wallets.
                 context.read<WalletBloc>().add(const WalletStarted());
-                // Also fetch user summary to check if user is logged in
-                // and connect WebSocket if so (handled by ExchangeListener)
-                ExchangeScope.refreshSession(context);
-                // Reconnect WebSocket here too — when AppStartupBloc retries
-                // after a pre-warm KeychainLockedException, the SettingsCubit
-                // env-change listener below has ALREADY fired during pre-warm
-                // (with the keychain locked) and won't fire again, so without
-                // this call the WebSocket stays disconnected post-unlock until
-                // the user toggles environment or cold-launches.
-                ExchangeScope.reconnectNotifications(context);
+                final _ = await locator<ExchangeFacade>().resolveAccess();
               },
             ),
             BlocListener<SettingsCubit, SettingsState>(
@@ -140,12 +133,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   previous.environment != null &&
                   previous.environment != current.environment,
               listener: (context, settings) async {
-                // Re-fetch user summary (re-init exchange bloc) and wallets
-                //  when environment changes
                 context.read<WalletBloc>().add(const WalletStarted());
-                await ExchangeScope.refreshSession(context);
-                // Reconnect WebSocket for the new environment
-                await ExchangeScope.reconnectNotifications(context);
+                final _ = await locator<ExchangeFacade>().resolveAccess();
               },
             ),
           ],
@@ -194,21 +183,27 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       localizationsDelegates: [
                         ...novlangLocalizationsDelegates(novlangPolicy),
                         LogsLocalizations.delegate,
+                        const QuickActionsFallbackDelegate(),
                         bullUiLocalizationsDelegate,
                         ...RecoverBullFeature.localizationsDelegates,
                       ],
                       supportedLocales: AppLocalizations.supportedLocales,
                       builder: (context, child) {
                         if (child == null) return const SizedBox.shrink();
-                        final app = SettingsFacade.amountScope(
-                          navigatorKey: AppRouter.rootNavigatorKey,
-                          child: BullSupportScope(
-                            onContactSupport: SupportFacade.contactSupport,
-                            child: AppStartupWidget(
-                              app: locator<RecoverBullFeature>().withAlerts(
-                                child,
-                                onOpen: () => AppRouter.router.pushNamed(
-                                  'recoverbullFlows',
+                        // keyboard_actions still uses SDK Material widgets;
+                        // the official bridge supports this transition.
+                        // ignore: deprecated_member_use
+                        final app = MaterialUiCompatibilityBridge(
+                          child: SettingsFacade.amountScope(
+                            navigatorKey: AppRouter.rootNavigatorKey,
+                            child: BullSupportScope(
+                              onContactSupport: SupportFacade.contactSupport,
+                              child: AppStartupWidget(
+                                app: locator<RecoverBullFeature>().withAlerts(
+                                  child,
+                                  onOpen: () => AppRouter.router.pushNamed(
+                                    'recoverbullFlows',
+                                  ),
                                 ),
                               ),
                             ),

@@ -33,18 +33,14 @@ void main() {
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.savePending(any())).thenAnswer((_) async {});
     when(() => wizard.markComplete()).thenAnswer((_) async {});
-    when(
-      () => settings.setLanguage(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setThemeMode(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setCurrency(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => settings.setErrorReportingEnabled(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => settings.setLanguage(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setThemeMode(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => settings.setErrorReportingEnabled(any()))
+        .thenAnswer((_) async => const Ok(null));
   });
 
   test('short-circuits when nothing is staged', () async {
@@ -139,9 +135,8 @@ void main() {
         touched: {WizardField.defaultCurrency},
       ),
     );
-    when(
-      () => settings.setCurrency(any()),
-    ).thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
+    when(() => settings.setCurrency(any()))
+        .thenAnswer((_) async => const Err(SettingsStoreWriteFailure('nope')));
 
     await usecase.execute();
 
@@ -186,4 +181,37 @@ void main() {
       verify(() => wizard.markComplete()).called(1);
     },
   );
+  test('retains exchange choice when callback is missing', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(
+        exchangeAccess: false,
+        touched: {WizardField.exchangeAccess},
+      ),
+    );
+    await usecase.execute();
+    final staged =
+        verify(() => wizard.savePending(captureAny())).captured.single
+            as WizardChoices;
+    expect(staged.exchangeAccess, isFalse);
+    expect(staged.touched, {WizardField.exchangeAccess});
+    verifyNever(() => wizard.clearPending());
+  });
+
+  test('clears exchange choice only after successful application', () async {
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(touched: {WizardField.exchangeAccess}),
+    );
+    var applied = false;
+    final applying = ApplyPendingWizardChoicesUsecase(
+      wizardRepository: wizard,
+      settingsRepository: settings,
+      applyExchangeAccess: (enabled) async {
+        applied = enabled;
+        return true;
+      },
+    );
+    await applying.execute();
+    expect(applied, isTrue);
+    verify(() => wizard.clearPending()).called(1);
+  });
 }

@@ -64,22 +64,19 @@ void main() {
 
   setUp(() async {
     FakeSecureStoragePlatform().install();
-    final stored = await Secrets(
-      scratchDirectory: () async => '/tmp',
-    ).import(words: words);
+    final stored = await Secrets(scratchDirectory: () async => '/tmp')
+        .import(words: words);
     aSecret = (stored as Ok<Secret, SecretFailure>).value;
 
     getAllSecretsUsecase = _MockGetAllSecretsUsecase();
     getWalletsUsecase = _MockGetWalletsUsecase();
     getSwapMasterKeyUsecase = _MockGetSwapMasterKeyUsecase();
     getSwapMnemonicUsecase = _MockGetSwapMnemonicUsecase();
-    when(
-      () => getAllSecretsUsecase.execute(),
-    ).thenAnswer((_) async => Ok([aSecret]));
+    when(() => getAllSecretsUsecase.execute())
+        .thenAnswer((_) async => Ok([aSecret]));
     when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
-    when(
-      () => getSwapMasterKeyUsecase.execute(),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => getSwapMasterKeyUsecase.execute())
+        .thenAnswer((_) async => const Ok(null));
 
     cubit = AllSeedViewCubit(
       getAllSecretsUsecase: getAllSecretsUsecase,

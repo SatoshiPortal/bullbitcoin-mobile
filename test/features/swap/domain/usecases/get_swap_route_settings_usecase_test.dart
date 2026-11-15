@@ -25,12 +25,10 @@ void main() {
     routeSettings = _MockSwapRouteSettingRepository();
     settingsRepository = _MockSettingsRepository();
     settings = _MockSettingsEntity();
-    when(
-      () => routeSettings.isExchangeFallbackEnabled(),
-    ).thenAnswer((_) async => const Ok(true));
-    when(
-      () => routeSettings.getRouteOverride(),
-    ).thenAnswer((_) async => const Ok(SwapRouteOverride.boltzOnly));
+    when(() => routeSettings.isExchangeFallbackEnabled())
+        .thenAnswer((_) async => const Ok(true));
+    when(() => routeSettings.getRouteOverride())
+        .thenAnswer((_) async => const Ok(SwapRouteOverride.boltzOnly));
     when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
     when(() => settings.isDevModeEnabled).thenReturn(true);
     usecase = GetSwapRouteSettingsUsecase(
@@ -56,9 +54,8 @@ void main() {
   });
 
   test('an unreadable setting is a failure, not a default', () async {
-    when(
-      () => routeSettings.isExchangeFallbackEnabled(),
-    ).thenAnswer((_) async => const Err(SwapStorageFailure()));
+    when(() => routeSettings.isExchangeFallbackEnabled())
+        .thenAnswer((_) async => const Err(SwapStorageFailure()));
 
     expect(await usecase.execute(), isA<Err<SwapRouteSettings, SwapFailure>>());
   });

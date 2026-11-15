@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Swipe-to-reveal-one-action row. **New (key gap)** — no equivalent exists in
 /// `lib/core/widgets`.

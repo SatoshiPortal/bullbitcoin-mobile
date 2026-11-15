@@ -1,5 +1,5 @@
 import 'package:bull_ui/generated/l10n/bull_ui_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart';
 
@@ -302,9 +302,8 @@ class _BitcoinEditingFormatter extends TextInputFormatter {
     if (newValue.composing.isValid && !newValue.composing.isCollapsed) {
       return newValue;
     }
-    final formatted = BullAmountInputFormatter(
-      unit.code,
-    ).formatEditUpdate(oldValue, newValue);
+    final formatted = BullAmountInputFormatter(unit.code)
+        .formatEditUpdate(oldValue, newValue);
     var normalized = unit == BitcoinUnit.btc
         ? newValue.text.replaceAll(',', '.')
         : newValue.text;

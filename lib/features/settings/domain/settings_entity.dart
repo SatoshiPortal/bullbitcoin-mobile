@@ -1,8 +1,9 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit, NetworkEnv;
+
 import 'dart:ui';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bull_tor/tor.dart';
 

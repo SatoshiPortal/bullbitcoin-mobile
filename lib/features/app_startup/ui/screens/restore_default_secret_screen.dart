@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_facade
 import 'package:bb_mobile/features/app_startup/presentation/app_startup_failure_l10n.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
@@ -53,13 +53,14 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
     return true;
   }
 
-  Future<void> _submit(List<String> words) async {
+  Future<void> _submit(List<String> words, String passphrase) async {
     setState(() {
       _busy = true;
       _error = null;
     });
     final result = await context.read<AppStartupBloc>().restoreDefaultSecret(
       words,
+      passphrase: passphrase,
     );
     if (!mounted) return;
     setState(() {
@@ -97,11 +98,11 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
               initialLength: bip39.MnemonicLength.words12,
               allowMultipleMnemonicLength: true,
               allowLabel: false,
-              // Default wallets never have a passphrase.
-              allowPassphrase: false,
+              allowPassphrase: true,
               externalError: _error,
               submitLabel: context.loc.onboardingRecover,
-              onSubmit: (mnemonic) => unawaited(_submit(mnemonic.words)),
+              onSubmit: (mnemonic) =>
+                  unawaited(_submit(mnemonic.words, mnemonic.passphrase)),
             ),
           ),
         ),

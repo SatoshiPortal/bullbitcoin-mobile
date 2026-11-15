@@ -28,9 +28,8 @@ class ElectrumUrlParser {
     }
 
     // Check for :s or :t suffix
-    final suffixMatch = RegExp(
-      r'^([a-zA-Z0-9.-]+):(\d+):(s|t)$',
-    ).firstMatch(trimmedInput);
+    final suffixMatch = RegExp(r'^([a-zA-Z0-9.-]+):(\d+):(s|t)$')
+        .firstMatch(trimmedInput);
 
     if (suffixMatch != null) {
       final host = suffixMatch.group(1)!;
@@ -41,9 +40,8 @@ class ElectrumUrlParser {
     }
 
     // Check if it's a valid host:port format (no suffix)
-    final hostPortMatch = RegExp(
-      r'^([a-zA-Z0-9.-]+):(\d+)$',
-    ).firstMatch(trimmedInput);
+    final hostPortMatch = RegExp(r'^([a-zA-Z0-9.-]+):(\d+)$')
+        .firstMatch(trimmedInput);
 
     if (hostPortMatch != null) {
       final host = hostPortMatch.group(1)!;

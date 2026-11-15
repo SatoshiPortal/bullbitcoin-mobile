@@ -18,12 +18,11 @@ import 'package:dio/dio.dart';
 import 'package:bull_sdk/boltz.dart' hide Network;
 import 'package:bull_sdk/boltz.dart' as boltz;
 
-typedef BoltzWebSocketFactory =
-    BoltzWebSocket Function(
-      String boltzUrl, {
-      void Function()? onDone,
-      void Function(Object error)? onError,
-    });
+typedef BoltzWebSocketFactory = BoltzWebSocket Function(
+  String boltzUrl, {
+  void Function()? onDone,
+  void Function(Object error)? onError,
+});
 
 BoltzWebSocket _createBoltzWebSocket(
   String boltzUrl, {
@@ -503,12 +502,12 @@ class BoltzDatasource {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
 
-      return broadcastViaBoltz
+      return await (broadcastViaBoltz
           ? btcLnSwap.broadcastBoltz(signedHex: signedTxHex)
           : btcLnSwap.broadcastLocal(
               signedHex: signedTxHex,
               electrumSettings: _electrumOverride(electrum),
-            );
+            ));
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -527,12 +526,12 @@ class BoltzDatasource {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
 
-      return broadcastViaBoltz
+      return await (broadcastViaBoltz
           ? lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex)
           : lbtcLnSwap.broadcastLocal(
               signedHex: signedTxHex,
               electrumSettings: _electrumOverride(electrum),
-            );
+            ));
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;

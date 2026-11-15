@@ -1,13 +1,15 @@
 import 'dart:io';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/features/wallet/data/payment_notifications.dart';
+import 'package:notifications/notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -34,26 +36,41 @@ void main() {
             : directory.path;
         if (storageFailure) {
           File(documents).writeAsStringSync('not a directory');
+        } else {
+          // The foreground created the store; the plugin fails to start.
+          switch (openForegroundNotificationStore(
+            '$documents/${PaymentNotifications.outboxFilename}',
+          )) {
+            case Ok(:final value):
+              await value.close();
+            case Err(:final failure):
+              fail('$failure');
+          }
         }
         final notifications = await PaymentNotifications.initializeBackground(
           documents,
           null,
           resources,
         );
-        final queue = SqliteWalletSyncJobQueue(
-          databasePath: '${directory.path}/queue',
-        );
+        expect(notifications, isNull);
+        final queue = switch (openForegroundWalletSyncJobQueue(
+          '${directory.path}/queue',
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => fail('$failure'),
+        };
         resources.onClose(queue.close);
         final writer = _Writer();
-        final task = WalletTransactionSyncBackgroundTask(
-          writer: writer,
+        final task = RunWalletSyncJobsUsecase(
+          wallets: writer,
           revisions: _Revisions(),
           keys: [key],
           queue: queue,
-          notifications: notifications,
-          copy: (count, chain) => (title: 'Payment', body: '$count'),
+          intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+          announcements: null,
+          logger: LoggerBackgroundTaskLogger(log),
         );
-        expect((await task.executeAll()).shouldRetry, isFalse);
+        expect((await task.execute()).shouldRetry, isFalse);
         expect(writer.calls, 1);
         await log.flush();
         final messages = (await log.readLogs()).join('\n');
@@ -78,7 +95,7 @@ class _Android extends AndroidFlutterLocalNotificationsPlugin {
   }) async => false;
 }
 
-final class _Writer implements BackgroundWalletSync {
+final class _Writer implements BackgroundWalletSyncPort {
   int calls = 0;
   @override
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
@@ -97,11 +114,9 @@ final class _Writer implements BackgroundWalletSync {
   }
 }
 
-final class _Revisions implements WalletRevisionReader {
+final class _Revisions implements WalletRevisionReaderPort {
   @override
-  Future<Result<WalletRevisionState, TransactionSyncFailure>> read(
-    WalletKey key,
-  ) async =>
+  Future<Result<WalletRevisionState, SyncFailure>> read(WalletKey key) async =>
       Ok(WalletRevisionState(stamp: stamp, lifecycle: WalletLifecycle.active));
   @override
   Stream<WalletRevisionState> watch(WalletKey key) => const Stream.empty();

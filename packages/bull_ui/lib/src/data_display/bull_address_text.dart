@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 /// Truncated address with tap-to-copy. **New primitive** — deliberately not a
@@ -59,9 +59,8 @@ class BullAddressText extends StatelessWidget {
                 _truncated,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelMedium?.copyWith(color: colors.textMuted),
+                style: Theme.of(context).textTheme.labelMedium
+                    ?.copyWith(color: colors.textMuted),
               ),
             ),
             const SizedBox(width: 4),

@@ -140,9 +140,8 @@ void main() {
     // denominated in BTC per BIP21 (regardless of the sats/fiat unit the
     // user typed in) and the note must travel as message=.
     test('bitcoin: amount is always in BTC and the note becomes message=', () {
-      final state = buildState(
-        payjoinGloballyEnabled: false,
-      ).copyWith(confirmedAmountSat: 50000, note: 'lunch money');
+      final state = buildState(payjoinGloballyEnabled: false)
+          .copyWith(confirmedAmountSat: 50000, note: 'lunch money');
 
       final uri = Uri.parse(state.paymentRequest);
       expect(uri.scheme, 'bitcoin');
@@ -152,9 +151,8 @@ void main() {
     });
 
     test('bitcoin: an amount alone produces amount= and no message=', () {
-      final state = buildState(
-        payjoinGloballyEnabled: false,
-      ).copyWith(confirmedAmountSat: 123456789);
+      final state = buildState(payjoinGloballyEnabled: false)
+          .copyWith(confirmedAmountSat: 123456789);
 
       final uri = Uri.parse(state.paymentRequest);
       expect(uri.queryParameters['amount'], '1.23456789');
@@ -162,9 +160,8 @@ void main() {
     });
 
     test('bitcoin: a note alone produces message= and no amount=', () {
-      final state = buildState(
-        payjoinGloballyEnabled: false,
-      ).copyWith(note: 'just a note');
+      final state = buildState(payjoinGloballyEnabled: false)
+          .copyWith(note: 'just a note');
 
       final uri = Uri.parse(state.paymentRequest);
       expect(uri.queryParameters['message'], 'just a note');

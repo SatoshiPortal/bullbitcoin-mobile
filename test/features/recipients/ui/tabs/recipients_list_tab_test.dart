@@ -16,11 +16,11 @@ import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.
 import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -50,9 +50,8 @@ void main() {
     events = StreamController.broadcast();
     final watch = _MockWatchVirtualIban();
     final ownerName = _MockGetAccountOwnerName();
-    when(
-      () => watch.execute(createIfAbsent: any(named: 'createIfAbsent')),
-    ).thenAnswer((_) => events.stream);
+    when(() => watch.execute(createIfAbsent: any(named: 'createIfAbsent')))
+        .thenAnswer((_) => events.stream);
     when(() => ownerName.execute()).thenAnswer(
       (_) async => const Ok(
         AccountOwnerName(firstName: 'Satoshi', lastName: 'Nakamoto'),
@@ -93,7 +92,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: BlocProvider<RecipientsBloc>.value(
@@ -155,9 +154,8 @@ void main() {
     await tester.tap(find.widgetWithText(BullButton, loc.recipientsContinue));
     await tester.pumpAndSettle();
 
-    verify(
-      () => bloc.add(const RecipientsEvent.virtualIbanActivated()),
-    ).called(1);
+    verify(() => bloc.add(const RecipientsEvent.virtualIbanActivated()))
+        .called(1);
     verify(
       () => bloc.add(
         const RecipientsEvent.sepaTypeChanged(
@@ -203,9 +201,8 @@ void main() {
     await tester.pump();
     await chooseConfidentialSepa(tester, loc);
 
-    Navigator.of(
-      tester.element(find.byType(VirtualIbanOnboardingScreen)),
-    ).pop();
+    Navigator.of(tester.element(find.byType(VirtualIbanOnboardingScreen)))
+        .pop();
     await tester.pumpAndSettle();
 
     expect(
@@ -214,9 +211,8 @@ void main() {
     );
     expect(tester.widget<BBButton>(find.byType(BBButton)).disabled, isFalse);
     await tester.tap(find.text(loc.recipientsContinue));
-    verify(
-      () => bloc.add(const RecipientsEvent.selected(_recipient)),
-    ).called(1);
+    verify(() => bloc.add(const RecipientsEvent.selected(_recipient)))
+        .called(1);
     verifyNever(() => bloc.add(const RecipientsEvent.virtualIbanActivated()));
     verifyNever(
       () => bloc.add(

@@ -87,9 +87,8 @@ List<String> productionDartFiles(String root) {
         ))
           if (file is File &&
               file.path.endsWith('.dart') &&
-              !RegExp(
-                r'\.(g|freezed|gr|config|mocks|steps)\.dart$',
-              ).hasMatch(file.path) &&
+              !RegExp(r'\.(g|freezed|gr|config|mocks|steps)\.dart$')
+                  .hasMatch(file.path) &&
               !file.path
                   .split(Platform.pathSeparator)
                   .any(
@@ -209,6 +208,8 @@ const _unresolvedSensitiveMembers = {
   'signedPsetWithExtraDetailsWithSeed',
   'signTxWithSeed',
   'createFromSeed',
+  'createFromSeedWithScanRuntime',
+  'deriveSpAddressFromSeed',
 };
 
 const _bridgeLibrary = 'package:bull_sdk/src/rust/frb_generated.dart';
@@ -219,9 +220,8 @@ bool _isTestingLibrary(String uri) =>
     uri == 'package:secrets/testing.dart' ||
     uri.startsWith('package:secrets/src/testing/') ||
     (!uri.contains(':') &&
-        RegExp(
-          r'(^|/)secrets/lib/(testing\.dart$|src/testing/)',
-        ).hasMatch(Uri.parse(uri).normalizePath().path));
+        RegExp(r'(^|/)secrets/lib/(testing\.dart$|src/testing/)')
+            .hasMatch(Uri.parse(uri).normalizePath().path));
 
 String? materialSymbol(Element element) {
   final uri = element.library?.uri.toString();
@@ -277,8 +277,10 @@ String? materialSymbol(Element element) {
             'mnemonic',
           }.contains(member),
     _ when uri.startsWith('package:bull_sdk/src/rust/third_party/dart_bwk/') =>
-      owner == 'SpAccount' &&
-          (member?.startsWith('createFromMnemonic') ?? false),
+      (owner == 'SpAccount' &&
+              ((member?.startsWith('createFromMnemonic') ?? false) ||
+                  (member?.startsWith('createFromSeed') ?? false))) ||
+          member == 'deriveSpAddressFromSeed',
     _bridgeLibrary => symbol == 'BullSdk.initMock',
     _ when uri.startsWith('package:recoverbull/') =>
       symbol == 'RecoverBull.restoreBackup' ||

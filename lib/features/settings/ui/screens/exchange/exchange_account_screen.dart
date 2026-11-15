@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ExchangeAccountScreen extends StatelessWidget {
   const ExchangeAccountScreen({super.key});

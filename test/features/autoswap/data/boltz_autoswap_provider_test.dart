@@ -122,9 +122,8 @@ void main() {
         ),
       ),
     );
-    when(
-      () => dropPendingLockup.execute(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => dropPendingLockup.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
     walletRepository = _MockWalletRepository();
     settingsRepository = _MockSettingsRepository();
     liquidWalletRepository = _MockLiquidWalletRepository();
@@ -152,11 +151,10 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => walletRepository.getWallets(environment: Environment.testnet),
-    ).thenAnswer(
-      (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
-    );
+    when(() => walletRepository.getWallets(environment: Environment.testnet))
+        .thenAnswer(
+          (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
+        );
     when(() => getReceiveAddress.execute(walletId: 'liquid-wallet')).thenAnswer(
       (_) async => WalletAddress(
         walletId: 'liquid-wallet',
@@ -174,9 +172,8 @@ void main() {
         feeRate: any(named: 'feeRate'),
       ),
     ).thenAnswer((_) async => const Ok('pset'));
-    when(
-      () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
-    ).thenAnswer((_) async => (100, 500));
+    when(() => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'))
+        .thenAnswer((_) async => (100, 500));
     when(() => getLimitsAndFees.execute(SwapType.liquidToBitcoin)).thenAnswer(
       (_) async => const Ok((
         SwapLimits(min: 3_570, max: 10_000_000),
@@ -195,18 +192,17 @@ void main() {
     ).thenAnswer(
       (_) async => Ok(
         Swap.chain(
-              id: 'swap-id',
-              keyIndex: 0,
-              type: SwapType.liquidToBitcoin,
-              status: SwapStatus.pending,
-              environment: swaps.Environment.testnet,
-              creationTime: DateTime.utc(2026),
-              sendWalletId: 'liquid-wallet',
-              paymentAddress: 'tlq1payin',
-              paymentAmount: 2_499_500,
-              receiveWalletId: 'bitcoin-wallet',
-            )
-            as ChainSwap,
+          id: 'swap-id',
+          keyIndex: 0,
+          type: SwapType.liquidToBitcoin,
+          status: SwapStatus.pending,
+          environment: swaps.Environment.testnet,
+          creationTime: DateTime.utc(2026),
+          sendWalletId: 'liquid-wallet',
+          paymentAddress: 'tlq1payin',
+          paymentAmount: 2_499_500,
+          receiveWalletId: 'bitcoin-wallet',
+        ) as ChainSwap,
       ),
     );
     when(
@@ -222,9 +218,8 @@ void main() {
         pset: 'pset',
       ),
     ).thenAnswer((_) async => 'signed-pset');
-    when(
-      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
-    ).thenAnswer((_) async => 'txid');
+    when(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
+        .thenAnswer((_) async => 'txid');
     when(
       () => recordLockup.execute(
         swapId: 'swap-id',
@@ -232,9 +227,8 @@ void main() {
         lockupFeeSat: 500,
       ),
     ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure()));
-    when(
-      () => labelsFacade.store(any()),
-    ).thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
+    when(() => labelsFacade.store(any()))
+        .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
   });
 
   test('stops before signing when Liquid build 1 returns Err', () async {
@@ -306,9 +300,8 @@ void main() {
           ),
         ),
       ).called(1);
-      verify(
-        () => broadcastLiquid.execute('signed-pset', isTestnet: true),
-      ).called(1);
+      verify(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
+          .called(1);
       verify(
         () => recordLockup.execute(
           swapId: 'swap-id',

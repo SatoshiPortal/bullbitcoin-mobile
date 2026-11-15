@@ -14,10 +14,14 @@ class ApplyPendingWizardChoicesUsecase {
   ApplyPendingWizardChoicesUsecase({
     required this._wizardRepository,
     required this._settingsRepository,
+    this.applyExchangeAccess,
   });
 
   final WizardRepository _wizardRepository;
   final SettingsRepository _settingsRepository;
+
+  /// Returns false when the choice could not be persisted and needs a retry.
+  final Future<bool> Function(bool enabled)? applyExchangeAccess;
 
   Future<void> execute() async {
     final choices = await _wizardRepository.readPending();
@@ -62,6 +66,13 @@ class ApplyPendingWizardChoicesUsecase {
       );
     }
 
+    if (choices.touched.contains(WizardField.exchangeAccess)) {
+      final apply = applyExchangeAccess;
+      if (apply == null || !await apply(choices.exchangeAccess)) {
+        failed.add(WizardField.exchangeAccess);
+      }
+    }
+
     // Keep only the choices that failed pending, so the next launch retries
     // just those. Clearing everything would drop what the user picked during
     // onboarding on a transient storage error; keeping everything would
@@ -80,6 +91,7 @@ class ApplyPendingWizardChoicesUsecase {
     } else {
       await _wizardRepository.savePending(
         WizardChoices(
+          exchangeAccess: choices.exchangeAccess,
           language: choices.language,
           themeMode: choices.themeMode,
           defaultCurrency: choices.defaultCurrency,

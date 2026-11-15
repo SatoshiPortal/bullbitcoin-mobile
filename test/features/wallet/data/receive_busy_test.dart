@@ -1,6 +1,8 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
 import 'package:primitives/primitives.dart' show Err;
+
 import 'dart:io';
 
 import 'package:bull_sdk/lwk.dart' as lwk;
@@ -9,8 +11,6 @@ import 'package:bull_sdk/src/rust/frb_generated.dart' show BullSdk, BullSdkApi;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show Signer;
-import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -18,16 +18,13 @@ import 'package:bb_mobile/features/wallet/data/wallet_address_repository.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 class _Metadata extends Mock implements WalletMetadataDatasource {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
-class _Bitcoin extends Mock implements BdkWalletDatasource {}
-
-class _Liquid extends Mock implements LwkWalletDatasource {}
+class _Values extends Mock implements SyncWalletValuesDatasource {}
 
 class _Labels extends Mock implements LabelsFacade {}
 
@@ -78,9 +75,8 @@ void main() {
           await log.flush();
           await directory.delete(recursive: true);
         });
-        when(
-          () => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress),
-        ).thenAnswer((_) async => lwk.LiquidNetwork.mainnet);
+        when(() => sdk.lwkApiTypesAddressValidate(addressString: issuedAddress))
+            .thenAnswer((_) async => lwk.LiquidNetwork.mainnet);
         native = _Native();
         labels = _Labels();
         final metadata = _Metadata();
@@ -89,8 +85,7 @@ void main() {
         repository = WalletAddressRepository(
           native: native,
           walletMetadataDatasource: metadata,
-          bdkWalletDatasource: _Bitcoin(),
-          lwkWalletDatasource: _Liquid(),
+          walletValuesDatasource: _Values(),
           labelsFacade: labels,
         );
       });
@@ -101,7 +96,7 @@ void main() {
           var attempts = 0;
           when(() => native.receive(row, advance: false)).thenAnswer((_) async {
             if (++attempts < 3) {
-              throw const WalletSnapshotException(TransactionSyncBusyFailure());
+              throw const WalletSnapshotException(SyncBusyFailure());
             }
             return (address: issuedAddress, index: 7);
           });
@@ -133,9 +128,8 @@ void main() {
       );
 
       test('persistent busy is bounded', () async {
-        when(() => native.receive(row, advance: false)).thenThrow(
-          const WalletSnapshotException(TransactionSyncBusyFailure()),
-        );
+        when(() => native.receive(row, advance: false))
+            .thenThrow(const WalletSnapshotException(SyncBusyFailure()));
         final prepare = PrepareReceiveAddressUsecase(
           GetReceiveAddressUsecase(walletAddressRepository: repository),
         );
@@ -155,9 +149,7 @@ void main() {
       });
 
       test('other failures are not retried', () async {
-        const error = WalletSnapshotException(
-          TransactionSyncNeedsRepairFailure(),
-        );
+        const error = WalletSnapshotException(SyncNeedsRepairFailure());
         when(() => native.receive(row, advance: false)).thenThrow(error);
         await expectLater(
           repository.getLastRevealedReceiveAddress(walletId: origin),
@@ -168,10 +160,9 @@ void main() {
       });
 
       test('label failure after issuance never replays an advance', () async {
-        when(
-          () => native.receive(row, advance: true),
-        ).thenAnswer((_) async => (address: issuedAddress, index: 8));
-        const error = WalletSnapshotException(TransactionSyncBusyFailure());
+        when(() => native.receive(row, advance: true))
+            .thenAnswer((_) async => (address: issuedAddress, index: 8));
+        const error = WalletSnapshotException(SyncBusyFailure());
         when(() => labels.fetchByReference(any())).thenThrow(error);
         await expectLater(
           repository.generateNewReceiveAddress(walletId: origin),

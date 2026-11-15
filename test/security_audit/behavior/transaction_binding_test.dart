@@ -114,18 +114,14 @@ void main() {
         currencyCode: 'CAD',
       ),
     );
-    when(
-      () => payjoinSessions.list(any()),
-    ).thenAnswer((_) async => const Ok([]));
-    when(
-      () => swapStore.all(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => const Ok(<Swap>[]));
-    when(
-      () => orderRepository.getOrders(),
-    ).thenAnswer((_) async => const Ok(<Order>[]));
-    when(
-      () => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')),
-    ).thenAnswer((_) async {});
+    when(() => payjoinSessions.list(any()))
+        .thenAnswer((_) async => const Ok([]));
+    when(() => swapStore.all(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const Ok(<Swap>[]));
+    when(() => orderRepository.getOrders())
+        .thenAnswer((_) async => const Ok(<Order>[]));
+    when(() => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')))
+        .thenAnswer((_) async {});
     when(
       () => getTransactionOrderSwapsUsecase.execute(
         walletId: any(named: 'walletId'),

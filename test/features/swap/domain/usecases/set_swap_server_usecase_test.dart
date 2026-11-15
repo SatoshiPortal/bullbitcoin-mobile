@@ -43,12 +43,10 @@ void main() {
     switcher = _MockSwapEngineSwitcher();
     swaps = _MockSwapStore();
     when(() => swaps.ongoing()).thenAnswer((_) async => const Ok([]));
-    when(
-      () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async {});
-    when(
-      () => switcher.rebuild(isTestnet: any(named: 'isTestnet')),
-    ).thenAnswer((_) async {});
+    when(() => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async {});
+    when(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')))
+        .thenAnswer((_) async {});
     stubEnvironment(Environment.mainnet);
     usecase = SetSwapServerUsecase(
       swapServerSettingRepository: serverSettings,
@@ -138,9 +136,8 @@ void main() {
   });
 
   test('a failed write is a storage failure and leaves the engine', () async {
-    when(
-      () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
-    ).thenThrow(const SwapServerSettingException());
+    when(() => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')))
+        .thenThrow(const SwapServerSettingException());
 
     final result = await usecase.execute('boltz.example.com/v2');
 

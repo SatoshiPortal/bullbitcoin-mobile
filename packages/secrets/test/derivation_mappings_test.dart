@@ -30,9 +30,8 @@ void main() {
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
     secret = ok(
-      await Secrets(
-        scratchDirectory: () async => '/tmp',
-      ).import(words: words.split(' ')),
+      await Secrets(scratchDirectory: () async => '/tmp')
+          .import(words: words.split(' ')),
     );
     final mnemonic = bdk.Mnemonic.fromString(mnemonic: words);
     try {
@@ -67,9 +66,9 @@ void main() {
       derived = root.derive(path: path);
       public = derived.asPublic();
       // `[fingerprint/path]xpub…` — keep the extended key only.
-      return RegExp(
-        r'[xt]pub[1-9A-HJ-NP-Za-km-z]+',
-      ).firstMatch(public.toString())!.group(0)!;
+      return RegExp(r'[xt]pub[1-9A-HJ-NP-Za-km-z]+')
+          .firstMatch(public.toString())!
+          .group(0)!;
     } finally {
       public?.dispose();
       derived?.dispose();
@@ -157,53 +156,46 @@ void main() {
           },
         );
 
-        test(
-          '$network / $scriptType account-one descriptors match its xpub',
-          () async {
-            const accountIndex = 1;
-            final descriptors = ok(
-              await secret.derive.descriptors.bitcoin(
-                network: network,
-                scriptType: scriptType,
-                accountIndex: accountIndex,
-              ),
-            );
-            final xpub = ok(
-              await secret.derive.xpub(
-                network: network,
-                scriptType: scriptType,
-                accountIndex: accountIndex,
-              ),
-            );
-            final canonicalType = network.isMainnet
-                ? XpubType.xpub
-                : XpubType.tpub;
-            final canonicalKey = canonicalType.reencode(xpub);
-            expect(
-              canonicalKey,
-              canonicalType.reencode(
-                oracle(
-                  scriptType,
-                  network.coinType,
-                  accountIndex: accountIndex,
-                ),
-              ),
-            );
-            final origin =
-                "[${secret.id.hex}/${scriptType.purpose}'/${network.coinType}'/$accountIndex']";
-            for (final (chain, descriptor) in [
-              (0, descriptors.external),
-              (1, descriptors.internal),
-            ]) {
-              final key = '$origin$canonicalKey/$chain/*';
-              expect(descriptor.split('#').first, switch (scriptType) {
-                ScriptType.bip44 => 'pkh($key)',
-                ScriptType.bip49 => 'sh(wpkh($key))',
-                ScriptType.bip84 => 'wpkh($key)',
-              });
-            }
-          },
-        );
+        test('$network / $scriptType account-one descriptors match its xpub', () async {
+          const accountIndex = 1;
+          final descriptors = ok(
+            await secret.derive.descriptors.bitcoin(
+              network: network,
+              scriptType: scriptType,
+              accountIndex: accountIndex,
+            ),
+          );
+          final xpub = ok(
+            await secret.derive.xpub(
+              network: network,
+              scriptType: scriptType,
+              accountIndex: accountIndex,
+            ),
+          );
+          final canonicalType = network.isMainnet
+              ? XpubType.xpub
+              : XpubType.tpub;
+          final canonicalKey = canonicalType.reencode(xpub);
+          expect(
+            canonicalKey,
+            canonicalType.reencode(
+              oracle(scriptType, network.coinType, accountIndex: accountIndex),
+            ),
+          );
+          final origin =
+              "[${secret.id.hex}/${scriptType.purpose}'/${network.coinType}'/$accountIndex']";
+          for (final (chain, descriptor) in [
+            (0, descriptors.external),
+            (1, descriptors.internal),
+          ]) {
+            final key = '$origin$canonicalKey/$chain/*';
+            expect(descriptor.split('#').first, switch (scriptType) {
+              ScriptType.bip44 => 'pkh($key)',
+              ScriptType.bip49 => 'sh(wpkh($key))',
+              ScriptType.bip84 => 'wpkh($key)',
+            });
+          }
+        });
       }
     }
   });

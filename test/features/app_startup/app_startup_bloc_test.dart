@@ -72,12 +72,10 @@ void main() {
   });
 
   test('starts up when default wallets exist', () async {
-    when(
-      () => checkDefaultWallets.execute(),
-    ).thenAnswer((_) async => const Ok(true));
-    when(
-      () => checkPinCodeExists.execute(),
-    ).thenAnswer((_) async => const Ok(true));
+    when(() => checkDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(true));
+    when(() => checkPinCodeExists.execute())
+        .thenAnswer((_) async => const Ok(true));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
@@ -99,12 +97,10 @@ void main() {
   test(
     'stays on splash when the keychain is locked before first unlock',
     () async {
-      when(
-        () => checkDefaultWallets.execute(),
-      ).thenAnswer((_) async => const Ok(true));
-      when(
-        () => checkPinCodeExists.execute(),
-      ).thenAnswer((_) async => const Err(AppUnlockKeychainLockedFailure()));
+      when(() => checkDefaultWallets.execute())
+          .thenAnswer((_) async => const Ok(true));
+      when(() => checkPinCodeExists.execute())
+          .thenAnswer((_) async => const Err(AppUnlockKeychainLockedFailure()));
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
@@ -169,9 +165,8 @@ void main() {
 
   test('lifts a PIN failure into this feature\'s family rather than '
       'rethrowing it', () async {
-    when(
-      () => checkDefaultWallets.execute(),
-    ).thenAnswer((_) async => const Ok(true));
+    when(() => checkDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(true));
     when(() => checkPinCodeExists.execute()).thenAnswer(
       (_) async => const Err(AppUnlockUnexpectedFailure('keychain read')),
     );
@@ -197,15 +192,13 @@ void main() {
   // rather than the terminal error screen.
   group('a failed data reset', () {
     setUp(() {
-      when(
-        () => checkDefaultWallets.execute(),
-      ).thenAnswer((_) async => const Ok(false));
+      when(() => checkDefaultWallets.execute())
+          .thenAnswer((_) async => const Ok(false));
     });
 
     test('surfaces rather than being ignored', () async {
-      when(
-        () => resetAppData.execute(),
-      ).thenAnswer((_) async => const Err(AppStartupResetFailure()));
+      when(() => resetAppData.execute())
+          .thenAnswer((_) async => const Err(AppStartupResetFailure()));
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
@@ -237,9 +230,8 @@ void main() {
   });
 
   test('starts a fresh install', () async {
-    when(
-      () => checkDefaultWallets.execute(),
-    ).thenAnswer((_) async => const Ok(false));
+    when(() => checkDefaultWallets.execute())
+        .thenAnswer((_) async => const Ok(false));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
@@ -261,8 +253,12 @@ void main() {
 
     Future<AppStartupBloc> missingSecret() async {
       when(() => checkDefaultWallets.execute()).thenAnswer(
-        (_) async =>
-            const Err(AppStartupMissingDefaultSecretFailure('73c5da0a')),
+        (_) async => const Err(
+          AppStartupMissingDefaultSecretFailure(
+            '73c5da0a',
+            walletId: 'wallet-id',
+          ),
+        ),
       );
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -278,15 +274,14 @@ void main() {
         when(
           () => restoreSecret.execute(
             expectedFingerprint: '73c5da0a',
+            expectedWalletId: 'wallet-id',
             words: words,
           ),
         ).thenAnswer((_) async => const Ok(null));
-        when(
-          () => checkDefaultWallets.execute(),
-        ).thenAnswer((_) async => const Ok(true));
-        when(
-          () => checkPinCodeExists.execute(),
-        ).thenAnswer((_) async => const Ok(true));
+        when(() => checkDefaultWallets.execute())
+            .thenAnswer((_) async => const Ok(true));
+        when(() => checkPinCodeExists.execute())
+            .thenAnswer((_) async => const Ok(true));
 
         final result = await bloc.restoreDefaultSecret(words);
         await bloc.stream.firstWhere((s) => s is AppStartupSuccess);
@@ -300,6 +295,7 @@ void main() {
       when(
         () => restoreSecret.execute(
           expectedFingerprint: any(named: 'expectedFingerprint'),
+          expectedWalletId: any(named: 'expectedWalletId'),
           words: any(named: 'words'),
         ),
       ).thenAnswer((_) async => const Err(AppStartupRestoreMismatchFailure()));
@@ -320,6 +316,7 @@ void main() {
       verifyNever(
         () => restoreSecret.execute(
           expectedFingerprint: any(named: 'expectedFingerprint'),
+          expectedWalletId: any(named: 'expectedWalletId'),
           words: any(named: 'words'),
         ),
       );

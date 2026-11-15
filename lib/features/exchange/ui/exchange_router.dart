@@ -1,3 +1,9 @@
+import 'package:bull_ui/bull_ui.dart'
+    show BullScaffold, BullTopBar, BullButton, BullText, BullThemeX, Gap;
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
+
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -9,7 +15,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.d
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,6 +38,7 @@ class ExchangeRouterConfig {
   final VoidCallback onHomeRefresh;
   final void Function(BuildContext) onExit;
   final void Function(BuildContext) onOpenSettings;
+  final void Function(BuildContext, ExchangeHomeAction) onAction;
 
   const ExchangeRouterConfig({
     required this.networkUnavailable,
@@ -41,13 +48,14 @@ class ExchangeRouterConfig {
     required this.onHomeRefresh,
     required this.onExit,
     required this.onOpenSettings,
+    required this.onAction,
   });
 }
 
 class ExchangeRouter {
   static GoRoute supportChatRoute(ExchangeRouterConfig config) =>
       ExchangeSupportChatRouter.route(
-        isLoggedIn: (context) => context.read<ExchangeCubit>().state.hasUser,
+        isLoggedIn: (context) => ExchangeScope.isLoggedIn(context),
         loginScreenBuilder: (draft) => ExchangeSupportLoginScreen(draft: draft),
         onExit: (context, fromExchange) {
           if (fromExchange) {
@@ -65,7 +73,7 @@ class ExchangeRouter {
       redirect: (context, state) async {
         if (await config.networkUnavailable()) return config.homePath;
         if (!context.mounted) return null;
-        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
+        final notLoggedIn = !ExchangeScope.isLoggedIn(context);
         if (notLoggedIn) {
           return ExchangeRoute.exchangeLanding.path;
         }
@@ -77,10 +85,25 @@ class ExchangeRouter {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: ExchangeHomeScreen(
-            homeCards: config.buildHomeCards(),
-            onHomeRefresh: config.onHomeRefresh,
-            onOpenSettings: () => config.onOpenSettings(context),
+          // Redirects run only on navigation: a session that ends while Trade
+          // is open must still leave it. Sign-in is offered only while access
+          // stays enabled; sign-out turns access off and returns home.
+          child: ExchangeSessionListener(
+            listenWhen: (wasLoggedIn, isLoggedIn) => wasLoggedIn && !isLoggedIn,
+            listener: (context, _) {
+              if (ExchangeScope.isEnabled(context)) {
+                context.goNamed(ExchangeRoute.exchangeLanding.name);
+              } else {
+                config.onExit(context);
+              }
+            },
+            child: ExchangeHomeScreen(
+              homeCards: config.buildHomeCards(),
+              onHomeRefresh: config.onHomeRefresh,
+              onOpenSettings: () => config.onOpenSettings(context),
+              onAction: (action) => config.onAction(context, action),
+              onExit: () => config.onExit(context),
+            ),
           ),
         );
       },
@@ -116,16 +139,43 @@ class ExchangeRouter {
         return NoTransitionPage(key: state.pageKey, child: landingScreen);
       },
     ),
-    GoRoute(
-      name: ExchangeRoute.exchangeAuth.name,
-      path: ExchangeRoute.exchangeAuth.path,
-      redirect: (context, state) async =>
-          await config.networkUnavailable() ? config.homePath : null,
-      pageBuilder: (context, state) {
-        final draft = state.extra as ExchangeSupportChatDraft?;
-        final fromSupport = state.uri.queryParameters['from'] == 'support';
+  ];
+
+  static GoRoute authRoute(ExchangeRouterConfig config) => GoRoute(
+    name: ExchangeRoute.exchangeAuth.name,
+    path: ExchangeRoute.exchangeAuth.path,
+    redirect: (context, state) async =>
+        await config.networkUnavailable() ? config.homePath : null,
+    pageBuilder: (context, state) {
+      final draft = state.extra as ExchangeSupportChatDraft?;
+      final fromSupport = state.uri.queryParameters['from'] == 'support';
+      final fromSettings = state.uri.queryParameters['from'] == 'settings';
+      if (fromSettings) {
+        void exitSettingsAuth() {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            config.onExit(context);
+          }
+        }
+
         return NoTransitionPage(
           key: state.pageKey,
+          child: _AuthAccessGate(
+            config: config,
+            child: _SettingsAuthenticationReturn(
+              onExit: exitSettingsAuth,
+              child: Scaffold(
+                body: ExchangeAuthScreen(onExit: exitSettingsAuth),
+              ),
+            ),
+          ),
+        );
+      }
+      return NoTransitionPage(
+        key: state.pageKey,
+        child: _AuthAccessGate(
+          config: config,
           child: BlocListener<ExchangeCubit, ExchangeState>(
             listenWhen: (previous, current) =>
                 previous.notLoggedIn && !current.notLoggedIn,
@@ -148,10 +198,90 @@ class ExchangeRouter {
               }
               context.goNamed(ExchangeRoute.exchangeHome.name);
             },
-            child: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+            child: Scaffold(
+              body: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+            ),
           ),
-        );
-      },
-    ),
-  ];
+        ),
+      );
+    },
+  );
+}
+
+class _SettingsAuthenticationReturn extends StatefulWidget {
+  const _SettingsAuthenticationReturn({
+    required this.child,
+    required this.onExit,
+  });
+
+  final Widget child;
+  final VoidCallback onExit;
+
+  @override
+  State<_SettingsAuthenticationReturn> createState() =>
+      _SettingsAuthenticationReturnState();
+}
+
+class _SettingsAuthenticationReturnState
+    extends State<_SettingsAuthenticationReturn> {
+  StreamSubscription<ExchangeAccess>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _subscription = ExchangeScope.accessChanges().listen((status) {
+      if (mounted &&
+          status is ExchangeAccessEnabled &&
+          status.session == ExchangeAccessSession.signedIn) {
+        widget.onExit();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
+}
+
+class _AuthAccessGate extends StatelessWidget {
+  const _AuthAccessGate({required this.config, required this.child});
+  final ExchangeRouterConfig config;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => ExchangeAccessBuilder(
+    builder: (context, access) {
+      if (ExchangeAvailability.canAuthenticate(access)) {
+        return child;
+      }
+      return BullScaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              BullTopBar(
+                title: context.loc.exchangeAccessSettingsTitle,
+                onBack: () => config.onExit(context),
+              ),
+              const Gap(24),
+              BullText(
+                context.loc.exchangeTradingUnavailable,
+                style: context.bullText.bodyMedium,
+              ),
+              const Gap(16),
+              BullButton.big(
+                label: context.loc.exchangeTradingRetry,
+                bgColor: context.bull.primary,
+                textColor: context.bull.onPrimary,
+                onPressed: () => context.read<ExchangeCubit>().retryAccess(),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

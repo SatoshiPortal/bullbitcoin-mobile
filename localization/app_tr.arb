@@ -9557,10 +9557,6 @@
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
-  "backupWalletInstructionNoPassphrase": "Yedeklemeniz geçiş tarafından korunmuyor. Yeni bir cüzdan yaratarak yedeklemenize bir geçiş ekleyin.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
-  },
   "transactionDetailLabelSwapId": "Swap ID",
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
@@ -9711,10 +9707,6 @@
   "payCustomFee": "Özel Ücretler",
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
-  },
-  "backupInstruction5": "Yedeklemeniz geçiş tarafından korunmuyor. Yeni bir cüzdan yaratarak yedeklemenize bir geçiş ekleyin.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
   },
   "buyConfirmExpress": "Doğru ifade",
   "@buyConfirmExpress": {

@@ -8,6 +8,10 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     RecoverBullStorageFullFailure() => context.loc.recoverbullStorageFull,
     RecoverBullStorageDamagedFailure() => context.loc.recoverbullStorageDamaged,
     RecoverBullJournalFailure() => context.loc.recoverbullJournalUnavailable,
+    VaultPassphraseRequiredFailure() =>
+      context.loc.recoverbullPassphraseRequired,
+    VaultPassphraseAcknowledgementFailure() =>
+      context.loc.recoverbullPassphraseAcknowledgement,
     VaultInvalidFailure() => context.loc.recoverbullErrorInvalidVaultFile,
     VaultWalletMismatchFailure() =>
       context.loc.recoverbullErrorVaultBelongsToAnotherWallet,

@@ -9,6 +9,29 @@ enum PayjoinStatus { started, requested, proposed, completed, aborted, expired }
 
 enum PayjoinParty { sender, recipient }
 
+/// An input an unfinished session holds. Only that session's own operation may
+/// spend it: the session is the owner, its wallet and network the scope, and
+/// [status] the state the reservation was read in.
+final class PayjoinInputReservation {
+  final Outpoint outpoint;
+  final String sessionId;
+
+  /// The side this wallet plays in the owning session.
+  final PayjoinParty role;
+  final String walletId;
+  final BitcoinNetwork network;
+  final PayjoinStatus status;
+
+  const PayjoinInputReservation({
+    required this.outpoint,
+    required this.sessionId,
+    required this.role,
+    required this.walletId,
+    required this.network,
+    required this.status,
+  });
+}
+
 final class PayjoinOwnership {
   final List<PayjoinParty> inputs;
   final List<PayjoinParty> outputs;

@@ -49,12 +49,10 @@ void main() {
         devModeEnabled: true,
       )),
     );
-    when(
-      () => setFallback.execute(any()),
-    ).thenAnswer((_) async => const Ok(null));
-    when(
-      () => setOverride.execute(any()),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => setFallback.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
+    when(() => setOverride.execute(any()))
+        .thenAnswer((_) async => const Ok(null));
   });
 
   SwapSettingsCubit build() => SwapSettingsCubit(
@@ -78,9 +76,8 @@ void main() {
   });
 
   test('nothing is written before the stored choices are known', () async {
-    when(
-      () => getSettings.execute(),
-    ).thenAnswer((_) async => const Err(SwapStorageFailure()));
+    when(() => getSettings.execute())
+        .thenAnswer((_) async => const Err(SwapStorageFailure()));
     final cubit = build();
     addTearDown(cubit.close);
 
@@ -105,9 +102,8 @@ void main() {
   });
 
   test('a failed write keeps the previous value and reports it', () async {
-    when(
-      () => setFallback.execute(any()),
-    ).thenAnswer((_) async => const Err(SwapStorageFailure()));
+    when(() => setFallback.execute(any()))
+        .thenAnswer((_) async => const Err(SwapStorageFailure()));
     final cubit = build();
     addTearDown(cubit.close);
     await cubit.load();
@@ -131,9 +127,8 @@ void main() {
 
   test('loads and stores the swap server', () async {
     final custom = SwapServer.parse('boltz.example.com/v2', isTestnet: false);
-    when(
-      () => setServer.execute(any()),
-    ).thenAnswer((_) async => Ok(custom ?? SwapServer.mainnetDefault));
+    when(() => setServer.execute(any()))
+        .thenAnswer((_) async => Ok(custom ?? SwapServer.mainnetDefault));
     final cubit = build();
     addTearDown(cubit.close);
     await cubit.load();

@@ -1,9 +1,12 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
+
 import 'dart:async';
+
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
+
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart' show SignerEntity;
@@ -228,19 +231,17 @@ swaps.LnReceiveSwap _boltzReceiveSwap({
   swaps.SwapStatus status = swaps.SwapStatus.pending,
   swaps.SwapType type = swaps.SwapType.lightningToLiquid,
   String receiveWalletId = 'w1',
-}) =>
-    swaps.Swap.lnReceive(
-          id: id,
-          keyIndex: 0,
-          type: type,
-          status: status,
-          environment: swaps.Environment.testnet,
-          creationTime: DateTime.utc(2026),
-          receiveWalletId: receiveWalletId,
-          invoice: 'lntb10u1boltz',
-          receiveAddress: 'tlq1-claim',
-        )
-        as swaps.LnReceiveSwap;
+}) => swaps.Swap.lnReceive(
+  id: id,
+  keyIndex: 0,
+  type: type,
+  status: status,
+  environment: swaps.Environment.testnet,
+  creationTime: DateTime.utc(2026),
+  receiveWalletId: receiveWalletId,
+  invoice: 'lntb10u1boltz',
+  receiveAddress: 'tlq1-claim',
+) as swaps.LnReceiveSwap;
 
 class _MockTransactions extends Mock implements WalletTransactionRepository {}
 
@@ -308,9 +309,8 @@ void main() {
 
   setUp(() {
     getWallets = _MockGetReceiveWalletsUsecase();
-    when(
-      () => getWallets.execute(onlyBitcoin: true),
-    ).thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
+    when(() => getWallets.execute(onlyBitcoin: true))
+        .thenAnswer((_) async => Ok([_testWallet(origin: 'default-btc')]));
     getSettings = _MockGetReceiveSettingsUsecase();
     convertSatsToCurrency = _MockConvertReceiveAmountUsecase();
     getReceiveAddress = _MockPrepareReceiveAddressUsecase();
@@ -321,30 +321,26 @@ void main() {
     createOrderSwap = _MockCreateReceiveOrderSwapUsecase();
     watchOrderSwap = _MockWatchReceiveOrderSwapUsecase();
     getSwapRoute = _MockGetReceiveSwapRouteUsecase();
-    when(
-      () => getSwapRoute.execute(),
-    ).thenAnswer((_) async => SwapRoute.exchange);
+    when(() => getSwapRoute.execute())
+        .thenAnswer((_) async => SwapRoute.exchange);
     createBoltzSwap = _MockCreateBoltzReceiveSwapUsecase();
     watchSwap = _MockWatchSwapUsecase();
-    when(
-      () => watchSwap.execute(any()),
-    ).thenAnswer((_) => const Stream.empty());
+    when(() => watchSwap.execute(any()))
+        .thenAnswer((_) => const Stream.empty());
     loadAddressLabel = _MockLoadReceiveAddressLabelUsecase();
     saveAddressLabel = _MockSaveReceiveAddressLabelUsecase();
     watchPayjoinEnabledChanges = _MockWatchReceivePayjoinEnabledUsecase();
     getPayjoinPolicy = _MockGetReceivePayjoinPolicyUsecase();
     payjoinEnabledChangeController = StreamController<bool>.broadcast();
     payjoinMinAmountChangeController = StreamController<int>.broadcast();
-    when(
-      () => watchPayjoinEnabledChanges.execute(),
-    ).thenAnswer((_) => payjoinEnabledChangeController.stream);
+    when(() => watchPayjoinEnabledChanges.execute())
+        .thenAnswer((_) => payjoinEnabledChangeController.stream);
     when(() => getPayjoinPolicy.execute()).thenAnswer(
       (_) async => const Ok((enabled: true, minimumAmountSat: 10000)),
     );
     watchPayjoinMinAmount = _MockWatchReceivePayjoinMinAmountUsecase();
-    when(
-      () => watchPayjoinMinAmount.execute(),
-    ).thenAnswer((_) => payjoinMinAmountChangeController.stream);
+    when(() => watchPayjoinMinAmount.execute())
+        .thenAnswer((_) => payjoinMinAmountChangeController.stream);
     setPayjoinEnabled = _MockSetReceivePayjoinEnabledUsecase();
     // Toggling persists to settings, which in the real app feeds back via the
     //  change stream; the tests emit on payjoinEnabledChangeController to
@@ -378,18 +374,16 @@ void main() {
         currencyCode: any(named: 'currencyCode'),
       ),
     ).thenAnswer((_) async => const Ok(1.0));
-    when(
-      () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => Ok(_testAddress()));
+    when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => Ok(_testAddress()));
     when(
       () => receiveWithPayjoin.execute(
         walletId: any(named: 'walletId'),
         address: any(named: 'address'),
       ),
     ).thenAnswer((_) async => Ok(_receiver()));
-    when(
-      () => loadAddressLabel.execute(any()),
-    ).thenAnswer((_) async => const Ok(''));
+    when(() => loadAddressLabel.execute(any()))
+        .thenAnswer((_) async => const Ok(''));
     when(
       () => saveAddressLabel.execute(
         address: any(named: 'address'),
@@ -430,9 +424,8 @@ void main() {
               ),
             );
             final selected = _testWallet(network: Network.bitcoinRegtest);
-            when(
-              () => getWallets.execute(onlyBitcoin: true),
-            ).thenAnswer((_) async => Ok([selected]));
+            when(() => getWallets.execute(onlyBitcoin: true))
+                .thenAnswer((_) async => Ok([selected]));
             final bloc = buildBloc(
               wallet: selected,
               withPresetWallet: preset,
@@ -486,40 +479,35 @@ void main() {
     }
   }
 
-  test(
-    'Liquid regtest is admitted and reaches the Liquid wallet lookup',
-    () async {
-      final inner = _MockSettings();
-      when(() => inner.execute()).thenAnswer(
-        (_) async => const SettingsEntity(
-          environment: Environment.regtest,
-          bitcoinUnit: BitcoinUnit.sats,
-          currencyCode: 'USD',
-        ),
-      );
-      final selected = _testWallet(network: Network.bitcoinRegtest);
-      when(
-        () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
-      ).thenAnswer((_) async => const Ok([]));
-      final bloc = buildBloc(
-        wallet: selected,
-        settings: GetReceiveSettingsUsecase(inner),
-      );
-      addTearDown(bloc.close);
-      final settled = bloc.stream.firstWhere((s) => s.failure != null);
+  test('Liquid regtest is admitted and reaches the Liquid wallet lookup', () async {
+    final inner = _MockSettings();
+    when(() => inner.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    final selected = _testWallet(network: Network.bitcoinRegtest);
+    when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+        .thenAnswer((_) async => const Ok([]));
+    final bloc = buildBloc(
+      wallet: selected,
+      settings: GetReceiveSettingsUsecase(inner),
+    );
+    addTearDown(bloc.close);
+    final settled = bloc.stream.firstWhere((s) => s.failure != null);
 
-      bloc.add(const ReceiveLiquidStarted());
-      await settled;
+    bloc.add(const ReceiveLiquidStarted());
+    await settled;
 
-      expect(bloc.state.type, ReceiveType.liquid);
-      expect(bloc.state.admissionFailure, isNull);
-      // No default Liquid wallet in this catalog: the lookup ran and found none.
-      expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
-      verify(
-        () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
-      ).called(1);
-    },
-  );
+    expect(bloc.state.type, ReceiveType.liquid);
+    expect(bloc.state.admissionFailure, isNull);
+    // No default Liquid wallet in this catalog: the lookup ran and found none.
+    expect(bloc.state.failure, isA<ReceiveAddressUnavailableFailure>());
+    verify(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+        .called(1);
+  });
 
   group('ReceivePayjoinOriginalTxBroadcasted guard', () {
     test(
@@ -542,9 +530,8 @@ void main() {
           originalTxBytes: Uint8List.fromList([1, 2, 3]),
           proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
         );
-        when(
-          () => broadcastOriginalTransaction.execute(any()),
-        ).thenAnswer((_) async => Ok(completedPayjoin));
+        when(() => broadcastOriginalTransaction.execute(any()))
+            .thenAnswer((_) async => Ok(completedPayjoin));
 
         final bloc = buildBloc();
         addTearDown(bloc.close);
@@ -556,9 +543,8 @@ void main() {
         bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
         await Future<void>.delayed(Duration.zero);
 
-        verify(
-          () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
-        ).called(1);
+        verify(() => broadcastOriginalTransaction.execute(proposedPayjoin.id))
+            .called(1);
         expect(bloc.state.payjoin, completedPayjoin);
         expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
       },
@@ -580,9 +566,8 @@ void main() {
         status: PayjoinStatus.aborted,
         originalTxBytes: Uint8List.fromList([1, 2, 3]),
       );
-      when(
-        () => broadcastOriginalTransaction.execute(any()),
-      ).thenAnswer((_) async => Ok(completedPayjoin));
+      when(() => broadcastOriginalTransaction.execute(any()))
+          .thenAnswer((_) async => Ok(completedPayjoin));
 
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -594,9 +579,8 @@ void main() {
       bloc.add(const ReceivePayjoinOriginalTxBroadcasted());
       await Future<void>.delayed(Duration.zero);
 
-      verify(
-        () => broadcastOriginalTransaction.execute(requestedPayjoin.id),
-      ).called(1);
+      verify(() => broadcastOriginalTransaction.execute(requestedPayjoin.id))
+          .called(1);
       expect(bloc.state.payjoin, completedPayjoin);
       expect(bloc.state.isBroadcastingOriginalTransaction, isFalse);
     });
@@ -619,9 +603,8 @@ void main() {
         proposalPsbt: 'cHNidP9wcm9wb3NhbA==',
         fallbackAvailableAt: clock.now().add(const Duration(seconds: 60)),
       );
-      when(
-        () => broadcastOriginalTransaction.execute(any()),
-      ).thenAnswer((_) async => Ok(proposedPayjoin));
+      when(() => broadcastOriginalTransaction.execute(any()))
+          .thenAnswer((_) async => Ok(proposedPayjoin));
 
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -805,12 +788,11 @@ void main() {
             address: any(named: 'address'),
           ),
         ).thenAnswer((_) async => Ok(proposedPayjoin));
-        when(
-          () => broadcastOriginalTransaction.execute(proposedPayjoin.id),
-        ).thenAnswer(
-          (_) async =>
-              const Err(ReceiveBroadcastOriginalTxUnavailableFailure()),
-        );
+        when(() => broadcastOriginalTransaction.execute(proposedPayjoin.id))
+            .thenAnswer(
+              (_) async =>
+                  const Err(ReceiveBroadcastOriginalTxUnavailableFailure()),
+            );
 
         final bloc = buildBloc();
         addTearDown(bloc.close);
@@ -887,9 +869,8 @@ void main() {
     test('when there is no bitcoin wallet at all', () async {
       // GetReceiveWalletsUsecase returns Ok([]) for an empty list; .first
       // would throw a StateError with no try/catch left to convert it.
-      when(
-        () => getWallets.execute(onlyBitcoin: true),
-      ).thenAnswer((_) async => const Ok(<Wallet>[]));
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => const Ok(<Wallet>[]));
 
       final bloc = buildBloc(withPresetWallet: false);
       addTearDown(bloc.close);
@@ -920,13 +901,12 @@ void main() {
     });
 
     test('when the address cannot be prepared', () async {
-      when(
-        () => getReceiveAddress.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => const Err(
-          ReceiveAddressUnavailableFailure('bdk: descriptor error'),
-        ),
-      );
+      when(() => getReceiveAddress.execute(walletId: any(named: 'walletId')))
+          .thenAnswer(
+            (_) async => const Err(
+              ReceiveAddressUnavailableFailure('bdk: descriptor error'),
+            ),
+          );
 
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -1071,9 +1051,8 @@ void main() {
         final updates =
             StreamController<Result<PayjoinSession, ReceiveFailure>>();
         addTearDown(updates.close);
-        when(
-          () => watchPayjoin.execute(ids: any(named: 'ids')),
-        ).thenAnswer((_) => updates.stream);
+        when(() => watchPayjoin.execute(ids: any(named: 'ids')))
+            .thenAnswer((_) => updates.stream);
 
         final bloc = buildBloc();
         addTearDown(bloc.close);
@@ -1101,9 +1080,8 @@ void main() {
           note: any(named: 'note'),
         ),
       ).thenAnswer((_) async => Ok(record));
-      when(
-        () => watchOrderSwap.execute(record.localId),
-      ).thenAnswer((_) => updates.stream);
+      when(() => watchOrderSwap.execute(record.localId))
+          .thenAnswer((_) => updates.stream);
 
       final bloc = buildBloc(
         wallet: _testWallet(network: Network.liquidTestnet),
@@ -1275,81 +1253,75 @@ void main() {
   });
 
   group('payjoin reacts live to the global setting changing', () {
-    test(
-      'does not create duplicate sessions when persistence and watcher both emit enable',
-      () async {
-        when(() => getPayjoinPolicy.execute()).thenAnswer(
-          (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
-        );
-        final creations =
-            <Completer<Result<PayjoinReceiverSession, ReceiveFailure>>>[];
-        when(
-          () => receiveWithPayjoin.execute(
-            walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-          ),
-        ).thenAnswer((_) {
-          final creation =
-              Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
-          creations.add(creation);
-          return creation.future;
-        });
+    test('does not create duplicate sessions when persistence and watcher both emit enable', () async {
+      when(() => getPayjoinPolicy.execute()).thenAnswer(
+        (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+      );
+      final creations =
+          <Completer<Result<PayjoinReceiverSession, ReceiveFailure>>>[];
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) {
+        final creation =
+            Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
+        creations.add(creation);
+        return creation.future;
+      });
 
-        final bloc = buildBloc();
-        addTearDown(bloc.close);
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
 
-        bloc.add(const ReceiveBitcoinStarted(null));
-        await pumpEventQueue();
-        expect(bloc.state.payjoin, isNull);
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+      expect(bloc.state.payjoin, isNull);
 
-        bloc.add(ReceivePayjoinToggled(true, () async => true));
-        await Future<void>.delayed(Duration.zero);
-        payjoinEnabledChangeController.add(true);
-        await pumpEventQueue();
+      bloc.add(ReceivePayjoinToggled(true, () async => true));
+      await Future<void>.delayed(Duration.zero);
+      payjoinEnabledChangeController.add(true);
+      await pumpEventQueue();
 
-        expect(creations, hasLength(1));
-        creations.single.complete(Ok(_receiver()));
-        await pumpEventQueue();
+      expect(creations, hasLength(1));
+      creations.single.complete(Ok(_receiver()));
+      await pumpEventQueue();
 
-        verify(() => watchPayjoin.execute(ids: any(named: 'ids'))).called(1);
-      },
-    );
+      verify(() => watchPayjoin.execute(ids: any(named: 'ids'))).called(1);
+    });
 
-    test(
-      'does not create duplicate sessions when watcher emits before persistence',
-      () async {
-        when(() => getPayjoinPolicy.execute()).thenAnswer(
-          (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
-        );
-        final creations =
-            <Completer<Result<PayjoinReceiverSession, ReceiveFailure>>>[];
-        when(
-          () => receiveWithPayjoin.execute(
-            walletId: any(named: 'walletId'),
-            address: any(named: 'address'),
-          ),
-        ).thenAnswer((_) {
-          final creation =
-              Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
-          creations.add(creation);
-          return creation.future;
-        });
+    test('does not create duplicate sessions when watcher emits before persistence', () async {
+      when(() => getPayjoinPolicy.execute()).thenAnswer(
+        (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
+      );
+      final creations =
+          <Completer<Result<PayjoinReceiverSession, ReceiveFailure>>>[];
+      when(
+        () => receiveWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          address: any(named: 'address'),
+        ),
+      ).thenAnswer((_) {
+        final creation =
+            Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
+        creations.add(creation);
+        return creation.future;
+      });
 
-        final bloc = buildBloc();
-        addTearDown(bloc.close);
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
 
-        bloc.add(const ReceiveBitcoinStarted(null));
-        await pumpEventQueue();
-        payjoinEnabledChangeController.add(true);
-        await Future<void>.delayed(Duration.zero);
-        bloc.add(ReceivePayjoinToggled(true, () async => true));
-        await pumpEventQueue();
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+      payjoinEnabledChangeController.add(true);
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(ReceivePayjoinToggled(true, () async => true));
+      await pumpEventQueue();
 
-        expect(creations, hasLength(1));
-        creations.single.complete(Ok(_receiver()));
-        await pumpEventQueue();
-      },
-    );
+      expect(creations, hasLength(1));
+      creations.single.complete(Ok(_receiver()));
+      await pumpEventQueue();
+    });
 
     test('creates a payjoin receiver session as soon as the setting is '
         'flipped on, without needing to leave and re-enter the receive '
@@ -1729,9 +1701,8 @@ void main() {
         note: any(named: 'note'),
       ),
     ).thenAnswer((_) async => Ok(record));
-    when(
-      () => watchOrderSwap.execute(record.localId),
-    ).thenAnswer((_) => lateStream);
+    when(() => watchOrderSwap.execute(record.localId))
+        .thenAnswer((_) => lateStream);
     final bloc = buildBloc(wallet: _testWallet(network: Network.liquidTestnet));
 
     bloc.add(const ReceiveLightningStarted());
@@ -1801,15 +1772,12 @@ void main() {
 
     setUp(() {
       swapUpdates = StreamController<swaps.Swap>.broadcast();
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltz);
-      when(
-        () => watchSwap.execute(any()),
-      ).thenAnswer((_) => swapUpdates.stream);
-      when(
-        () => getWallets.execute(sync: true),
-      ).thenAnswer((_) async => const Ok([]));
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
+      when(() => watchSwap.execute(any()))
+          .thenAnswer((_) => swapUpdates.stream);
+      when(() => getWallets.execute(sync: true))
+          .thenAnswer((_) async => const Ok([]));
     });
 
     tearDown(() => swapUpdates.close());
@@ -1898,9 +1866,8 @@ void main() {
 
     test('Boltz unreachable with the fallback on creates an exchange '
         'order instead', () async {
-      when(
-        () => getSwapRoute.execute(),
-      ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
       stubBoltz(const Err(swaps.SwapsBoltzUnavailableFailure('418')));
       final record = _receiveOrderSwapRecord();
       when(
@@ -1910,9 +1877,8 @@ void main() {
           note: any(named: 'note'),
         ),
       ).thenAnswer((_) async => Ok(record));
-      when(
-        () => watchOrderSwap.execute(record.localId),
-      ).thenAnswer((_) => const Stream.empty());
+      when(() => watchOrderSwap.execute(record.localId))
+          .thenAnswer((_) => const Stream.empty());
 
       final bloc = await confirmLightning();
 
@@ -1924,9 +1890,8 @@ void main() {
     test(
       'a Boltz rejection does not fall back even with the fallback on',
       () async {
-        when(
-          () => getSwapRoute.execute(),
-        ).thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltzWithExchangeFallback);
         stubBoltz(const Err(swaps.SwapsBoltzRejectedFailure('bad invoice')));
 
         final bloc = await confirmLightning();
@@ -2028,9 +1993,8 @@ void main() {
       final wallet = _testWallet(network: Network.liquidMainnet);
       final next = _testAddress().copyWith(index: 1, address: 'liquid-next');
       var issued = _testAddress();
-      when(
-        () => getReceiveAddress.execute(walletId: wallet.id),
-      ).thenAnswer((_) async => Ok(issued));
+      when(() => getReceiveAddress.execute(walletId: wallet.id))
+          .thenAnswer((_) async => Ok(issued));
       when(
         () => getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
       ).thenAnswer((_) async {
@@ -2065,9 +2029,8 @@ void main() {
         final next = old.copyWith(index: 1, address: 'next-issued');
         final retry = Completer<Result<WalletAddress, ReceiveFailure>>();
         var advances = 0;
-        when(
-          () => getReceiveAddress.execute(walletId: wallet.id),
-        ).thenAnswer((_) async => Ok(old));
+        when(() => getReceiveAddress.execute(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(old));
         when(
           () =>
               getReceiveAddress.execute(walletId: wallet.id, generateNew: true),
@@ -2149,12 +2112,10 @@ void main() {
                 : Network.bitcoinMainnet,
           );
           final pending = Completer<Result<WalletAddress, ReceiveFailure>>();
-          when(
-            () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
-          ).thenAnswer((_) async => Ok([destination]));
-          when(
-            () => getWallets.execute(onlyBitcoin: true),
-          ).thenAnswer((_) async => Ok([destination]));
+          when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+              .thenAnswer((_) async => Ok([destination]));
+          when(() => getWallets.execute(onlyBitcoin: true))
+              .thenAnswer((_) async => Ok([destination]));
           when(
             () => getReceiveAddress.execute(
               walletId: wallet.id,
@@ -2219,9 +2180,8 @@ void main() {
         address: any(named: 'address'),
       ),
     ).thenAnswer((_) async => Ok(bSession));
-    when(
-      () => watchPayjoin.execute(ids: ['pj-b']),
-    ).thenAnswer((_) => bUpdates.stream);
+    when(() => watchPayjoin.execute(ids: ['pj-b']))
+        .thenAnswer((_) => bUpdates.stream);
     final bloc = buildBloc(withPresetWallet: false);
     addTearDown(() async {
       await bloc.close();
@@ -2318,44 +2278,40 @@ void main() {
       ).called(1);
     });
 
-    test(
-      'updates the QR immediately when disabling payjoin without a watcher event',
-      () async {
-        when(
-          () => setPayjoinEnabled.execute(
-            false,
-            requestConsent: any(named: 'requestConsent'),
-          ),
-        ).thenAnswer((_) async => const Ok<bool, ReceiveFailure>(false));
+    test('updates the QR immediately when disabling payjoin without a watcher event', () async {
+      when(
+        () => setPayjoinEnabled.execute(
+          false,
+          requestConsent: any(named: 'requestConsent'),
+        ),
+      ).thenAnswer((_) async => const Ok<bool, ReceiveFailure>(false));
 
-        final cancel = Completer<void>();
-        addTearDown(() {
-          if (!cancel.isCompleted) cancel.complete();
-        });
-        when(
-          () => watchPayjoin.execute(ids: any(named: 'ids')),
-        ).thenAnswer((_) => _ControlledCancelPayjoinStream(cancel.future));
+      final cancel = Completer<void>();
+      addTearDown(() {
+        if (!cancel.isCompleted) cancel.complete();
+      });
+      when(() => watchPayjoin.execute(ids: any(named: 'ids')))
+          .thenAnswer((_) => _ControlledCancelPayjoinStream(cancel.future));
 
-        final bloc = buildBloc();
-        addTearDown(bloc.close);
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
 
-        bloc.add(const ReceiveBitcoinStarted(null));
-        await pumpEventQueue();
-        expect(bloc.state.qrData, contains('pj='));
+      bloc.add(const ReceiveBitcoinStarted(null));
+      await pumpEventQueue();
+      expect(bloc.state.qrData, contains('pj='));
 
-        bloc.add(ReceivePayjoinToggled(false, () async => true));
-        await Future<void>.delayed(Duration.zero);
+      bloc.add(ReceivePayjoinToggled(false, () async => true));
+      await Future<void>.delayed(Duration.zero);
 
-        expect(bloc.state.payjoinGloballyEnabled, isFalse);
-        expect(bloc.state.payjoin, isNull);
-        expect(
-          Uri.parse(bloc.state.qrData).queryParameters,
-          isNot(contains('pj')),
-        );
+      expect(bloc.state.payjoinGloballyEnabled, isFalse);
+      expect(bloc.state.payjoin, isNull);
+      expect(
+        Uri.parse(bloc.state.qrData).queryParameters,
+        isNot(contains('pj')),
+      );
 
-        cancel.complete();
-      },
-    );
+      cancel.complete();
+    });
 
     test(
       'drops repeated toggles while consent and persistence are in flight',
@@ -2419,9 +2375,8 @@ void main() {
         );
         final bPayjoin =
             Completer<Result<PayjoinReceiverSession, ReceiveFailure>>();
-        when(
-          () => getWallets.execute(onlyBitcoin: true),
-        ).thenAnswer((_) async => Ok([walletA, walletB]));
+        when(() => getWallets.execute(onlyBitcoin: true))
+            .thenAnswer((_) async => Ok([walletA, walletB]));
         when(
           () => watchWalletTransaction.execute(
             walletId: walletA.id,
@@ -2549,15 +2504,13 @@ void main() {
           walletTransactionRepository: transactions,
           walletFacade: facade,
         );
-        when(
-          () => getReceiveAddress.execute(walletId: wallet.id),
-        ).thenAnswer((_) async => Ok(address));
+        when(() => getReceiveAddress.execute(walletId: wallet.id))
+            .thenAnswer((_) async => Ok(address));
         when(() => getPayjoinPolicy.execute()).thenAnswer(
           (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
         );
-        when(
-          () => convertSatsToCurrency.execute(),
-        ).thenAnswer((_) => price.future);
+        when(() => convertSatsToCurrency.execute())
+            .thenAnswer((_) => price.future);
         final bloc = buildBloc(wallet: wallet, observation: observation);
         addTearDown(() async {
           if (!price.isCompleted) price.complete(const Ok(1.0));
@@ -2677,18 +2630,16 @@ void main() {
           final initial = Completer<Result<WalletAddress, ReceiveFailure>>();
           final next = Completer<Result<WalletAddress, ReceiveFailure>>();
           final label = Completer<Result<String, ReceiveFailure>>();
-          when(
-            () => getReceiveAddress.execute(walletId: wallet.id),
-          ).thenAnswer((_) => initial.future);
+          when(() => getReceiveAddress.execute(walletId: wallet.id))
+              .thenAnswer((_) => initial.future);
           when(
             () => getReceiveAddress.execute(
               walletId: wallet.id,
               generateNew: true,
             ),
           ).thenAnswer((_) => next.future);
-          when(
-            () => loadAddressLabel.execute(any()),
-          ).thenAnswer((_) => label.future);
+          when(() => loadAddressLabel.execute(any()))
+              .thenAnswer((_) => label.future);
           when(() => getPayjoinPolicy.execute()).thenAnswer(
             (_) async => const Ok((enabled: false, minimumAmountSat: 10000)),
           );
@@ -2728,9 +2679,8 @@ void main() {
             bloc.add(const ReceiveLiquidStarted());
             async.flushMicrotasks();
             expect(bloc.state.revealedAddressGeneration, isNotNull);
-            verify(
-              () => getReceiveAddress.execute(walletId: wallet.id),
-            ).called(1);
+            verify(() => getReceiveAddress.execute(walletId: wallet.id))
+                .called(1);
           }
           unawaited(bloc.close());
           async.flushMicrotasks();

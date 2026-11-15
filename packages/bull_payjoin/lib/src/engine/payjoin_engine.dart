@@ -7,7 +7,6 @@ import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
 import 'package:bull_payjoin/src/domain/payjoin_policy.dart';
-import 'package:bull_payjoin/src/engine/bitcoin_tx.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_contract.dart';
 import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
@@ -27,6 +26,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final api.PayjoinTransactionPort _transactions;
   final PayjoinPolicyStore _policy;
   final api.PayjoinLabelsPort _labels;
+  final api.PayjoinCodecPort _codec;
   // Shared across receiver sessions so two proposals cannot select the same
   // wallet UTXO before either proposal has been persisted.
   final Lock _utxoSelectionLock;
@@ -106,7 +106,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required api.PayjoinTransactionPort transactions,
     required PayjoinPolicyStore policy,
     required api.PayjoinLabelsPort labels,
+    required api.PayjoinCodecPort codec,
   }) : _wallet = wallet,
+       _codec = codec,
        _blockchain = blockchain,
        _transactions = transactions,
        _policy = policy,
@@ -232,37 +234,50 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     return await _pdkPayjoinDatasource.fetchDirectoryKeys() != null;
   }
 
-  // TODO: Remove this and use the general frozen utxo datasource
   @override
   Future<List<({String txId, int vout})>>
-  getUtxosFrozenByOngoingPayjoins() async {
+  getUtxosFrozenByOngoingPayjoins() async => [
+    for (final reservation in await getInputReservations())
+      (txId: reservation.outpoint.txId, vout: reservation.outpoint.vout),
+  ];
+
+  @override
+  Future<List<api.PayjoinInputReservation>> getInputReservations() async {
     final payjoins = await _localPayjoinDatasource.fetchAll(
       onlyUnfinished: true,
     );
-
-    final inputs = await Future.wait(
-      payjoins.map((payjoin) async {
-        final psbt = payjoin is PayjoinReceiverModel
-            ? payjoin.proposalPsbt
-            : (payjoin as PayjoinSenderModel).originalPsbt;
-
-        if (psbt == null) {
-          return null;
-        }
-
-        // Extract the spent utxos from the proposal psbt
-        final proposalTx = await BitcoinTx.fromPsbt(psbt);
-        final spentUtxos = proposalTx.inputs
-            .map((input) => (txId: input.txid, vout: input.vout))
-            .toList();
-        return spentUtxos;
-      }),
-    );
-
-    return inputs
-        .whereType<List<({String txId, int vout})>>()
-        .expand((element) => element)
-        .toList();
+    final reservations = <api.PayjoinInputReservation>[];
+    for (final payjoin in payjoins) {
+      // A receiver holds the inputs of its proposal, a sender those of its
+      // original; a receiver with no proposal yet holds nothing.
+      final (psbt, role) = switch (payjoin) {
+        PayjoinReceiverModel(:final proposalPsbt) => (
+          proposalPsbt,
+          api.PayjoinParty.recipient,
+        ),
+        PayjoinSenderModel(:final originalPsbt) => (
+          originalPsbt,
+          api.PayjoinParty.sender,
+        ),
+      };
+      if (psbt == null) continue;
+      // An undecodable row throws: an unreadable reservation is never none.
+      for (final outpoint in _codec.decodePsbt(psbt).inputs) {
+        reservations.add(
+          api.PayjoinInputReservation(
+            outpoint: outpoint,
+            sessionId: payjoin.id,
+            role: role,
+            walletId: payjoin.walletId,
+            network: payjoin.isTestnet
+                ? primitives.BitcoinNetwork.testnet
+                : primitives.BitcoinNetwork.mainnet,
+            status: api.PayjoinStatus.values.byName(payjoin.status.name),
+          ),
+        );
+      }
+    }
+    return reservations;
   }
 
   @override
@@ -385,6 +400,27 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         }
       },
     );
+
+    // The POST handed the receiver a fully signed, broadcastable original.
+    // BIP 77 lets the receiver broadcast it at any point and gives the sender
+    // no way to revoke it, so from here this payment can exist without this
+    // device ever reaching the bitcoin network: record it as network
+    // evidence. Expiry then keeps the row reserved and replays this same
+    // original (_processExpiredPayjoinInner, _holdUnresolvedOriginal) instead
+    // of releasing its inputs to a rebuild that would not conflict with the
+    // receiver's copy. Best effort: a failed write is logged and leaves the
+    // row as it was; the POST is not undone by it.
+    try {
+      await _recordSenderNetworkEvidence(model.id);
+    } catch (e, st) {
+      _log.warning(
+        code: api.PayjoinLogCode.storageFailure,
+        role: api.PayjoinLogRole.sender,
+        sessionRef: model.toEntity().logRef,
+        error: e,
+        trace: st,
+      );
+    }
 
     // The datasource returned the session in its post-POST state
     // (PollingForProposal); the write-ahead persist above stored the
@@ -737,6 +773,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           sender.id,
           () => _blockchain.broadcastPsbt(
             walletId: sender.walletId,
+            sessionId: sender.id,
             network: network,
             psbt: sender.originalPsbt,
           ),
@@ -932,9 +969,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         error: e,
         trace: StackTrace.current,
       );
-      result =
-          (await _broadcastOriginalWithRetry(model.toEntity()))
-              as PayjoinReceiver?;
+      result = (await _broadcastOriginalWithRetry(
+        model.toEntity(),
+      )) as PayjoinReceiver?;
     }
 
     if (result != null) {
@@ -1343,7 +1380,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // are local best-effort work and must never route into the competing
         // original-transaction fallback if either fails.
         try {
-          final broadcastTxId = (await BitcoinTx.fromPsbt(finalizedPsbt)).txid;
+          final broadcastTxId = _codec.decodePsbt(finalizedPsbt).txid;
           await labelCompletedPayjoinSend(
             broadcastTxId,
             walletId: payjoin.walletId,
@@ -1745,12 +1782,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  but not recorded). The session stays unfinished and reserved, and is
       //  not sent again in this run.
       //
-      //  No evidence: the port proved nothing reached the network. Persist the
-      //  expiry so the session becomes terminal on our side. Two things
+      //  No evidence: the port proved nothing reached the network, and the
+      //  original never reached the receiver either (a delivered original is
+      //  recorded as evidence at creation, see createPayjoinSender). Persist
+      //  the expiry so the session becomes terminal on our side. Two things
       //  follow, and they are inseparable. It releases this session's inputs —
       //  the freeze reads `onlyUnfinished`, so an unfinished row locks those
       //  coins out of every send in the app, not just this order, for a
-      //  payment we could not even hand to the network. And because they are
+      //  payment nobody can put on the network. And because they are
       //  released the user can rebuild the payment on other coins, which is
       //  exactly why this original is never sent again once expired (see the
       //  sender sweep in _resumePayjoinsOnStartupUnguarded): the two would not
@@ -1973,7 +2012,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// cleared for display hygiene (see the sender sweep in
   /// [_resumePayjoinsOnStartupUnguarded]): the stored proposal still pins the
   /// payjoin transaction, and the engine's own invariant is that
-  /// `BitcoinTx.fromPsbt(proposalPsbt).txid == txId` (see
+  /// `codec.decodePsbt(proposalPsbt).txid == txId` (see
   /// payjoin_runtime reconstructSender). Returns null when no proposal was ever
   /// exchanged — no payjoin transaction can exist — or the PSBT cannot be
   /// parsed, in which case no broadcast watcher is armed and the fallback
@@ -1982,7 +2021,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final proposalPsbt = sender.proposalPsbt;
     if (proposalPsbt == null) return null;
     try {
-      return (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+      return _codec.decodePsbt(proposalPsbt).txid;
     } catch (_) {
       // A corrupt row. The cause is dropped: it may quote the PSBT.
       _log.warning(
@@ -2114,22 +2153,19 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       final network = payjoin.isTestnet
           ? primitives.BitcoinNetwork.testnet
           : primitives.BitcoinNetwork.mainnet;
-      final isMineSync = await _wallet.createOwnershipChecker(
-        walletId: payjoin.walletId,
-        network: network,
-      );
+      // One capture answers both questions from the same committed state.
       // The input guard asks about outpoints, not scripts: the sender supplies
       // the previous outputs in its PSBT, so a script-keyed answer could be
-      // steered. The output check below is a different question — it is our own
+      // steered. The output check is a different question — it is our own
       // address, so a script check is the right one there.
-      final ownsOutpointSync = await _wallet.createOutpointOwnershipChecker(
+      final ownership = await _wallet.captureOwnership(
         walletId: payjoin.walletId,
         network: network,
       );
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
-        ownsOutpoint: ownsOutpointSync,
-        hasReceiverOutput: isMineSync,
+        ownsOutpoint: ownership.ownsOutpoint,
+        hasReceiverOutput: ownership.ownsScript,
         inputPairs: inputPairs,
         signPsbt: (psbt) => _wallet.signPsbt(
           walletId: payjoin.walletId,
@@ -2304,6 +2340,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       payjoinModel.id,
       () => _blockchain.broadcastPsbt(
         walletId: payjoinModel.walletId,
+        sessionId: payjoinModel.id,
         network: network,
         psbt: finalizedPsbt,
       ),
@@ -2866,11 +2903,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// even though it already succeeded.
   void _syncWalletAfterBroadcast(String walletId) {
     unawaited(
-      Future(() => _transactions.refreshWallet(walletId)).catchError((
-        Object e,
-      ) {
-        _log.warning(code: api.PayjoinLogCode.walletFailure, error: e);
-      }),
+      Future(() => _transactions.refreshWallet(walletId))
+          .catchError((Object e) {
+            _log.warning(code: api.PayjoinLogCode.walletFailure, error: e);
+          }),
     );
   }
 
@@ -2899,9 +2935,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   ///
   /// Not private (and marked [visibleForTesting]) so it can be exercised
   /// directly: driving it through the full reactive sender pipeline needs a
-  /// real, valid PSBT for BitcoinTx.fromPsbt to parse (FFI-backed — the
-  /// existing payjoin datasource tests document the same offline-fixture
-  /// constraint), which isn't practical to construct in a unit test.
+  /// real, valid PSBT for the codec to decode (the existing payjoin
+  /// datasource tests document the same offline-fixture constraint), which
+  /// isn't practical to construct in a unit test.
   @visibleForTesting
   Future<void> labelCompletedPayjoinSend(
     String txId, {

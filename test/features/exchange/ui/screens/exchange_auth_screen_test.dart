@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/exchange/data/exchange_access_repository_impl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:convert';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -11,14 +14,14 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_exchange_web_set
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+
 import '../../../settings/fake_webview_platform.dart';
 
 class _Settings extends Mock implements GetExchangeWebSettingsUsecase {}
@@ -27,9 +30,17 @@ class _Keys extends Mock implements ExchangeApiKeyRepository {}
 
 class _Cubit extends Mock implements ExchangeCubit {}
 
+class _FakeAuthentication extends Fake
+    implements CompleteExchangeAuthenticationUsecase {}
+
 class _Platform extends FakeWebViewPlatform {
   _Delegate? delegate;
   _Controller? controller;
+  final cookies = _Cookies(const PlatformWebViewCookieManagerCreationParams());
+  @override
+  PlatformWebViewCookieManager createPlatformCookieManager(
+    PlatformWebViewCookieManagerCreationParams params,
+  ) => cookies;
   @override
   PlatformWebViewController createPlatformWebViewController(
     PlatformWebViewControllerCreationParams params,
@@ -38,6 +49,21 @@ class _Platform extends FakeWebViewPlatform {
   PlatformNavigationDelegate createPlatformNavigationDelegate(
     PlatformNavigationDelegateCreationParams params,
   ) => delegate = _Delegate(params);
+}
+
+class _Cookies extends PlatformWebViewCookieManager {
+  _Cookies(super.params) : super.implementation();
+  int clears = 0;
+  List<WebViewCookie> cookies = const [
+    WebViewCookie(name: 'bb_session', value: '', domain: 'example.invalid'),
+  ];
+  @override
+  Future<List<WebViewCookie>> getCookies(Uri url) async => cookies;
+  @override
+  Future<bool> clearCookies() async {
+    clears++;
+    return true;
+  }
 }
 
 class _Controller extends FakePlatformWebViewController {
@@ -59,16 +85,34 @@ class _Delegate extends FakePlatformNavigationDelegate {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  for (final scenario in ['deferred', 'acknowledge', 'retry', 'inactive']) {
+  setUpAll(() => registerFallbackValue(_FakeAuthentication()));
+  for (final scenario in [
+    'deferred',
+    'acknowledge',
+    'retry',
+    'inactive',
+    'no-session',
+  ]) {
     testWidgets('authentication WebView: $scenario', (tester) async {
       var generations = 0;
-      var cookieClears = 0;
       var exits = 0;
       final platform = _Platform();
+      if (scenario == 'no-session') platform.cookies.cookies = [];
       WebViewPlatform.instance = platform;
       final settings = _Settings();
       final keys = _Keys();
       final cubit = _Cubit();
+      SharedPreferences.setMockInitialValues({});
+      when(() => keys.readActiveApiKey(isTestnet: true))
+          .thenAnswer((_) async => const Ok(null));
+      final access = ExchangeAccessRepositoryImpl(
+        apiKeyRepository: keys,
+        readEnvironment: () async => true,
+        platformAllowed: () async => true,
+        disconnectNotifications: () async {},
+        clearCookies: () async {},
+      );
+      await access.enable();
       when(settings.execute).thenAnswer(
         (_) async => const Ok(
           SettingsEntity(
@@ -80,6 +124,21 @@ void main() {
       );
       when(() => cubit.state).thenReturn(const ExchangeState());
       when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+      // The screen authenticates through its cubit, which runs the use case.
+      when(
+        () => cubit.completeAuthentication(
+          any(),
+          isCurrent: any(named: 'isCurrent'),
+        ),
+      ).thenAnswer(
+        (invocation) =>
+            (invocation.positionalArguments.single
+                    as CompleteExchangeAuthenticationUsecase)
+                .execute(
+                  isCurrent:
+                      invocation.namedArguments[#isCurrent] as bool Function(),
+                ),
+      );
       locator.registerSingleton<GetExchangeWebSettingsUsecase>(settings);
       locator.registerFactoryParam<
         CompleteExchangeAuthenticationUsecase,
@@ -111,50 +170,15 @@ void main() {
               },
             ),
           ),
-          apiKeyRepository: keys,
+          access: access,
           isTestnet: session.isTestnet,
         ),
       );
-      registerFallbackValue(
-        locator<CompleteExchangeAuthenticationUsecase>(
-          param1: (String _) async => '',
-          param2: (isTestnet: true, isOpen: () => true),
-        ),
-      );
-      when(() => cubit.completeAuthentication(any())).thenAnswer((
-        invocation,
-      ) async {
-        final operation =
-            invocation.positionalArguments.first
-                as CompleteExchangeAuthenticationUsecase;
-        return switch (await operation.execute()) {
-          Err(:final failure) => failure,
-          Ok() => null,
-        };
-      });
-      const channel = MethodChannel('webview_cookie_manager');
-      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
-        call,
-      ) async {
-        if (call.method == 'clearCookies') {
-          cookieClears++;
-          return null;
-        }
-        return [
-          {'name': 'bb_session', 'value': 'synthetic-session'},
-        ];
-      });
-      addTearDown(() async {
-        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          channel,
-          null,
-        );
-        await locator.reset();
-      });
+      addTearDown(locator.reset);
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider<ExchangeCubit>.value(
             value: cubit,
@@ -170,7 +194,7 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-      if (scenario == 'deferred') {
+      if (scenario == 'deferred' || scenario == 'no-session') {
         expect(find.byType(AlertDialog), findsNothing);
       } else {
         expect(find.byType(AlertDialog), findsOneWidget);
@@ -182,12 +206,28 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(AlertDialog), findsNothing);
       }
-      expect(generations, 1);
-      expect(cookieClears, 0);
+      expect(generations, scenario == 'no-session' ? 0 : 1);
+      expect(platform.cookies.clears, 0);
       expect(exits, 0);
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(platform.controller?.reloadCount, scenario == 'retry' ? 1 : 0);
-      verifyZeroInteractions(keys);
+      if (scenario == 'no-session') {
+        verifyNever(
+          () => cubit.completeAuthentication(
+            any(),
+            isCurrent: any(named: 'isCurrent'),
+          ),
+        );
+      } else {
+        verify(
+          () => cubit.completeAuthentication(
+            any(),
+            isCurrent: any(named: 'isCurrent'),
+          ),
+        ).called(1);
+      }
+      verify(() => keys.readActiveApiKey(isTestnet: true)).called(1);
+      verifyNoMoreInteractions(keys);
     });
   }
 }

@@ -57,9 +57,8 @@ void main() {
   setUp(() {
     gateway = _MockGateway();
     environment = _MockGetRecipientsEnvironmentUsecase();
-    when(
-      () => environment.execute(),
-    ).thenAnswer((_) async => const Ok(Environment.mainnet));
+    when(() => environment.execute())
+        .thenAnswer((_) async => const Ok(Environment.mainnet));
     registerFallbackValue(_details());
   });
 
@@ -171,9 +170,8 @@ void main() {
     'a failed environment read is returned, not thrown: these use-cases '
     'promise a Result and the bloc has no catch left to stop a throw',
     () async {
-      when(
-        () => environment.execute(),
-      ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+      when(() => environment.execute())
+          .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
 
       final result = await GetRecipientsUsecase(
         recipientsGateway: gateway,
@@ -261,9 +259,8 @@ void main() {
     setUp(() => summary = _MockGetExchangeUserSummaryUsecase());
 
     test('maps the account currency to a jurisdiction', () async {
-      when(
-        () => summary.execute(),
-      ).thenAnswer((_) async => _summaryWith('CRC'));
+      when(() => summary.execute())
+          .thenAnswer((_) async => _summaryWith('CRC'));
 
       final result = await GetPreferredJurisdictionUsecase(summary).execute();
 
@@ -271,9 +268,8 @@ void main() {
     });
 
     test('an unknown currency falls back rather than failing', () async {
-      when(
-        () => summary.execute(),
-      ).thenAnswer((_) async => _summaryWith('JPY'));
+      when(() => summary.execute())
+          .thenAnswer((_) async => _summaryWith('JPY'));
 
       final result = await GetPreferredJurisdictionUsecase(summary).execute();
 

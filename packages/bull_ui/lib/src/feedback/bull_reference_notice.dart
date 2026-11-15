@@ -3,7 +3,7 @@ import 'package:bull_ui/src/data_display/bull_info_card.dart';
 import 'package:bull_ui/src/inputs/bull_copy_field.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A notice that hands the user a reference to keep and one way out: an info
 /// card with [message], the copyable [reference] and a single action button.

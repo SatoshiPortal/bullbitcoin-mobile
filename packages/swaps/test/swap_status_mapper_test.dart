@@ -10,18 +10,17 @@ void main() {
 
   LnSendSwapModel submarine({String? sendTxid, String status = 'pending'}) =>
       SwapModel.lnSend(
-            id: 'sub-1',
-            type: SwapType.liquidToLightning.name,
-            status: status,
-            keyIndex: 0,
-            creationTime: DateTime(2026, 9).millisecondsSinceEpoch,
-            sendWalletId: 'w-liquid',
-            invoice: 'lnbc1',
-            paymentAddress: 'lq1lockup',
-            paymentAmount: 100000,
-            sendTxid: sendTxid,
-          )
-          as LnSendSwapModel;
+        id: 'sub-1',
+        type: SwapType.liquidToLightning.name,
+        status: status,
+        keyIndex: 0,
+        creationTime: DateTime(2026, 9).millisecondsSinceEpoch,
+        sendWalletId: 'w-liquid',
+        invoice: 'lnbc1',
+        paymentAddress: 'lq1lockup',
+        paymentAmount: 100000,
+        sendTxid: sendTxid,
+      ) as LnSendSwapModel;
 
   test('txnMempool records the Boltz-reported lockup txid when none is '
       'stored — the row must never read as "no funds moved"', () {

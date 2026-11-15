@@ -10,15 +10,14 @@ void main() {
     test(
       'sensitive files use Documents and backup exclusion is configured',
       () {
-        final sqlite = File(
-          'lib/core/storage/sqlite_database.dart',
-        ).readAsStringSync();
+        final sqlite = File('lib/core/storage/sqlite_database.dart')
+            .readAsStringSync();
         final initialization = File('lib/init.dart').readAsStringSync();
         final walletComposition = File(
           'lib/features/wallet/wallet_locator.dart',
         ).readAsStringSync();
         final writer = File(
-          'packages/transaction_sync/lib/src/write/native_write_session.dart',
+          'packages/sync/lib/src/data/write/native_write_session.dart',
         ).readAsStringSync();
         expect(sqlite, contains('getApplicationDocumentsDirectory'));
         expect(initialization, contains('getApplicationDocumentsDirectory'));
@@ -56,15 +55,13 @@ void main() {
         'lib/features/electrum_settings/background_setup.dart',
       ].map((path) => File(path).readAsStringSync()).join('\n');
       expect(source, contains('await getApplicationDocumentsDirectory()'));
-      expect(source, contains('writerMetadataPath(documents.path)'));
+      expect(source, contains('openExisting(documents.path)'));
       expect(
         source,
-        matches(
-          RegExp(
-            r"p\.join\(\s*documents\.path,\s*'wallet_transaction_sync_queue.sqlite'",
-          ),
-        ),
+        contains("_queueFilename = 'wallet_transaction_sync_queue.sqlite'"),
       );
+      expect(source, contains('openBackgroundWalletSyncQueue(documents.path)'));
+      expect(source, contains('p.join(documents, _queueFilename)'));
       expect(
         source,
         matches(
@@ -76,10 +73,11 @@ void main() {
       final notifications = File(
         'lib/features/wallet/data/payment_notifications.dart',
       ).readAsStringSync();
-      expect(notifications, contains('outbox = openOutbox(documents);'));
       expect(
         notifications,
-        contains('databasePath: p.join(documents, outboxFilename)'),
+        contains(
+          'openExistingNotificationStore(p.join(documents, outboxFilename))',
+        ),
       );
       expect(source, isNot(contains('AppLocator.setup(')));
       expect(source, isNot(contains('payjoinDatabaseFilename')));

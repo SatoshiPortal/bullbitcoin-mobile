@@ -243,13 +243,11 @@ void main() {
 
   group('GetSwapLimitsAndFeesUsecase', () {
     test('returns the provider\'s answer', () async {
-      when(
-        () => boltz.limitsAndFees(SwapType.bitcoinToLiquid),
-      ).thenAnswer((_) async => const Err(SwapsBoltzUnavailableFailure()));
+      when(() => boltz.limitsAndFees(SwapType.bitcoinToLiquid))
+          .thenAnswer((_) async => const Err(SwapsBoltzUnavailableFailure()));
 
-      final result = await GetSwapLimitsAndFeesUsecase(
-        boltz,
-      ).execute(SwapType.bitcoinToLiquid);
+      final result = await GetSwapLimitsAndFeesUsecase(boltz)
+          .execute(SwapType.bitcoinToLiquid);
 
       expect((result as Err).failure, isA<SwapsBoltzUnavailableFailure>());
     });
@@ -274,9 +272,8 @@ void main() {
     });
 
     test('reports a failure when the lockup cannot be recorded', () async {
-      when(
-        () => resolver.recordLockup(swapId: 's1', txid: 'tx'),
-      ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('locked')));
+      when(() => resolver.recordLockup(swapId: 's1', txid: 'tx'))
+          .thenAnswer((_) async => const Err(SwapsUnexpectedFailure('locked')));
 
       final result = await RecordSwapLockupUsecase(
         resolver,
@@ -317,9 +314,8 @@ void main() {
     });
 
     test('a provider failure is returned', () async {
-      when(
-        () => resolver.restore(),
-      ).thenAnswer((_) async => const Err(SwapsBoltzUnavailableFailure()));
+      when(() => resolver.restore())
+          .thenAnswer((_) async => const Err(SwapsBoltzUnavailableFailure()));
 
       final result = await RestoreSwapsUsecase(resolver, store).execute();
 
@@ -334,9 +330,8 @@ void main() {
       final stored = _MockChainSwap();
       when(() => rescued.id).thenReturn('r1');
       final restored = _restored('r1');
-      when(
-        () => resolver.rescue(restored, walletId: 'w-liquid'),
-      ).thenAnswer((_) async => Ok(rescued));
+      when(() => resolver.rescue(restored, walletId: 'w-liquid'))
+          .thenAnswer((_) async => Ok(rescued));
       when(() => store.get('r1')).thenAnswer((_) async => Ok(stored));
 
       final result = await RescueSwapUsecase(
@@ -352,9 +347,8 @@ void main() {
 
     test('a refused rescue drives nothing', () async {
       final restored = _restored('r1');
-      when(
-        () => resolver.rescue(restored, walletId: 'w-btc'),
-      ).thenAnswer((_) async => const Err(SwapsUnexpectedFailure('side')));
+      when(() => resolver.rescue(restored, walletId: 'w-btc'))
+          .thenAnswer((_) async => const Err(SwapsUnexpectedFailure('side')));
 
       final result = await RescueSwapUsecase(
         resolver,

@@ -11,9 +11,9 @@ bool preimageMatchesInvoice({
 }) {
   try {
     final paymentHash =
-        Bolt11PaymentRequest(
-              invoice.trim().toLowerCase(),
-            ).tags.firstWhere((t) => t.type == 'payment_hash').data
+        Bolt11PaymentRequest(invoice.trim().toLowerCase()).tags
+                .firstWhere((t) => t.type == 'payment_hash')
+                .data
             as String;
     final bytes = <int>[
       for (var i = 0; i + 2 <= preimage.length; i += 2)
