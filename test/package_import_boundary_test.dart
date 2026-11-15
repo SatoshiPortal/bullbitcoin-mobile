@@ -8,12 +8,31 @@ import 'package:flutter_test/flutter_test.dart';
 // unnoticed. No member imports the app.
 
 /// Pre-existing imports of a non-exported file, to fix in their own change.
-const _knownExceptions = {
+const _knownExceptions = <String, Set<String>>{
   // ExternalTorPort is not exported by bull_tor's public libraries.
   'test/core_test/recoverbull/ensure_recoverbull_tor_session_usecase_test.dart':
-      'package:bull_tor/src/domain/ports/external_tor_port.dart',
+      {'package:bull_tor/src/domain/ports/external_tor_port.dart'},
   'test/features/wallet/domain/get_external_tor_proxy_status_usecase_test.dart':
-      'package:bull_tor/src/domain/ports/external_tor_port.dart',
+      {'package:bull_tor/src/domain/ports/external_tor_port.dart'},
+  // The default-passphrase device test assembles the RecoverBull vault flow from its internals.
+  'integration_test/default_passphrase_device_test.dart': {
+    'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart',
+    'package:bull_recoverbull/src/data/secrets_vault_repository.dart',
+    'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart',
+    'package:bull_recoverbull/src/domain/repositories/vault_file_repository.dart',
+    'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/delete_drive_vault_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/export_drive_vault_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/list_drive_vaults_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/manage_backup_settings_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/pick_vault_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/read_drive_vault_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/restore_vault_usecase.dart',
+    'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart',
+    'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart',
+    'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart',
+    'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart',
+  },
 };
 
 final _directive = RegExp(r'^\s*(?:import|export)\s+[^;]+;', multiLine: true);
@@ -83,7 +102,8 @@ void main() {
               package != owner &&
               libraryPath.contains('/');
           final importsApp = owner != null && package == 'bb_mobile';
-          if ((crossesMember || importsApp) && _knownExceptions[path] != uri) {
+          if ((crossesMember || importsApp) &&
+              !(_knownExceptions[path]?.contains(uri) ?? false)) {
             violations.add('$path: $uri');
           }
         }

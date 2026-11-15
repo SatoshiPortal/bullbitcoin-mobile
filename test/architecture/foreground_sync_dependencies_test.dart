@@ -61,10 +61,10 @@ const _allowedTargets = <String, String>{
   'support': 'exchange_support_chat',
   'swap':
       'autoswap consolidation fees labels send settings transactions wallet',
-  'test_wallet_backup': 'onboarding recoverbull wallet',
+  'test_wallet_backup': 'app_unlock onboarding recoverbull wallet',
   'transactions':
       'buy electrum_settings exchange labels pay replace_by_fee swap wallet',
-  'wallet': 'announcements backup_settings bitcoin_price consolidation electrum_settings exchange import_watch_only_wallet labels onboarding quick_actions receive recoverbull send settings sp swap tor_settings transactions',
+  'wallet': 'announcements backup_settings bitcoin_price consolidation electrum_settings import_watch_only_wallet labels onboarding quick_actions receive recoverbull send settings sp swap tor_settings transactions',
   'withdraw': 'exchange recipients transactions',
   'wizard': 'exchange settings',
 };

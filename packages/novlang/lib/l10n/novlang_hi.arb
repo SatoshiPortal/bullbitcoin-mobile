@@ -230,5 +230,7 @@
   "app__exchangePaymentSentPastDeadline_apple": "भुगतान भेज दिया गया। Bull Bitcoin के अनुसार इस ऑर्डर के भुगतान की समय-सीमा समाप्त हो गई है। नीचे दिया गया लेनदेन ID सुरक्षित रखें और यदि ऑर्डर अपडेट न हो तो सपोर्ट से संपर्क करें।",
   "app__allSeedViewSwapMnemonicTitle_apple": "ट्रांसफ़र मेमोनिक",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "ट्रांसफ़र मेमोनिक हटाएं?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "यह ट्रांसफ़र मास्टर की को सुरक्षित स्टोरेज से हटा देता है। ऐप को अगली बार इसकी आवश्यकता होने पर यह आपके वॉलेट सीड से, उसी फ़िंगरप्रिंट के साथ, फिर से निकाली जाएगी। जारी ट्रांसफ़रों पर कोई असर नहीं पड़ेगा।"
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "यह ट्रांसफ़र मास्टर की को सुरक्षित स्टोरेज से हटा देता है। ऐप को अगली बार इसकी आवश्यकता होने पर यह आपके वॉलेट सीड से, उसी फ़िंगरप्रिंट के साथ, फिर से निकाली जाएगी। जारी ट्रांसफ़रों पर कोई असर नहीं पड़ेगा।",
+  "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "quick_actions__transfer_apple": "Transfer"
 }

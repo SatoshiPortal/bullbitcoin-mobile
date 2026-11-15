@@ -326,14 +326,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Madad Lo",
-  "@settingsGetHelpLabel": {
-    "description": "Label for the Get Help support chat link in settings"
-  },
   "settingsServiceStatusTitle": "Services Status",
   "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
@@ -11347,7 +11339,6 @@
   "settingsSearchLabelsKeywords": "wallet ke labels|transaction ke labels|BIP329|labels import karein|labels export karein",
   "settingsSearchTransactionHistoryKeywords": "transaction export karein|transaction history export karein|CSV|wallet history",
   "settingsSearchAppSettingsKeywords": "app preferences|application settings|general settings",
-  "settingsSearchBtcMapKeywords": "BTC Map|bitcoin ka naksha|merchant map|bitcoin kharch karne ki jagah",
   "settingsSearchTermsOfServiceKeywords": "niyam aur shartein|kanooni|user agreement|TOS",
   "settingsSearchServicesStatusKeywords": "service health|system status|online|service outage",
   "settingsSearchImportWalletKeywords": "wallet add karein|wallet recover karein|recovery phrase import karein|watch-only wallet|hardware wallet",
@@ -11590,5 +11581,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Yeh transaction pehle se hi blockchain mein hai. Broadcast karne ke liye kuch bhi baaki nahin hai.",
   "broadcastSignedTxErrorRejected": "Network ne is transaction ko reject kar diya. Yeh adhoora signed, invalid, ya kisi doosre payment se conflict mein ho sakta hai.",
   "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai.",
+  "settingsDarkModeTitle": "Dark mode",
+  "settingsSourceCodeTitle": "Source code"
 }

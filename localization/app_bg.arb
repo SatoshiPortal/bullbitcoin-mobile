@@ -1754,11 +1754,6 @@
       }
     }
   },
-  "settingsGithubLabel": "GitHub",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Получете помощ",
   "exchangeStatisticsOrderStats": "Статистика за поръчки",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -9156,7 +9151,6 @@
   "settingsSearchLabelsKeywords": "етикети на портфейла|етикети на транзакциите|BIP329|импортиране на етикети|експортиране на етикети",
   "settingsSearchTransactionHistoryKeywords": "експортиране на транзакции|експорт на транзакции|CSV|история на портфейла",
   "settingsSearchAppSettingsKeywords": "предпочитания на приложението|настройки на приложението|общи настройки",
-  "settingsSearchBtcMapKeywords": "BTC Map|биткойн карта|карта на търговците|места за плащане с биткойн",
   "settingsSearchTermsOfServiceKeywords": "общи условия|правна информация|потребителско споразумение|TOS",
   "settingsSearchServicesStatusKeywords": "състояние на услугите|системен статус|онлайн|прекъсване",
   "settingsSearchImportWalletKeywords": "добавяне на портфейл|възстановяване на портфейл|импортиране на мнемонична фраза|портфейл само за наблюдение|хардуерен портфейл",
@@ -9399,5 +9393,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Тази транзакция вече е в блокчейна. Няма какво повече да се излъчва.",
   "broadcastSignedTxErrorRejected": "Мрежата отхвърли тази транзакция. Възможно е да не е напълно подписана, да е невалидна или да е в конфликт с друго плащане.",
   "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки.",
+  "settingsDarkModeTitle": "Тъмен режим",
+  "settingsSourceCodeTitle": "Изходен код"
 }

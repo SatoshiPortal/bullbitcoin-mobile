@@ -18,6 +18,7 @@ class BullSettingsEntryItem extends StatelessWidget {
     this.isSuperUser = false,
     this.trailing,
     this.contentPadding,
+    this.leading,
   });
 
   /// Leading icon glyph.
@@ -47,6 +48,9 @@ class BullSettingsEntryItem extends StatelessWidget {
   /// Content padding override.
   final EdgeInsetsGeometry? contentPadding;
 
+  /// Leading widget drawn instead of [icon], for a glyph no icon font has.
+  final Widget? leading;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
@@ -61,7 +65,9 @@ class BullSettingsEntryItem extends StatelessWidget {
       ),
       tileColor: colors.transparent,
       contentPadding: contentPadding,
-      leading: Icon(effectiveIcon, color: effectiveIconColor),
+      leading: isSuperUser
+          ? Icon(effectiveIcon, color: effectiveIconColor)
+          : leading ?? Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,
         maxLines: 1,

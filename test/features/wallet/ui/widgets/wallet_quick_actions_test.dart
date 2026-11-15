@@ -46,7 +46,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Transfer'));
+      await tester.tap(find.text('Swap'));
       expect(selected, QuickAction.transfer);
       expect(find.text('Buy'), findsNothing);
       changes.add(true);
@@ -56,7 +56,7 @@ void main() {
       expect(find.text('Buy'), findsOneWidget);
       Navigator.of(tester.element(find.text('Buy'))).pop();
       await tester.pumpAndSettle();
-      expect(find.text('Transfer'), findsOneWidget);
+      expect(find.text('Swap'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
@@ -93,7 +93,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Buy'), findsNothing);
-    expect(find.text('Transfer'), findsOneWidget);
+    expect(find.text('Swap'), findsOneWidget);
     changes.add(true);
     await tester.pumpAndSettle();
     expect(find.text('Buy'), findsOneWidget);
