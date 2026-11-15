@@ -192,9 +192,8 @@ void main() {
       combinedCtDescriptor: 'ct(slip77(other),wpkh(public))',
     );
     var ran = false;
-    final result = await worker(
-      given: other,
-    ).sync(key, expectedGeneration: 1, operation: Sync((_) => ran = true));
+    final result = await worker(given: other)
+        .sync(key, expectedGeneration: 1, operation: Sync((_) => ran = true));
     expect(
       (result as Err<WriterOutcome, SyncFailure>).failure,
       isA<SyncInvalidCatalogFailure>(),

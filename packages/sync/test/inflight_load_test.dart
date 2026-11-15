@@ -8,6 +8,7 @@ import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 import 'support/projection_fakes.dart';
+
 import 'package:sync/src/data/freeze_authority.dart';
 
 /// A load whose mapping is suspended must not publish once a delete or a

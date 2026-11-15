@@ -26,9 +26,8 @@ void main() {
     repository = _MockWalletRepository();
     usecase = ImportWatchOnlyDescriptorUsecase(walletRepository: repository);
     descriptor = _MockDescriptor();
-    when(
-      () => descriptor.network,
-    ).thenReturn(satoshifier.Network.bitcoinMainnet);
+    when(() => descriptor.network)
+        .thenReturn(satoshifier.Network.bitcoinMainnet);
     final watchOnlyDescriptor = _MockWatchOnlyDescriptor();
     when(() => watchOnlyDescriptor.descriptor).thenReturn(descriptor);
     entity = WatchOnlyDescriptorEntity(
@@ -38,9 +37,8 @@ void main() {
 
   group('ImportWatchOnlyDescriptorUsecase', () {
     test('rejects Liquid descriptors before persistence', () async {
-      when(
-        () => descriptor.network,
-      ).thenReturn(satoshifier.Network.liquidMainnet);
+      when(() => descriptor.network)
+          .thenReturn(satoshifier.Network.liquidMainnet);
 
       final result = await usecase.execute(watchOnlyDescriptor: entity);
 
@@ -55,9 +53,8 @@ void main() {
     });
 
     test('maps an existing wallet to WalletAlreadyExistsFailure', () async {
-      when(
-        () => repository.importDescriptor(watchOnlyDescriptor: entity),
-      ).thenThrow(const WalletAlreadyExistsException('existing-wallet-id'));
+      when(() => repository.importDescriptor(watchOnlyDescriptor: entity))
+          .thenThrow(const WalletAlreadyExistsException('existing-wallet-id'));
 
       final result = await usecase.execute(watchOnlyDescriptor: entity);
 
@@ -70,9 +67,8 @@ void main() {
 
     test('maps a foreign repository failure to ImportFailedFailure '
         'without leaking the raw exception', () async {
-      when(
-        () => repository.importDescriptor(watchOnlyDescriptor: entity),
-      ).thenThrow(Exception('BDK: descriptor checksum mismatch 0xdeadbeef'));
+      when(() => repository.importDescriptor(watchOnlyDescriptor: entity))
+          .thenThrow(Exception('BDK: descriptor checksum mismatch 0xdeadbeef'));
 
       final result = await usecase.execute(watchOnlyDescriptor: entity);
 
@@ -85,9 +81,8 @@ void main() {
 
     test('returns Ok with the wallet on success', () async {
       final wallet = _MockWallet();
-      when(
-        () => repository.importDescriptor(watchOnlyDescriptor: entity),
-      ).thenAnswer((_) async => wallet);
+      when(() => repository.importDescriptor(watchOnlyDescriptor: entity))
+          .thenAnswer((_) async => wallet);
 
       final result = await usecase.execute(watchOnlyDescriptor: entity);
 

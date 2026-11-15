@@ -30,9 +30,8 @@ void main() {
     expect(cubit.state.failure, isA<SellNetworkFailure>());
     expect(cubit.state.availability, isNull);
 
-    when(
-      load.execute,
-    ).thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
+    when(load.execute)
+        .thenAnswer((_) async => const Ok(ConfidentialSepaAvailability.ready));
     await cubit.load();
     expect(cubit.state.availability, ConfidentialSepaAvailability.ready);
     expect(cubit.state.failure, isNull);

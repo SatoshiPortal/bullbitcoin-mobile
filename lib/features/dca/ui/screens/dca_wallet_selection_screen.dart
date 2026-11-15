@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_wallet_radio_list.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -133,14 +133,13 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                         onPressed: _useDefaultLightningAddress
                             ? null
                             : () {
-                                Clipboard.getData(Clipboard.kTextPlain).then((
-                                  value,
-                                ) {
-                                  if (value?.text != null) {
-                                    _lightningAddressController.text =
-                                        value!.text!;
-                                  }
-                                });
+                                Clipboard.getData(Clipboard.kTextPlain)
+                                    .then((value) {
+                                      if (value?.text != null) {
+                                        _lightningAddressController.text =
+                                            value!.text!;
+                                      }
+                                    });
                               },
                       ),
                     ),

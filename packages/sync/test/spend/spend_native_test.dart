@@ -192,9 +192,8 @@ void main() {
         .singleWhere(
           (output) =>
               output.scriptPubkey.length != script.length ||
-              !Iterable.generate(
-                script.length,
-              ).every((i) => output.scriptPubkey[i] == script[i]),
+              !Iterable.generate(script.length)
+                  .every((i) => output.scriptPubkey[i] == script[i]),
         )
         .scriptPubkey;
   }

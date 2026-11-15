@@ -1,4 +1,5 @@
 import '../lease_diagnostics.dart';
+
 import 'dart:io';
 
 import 'package:bull_sdk/bdk.dart' as bdk;
@@ -206,7 +207,7 @@ final class WalletSnapshotReader {
 
     if (state.lifecycle == WalletLifecycle.pendingWrite ||
         state.initializedSchema != requiredSchemaVersion) {
-      return busy(
+      return await busy(
         state.lifecycle == WalletLifecycle.pendingWrite
             ? LeaseBusySource.lifecycleGate
             : LeaseBusySource.schemaGate,
@@ -219,14 +220,14 @@ final class WalletSnapshotReader {
       {
         switch (await liquidAdmission.acquire(key)) {
           case Err(failure: SyncBusyFailure()):
-            return busy();
+            return await busy();
           case Err(:final failure):
             return Err(failure);
           case Ok(:final value):
             lease = value;
         }
         if (lease.revision.key != key || lease.revision != state.stamp) {
-          return busy(LeaseBusySource.revisionRead);
+          return await busy(LeaseBusySource.revisionRead);
         }
       }
       final stamp = lease.revision;
@@ -238,7 +239,7 @@ final class WalletSnapshotReader {
       if (readyResult case Err(:final failure)) {
         if (failure is SyncBusyFailure) {
           // Readiness owns the exact gate diagnostic.
-          return busy();
+          return await busy();
         }
         _cache.remove(key);
         return Err(failure);
@@ -246,7 +247,7 @@ final class WalletSnapshotReader {
       final ready = (readyResult as Ok<WalletReadReady, SyncFailure>).value;
       if (ready.revision != stamp ||
           ready.schemaVersion != requiredSchemaVersion) {
-        return busy(
+        return await busy(
           ready.revision != stamp
               ? LeaseBusySource.revisionRead
               : LeaseBusySource.schemaGate,
@@ -268,15 +269,15 @@ final class WalletSnapshotReader {
             ),
           );
         }
-        return busy(LeaseBusySource.revisionRead);
+        return await busy(LeaseBusySource.revisionRead);
       }
       final timer = Stopwatch()..start();
       final wallet = await hydrate(ready);
       unpublished = wallet;
       final after = await revisions.read(key);
-      if (after case Ok(
-        value: final next,
-      ) when next.lifecycle == WalletLifecycle.active && next.stamp == stamp) {
+      if (after case Ok(value: final next)
+          when next.lifecycle == WalletLifecycle.active &&
+              next.stamp == stamp) {
         log.fine(
           'Wallet reader hydrated: network=${key.network} '
           'generation=${stamp.generation} revision=${stamp.revision} '
@@ -296,10 +297,10 @@ final class WalletSnapshotReader {
         unpublished = null;
         return Ok(snapshot);
       }
-      return busy(LeaseBusySource.revisionRead);
+      return await busy(LeaseBusySource.revisionRead);
     } on _ReadFailure catch (e) {
       if (e.failure is SyncBusyFailure) {
-        return busy(LeaseBusySource.schemaGate);
+        return await busy(LeaseBusySource.schemaGate);
       }
       return Err(e.failure);
     } on FileSystemException {
@@ -406,9 +407,8 @@ final class WalletSnapshotReader {
     // Never derive it by calling Wallet.init on an absent directory.
     final relative = ready.liquidCachePath;
     if (relative == null ||
-        !RegExp(
-          r'^[a-zA-Z0-9_-]+/enc_cache/[a-fA-F0-9]+$',
-        ).hasMatch(relative)) {
+        !RegExp(r'^[a-zA-Z0-9_-]+/enc_cache/[a-fA-F0-9]+$')
+            .hasMatch(relative)) {
       throw const _ReadFailure(SyncBusyFailure());
     }
     var checked = source;

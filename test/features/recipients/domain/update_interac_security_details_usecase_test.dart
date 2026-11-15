@@ -17,21 +17,17 @@ void main() {
   setUp(() {
     repository = _MockInteracSecurityDetailsRepository();
     usecase = UpdateInteracSecurityDetailsUsecase(repository);
-    details =
-        (InteracSecurityDetails.create(
-                  recipientId: 'recipient-1',
-                  email: 'person@example.com',
-                  securityQuestion: 'Favourite city?',
-                  securityAnswer: 'Montreal',
-                )
-                as Ok<InteracSecurityDetails, RecipientsFailure>)
-            .value;
+    details = (InteracSecurityDetails.create(
+      recipientId: 'recipient-1',
+      email: 'person@example.com',
+      securityQuestion: 'Favourite city?',
+      securityAnswer: 'Montreal',
+    ) as Ok<InteracSecurityDetails, RecipientsFailure>).value;
   });
 
   test('forwards the update result from the repository', () async {
-    when(
-      () => repository.update(details),
-    ).thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
+    when(() => repository.update(details))
+        .thenAnswer((_) async => const Ok<void, RecipientsFailure>(null));
 
     final result = await usecase.execute(details);
 
@@ -40,9 +36,8 @@ void main() {
   });
 
   test('forwards a repository failure untouched', () async {
-    when(
-      () => repository.update(details),
-    ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+    when(() => repository.update(details))
+        .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
 
     final result = await usecase.execute(details);
 

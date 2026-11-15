@@ -331,9 +331,8 @@ void _stubSuccessfulCreation(
       outNetwork: OrderSwapNetwork.liquid,
     ),
   ).thenAnswer((_) async => Ok(_quote()));
-  when(
-    () => getReceiveAddress.execute(walletId: 'wallet-1', generateNew: true),
-  ).thenAnswer((_) async => _address());
+  when(() => getReceiveAddress.execute(walletId: 'wallet-1', generateNew: true))
+      .thenAnswer((_) async => _address());
   when(
     () => swapFacade.createOrder(
       amountSat: BigInt.from(100000),
@@ -402,13 +401,12 @@ OrderSwapRecord _record({DateTime? confirmationDeadline}) => OrderSwapRecord(
 
 Bolt11PaymentRequest _invoice({int amountSat = 100000, int? expiresAt}) =>
     PaymentRequest.bolt11(
-          invoice: 'lntb-invoice',
-          amountSat: amountSat,
-          paymentHash: 'hash',
-          expiresAt: expiresAt ?? 2000000000,
-          isTestnet: true,
-        )
-        as Bolt11PaymentRequest;
+      invoice: 'lntb-invoice',
+      amountSat: amountSat,
+      paymentHash: 'hash',
+      expiresAt: expiresAt ?? 2000000000,
+      isTestnet: true,
+    ) as Bolt11PaymentRequest;
 
 Wallet _wallet(Network network) => Wallet(
   origin: 'wallet-1',

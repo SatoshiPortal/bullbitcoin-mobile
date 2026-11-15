@@ -39,9 +39,9 @@ void main() {
     return path;
   }
 
-  String readLocale(String locale) => File(
-    p.join(tmp.path, 'localization', 'app_$locale.arb'),
-  ).readAsStringSync();
+  String readLocale(String locale) =>
+      File(p.join(tmp.path, 'localization', 'app_$locale.arb'))
+          .readAsStringSync();
 
   /// Runs the tool with [args] in the fixture dir. Uses the Dart VM directly
   /// (no `dart run`) so there are no per-call package build hooks — fast and

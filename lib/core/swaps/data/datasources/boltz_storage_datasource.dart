@@ -214,11 +214,9 @@ class BoltzStorageDatasource {
     BoltzNetwork network, {
     required String walletFingerprint,
   }) async {
-    final jsonString =
-        await _secureSwapStorage.getValue(
-              _swapMasterKeyStorageKey(network, walletFingerprint),
-            )
-            as String;
+    final jsonString = await _secureSwapStorage.getValue(
+      _swapMasterKeyStorageKey(network, walletFingerprint),
+    ) as String;
     return SwapMasterKeyModel.fromJson(
       jsonDecode(jsonString) as Map<String, dynamic>,
     );

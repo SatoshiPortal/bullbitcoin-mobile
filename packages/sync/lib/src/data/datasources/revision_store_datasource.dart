@@ -1,9 +1,11 @@
 import 'dart:io';
+
 import '../store_identity.dart';
 
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart';
+
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/wallet_key.dart';
 import '../../domain/wallet_revision.dart';
@@ -78,7 +80,7 @@ final class RevisionStoreDatasource {
       }
       return RevisionStoreDatasource._(db);
     } on Object {
-      db.dispose();
+      db.close();
       rethrow;
     }
   }
@@ -98,10 +100,10 @@ final class RevisionStoreDatasource {
       _configure(db);
       return RevisionStoreDatasource._(db);
     } on SqliteException {
-      db?.dispose();
+      db?.close();
       throw const RevisionStoreUnavailable();
     } on Object {
-      db?.dispose();
+      db?.close();
       rethrow;
     }
   }
@@ -332,7 +334,7 @@ final class RevisionStoreDatasource {
     return state;
   }
 
-  void close() => _db.dispose();
+  void close() => _db.close();
 }
 
 /// Missing, or at a version this build neither creates nor migrates.

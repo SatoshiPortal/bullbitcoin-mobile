@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';

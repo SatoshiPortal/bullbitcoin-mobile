@@ -10,9 +10,12 @@ import 'package:sync/sync.dart'
         SyncProtectedInputsFailure,
         SyncSpendBlockedFailure,
         UnsignedSpend;
+
 import '../domain/wallet_spend_failure.dart';
+
 import 'package:sync/sync.dart' show validateAddress;
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
+
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -192,14 +195,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              network: metadata.network,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      externalDescriptor: metadata.externalPublicDescriptor,
+      internalDescriptor: metadata.internalPublicDescriptor,
+      network: metadata.network,
+      id: metadata.id,
+    ) as PublicBdkWalletModel;
 
     final isFromWallet = await _values.isMine(script, wallet: wallet);
 
@@ -221,14 +222,12 @@ class BitcoinWalletRepository implements BitcoinSendPort {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet =
-        WalletModel.publicBdk(
-              externalDescriptor: metadata.externalPublicDescriptor,
-              internalDescriptor: metadata.internalPublicDescriptor,
-              network: metadata.network,
-              id: metadata.id,
-            )
-            as PublicBdkWalletModel;
+    final wallet = WalletModel.publicBdk(
+      externalDescriptor: metadata.externalPublicDescriptor,
+      internalDescriptor: metadata.internalPublicDescriptor,
+      network: metadata.network,
+      id: metadata.id,
+    ) as PublicBdkWalletModel;
 
     final isFromWallet = await _values.areAddressesMine(
       addresses,

@@ -1,5 +1,7 @@
 import '../lease_diagnostics.dart';
+
 import 'package:primitives/primitives.dart';
+
 import '../../domain/sync_failure.dart';
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/wallet_revision.dart';

@@ -76,8 +76,7 @@ void main() {
     final cases = <(Object, SyncFailure)>[
       (
         const lwk.LwkError(
-          msg:
-              'ClientError(Protocol(Object {"code": Number(2), "message": String("sendrawtransaction RPC error -26: refused")}))',
+          msg: 'ClientError(Protocol(Object {"code": Number(2), "message": String("sendrawtransaction RPC error -26: refused")}))',
         ),
         rejected,
       ),
@@ -89,15 +88,13 @@ void main() {
       ),
       (
         const lwk.LwkError(
-          msg:
-              'ClientError(Protocol(Object {"code": Number(-26), "message": String("x")}))',
+          msg: 'ClientError(Protocol(Object {"code": Number(-26), "message": String("x")}))',
         ),
         rejected,
       ),
       (
         const lwk.LwkError(
-          msg:
-              'ClientError(IOError(Custom { kind: TimedOut, error: "private.invalid" }))',
+          msg: 'ClientError(IOError(Custom { kind: TimedOut, error: "private.invalid" }))',
         ),
         connection,
       ),
@@ -113,8 +110,7 @@ void main() {
       ),
       (
         const lwk.LwkError(
-          msg:
-              'ClientError(Protocol(Object {"code": Number(-25), "message": String("Number(-26)")}))',
+          msg: 'ClientError(Protocol(Object {"code": Number(-25), "message": String("Number(-26)")}))',
         ),
         unknown,
       ),

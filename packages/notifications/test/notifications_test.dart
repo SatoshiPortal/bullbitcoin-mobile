@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -68,12 +69,9 @@ void main() {
   setUp(() {
     directory = Directory.systemTemp.createTempSync('notifications_test_');
     log = Logger.replace(directory: directory);
-    outbox =
-        (openForegroundNotificationStore(
-                  '${directory.path}/notifications.sqlite',
-                )
-                as Ok<NotificationStoreRepository, NotificationsFailure>)
-            .value;
+    outbox = (openForegroundNotificationStore(
+      '${directory.path}/notifications.sqlite',
+    ) as Ok<NotificationStoreRepository, NotificationsFailure>).value;
   });
 
   tearDown(() async {

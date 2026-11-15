@@ -50,7 +50,7 @@ void main() {
         final database = sqlite3.open(path);
         database.execute('CREATE TABLE previous (id INTEGER)');
         database.execute('PRAGMA user_version = $version');
-        database.dispose();
+        database.close();
       }
       final before = [
         for (final path in [queuePath(), storePath()])

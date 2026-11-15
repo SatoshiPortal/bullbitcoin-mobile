@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A settings-list row: leading icon, title, trailing chevron.
 ///
@@ -66,9 +66,8 @@ class BullSettingsEntryItem extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyLarge?.copyWith(color: textColor ?? colors.onSurface),
+        style: Theme.of(context).textTheme.bodyLarge
+            ?.copyWith(color: textColor ?? colors.onSurface),
       ),
       subtitle: subtitle == null
           ? null
@@ -76,9 +75,8 @@ class BullSettingsEntryItem extends StatelessWidget {
               subtitle!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.textMuted),
             ),
       trailing: trailing ?? const Icon(Icons.chevron_right),
       onTap: onTap,

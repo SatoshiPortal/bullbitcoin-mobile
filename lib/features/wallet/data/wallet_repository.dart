@@ -3,7 +3,9 @@ import 'package:sync/diagnostics.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:primitives/primitives.dart' show Err, Fingerprint, Ok, Result;
 import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
+
 import 'dart:async';
+
 import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
 import 'package:sync/sync.dart' show WalletSnapshotException;
 import 'package:sync/sync.dart'

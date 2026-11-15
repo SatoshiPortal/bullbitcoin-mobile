@@ -9,6 +9,7 @@ import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:payjoin/payjoin.dart' as pdk;
 import 'package:test/test.dart';
+
 import 'support/test_codec.dart';
 
 // Public ORIGINAL_PSBT and OHTTP key fixtures from payjoin-test-utils.

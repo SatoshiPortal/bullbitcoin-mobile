@@ -49,18 +49,14 @@ void main() {
       ExchangeUserRepositoryImpl(bullbitcoinApiDatasource: api);
 
   void givenSignedOut() {
-    when(
-      () => api.getUserSummary(),
-    ).thenThrow(const ExchangeAuthenticationException());
-    when(
-      () => api.listAnnouncements(),
-    ).thenThrow(const ExchangeAuthenticationException());
-    when(
-      () => api.registerResponsibilityConsent(),
-    ).thenThrow(const ExchangeAuthenticationException());
-    when(
-      () => api.saveUserPreference(params: any(named: 'params')),
-    ).thenThrow(const ExchangeAuthenticationException());
+    when(() => api.getUserSummary())
+        .thenThrow(const ExchangeAuthenticationException());
+    when(() => api.listAnnouncements())
+        .thenThrow(const ExchangeAuthenticationException());
+    when(() => api.registerResponsibilityConsent())
+        .thenThrow(const ExchangeAuthenticationException());
+    when(() => api.saveUserPreference(params: any(named: 'params')))
+        .thenThrow(const ExchangeAuthenticationException());
   }
 
   setUp(() {
@@ -159,9 +155,8 @@ void main() {
 
   group('saveUserPreference', () {
     test('a throwing datasource becomes a sanitized failure', () async {
-      when(
-        () => api.saveUserPreference(params: any(named: 'params')),
-      ).thenThrow(Exception(_rawReason));
+      when(() => api.saveUserPreference(params: any(named: 'params')))
+          .thenThrow(Exception(_rawReason));
 
       final failure = _failureOf(
         await build().saveUserPreference(language: 'en'),
@@ -183,9 +178,8 @@ void main() {
 
   group('registerScamWarningConsent', () {
     test('a throwing datasource becomes a sanitized failure', () async {
-      when(
-        () => api.registerResponsibilityConsent(),
-      ).thenThrow(Exception(_rawReason));
+      when(() => api.registerResponsibilityConsent())
+          .thenThrow(Exception(_rawReason));
 
       final failure = _failureOf(await build().registerScamWarningConsent());
 

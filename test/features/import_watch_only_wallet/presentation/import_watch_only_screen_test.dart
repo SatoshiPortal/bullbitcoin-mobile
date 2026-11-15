@@ -7,10 +7,10 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xp
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -28,9 +28,8 @@ void main() {
         // Published BIP84 test account, as entered in the FIX device campaign.
         const vpub =
             'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc';
-        final wallet = (await WatchOnlyWalletEntity.parse(
-          vpub,
-        )).copyWith(label: labelCorrection ? '' : 'NeverScanned');
+        final wallet = (await WatchOnlyWalletEntity.parse(vpub))
+            .copyWith(label: labelCorrection ? '' : 'NeverScanned');
         final settings = _Settings();
         final importer = _Xpub();
         when(settings.fetch).thenAnswer(
@@ -54,7 +53,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: ImportWatchOnlyScreen(watchOnlyWallet: wallet),
           ),

@@ -9,9 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2621 custom server replacement', () {
     test('storage path atomically replaces the old URL row', () {
-      final table = File(
-        'lib/core/storage/tables/mempool_servers_table.dart',
-      ).readAsStringSync();
+      final table = File('lib/core/storage/tables/mempool_servers_table.dart')
+          .readAsStringSync();
       final datasource = File(
         'lib/core/mempool/frameworks/drift/datasources/'
         'mempool_server_storage_datasource.dart',

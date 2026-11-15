@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failur
 import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_state.dart';
 import 'package:bb_mobile/features/limit_orders/ui/limit_orders_router.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 

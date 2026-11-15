@@ -68,9 +68,8 @@ void main() {
     test('returns an unreadable entry beside readable secrets', () async {
       // R6's last item: a shorter list must never look like a smaller
       // keystore. One good entry, one value under the prefix that is not ours.
-      FakeSecureStoragePlatform(
-        entries: {'seed_deadbeef': 'not json at all'},
-      ).install();
+      FakeSecureStoragePlatform(entries: {'seed_deadbeef': 'not json at all'})
+          .install();
       secrets = Secrets(scratchDirectory: () async => '/tmp');
       usecase = GetAllSecretsUsecase(secrets: secrets);
       expect(

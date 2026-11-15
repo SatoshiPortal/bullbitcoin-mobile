@@ -39,18 +39,16 @@ void main() {
     });
 
     test('forwards the id when the core use-case answers', () async {
-      when(
-        () => getUserSummaryUsecase.execute(),
-      ).thenAnswer((_) async => _userSummary);
+      when(() => getUserSummaryUsecase.execute())
+          .thenAnswer((_) async => _userSummary);
 
       expect((await usecase.execute() as Ok).value, 'user-1');
     });
 
     test('a raw throw never escapes: it becomes the catch-all failure and the '
         'reason stays in logMessage', () async {
-      when(
-        () => getUserSummaryUsecase.execute(),
-      ).thenThrow(Exception('token=SECRET at host=internal.bull'));
+      when(() => getUserSummaryUsecase.execute())
+          .thenThrow(Exception('token=SECRET at host=internal.bull'));
 
       final failure = (await usecase.execute() as Err).failure;
 

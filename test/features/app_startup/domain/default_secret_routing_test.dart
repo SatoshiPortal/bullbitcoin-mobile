@@ -204,9 +204,8 @@ void main() {
         entries: {'seed_$fingerprint': entry},
       );
       storage.install();
-      final fallback = await Secrets(
-        scratchDirectory: () async => '/tmp',
-      ).fetch(Fingerprint(fingerprint));
+      final fallback = await Secrets(scratchDirectory: () async => '/tmp')
+          .fetch(Fingerprint(fingerprint));
       registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
       onRegtest([wallet(Network.bitcoinRegtest)]);
       when(
@@ -300,25 +299,21 @@ void main() {
     );
   });
 
-  test(
-    'an absent seed names the wallet and asks for a restore',
-    () async {
-      // The fss9 cohort: metadata survived, the entry did not.
-      final usecase = usecaseOn(FakeSecureStoragePlatform());
+  test('an absent seed names the wallet and asks for a restore', () async {
+    // The fss9 cohort: metadata survived, the entry did not.
+    final usecase = usecaseOn(FakeSecureStoragePlatform());
 
-      expect(
-        await usecase.execute(),
-        isA<Err<bool, AppStartupFailure>>().having(
-          (r) => r.failure,
-          'failure',
-          isA<AppStartupMissingDefaultSecretFailure>()
-              .having((f) => f.logMessage, 'logMessage', fingerprint)
-              .having((f) => f.walletId, 'walletId', 'origin-bitcoinMainnet'),
-        ),
-      );
-    },
-    timeout: const Timeout(Duration(seconds: 30)),
-  );
+    expect(
+      await usecase.execute(),
+      isA<Err<bool, AppStartupFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<AppStartupMissingDefaultSecretFailure>()
+            .having((f) => f.logMessage, 'logMessage', fingerprint)
+            .having((f) => f.walletId, 'walletId', 'origin-bitcoinMainnet'),
+      ),
+    );
+  }, timeout: const Timeout(Duration(seconds: 30)));
 
   test(
     'a missing Liquid secret identifies the Bitcoin default in its environment',

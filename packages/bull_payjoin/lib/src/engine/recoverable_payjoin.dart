@@ -5,6 +5,7 @@ import '../domain/payjoin_session.dart';
 import '../public/payjoin.dart';
 import '../public/payjoin_lifecycle.dart';
 import '../public/payjoin_roles.dart';
+
 import 'package:primitives/primitives.dart';
 
 typedef PayjoinLifecycleOpener =

@@ -44,7 +44,7 @@ final class ElectrumCacheDatasource {
         );
         return ElectrumCacheDatasource._(db, rebuilt: attempt > 0);
       } catch (_) {
-        db?.dispose();
+        db?.close();
         _deleteFiles(path);
       }
     }
@@ -111,11 +111,11 @@ final class ElectrumCacheDatasource {
         rethrow;
       }
     } finally {
-      insert.dispose();
+      insert.close();
     }
   }
 
-  void close() => _db.dispose();
+  void close() => _db.close();
 
   static void _deleteFiles(String path) {
     for (final suffix in const ['', '-journal', '-wal', '-shm']) {

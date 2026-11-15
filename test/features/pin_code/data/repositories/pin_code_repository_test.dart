@@ -12,9 +12,8 @@ class MockKeyValueStorage extends Mock
 void main() {
   test('maps a locked keychain to PinCodeKeychainLockedFailure', () async {
     final storage = MockKeyValueStorage();
-    when(
-      () => storage.getValue(any()),
-    ).thenThrow(const KeychainLockedException());
+    when(() => storage.getValue(any()))
+        .thenThrow(const KeychainLockedException());
     final repository = PinCodeRepository(storage);
 
     final result = await repository.isPinCodeSet();

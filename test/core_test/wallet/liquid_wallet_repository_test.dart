@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+
 import 'dart:io';
+
 import 'package:sync/sync.dart'
     show
         SyncConsolidationRequiredFailure,
@@ -168,9 +170,8 @@ void main() {
   });
 
   test('does not sign a PSET that spends a newly frozen coin', () async {
-    when(
-      () => frozen.getFrozenOutpoints(),
-    ).thenAnswer((_) async => {(txId: first.txId, vout: first.vout)});
+    when(() => frozen.getFrozenOutpoints())
+        .thenAnswer((_) async => {(txId: first.txId, vout: first.vout)});
     when(() => lwk.getPsetInputs('pset')).thenReturn({first});
     await expectLater(
       repository.signPset(pset: 'pset', walletId: walletId),

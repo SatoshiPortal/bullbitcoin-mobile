@@ -52,9 +52,8 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     // The receiver's own input in a payjoin proposal carries no derivation
     // path, and the package signs only what it can derive: sync adds the
     // paths first, from the public descriptors.
-    final annotated = switch (await (await _wallet(
-      walletId,
-    )).tx.annotate(psbt)) {
+    final annotated = switch (await (await _wallet(walletId)).tx
+        .annotate(psbt)) {
       Ok(:final value) => value,
       Err(:final failure) => throw StateError('sync: ${failure.logCode}'),
     };

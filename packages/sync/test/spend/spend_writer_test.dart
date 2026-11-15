@@ -399,14 +399,8 @@ void main() {
       ]);
       expect(
         (err(
-                  await stores.spend.build(
-                    key,
-                    generation(key),
-                    pay(selected: [_a]),
-                  ),
-                )
-                as SyncProtectedInputsFailure)
-            .reserved,
+          await stores.spend.build(key, generation(key), pay(selected: [_a])),
+        ) as SyncProtectedInputsFailure).reserved,
         {_a},
       );
       expect(

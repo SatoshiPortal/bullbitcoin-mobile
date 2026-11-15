@@ -8,10 +8,10 @@ import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,7 +54,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
@@ -139,7 +139,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: BlocProvider.value(
             value: bloc,
@@ -202,7 +202,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
@@ -231,9 +231,8 @@ void main() {
     );
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
-    verify(
-      () => scan.execute(words: ['abandon'], passphrase: ' pass '),
-    ).called(2);
+    verify(() => scan.execute(words: ['abandon'], passphrase: ' pass '))
+        .called(2);
     await tester.tap(find.text('Continue without checking'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -268,7 +267,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
@@ -328,7 +327,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider.value(
           value: bloc,
@@ -350,9 +349,8 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     );
-    verify(
-      () => recover.execute(mnemonicWords: ['abandon'], passphrase: ''),
-    ).called(1);
+    verify(() => recover.execute(mnemonicWords: ['abandon'], passphrase: ''))
+        .called(1);
     expect(find.textContaining('This wallet looks empty'), findsNothing);
     recovery.complete(const Err(OnboardingWalletSetupFailure()));
     await tester.pump();

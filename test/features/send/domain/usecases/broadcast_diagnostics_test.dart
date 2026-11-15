@@ -1,6 +1,8 @@
 import '../../../../frozen_outpoints_fixture.dart';
+
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:primitives/primitives.dart' hide Network;
+
 import 'dart:io';
 
 import 'package:bb_mobile/features/send/data/liquid_blockchain_repository_impl.dart';
@@ -117,116 +119,114 @@ void main() {
   for (final feature in ['sell', 'pay']) {
     for (final chain in ['bitcoin', 'liquid']) {
       for (final category in ['rejected', 'connection', 'unexpected']) {
-        test(
-          '$feature $chain preserves $category through Send and fallback',
-          () async {
-            final directory = await Directory.systemTemp.createTemp(
-              'payin-log-',
-            );
-            final reporter = _Reporter();
-            log = Logger.replace(directory: directory, reporter: reporter);
-            addTearDown(() async {
-              await log.flush();
-              log = Logger.replace(directory: Directory.current);
-              await directory.delete(recursive: true);
-            });
-            final settings = _Settings();
-            when(settings.fetch).thenAnswer(
-              (_) async => const SettingsEntity(
-                environment: Environment.mainnet,
-                bitcoinUnit: BitcoinUnit.sats,
-                currencyCode: 'USD',
-              ),
-            );
-            // What sync reports once every server failed; the native causes and
-            // their text never leave sync.
-            final SyncFailure failure = switch (category) {
-              'rejected' => const SyncBroadcastRejectedFailure(),
-              'connection' => const SyncConnectionFailure(),
-              _ => const SyncOutcomeUnknownFailure(),
-            };
-            final connections = _Failing(failure);
-            final bitcoin = BitcoinBlockchainRepository(
-              connections: connections,
-            );
-            final liquid = LiquidBlockchainRepositoryImpl(
-              connections: connections,
-            );
-            final btc = BroadcastBitcoinTransactionUsecase(
-              wallet: WalletFacade(
-                const Stream.empty(),
-                // Sync broadcasts a wallet's spend and reports the same
-                // failure the servers gave.
-                broadcastSpend:
-                    (_, _, {required network, built, owner, replacing}) async =>
-                        Err(failure),
-              ),
-              bitcoinBlockchainRepository: bitcoin,
-              walletUtxoRepository: EmptyFrozenOutpoints(),
-              settingsRepository: settings,
-            );
-            final lbtc = BroadcastLiquidTransactionUsecase(
-              liquidBlockchainRepository: liquid,
-              settingsRepository: settings,
-            );
-            const wallet = WalletFacade(Stream.empty());
-            if (feature == 'sell') {
-              final usecase = BroadcastSellPayinUsecase(
-                wallet: wallet,
-                send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
-              );
-              if (chain == 'bitcoin') {
-                expect(
-                  await usecase.bitcoin(
-                    _signedPublicTest,
-                    walletId: 'source',
-                    isPsbt: true,
-                    network: Network.bitcoinMainnet,
-                  ),
-                  isA<Err>(),
-                );
-              } else {
-                expect(
-                  await usecase.liquid(_signedPublicTest, walletId: 'source'),
-                  isA<Err>(),
-                );
-              }
-            } else {
-              final usecase = BroadcastPayPayinUsecase(
-                wallet: wallet,
-                send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
-              );
-              if (chain == 'bitcoin') {
-                expect(
-                  await usecase.bitcoin(
-                    _signedPublicTest,
-                    walletId: 'source',
-                    isPsbt: true,
-                    network: Network.bitcoinMainnet,
-                  ),
-                  isA<Err>(),
-                );
-              } else {
-                expect(
-                  await usecase.liquid(_signedPublicTest, walletId: 'source'),
-                  isA<Err>(),
-                );
-              }
-            }
+        test('$feature $chain preserves $category through Send and fallback', () async {
+          final directory = await Directory.systemTemp.createTemp('payin-log-');
+          final reporter = _Reporter();
+          log = Logger.replace(directory: directory, reporter: reporter);
+          addTearDown(() async {
             await log.flush();
-            final disk = await log.logsFile.readAsString();
-            expect(
-              disk,
-              contains(
-                '\tWARNING\t${feature}_payin_broadcast_failed chain=$chain category=$category\t',
-              ),
+            log = Logger.replace(directory: Directory.current);
+            await directory.delete(recursive: true);
+          });
+          final settings = _Settings();
+          when(settings.fetch).thenAnswer(
+            (_) async => const SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
+          );
+          // What sync reports once every server failed; the native causes and
+          // their text never leave sync.
+          final SyncFailure failure = switch (category) {
+            'rejected' => const SyncBroadcastRejectedFailure(),
+            'connection' => const SyncConnectionFailure(),
+            _ => const SyncOutcomeUnknownFailure(),
+          };
+          final connections = _Failing(failure);
+          final bitcoin = BitcoinBlockchainRepository(connections: connections);
+          final liquid = LiquidBlockchainRepositoryImpl(
+            connections: connections,
+          );
+          final btc = BroadcastBitcoinTransactionUsecase(
+            wallet: WalletFacade(
+              const Stream.empty(),
+              // Sync broadcasts a wallet's spend and reports the same
+              // failure the servers gave.
+              broadcastSpend: (
+                _,
+                _, {
+                required network,
+                built,
+                owner,
+                replacing,
+              }) async => Err(failure),
+            ),
+            bitcoinBlockchainRepository: bitcoin,
+            walletUtxoRepository: EmptyFrozenOutpoints(),
+            settingsRepository: settings,
+          );
+          final lbtc = BroadcastLiquidTransactionUsecase(
+            liquidBlockchainRepository: liquid,
+            settingsRepository: settings,
+          );
+          const wallet = WalletFacade(Stream.empty());
+          if (feature == 'sell') {
+            final usecase = BroadcastSellPayinUsecase(
+              wallet: wallet,
+              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
             );
-            // A wallet's Bitcoin spend is broadcast by sync, behind the
-            // facade; Liquid here goes through the app's servers.
-            expect(connections.runs, chain == 'liquid' ? 1 : 0);
-            verifyZeroInteractions(reporter);
-          },
-        );
+            if (chain == 'bitcoin') {
+              expect(
+                await usecase.bitcoin(
+                  _signedPublicTest,
+                  walletId: 'source',
+                  isPsbt: true,
+                  network: Network.bitcoinMainnet,
+                ),
+                isA<Err>(),
+              );
+            } else {
+              expect(
+                await usecase.liquid(_signedPublicTest, walletId: 'source'),
+                isA<Err>(),
+              );
+            }
+          } else {
+            final usecase = BroadcastPayPayinUsecase(
+              wallet: wallet,
+              send: SendFacade(bitcoin: btc.execute, liquid: lbtc.execute),
+            );
+            if (chain == 'bitcoin') {
+              expect(
+                await usecase.bitcoin(
+                  _signedPublicTest,
+                  walletId: 'source',
+                  isPsbt: true,
+                  network: Network.bitcoinMainnet,
+                ),
+                isA<Err>(),
+              );
+            } else {
+              expect(
+                await usecase.liquid(_signedPublicTest, walletId: 'source'),
+                isA<Err>(),
+              );
+            }
+          }
+          await log.flush();
+          final disk = await log.logsFile.readAsString();
+          expect(
+            disk,
+            contains(
+              '\tWARNING\t${feature}_payin_broadcast_failed chain=$chain category=$category\t',
+            ),
+          );
+          // A wallet's Bitcoin spend is broadcast by sync, behind the
+          // facade; Liquid here goes through the app's servers.
+          expect(connections.runs, chain == 'liquid' ? 1 : 0);
+          verifyZeroInteractions(reporter);
+        });
       }
     }
   }

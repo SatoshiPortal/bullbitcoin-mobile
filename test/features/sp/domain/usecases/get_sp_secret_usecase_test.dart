@@ -31,18 +31,15 @@ void main() {
             final secret = (imported as Ok<Secret, SecretFailure>).value;
             final mainnet = _Wallet();
             final testnet = _Wallet();
-            when(
-              () => mainnet.network,
-            ).thenReturn(wallet_model.Network.bitcoinMainnet);
-            when(
-              () => testnet.network,
-            ).thenReturn(wallet_model.Network.bitcoinTestnet);
+            when(() => mainnet.network)
+                .thenReturn(wallet_model.Network.bitcoinMainnet);
+            when(() => testnet.network)
+                .thenReturn(wallet_model.Network.bitcoinTestnet);
             final selected = network == BitcoinNetwork.mainnet
                 ? mainnet
                 : testnet;
-            when(
-              () => selected.masterFingerprint,
-            ).thenReturn(secret.info.id.hex);
+            when(() => selected.masterFingerprint)
+                .thenReturn(secret.info.id.hex);
             final repository = _WalletRepository();
             when(
               () =>

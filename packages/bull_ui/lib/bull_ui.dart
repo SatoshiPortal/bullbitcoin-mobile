@@ -94,7 +94,7 @@ export 'package:flutter/widgets.dart'
         WrapCrossAlignment;
 
 // Material/services symbols required by component public APIs.
-export 'package:flutter/material.dart'
+export 'package:material_ui/material_ui.dart'
     show
         DropdownMenuItem,
         FormFieldValidator,

@@ -18,10 +18,12 @@ final backgroundRunBudget = Platform.isIOS
 
 typedef BackgroundTaskHandler =
     Future<BackgroundTaskExecutionResult> Function();
-typedef BackgroundTaskSetup =
-    Future<BackgroundTaskHandler> Function(BackgroundTaskResources resources);
-typedef BackgroundTaskBootstrap =
-    Future<BackgroundTaskRunner> Function(BackgroundTask task);
+typedef BackgroundTaskSetup = Future<BackgroundTaskHandler> Function(
+  BackgroundTaskResources resources,
+);
+typedef BackgroundTaskBootstrap = Future<BackgroundTaskRunner> Function(
+  BackgroundTask task,
+);
 
 /// The shell owns the top-level entry point and supplies a fresh bootstrap for
 /// every isolate. No package singleton is shared across WorkManager isolates.

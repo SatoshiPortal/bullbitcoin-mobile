@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:sqlite3/sqlite3.dart';
+
 import '../../domain/public_wallet_descriptor.dart';
 import '../../domain/wallet_key.dart';
 import '../store_identity.dart';
@@ -24,7 +25,7 @@ final class SpendGateStoreDatasource {
       }
       return SpendGateStoreDatasource._(db);
     } on Exception {
-      db?.dispose();
+      db?.close();
       // Do not let revision-store recovery quarantine the wrong database.
       throw const BitcoinSpendGateUnavailable();
     }
@@ -64,7 +65,7 @@ final class SpendGateStoreDatasource {
     } on Exception {
       throw const BitcoinSpendGateUnavailable();
     } finally {
-      db?.dispose();
+      db?.close();
     }
   }
 
@@ -177,7 +178,7 @@ final class SpendGateStoreDatasource {
     }
   }
 
-  void close() => _db.dispose();
+  void close() => _db.close();
 }
 
 final class BitcoinSpendGateUnavailable implements Exception {

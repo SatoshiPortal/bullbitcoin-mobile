@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
+
 import '../../domain/sync_failure.dart';
 import '../../domain/public_wallet_descriptor.dart';
 

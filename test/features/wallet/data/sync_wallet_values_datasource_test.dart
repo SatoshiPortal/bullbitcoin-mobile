@@ -21,10 +21,10 @@ void main() {
   );
   // BIP173 test vector: a testnet P2WPKH address.
   const address = 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx';
-  final script =
-      (sync.bitcoinAddressScript(address, BitcoinNetwork.testnet)
-              as Ok<Uint8List, sync.SyncFailure>)
-          .value;
+  final script = (sync.bitcoinAddressScript(
+    address,
+    BitcoinNetwork.testnet,
+  ) as Ok<Uint8List, sync.SyncFailure>).value;
 
   sync.BitcoinOutput output(
     int vout,

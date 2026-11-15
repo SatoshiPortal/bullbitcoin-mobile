@@ -20,9 +20,8 @@ void main() {
   setUp(() {
     dismissalRepository = _MockDismissalRepository();
     swapFacade = _MockSwapFacade();
-    when(
-      () => dismissalRepository.getDismissals(),
-    ).thenAnswer((_) async => const []);
+    when(() => dismissalRepository.getDismissals())
+        .thenAnswer((_) async => const []);
     when(() => swapFacade.isAppUpdateRequired).thenReturn(false);
     usecase = GetVisibleAnnouncementsUsecase(dismissalRepository, swapFacade);
   });
@@ -52,9 +51,8 @@ void main() {
   });
 
   test('returns a failure when the dismissals source throws', () async {
-    when(
-      () => dismissalRepository.getDismissals(),
-    ).thenThrow(Exception('boom'));
+    when(() => dismissalRepository.getDismissals())
+        .thenThrow(Exception('boom'));
 
     final result = await usecase.execute();
 

@@ -8,6 +8,7 @@ import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 import 'support/projection_fakes.dart';
+
 import 'package:sync/src/data/freeze_authority.dart';
 
 /// Exact queries (ownership, unspent) decide protocol steps: they must answer

@@ -9,9 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2595 magic-routing authentication', () {
     test('send flow does not consume Boltz magic-routing data', () {
-      final source = File(
-        'lib/features/send/presentation/bloc/send_cubit.dart',
-      ).readAsStringSync();
+      final source = File('lib/features/send/presentation/bloc/send_cubit.dart')
+          .readAsStringSync();
 
       expect(source, isNot(contains('magicBip21')));
       expect(source, contains('_createSendSwapUsecase.execute('));

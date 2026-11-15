@@ -44,7 +44,7 @@ final class SqliteWalletSyncJobQueueRepository
     if (leaseDuration <= Duration.zero ||
         retryBase <= Duration.zero ||
         retryMaximum < retryBase) {
-      _database.dispose();
+      _database.close();
       throw ArgumentError(
         'Durations must be positive and retryMaximum >= retryBase',
       );
@@ -125,14 +125,14 @@ final class SqliteWalletSyncJobQueueRepository
         database.execute('PRAGMA user_version = $schemaVersion');
       } else if (version != schemaVersion) {
         database.execute('ROLLBACK');
-        database.dispose();
+        database.close();
         return Err(BackgroundTasksStoreVersionFailure(version));
       }
       database.execute('COMMIT');
       return Ok(database);
     } on SqliteException {
       _rollbackOf(database);
-      database.dispose();
+      database.close();
       return const Err(BackgroundTasksStorageFailure());
     }
   }
@@ -495,6 +495,6 @@ final class SqliteWalletSyncJobQueueRepository
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
-    _database.dispose();
+    _database.close();
   }
 }

@@ -121,20 +121,16 @@ void main() {
       List.filled(16, 0),
       bip39.Language.french,
     ).sentence.split(' ');
-    final french =
-        (await secrets.import(
-                  words: frenchWords,
-                  language: bip39.Language.french,
-                )
-                as Ok<Secret, SecretFailure>)
-            .value;
-    final passphrase =
-        (await secrets.import(words: words, passphrase: 'TREZOR')
-                as Ok<Secret, SecretFailure>)
-            .value;
-    when(
-      () => references.list(),
-    ).thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));
+    final french = (await secrets.import(
+      words: frenchWords,
+      language: bip39.Language.french,
+    ) as Ok<Secret, SecretFailure>).value;
+    final passphrase = (await secrets.import(
+      words: words,
+      passphrase: 'TREZOR',
+    ) as Ok<Secret, SecretFailure>).value;
+    when(() => references.list())
+        .thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));
     final result = await LoadNetworkWalletSetupUsecase(
       settings,
       references,
@@ -201,9 +197,8 @@ void main() {
             .reusable,
         [secret.id],
       );
-      when(
-        () => settings.fetch(),
-      ).thenAnswer((_) async => regtest.copyWith(isDevModeEnabled: false));
+      when(() => settings.fetch())
+          .thenAnswer((_) async => regtest.copyWith(isDevModeEnabled: false));
       expect(
         await usecase.execute(),
         isA<Err<NetworkWalletSetup, NetworkWalletSetupFailure>>(),

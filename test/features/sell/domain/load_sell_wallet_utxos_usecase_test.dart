@@ -32,9 +32,8 @@ void main() {
         address: 'bc1qaddress',
       ),
     ];
-    when(
-      () => getWalletUtxos.execute(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => utxos);
+    when(() => getWalletUtxos.execute(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => utxos);
 
     final result = await usecase.execute(walletId: 'wallet-1');
 
@@ -42,9 +41,8 @@ void main() {
   });
 
   test('sanitizes a lookup failure', () async {
-    when(
-      () => getWalletUtxos.execute(walletId: any(named: 'walletId')),
-    ).thenThrow(Exception('GetUtxosUsecaseException: db locked'));
+    when(() => getWalletUtxos.execute(walletId: any(named: 'walletId')))
+        .thenThrow(Exception('GetUtxosUsecaseException: db locked'));
 
     final result = await usecase.execute(walletId: 'wallet-1');
 

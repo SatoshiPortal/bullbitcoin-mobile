@@ -59,16 +59,14 @@ void main() {
           );
           expect(opened.language, language);
           expect(opened.metadata, {'label': 'published vector'});
-          final plaintext =
-              jsonDecode(
-                    utf8.decode(
-                      RecoverBull.restoreBackup(
-                        backup: BullBackup.fromJson(backup.vault.json),
-                        backupKey: convert.hex.decode(backup.key.hex),
-                      ),
-                    ),
-                  )
-                  as Map<String, dynamic>;
+          final plaintext = jsonDecode(
+            utf8.decode(
+              RecoverBull.restoreBackup(
+                backup: BullBackup.fromJson(backup.vault.json),
+                backupKey: convert.hex.decode(backup.key.hex),
+              ),
+            ),
+          ) as Map<String, dynamic>;
           if (language == bip39.Language.english) {
             const golden =
                 '{"label":"published vector","mnemonic":["abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","abandon","about"],"mnemonicLanguage":"english"}';
@@ -223,16 +221,14 @@ void main() {
       final path =
           (jsonDecode(backup.vault.json) as Map<String, dynamic>)['path'];
       ok(await secrets.trash(secret.id));
-      final file =
-          jsonDecode(
-                RecoverBull.createBackup(
-                  secret: utf8.encode(
-                    jsonEncode({'language': callerValue, 'mnemonic': english}),
-                  ),
-                  backupKey: convert.hex.decode(backup.key.hex),
-                ).toJson(),
-              )
-              as Map<String, dynamic>;
+      final file = jsonDecode(
+        RecoverBull.createBackup(
+          secret: utf8.encode(
+            jsonEncode({'language': callerValue, 'mnemonic': english}),
+          ),
+          backupKey: convert.hex.decode(backup.key.hex),
+        ).toJson(),
+      ) as Map<String, dynamic>;
       file['path'] = path;
       final vault = EncryptedVault(json: jsonEncode(file));
       final key = backup.key;
@@ -263,14 +259,12 @@ void main() {
       final backup = ok(await french.backup.recoverbull());
       final path =
           (jsonDecode(backup.vault.json) as Map<String, dynamic>)['path'];
-      final file =
-          jsonDecode(
-                RecoverBull.createBackup(
-                  secret: utf8.encode(jsonEncode({'mnemonic': shared})),
-                  backupKey: convert.hex.decode(backup.key.hex),
-                ).toJson(),
-              )
-              as Map<String, dynamic>;
+      final file = jsonDecode(
+        RecoverBull.createBackup(
+          secret: utf8.encode(jsonEncode({'mnemonic': shared})),
+          backupKey: convert.hex.decode(backup.key.hex),
+        ).toJson(),
+      ) as Map<String, dynamic>;
       file['path'] = path;
       final vault = EncryptedVault(json: jsonEncode(file));
       final restored = ok(

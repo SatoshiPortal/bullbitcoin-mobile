@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_failure_l10n.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;

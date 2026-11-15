@@ -54,8 +54,9 @@ void main() {
   Future<Secret> store(WidgetTester tester, List<String> words) async {
     late Secret secret;
     await tester.runAsync(() async {
-      secret = (await secrets.import(words: words) as Ok<Secret, SecretFailure>)
-          .value;
+      secret = (await secrets.import(
+        words: words,
+      ) as Ok<Secret, SecretFailure>).value;
     });
     return secret;
   }
@@ -96,10 +97,10 @@ void main() {
   testWidgets('the passphrase is hidden by default', (tester) async {
     late Secret secret;
     await tester.runAsync(() async {
-      secret =
-          (await secrets.import(words: wordsA, passphrase: 'synthetic')
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      secret = (await secrets.import(
+        words: wordsA,
+        passphrase: 'synthetic',
+      ) as Ok<Secret, SecretFailure>).value;
     });
     await tester.pumpWidget(
       Directionality(
@@ -217,10 +218,10 @@ void main() {
     // in a host's own word cells alike.
     late Secret secret;
     await tester.runAsync(() async {
-      secret =
-          (await secrets.import(words: wordsA, passphrase: 'hunter2')
-                  as Ok<Secret, SecretFailure>)
-              .value;
+      secret = (await secrets.import(
+        words: wordsA,
+        passphrase: 'hunter2',
+      ) as Ok<Secret, SecretFailure>).value;
     });
     for (final view in [
       secret.widgets.mnemonicView(

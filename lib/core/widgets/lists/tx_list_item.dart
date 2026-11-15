@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Everything [TxListItem] needs to render one row, already resolved.
 ///

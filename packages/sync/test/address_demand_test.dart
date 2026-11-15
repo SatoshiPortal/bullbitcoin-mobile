@@ -6,6 +6,7 @@ import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 import 'support/projection_fakes.dart';
+
 import 'package:sync/src/data/freeze_authority.dart';
 
 void main() {

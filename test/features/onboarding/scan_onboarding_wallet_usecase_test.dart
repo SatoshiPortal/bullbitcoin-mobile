@@ -16,9 +16,8 @@ void main() {
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Err(ImportMnemonicScanTimeoutFailure()));
-    final result = await ScanOnboardingWalletUsecase(
-      scan,
-    ).execute(words: const ['word'], passphrase: ' pass ');
+    final result = await ScanOnboardingWalletUsecase(scan)
+        .execute(words: const ['word'], passphrase: ' pass ');
     expect(result, isA<Err<bool, OnboardingFailure>>());
   });
 }

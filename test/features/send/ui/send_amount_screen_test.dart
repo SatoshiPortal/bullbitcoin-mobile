@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -24,8 +25,8 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -83,7 +84,7 @@ void main() {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -135,16 +136,15 @@ void main() {
     when(() => cubit.isSpMode).thenReturn(false);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-    when(
-      () => cubit.amountChanged(amount: null, isMax: true),
-    ).thenAnswer((_) async {});
+    when(() => cubit.amountChanged(amount: null, isMax: true))
+        .thenAnswer((_) async {});
 
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -240,7 +240,7 @@ void main() {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -328,7 +328,7 @@ void main() {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -389,16 +389,15 @@ void main() {
     when(() => cubit.isSpMode).thenReturn(false);
     when(() => cubit.state).thenReturn(state);
     when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
-    when(
-      () => cubit.amountChanged(amount: '999000', isMax: false),
-    ).thenAnswer((_) async {});
+    when(() => cubit.amountChanged(amount: '999000', isMax: false))
+        .thenAnswer((_) async {});
 
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -473,7 +472,7 @@ void main() {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -544,7 +543,7 @@ void main() {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         builder: _amountScope,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -614,7 +613,7 @@ void main() {
           theme: AppTheme.themeData(AppThemeType.light),
           localizationsDelegates: const [
             bullUiLocalizationsDelegate,
-            ...AppLocalizations.localizationsDelegates,
+            ...appLocalizationsDelegates,
           ],
           builder: _amountScope,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -704,7 +703,7 @@ void main() {
           theme: AppTheme.themeData(AppThemeType.light),
           localizationsDelegates: const [
             bullUiLocalizationsDelegate,
-            ...AppLocalizations.localizationsDelegates,
+            ...appLocalizationsDelegates,
           ],
           builder: _amountScope,
           supportedLocales: AppLocalizations.supportedLocales,

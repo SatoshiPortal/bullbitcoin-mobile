@@ -117,13 +117,11 @@ void main() {
   group('BroadcastOriginalTransactionUsecase', () {
     test('returns the updated session on success', () async {
       final session = _session();
-      when(
-        () => sender.broadcastOriginal(session.id),
-      ).thenAnswer((_) async => Ok<PayjoinSession, PayjoinFailure>(session));
+      when(() => sender.broadcastOriginal(session.id))
+          .thenAnswer((_) async => Ok<PayjoinSession, PayjoinFailure>(session));
 
-      final result = await BroadcastOriginalTransactionUsecase(
-        sender,
-      ).execute(session);
+      final result = await BroadcastOriginalTransactionUsecase(sender)
+          .execute(session);
 
       expect((result as bb.Ok).value, session);
     });
@@ -138,9 +136,8 @@ void main() {
           ),
         );
 
-        final result = await BroadcastOriginalTransactionUsecase(
-          sender,
-        ).execute(session);
+        final result = await BroadcastOriginalTransactionUsecase(sender)
+            .execute(session);
 
         expect(
           (result as bb.Err).failure,
@@ -156,9 +153,8 @@ void main() {
           PayjoinUnavailableFailure('Could not verify competing transactions'),
         ),
       );
-      final result = await BroadcastOriginalTransactionUsecase(
-        sender,
-      ).execute(session);
+      final result = await BroadcastOriginalTransactionUsecase(sender)
+          .execute(session);
       expect(
         (result as bb.Err).failure,
         isA<TransactionPayjoinVerificationFailure>(),
@@ -173,9 +169,8 @@ void main() {
         ),
       );
 
-      final result = await BroadcastOriginalTransactionUsecase(
-        sender,
-      ).execute(session);
+      final result = await BroadcastOriginalTransactionUsecase(sender)
+          .execute(session);
 
       final failure = (result as bb.Err).failure as TransactionFailure;
       expect(failure, isA<TransactionPayjoinBroadcastFailure>());
@@ -191,9 +186,8 @@ void main() {
         ),
       );
 
-      final result = await BroadcastOriginalTransactionUsecase(
-        sender,
-      ).canExecute(session);
+      final result = await BroadcastOriginalTransactionUsecase(sender)
+          .canExecute(session);
 
       expect(
         (result as bb.Err).failure,
@@ -211,9 +205,8 @@ void main() {
           ),
         );
 
-        final result = await BroadcastOriginalTransactionUsecase(
-          sender,
-        ).canExecute(session);
+        final result = await BroadcastOriginalTransactionUsecase(sender)
+            .canExecute(session);
 
         expect((result as bb.Ok).value, isFalse);
       },
@@ -223,18 +216,17 @@ void main() {
   group('WatchPayjoinUsecase', () {
     test('emits a Result per event instead of throwing', () async {
       final session = _session();
-      when(
-        () => sessions.watch(sessionIds: any(named: 'sessionIds')),
-      ).thenAnswer(
-        (_) => Stream<Result<PayjoinSession, PayjoinFailure>>.fromIterable([
-          Ok(session),
-          const Err(PayjoinStorageFailure('db closed mid-watch')),
-        ]),
-      );
+      when(() => sessions.watch(sessionIds: any(named: 'sessionIds')))
+          .thenAnswer(
+            (_) => Stream<Result<PayjoinSession, PayjoinFailure>>.fromIterable([
+              Ok(session),
+              const Err(PayjoinStorageFailure('db closed mid-watch')),
+            ]),
+          );
 
-      final emitted = await WatchPayjoinUsecase(
-        sessions,
-      ).execute(ids: ['pj-1']).toList();
+      final emitted = await WatchPayjoinUsecase(sessions)
+          .execute(ids: ['pj-1'])
+          .toList();
 
       expect(emitted.first, isA<bb.Ok<PayjoinSession, TransactionFailure>>());
       final failure = (emitted.last as bb.Err).failure as TransactionFailure;
@@ -245,13 +237,12 @@ void main() {
     test('turns a raw stream error into a failure value, not a zone error', () {
       // The cubit listens without an onError, so an error event escaping this
       // use case would become an unhandled zone error.
-      when(
-        () => sessions.watch(sessionIds: any(named: 'sessionIds')),
-      ).thenAnswer(
-        (_) => Stream<Result<PayjoinSession, PayjoinFailure>>.error(
-          StateError('session store closed'),
-        ),
-      );
+      when(() => sessions.watch(sessionIds: any(named: 'sessionIds')))
+          .thenAnswer(
+            (_) => Stream<Result<PayjoinSession, PayjoinFailure>>.error(
+              StateError('session store closed'),
+            ),
+          );
 
       expect(
         WatchPayjoinUsecase(sessions).execute(),

@@ -1,3 +1,7 @@
+analyzer:
+  exclude:
+    - build/**
+    - ios/**
 include: package:lints/recommended.yaml
 
 linter:

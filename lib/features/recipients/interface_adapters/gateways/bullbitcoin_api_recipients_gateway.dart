@@ -175,9 +175,8 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
             // yet, and dropping one row is better than showing none. Nulls
             // are filtered out below.
             try {
-              return RecipientModel.fromJson(
-                e as Map<String, dynamic>,
-              ).toDomain;
+              return RecipientModel.fromJson(e as Map<String, dynamic>)
+                  .toDomain;
             } catch (err) {
               // warning, not severe: severe uploads the exception to the
               // crash reporter, and a parse error over a recipient payload
@@ -283,9 +282,8 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
           .map((e) {
             // Same per-element tolerance as listRecipients.
             try {
-              return CadBillerModel.fromJson(
-                e as Map<String, dynamic>,
-              ).toDomain;
+              return CadBillerModel.fromJson(e as Map<String, dynamic>)
+                  .toDomain;
             } catch (err) {
               log.warning('Skipping unparseable CAD biller element: $err');
               return null;

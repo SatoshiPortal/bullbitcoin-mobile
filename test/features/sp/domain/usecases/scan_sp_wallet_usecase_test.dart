@@ -32,9 +32,8 @@ void main() {
 
   group('ScanSpWalletUsecase', () {
     test('calls scanOnce exactly once on the repository', () async {
-      when(
-        () => repository.scanOnce(),
-      ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+      when(() => repository.scanOnce())
+          .thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
       final result = await usecase.execute();
 
@@ -45,9 +44,8 @@ void main() {
     test(
       'each execute() delegates to scanOnce (idempotent pass-through)',
       () async {
-        when(
-          () => repository.scanOnce(),
-        ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+        when(() => repository.scanOnce())
+            .thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
         expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
         expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
@@ -60,9 +58,8 @@ void main() {
 
     test('rethrows the exact error thrown by scanOnce', () async {
       final scanError = StateError('scan backend offline');
-      when(
-        () => repository.scanOnce(),
-      ).thenAnswer((_) async => throw scanError);
+      when(() => repository.scanOnce())
+          .thenAnswer((_) async => throw scanError);
 
       // The same instance must propagate unchanged (no wrapping/swallowing).
       await expectLater(usecase.execute(), throwsA(same(scanError)));
@@ -71,9 +68,8 @@ void main() {
     });
 
     test('does not touch any repository method other than scanOnce', () async {
-      when(
-        () => repository.scanOnce(),
-      ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+      when(() => repository.scanOnce())
+          .thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
       expect(await usecase.execute(), isA<Ok<void, SpFailure>>());
 
@@ -85,9 +81,8 @@ void main() {
     });
 
     test('forwards a chosen start height to scanOnce', () async {
-      when(
-        () => repository.scanOnce(startHeight: any(named: 'startHeight')),
-      ).thenAnswer((_) async => const Ok<void, SpFailure>(null));
+      when(() => repository.scanOnce(startHeight: any(named: 'startHeight')))
+          .thenAnswer((_) async => const Ok<void, SpFailure>(null));
 
       expect(
         await usecase.execute(startHeight: 800000),

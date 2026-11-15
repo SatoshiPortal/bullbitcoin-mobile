@@ -14,15 +14,14 @@ import 'package:sync/sync.dart'
         SyncFailure,
         UnsignedSpend;
 
-typedef BroadcastSpend =
-    Future<Result<SpendReceipt, SyncFailure>> Function(
-      String walletId,
-      SignedTransaction transaction, {
-      required Network network,
-      UnsignedSpend? built,
-      SpendOwner? owner,
-      String? replacing,
-    });
+typedef BroadcastSpend = Future<Result<SpendReceipt, SyncFailure>> Function(
+  String walletId,
+  SignedTransaction transaction, {
+  required Network network,
+  UnsignedSpend? built,
+  SpendOwner? owner,
+  String? replacing,
+});
 
 /// After an accepted Bitcoin broadcast, the spend gate stays closed until a
 /// sync pass observes the payment. The pass started right after the broadcast

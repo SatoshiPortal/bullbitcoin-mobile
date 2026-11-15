@@ -1,6 +1,6 @@
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:novlang/novlang.dart';
 
@@ -152,10 +152,7 @@ void main() {
         valueListenable: policy,
         builder: (context, value, _) => MaterialApp(
           locale: en,
-          localizationsDelegates: [
-            NovlangAppLocalizationsDelegate(value),
-            ...AppLocalizations.localizationsDelegates,
-          ],
+          localizationsDelegates: novlangLocalizationsDelegates(value),
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: Builder(

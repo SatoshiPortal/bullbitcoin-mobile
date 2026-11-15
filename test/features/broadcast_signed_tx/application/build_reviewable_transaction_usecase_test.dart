@@ -68,9 +68,8 @@ void main() {
         final parentTx = _MockTransaction();
         when(() => parentTx.txid).thenReturn('parenttxid');
         when(() => parentTx.outputs).thenReturn(const []);
-        when(
-          () => port.fetch(txid: any(named: 'txid')),
-        ).thenAnswer((_) async => parentTx);
+        when(() => port.fetch(txid: any(named: 'txid')))
+            .thenAnswer((_) async => parentTx);
 
         final result = await usecase.execute(tx);
 
@@ -90,9 +89,8 @@ void main() {
       final parentTx = _MockTransaction();
       when(() => parentTx.txid).thenReturn('parenttxid');
       when(() => parentTx.outputs).thenReturn([parentOutput]);
-      when(
-        () => port.fetch(txid: any(named: 'txid')),
-      ).thenAnswer((_) async => parentTx);
+      when(() => port.fetch(txid: any(named: 'txid')))
+          .thenAnswer((_) async => parentTx);
 
       final result = await usecase.execute(tx);
 

@@ -42,9 +42,9 @@ final class RecoverBullBackup {
   /// The index is random rather than sequential so two backups of the
   /// same wallet do not share a key, and so a leaked key reveals nothing
   /// about the others.
-  String newDerivationPath() => Bip85HardenedPath(
-    "${_application.number}'/0'/${_randomIndex()}'",
-  ).toString();
+  String newDerivationPath() =>
+      Bip85HardenedPath("${_application.number}'/0'/${_randomIndex()}'")
+          .toString();
 
   /// The 32-byte backup key for [path], as hex.
   String backupKey({required String masterXprv, required String path}) {

@@ -29,9 +29,8 @@ void main() {
   });
 
   test('wraps each event in Ok', () async {
-    when(
-      () => swapFacade.watchOrder('local-1'),
-    ).thenAnswer((_) => Stream.value(Ok(_record())));
+    when(() => swapFacade.watchOrder('local-1'))
+        .thenAnswer((_) => Stream.value(Ok(_record())));
 
     final emitted = await usecase.execute('local-1').toList();
 

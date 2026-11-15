@@ -1,4 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
+
 import '../../l10n/context_localizations.dart';
 
 class RecoverBullHistoricalWarning extends StatelessWidget {

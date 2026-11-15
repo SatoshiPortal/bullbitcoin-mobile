@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+
 import 'data/frozen_utxos_freeze_store.dart';
 import 'data/broadcast_observation_follow_up.dart';
 import 'data/catalog_wallet_secret_references_repository.dart';
@@ -6,10 +7,13 @@ import 'domain/repositories/wallet_secret_references_repository.dart';
 import 'domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'domain/usecases/create_network_wallet_usecase.dart';
 import 'presentation/network_wallet_setup_cubit.dart';
+
 import 'package:background_tasks/background_tasks.dart';
 import 'package:flutter/widgets.dart';
+
 import 'data/payment_notifications.dart';
 import 'data/wallet_payment_observer.dart';
+
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';

@@ -135,9 +135,9 @@ void main() {
       expect(result.value, hasLength(1));
     }
     catalog.failure = Exception('private diagnostic');
-    final result =
-        await port.find(WalletKey(id: bitcoin, network: BitcoinNetwork.mainnet))
-            as Err<PublicWalletDescriptor, SyncFailure>;
+    final result = await port.find(
+      WalletKey(id: bitcoin, network: BitcoinNetwork.mainnet),
+    ) as Err<PublicWalletDescriptor, SyncFailure>;
     expect(result.failure, isA<SyncStorageFailure>());
     expect(result.failure.toString(), isNot(contains('private diagnostic')));
     catalog.failure = StateError('programmer failure');

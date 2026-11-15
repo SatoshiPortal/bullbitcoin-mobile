@@ -10,8 +10,8 @@ import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -67,7 +67,7 @@ void main() {
   // context.canPop(), so a bare MaterialApp is not enough.
   Widget app(WithdrawBloc bloc) => MaterialApp.router(
     theme: AppTheme.themeData(AppThemeType.light),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: GoRouter(
       routes: [

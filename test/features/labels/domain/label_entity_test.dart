@@ -51,8 +51,7 @@ void main() {
           id: 1,
           type: LabelType.publicKey,
           label: 'test',
-          reference:
-              '0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352',
+          reference: '0250863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352',
         ),
         returnsNormally,
       );
@@ -64,8 +63,7 @@ void main() {
           id: 1,
           type: LabelType.publicKey,
           label: 'test',
-          reference:
-              '50863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352',
+          reference: '50863ad64a87ae8a2fe83c1af1a8403cb53f53e486d8511dad8a04887e5b2352',
         ),
         returnsNormally,
       );

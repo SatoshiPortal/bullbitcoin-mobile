@@ -127,16 +127,14 @@ void main() {
   });
 
   test('a protected default does not put its passphrase in the vault', () {
-    final plaintext =
-        jsonDecode(
-              utf8.decode(
-                RecoverBull.restoreBackup(
-                  backup: BullBackup.fromJson(repository.encode(backup.vault)),
-                  backupKey: convert.hex.decode(backup.key.hex),
-                ),
-              ),
-            )
-            as Map<String, dynamic>;
+    final plaintext = jsonDecode(
+      utf8.decode(
+        RecoverBull.restoreBackup(
+          backup: BullBackup.fromJson(repository.encode(backup.vault)),
+          backupKey: convert.hex.decode(backup.key.hex),
+        ),
+      ),
+    ) as Map<String, dynamic>;
     expect(
       plaintext.keys,
       unorderedEquals([
@@ -163,12 +161,10 @@ void main() {
       );
       expect(
         (await repository.fingerprint(
-                  backup.vault,
-                  backup.key,
-                  passphrase: 'wrong',
-                )
-                as Err)
-            .failure,
+          backup.vault,
+          backup.key,
+          passphrase: 'wrong',
+        ) as Err).failure,
         isA<VaultPassphraseRequiredFailure>(),
       );
       expect(
@@ -186,33 +182,32 @@ void main() {
     },
   );
 
-  test(
-    'a wrong restore cannot write; the correct passphrase restores the original',
-    () async {
-      storage.entries.clear();
-      storage.scriptedWrites.add(Exception('unexpected write'));
-      expect(
-        (await repository.restore(backup.vault, backup.key, passphrase: 'wrong')
-                as Err)
-            .failure,
-        isA<VaultPassphraseRequiredFailure>(),
-      );
-      expect(storage.entries, isEmpty);
-      expect(storage.scriptedWrites, hasLength(1));
-      storage.scriptedWrites.clear();
-      expect(
-        ok(
-          await repository.restore(
-            backup.vault,
-            backup.key,
-            passphrase: passphrase,
-          ),
+  test('a wrong restore cannot write; the correct passphrase restores the original', () async {
+    storage.entries.clear();
+    storage.scriptedWrites.add(Exception('unexpected write'));
+    expect(
+      (await repository.restore(
+        backup.vault,
+        backup.key,
+        passphrase: 'wrong',
+      ) as Err).failure,
+      isA<VaultPassphraseRequiredFailure>(),
+    );
+    expect(storage.entries, isEmpty);
+    expect(storage.scriptedWrites, hasLength(1));
+    storage.scriptedWrites.clear();
+    expect(
+      ok(
+        await repository.restore(
+          backup.vault,
+          backup.key,
+          passphrase: passphrase,
         ),
-        secret.id,
-      );
-      expect(storage.entries, isNotEmpty);
-    },
-  );
+      ),
+      secret.id,
+    );
+    expect(storage.entries, isNotEmpty);
+  });
 
   test(
     'unverified recovery permits only the empty-passphrase sibling',
@@ -221,13 +216,11 @@ void main() {
       storage.scriptedWrites.add(Exception('unexpected write'));
       expect(
         (await repository.restore(
-                  backup.vault,
-                  backup.key,
-                  passphrase: 'wrong',
-                  allowUnverified: true,
-                )
-                as Err)
-            .failure,
+          backup.vault,
+          backup.key,
+          passphrase: 'wrong',
+          allowUnverified: true,
+        ) as Err).failure,
         isA<VaultPassphraseRequiredFailure>(),
       );
       expect(storage.entries, isEmpty);
@@ -261,9 +254,9 @@ void main() {
     );
     expect(vaults.creates, 0);
     expect(
-      ok(
-        await create.execute(passphraseWarningAccepted: true),
-      ).context.fingerprint,
+      ok(await create.execute(passphraseWarningAccepted: true))
+          .context
+          .fingerprint,
       secret.id,
     );
     expect(vaults.creates, 1);

@@ -19,7 +19,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/verify_backup_passphrase_usecase.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
@@ -40,7 +40,7 @@ import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
 import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -187,21 +187,17 @@ void main({bool isInitialized = false}) {
       final backup = custodyValue(await secret.backup.recoverbull());
       expect(
         (await secrets.recoverbull.fingerprint(
-                  vault: backup.vault,
-                  key: backup.key,
-                )
-                as Err)
-            .failure,
+          vault: backup.vault,
+          key: backup.key,
+        ) as Err).failure,
         isA<VaultIdentityMismatchFailure>(),
       );
       expect(
         (await secrets.recoverbull.fingerprint(
-                  vault: backup.vault,
-                  key: backup.key,
-                  passphrase: 'wrong',
-                )
-                as Err)
-            .failure,
+          vault: backup.vault,
+          key: backup.key,
+          passphrase: 'wrong',
+        ) as Err).failure,
         isA<VaultIdentityMismatchFailure>(),
       );
       expect(
@@ -218,18 +214,18 @@ void main({bool isInitialized = false}) {
       // Remove only this test's fresh secret, so a successful restore must
       // actually write it again. A failed candidate must leave storage intact.
       custodyValue(await secrets.trash(secret.id));
-      final before = custodyValue(
-        await secrets.list(),
-      ).map((entry) => entry.id).toSet();
+      final before = custodyValue(await secrets.list())
+          .map((entry) => entry.id)
+          .toSet();
       final wrong = await secrets.recoverbull.restore(
         vault: backup.vault,
         key: backup.key,
         passphrase: 'wrong',
       );
       expect((wrong as Err).failure, isA<VaultIdentityMismatchFailure>());
-      final after = custodyValue(
-        await secrets.list(),
-      ).map((entry) => entry.id).toSet();
+      final after = custodyValue(await secrets.list())
+          .map((entry) => entry.id)
+          .toSet();
       expect(after, before);
       expect(custodyValue(await secrets.exists(secret.id)), isFalse);
       final restored = custodyValue(
@@ -283,7 +279,7 @@ void main({bool isInitialized = false}) {
       ) => MaterialApp(
         locale: const Locale('en'),
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: RecoverBullLocalizations.localizationsDelegates,
+        localizationsDelegates: rb.RecoverBullFeature.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: VaultFlowPage(
           flow: flow,
@@ -318,9 +314,9 @@ void main({bool isInitialized = false}) {
       await tester.pumpAndSettle();
 
       custodyValue(await secrets.trash(secret.id));
-      final before = custodyValue(
-        await secrets.list(),
-      ).map((entry) => entry.id).toSet();
+      final before = custodyValue(await secrets.list())
+          .map((entry) => entry.id)
+          .toSet();
       final recover = _vaultPresentation(vaults, wallets, backup.vault);
       await tester.pumpWidget(page(rb.RecoverBullFlow.recoverVault, recover));
       await _waitFor(
@@ -385,7 +381,7 @@ void main({bool isInitialized = false}) {
       MaterialApp(
         locale: const Locale('en'),
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: appLocalizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: MnemonicWidget(
@@ -423,180 +419,176 @@ void main({bool isInitialized = false}) {
 }
 
 void registerPhysicalRecoveryTests() {
-  testWidgets(
-    'physical default recovery and backup passphrase on device',
-    (tester) async {
-      final wallets = locator<WalletRepository>();
-      final existing = await wallets.getWallets(onlyDefaults: true);
-      final prior = switch (existing) {
+  testWidgets('physical default recovery and backup passphrase on device', (
+    tester,
+  ) async {
+    final wallets = locator<WalletRepository>();
+    final existing = await wallets.getWallets(onlyDefaults: true);
+    final prior = switch (existing) {
+      Ok(:final value) => value,
+      Err(:final failure) => fail(
+        'default wallet read failed: ${failure.runtimeType}',
+      ),
+    };
+    // This test creates persistent defaults; never touch a populated app.
+    expect(prior.isEmpty, isTrue, reason: 'requires a dedicated empty app');
+
+    final random = Random.secure();
+    final words = bip39.Mnemonic(
+      List<int>.generate(16, (_) => random.nextInt(256)),
+      bip39.Language.english,
+    ).words;
+    const phrase = 'synthetic passphrase é';
+    final onboarding = locator<OnboardingBloc>();
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => BlocProvider.value(
+            value: onboarding,
+            child: const OnboardingPhysicalRecovery(),
+          ),
+        ),
+        GoRoute(
+          name: WalletRoute.walletHome.name,
+          path: WalletRoute.walletHome.path,
+          builder: (_, _) => const Scaffold(body: Text('DEVICE_WALLET_READY')),
+        ),
+      ],
+    );
+    TestWalletBackupBloc? backupBloc;
+    try {
+      await tester.pumpWidget(
+        MaterialApp.router(
+          locale: const Locale('en'),
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      );
+      await _waitFor(
+        tester,
+        () => find.byType(MnemonicWidget).evaluate().isNotEmpty,
+      );
+      // The independent widget test types the field. Here invoke the actual
+      // widget's submit callback with a fresh synthetic recovery record.
+      tester.widget<MnemonicWidget>(find.byType(MnemonicWidget)).onSubmit((
+        words: words,
+        passphrase: phrase,
+        label: '',
+        language: bip39.Language.english,
+      ));
+      // Electrum may answer empty or fail. Both require explicit consent;
+      // no server setting or network policy is changed by this test.
+      for (var i = 0; i < 1200; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+        if (find.text('Continue without checking').evaluate().isNotEmpty ||
+            find.text('This wallet looks empty').evaluate().isNotEmpty ||
+            find.text('DEVICE_WALLET_READY').evaluate().isNotEmpty) {
+          break;
+        }
+      }
+      final unavailable = find.text('Continue without checking');
+      final empty = find.text('This wallet looks empty');
+      if (unavailable.evaluate().isNotEmpty) {
+        await tester.tap(unavailable);
+      } else if (empty.evaluate().isNotEmpty) {
+        await tester.tap(find.widgetWithText(TextButton, 'Continue'));
+      } else {
+        expect(
+          find.text('DEVICE_WALLET_READY'),
+          findsOneWidget,
+          reason: 'scan must finish or offer an explicit continuation',
+        );
+      }
+      await _waitFor(
+        tester,
+        () => find.text('DEVICE_WALLET_READY').evaluate().isNotEmpty,
+      );
+      final read = await wallets.getWallets(onlyDefaults: true);
+      final created = switch (read) {
         Ok(:final value) => value,
         Err(:final failure) => fail(
-          'default wallet read failed: ${failure.runtimeType}',
+          'wallet read failed: ${failure.runtimeType}',
         ),
       };
-      // This test creates persistent defaults; never touch a populated app.
-      expect(prior.isEmpty, isTrue, reason: 'requires a dedicated empty app');
-
-      final random = Random.secure();
-      final words = bip39.Mnemonic(
-        List<int>.generate(16, (_) => random.nextInt(256)),
-        bip39.Language.english,
-      ).words;
-      const phrase = 'synthetic passphrase é';
-      final onboarding = locator<OnboardingBloc>();
-      final router = GoRouter(
-        initialLocation: '/',
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (_, _) => BlocProvider.value(
-              value: onboarding,
-              child: const OnboardingPhysicalRecovery(),
-            ),
-          ),
-          GoRoute(
-            name: WalletRoute.walletHome.name,
-            path: WalletRoute.walletHome.path,
-            builder: (_, _) =>
-                const Scaffold(body: Text('DEVICE_WALLET_READY')),
-          ),
-        ],
+      expect(created.length, 2);
+      expect(created.where((wallet) => wallet.network.isBitcoin).length, 1);
+      expect(created.where((wallet) => wallet.network.isLiquid).length, 1);
+      expect(
+        created.map((wallet) => wallet.masterFingerprint).toSet().length,
+        1,
       );
-      TestWalletBackupBloc? backupBloc;
-      try {
-        await tester.pumpWidget(
-          MaterialApp.router(
-            locale: const Locale('en'),
-            theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: router,
-          ),
-        );
-        await _waitFor(
-          tester,
-          () => find.byType(MnemonicWidget).evaluate().isNotEmpty,
-        );
-        // The independent widget test types the field. Here invoke the actual
-        // widget's submit callback with a fresh synthetic recovery record.
-        tester.widget<MnemonicWidget>(find.byType(MnemonicWidget)).onSubmit((
-          words: words,
-          passphrase: phrase,
-          label: '',
-          language: bip39.Language.english,
-        ));
-        // Electrum may answer empty or fail. Both require explicit consent;
-        // no server setting or network policy is changed by this test.
-        for (var i = 0; i < 1200; i++) {
-          await tester.pump(const Duration(milliseconds: 100));
-          if (find.text('Continue without checking').evaluate().isNotEmpty ||
-              find.text('This wallet looks empty').evaluate().isNotEmpty ||
-              find.text('DEVICE_WALLET_READY').evaluate().isNotEmpty) {
-            break;
-          }
-        }
-        final unavailable = find.text('Continue without checking');
-        final empty = find.text('This wallet looks empty');
-        if (unavailable.evaluate().isNotEmpty) {
-          await tester.tap(unavailable);
-        } else if (empty.evaluate().isNotEmpty) {
-          await tester.tap(find.widgetWithText(TextButton, 'Continue'));
-        } else {
-          expect(
-            find.text('DEVICE_WALLET_READY'),
-            findsOneWidget,
-            reason: 'scan must finish or offer an explicit continuation',
-          );
-        }
-        await _waitFor(
-          tester,
-          () => find.text('DEVICE_WALLET_READY').evaluate().isNotEmpty,
-        );
-        final read = await wallets.getWallets(onlyDefaults: true);
-        final created = switch (read) {
-          Ok(:final value) => value,
-          Err(:final failure) => fail(
-            'wallet read failed: ${failure.runtimeType}',
-          ),
-        };
-        expect(created.length, 2);
-        expect(created.where((wallet) => wallet.network.isBitcoin).length, 1);
-        expect(created.where((wallet) => wallet.network.isLiquid).length, 1);
-        expect(
-          created.map((wallet) => wallet.masterFingerprint).toSet().length,
-          1,
-        );
-        final secrets = locator<Secrets>();
-        final secret = custodyValue(
-          await secrets.fetch(Fingerprint(created.first.masterFingerprint)),
-        );
-        expect(secret.info.hasPassphrase, isTrue);
-        expect(custodyValue(await secret.verify.passphrase(phrase)), isTrue);
+      final secrets = locator<Secrets>();
+      final secret = custodyValue(
+        await secrets.fetch(Fingerprint(created.first.masterFingerprint)),
+      );
+      expect(secret.info.hasPassphrase, isTrue);
+      expect(custodyValue(await secret.verify.passphrase(phrase)), isTrue);
 
-        backupBloc = TestWalletBackupBloc(
-          completeBackupVerificationUsecase:
-              locator<CompleteBackupVerificationUsecase>(),
-          loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
-          getSecretFromFingerprintUsecase:
-              locator<GetSecretFromFingerprintUsecase>(),
-          verifyBackupPassphraseUsecase:
-              locator<VerifyBackupPassphraseUsecase>(),
-        )..add(const LoadWallets());
-        final selectedBloc = backupBloc;
-        await tester.pumpWidget(
-          MaterialApp(
-            locale: const Locale('en'),
-            theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: BlocProvider.value(
-              value: selectedBloc,
-              child: const VerifyMnemonicScreen(),
-            ),
+      backupBloc = TestWalletBackupBloc(
+        completeBackupVerificationUsecase:
+            locator<CompleteBackupVerificationUsecase>(),
+        loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
+        getSecretFromFingerprintUsecase:
+            locator<GetSecretFromFingerprintUsecase>(),
+        verifyBackupPassphraseUsecase: locator<VerifyBackupPassphraseUsecase>(),
+      )..add(const LoadWallets());
+      final selectedBloc = backupBloc;
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('en'),
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: BlocProvider.value(
+            value: selectedBloc,
+            child: const VerifyMnemonicScreen(),
           ),
-        );
-        await _waitFor(
-          tester,
-          () => find.byType(MnemonicChallenge).evaluate().isNotEmpty,
-        );
-        // Challenge tiles are painted and deliberately unreadable to the
-        // widget tree. Invoke the real widget's onSolved callback; this does
-        // not test entering the words and must not certify that part of UX.
-        tester
-            .widget<MnemonicChallenge>(find.byType(MnemonicChallenge))
-            .onSolved();
-        await _waitFor(
-          tester,
-          () => find
-              .text('Enter your passphrase to verify your backup.')
-              .evaluate()
-              .isNotEmpty,
-        );
-        final input = find.byType(TextField);
-        await tester.enterText(input, 'wrong');
-        await tester.ensureVisible(find.text('Continue'));
-        await tester.tap(find.text('Continue'));
-        await _waitFor(
-          tester,
-          () => find.text('Incorrect passphrase.').evaluate().isNotEmpty,
-        );
-        expect(find.byType(BackupTestSuccessScreen), findsNothing);
-        await tester.enterText(input, phrase);
-        await tester.ensureVisible(find.text('Continue'));
-        await tester.tap(find.text('Continue'));
-        await _waitFor(
-          tester,
-          () => find.byType(BackupTestSuccessScreen).evaluate().isNotEmpty,
-        );
-      } finally {
-        await tester.pumpWidget(const SizedBox.shrink());
-        router.dispose();
-        await onboarding.close();
-        await backupBloc?.close();
-      }
-    },
-    timeout: const Timeout(Duration(minutes: 4)),
-  );
+        ),
+      );
+      await _waitFor(
+        tester,
+        () => find.byType(MnemonicChallenge).evaluate().isNotEmpty,
+      );
+      // Challenge tiles are painted and deliberately unreadable to the
+      // widget tree. Invoke the real widget's onSolved callback; this does
+      // not test entering the words and must not certify that part of UX.
+      tester
+          .widget<MnemonicChallenge>(find.byType(MnemonicChallenge))
+          .onSolved();
+      await _waitFor(
+        tester,
+        () => find
+            .text('Enter your passphrase to verify your backup.')
+            .evaluate()
+            .isNotEmpty,
+      );
+      final input = find.byType(TextField);
+      await tester.enterText(input, 'wrong');
+      await tester.ensureVisible(find.text('Continue'));
+      await tester.tap(find.text('Continue'));
+      await _waitFor(
+        tester,
+        () => find.text('Incorrect passphrase.').evaluate().isNotEmpty,
+      );
+      expect(find.byType(BackupTestSuccessScreen), findsNothing);
+      await tester.enterText(input, phrase);
+      await tester.ensureVisible(find.text('Continue'));
+      await tester.tap(find.text('Continue'));
+      await _waitFor(
+        tester,
+        () => find.byType(BackupTestSuccessScreen).evaluate().isNotEmpty,
+      );
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      router.dispose();
+      await onboarding.close();
+      await backupBloc?.close();
+    }
+  }, timeout: const Timeout(Duration(minutes: 4)));
 }
 
 void registerReturnNavigationTest() {
@@ -628,7 +620,7 @@ void registerReturnNavigationTest() {
         MaterialApp.router(
           locale: const Locale('en'),
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: router,
         ),

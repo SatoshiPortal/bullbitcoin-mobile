@@ -8,8 +8,8 @@ import 'package:bb_mobile/features/swap/domain/entities/order_swap_record.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:flutter/material.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -49,9 +49,8 @@ void main() {
         transaction: Transaction(orderSwap: _orderSwap()),
       ),
     );
-    when(
-      () => detailsCubit.stream,
-    ).thenAnswer((_) => const Stream<TransactionDetailsState>.empty());
+    when(() => detailsCubit.stream)
+        .thenAnswer((_) => const Stream<TransactionDetailsState>.empty());
     when(() => settingsCubit.state).thenReturn(
       const SettingsState(
         storedSettings: SettingsEntity(
@@ -61,9 +60,8 @@ void main() {
         ),
       ),
     );
-    when(
-      () => settingsCubit.stream,
-    ).thenAnswer((_) => const Stream<SettingsState>.empty());
+    when(() => settingsCubit.stream)
+        .thenAnswer((_) => const Stream<SettingsState>.empty());
 
     final navigatorKey = GlobalKey<NavigatorState>();
     await tester.pumpWidget(
@@ -72,7 +70,7 @@ void main() {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: const [
           bullUiLocalizationsDelegate,
-          ...AppLocalizations.localizationsDelegates,
+          ...appLocalizationsDelegates,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: MultiBlocProvider(

@@ -19,9 +19,8 @@ void main() {
 
   group('count', () {
     test('returns the repository\'s L-BTC UTXO count', () async {
-      when(
-        () => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => 42);
+      when(() => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => 42);
 
       final count = await usecase.count(walletId: walletId);
 
@@ -29,9 +28,8 @@ void main() {
     });
 
     test('returns null if the underlying read fails', () async {
-      when(
-        () => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('boom'));
+      when(() => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')))
+          .thenThrow(Exception('boom'));
 
       final count = await usecase.count(walletId: walletId);
 
@@ -42,9 +40,8 @@ void main() {
   group('execute — isRequired against kLiquidConsolidationThreshold', () {
     test('is true once the count exceeds the threshold', () async {
       final total = kLiquidConsolidationThreshold + 1;
-      when(
-        () => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => total);
+      when(() => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => total);
 
       final required = await usecase.execute(walletId: walletId);
 
@@ -52,9 +49,8 @@ void main() {
     });
 
     test('is false at exactly the threshold (boundary)', () async {
-      when(
-        () => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => kLiquidConsolidationThreshold);
+      when(() => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => kLiquidConsolidationThreshold);
 
       final required = await usecase.execute(walletId: walletId);
 
@@ -63,9 +59,8 @@ void main() {
 
     test('is false for a normal, small wallet well under the threshold — '
         'the no-regression acceptance criterion', () async {
-      when(
-        () => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')),
-      ).thenAnswer((_) async => 5);
+      when(() => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => 5);
 
       final required = await usecase.execute(walletId: walletId);
 
@@ -73,9 +68,8 @@ void main() {
     });
 
     test('is false when the count could not be read', () async {
-      when(
-        () => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')),
-      ).thenThrow(Exception('boom'));
+      when(() => repo.getLbtcUtxoCount(walletId: any(named: 'walletId')))
+          .thenThrow(Exception('boom'));
 
       final required = await usecase.execute(walletId: walletId);
 

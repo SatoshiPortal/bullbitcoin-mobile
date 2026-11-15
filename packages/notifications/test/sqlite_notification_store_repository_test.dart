@@ -125,7 +125,7 @@ void main() {
       expect(second?.platformId, first.platformId + 1);
 
       final database = sqlite3.open(path);
-      addTearDown(database.dispose);
+      addTearDown(database.close);
       database.execute('UPDATE platform_ids SET next_id = ?', [
         SqliteNotificationStoreRepository.maxPlatformId + 1,
       ]);
@@ -222,7 +222,7 @@ void main() {
       test('refuses version $version without changing it', () {
         final other = '${directory.path}/v$version.sqlite';
         final database = sqlite3.open(other);
-        addTearDown(database.dispose);
+        addTearDown(database.close);
         database.execute('PRAGMA user_version = $version');
         database.execute('CREATE TABLE unknown (id INTEGER)');
 

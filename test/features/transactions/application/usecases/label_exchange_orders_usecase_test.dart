@@ -128,9 +128,8 @@ void main() {
 
       await usecase.execute(orders: [buyOrder()], explicitCompletion: true);
 
-      final stored = verify(
-        () => labelsFacade.store(captureAny()),
-      ).captured.cast<NewLabel>();
+      final stored = verify(() => labelsFacade.store(captureAny())).captured
+          .cast<NewLabel>();
       expect(stored, hasLength(2));
       expect(
         stored,
@@ -168,9 +167,8 @@ void main() {
 
     await usecase.execute(orders: [buyOrder()], explicitCompletion: true);
 
-    final stored = verify(
-      () => labelsFacade.store(captureAny()),
-    ).captured.cast<NewLabel>();
+    final stored = verify(() => labelsFacade.store(captureAny())).captured
+        .cast<NewLabel>();
     expect(stored, hasLength(1));
     expect(stored.single.type, LabelType.transaction);
     expect(stored.single.reference, 'buy-txid');

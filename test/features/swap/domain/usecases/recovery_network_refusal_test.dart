@@ -72,9 +72,8 @@ void main() {
           currencyCode: 'USD',
         ),
       );
-      when(
-        () => swaps.restoreSwaps(isTestnet: false),
-      ).thenThrow('legacy provider diagnostic');
+      when(() => swaps.restoreSwaps(isTestnet: false))
+          .thenThrow('legacy provider diagnostic');
       final result = await RestoreSwapsUsecase(
         swapRepository: swaps,
         settingsRepository: settings,

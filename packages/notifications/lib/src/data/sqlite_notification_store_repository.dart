@@ -76,14 +76,14 @@ final class SqliteNotificationStoreRepository
         _create(database);
       } else if (version != schemaVersion) {
         database.execute('ROLLBACK');
-        database.dispose();
+        database.close();
         return Err(NotificationsStoreVersionFailure(version));
       }
       database.execute('COMMIT');
       return Ok(database);
     } on SqliteException {
       _rollback(database);
-      database.dispose();
+      database.close();
       return const Err(NotificationsStorageFailure());
     }
   }
@@ -315,7 +315,7 @@ final class SqliteNotificationStoreRepository
   Future<void> close() async {
     if (_closed) return;
     _closed = true;
-    _database.dispose();
+    _database.close();
   }
 }
 

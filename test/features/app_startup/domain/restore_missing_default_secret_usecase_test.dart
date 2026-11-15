@@ -107,9 +107,8 @@ void main() {
     secrets = Secrets(scratchDirectory: () async => '/tmp');
     wallets = _MockWalletRepository();
     final wallet = await realWallet(_missingFingerprint, _missing);
-    when(
-      () => wallets.getWallets(),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
+    when(() => wallets.getWallets())
+        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
     usecase = RestoreMissingDefaultSecretUsecase(
       secrets: secrets,
       walletRepository: wallets,
@@ -268,9 +267,8 @@ void main() {
     );
     final fingerprint = (created as Ok<Secret, SecretFailure>).value.id.hex;
     final wallet = await realWallet(fingerprint, _missing, passphrase);
-    when(
-      () => wallets.getWallets(),
-    ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
+    when(() => wallets.getWallets())
+        .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
     expect(
       await secrets.trash(Fingerprint(fingerprint)),
       isA<Ok<void, SecretFailure>>(),
@@ -309,34 +307,25 @@ void main() {
     },
   );
 
-  test(
-    'a second wallet with the same fingerprint cannot mask a descriptor mismatch',
-    () async {
-      final matching = await realWallet(
-        _missingFingerprint,
-        _missing,
-        '',
-        false,
-      );
-      when(() => wallets.getWallets()).thenAnswer(
-        (_) async => Ok<List<Wallet>, WalletFailure>([
-          matching,
-          localWallet(_missingFingerprint, isDefault: true),
-        ]),
-      );
-      final result = await usecase.execute(
-        expectedFingerprint: _missingFingerprint,
-        words: _missing,
-      );
-      expect(result, isA<Err<void, AppStartupFailure>>());
-      expect(storage.entries, isEmpty);
-    },
-  );
+  test('a second wallet with the same fingerprint cannot mask a descriptor mismatch', () async {
+    final matching = await realWallet(_missingFingerprint, _missing, '', false);
+    when(() => wallets.getWallets()).thenAnswer(
+      (_) async => Ok<List<Wallet>, WalletFailure>([
+        matching,
+        localWallet(_missingFingerprint, isDefault: true),
+      ]),
+    );
+    final result = await usecase.execute(
+      expectedFingerprint: _missingFingerprint,
+      words: _missing,
+    );
+    expect(result, isA<Err<void, AppStartupFailure>>());
+    expect(storage.entries, isEmpty);
+  });
 
   test('refuses to write when no Bitcoin descriptor is available', () async {
-    when(
-      () => wallets.getWallets(),
-    ).thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
+    when(() => wallets.getWallets())
+        .thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
     final result = await usecase.execute(
       expectedFingerprint: _missingFingerprint,
       words: _missing,
