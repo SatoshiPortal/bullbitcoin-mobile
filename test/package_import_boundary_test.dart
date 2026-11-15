@@ -15,7 +15,7 @@ const _knownExceptions = <String, Set<String>>{
   'test/features/wallet/domain/get_external_tor_proxy_status_usecase_test.dart':
       {'package:bull_tor/src/domain/ports/external_tor_port.dart'},
   // The default-passphrase device test assembles the RecoverBull vault flow from its internals.
-  'integration_test/default_passphrase_device_test.dart': {
+  'integration_test/device/default_passphrase_device_test.dart': {
     'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart',
     'package:bull_recoverbull/src/data/secrets_vault_repository.dart',
     'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart',
