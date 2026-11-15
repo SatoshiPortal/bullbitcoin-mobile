@@ -10,8 +10,18 @@ import '../domain/ports/network_presence_port.dart';
 import '../domain/tor_failure.dart';
 import '../domain/tor_repository.dart';
 
+/// A direct bootstrap that has not finished in this time will not.
+const defaultDirectBudget = Duration(minutes: 2);
+
+/// Snowflake reaches Tor through volunteer proxies and can take minutes on a
+/// filtered network. Provisional until field measurements set it.
+const defaultSnowflakeBudget = Duration(minutes: 15);
+
 /// Marks a direct attempt ended by a persistent censorship verdict.
-const _censoredOutcome = Object();
+final _censoredOutcome = Object();
+
+/// Marks an attempt that outlived its budget.
+final _expiredOutcome = Object();
 
 final class TorRepositoryImpl implements TorRepository {
   final EmbeddedTorPort _embeddedTor;
@@ -21,6 +31,9 @@ final class TorRepositoryImpl implements TorRepository {
   /// How long a censorship verdict must hold before automatic mode stops the
   /// direct attempt and switches to Snowflake.
   final Duration _censorshipFallbackAfter;
+  final Duration _directBudget;
+  final Duration _snowflakeBudget;
+  final DateTime Function() _now;
   final StreamController<TorConnectionState> _changes =
       StreamController<TorConnectionState>.broadcast(sync: true);
 
@@ -46,6 +59,9 @@ final class TorRepositoryImpl implements TorRepository {
     Future<void> Function(TorTransport)? onSuccessfulTransport,
     NetworkPresencePort? network,
     Duration censorshipFallbackAfter = const Duration(seconds: 15),
+    Duration directBudget = defaultDirectBudget,
+    Duration snowflakeBudget = defaultSnowflakeBudget,
+    DateTime Function()? now,
   }) => TorRepositoryImpl._(
     embeddedTor,
     initialMode,
@@ -53,6 +69,9 @@ final class TorRepositoryImpl implements TorRepository {
     onSuccessfulTransport,
     network,
     censorshipFallbackAfter,
+    directBudget,
+    snowflakeBudget,
+    now ?? DateTime.now,
   );
 
   TorRepositoryImpl._(
@@ -62,6 +81,9 @@ final class TorRepositoryImpl implements TorRepository {
     this._onSuccessfulTransport,
     this._network,
     this._censorshipFallbackAfter,
+    this._directBudget,
+    this._snowflakeBudget,
+    this._now,
   );
 
   @override
@@ -196,6 +218,7 @@ final class TorRepositoryImpl implements TorRepository {
     // Censorship watch for the attempt in flight: a verdict that holds for
     // [_censorshipFallbackAfter] ends a direct attempt that has a fallback.
     var circumvention = false;
+    DateTime? deadline;
     Completer<void>? censored;
     Timer? censorshipTimer;
     void watchCensorship(TorDiagnostic? diagnostic) {
@@ -228,6 +251,7 @@ final class TorRepositoryImpl implements TorRepository {
               diagnostic: classified,
               transport: transport,
               circumvention: circumvention,
+              deadline: deadline,
             ),
           );
         case EmbeddedTorReady(:final endpoint, :final transport):
@@ -247,27 +271,45 @@ final class TorRepositoryImpl implements TorRepository {
       censorshipTimer = null;
       final pendingCensorship = hasFallback ? Completer<void>() : null;
       censored = pendingCensorship;
+      final budget = transport == TorTransport.snowflake
+          ? _snowflakeBudget
+          : _directBudget;
+      deadline = _now().add(budget);
+      final expired = Completer<void>();
+      final budgetTimer = Timer(budget, () {
+        if (!expired.isCompleted) expired.complete();
+      });
       _emit(
         TorConnecting(
           source: TorSource.embedded,
           transport: transport,
           circumvention: circumvention,
+          deadline: deadline,
         ),
       );
       try {
         final start = _embeddedTor.start(transport);
-        final Object? outcome = pendingCensorship == null
-            ? await start
-            : await Future.any<Object?>([
-                start,
-                pendingCensorship.future.then((_) => _censoredOutcome),
-              ]);
+        final Object? outcome = await Future.any<Object?>([
+          start,
+          expired.future.then((_) => _expiredOutcome),
+          if (pendingCensorship != null)
+            pendingCensorship.future.then((_) => _censoredOutcome),
+        ]);
         if (!_isCurrent(generation)) return _current;
-        if (identical(outcome, _censoredOutcome)) {
+        if (identical(outcome, _censoredOutcome) ||
+            identical(outcome, _expiredOutcome)) {
           // The interrupted start fails with a cancellation nobody awaits.
           unawaited(start.then((_) {}, onError: (_) {}));
           await _embeddedTor.stop();
           if (!_isCurrent(generation)) return _current;
+          if (identical(outcome, _expiredOutcome) && !hasFallback) {
+            return _fail(
+              generation,
+              TorBootstrapTimeoutFailure(
+                '${transport.name} not ready within ${budget.inSeconds}s',
+              ),
+            );
+          }
           circumvention = true;
           continue;
         }
@@ -287,6 +329,7 @@ final class TorRepositoryImpl implements TorRepository {
       } catch (error) {
         return _fail(generation, TorUnexpectedFailure(error.toString()));
       } finally {
+        budgetTimer.cancel();
         censorshipTimer?.cancel();
         censorshipTimer = null;
       }

@@ -50,12 +50,16 @@ final class TorConnecting extends TorConnectionState {
   /// This attempt circumvents a network that appeared to block direct Tor.
   final bool circumvention;
 
+  /// When this attempt gives up if Tor is still not ready.
+  final DateTime? deadline;
+
   const TorConnecting({
     required this.source,
     this.progress,
     this.diagnostic,
     this.transport,
     this.circumvention = false,
+    this.deadline,
   });
 }
 
