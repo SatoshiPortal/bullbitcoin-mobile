@@ -1,5 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
+
 import 'data/datasources/export_logs_datasource.dart';
 import 'data/datasources/logger_logs_datasource.dart';
 import 'data/datasources/share_logs_datasource.dart';

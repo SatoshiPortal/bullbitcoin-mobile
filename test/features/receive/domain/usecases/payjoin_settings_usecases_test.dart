@@ -34,9 +34,8 @@ void main() {
     test('an empty stream throws on .first — that must become a failure, '
         'never escape into the bloc', () async {
       final settings = _MockSettingsFacade();
-      when(
-        () => settings.watchPayjoinReceivePolicy(),
-      ).thenAnswer((_) => const Stream.empty());
+      when(() => settings.watchPayjoinReceivePolicy())
+          .thenAnswer((_) => const Stream.empty());
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
 
@@ -55,9 +54,8 @@ void main() {
     test('an errored stream becomes a failure carrying the raw reason in '
         'logMessage only', () async {
       final settings = _MockSettingsFacade();
-      when(
-        () => settings.watchPayjoinReceivePolicy(),
-      ).thenAnswer((_) => Stream.error(StateError(_rawReason)));
+      when(() => settings.watchPayjoinReceivePolicy())
+          .thenAnswer((_) => Stream.error(StateError(_rawReason)));
 
       final result = await GetReceivePayjoinPolicyUsecase(settings).execute();
 
@@ -119,9 +117,8 @@ void main() {
   group('FetchReceiveNoteSuggestionsUsecase', () {
     test('converts a throw into a sanitized failure', () async {
       final labels = _MockLabelsFacade();
-      when(
-        () => labels.fetchDistinctLabels(type: any(named: 'type')),
-      ).thenThrow(Exception('drift: no such table labels'));
+      when(() => labels.fetchDistinctLabels(type: any(named: 'type')))
+          .thenThrow(Exception('drift: no such table labels'));
 
       final result = await FetchReceiveNoteSuggestionsUsecase(labels).execute();
 
@@ -137,16 +134,14 @@ void main() {
     test('scopes suggestions to address labels — a transaction label is '
         'private and must never become a BIP21 message=', () async {
       final labels = _MockLabelsFacade();
-      when(
-        () => labels.fetchDistinctLabels(type: any(named: 'type')),
-      ).thenAnswer((_) async => {'lunch'});
+      when(() => labels.fetchDistinctLabels(type: any(named: 'type')))
+          .thenAnswer((_) async => {'lunch'});
 
       final result = await FetchReceiveNoteSuggestionsUsecase(labels).execute();
       expect(result, isA<Ok<Set<String>, ReceiveFailure>>());
 
-      verify(
-        () => labels.fetchDistinctLabels(type: LabelType.address),
-      ).called(1);
+      verify(() => labels.fetchDistinctLabels(type: LabelType.address))
+          .called(1);
     });
   });
 }

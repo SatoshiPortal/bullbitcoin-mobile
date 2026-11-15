@@ -18,7 +18,7 @@ import 'package:bb_mobile/features/limit_orders/presentation/limit_orders_failur
 import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_order_detail_row.dart';
 import 'package:bb_mobile/features/limit_orders/ui/widgets/limit_orders_loading_bar.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -98,7 +98,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
               child: BBKeyboardActions(
                 disableScroll: true,
                 nextFocus: false,
-                focusNodes: [_limitPriceNode, _discountNode, _amountNode],
                 child: _body(context, state),
               ),
             ),

@@ -1,19 +1,30 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+
 import 'dart:io';
-import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
-import 'package:bb_mobile/core/wallet/domain/consolidation_required_exception.dart';
+
+import 'package:sync/sync.dart'
+    show
+        SyncConsolidationRequiredFailure,
+        SyncFailure,
+        SyncInsufficientFundsFailure,
+        SyncNoSpendableInputsFailure,
+        SyncProtectedInputsFailure,
+        SyncStorageFailure,
+        UnsignedSpend,
+        WalletKey,
+        WalletRevision;
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,8 +35,9 @@ class _MockMetadataDatasource extends Mock
 
 class _MockLwkDatasource extends Mock implements LwkWalletDatasource {}
 
-class _MockFrozenDatasource extends Mock
-    implements FrozenWalletUtxoDatasource {}
+class _MockValues extends Mock implements SyncWalletValuesDatasource {}
+
+class _MockFrozenDatasource extends Mock implements SyncFreezesDatasource {}
 
 void main() {
   const walletId = 'elwpkh([73c5da0a/84h/1h/0h])';
@@ -33,8 +45,10 @@ void main() {
   const second = (txId: 'second', vout: 1);
   const fee = RelativeFee(25);
   late _MockLwkDatasource lwk;
+  late _MockValues values;
   late _MockFrozenDatasource frozen;
   late LiquidWalletRepository repository;
+  late Result<UnsignedSpend, SyncFailure> built;
   late FakeSecureStoragePlatform store;
 
   setUpAll(() {
@@ -51,6 +65,7 @@ void main() {
   setUp(() {
     final metadata = _MockMetadataDatasource();
     lwk = _MockLwkDatasource();
+    values = _MockValues();
     frozen = _MockFrozenDatasource();
     store = FakeSecureStoragePlatform()..install();
     final scratch = Directory.systemTemp.createTempSync('ben-liquid-test-');
@@ -59,7 +74,8 @@ void main() {
       walletMetadataDatasource: metadata,
       secrets: Secrets(scratchDirectory: () async => scratch.path),
       lwkWalletDatasource: lwk,
-      frozenWalletUtxoDatasource: frozen,
+      walletValuesDatasource: values,
+      freezesDatasource: frozen,
       // The address check needs lwk's native library; these tests cover
       // selection, so they accept every address.
       validateAddress: (_, _) async => const Ok(null),
@@ -79,19 +95,17 @@ void main() {
         isDefault: false,
       ),
     );
-    when(() => frozen.getAllFrozen()).thenAnswer((_) async => []);
-    when(() => lwk.getUtxos(wallet: any(named: 'wallet'))).thenAnswer(
-      (_) async => [
-        for (final coin in [first, second])
-          WalletUtxoModel.liquid(
-            txId: coin.txId,
-            vout: coin.vout,
-            amountSat: BigInt.from(50000),
-            scriptPubkey: '',
-            standardAddress: 'tex1address',
-            confidentialAddress: 'tlq1address',
-          ),
-      ],
+    when(() => frozen.getFrozenOutpoints()).thenAnswer((_) async => {});
+    built = Ok(
+      UnsignedSpend(
+        revision: WalletRevision(
+          key: WalletKey(id: walletId, network: LiquidNetwork.testnet),
+          generation: 1,
+          revision: 1,
+        ),
+        encoded: 'pset',
+        inputs: const [],
+      ),
     );
     when(
       () => lwk.buildPset(
@@ -102,7 +116,7 @@ void main() {
         drain: any(named: 'drain'),
         selectedInputs: any(named: 'selectedInputs'),
       ),
-    ).thenAnswer((_) async => 'pset');
+    ).thenAnswer((_) async => built);
   });
 
   Future<Result<String, WalletFailure>> build({Set<Outpoint>? selected}) =>
@@ -128,61 +142,36 @@ void main() {
           as Set<Outpoint>?;
 
   test('passes exactly the selected outpoints to the builder', () async {
-    await build(selected: {second});
+    expect(await build(selected: {second}), isA<Ok<String, WalletFailure>>());
     expect(builtInputs(), {second});
   });
 
-  test('preserves automatic selection when no coins are frozen', () async {
+  test('leaves the selection and the freezes to sync', () async {
     await build();
     expect(builtInputs(), isNull);
+    verifyZeroInteractions(frozen);
   });
 
-  test('excludes frozen coins from automatic sends', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [(walletId: walletId, txId: first.txId, vout: first.vout)],
-    );
-    await build();
-    expect(builtInputs(), {second});
-  });
-
-  for (final selection in <Set<Outpoint>>[
-    {},
-    {first, (txId: 'missing', vout: 0)},
-  ]) {
-    test('rejects an unavailable selection $selection', () async {
-      expect(
-        (await build(selected: selection) as Err<String, WalletFailure>)
-            .failure,
-        isA<WalletSelectedInputsUnavailableFailure>(),
-      );
-      verifyNever(
-        () => lwk.buildPset(
-          wallet: any(named: 'wallet'),
-          address: any(named: 'address'),
-          feeRate: any(named: 'feeRate'),
-          amountSat: any(named: 'amountSat'),
-          drain: any(named: 'drain'),
-          selectedInputs: any(named: 'selectedInputs'),
-        ),
-      );
-    });
-  }
-
-  test('rejects a selected coin frozen after it was selected', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [(walletId: walletId, txId: first.txId, vout: first.vout)],
-    );
+  test('rejects an empty selection before sync', () async {
     expect(
-      (await build(selected: {first, second}) as Err<String, WalletFailure>)
-          .failure,
+      (await build(selected: {}) as Err<String, WalletFailure>).failure,
       isA<WalletSelectedInputsUnavailableFailure>(),
+    );
+    verifyNever(
+      () => lwk.buildPset(
+        wallet: any(named: 'wallet'),
+        address: any(named: 'address'),
+        feeRate: any(named: 'feeRate'),
+        amountSat: any(named: 'amountSat'),
+        drain: any(named: 'drain'),
+        selectedInputs: any(named: 'selectedInputs'),
+      ),
     );
   });
 
   test('does not sign a PSET that spends a newly frozen coin', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [(walletId: walletId, txId: first.txId, vout: first.vout)],
-    );
+    when(() => frozen.getFrozenOutpoints())
+        .thenAnswer((_) async => {(txId: first.txId, vout: first.vout)});
     when(() => lwk.getPsetInputs('pset')).thenReturn({first});
     await expectLater(
       repository.signPset(pset: 'pset', walletId: walletId),
@@ -191,41 +180,32 @@ void main() {
     expect(store.reads, 0);
   });
 
-  test('rejects automatic sends when all coins are frozen', () async {
-    when(() => frozen.getAllFrozen()).thenAnswer(
-      (_) async => [
-        for (final coin in [first, second])
-          (walletId: walletId, txId: coin.txId, vout: coin.vout),
-      ],
-    );
-    expect(
-      (await build() as Err<String, WalletFailure>).failure,
-      isA<WalletNoSpendableInputsFailure>(),
-    );
-  });
-  for (final (exception, matcher) in <(Exception, Matcher)>[
+  for (final (failure, selected, matcher) in <(SyncFailure, bool, Matcher)>[
     (
-      InsufficientFundsException('shortfall'),
+      const SyncInsufficientFundsFailure(),
+      false,
       isA<WalletInsufficientFundsFailure>(),
     ),
     (
-      ConsolidationRequiredException('limit'),
+      const SyncConsolidationRequiredFailure(),
+      false,
       isA<WalletConsolidationRequiredFailure>(),
     ),
-    (Exception('private SDK diagnostic'), isA<WalletTransactionBuildFailure>()),
+    (
+      SyncProtectedInputsFailure(frozen: {first}),
+      true,
+      isA<WalletSelectedInputsUnavailableFailure>(),
+    ),
+    (
+      const SyncNoSpendableInputsFailure(),
+      false,
+      isA<WalletNoSpendableInputsFailure>(),
+    ),
+    (const SyncStorageFailure(), false, isA<WalletTransactionBuildFailure>()),
   ]) {
-    test('maps ${exception.runtimeType} at the builder boundary', () async {
-      when(
-        () => lwk.buildPset(
-          wallet: any(named: 'wallet'),
-          address: any(named: 'address'),
-          feeRate: any(named: 'feeRate'),
-          amountSat: any(named: 'amountSat'),
-          drain: any(named: 'drain'),
-          selectedInputs: any(named: 'selectedInputs'),
-        ),
-      ).thenThrow(exception);
-      final result = await build(selected: {first});
+    test('maps ${failure.logCode} from sync\'s builder', () async {
+      built = Err(failure);
+      final result = await build(selected: selected ? {first} : null);
       expect((result as Err<String, WalletFailure>).failure, matcher);
       expect(store.reads, 0);
     });

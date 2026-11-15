@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A compact "Sync" text button whose leading icon spins while [syncing] is
 /// true. **New.** Encapsulates the rotation animation so feature code (which may

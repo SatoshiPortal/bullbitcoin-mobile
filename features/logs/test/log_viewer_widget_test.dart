@@ -13,7 +13,7 @@ import 'package:bull_logs/src/presentation/logs_state.dart';
 import 'package:bull_logs/src/ui/log_settings_screen.dart';
 import 'package:bull_logs/src/ui/log_viewer_widget.dart';
 import 'package:bull_logs/generated/l10n/logs_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -399,9 +399,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 120));
     expect(cubit.state.visibleEntries, [info]);
 
-    Navigator.of(
-      tester.element(find.byKey(const ValueKey('logs-search'))),
-    ).pop();
+    Navigator.of(tester.element(find.byKey(const ValueKey('logs-search'))))
+        .pop();
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('logs-share')));
     await tester.pumpAndSettle();

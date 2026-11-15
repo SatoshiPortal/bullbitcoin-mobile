@@ -38,9 +38,8 @@ void main() {
   group('StoreLabelUsecase', () {
     test('maps a repository failure to a sanitized LabelFailure '
         'without leaking the raw exception', () async {
-      when(
-        () => repository.store(any()),
-      ).thenThrow(Exception('drift: UNIQUE constraint failed'));
+      when(() => repository.store(any()))
+          .thenThrow(Exception('drift: UNIQUE constraint failed'));
 
       final result = await usecase.execute(newLabel);
 

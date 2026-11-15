@@ -160,9 +160,8 @@ void main() {
           '${type.name} on ${network.name} keeps the bank order type',
           () async {
             final order = _MockFiatPaymentOrder();
-            when(
-              payjoinPolicy.load,
-            ).thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
+            when(payjoinPolicy.load)
+                .thenAnswer((_) async => Ok(PayjoinPolicy.defaults()));
             final processor = type == RecipientType.confidentialSepaEur
                 ? SepaPaymentProcessor.confidential
                 : SepaPaymentProcessor.regular;
@@ -280,9 +279,8 @@ void main() {
 
   group('payjoin follows the sell switch only', () {
     Future<bool> requestedPayjoin(PayjoinPolicy policy) async {
-      when(
-        payjoinPolicy.load,
-      ).thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(policy));
+      when(payjoinPolicy.load)
+          .thenAnswer((_) async => Ok<PayjoinPolicy, PayjoinFailure>(policy));
       when(
         () => mainnet.placeSellOrder(
           orderAmount: any(named: 'orderAmount'),

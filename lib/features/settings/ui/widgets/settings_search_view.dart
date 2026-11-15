@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_search.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
 
 /// The settings search surface: a field, and the results for what it holds.
@@ -133,9 +133,8 @@ class _Message extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyLarge?.copyWith(color: context.appColors.textMuted),
+          style: Theme.of(context).textTheme.bodyLarge
+              ?.copyWith(color: context.appColors.textMuted),
         ),
       ),
     );

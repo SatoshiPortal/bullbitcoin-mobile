@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_scaffold.dart';
@@ -10,9 +11,9 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_network_selection.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSegmented;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Wallet wallet(Network network, {SignerEntity signer = SignerEntity.local}) =>
@@ -44,7 +45,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: ReceiveNetworkSelection(wallet: wallet(network)),
@@ -99,7 +100,7 @@ void main() {
           MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
         );

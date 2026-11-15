@@ -196,9 +196,8 @@ void main() {
           (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
       final fingerprint = stored.value.id.hex;
 
-      final result = await GetSecretFromFingerprintUsecase(
-        secrets: secrets,
-      ).execute(fingerprint);
+      final result = await GetSecretFromFingerprintUsecase(secrets: secrets)
+          .execute(fingerprint);
 
       final secret = (result as Ok<Secret, TestWalletBackupFailure>).value;
       expect(secret.id.hex, fingerprint);

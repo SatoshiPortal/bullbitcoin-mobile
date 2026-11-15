@@ -1,6 +1,5 @@
-import 'package:transaction_sync/read.dart';
-import 'package:transaction_sync/transaction_sync.dart'
-    show TransactionSyncBusyFailure;
+import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:sync/sync.dart' show SyncBusyFailure;
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_kind.dart';
 import 'package:bb_mobile/features/wallet/domain/sync_trigger.dart';
@@ -37,9 +36,7 @@ void main() {
     test('busy round preserves classification, mixed=$mixed', () async {
       when(() => coordinator.sync(trigger: any(named: 'trigger'))).thenThrow(
         SyncCoordinatorException({
-          SyncKind.bitcoin: const WalletSnapshotException(
-            TransactionSyncBusyFailure(),
-          ),
+          SyncKind.bitcoin: const WalletSnapshotException(SyncBusyFailure()),
           if (mixed) SyncKind.liquid: Exception('connection'),
         }),
       );
@@ -52,17 +49,15 @@ void main() {
   }
 
   test('a completed sync round is Ok', () async {
-    when(
-      () => coordinator.sync(trigger: any(named: 'trigger')),
-    ).thenAnswer((_) async {});
+    when(() => coordinator.sync(trigger: any(named: 'trigger')))
+        .thenAnswer((_) async {});
 
     expect(await usecase.execute(), isA<Ok<void, WalletFailure>>());
   });
 
   test('forwards the trigger it was given', () async {
-    when(
-      () => coordinator.sync(trigger: any(named: 'trigger')),
-    ).thenAnswer((_) async {});
+    when(() => coordinator.sync(trigger: any(named: 'trigger')))
+        .thenAnswer((_) async {});
 
     // The result is asserted too because `execute` is `@useResult` — the
     // annotation is doing its job here and discarding it is a warning.

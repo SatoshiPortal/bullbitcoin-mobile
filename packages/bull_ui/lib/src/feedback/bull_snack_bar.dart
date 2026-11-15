@@ -4,7 +4,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Toast utility shown at the top of the screen, below the status bar, with an
 /// optional leading icon and an action (`actionLabel` + `onAction`), e.g. the
@@ -165,9 +165,8 @@ class _BullSnackBarContent extends StatelessWidget {
             // Centred in the pill, so a wrapped message stays balanced; with an
             // action the message keeps to the start, next to it.
             textAlign: hasAction ? TextAlign.start : TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: colors.text),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: colors.text),
           ),
         ),
         if (hasAction) ...[
@@ -177,10 +176,8 @@ class _BullSnackBarContent extends StatelessWidget {
             child: Text(
               actionLabel!,
               // Error reads as a warm red on both the light and the dark toast.
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colors.error,
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(context).textTheme.bodyLarge
+                  ?.copyWith(color: colors.error, fontWeight: FontWeight.w700),
             ),
           ),
         ],

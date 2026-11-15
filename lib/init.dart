@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/app_startup/public/app_startup_facade.dart';
+
 import 'dart:async';
+
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'package:bb_mobile/background_setup.dart';
@@ -74,6 +76,7 @@ class Bull {
       () => loadTorDiagnosticContext(settings, locator<Tor>()),
     );
     await refreshReportingConsent(settings);
+    await prepareBackgroundWalletStores(locator);
     await configureBackgroundTasks();
 
     await Report.recordMigration();

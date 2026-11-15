@@ -162,15 +162,14 @@ void main() {
   test('Bitcoin reports a failed BDK probe as offline', () async {
     final adapter = ServerStatusAdapter(
       const ElectrumSocketConnector(),
-      bdkProbe:
-          ({
-            required url,
-            required socks5,
-            required timeout,
-            required retry,
-            required validateDomain,
-            required isMainnet,
-          }) async => throw const SocketException('probe failed'),
+      bdkProbe: ({
+        required url,
+        required socks5,
+        required timeout,
+        required retry,
+        required validateDomain,
+        required isMainnet,
+      }) async => throw const SocketException('probe failed'),
     );
 
     final status = await adapter.checkElectrum(

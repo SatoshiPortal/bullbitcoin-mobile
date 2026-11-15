@@ -1,4 +1,5 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
+
 import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart';

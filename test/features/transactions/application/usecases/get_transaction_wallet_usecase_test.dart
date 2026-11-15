@@ -45,9 +45,8 @@ void main() {
 
   test('forwards the wallet on success', () async {
     final wallet = _wallet();
-    when(
-      () => getWallet.execute('w1', sync: false),
-    ).thenAnswer((_) async => wallet);
+    when(() => getWallet.execute('w1', sync: false))
+        .thenAnswer((_) async => wallet);
 
     final result = await usecase.execute('w1');
 
@@ -55,9 +54,8 @@ void main() {
   });
 
   test('catches the thrown core exception and returns a failure', () async {
-    when(
-      () => getWallet.execute('w1', sync: false),
-    ).thenThrow(GetWalletException('descriptor xprv9s21ZrQH... is corrupt'));
+    when(() => getWallet.execute('w1', sync: false))
+        .thenThrow(GetWalletException('descriptor xprv9s21ZrQH... is corrupt'));
 
     final result = await usecase.execute('w1');
 
@@ -69,9 +67,8 @@ void main() {
   });
 
   test('does not leak a bare runtime error either', () async {
-    when(
-      () => getWallet.execute('w1', sync: true),
-    ).thenThrow(StateError('wallet database is locked'));
+    when(() => getWallet.execute('w1', sync: true))
+        .thenThrow(StateError('wallet database is locked'));
 
     final result = await usecase.execute('w1', sync: true);
 

@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/recipients/public/recipient_filter_criteria.d
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/ui/widgets/confidential_sepa_availability_status.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
 

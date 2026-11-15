@@ -39,9 +39,8 @@ void main() {
     test(
       'returns Err(AppUnlockUnexpectedFailure) when storage throws',
       () async {
-        when(
-          () => storage.getValue(any()),
-        ).thenThrow(Exception('storage error'));
+        when(() => storage.getValue(any()))
+            .thenThrow(Exception('storage error'));
 
         final result = await repository.getFailedUnlockAttempts();
 
@@ -114,9 +113,8 @@ void main() {
     });
 
     test('getLockedUntil parses the stored epoch', () async {
-      when(
-        () => storage.getValue('unlockLockedUntilKey'),
-      ).thenAnswer((_) async => '1786000000000');
+      when(() => storage.getValue('unlockLockedUntilKey'))
+          .thenAnswer((_) async => '1786000000000');
 
       final result = await repository.getLockedUntil();
 
@@ -128,9 +126,8 @@ void main() {
     });
 
     test('getLockedUntil returns null when nothing is stored', () async {
-      when(
-        () => storage.getValue('unlockLockedUntilKey'),
-      ).thenAnswer((_) async => null);
+      when(() => storage.getValue('unlockLockedUntilKey'))
+          .thenAnswer((_) async => null);
 
       final result = await repository.getLockedUntil();
 
@@ -138,9 +135,8 @@ void main() {
     });
 
     test('getLockedUntil returns Err when storage throws', () async {
-      when(
-        () => storage.getValue('unlockLockedUntilKey'),
-      ).thenThrow(Exception('storage error'));
+      when(() => storage.getValue('unlockLockedUntilKey'))
+          .thenThrow(Exception('storage error'));
 
       final result = await repository.getLockedUntil();
 

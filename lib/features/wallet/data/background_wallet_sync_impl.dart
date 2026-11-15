@@ -1,15 +1,20 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
+import 'package:sync/write.dart';
 
-import 'wallet_payment_observer.dart';
-
-final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
+final class BackgroundWalletSyncImpl implements BackgroundWalletSyncPort {
   final WalletCatalogPort _catalog;
   final ElectrumSync _sync;
-  final WalletPaymentObserver? _observer;
 
-  const BackgroundWalletSyncImpl(this._catalog, this._sync, this._observer);
+  /// Collects the incoming history only when it can be announced.
+  final bool _collectIncoming;
+
+  const BackgroundWalletSyncImpl(
+    this._catalog,
+    this._sync, {
+    required this._collectIncoming,
+  });
 
   @override
   Future<Result<BackgroundSyncOutcome, BackgroundSyncFailure>> synchronize(
@@ -20,12 +25,12 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
     final descriptor = await _catalog.find(key);
     if (descriptor case Err(:final failure)) return Err(_failure(failure));
     final result = await _sync.execute(
-      (descriptor as Ok<PublicWalletDescriptor, TransactionSyncFailure>).value,
+      (descriptor as Ok<PublicWalletDescriptor, SyncFailure>).value,
       discover: discover,
       headless: true,
       reason: SyncReason.background,
       allowInitialScan: allowInitialScan,
-      onCompletion: _observer?.record,
+      collectIncoming: _collectIncoming,
     );
     return switch (result) {
       Ok(
@@ -50,41 +55,39 @@ final class BackgroundWalletSyncImpl implements BackgroundWalletSync {
     };
   }
 
-  BackgroundSyncFailure _failure(
-    TransactionSyncFailure failure,
-  ) => switch (failure) {
-    TransactionSyncInvalidAddressFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.address,
-      ),
-    TransactionSyncBusyFailure() => const BackgroundSyncBusyFailure(),
-    TransactionSyncUnsupportedNetworkFailure(:final authorization) =>
-      BackgroundSyncUnsupportedNetworkFailure(authorization: authorization),
-    TransactionSyncInitialScanRequiredFailure() =>
+  BackgroundSyncFailure _failure(SyncFailure failure) => switch (failure) {
+    SyncInvalidAddressFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.address,
+    ),
+    SyncBusyFailure() => const BackgroundSyncBusyFailure(),
+    SyncUnsupportedNetworkFailure() =>
+      const BackgroundSyncUnsupportedNetworkFailure(),
+    SyncUnauthorizedNetworkFailure() =>
+      const BackgroundSyncUnauthorizedNetworkFailure(),
+    SyncInitialScanRequiredFailure() =>
       const BackgroundSyncInitialScanRequiredFailure(),
-    TransactionSyncNeedsRepairFailure(
-      revision: final WalletRevision revision,
-    ) =>
+    SyncNeedsRepairFailure(revision: final WalletRevision revision) =>
       BackgroundSyncNeedsRepairFailure(revision),
-    TransactionSyncConnectionFailure() =>
-      const BackgroundSyncConnectionFailure(),
-    TransactionSyncStorageFailure() => const BackgroundSyncUnavailableFailure(
+    SyncConnectionFailure() => const BackgroundSyncConnectionFailure(),
+    SyncStorageFailure() => const BackgroundSyncUnavailableFailure(
       BackgroundSyncUnavailableReason.storage,
     ),
-    TransactionSyncInvalidCatalogFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.catalog,
-      ),
-    TransactionSyncNotFoundFailure() => const BackgroundSyncUnavailableFailure(
+    SyncInvalidCatalogFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.catalog,
+    ),
+    SyncNotFoundFailure() => const BackgroundSyncUnavailableFailure(
       BackgroundSyncUnavailableReason.missing,
     ),
-    TransactionSyncNeedsRepairFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.repair,
-      ),
-    TransactionSyncRestartRequiredFailure() =>
-      const BackgroundSyncUnavailableFailure(
-        BackgroundSyncUnavailableReason.restart,
-      ),
+    SyncNeedsRepairFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.repair,
+    ),
+    // A refresh decodes, builds and broadcasts nothing: chain and spend
+    // failures are unreachable.
+    SyncRestartRequiredFailure() ||
+    SyncClosedFailure() ||
+    SyncChainFailure() ||
+    SyncSpendFailure() => const BackgroundSyncUnavailableFailure(
+      BackgroundSyncUnavailableReason.restart,
+    ),
   };
 }

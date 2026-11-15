@@ -1,7 +1,7 @@
 import 'package:bull_ui/src/inputs/bull_input_text.dart';
 import 'package:bull_ui/src/inputs/labeled_input_frame.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A [BullInputText] with a bold label above it, set in a bordered card with
 /// a drop shadow.

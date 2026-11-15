@@ -163,9 +163,8 @@ void main() {
   test('writer returns the original failure without emitting it', () async {
     const failure = SettingsStorageFailure();
     const result = Err<void, SettingsFailure>(failure);
-    when(
-      () => setBitcoinUnit.execute(BitcoinUnit.sats),
-    ).thenAnswer((_) async => result);
+    when(() => setBitcoinUnit.execute(BitcoinUnit.sats))
+        .thenAnswer((_) async => result);
     expect(await cubit.setBitcoinUnit(BitcoinUnit.sats), same(result));
     expect(cubit.state.failure, isNull);
     expect(cubit.state.bitcoinUnit, BitcoinUnit.sats);
@@ -175,9 +174,8 @@ void main() {
 
   test('writer preserves settings changed during persistence', () async {
     final pending = Completer<Result<void, SettingsFailure>>();
-    when(
-      () => setBitcoinUnit.execute(BitcoinUnit.btc),
-    ).thenAnswer((_) => pending.future);
+    when(() => setBitcoinUnit.execute(BitcoinUnit.btc))
+        .thenAnswer((_) => pending.future);
     final write = cubit.setBitcoinUnit(BitcoinUnit.btc);
     cubit.seed(
       const SettingsEntity(

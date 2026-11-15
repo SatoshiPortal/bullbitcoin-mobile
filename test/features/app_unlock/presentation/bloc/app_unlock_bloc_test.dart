@@ -19,9 +19,8 @@ class MockAttemptUnlockWithPinCodeUsecase extends Mock
 void main() {
   test('emits failure when the keychain is locked', () async {
     final checkPinCodeExists = MockCheckPinCodeExistsUsecase();
-    when(
-      () => checkPinCodeExists.execute(),
-    ).thenAnswer((_) async => const Err(AppUnlockKeychainLockedFailure()));
+    when(() => checkPinCodeExists.execute())
+        .thenAnswer((_) async => const Err(AppUnlockKeychainLockedFailure()));
     final bloc = AppUnlockBloc(
       checkPinCodeExistsUsecase: checkPinCodeExists,
       getLatestUnlockAttemptUsecase: MockGetLatestUnlockAttemptUsecase(),

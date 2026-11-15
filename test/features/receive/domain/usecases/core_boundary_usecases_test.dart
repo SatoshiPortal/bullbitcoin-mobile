@@ -1,4 +1,5 @@
 import '../../../../fake_index_price_reader.dart';
+
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -73,9 +74,8 @@ void main() {
         ),
       ).thenAnswer((_) async => Ok([_wallet()]));
 
-      final result = await GetReceiveWalletsUsecase(
-        inner,
-      ).execute(onlyBitcoin: true);
+      final result = await GetReceiveWalletsUsecase(inner)
+          .execute(onlyBitcoin: true);
 
       expect(result, isA<Ok<List<Wallet>, ReceiveFailure>>());
     });
@@ -93,9 +93,8 @@ void main() {
           ),
         ).thenThrow(Exception(_rawReason));
 
-        final result = await GetReceiveWalletsUsecase(
-          inner,
-        ).execute(onlyBitcoin: true);
+        final result = await GetReceiveWalletsUsecase(inner)
+            .execute(onlyBitcoin: true);
 
         switch (result) {
           case Ok():
@@ -229,9 +228,8 @@ void main() {
         ),
       ).thenAnswer((_) async => _address());
 
-      final result = await PrepareReceiveAddressUsecase(
-        inner,
-      ).execute(walletId: 'w1');
+      final result = await PrepareReceiveAddressUsecase(inner)
+          .execute(walletId: 'w1');
 
       expect(result, isA<Ok<WalletAddress, ReceiveFailure>>());
     });
@@ -256,9 +254,8 @@ void main() {
           ),
         ).thenThrow(Exception(_rawReason));
 
-        final result = await PrepareReceiveAddressUsecase(
-          inner,
-        ).execute(walletId: 'w1');
+        final result = await PrepareReceiveAddressUsecase(inner)
+            .execute(walletId: 'w1');
 
         final lines = await log.readLogs();
         expect(lines.map((line) => line.split('\t').sublist(1, 3)), [
@@ -292,9 +289,8 @@ void main() {
         ),
       ).thenThrow(Exception(_rawReason));
 
-      final result = await GetReceiveAddressAtIndexUsecase(
-        inner,
-      ).execute(walletId: 'w1', index: 1);
+      final result = await GetReceiveAddressAtIndexUsecase(inner)
+          .execute(walletId: 'w1', index: 1);
 
       switch (result) {
         case Ok():

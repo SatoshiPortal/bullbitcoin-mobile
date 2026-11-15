@@ -169,9 +169,8 @@ void main() {
 
     test('derives and records at the allocated index', () async {
       stubWallets([defaultWallet]);
-      when(
-        () => bip85Repository.fetchNextIndexForApplication(any()),
-      ).thenAnswer((_) async => const Ok(3));
+      when(() => bip85Repository.fetchNextIndexForApplication(any()))
+          .thenAnswer((_) async => const Ok(3));
       when(
         () => bip85Repository.recordMnemonic(
           xprvFingerprint: any(named: 'xprvFingerprint'),
@@ -246,9 +245,8 @@ void main() {
 
     test('an index allocation failure is forwarded as-is', () async {
       stubWallets([defaultWallet]);
-      when(
-        () => bip85Repository.fetchNextIndexForApplication(any()),
-      ).thenAnswer((_) async => const Err(Bip85StorageFailure('no index')));
+      when(() => bip85Repository.fetchNextIndexForApplication(any()))
+          .thenAnswer((_) async => const Err(Bip85StorageFailure('no index')));
 
       expect(
         ((await usecase.execute(length: 30)) as Err).failure,
@@ -278,9 +276,8 @@ void main() {
         ),
       );
       stubWallets([defaultWallet.copyWith(network: Network.bitcoinTestnet)]);
-      when(
-        () => bip85Repository.fetchAll(),
-      ).thenAnswer((_) async => const Ok([]));
+      when(() => bip85Repository.fetchAll())
+          .thenAnswer((_) async => const Ok([]));
 
       expect(await usecase.execute(), isA<Ok>());
       verify(

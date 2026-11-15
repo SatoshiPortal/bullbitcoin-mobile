@@ -10,6 +10,8 @@ import 'package:dio/dio.dart';
 import 'package:payjoin/payjoin.dart' as pdk;
 import 'package:test/test.dart';
 
+import 'support/test_codec.dart';
+
 // Public ORIGINAL_PSBT and OHTTP key fixtures from payjoin-test-utils.
 const _originalPsbt =
     'cHNidP8BAHMCAAAAAY8nutGgJdyYGXWiBEb45Hoe9lWGbkxh/6bNiOJdCDuDAAAAAAD+////AtyVuAUAAAAAF6kUHehJ8GnSdBUOOv6ujXLrWmsJRDCHgIQeAAAAAAAXqRR3QJbbz0hnQ8IvQ0fptGn+votneofTAAAAAAEBIKgb1wUAAAAAF6kU3k4ekGHKWRNbA1rV5tR5kEVDVNCHAQcXFgAUx4pFclNVgo1WWAdN1SYNX8tphTABCGsCRzBEAiB8Q+A6dep+Rz92vhy26lT0AjZn4PRLi8Bf9qoB/CMk0wIgP/Rj2PWZ3gEjUkTlhDRNAQ0gXwTO7t9n+V14pZ6oljUBIQMVmsAaoNWHVMS02LfTSe0e388LNitPa1UQZyOihY+FFgABABYAFEb2Giu6c4KO5YW0pfw3lGp9jMUUAAA=';
@@ -43,7 +45,11 @@ void main() {
         },
       ),
     );
-    final datasource = PdkPayjoinDatasource(dio: dio, log: PayjoinLogger(port));
+    final datasource = PdkPayjoinDatasource(
+      dio: dio,
+      log: PayjoinLogger(port),
+      codec: const TestPayjoinCodec(),
+    );
     try {
       await expectLater(
         datasource.createSender(
@@ -160,6 +166,7 @@ Future<void> _expectSenderRoutes({
       ),
     );
     final datasource = PdkPayjoinDatasource(
+      codec: const TestPayjoinCodec(),
       dio: dio,
       log: PayjoinLogger.silent,
       servers: servers,

@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/widgets/coming_soon_bottom_sheet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_failure_l10n.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSegmented, Gap;
 

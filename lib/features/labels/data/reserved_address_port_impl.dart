@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
 import 'package:primitives/primitives.dart';
-import 'package:transaction_sync/transaction_sync.dart';
+import 'package:sync/sync.dart';
 
 final class ReservedAddressPortImpl implements ReservedAddressPort {
   final LabelsRepositoryPort _labels;
@@ -9,7 +9,7 @@ final class ReservedAddressPortImpl implements ReservedAddressPort {
   ReservedAddressPortImpl(this._labels);
 
   @override
-  Future<Result<bool, TransactionSyncFailure>> isReserved(
+  Future<Result<bool, SyncFailure>> isReserved(
     WalletKey key,
     String address,
   ) async {
@@ -19,7 +19,7 @@ final class ReservedAddressPortImpl implements ReservedAddressPort {
       final labels = await _labels.fetchByReference(address);
       return Ok(labels.any((label) => LabelSystem.isSystemLabel(label.label)));
     } on Exception {
-      return const Err(TransactionSyncStorageFailure());
+      return const Err(SyncStorageFailure());
     }
   }
 }

@@ -101,14 +101,12 @@ void main() {
         currencyCode: 'USD',
       ),
     );
-    when(
-      () => walletRepository.getWallets(environment: Environment.testnet),
-    ).thenAnswer(
-      (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
-    );
-    when(
-      () => swapRepository.getOngoingSwaps(walletId: 'liquid-wallet'),
-    ).thenAnswer((_) async => []);
+    when(() => walletRepository.getWallets(environment: Environment.testnet))
+        .thenAnswer(
+          (_) async => Ok([_wallet(liquid: true), _wallet(liquid: false)]),
+        );
+    when(() => swapRepository.getOngoingSwaps(walletId: 'liquid-wallet'))
+        .thenAnswer((_) async => []);
     when(() => getReceiveAddress.execute(walletId: 'liquid-wallet')).thenAnswer(
       (_) async => WalletAddress(
         walletId: 'liquid-wallet',
@@ -126,17 +124,15 @@ void main() {
         feeRate: any(named: 'feeRate'),
       ),
     ).thenAnswer((_) async => const Ok('pset'));
-    when(
-      () => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'),
-    ).thenAnswer((_) async => (100, 500));
-    when(
-      () => swapRepository.getSwapLimitsAndFees(SwapType.liquidToBitcoin),
-    ).thenAnswer(
-      (_) async => (
-        const SwapLimits(min: 3_570, max: 10_000_000),
-        const SwapFees(boltzPercent: 0.25, claimFee: 389),
-      ),
-    );
+    when(() => liquidWalletRepository.getPsetSizeAndAbsoluteFees(pset: 'pset'))
+        .thenAnswer((_) async => (100, 500));
+    when(() => swapRepository.getSwapLimitsAndFees(SwapType.liquidToBitcoin))
+        .thenAnswer(
+          (_) async => (
+            const SwapLimits(min: 3_570, max: 10_000_000),
+            const SwapFees(boltzPercent: 0.25, claimFee: 389),
+          ),
+        );
     when(
       () => swapRepository.createLiquidToBitcoinSwap(
         sendWalletId: 'liquid-wallet',
@@ -146,20 +142,18 @@ void main() {
         receiveWalletId: 'bitcoin-wallet',
       ),
     ).thenAnswer(
-      (_) async =>
-          Swap.chain(
-                id: 'swap-id',
-                keyIndex: 0,
-                type: SwapType.liquidToBitcoin,
-                status: SwapStatus.pending,
-                environment: Environment.testnet,
-                creationTime: DateTime.utc(2026),
-                sendWalletId: 'liquid-wallet',
-                paymentAddress: 'tlq1payin',
-                paymentAmount: 2_499_500,
-                receiveWalletId: 'bitcoin-wallet',
-              )
-              as ChainSwap,
+      (_) async => Swap.chain(
+        id: 'swap-id',
+        keyIndex: 0,
+        type: SwapType.liquidToBitcoin,
+        status: SwapStatus.pending,
+        environment: Environment.testnet,
+        creationTime: DateTime.utc(2026),
+        sendWalletId: 'liquid-wallet',
+        paymentAddress: 'tlq1payin',
+        paymentAmount: 2_499_500,
+        receiveWalletId: 'bitcoin-wallet',
+      ) as ChainSwap,
     );
     when(
       () => liquidWalletRepository.getAmountSentToAddress(
@@ -174,9 +168,8 @@ void main() {
         pset: 'pset',
       ),
     ).thenAnswer((_) async => 'signed-pset');
-    when(
-      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
-    ).thenAnswer((_) async => 'txid');
+    when(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
+        .thenAnswer((_) async => 'txid');
     when(
       () => swapRepository.updatePaidSendSwap(
         swapId: 'swap-id',
@@ -184,9 +177,8 @@ void main() {
         absoluteFees: 500,
       ),
     ).thenAnswer((_) async {});
-    when(
-      () => labelsFacade.store(any()),
-    ).thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
+    when(() => labelsFacade.store(any()))
+        .thenAnswer((_) async => const Err(LabelUnexpectedFailure()));
   });
 
   test('stops before signing when Liquid build 1 returns Err', () async {
@@ -246,9 +238,8 @@ void main() {
 
     expect(result, isA<Ok<String, AutoswapFailure>>());
     expect((result as Ok<String, AutoswapFailure>).value, 'swap-id');
-    verify(
-      () => walletRepository.getWallets(environment: Environment.testnet),
-    ).called(1);
+    verify(() => walletRepository.getWallets(environment: Environment.testnet))
+        .called(1);
     verify(
       () => swapRepository.createLiquidToBitcoinSwap(
         sendWalletId: 'liquid-wallet',
@@ -258,8 +249,7 @@ void main() {
         receiveWalletId: 'bitcoin-wallet',
       ),
     ).called(1);
-    verify(
-      () => broadcastLiquid.execute('signed-pset', isTestnet: true),
-    ).called(1);
+    verify(() => broadcastLiquid.execute('signed-pset', isTestnet: true))
+        .called(1);
   });
 }

@@ -1,7 +1,7 @@
 import '../../../frozen_outpoints_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
-import 'dart:io';
 
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/send/data/bitcoin_blockchain_repository.dart'
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/broadcast_signed_tx_failure.dart';
@@ -18,6 +19,15 @@ import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sync/sync.dart'
+    show
+        SyncAlreadyInChainFailure,
+        SyncBroadcastRejectedFailure,
+        SyncConnectionFailure,
+        SyncFailure,
+        SyncOutcomeUnknownFailure,
+        WalletConnection,
+        WalletConnectionPort;
 
 class _MockBroadcastBitcoinTransactionUsecase extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
@@ -25,8 +35,24 @@ class _MockBroadcastBitcoinTransactionUsecase extends Mock
 class _MockVerifySignedTxUsecase extends Mock
     implements VerifyBroadcastSignedTxUsecase {}
 
-class _MockBitcoinBlockchainRepository extends Mock
-    implements BitcoinBlockchainRepository {}
+/// A port whose every server failed with [failure]; it counts its runs.
+final class _Connections implements WalletConnectionPort {
+  final SyncFailure? failure;
+  var runs = 0;
+
+  _Connections(this.failure);
+
+  @override
+  Future<Result<T, SyncFailure>> run<T>({
+    required primitives.Network network,
+    required Future<Result<T, SyncFailure>> Function(WalletConnection)
+    operation,
+    required bool Function(SyncFailure) mayRetry,
+  }) async {
+    runs++;
+    return Err(failure ?? const SyncConnectionFailure());
+  }
+}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
@@ -153,24 +179,23 @@ void main() {
   );
 
   group('broadcast failure categories reach the screen', () {
-    late _MockBitcoinBlockchainRepository blockchain;
+    late _Connections connections;
     late _MockSettingsRepository settings;
 
     Future<BroadcastSignedTxCubit> broadcastThrough(
-      Object? nodeError, {
+      SyncFailure? failure, {
       app.Network network = app.Network.bitcoinMainnet,
     }) async {
-      if (nodeError != null) {
-        when(
-          () => blockchain.broadcastPsbt(any(), network: any(named: 'network')),
-        ).thenThrow(nodeError);
-      }
-      // The real use case, called without a wallet as Broadcast Transaction
-      // does, so the category travels from the mapper to the cubit.
+      connections = _Connections(failure);
+      // The real use case and repository, called without a wallet as
+      // Broadcast Transaction does, so the category sync reports travels to
+      // the cubit.
       final cubit = BroadcastSignedTxCubit(
         network: network,
         broadcastBitcoinTransactionUsecase: BroadcastBitcoinTransactionUsecase(
-          bitcoinBlockchainRepository: blockchain,
+          bitcoinBlockchainRepository: BitcoinBlockchainRepository(
+            connections: connections,
+          ),
           walletUtxoRepository: EmptyFrozenOutpoints(),
           settingsRepository: settings,
         ),
@@ -184,21 +209,12 @@ void main() {
       return cubit;
     }
 
-    setUpAll(() => registerFallbackValue(app.Network.bitcoinMainnet));
-
-    setUp(() {
-      blockchain = _MockBitcoinBlockchainRepository();
-      settings = _MockSettingsRepository();
-    });
+    setUp(() => settings = _MockSettingsRepository());
 
     // Regression (Pixel 6a): rebroadcasting a confirmed transaction said
     // "Check your internet connection" instead of reporting it confirmed.
     test('-27 reports a transaction already in the chain', () async {
-      final cubit = await broadcastThrough(
-        bdk.ProtocolElectrumException(
-          '{"code":2,"message":"sendrawtransaction RPC error -27: Transaction outputs already in utxo set"}',
-        ),
-      );
+      final cubit = await broadcastThrough(const SyncAlreadyInChainFailure());
 
       expect(cubit.state.failure, isA<TransactionAlreadyInChainFailure>());
     });
@@ -207,9 +223,7 @@ void main() {
     // transaction refused on the Pixel 6a; not a proof of its cause.
     test('-26 reports a rejected transaction', () async {
       final cubit = await broadcastThrough(
-        bdk.ProtocolElectrumException(
-          '{"code":2,"message":"sendrawtransaction RPC error -26: mandatory-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation)"}',
-        ),
+        const SyncBroadcastRejectedFailure(),
       );
 
       expect(cubit.state.failure, isA<TransactionRejectedFailure>());
@@ -218,17 +232,13 @@ void main() {
     // Propagation of the unexpected category, as for the PSBT pasted again
     // on the Pixel 6a; not a proof of a mempool cause.
     test('an unclassified failure leaves the outcome unknown', () async {
-      final cubit = await broadcastThrough(
-        bdk.AllAttemptsErroredElectrumException(),
-      );
+      final cubit = await broadcastThrough(const SyncOutcomeUnknownFailure());
 
       expect(cubit.state.failure, isA<BroadcastOutcomeUnknownFailure>());
     });
 
     test('only a connection failure blames the connection', () async {
-      final cubit = await broadcastThrough(
-        const SocketException('electrum.invalid'),
-      );
+      final cubit = await broadcastThrough(const SyncConnectionFailure());
 
       expect(cubit.state.failure, isA<BroadcastFailedFailure>());
     });
@@ -249,7 +259,7 @@ void main() {
       );
 
       expect(cubit.state.failure, isA<BroadcastNetworkNotEnabledFailure>());
-      verifyZeroInteractions(blockchain);
+      expect(connections.runs, 0);
     });
   });
 
@@ -261,9 +271,9 @@ void main() {
       'cHNidP8BAKQCAAAAA6DLc9RAdKwWQb/7Nrq1FyAtDQ3e0w5E4LkLpcrwBL0aAAAAAAD9////78NG2vqjywKaa0QHfo6C44o1+odXeWZ43FfHy4bLdxABAAAAAP3///8rhueJha90HzgJ6alnJ1uvi0Zbq0JQoXnwDb0Cjn79DwAAAAAA/f///wHWCBAAAAAAABYAFDraKFKubXzlSvRQy8V4X+TwKhLXAAAAAAAiAgIv4ZP089Gh3DcLFcr/Om6kI99LFHsT5XO9/AqiYPn5S0cwRAIgMJcGjoczA/ht/oTuE30a5StXa9l72t5+jayaURudfnECIGw+ymYS2RDszHL+KXRuoiNjvAUiIIKE7wa7+RKORevBAQAiAgJnXJ8+nIC4cTUtC795s+zlThrpxrAJRLHpGYkEQyw1x0cwRAIgH5pFuC079UUXzPJU1ya57Lak9Yc4NkAttmOEsNphd/cCIBnVkzO/wVfD5dxWKXbqdHazwUirh2zcY1MIH1skRqkbAQAiAgMUAdnwr2UVz6AhNBI5j6an4wHRGVX3uhSLaWy2qS70xkcwRAIgVrv+vZ9iG1njv8wrSCuhhLIlkMRqk4lxnHBRMHTzVWUCIELRLHVXUTyL0rFWA8aNADWjkOB/pepeQst7u2GryIylAQAA';
 
   test('finalizes a SeedSigner-trimmed PSBT before broadcasting', () async {
-    final signedTrimmedPsbt = bdk.Psbt(
-      psbtBase64: firstSignedTrimmedPsbt,
-    ).combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt)).serialize();
+    final signedTrimmedPsbt = bdk.Psbt(psbtBase64: firstSignedTrimmedPsbt)
+        .combine(other: bdk.Psbt(psbtBase64: secondSignedTrimmedPsbt))
+        .serialize();
     final broadcast = _MockBroadcastBitcoinTransactionUsecase();
     when(
       () => broadcast.execute(

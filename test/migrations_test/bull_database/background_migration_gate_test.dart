@@ -55,7 +55,7 @@ void main() {
       await db.close();
       final raw = sqlite3.open(file.path);
       raw.userVersion = SqliteDatabase.currentSchemaVersion + 1;
-      raw.dispose();
+      raw.close();
 
       expect(SqliteDatabase.isFileAtCurrentSchema(file), isFalse);
     });
@@ -84,6 +84,6 @@ int _userVersion(File file) {
   try {
     return db.userVersion;
   } finally {
-    db.dispose();
+    db.close();
   }
 }

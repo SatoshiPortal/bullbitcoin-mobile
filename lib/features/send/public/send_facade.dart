@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 
 export 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network;
+
 export '../domain/send_failure.dart';
 export 'send_route.dart';
 export 'send_route_args.dart';

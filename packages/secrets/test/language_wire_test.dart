@@ -29,16 +29,14 @@ void main() {
     expect(golden.keys.toSet(), bip39.Language.values.toSet());
   });
 
-  Map<String, dynamic> plaintextOf(String vault) =>
-      jsonDecode(
-            utf8.decode(
-              RecoverBull.restoreBackup(
-                backup: BullBackup.fromJson(vault),
-                backupKey: convert.hex.decode(backupKey),
-              ),
-            ),
-          )
-          as Map<String, dynamic>;
+  Map<String, dynamic> plaintextOf(String vault) => jsonDecode(
+    utf8.decode(
+      RecoverBull.restoreBackup(
+        backup: BullBackup.fromJson(vault),
+        backupKey: convert.hex.decode(backupKey),
+      ),
+    ),
+  ) as Map<String, dynamic>;
 
   String vaultWith(Map<String, dynamic> plaintext) => RecoverBull.createBackup(
     secret: utf8.encode(jsonEncode(plaintext)),
@@ -58,14 +56,12 @@ void main() {
       } else {
         expect(json['language'], wire);
       }
-      final decoded =
-          SecretModel.fromJson({
-                'mnemonicWords': words,
-                'passphrase': null,
-                'runtimeType': 'mnemonic',
-                'language': wire,
-              })
-              as MnemonicSecretModel;
+      final decoded = SecretModel.fromJson({
+        'mnemonicWords': words,
+        'passphrase': null,
+        'runtimeType': 'mnemonic',
+        'language': wire,
+      }) as MnemonicSecretModel;
       expect(decoded.language, language);
     });
 

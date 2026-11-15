@@ -82,17 +82,15 @@ void main() {
     });
 
     test('a null exchange rate and deadline parse', () {
-      final order =
-          OrderModel.fromJson(
-                orderJsonFixture(
-                  overrides: const {
-                    'exchangeRateAmount': null,
-                    'exchangeRateCurrency': null,
-                    'confirmationDeadline': null,
-                  },
-                ),
-              ).toEntity(isTestnet: false)
-              as BuyOrder;
+      final order = OrderModel.fromJson(
+        orderJsonFixture(
+          overrides: const {
+            'exchangeRateAmount': null,
+            'exchangeRateCurrency': null,
+            'confirmationDeadline': null,
+          },
+        ),
+      ).toEntity(isTestnet: false) as BuyOrder;
 
       expect(order.exchangeRateAmount, isNull);
       expect(order.exchangeRateCurrency, isNull);

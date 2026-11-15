@@ -1,6 +1,6 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A generic small pill: background + foreground + optional leading icon +
 /// text. **New.** Backs the keychain badge, Frozen marker, conf pill, and count

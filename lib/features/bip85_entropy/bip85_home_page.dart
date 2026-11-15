@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/widgets/bip85_derivation_widget.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/bip85_failure_l10n.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/state.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:bull_ui/bull_ui.dart'

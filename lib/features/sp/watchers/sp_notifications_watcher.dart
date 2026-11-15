@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:primitives/primitives.dart';
 
 import 'package:bull_logger/bull_logger.dart';

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 // Helper widget to avoid needing to repeat the mapping of the type with its
 // translation label per recipient type in multiple places.

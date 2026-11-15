@@ -7,12 +7,11 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-typedef OpenSelectedCoinsFlow =
-    Future<void> Function(
-      BuildContext context,
-      Wallet wallet,
-      Set<Outpoint> outpoints,
-    );
+typedef OpenSelectedCoinsFlow = Future<void> Function(
+  BuildContext context,
+  Wallet wallet,
+  Set<Outpoint> outpoints,
+);
 
 enum CoinsRoute {
   coins('/coins');

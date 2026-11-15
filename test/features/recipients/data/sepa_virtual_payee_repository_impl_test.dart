@@ -205,9 +205,9 @@ void main() {
       ]);
 
       expect(await statusOf('r-1'), SepaVirtualPayeeStatus.active);
-      final pages = sentRequests(
-        mainnet,
-      ).map((r) => (r['params'] as Map)['paginator']).toList();
+      final pages = sentRequests(mainnet)
+          .map((r) => (r['params'] as Map)['paginator'])
+          .toList();
       expect(pages, [
         {'page': 1, 'pageSize': 50},
         {'page': 2, 'pageSize': 50},

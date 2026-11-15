@@ -70,17 +70,15 @@ void main() {
 
   group('LoadAutoswapSettingsUsecase', () {
     test('returns only bitcoin wallets and the stored recipient', () async {
-      when(
-        () => getAutoSwap.execute(),
-      ).thenAnswer((_) async => const AutoSwap(recipientWalletId: 'stored'));
-      when(
-        () => wallets.getWallets(environment: any(named: 'environment')),
-      ).thenAnswer(
-        (_) async => Ok<List<Wallet>, WalletFailure>([
-          FakeWallet(id: 'btc', isLiquid: false, isDefault: true),
-          FakeWallet(id: 'lbtc', isLiquid: true, isDefault: true),
-        ]),
-      );
+      when(() => getAutoSwap.execute())
+          .thenAnswer((_) async => const AutoSwap(recipientWalletId: 'stored'));
+      when(() => wallets.getWallets(environment: any(named: 'environment')))
+          .thenAnswer(
+            (_) async => Ok<List<Wallet>, WalletFailure>([
+              FakeWallet(id: 'btc', isLiquid: false, isDefault: true),
+              FakeWallet(id: 'lbtc', isLiquid: true, isDefault: true),
+            ]),
+          );
 
       final result = await usecase.execute();
 
@@ -94,17 +92,15 @@ void main() {
     test(
       'falls back to the default bitcoin wallet when none is stored',
       () async {
-        when(
-          () => getAutoSwap.execute(),
-        ).thenAnswer((_) async => const AutoSwap());
-        when(
-          () => wallets.getWallets(environment: any(named: 'environment')),
-        ).thenAnswer(
-          (_) async => Ok<List<Wallet>, WalletFailure>([
-            FakeWallet(id: 'other', isLiquid: false, isDefault: false),
-            FakeWallet(id: 'default-btc', isLiquid: false, isDefault: true),
-          ]),
-        );
+        when(() => getAutoSwap.execute())
+            .thenAnswer((_) async => const AutoSwap());
+        when(() => wallets.getWallets(environment: any(named: 'environment')))
+            .thenAnswer(
+              (_) async => Ok<List<Wallet>, WalletFailure>([
+                FakeWallet(id: 'other', isLiquid: false, isDefault: false),
+                FakeWallet(id: 'default-btc', isLiquid: false, isDefault: true),
+              ]),
+            );
 
         final result = await usecase.execute();
 
@@ -129,12 +125,10 @@ void main() {
     });
 
     test('maps a failing wallet lookup to SettingsUnavailable', () async {
-      when(
-        () => getAutoSwap.execute(),
-      ).thenAnswer((_) async => const AutoSwap());
-      when(
-        () => wallets.getWallets(environment: any(named: 'environment')),
-      ).thenAnswer((_) async => throw Exception('bdk exploded'));
+      when(() => getAutoSwap.execute())
+          .thenAnswer((_) async => const AutoSwap());
+      when(() => wallets.getWallets(environment: any(named: 'environment')))
+          .thenAnswer((_) async => throw Exception('bdk exploded'));
 
       expect(
         failureOf(await usecase.execute()),

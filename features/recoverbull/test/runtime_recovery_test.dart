@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/src/data/secrets_vault_repository.dart';
@@ -10,7 +11,7 @@ import 'package:secrets/testing.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  FilePicker.platform = _Picker();
+  FilePickerPlatform.instance = _Picker();
   test(
     'corrupt metadata blocks the server but preserves manual recovery',
     () async {
@@ -30,10 +31,9 @@ void main() {
         fingerprint: Fingerprint('73c5da0a'),
         network: BitcoinNetwork.testnet,
       );
-      final backup =
-          (await SecretsVaultRepository(secrets).create(context)
-                  as Ok<VaultBackup, RecoverBullFailure>)
-              .value;
+      final backup = (await SecretsVaultRepository(
+        secrets,
+      ).create(context) as Ok<VaultBackup, RecoverBullFailure>).value;
       secure.entries.clear();
       final routes = _Routes();
       final owners = _Owners();
@@ -110,4 +110,4 @@ final class _Owners
       const Err(RecoverBullUnexpectedFailure());
 }
 
-final class _Picker extends FilePicker {}
+final class _Picker extends FilePickerPlatform {}

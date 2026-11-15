@@ -88,9 +88,8 @@ void main() {
 
     test('a saved choice survives into a fresh repository', () async {
       final storage = InMemoryKeyValueStorage();
-      await KeyValueSpAutoScanRepository(
-        storage: storage,
-      ).save(isEnabled: false);
+      await KeyValueSpAutoScanRepository(storage: storage)
+          .save(isEnabled: false);
 
       final reopened = KeyValueSpAutoScanRepository(storage: storage);
       await reopened.warmUp();

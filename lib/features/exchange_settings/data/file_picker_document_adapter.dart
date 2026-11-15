@@ -11,7 +11,9 @@ import 'package:primitives/primitives.dart';
 /// channel is awaited here, so a rejected or crashing picker becomes a
 /// `Result` rather than an exception reaching the cubit.
 class FilePickerDocumentAdapter implements DocumentPickerPort {
-  const FilePickerDocumentAdapter();
+  final FilePickerPlatform? _filePicker;
+
+  const FilePickerDocumentAdapter({this._filePicker});
 
   @override
   @useResult
@@ -19,26 +21,36 @@ class FilePickerDocumentAdapter implements DocumentPickerPort {
     required List<String> allowedExtensions,
   }) async {
     try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowMultiple: false,
-        allowedExtensions: allowedExtensions,
-        withData: true,
-      );
+      final result = await (_filePicker ?? FilePickerPlatform.instance)
+          .pickFile(
+            type: FileType.custom,
+            allowedExtensions: allowedExtensions,
+          );
 
-      if (result == null || result.files.isEmpty) {
+      if (result == null) {
         // Dismissed without choosing.
         return const Ok(null);
       }
 
-      final file = result.files.first;
+      final file = result;
 
+      final List<int> bytes;
+      try {
+        bytes = await file.readAsBytes();
+      } catch (e, st) {
+        log.severe(
+          message: 'Selected document could not be read',
+          error: e,
+          trace: st,
+        );
+        return const Err(ExchangeSettingsDocumentUnreadableFailure());
+      }
       return Ok(
         PickedDocument(
           name: file.name,
           extension: file.extension?.toLowerCase(),
-          sizeBytes: file.size,
-          bytes: file.bytes,
+          sizeBytes: bytes.length,
+          bytes: bytes,
         ),
       );
     } catch (e, st) {

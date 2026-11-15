@@ -36,12 +36,10 @@ void main() {
     'proposal retry forwards only the retained session id and maps refusal',
     () async {
       final sender = _MockPayjoinSender();
-      when(
-        () => sender.retryProposal('same-session'),
-      ).thenAnswer((_) async => const Err(PayjoinSpendBlockedFailure()));
-      final result = await RetryPayjoinProposalUsecase(
-        sender,
-      ).execute('same-session');
+      when(() => sender.retryProposal('same-session'))
+          .thenAnswer((_) async => const Err(PayjoinSpendBlockedFailure()));
+      final result = await RetryPayjoinProposalUsecase(sender)
+          .execute('same-session');
       expect(result, isA<core.Err<PayjoinSession, SendFailure>>());
       expect((result as core.Err).failure, isA<SendPayjoinPausedFailure>());
       verify(() => sender.retryProposal('same-session')).called(1);

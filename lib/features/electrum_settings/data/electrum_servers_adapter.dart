@@ -79,6 +79,7 @@ class ElectrumServersAdapter implements ElectrumServersPort {
             stopGap: settings.stopGap,
             validateDomain: settings.validateDomain,
             isCustom: server.isCustom,
+            // ⚠️ Liquid never goes through Tor: LWK has no SOCKS option.
             socks5: network.isLiquid ? null : settings.socks5,
           ),
         )

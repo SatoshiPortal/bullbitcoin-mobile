@@ -18,9 +18,8 @@ void main() {
   });
 
   test('returns Ok(true) when pin code is set', () async {
-    when(
-      () => pinCodeRepository.isPinCodeSet(),
-    ).thenAnswer((_) async => const Ok(true));
+    when(() => pinCodeRepository.isPinCodeSet())
+        .thenAnswer((_) async => const Ok(true));
 
     final result = await usecase.execute();
 
@@ -29,9 +28,8 @@ void main() {
   });
 
   test('returns Ok(false) when pin code is not set', () async {
-    when(
-      () => pinCodeRepository.isPinCodeSet(),
-    ).thenAnswer((_) async => const Ok(false));
+    when(() => pinCodeRepository.isPinCodeSet())
+        .thenAnswer((_) async => const Ok(false));
 
     final result = await usecase.execute();
 
@@ -59,9 +57,8 @@ void main() {
   test(
     'maps a keychain-locked repository failure without losing its type',
     () async {
-      when(
-        () => pinCodeRepository.isPinCodeSet(),
-      ).thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
+      when(() => pinCodeRepository.isPinCodeSet())
+          .thenAnswer((_) async => const Err(PinCodeKeychainLockedFailure()));
 
       final result = await usecase.execute();
 

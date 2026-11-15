@@ -3,8 +3,10 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_logs/src/ui/share_logs_bottom_sheet.dart';
 import 'package:bull_logs/src/presentation/logs_cubit.dart';
 import 'package:bull_logs/src/presentation/logs_state.dart';
+
 import 'log_viewer_widget.dart';
-import 'package:flutter/material.dart';
+
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
 

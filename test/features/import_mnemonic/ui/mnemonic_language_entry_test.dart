@@ -1,12 +1,13 @@
 import 'dart:io';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
+import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:flutter/material.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSecretTextInput;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';
 
@@ -19,7 +20,7 @@ Future<void> host(
 }) => tester.pumpWidget(
   MaterialApp(
     theme: AppTheme.themeData(AppThemeType.light),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: MnemonicWidget(
@@ -429,7 +430,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: MnemonicWidget(

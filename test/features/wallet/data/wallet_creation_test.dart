@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -20,12 +22,21 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
-import 'package:primitives/primitives.dart' show Ok;
-import 'package:transaction_sync/transaction_sync.dart'
-    show WalletConnectionPolicy, ReservedAddressPort, ElectrumSync, SyncReason;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:sync/sync.dart'
+    show
+        InputReservation,
+        InputReservationPort,
+        ReservedAddressPort,
+        SyncFailure,
+        SyncReason,
+        SyncNotFoundFailure,
+        WalletConnectionPort;
+import 'package:sync/write.dart' show ElectrumSync;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 
 import 'package:secrets/testing.dart';
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
@@ -35,7 +46,9 @@ class _Bitcoin extends Mock implements BdkWalletDatasource {}
 
 class _Liquid extends Mock implements LwkWalletDatasource {}
 
-class _Connections extends Mock implements WalletConnectionPolicy {}
+class _Values extends Mock implements SyncWalletValuesDatasource {}
+
+class _Connections extends Mock implements WalletConnectionPort {}
 
 class _Reserved extends Mock implements ReservedAddressPort {}
 
@@ -56,9 +69,8 @@ void main() {
     storage = FakeSecureStoragePlatform()..install();
     // Published BIP84 vector; the secret stays in the in-memory test keystore.
     final imported = await Secrets(scratchDirectory: () async => '/tmp').import(
-      words:
-          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
-              .split(' '),
+      words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+          .split(' '),
     );
     secret = (imported as Ok<Secret, SecretFailure>).value;
     row = await WalletMetadataService.deriveFromSecret(
@@ -69,9 +81,9 @@ void main() {
     );
     registerFallbackValue(row);
     registerFallbackValue(WalletModel.fromMetadata(row));
-    descriptor =
-        await WatchOnlyWalletEntity.parse(row.externalPublicDescriptor)
-            as WatchOnlyDescriptorEntity;
+    descriptor = await WatchOnlyWalletEntity.parse(
+      row.externalPublicDescriptor,
+    ) as WatchOnlyDescriptorEntity;
     directory = await Directory.systemTemp.createTemp('wallet-create-');
     reporter = _Reporter();
     await initializeLogging(directory: directory, reporter: reporter);
@@ -82,7 +94,8 @@ void main() {
     native = _Native();
     when(() => native.prepareCreate(any())).thenAnswer((_) async {});
     final bitcoin = _Bitcoin();
-    when(() => bitcoin.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
+    final values = _Values();
+    when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
       (_) async => BalanceModel(
         confirmedSat: BigInt.zero,
         immatureSat: BigInt.zero,
@@ -97,13 +110,13 @@ void main() {
       walletMetadataDatasource: metadata,
       bdkWalletDatasource: bitcoin,
       lwkWalletDatasource: _Liquid(),
-      synchronize:
-          (
-            _, {
-            discover = false,
-            allowInitialScan = true,
-            reason = SyncReason.auto,
-          }) async {},
+      walletValuesDatasource: values,
+      synchronize: (
+        _, {
+        discover = false,
+        allowInitialScan = true,
+        reason = SyncReason.auto,
+      }) async {},
       isSyncing: ({walletId}) => false,
       syncStarted: const Stream.empty(),
       syncFinished: const Stream.empty(),
@@ -164,22 +177,19 @@ void main() {
     },
   );
 
-  test(
-    'regression: unrelated settings commit during prepare does not abort import',
-    () async {
-      final observer = await independent();
-      when(() => native.prepareCreate(any())).thenAnswer((_) async {
-        await observer.customStatement('UPDATE settings SET rowid = rowid');
-      });
-      when(() => native.create(any())).thenAnswer((_) async {});
-      try {
-        await create('secret');
-        verify(() => native.create(any())).called(1);
-      } finally {
-        await observer.close();
-      }
-    },
-  );
+  test('regression: unrelated settings commit during prepare does not abort import', () async {
+    final observer = await independent();
+    when(() => native.prepareCreate(any())).thenAnswer((_) async {
+      await observer.customStatement('UPDATE settings SET rowid = rowid');
+    });
+    when(() => native.create(any())).thenAnswer((_) async {});
+    try {
+      await create('secret');
+      verify(() => native.create(any())).called(1);
+    } finally {
+      await observer.close();
+    }
+  });
 
   for (final path in ['secret', 'descriptor', 'xpub']) {
     test('$path rolls back failed native creation and permits retry', () async {
@@ -215,12 +225,16 @@ void main() {
     final runtime = WalletNativeRuntime(
       catalog: WalletCatalogPortImpl(metadata),
       reserved: _Reserved(),
+      inputReservations: _NoInputReservations(),
       metadata: metadata,
       sync: ElectrumSync(
         connections: _Connections(),
         documentsDirectory: () async => directory.path,
+        readRevision: (_) async => const Err(SyncNotFoundFailure()),
       ),
       documentsDirectory: () async => directory.path,
+      freezes: MemoryFreezeStore(),
+      connections: _Connections(),
     );
     when(() => native.create(any())).thenAnswer(
       (call) => runtime.create(
@@ -257,9 +271,8 @@ void main() {
   test('existing metadata survives a rejected creation', () async {
     final existing = row.copyWith(label: 'original');
     await metadata.store(existing);
-    when(
-      () => native.create(any()),
-    ).thenThrow(const FileSystemException('injected'));
+    when(() => native.create(any()))
+        .thenThrow(const FileSystemException('injected'));
     await expectLater(
       create('secret'),
       throwsA(isA<WalletAlreadyExistsException>()),
@@ -323,4 +336,10 @@ void _configure(Database db) {
   db.execute('PRAGMA busy_timeout = 2000');
   db.execute('PRAGMA journal_mode = WAL');
   db.execute('PRAGMA synchronous = FULL');
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
 }

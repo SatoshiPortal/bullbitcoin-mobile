@@ -12,9 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Security audit #2646 atomic BIP85 allocation', () {
     test('cubit serializes concurrent derivation actions', () {
-      final cubit = File(
-        'lib/features/bip85_entropy/presentation/cubit.dart',
-      ).readAsStringSync();
+      final cubit = File('lib/features/bip85_entropy/presentation/cubit.dart')
+          .readAsStringSync();
 
       expect(cubit, contains('_derivationInProgress'));
       expect(cubit, contains('if (_derivationInProgress) return;'));

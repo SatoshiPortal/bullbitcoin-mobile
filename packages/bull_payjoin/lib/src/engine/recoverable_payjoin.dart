@@ -5,6 +5,7 @@ import '../domain/payjoin_session.dart';
 import '../public/payjoin.dart';
 import '../public/payjoin_lifecycle.dart';
 import '../public/payjoin_roles.dart';
+
 import 'package:primitives/primitives.dart';
 
 typedef PayjoinLifecycleOpener =
@@ -246,6 +247,13 @@ final class _RecoverablePayjoinSessions implements PayjoinSessions {
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints() async {
     await _owner._readyForRoleCall();
     return _owner._delegate.sessions.reservedOutpoints();
+  }
+
+  @override
+  Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
+  inputReservations() async {
+    await _owner._readyForRoleCall();
+    return _owner._delegate.sessions.inputReservations();
   }
 }
 
