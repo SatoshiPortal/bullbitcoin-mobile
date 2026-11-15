@@ -15,6 +15,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullLabeledTextInput,
         BullSecretTextInput,
         BullShapesX,
+        BullSwitch,
         BullText,
         Gap;
 import 'package:flutter/foundation.dart';
@@ -245,6 +246,16 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
   // No setState: the inputs keep their own text, and nothing else displays it.
   void updatePassphrase(String value) => setState(() => passphrase = value);
 
+  /// Turning the passphrase off drops what was typed, so a field opened by
+  /// mistake never leaves a hidden passphrase behind.
+  void _setPassphraseEnabled(bool enabled) => setState(() {
+    _showPassphrase = enabled;
+    if (enabled) return;
+    passphrase = '';
+    _passphraseCleared = false;
+    _passphraseGeneration++;
+  });
+
   void updateLabel(String value) => label = value;
 
   void changeMnemonicLength(bip39.MnemonicLength value) {
@@ -452,11 +463,26 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
 
                   if (widget.allowPassphrase) ...[
                     const Gap(16),
-                    if (!_showPassphrase)
-                      TextButton(
-                        onPressed: () => setState(() => _showPassphrase = true),
-                        child: Text(context.loc.passphraseOption),
+                    MergeSemantics(
+                      child: InkWell(
+                        onTap: () => _setPassphraseEnabled(!_showPassphrase),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: BullText(
+                                context.loc.passphraseOption,
+                                style: context.font.bodyLarge,
+                              ),
+                            ),
+                            BullSwitch(
+                              key: const Key('mnemonicPassphraseSwitch'),
+                              value: _showPassphrase,
+                              onChanged: _setPassphraseEnabled,
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
                     if (_showPassphrase) ...[
                       BullText(
                         context.loc.passphraseOptionHelp,
