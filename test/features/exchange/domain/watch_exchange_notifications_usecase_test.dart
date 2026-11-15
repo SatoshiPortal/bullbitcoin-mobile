@@ -145,7 +145,7 @@ void main() {
   });
 
   test(
-    'sign out waits for a pending native connection to finish and close',
+    'a pending native handshake holds neither sign-out nor the trading guard',
     () async {
       SharedPreferences.setMockInitialValues({
         'exchange_access': '{"enabled":true,"signOutPending":false}',
@@ -177,26 +177,55 @@ void main() {
       );
       final connection = usecase.connect();
       await Future<void>.delayed(Duration.zero);
+      verify(repository.connect).called(1);
+
+      // A trading guard settles while the handshake is still pending.
+      final guard = await realAccess
+          .runAuthenticated(() async => const Ok(null))
+          .timeout(const Duration(seconds: 1));
+      expect(guard, isA<Ok>());
+
       final beforeSignOut = disconnects;
-      var signedOut = false;
-      final logout = realAccess.signOut().then((result) {
-        signedOut = true;
-        return result;
-      });
-      await Future<void>.delayed(Duration.zero);
-      final finishedBeforeConnection = signedOut;
-      final cutBeforeConnectionFinished = disconnects > beforeSignOut;
+      final logout = await realAccess.signOut().timeout(
+        const Duration(seconds: 1),
+      );
+      expect(logout, isA<Ok>());
+      expect(disconnects, greaterThan(beforeSignOut));
+      expect(realAccess.current, isA<ExchangeAccessDisabled>());
+
       pending.complete(const Ok(null));
-      final connectionResult = await connection;
-      final logoutResult = await logout;
-      expect(finishedBeforeConnection, isFalse);
-      expect(cutBeforeConnectionFinished, isTrue);
       expect(
-        _failureOf(connectionResult),
+        _failureOf(await connection),
         isA<ExchangeOperationStaleFailure>(),
       );
-      expect(logoutResult, isA<Ok>());
-      expect(disconnects, greaterThanOrEqualTo(1));
+    },
+  );
+
+  test(
+    'sign-out started during the environment read opens no socket',
+    () async {
+      final environment = Completer<SettingsEntity>();
+      when(settings.fetch).thenAnswer((_) => environment.future);
+      var epoch = 1;
+      when(() => access.epoch).thenAnswer((_) => epoch);
+      final connection = build().connect();
+      await Future<void>.delayed(Duration.zero);
+      epoch = 2;
+      when(
+        () => access.current,
+      ).thenReturn(const ExchangeAccessSignOutIncomplete());
+      environment.complete(
+        const SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      expect(
+        _failureOf(await connection),
+        isA<ExchangeOperationStaleFailure>(),
+      );
+      verifyNever(repository.connect);
     },
   );
 

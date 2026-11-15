@@ -149,6 +149,43 @@ void main() {
     expect(repository.current, isA<ExchangeAccessDisabled>());
   });
 
+  test('sign out is journaled before queued work finishes', () async {
+    SharedPreferences.setMockInitialValues({
+      'exchange_access': '{"enabled":true,"signOutPending":false}',
+    });
+    final keys = _Keys();
+    when(
+      () => keys.readActiveApiKey(isTestnet: false),
+    ).thenAnswer((_) async => const Ok('active'));
+    when(
+      () => keys.deleteApiKey(isTestnet: any(named: 'isTestnet')),
+    ).thenAnswer((_) async => const Ok(null));
+    final environment = Completer<bool>();
+    final repository = ExchangeAccessRepositoryImpl(
+      apiKeyRepository: keys,
+      readEnvironment: () => environment.future,
+      platformAllowed: () async => true,
+      disconnectNotifications: () async {},
+      clearCookies: () async {},
+    );
+    // Reconciliation occupies the queue until the environment is read.
+    final resolving = repository.resolve();
+    await Future<void>.delayed(Duration.zero);
+    final signOut = repository.signOut();
+    await Future<void>.delayed(Duration.zero);
+
+    final prefs = await SharedPreferences.getInstance();
+    final journal =
+        jsonDecode(prefs.getString('exchange_access') ?? '{}')
+            as Map<String, dynamic>;
+    expect(journal['signOutPending'], isTrue);
+
+    environment.complete(false);
+    await resolving;
+    expect(await signOut, isA<Ok>());
+    expect(repository.current, isA<ExchangeAccessDisabled>());
+  });
+
   test('resolve retries a pending sign out', () async {
     SharedPreferences.setMockInitialValues({
       'exchange_access': '{"enabled":false,"signOutPending":true}',
