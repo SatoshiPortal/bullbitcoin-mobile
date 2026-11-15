@@ -63,6 +63,9 @@ final class RecoverBullSettingsAdapter
   }
 
   @override
+  Stream<TorConnectionState> watch() => _embedded.states;
+
+  @override
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
     bool restartEmbedded = false,
   }) async {

@@ -83,6 +83,9 @@ final class _Routes implements RecoverBullRoutePort {
     opens++;
     return const Err(RecoverBullUnexpectedFailure());
   }
+
+  @override
+  Stream<TorConnectionState> watch() => const Stream.empty();
 }
 
 final class _Owners

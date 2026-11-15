@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bull_tor/tor.dart' show TorConnectionState, TorUninitialized;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
@@ -17,8 +20,15 @@ import '../domain/usecases/delete_drive_vault_usecase.dart';
 import '../domain/usecases/export_drive_vault_usecase.dart';
 import '../domain/usecases/manage_vault_session_usecase.dart';
 
+enum KeyServerStatus { unknown, connecting, online, offline }
+
 final class VaultFlowState {
   final bool busy;
+  final KeyServerStatus keyServer;
+
+  /// Failed key-server attempts on the current route; a new route starts again from zero.
+  final int keyServerFailures;
+  final TorConnectionState tor;
   final bool hasPendingProviderSave;
   final BackupSettings? settings;
   final EncryptedVault? vault;
@@ -28,6 +38,9 @@ final class VaultFlowState {
 
   const VaultFlowState({
     this.busy = false,
+    this.keyServer = KeyServerStatus.unknown,
+    this.keyServerFailures = 0,
+    this.tor = const TorUninitialized(),
     this.hasPendingProviderSave = false,
     this.settings,
     this.vault,
@@ -52,6 +65,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
   final ManageVaultSessionUsecase? _session;
   final CompleteVaultUsecase _complete;
   final RecoverBullFailure unavailable;
+  StreamSubscription<TorConnectionState>? _torSubscription;
   bool _closing = false;
 
   VaultFlowCubit(
@@ -61,7 +75,30 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     this._complete, {
     required this.unavailable,
     EncryptedVault? vault,
-  }) : super(VaultFlowState(vault: vault));
+    Stream<TorConnectionState>? tor,
+  }) : super(VaultFlowState(vault: vault)) {
+    _torSubscription = tor?.listen((value) {
+      if (_closing || isClosed) return;
+      emit(_copy(tor: value));
+    });
+  }
+
+  VaultFlowState _copy({
+    KeyServerStatus? keyServer,
+    int? keyServerFailures,
+    TorConnectionState? tor,
+  }) => VaultFlowState(
+    busy: state.busy,
+    keyServer: keyServer ?? state.keyServer,
+    keyServerFailures: keyServerFailures ?? state.keyServerFailures,
+    tor: tor ?? state.tor,
+    hasPendingProviderSave: state.hasPendingProviderSave,
+    settings: state.settings,
+    vault: state.vault,
+    files: state.files,
+    completion: state.completion,
+    failure: state.failure,
+  );
 
   void _publish({
     bool busy = false,
@@ -75,6 +112,9 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     emit(
       VaultFlowState(
         busy: busy,
+        keyServer: state.keyServer,
+        keyServerFailures: state.keyServerFailures,
+        tor: state.tor,
         hasPendingProviderSave: _session?.hasPendingProviderSave ?? false,
         settings: settings ?? state.settings,
         vault: vault ?? state.vault,
@@ -132,12 +172,39 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     await _run(() => _files.delete.execute(file));
   }
 
+  /// Probes the key server through this flow's route; the connection screen
+  /// calls it once consent is granted, and again on Retry or New route.
   Future<void> connect({bool newRoute = false}) async {
-    await _run(
-      () =>
-          _session?.connect(newRoute: newRoute) ??
-          Future.value(Err(unavailable)),
+    if (state.busy || _closing || isClosed) return;
+    emit(
+      _copy(
+        keyServer: KeyServerStatus.connecting,
+        keyServerFailures: newRoute ? 0 : null,
+      ),
     );
+    var connected = false;
+    await _run(() async {
+      final result =
+          await (_session?.connect(newRoute: newRoute) ??
+              Future.value(Err<void, RecoverBullFailure>(unavailable)));
+      connected = result is Ok;
+      return result;
+    });
+    if (_closing || isClosed) return;
+    emit(
+      connected
+          ? _copy(keyServer: KeyServerStatus.online)
+          : _copy(
+              keyServer: KeyServerStatus.offline,
+              keyServerFailures: state.keyServerFailures + 1,
+            ),
+    );
+  }
+
+  /// Clears a failure once the screen has shown it.
+  void clearFailure() {
+    if (_closing || isClosed || state.failure == null) return;
+    _publish(files: state.files);
   }
 
   Future<void> create(
@@ -235,6 +302,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     // Fence callbacks immediately, while the session finishes accounting for
     // any network or storage operation already committed.
     _closing = true;
+    await _torSubscription?.cancel();
     final closing = _session?.close();
     await super.close();
     await closing;

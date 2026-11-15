@@ -9,6 +9,10 @@ abstract interface class RecoverBullRoutePort {
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
     bool restartEmbedded = false,
   });
+
+  /// Tor readiness for the connection screen: the current state, then changes.
+  /// Observing never acquires a route.
+  Stream<TorConnectionState> watch();
 }
 
 final class RecoverBullRoute {
