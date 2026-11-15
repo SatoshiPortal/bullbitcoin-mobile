@@ -192,6 +192,8 @@ class ExchangeLocator {
         getExchangeAnnouncementsUsecase:
             locator<GetExchangeAnnouncementsUsecase>(),
         deleteAccount: locator<DeleteExchangeAccountUsecase>(),
+        enableAccess: locator<EnableExchangeUsecase>(),
+        resolveAccess: locator<ResolveExchangeAccessUsecase>(),
         watchAccess: locator<WatchExchangeAccessUsecase>(),
         watchExchangeNotificationsUsecase:
             locator<WatchExchangeNotificationsUsecase>(),

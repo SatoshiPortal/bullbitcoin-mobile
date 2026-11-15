@@ -276,9 +276,7 @@ class _AuthAccessGate extends StatelessWidget {
                 label: context.loc.exchangeTradingRetry,
                 bgColor: context.bull.primary,
                 textColor: context.bull.onPrimary,
-                onPressed: () async {
-                  final _ = await locator<ExchangeFacade>().resolveAccess();
-                },
+                onPressed: () => context.read<ExchangeCubit>().retryAccess(),
               ),
             ],
           ),
