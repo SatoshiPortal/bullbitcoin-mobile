@@ -128,6 +128,19 @@ void main() {
     },
   );
 
+  test('logout goes through the sign-out use case', () async {
+    when(signOut.execute)
+        .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
+    final cubit = build();
+    addTearDown(cubit.close);
+    final result = await cubit.logout();
+    expect(
+      (result as Err<void, ExchangeFailure>).failure,
+      isA<ExchangeSessionClearFailure>(),
+    );
+    verify(signOut.execute).called(1);
+  });
+
   test('support activation and retry go through their use cases', () async {
     when(() => enable.execute(forSupport: true))
         .thenAnswer((_) async => const Ok(null));
