@@ -56,6 +56,24 @@ void main() {
     },
   );
 
+  test(
+    'a passphrase default can be sealed without storing its passphrase',
+    () async {
+      final protected = _ok(
+        await secrets.import(words: words, passphrase: 'synthetic-passphrase'),
+      );
+      final protectedContext = VaultContext(
+        fingerprint: protected.id,
+        network: context.network,
+      );
+      final backup = _ok(await repository.create(protectedContext));
+      expect(
+        repository.encode(backup.vault),
+        isNot(contains('synthetic-passphrase')),
+      );
+    },
+  );
+
   test('untrusted metadata cannot certify a different wallet', () async {
     final secret = _ok(await secrets.fetch(context.fingerprint));
     final sealed = _ok(

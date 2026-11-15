@@ -1,7 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/init.dart';
+import 'package:bip32_keys/bip32_keys.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bip85_entropy/bip85_entropy.dart';
+import 'package:bull_sdk/bwk.dart' as bwk;
 import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:convert/convert.dart' as convert;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -277,6 +283,110 @@ Future<void> main({bool isInitialized = false}) async {
     });
 
     test(
+      'a Unicode passphrase selects the published seed across consumers',
+      () async {
+        // Published bip32JP BIP39 vector. The two passphrases differ as strings
+        // but have the same NFKD form, including the compatibility character.
+        const composed = '㍍ガバヴァぱばぐゞちぢ十人十色';
+        const decomposed = 'メートルガバヴァぱばぐゞちぢ十人十色';
+        final japanese = [...List.filled(11, 'あいこくしん'), 'あおぞら'];
+        const seedHex =
+            'a262d6fb6122ecf45be09c50492b31f92e9beb7d9a845987a02cefda57a15f9c'
+            '467a17872029a9e92299b5cbdf306e3a0ee620245cbd508959b6cb7ca637bd55';
+        final root = Bip32Keys.fromSeed(
+          Uint8List.fromList(convert.hex.decode(seedHex)),
+        );
+        final secret = switch (await secrets.import(
+          words: japanese,
+          language: Language.japanese,
+          passphrase: composed,
+        )) {
+          Ok(:final value) => value,
+          Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+            await secrets.fetch(id),
+          ),
+          Err(:final failure) => fail('import: ${failure.runtimeType}'),
+        };
+        expect(unwrap(await secret.verify.seed(seedHex)), isTrue);
+
+        Future<String> preview(String passphrase) async =>
+            unwrap(
+              await secrets.preview.bitcoinDescriptors(
+                words: japanese,
+                language: Language.japanese,
+                passphrase: passphrase,
+                network: BitcoinNetwork.mainnet,
+                scriptTypes: {ScriptType.bip84},
+              ),
+            )[ScriptType.bip84]?.external ??
+            (throw StateError('BIP84 preview missing'));
+        final bdk = unwrap(
+          await secret.derive.descriptors.bitcoin(
+            network: BitcoinNetwork.mainnet,
+            scriptType: ScriptType.bip84,
+          ),
+        );
+        final accountXpub = root.derivePath("m/84'/0'/0'").neutered.toBase58();
+        expect(bdk.external, contains(accountXpub));
+        expect(await preview(composed), bdk.external);
+        expect(await preview(decomposed), bdk.external);
+
+        final liquid = unwrap(
+          await secret.derive.descriptors.liquid(
+            network: LiquidNetwork.mainnet,
+          ),
+        );
+        expect(
+          liquid,
+          'ct(slip77(45ca5d9811bccd804a5b51aaf262a6b5be46f0fee838fcc5d1451b3c23944f54),elwpkh([d9a4c6ac/84h/1776h/0h]xpub6CxzR79MsXkn6uYBAQXiFxPxHLCTkLSgjfi2GrYkAo2NgUY3KCh3a6tgMnJMNV7ZdUvpLV2Dsp4nB5t3rFhNbGExFBb5euGVcqhKZkPx9PF/<0;1>/*))#2q0d70qc',
+        );
+
+        List<String> referenceChild(int index) => Bip85Entropy.deriveMnemonic(
+          xprvBase58: root.toBase58(),
+          language: bip39.Language.english,
+          length: bip39.MnemonicLength.words12,
+          index: index,
+        ).words;
+        final ark = unwrap(
+          await secret.derive.bip85.mnemonic(
+            wordCount: MnemonicLength.words12,
+            index: 11811,
+          ),
+        );
+        expect(ark, referenceChild(11811));
+        final swap = unwrap(
+          await secret.derive.swapKey(network: BitcoinNetwork.mainnet),
+        );
+        expect(swap.mnemonic, referenceChild(26589).join(' '));
+
+        // Compare the account opened by secrets with bwk's stateless BIP352
+        // derivation from the published seed. No scan or server is started.
+        final expectedSpAddress = await bwk.deriveSpAddressFromSeed(
+          seed: convert.hex.decode(seedHex),
+          network: bwk.SpNetwork.signet,
+        );
+        final account = unwrap(
+          await secret.silentPayments.account(
+            name: 'unicode-vector',
+            network: bwk.SpNetwork.signet,
+            blindbitUrl: 'http://127.0.0.1:1',
+            electrumUrl: '',
+            dataDir: scratch.path,
+            dustLimit: BigInt.zero,
+            fetchConcurrencyFactor: 1,
+            matchConcurrencyFactor: 1,
+          ),
+        );
+        try {
+          expect(account.spAddress(), expectedSpAddress);
+        } finally {
+          await account.dispose();
+          await account.release();
+        }
+      },
+    );
+
+    test(
       'the swap key is a BIP85 child of the wallet, never its own key',
       () async {
         // boltz-client 0.4.1 derives the swap mnemonic as the 12-word BIP85
@@ -396,11 +506,21 @@ Future<void> main({bool isInitialized = false}) async {
         final withPassphrase = await importWords(passphrase: 'TREZOR');
         final sealed = unwrap(await withPassphrase.backup.recoverbull());
 
-        // The file alone gives the sibling; with the passphrase, the wallet.
+        // Missing passphrase is refused before import. Only an explicit
+        // unverified request may open the empty-passphrase sibling.
+        final missing = await secrets.recoverbull.restore(
+          vault: sealed.vault,
+          key: sealed.key,
+        );
+        expect(
+          (missing as Err<RestoredVault, SecretFailure>).failure,
+          isA<VaultIdentityMismatchFailure>(),
+        );
         final bare = unwrap(
           await secrets.recoverbull.restore(
             vault: sealed.vault,
             key: sealed.key,
+            allowUnverified: true,
           ),
         );
         expect(bare.secret.id.hex, zooId);

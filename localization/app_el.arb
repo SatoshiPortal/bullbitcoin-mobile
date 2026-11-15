@@ -8523,10 +8523,6 @@
   "@payCustomFee": {
     "description": "Option to set custom fee amount"
   },
-  "backupInstruction5": "Το εφεδρικό σας δεν προστατεύεται από το passphrase. Προσθέστε ένα παθητικό στο backup σας αργότερα δημιουργώντας ένα νέο πορτοφόλι.",
-  "@backupInstruction5": {
-    "description": "Fifth backup instruction about passphrase protection"
-  },
   "buyConfirmExpress": "Επιβεβαίωση",
   "@buyConfirmExpress": {
     "description": "Button to confirm express withdrawal"
@@ -10133,10 +10129,6 @@
   "createdAtLabel": "Δημιουργήθηκε στο:",
   "@createdAtLabel": {
     "description": "Label for creation date"
-  },
-  "backupWalletInstructionNoPassphrase": "Το εφεδρικό σας δεν προστατεύεται από το passphrase. Προσθέστε ένα παθητικό στο backup σας αργότερα δημιουργώντας ένα νέο πορτοφόλι.",
-  "@backupWalletInstructionNoPassphrase": {
-    "description": "Information about passphrase protection option"
   },
   "autoswapRecipientWalletDefaultLabel": "Bitcoin Wallet",
   "@autoswapRecipientWalletDefaultLabel": {

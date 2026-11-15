@@ -16,6 +16,8 @@ final class RecoverServerVaultUsecase {
   Future<Result<VaultCompletion, RecoverBullFailure>> execute({
     required EncryptedVault vault,
     required String password,
+    String passphrase = '',
+    bool allowUnverified = false,
   }) async {
     final context = await _start.execute(RecoverBullFlow.recoverVault);
     final BitcoinNetwork network;
@@ -32,6 +34,8 @@ final class RecoverServerVaultUsecase {
         vault: vault,
         password: password,
         recoveryNetwork: network,
+        passphrase: passphrase,
+        allowUnverified: allowUnverified,
       );
     } finally {
       await session.close();
