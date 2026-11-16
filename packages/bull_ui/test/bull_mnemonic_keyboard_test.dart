@@ -102,6 +102,24 @@ Finder scramble() => find.byKey(const Key('mnemonicParanoidToggle'));
 Finder languageKey() => find.byKey(const Key('mnemonicLanguageKey'));
 Finder pageKey() => find.byKey(const Key('mnemonicPageKey'));
 
+const keypad = BullKeypadColors.light;
+const type = BullTypography.standard;
+
+TextStyle? styleOf(WidgetTester tester, String text) =>
+    tester.widget<Text>(find.text(text)).style;
+
+Color? fillOf(WidgetTester tester, Finder key) => tester
+    .widget<BullKeyCap>(
+      find
+          .descendant(
+            of: key,
+            matching: find.byType(BullKeyCap),
+            matchRoot: true,
+          )
+          .first,
+    )
+    .fill;
+
 void main() {
   group('BullMnemonicKeyboard keys', () {
     testWidgets('renders every letter of the alphabet as a key', (
@@ -138,16 +156,10 @@ void main() {
 
         final on = tester.widget<BullKeyCap>(keyCap('a'));
         final off = tester.widget<BullKeyCap>(keyCap('b'));
-        expect(on.fill, testBullTheme.background);
+        expect(on.fill, keypad.key);
         expect(off.fill, testBullTheme.transparent);
-        expect(
-          tester.widget<Text>(find.text('b')).style?.color,
-          testBullTheme.outline,
-        );
-        expect(
-          tester.widget<Text>(find.text('a')).style?.color,
-          testBullTheme.onSurface,
-        );
+        expect(styleOf(tester, 'b')?.color, keypad.disabledGlyph);
+        expect(styleOf(tester, 'a')?.color, keypad.onKey);
       },
     );
 
@@ -173,6 +185,58 @@ void main() {
       await tester.tap(backspace(), warnIfMissed: false);
       await tester.tap(enter(), warnIfMissed: false);
       expect((backspaces, enters), (1, 1));
+    });
+
+    testWidgets('the keys sit on the keypad panel', (tester) async {
+      await pumpKeyboard(tester);
+      final panel = tester.widget<Material>(
+        find
+            .descendant(
+              of: find.byType(BullMnemonicKeyboard),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+      expect(panel.color, keypad.panel);
+    });
+
+    testWidgets('function key glyphs read the keypad roles', (tester) async {
+      await pumpKeyboard(tester, canBackspace: false);
+      Color? iconColor(IconData icon) =>
+          tester.widget<Icon>(find.byIcon(icon)).color;
+      expect(iconColor(Icons.keyboard_return), keypad.onFunctionKey);
+      expect(iconColor(Icons.backspace_outlined), keypad.onFunctionKeyDisabled);
+      expect(fillOf(tester, backspace()), keypad.functionKey);
+    });
+
+    testWidgets('glyphs ignore the system text size, the key already scales', (
+      tester,
+    ) async {
+      await pumpKeyboard(tester, screen: largePhone);
+      final plain = tester.getSize(find.text('q'));
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpKeyboard(tester, screen: largePhone);
+      expect(tester.getSize(find.text('q')), plain);
+      expect(
+        tester.widget<Text>(find.text('q')).textScaler,
+        TextScaler.noScaling,
+      );
+    });
+
+    testWidgets('secondary key labels never fall below the caption size', (
+      tester,
+    ) async {
+      await pumpKeyboard(
+        tester,
+        screen: landscapePhone,
+        accents: const [eAcute, eGrave],
+      );
+      final code = styleOf(tester, 'EN')?.fontSize;
+      final page = styleOf(tester, '$eAcute$eGrave')?.fontSize;
+      for (final size in [code, page]) {
+        expect(size, greaterThanOrEqualTo(type.caption.fontSize ?? 0));
+      }
     });
 
     testWidgets('a combining mark key shows a base and reports the bare mark', (
@@ -260,10 +324,7 @@ void main() {
           matching: find.byType(BullKeyCap),
           matchRoot: true,
         );
-        expect(
-          tester.widget<BullKeyCap>(cap.first).fill,
-          testBullTheme.outline,
-        );
+        expect(tester.widget<BullKeyCap>(cap.first).fill, keypad.functionKey);
       }
     });
 
@@ -393,6 +454,8 @@ void main() {
         tester.getRect(find.text('French')).bottom,
         lessThan(tester.getRect(languageKey()).top),
       );
+      expect(styleOf(tester, 'English')?.fontSize, type.body.fontSize);
+      expect(styleOf(tester, 'FR')?.fontSize, type.caption.fontSize);
       await tester.tap(find.text('French'));
       await tester.pumpAndSettle();
       expect(chosen, 1);
@@ -421,6 +484,7 @@ void main() {
         tester.widget<Text>(find.text('about')).style?.fontWeight,
         FontWeight.w400,
       );
+      expect(styleOf(tester, 'able')?.fontSize, type.body.fontSize);
       await tester.tap(find.text('above'));
       expect(tapped, 'above');
     });
@@ -430,6 +494,10 @@ void main() {
     ) async {
       await pumpKeyboard(tester, suggestionNotice: '128 possible last words');
       expect(find.text('128 possible last words'), findsOneWidget);
+      expect(
+        styleOf(tester, '128 possible last words')?.fontSize,
+        type.label.fontSize,
+      );
     });
   });
 
