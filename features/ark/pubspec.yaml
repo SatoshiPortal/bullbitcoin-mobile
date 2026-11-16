@@ -1,0 +1,32 @@
+name: bull_ark
+description: Ark wallet journeys and platform orchestration.
+publish_to: none
+version: 0.1.0
+resolution: workspace
+environment:
+  sdk: '3.14.0'
+  flutter: '3.50.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  ark:
+  secrets:
+  primitives:
+  meta: ^1.17.0
+  bloc: ^9.2.1
+  bull_ui:
+  background_tasks:
+  notifications:
+  shared_preferences: ^2.3.0
+  sqlite3: ^3.5.2
+  crypto: ^3.0.7
+dev_dependencies:
+  test: ^1.32.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  generate: true
