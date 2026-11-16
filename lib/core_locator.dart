@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/app_startup/public/foreground_electrum_startup.dart';
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_core_locator.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
@@ -57,6 +59,19 @@ class CoreLocator {
     await SettingsLocator.registerRepositories(locator);
     final settingsRepository = locator<settings.SettingsRepository>();
     final appSettings = await settingsRepository.fetch();
+    await ForegroundElectrumStartup.prepare(
+      capturedSettings: appSettings,
+      prepareElectrum: (environment) async {
+        final prepared = await locator<ElectrumSettingsFacade>()
+            .prepareForegroundStorage(
+              environment,
+              regtestProfile: environment == NetworkEnv.regtest
+                  ? RegtestElectrumProfile.fromBuildEnvironment()
+                  : null,
+            );
+        return prepared is Ok;
+      },
+    );
     bull_tor.TorLocator.registerRepositories(
       locator,
       initialMode: appSettings.torTransportMode,

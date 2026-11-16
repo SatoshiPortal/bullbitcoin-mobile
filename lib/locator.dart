@@ -111,6 +111,8 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
+    // Lazy registrations only; storage is prepared before network repositories.
+    ElectrumSettingsLocator.setup(locator);
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports
@@ -131,7 +133,6 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
-    ElectrumSettingsLocator.setup(locator);
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
