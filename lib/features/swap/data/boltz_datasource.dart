@@ -45,6 +45,7 @@ class BoltzDatasource {
   /// Public (non-secret) id only; the key material itself lives in secure
   /// storage and is read on demand.
   String? _swapMasterKeyWalletFingerprint;
+  int _swapMasterKeyGeneration = 0;
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
 
@@ -180,11 +181,14 @@ class BoltzDatasource {
     required String walletFingerprint,
     required bool isTestnet,
   }) async {
+    final generation = ++_swapMasterKeyGeneration;
+    _swapMasterKeyWalletFingerprint = null;
     final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
     final exists = await _boltzStore.swapMasterKeyExists(
       network,
       walletFingerprint: walletFingerprint,
     );
+    if (generation != _swapMasterKeyGeneration) return false;
     if (exists) _swapMasterKeyWalletFingerprint = walletFingerprint;
     return exists;
   }
