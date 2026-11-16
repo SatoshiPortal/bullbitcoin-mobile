@@ -59,14 +59,21 @@ Size enterKeySize(WidgetTester tester) =>
 
 void main() {
   group('BullKeypadGrid', () {
-    test('keys grow with the space up to the cap', () {
+    test('keys grow with the screen height up to the cap', () {
       final heights = [
-        for (final screen in [smallPhone, largePhone, desktopWindow])
+        for (final screen in [smallPhone, largePhone, const Size(1440, 1600)])
           resolve(screen).keyHeight,
       ];
       expect(heights[0], lessThan(heights[1]));
       expect(heights[1], lessThan(heights[2]));
       expect(heights[2], grid.maxKeyHeight);
+    });
+
+    test('the rows take a quarter of a phone screen height', () {
+      final metrics = resolve(largePhone);
+      final rows =
+          metrics.keyHeight * grid.rows + metrics.gap * (grid.rows - 1);
+      expect(rows, closeTo(largePhone.height * grid.screenShare, 0.01));
     });
 
     test('a wide window caps the key width and the keypad width', () {
