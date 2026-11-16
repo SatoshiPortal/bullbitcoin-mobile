@@ -81,11 +81,11 @@ class _ArkClaimRecoveryScreenState extends State<ArkClaimRecoveryScreen> {
                       displayValue: selection.summary.destination,
                     ),
                     BullDetailsTableItem(
-                      label: l10n.net,
+                      label: l10n.netInSats,
                       displayValue: selection.summary.net.toString(),
                     ),
                     BullDetailsTableItem(
-                      label: l10n.fee,
+                      label: l10n.feeInSats,
                       displayValue: selection.summary.fee.toString(),
                     ),
                     BullDetailsTableItem(
