@@ -152,7 +152,12 @@ void main() {
       isA<Ok>(),
     );
     expect(gateway.scheduled.length, 2);
-    expect(gateway.scheduled.first, gateway.scheduled.last);
+    expect(gateway.scheduled.first.id, gateway.scheduled.last.id);
+    expect(gateway.scheduled.last.at, warning(110).notifyAt);
+    expect(
+      gateway.scheduled.last.at.isBefore(gateway.scheduled.first.at),
+      true,
+    );
     expect(gateway.scheduled.first.id, isNegative);
     await reopened.close();
   });

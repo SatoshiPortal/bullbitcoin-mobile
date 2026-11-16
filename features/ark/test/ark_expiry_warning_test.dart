@@ -176,6 +176,46 @@ void main() {
     expect(repository.calls, isEmpty);
   });
   test(
+    'unknown pending board evidence cannot authorize empty cancellation',
+    () async {
+      final repository = Reminders();
+      await UpdateArkExpiryWarningUsecase(repository).execute(
+        observed(
+          obligations: ArkObligationStatus.none,
+          boards: [
+            ArkPendingBoard(
+              vtxoId: 'pending',
+              fundingTxid: 'tx',
+              amount: Sats.fromInt(1),
+            ),
+          ],
+        ),
+      );
+      expect(repository.calls, isEmpty);
+    },
+  );
+  test(
+    'unresolved funding operation cannot authorize empty cancellation',
+    () async {
+      final repository = Reminders();
+      await UpdateArkExpiryWarningUsecase(repository).execute(
+        observed(
+          obligations: ArkObligationStatus.none,
+          operations: [
+            ArkOperation(
+              id: 'unknown',
+              kind: ArkOperationKind.board,
+              status: ArkOperationStatus.outcomeUnknown,
+              chainSource: Uri.parse('https://example.com'),
+              configGeneration: 1,
+            ),
+          ],
+        ),
+      );
+      expect(repository.calls, isEmpty);
+    },
+  );
+  test(
     'only fresh completed empty inventory authorizes cancellation',
     () async {
       final repository = Reminders();
