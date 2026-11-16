@@ -801,8 +801,7 @@ class MnemonicSentenceWidget extends StatefulWidget {
   /// the space that remains above it.
   final ValueNotifier<MnemonicKeyboardBar?>? keyboardBarSlot;
 
-  /// The keyboard's language key, with the field being typed. Null hides it,
-  /// for an English-only entry.
+  /// The keyboard's language key, with the field being typed. Null hides it.
   final void Function(bip39.Language language, int? typing)? onLanguageSelected;
 
   /// Changed together with [controllers] when the new fields should open on
