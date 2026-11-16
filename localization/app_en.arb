@@ -15443,5 +15443,17 @@
   "pinCodeScrambleKeypadHint": "Scramble the digits on every tap",
   "@pinCodeScrambleKeypadHint": {
     "description": "Tooltip on the PIN keypad key that turns on the privacy mode: the digit keys are randomised after each key press so their positions cannot be read by an onlooker"
+  },
+  "mnemonicWordCountLabel": "Words",
+  "@mnemonicWordCountLabel": {
+    "description": "Label above the control choosing how many words the recovery phrase has"
+  },
+  "passphraseOptionOffSubtitle": "Optional extra word (BIP39)",
+  "@passphraseOptionOffSubtitle": {
+    "description": "Subtitle of the passphrase switch while it is off"
+  },
+  "passphraseOptionOnSubtitle": "Entered below, never shown",
+  "@passphraseOptionOnSubtitle": {
+    "description": "Subtitle of the passphrase switch while it is on: the passphrase field below stays obscured"
   }
 }

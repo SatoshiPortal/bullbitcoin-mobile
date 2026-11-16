@@ -4784,5 +4784,8 @@
   "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
   "settingsDarkModeTitle": "Mode sombre",
   "settingsSourceCodeTitle": "Code source",
-  "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui"
+  "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
+  "mnemonicWordCountLabel": "Mots",
+  "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
+  "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée"
 }

@@ -4619,5 +4619,8 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
   "settingsDarkModeTitle": "Modo oscuro",
   "settingsSourceCodeTitle": "Código fuente",
-  "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque"
+  "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque",
+  "mnemonicWordCountLabel": "Palabras",
+  "passphraseOptionOffSubtitle": "Palabra adicional opcional (BIP39)",
+  "passphraseOptionOnSubtitle": "Se introduce abajo, nunca se muestra"
 }

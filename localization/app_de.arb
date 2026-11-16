@@ -4845,5 +4845,8 @@
   "passphraseHide": "Passphrase verbergen",
   "settingsDarkModeTitle": "Dunkelmodus",
   "settingsSourceCodeTitle": "Quellcode",
-  "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen"
+  "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen",
+  "mnemonicWordCountLabel": "Wörter",
+  "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
+  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt"
 }
