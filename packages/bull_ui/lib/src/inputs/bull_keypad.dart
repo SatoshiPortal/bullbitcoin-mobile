@@ -120,6 +120,11 @@ class BullKeyCap extends StatelessWidget {
   final double height;
   final Widget child;
 
+  /// The key colour whatever its state. Null keeps the PIN pad look: surface
+  /// when enabled, a darker container when not. A keyboard that marks a
+  /// disabled key by its glyph alone passes its fill here.
+  final Color? fill;
+
   /// When true, the key changes appearance as an instant cut with no ink
   /// splash. Used while the layout is reshuffling on every tap: an animated
   /// colour fade or a splash that outlives the reshuffle would mark, for a
@@ -134,6 +139,7 @@ class BullKeyCap extends StatelessWidget {
     required this.height,
     required this.child,
     this.suppressAnimation = false,
+    this.fill,
   });
 
   @override
@@ -145,7 +151,8 @@ class BullKeyCap extends StatelessWidget {
       // extra frame of state history for a camera; there is no reason to
       // animate a key cap.
       animationDuration: Duration.zero,
-      color: enabled ? colors.surface : colors.surfaceContainerHighest,
+      color:
+          fill ?? (enabled ? colors.surface : colors.surfaceContainerHighest),
       borderRadius: radius,
       child: InkWell(
         // A key must never take focus from the field being typed into.

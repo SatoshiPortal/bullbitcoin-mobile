@@ -383,13 +383,19 @@ m.Widget bullCheckboxUncheckedUseCase(m.BuildContext context) {
   );
 }
 
+const _mnemonicLanguages = [
+  BullKeyboardLanguage(code: 'EN', name: 'English'),
+  BullKeyboardLanguage(code: 'FR', name: 'French'),
+  BullKeyboardLanguage(code: 'JA', name: 'Japanese'),
+];
+
 @widgetbook.UseCase(name: 'QWERTY', type: BullMnemonicKeyboard)
 m.Widget bullMnemonicKeyboardUseCase(m.BuildContext context) {
-  // Resize the viewport to watch the keys follow the available space.
+  // Resize the viewport to watch the panel keep 35% of its height.
   return m.Align(
     alignment: m.Alignment.bottomCenter,
     child: BullMnemonicKeyboard(
-      enabledLetters: BullMnemonicKeyboard.qwerty.toSet(),
+      enabledLetters: BullMnemonicKeyboard.qwerty.toSet().difference({'x'}),
       canBackspace: true,
       canAdvance: context.knobs.boolean(label: 'can advance'),
       onLetter: (_) {},
@@ -398,6 +404,68 @@ m.Widget bullMnemonicKeyboardUseCase(m.BuildContext context) {
       shuffleActive: context.knobs.boolean(label: 'shuffle active'),
       onToggleShuffle: () {},
       shuffleHint: 'Scramble the keys and suggestions on every tap',
+      suggestions: const ['able', 'about', 'above'],
+      languages: _mnemonicLanguages,
+      onLanguage: (_) {},
+      languageHint: 'Recovery phrase language',
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'AZERTY with accents', type: BullMnemonicKeyboard)
+m.Widget bullMnemonicKeyboardAccentsUseCase(m.BuildContext context) {
+  // Long press e for its accents, or open them with the page key.
+  const rows = ['azertyuiop', 'qsdfghjklm', 'wxcvbn'];
+  final layout = [for (final row in rows) ...row.split('')];
+  const accents = ['e\u0301', 'e\u0300'];
+  return m.Align(
+    alignment: m.Alignment.bottomCenter,
+    child: BullMnemonicKeyboard(
+      layout: layout,
+      rows: [for (final row in rows) row.length],
+      accents: accents,
+      variants: const {'e': accents},
+      enabledLetters: {...layout, ...accents},
+      canBackspace: false,
+      canAdvance: true,
+      onLetter: (_) {},
+      onBackspace: () {},
+      onEnter: () {},
+      shuffleActive: false,
+      onToggleShuffle: () {},
+      shuffleHint: 'Scramble the keys and suggestions on every tap',
+      languages: _mnemonicLanguages,
+      selectedLanguage: 1,
+      onLanguage: (_) {},
+      languageHint: 'Recovery phrase language',
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Character grid', type: BullMnemonicKeyboard)
+m.Widget bullMnemonicKeyboardGridUseCase(m.BuildContext context) {
+  final layout = [
+    for (var code = 0x3042; code < 0x3042 + 44; code++)
+      String.fromCharCode(code),
+  ];
+  return m.Align(
+    alignment: m.Alignment.bottomCenter,
+    child: BullMnemonicKeyboard(
+      layout: layout,
+      scrollable: true,
+      enabledLetters: layout.toSet(),
+      canBackspace: true,
+      canAdvance: false,
+      onLetter: (_) {},
+      onBackspace: () {},
+      onEnter: () {},
+      shuffleActive: false,
+      onToggleShuffle: () {},
+      shuffleHint: 'Scramble the keys and suggestions on every tap',
+      languages: _mnemonicLanguages,
+      selectedLanguage: 2,
+      onLanguage: (_) {},
+      languageHint: 'Recovery phrase language',
     ),
   );
 }
