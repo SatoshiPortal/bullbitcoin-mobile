@@ -7,6 +7,7 @@ enum ArkOperationStatus {
   succeeded,
   failed,
   outcomeUnknown,
+  conflicted,
 }
 
 sealed class ArkSubmission {

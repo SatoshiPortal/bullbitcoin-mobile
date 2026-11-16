@@ -241,7 +241,8 @@ final class BarkArkClient implements ArkClient {
         .where(
           (o) =>
               o.status == ArkOperationStatus.admitted ||
-              o.status == ArkOperationStatus.outcomeUnknown,
+              o.status == ArkOperationStatus.outcomeUnknown ||
+              o.status == ArkOperationStatus.conflicted,
         )
         .toList();
     final pinnedSources = unknown.map((o) => o.chainSource).toSet();
@@ -462,7 +463,8 @@ final class BarkArkClient implements ArkClient {
                   (o) =>
                       o.status == ArkOperationStatus.pending ||
                       o.status == ArkOperationStatus.admitted ||
-                      o.status == ArkOperationStatus.outcomeUnknown,
+                      o.status == ArkOperationStatus.outcomeUnknown ||
+                      o.status == ArkOperationStatus.conflicted,
                 )
                 .expand((o) => o.actualIds)
                 .toSet();
@@ -638,6 +640,7 @@ final class BarkArkClient implements ArkClient {
           (op) =>
               (op.status == ArkOperationStatus.admitted ||
                   op.status == ArkOperationStatus.outcomeUnknown ||
+                  op.status == ArkOperationStatus.conflicted ||
                   op.status == ArkOperationStatus.pending) &&
               (op.kind == ArkOperationKind.payment ||
                   op.kind == ArkOperationKind.renewal ||

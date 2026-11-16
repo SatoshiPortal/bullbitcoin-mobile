@@ -70,7 +70,7 @@ final class BarkNativeOpener implements ArkNativeOpener {
           ),
         ),
       );
-      return _BarkSession(wallet, onchain, stages, config);
+      return BarkNativeSession(wallet, onchain, stages, config);
     } catch (_) {
       onchain.dispose();
       rethrow;
@@ -78,12 +78,12 @@ final class BarkNativeOpener implements ArkNativeOpener {
   }
 }
 
-final class _BarkSession implements ArkNativeSession {
+final class BarkNativeSession implements ArkNativeSession {
   final bark.Wallet _wallet;
   final bark.OnchainWallet _onchain;
   final ArkStageRunner _stages;
   final ArkAccountConfig _config;
-  _BarkSession(this._wallet, this._onchain, this._stages, this._config);
+  BarkNativeSession(this._wallet, this._onchain, this._stages, this._config);
 
   Future<T> _run<T>(String name, Future<T> Function() action) =>
       _stages.run(name, action);
@@ -891,14 +891,21 @@ final class _BarkSession implements ArkNativeSession {
         status = ArkOperationStatus.succeeded;
       }
     }
-    if (operation.kind == ArkOperationKind.claim) {
+    if (operation.kind == ArkOperationKind.claim &&
+        reference != null &&
+        RegExp(r'^[0-9a-f]{64}$').hasMatch(reference) &&
+        operation.actualIds.isNotEmpty) {
       final exits = await _run('reconcile-claim', _wallet.getExitVtxos);
-      if (operation.actualIds.isNotEmpty &&
-          operation.actualIds.every(
-            (id) => exits.any(
-              (v) => v.vtxoId == id && v.state is bark.ClaimedExitState,
-            ),
-          )) {
+      final claimed = {
+        for (final exit in exits)
+          if (exit.state case bark.ClaimedExitState(:final txid))
+            exit.vtxoId: txid,
+      };
+      if (operation.actualIds.any(
+        (id) => claimed[id] != null && claimed[id] != reference,
+      )) {
+        status = ArkOperationStatus.conflicted;
+      } else if (operation.actualIds.every((id) => claimed[id] == reference)) {
         status = ArkOperationStatus.succeeded;
       }
     }
