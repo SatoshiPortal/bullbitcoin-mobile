@@ -8,6 +8,12 @@ import '../../generated/l10n/ark_localizations_fr.dart';
 /// The app locale still controls the package's French/English fallback.
 ArkLocalizations arkLocalizationsOf(BuildContext context) =>
     ArkLocalizations.of(context) ??
-    (Localizations.maybeLocaleOf(context)?.languageCode == 'fr'
-        ? ArkLocalizationsFr()
-        : ArkLocalizationsEn());
+    arkLocalizationsForLanguage(
+      Localizations.maybeLocaleOf(context)?.languageCode ?? 'en',
+    );
+
+/// Shared by context-free settings catalogues as well as visible entry widgets.
+ArkLocalizations arkLocalizationsForLanguage(String localeName) =>
+    localeName.split(RegExp('[-_]')).first.toLowerCase() == 'fr'
+    ? ArkLocalizationsFr()
+    : ArkLocalizationsEn();
