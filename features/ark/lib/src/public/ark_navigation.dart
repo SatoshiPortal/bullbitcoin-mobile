@@ -10,8 +10,23 @@ final class ArkPaymentEntry {
   const ArkPaymentEntry(this.account, {this.destination = ''});
 }
 
+/// A route selector, not recovery authority. The page reads its own journal.
+final class ArkClaimRecoveryEntry {
+  final ArkAccountId account;
+  final String operationId;
+  const ArkClaimRecoveryEntry(this.account, this.operationId);
+}
+
 abstract final class ArkNavigation {
   static void open(BuildContext context) => context.push('/ark');
+  static void reviewClaimRecovery(
+    BuildContext context,
+    ArkAccountId account,
+    String operationId,
+  ) => context.push(
+    '/ark/claim-recovery',
+    extra: ArkClaimRecoveryEntry(account, operationId),
+  );
   static void send(
     BuildContext context,
     ArkAccountId account, {
