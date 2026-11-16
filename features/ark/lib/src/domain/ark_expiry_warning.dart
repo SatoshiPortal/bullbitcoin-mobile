@@ -24,6 +24,9 @@ final class ArkExpiryWarning {
       return null;
     }
     final pendingBoards = snapshot.pendingBoards.map((b) => b.vtxoId).toSet();
+    bool admitsBound(ArkVtxo vtxo) =>
+        !pendingBoards.contains(vtxo.id) ||
+        vtxo.state == ArkVtxoState.spendable;
     final live = snapshot.vtxos
         .where(
           (v) =>
@@ -34,6 +37,7 @@ final class ArkExpiryWarning {
     final observedReplacementIds = live
         .where(
           (v) =>
+              admitsBound(v) &&
               (v.state == ArkVtxoState.spendable ||
                   v.state == ArkVtxoState.locked) &&
               !v.pendingRound,
@@ -62,8 +66,7 @@ final class ArkExpiryWarning {
     final retired = {for (final id in retiredIds) 'vtxo:$id'};
     final expiries = {
       for (final v in live)
-        if (!pendingBoards.contains(v.id) || v.state == ArkVtxoState.spendable)
-          'vtxo:${v.id}': v.expiryHeight,
+        if (admitsBound(v)) 'vtxo:${v.id}': v.expiryHeight,
     };
     if (expiries.isEmpty) return null;
     final earliest = expiries.values.reduce((a, b) => a < b ? a : b);
