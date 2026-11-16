@@ -8,14 +8,17 @@ import 'package:test/test.dart';
 /// Exercise the actual adapter method with Dart implementations of the native
 /// handles through the package-private-src session constructor.
 /// No FFI function, native opener or network request is invoked by these tests.
-ArkNativeSession session(List<bark.ExitVtxo> exits) {
+ArkNativeSession session(
+  List<bark.ExitVtxo> exits, {
+  List<bark.Movement> movements = const [],
+}) {
   final account = ArkAccountId(
     parent: Fingerprint('12345678'),
     network: BitcoinNetwork.regtest,
     serverIdentity: 'server',
   );
   return adapter.BarkNativeSession(
-    _Wallet(exits),
+    _Wallet(exits, movements),
     _Onchain(),
     _Stages(),
     ArkAccountConfig(
@@ -28,7 +31,10 @@ ArkNativeSession session(List<bark.ExitVtxo> exits) {
 
 final class _Wallet implements bark.Wallet {
   final List<bark.ExitVtxo> exits;
-  _Wallet(this.exits);
+  final List<bark.Movement> movements;
+  _Wallet(this.exits, this.movements);
+  @override
+  Future<List<bark.Movement>> history() async => movements;
   @override
   Future<List<bark.ExitVtxo>> getExitVtxos() async => exits;
   @override
@@ -73,6 +79,55 @@ void main() {
       block: bark.BlockRef(height: 100, hash: 'block'),
     ),
   );
+  for (final status in ['failed', 'successful']) {
+    test(
+      'native payment $status preserves effect uncertainty and original binding',
+      () async {
+        final native = session(
+          [],
+          movements: [
+            bark.Movement(
+              id: 42,
+              status: status,
+              subsystemName: 'bark.arkoor',
+              subsystemKind: 'send',
+              metadataJson: '{}',
+              intendedBalanceSats: -1000,
+              effectiveBalanceSats: -1000,
+              offchainFeeSats: 0,
+              sentToAddresses: ['{"type":"ark","value":"destination"}'],
+              receivedOnAddresses: [],
+              inputVtxoIds: ['actual'],
+              outputVtxoIds: ['change'],
+              exitedVtxoIds: [],
+              createdAt: '2026-11-16T00:00:00Z',
+              updatedAt: '2026-11-16T00:00:01Z',
+            ),
+          ],
+        );
+        final original = ArkOperation(
+          id: 'payment',
+          kind: ArkOperationKind.payment,
+          status: ArkOperationStatus.outcomeUnknown,
+          chainSource: Uri.parse('http://localhost:3000'),
+          configGeneration: 1,
+          nativeReference: '42',
+          actualIds: ['actual'],
+        );
+        final result = await native.reconcile(original);
+        expect(
+          result?.status,
+          status == 'failed'
+              ? ArkOperationStatus.outcomeUnknown
+              : ArkOperationStatus.succeeded,
+        );
+        expect(result?.nativeReference, original.nativeReference);
+        expect(result?.chainSource, original.chainSource);
+        expect(result?.actualIds, original.actualIds);
+        native.close();
+      },
+    );
+  }
   test(
     'claimed actual ids with another txid are conflict, never success',
     () async {
