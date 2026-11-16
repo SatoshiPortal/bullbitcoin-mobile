@@ -225,6 +225,12 @@ class _Body extends StatelessWidget {
     _ => null,
   };
 
+  /// Time left before the running key-server probe gives up, counted down.
+  Duration? get _serverRemaining => switch (state.keyServerDeadline) {
+    final deadline? => _nonNegative(deadline.difference(DateTime.now())),
+    null => null,
+  };
+
   static Duration _nonNegative(Duration value) =>
       value.isNegative ? Duration.zero : value;
 
@@ -493,7 +499,9 @@ class _Body extends StatelessWidget {
         _PhaseCard(
           label: context.loc.recoverbullRecoverBullServer,
           phase: _serverPhase,
-          time: _serverPhase == _PhaseState.active ? elapsed : null,
+          time: _serverPhase == _PhaseState.active
+              ? _serverRemaining ?? elapsed
+              : null,
         ),
         const Gap(24),
         if (_showFailurePanel)

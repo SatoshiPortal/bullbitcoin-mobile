@@ -9,6 +9,9 @@ import '../recoverbull_failure.dart';
 
 /// One already-selected server and one flow-owned transport. A server change
 /// requires a new session; in-flight operations cannot switch destinations.
+/// How long one key-server operation may take before it gives up.
+const keyServerOperationTimeout = Duration(seconds: 75);
+
 abstract interface class KeyServerRepository {
   @useResult
   Future<Result<void, RecoverBullFailure>> probe();

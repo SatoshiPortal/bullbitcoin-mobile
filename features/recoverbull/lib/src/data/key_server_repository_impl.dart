@@ -30,7 +30,7 @@ final class KeyServerRepositoryImpl implements KeyServerRepository {
     required HttpClient transport,
     required this._releaseRoute,
     this._takeConnectFailure,
-    this.timeout = const Duration(seconds: 75),
+    this.timeout = keyServerOperationTimeout,
   }) : _server = client.KeyServer(address: server, client: transport),
        _transport = transport;
 

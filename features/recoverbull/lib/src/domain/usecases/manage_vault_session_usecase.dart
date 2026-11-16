@@ -41,13 +41,18 @@ final class ManageVaultSessionUsecase {
 
   /// [restartTor] restarts a Tor bootstrap that failed or stalled, as Retry
   /// does when Tor is not ready; [viaSnowflake] restarts it through Snowflake.
-  /// New route only replaces this flow's circuit.
+  /// New route only replaces this flow's circuit. [onProbe] receives when the
+  /// key-server probe will give up, once Tor has delivered a route.
   Future<Result<void, RecoverBullFailure>> connect({
     bool newRoute = false,
     bool restartTor = false,
     bool viaSnowflake = false,
+    void Function(DateTime deadline)? onProbe,
   }) => _run(
-    (server, _) => server.probe(),
+    (server, _) {
+      onProbe?.call(DateTime.now().add(keyServerOperationTimeout));
+      return server.probe();
+    },
     newRoute: newRoute || restartTor || viaSnowflake,
     restartTor: restartTor || viaSnowflake,
     viaSnowflake: viaSnowflake,

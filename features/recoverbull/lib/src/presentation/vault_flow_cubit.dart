@@ -29,6 +29,9 @@ final class VaultFlowState {
 
   /// Failed key-server attempts on the current route; a new route starts again from zero.
   final int keyServerFailures;
+
+  /// When the running key-server probe gives up; null while none runs.
+  final DateTime? keyServerDeadline;
   final TorConnectionState tor;
   final bool hasPendingProviderSave;
   final BackupSettings? settings;
@@ -41,6 +44,7 @@ final class VaultFlowState {
     this.busy = false,
     this.keyServer = KeyServerStatus.unknown,
     this.keyServerFailures = 0,
+    this.keyServerDeadline,
     this.tor = const TorUninitialized(),
     this.hasPendingProviderSave = false,
     this.settings,
@@ -105,10 +109,14 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     TorConnectionState? tor,
     bool? hasPendingProviderSave,
     RecoverBullFailure? Function()? failure,
+    DateTime? Function()? keyServerDeadline,
   }) => VaultFlowState(
     busy: state.busy,
     keyServer: keyServer ?? state.keyServer,
     keyServerFailures: keyServerFailures ?? state.keyServerFailures,
+    keyServerDeadline: keyServerDeadline == null
+        ? state.keyServerDeadline
+        : keyServerDeadline(),
     tor: tor ?? state.tor,
     hasPendingProviderSave:
         hasPendingProviderSave ?? state.hasPendingProviderSave,
@@ -133,6 +141,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
         busy: busy,
         keyServer: state.keyServer,
         keyServerFailures: state.keyServerFailures,
+        keyServerDeadline: state.keyServerDeadline,
         tor: state.tor,
         hasPendingProviderSave: _session?.hasPendingProviderSave ?? false,
         settings: settings ?? state.settings,
@@ -208,6 +217,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
         keyServer: KeyServerStatus.connecting,
         keyServerFailures: newRoute || restartTor || viaSnowflake ? 0 : null,
         failure: () => null,
+        keyServerDeadline: () => null,
       ),
     );
     final Result<void, RecoverBullFailure> result;
@@ -217,6 +227,10 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
                 newRoute: newRoute,
                 restartTor: restartTor,
                 viaSnowflake: viaSnowflake,
+                onProbe: (deadline) {
+                  if (_closing || isClosed) return;
+                  emit(_copy(keyServerDeadline: () => deadline));
+                },
               ) ??
               Future.value(Err<void, RecoverBullFailure>(unavailable)));
     } finally {
@@ -224,9 +238,13 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     }
     if (_closing || isClosed) return;
     emit(switch (result) {
-      Ok() => _copy(keyServer: KeyServerStatus.online),
+      Ok() => _copy(
+        keyServer: KeyServerStatus.online,
+        keyServerDeadline: () => null,
+      ),
       Err(:final failure) => _copy(
         keyServer: KeyServerStatus.offline,
+        keyServerDeadline: () => null,
         keyServerFailures: state.keyServerFailures + 1,
         failure: () => failure,
       ),
