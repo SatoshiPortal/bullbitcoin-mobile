@@ -38,11 +38,14 @@ This checkpoint is an explicit package-owned Linux runner, **not mounted in `Ark
 
 Create a private directory for the archive and a JSON configuration containing `sourcePath`, `archivePath`, `namespaceFingerprint`, `expectedNativeFingerprint` and `expectedServerPubkey`. Obtain the last two public identity values independently from the authorized owner; reading them from the source being checked does not establish the expected identity. `namespaceFingerprint` is an eight-lowercase-hex standalone archive namespace, **not proof of a BIP85 parent relationship**. The source and archive must be different physical files. Existing incompatible/partial archives refuse without reset.
 
-From the repository root, with the existing workspace dependencies installed:
+With the workspace dependencies installed, run from the package so Dart prepares its native assets through the supported hooks:
 
 ```sh
-/home/debian/fvm/bin/fvm dart --packages=.dart_tool/package_config.json packages/ark/example/sql_archive_watch.dart /absolute/private/watcher-config.json
+cd packages/ark
+fvm dart run example/sql_archive_watch.dart /absolute/private/watcher-config.json
 ```
+
+Use the project-pinned toolchains for the initial native-asset preparation. Running the script directly does not prepare those assets and is not the supported clean-start command.
 
 The runner performs an initial guarded observation/append before reporting started. DB/WAL/rollback-journal events coalesce into capture, with a five-second fallback after a settled pass; SHM events are ignored. A create/delete/move into or out of the DB path invalidates the retained reader after admitted work settles. SIGINT or SIGTERM closes admission, cancels its one timer/subscription and awaits admitted capture before closing owned handles. Runtime failure getters distinguish source, archive and scheduling problems; a successful fallback does not erase a watch failure. The CLI reports deduplicated status transitions using only bounded source/archive/watch labels and failure type/reason enums; it emits no paths, cell/preimage payloads or exception text. Watch loss remains sticky until a new watcher lifetime, even if fallback capture succeeds. The standalone archive profile is explicitly `regtest-sql-opaque`, not a seed-derivation claim.
 
