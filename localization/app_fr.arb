@@ -4716,7 +4716,6 @@
   "mnemonicLanguageLabel": "Langue de la phrase de récupération",
   "mnemonicLanguageSuggestion": "Ces mots correspondent à la langue {language}. Sélectionnez-la pour continuer.",
   "mnemonicLanguageAmbiguous": "Ces mots correspondent à plusieurs langues. Sélectionnez la langue de votre phrase de récupération.",
-  "mnemonicDefaultEnglishOnly": "Les portefeuilles par défaut nécessitent actuellement une phrase de récupération en anglais. Après la configuration, vous pouvez importer une autre langue dans un portefeuille Bitcoin séparé.",
   "mnemonicLanguageName": "{language, select, english{Anglais} french{Français} spanish{Espagnol} italian{Italien} portuguese{Portugais} czech{Tchèque} korean{Coréen} simplifiedChinese{Chinois (simplifié)} traditionalChinese{Chinois (traditionnel)} japanese{Japonais} other{Langue inconnue}}",
   "mnemonicOtherLanguageWordsError": "Ces mots figurent dans la liste de mots « {language} », pas « {selected} », et ne forment pas non plus une phrase de récupération valide dans cette langue. Vérifiez chaque mot et sa position.",
   "importMnemonicScanServerUnavailable": "Impossible de joindre un serveur pour vérifier ce portefeuille. Vous pouvez quand même l'importer.",
@@ -4787,5 +4786,6 @@
   "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
   "mnemonicWordCountLabel": "Mots",
   "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
-  "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée"
+  "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée",
+  "networkWalletReuseNoRecoveryPhrase": "Ce portefeuille n'a pas de phrase de récupération, il ne peut donc pas être réutilisé ici. Importez une phrase de récupération ou créez un nouveau portefeuille."
 }
