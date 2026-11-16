@@ -15439,5 +15439,9 @@
   "settingsSourceCodeTitle": "Source code",
   "@settingsSourceCodeTitle": {
     "description": "Settings entry opening the app's public source code repository."
+  },
+  "importMnemonicUnsupportedScript": "This wallet type is not supported on the selected Bitcoin network.",
+  "@importMnemonicUnsupportedScript": {
+    "description": "Shown when the selected Bitcoin network does not support this wallet script type; retrying the scan cannot enable it."
   }
 }
