@@ -28,13 +28,18 @@ class Client extends FakeArkClient {
   bool keyedSyncFails = false;
   Completer<void>? heldRead;
   Completer<void>? heldSubmit;
+  Completer<void>? heldRenew;
+  final projections = <ArkAccountId, ArkSnapshot>{};
   @override
   Future<Result<ArkSnapshot, ArkWalletFailure>> read(
     ArkAccountId account,
   ) async {
     final result = await super.read(account);
     await heldRead?.future;
-    return result;
+    return switch (projections[account]) {
+      final projection? => Ok(projection),
+      null => result,
+    };
   }
 
   @override
@@ -51,7 +56,7 @@ class Client extends FakeArkClient {
   Future<Result<ArkPassOutcome, ArkWalletFailure>> synchronize(
     ArkAccountId account, {
     required bool renew,
-  }) {
+  }) async {
     if (keyedSyncFails) {
       calls.add('renew');
       arguments.add((account, renew));
@@ -59,7 +64,9 @@ class Client extends FakeArkClient {
         'Child/Secrets/native unavailable at keyed sync boundary',
       );
     }
-    return super.synchronize(account, renew: renew);
+    final result = super.synchronize(account, renew: renew);
+    await heldRenew?.future;
+    return result;
   }
 }
 
@@ -141,6 +148,36 @@ void main() {
     expect(await task.execute(), isA<Err>());
     expect(client.calls, ['read', 'submit', 'renew']);
   });
+  test(
+    'all protected saved deliveries precede the first keyed renewal',
+    () async {
+      final other = ArkAccountId(
+        parent: Fingerprint('22334455'),
+        network: BitcoinNetwork.mainnet,
+        serverIdentity: account().serverIdentity,
+      );
+      await registry.publish(
+        ArkAccountConfig(
+          id: other,
+          arkUrl: Uri.parse('https://ark.example.com'),
+          primaryEsploraUrl: Uri.parse('https://chain.example.com'),
+        ),
+      );
+      client.projections[other] = journal(id: other);
+      final held = Completer<void>();
+      client.heldRenew = held;
+      final pending = task.execute();
+      await Future<void>.delayed(Duration.zero);
+      final beforeRenewSettles = List.of(client.calls);
+      final delivered = client.arguments
+          .whereType<(ArkAccountId, ArkSubmission)>()
+          .toList();
+      held.complete();
+      await pending;
+      expect(beforeRenewSettles, ['read', 'submit', 'read', 'submit', 'renew']);
+      expect(delivered.map((c) => c.$1), [account(), other]);
+    },
+  );
   test(
     'failed read still permits renewal without constructing a claim',
     () async {
