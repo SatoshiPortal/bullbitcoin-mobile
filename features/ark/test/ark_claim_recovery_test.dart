@@ -23,8 +23,9 @@ final txid = List.filled(32, '42').join();
 ArkOperation saved({
   ArkOperationStatus status = ArkOperationStatus.outcomeUnknown,
   bool summary = true,
+  String id = 'original-claim',
 }) => ArkOperation(
-  id: 'original-claim',
+  id: id,
   kind: ArkOperationKind.claim,
   status: status,
   chainSource: Uri.parse('https://captured-chain.example'),
@@ -287,24 +288,18 @@ void main() {
       expect(client.submissions.length, 1);
     },
   );
-  test(
-    'background pass never submits a saved claim recovery automatically',
-    () async {
-      final client = FakeArkClient()
-        ..pass = Ok(
-          ArkPassOutcome(
-            snapshot: journal(),
-            completedStages: {ArkStage.vtxos},
-          ),
-        );
-      expect(
-        await RunArkBackgroundUsecase(
-          SynchronizeArkUsecase(ArkRepositoryImpl(client)),
-          UpdateArkExpiryWarningUsecase(Reminders()),
-        ).execute(account()),
-        isA<Ok>(),
+  test('renewal-only lane never constructs or submits a new claim', () async {
+    final client = FakeArkClient()
+      ..pass = Ok(
+        ArkPassOutcome(snapshot: journal(), completedStages: {ArkStage.vtxos}),
       );
-      expect(client.calls, ['renew']);
-    },
-  );
+    expect(
+      await RunArkBackgroundUsecase(
+        SynchronizeArkUsecase(ArkRepositoryImpl(client)),
+        UpdateArkExpiryWarningUsecase(Reminders()),
+      ).execute(account()),
+      isA<Ok>(),
+    );
+    expect(client.calls, ['renew']);
+  });
 }
