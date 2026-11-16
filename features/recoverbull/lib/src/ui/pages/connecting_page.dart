@@ -49,7 +49,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
   /// The network appeared to block Tor during this visit: the switch to
   /// Snowflake and any later failure are explained as filtering, not as a
   /// connectivity problem.
-  bool _filtered = false;
+  _Blockage? _blockage;
 
   @override
   void initState() {
@@ -90,10 +90,11 @@ class _ConnectingPageState extends State<ConnectingPage> {
       _ => null,
     };
     setState(() {
-      if (connection
-          case tor.TorConnecting(:final circumvention, :final diagnostic)
-          when circumvention || (diagnostic?.suggestsCensorship ?? false)) {
-        _filtered = true;
+      // Tor's own filtering evidence outranks the ambiguous verdict.
+      if (diagnostic?.suggestsCensorship ?? false) {
+        _blockage = _Blockage.filtered;
+      } else if (diagnostic == tor.TorDiagnostic.noInternetOrBlocked) {
+        _blockage ??= _Blockage.noInternetOrBlocked;
       }
       if (diagnostic == null) {
         _blockageSince = null;
@@ -162,7 +163,10 @@ class _ConnectingPageState extends State<ConnectingPage> {
                         state: state,
                         elapsed: _elapsed,
                         showBlockage: _blockageIsSettled,
-                        filtered: _filtered,
+                        blockage: _blockage,
+                        snowflakeAvailable: context
+                            .read<VaultFlowCubit>()
+                            .snowflakeAvailable,
                         onRetry: _resetWait,
                       ),
                     ),
@@ -183,14 +187,16 @@ class _Body extends StatelessWidget {
   final VaultFlowState state;
   final Duration elapsed;
   final bool showBlockage;
-  final bool filtered;
+  final _Blockage? blockage;
+  final bool snowflakeAvailable;
   final VoidCallback onRetry;
 
   const _Body({
     required this.state,
     required this.elapsed,
     required this.showBlockage,
-    required this.filtered,
+    required this.blockage,
+    required this.snowflakeAvailable,
     required this.onRetry,
   });
 
@@ -259,7 +265,8 @@ class _Body extends StatelessWidget {
       _torPhase == _PhaseState.failed ||
       _serverPhase == _PhaseState.failed ||
       switch (_diagnostic) {
-        final diagnostic? => !diagnostic.suggestsCensorship,
+        // Automatic mode answers these by switching to Snowflake.
+        final diagnostic? => !(diagnostic.worthSnowflake && snowflakeAvailable),
         null => false,
       };
 
@@ -282,9 +289,30 @@ class _Body extends StatelessWidget {
   bool get _censorshipNow => switch (_tor) {
     tor.TorConnecting(:final diagnostic, transport: final transport)
         when transport != tor.TorTransport.snowflake =>
-      diagnostic?.suggestsCensorship ?? false,
+      diagnostic?.worthSnowflake ?? false,
     _ => false,
   };
+
+  bool get _filtered => blockage != null;
+
+  String _blockageStatus(BuildContext context) => switch (blockage) {
+    _Blockage.noInternetOrBlocked =>
+      context.loc.torSettingsStatusNoInternetOrBlocked,
+    _ => context.loc.torSettingsStatusCensored,
+  };
+
+  String _blockageDescription(BuildContext context) => switch (blockage) {
+    _Blockage.noInternetOrBlocked =>
+      context.loc.torSettingsDescNoInternetOrBlocked,
+    _ => context.loc.torSettingsDescCensored,
+  };
+
+  /// The user may restart Tor through Snowflake whenever their mode lets the app pick the transport.
+  bool get _offersSnowflake =>
+      _tor is! tor.TorReady &&
+      _tor.source != tor.TorSource.external &&
+      state.failure is! ExternalTorProxyUnavailableFailure &&
+      snowflakeAvailable;
 
   TorBullState get _mascotState {
     if (_censorshipNow) return TorBullState.filtered;
@@ -311,7 +339,7 @@ class _Body extends StatelessWidget {
     return switch (_mascotState) {
       TorBullState.direct => context.loc.torSettingsModeDirectDescription,
       TorBullState.filtered => [
-        context.loc.torSettingsDescCensored,
+        _blockageDescription(context),
         context.loc.torSettingsModeAutomaticDescription,
       ].join(' '),
       TorBullState.snowflake => context.loc.torSettingsModeSnowflakeDescription,
@@ -328,8 +356,8 @@ class _Body extends StatelessWidget {
       return failure.toTranslated(context);
     }
     // Tor never got through a network seen blocking it: say so, not "offline".
-    if (filtered && _tor is! tor.TorReady) {
-      return context.loc.torSettingsDescCensored;
+    if (_filtered && _tor is! tor.TorReady) {
+      return _blockageDescription(context);
     }
     final diagnostic = _diagnostic ?? _failureDiagnostic;
     if (diagnostic != null) {
@@ -338,6 +366,8 @@ class _Body extends StatelessWidget {
       }
       return switch (diagnostic) {
         tor.TorDiagnostic.offline => context.loc.recoverbullTorOffline,
+        tor.TorDiagnostic.noInternetOrBlocked =>
+          context.loc.torSettingsDescNoInternetOrBlocked,
         tor.TorDiagnostic.clockSkewed => context.loc.recoverbullTorClockSkewed,
         tor.TorDiagnostic.filtering ||
         tor.TorDiagnostic.cantReachTor => context.loc.torSettingsDescCensored,
@@ -402,7 +432,7 @@ class _Body extends StatelessWidget {
               decoration: BoxDecoration(
                 color: switch (_mascotState) {
                   TorBullState.filtered => context.bull.warningContainer,
-                  TorBullState.snowflake when filtered =>
+                  TorBullState.snowflake when _filtered =>
                     context.bull.warningContainer,
                   TorBullState.failed => context.bull.errorContainer,
                   _ => context.bull.surface,
@@ -412,9 +442,9 @@ class _Body extends StatelessWidget {
               child: Column(
                 children: [
                   if (_mascotState == TorBullState.filtered ||
-                      (_mascotState == TorBullState.snowflake && filtered))
+                      (_mascotState == TorBullState.snowflake && _filtered))
                     BullText(
-                      context.loc.torSettingsStatusCensored,
+                      _blockageStatus(context),
                       textAlign: .center,
                       style: context.bullText.bodyLarge?.copyWith(
                         color: context.bull.warning,
@@ -479,7 +509,7 @@ class _Body extends StatelessWidget {
               _ => null,
             },
             onOpenTorSettings:
-                filtered ||
+                _filtered ||
                     _tor is tor.TorUnavailable ||
                     state.failure is ExternalTorProxyUnavailableFailure
                 ? RecoverBullFlowScope.of(context).onOpenTorSettings
@@ -488,6 +518,12 @@ class _Body extends StatelessWidget {
                 ? () {
                     onRetry();
                     unawaited(cubit.connect(newRoute: true));
+                  }
+                : null,
+            onSnowflake: _offersSnowflake
+                ? () {
+                    onRetry();
+                    unawaited(cubit.connect(viaSnowflake: true));
                   }
                 : null,
           )
@@ -652,6 +688,7 @@ class _FailurePanel extends StatelessWidget {
   final VoidCallback onRetry;
   final VoidCallback? onNewCircuit;
   final VoidCallback? onOpenTorSettings;
+  final VoidCallback? onSnowflake;
 
   /// A fixed technical label naming the exact reason, unlocalised like the timer.
   final String? detail;
@@ -662,6 +699,7 @@ class _FailurePanel extends StatelessWidget {
     this.busy = false,
     this.onNewCircuit,
     this.onOpenTorSettings,
+    this.onSnowflake,
     this.detail,
   });
 
@@ -709,6 +747,19 @@ class _FailurePanel extends StatelessWidget {
             onPressed: onNewCircuit,
           ),
         ],
+        if (onSnowflake case final onSnowflake?) ...[
+          const Gap(12),
+          BullButton.big(
+            label: context.loc.recoverbullUseSnowflake,
+            textStyle: context.bullText.headlineLarge,
+            bgColor: context.bull.surface,
+            textColor: context.bull.onSurface,
+            outlined: true,
+            borderColor: context.bull.onSurface,
+            disabled: busy,
+            onPressed: onSnowflake,
+          ),
+        ],
         if (onOpenTorSettings case final onOpenTorSettings?) ...[
           const Gap(12),
           BullButton.big(
@@ -723,3 +774,6 @@ class _FailurePanel extends StatelessWidget {
     );
   }
 }
+
+/// Why Tor could not get through, as far as the device can tell.
+enum _Blockage { filtered, noInternetOrBlocked }

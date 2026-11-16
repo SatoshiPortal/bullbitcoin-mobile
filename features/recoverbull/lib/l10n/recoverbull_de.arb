@@ -273,5 +273,8 @@
   "backupWalletHowToDecideBackupModalTitle": "Wie entscheiden",
   "backupSettingsSecurityWarning": "Sicherheitswarnung",
   "torSettingsTitle": "Tor-Einstellungen",
-  "torSettingsExternalProxyUnavailableDescription": "Bull konnte keine Verbindung zum konfigurierten SOCKS5-Proxy herstellen."
+  "torSettingsExternalProxyUnavailableDescription": "Bull konnte keine Verbindung zum konfigurierten SOCKS5-Proxy herstellen.",
+  "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
+  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor.",
+  "recoverbullUseSnowflake": "Snowflake verwenden"
 }

@@ -66,8 +66,12 @@ final class RecoverBullSettingsAdapter
   Stream<TorConnectionState> watch() => _embedded.states;
 
   @override
+  bool get snowflakeAvailable => _embedded.mode == TorTransportMode.automatic;
+
+  @override
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async {
     try {
       final settings = await _settings.fetch();
@@ -88,8 +92,8 @@ final class RecoverBullSettingsAdapter
       }
       // New route never restarts the shared engine or another flow's circuit;
       // only Retry after a failed or stalled bootstrap asks for a restart.
-      final ready = restartEmbedded
-          ? await _embedded.retry()
+      final ready = restartEmbedded || viaSnowflake
+          ? await _embedded.retry(snowflake: viaSnowflake)
           : await _embedded.ensureReady();
       if (ready is! TorReady || ready.route.source != TorSource.embedded) {
         return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));

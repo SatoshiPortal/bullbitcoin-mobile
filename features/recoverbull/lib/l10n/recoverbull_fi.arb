@@ -270,5 +270,8 @@
   "backupWalletHowToDecide": "Miten valita?",
   "backupWalletHowToDecideBackupModalTitle": "Miten valita",
   "backupSettingsSecurityWarning": "Turvallisuusvaroitus",
-  "torSettingsTitle": "Tor-asetukset"
+  "torSettingsTitle": "Tor-asetukset",
+  "torSettingsStatusNoInternetOrBlocked": "Ei internetiä tai sensuroitu verkko",
+  "torSettingsDescNoInternetOrBlocked": "Tällä verkolla ei ole internetyhteyttä, tai se estää Torin.",
+  "recoverbullUseSnowflake": "Käytä Snowflakea"
 }

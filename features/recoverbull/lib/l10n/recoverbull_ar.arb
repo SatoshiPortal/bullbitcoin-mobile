@@ -600,5 +600,8 @@
   "backupWalletHowToDecide": "كيف تقرر؟?",
   "backupWalletHowToDecideBackupModalTitle": "كيفية تقرير",
   "backupSettingsSecurityWarning": "تحذير أمني",
-  "torSettingsTitle": "تنظيمات التعذيب"
+  "torSettingsTitle": "تنظيمات التعذيب",
+  "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
+  "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
+  "recoverbullUseSnowflake": "استخدام Snowflake"
 }

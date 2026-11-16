@@ -600,5 +600,8 @@
   "backupWalletHowToDecide": "Πώς να αποφασίσετε?",
   "backupWalletHowToDecideBackupModalTitle": "Πώς να αποφασίσετε",
   "backupSettingsSecurityWarning": "Προειδοποίηση ασφαλείας",
-  "torSettingsTitle": "Οι ρυθμίσεις Tor"
+  "torSettingsTitle": "Οι ρυθμίσεις Tor",
+  "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
+  "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
+  "recoverbullUseSnowflake": "Χρήση Snowflake"
 }

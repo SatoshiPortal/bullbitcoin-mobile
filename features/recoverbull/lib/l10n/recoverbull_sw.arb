@@ -165,5 +165,8 @@
   "backupWalletHowToDecide": "Nichague vipi?",
   "backupWalletHowToDecideBackupModalTitle": "Nichague vipi",
   "backupSettingsSecurityWarning": "Onyo la Usalama",
-  "torSettingsTitle": "Mipangilio ya Tor"
+  "torSettingsTitle": "Mipangilio ya Tor",
+  "torSettingsStatusNoInternetOrBlocked": "Hakuna intaneti au mtandao umedhibitiwa",
+  "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor.",
+  "recoverbullUseSnowflake": "Tumia Snowflake"
 }

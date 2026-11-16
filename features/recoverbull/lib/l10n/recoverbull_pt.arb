@@ -270,5 +270,8 @@
   "backupWalletHowToDecide": "Como decidir?",
   "backupWalletHowToDecideBackupModalTitle": "Como decidir",
   "backupSettingsSecurityWarning": "Aviso de Segurança",
-  "torSettingsTitle": "Configurações do Tor"
+  "torSettingsTitle": "Configurações do Tor",
+  "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
+  "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
+  "recoverbullUseSnowflake": "Usar Snowflake"
 }

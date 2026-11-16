@@ -40,14 +40,17 @@ final class ManageVaultSessionUsecase {
   bool get hasPendingProviderSave => _create.hasPendingProviderSave;
 
   /// [restartTor] restarts a Tor bootstrap that failed or stalled, as Retry
-  /// does when Tor is not ready; New route only replaces this flow's circuit.
+  /// does when Tor is not ready; [viaSnowflake] restarts it through Snowflake.
+  /// New route only replaces this flow's circuit.
   Future<Result<void, RecoverBullFailure>> connect({
     bool newRoute = false,
     bool restartTor = false,
+    bool viaSnowflake = false,
   }) => _run(
     (server, _) => server.probe(),
-    newRoute: newRoute || restartTor,
-    restartTor: restartTor,
+    newRoute: newRoute || restartTor || viaSnowflake,
+    restartTor: restartTor || viaSnowflake,
+    viaSnowflake: viaSnowflake,
   );
 
   Future<Result<VaultCompletion, RecoverBullFailure>> create({
@@ -171,6 +174,7 @@ final class ManageVaultSessionUsecase {
     action, {
     bool newRoute = false,
     bool restartTor = false,
+    bool viaSnowflake = false,
   }) async {
     if (_closed) return const Err(VaultCancelledFailure());
     if (_active != null) return const Err(VaultContextChangedFailure());
@@ -202,6 +206,7 @@ final class ManageVaultSessionUsecase {
         switch (await _open.execute(
           expected: settings,
           restartEmbedded: restartTor,
+          viaSnowflake: viaSnowflake,
         )) {
           case Err(:final failure):
             return Err(failure);

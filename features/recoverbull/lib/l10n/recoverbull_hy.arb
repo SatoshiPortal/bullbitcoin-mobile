@@ -165,5 +165,8 @@
   "backupWalletHowToDecide": "Ինչպե՞ս որոշել",
   "backupWalletHowToDecideBackupModalTitle": "Ինչպես որոշել",
   "backupSettingsSecurityWarning": "Անվտանգության նախազգուշացում",
-  "torSettingsTitle": "Tor կարգավորումներ"
+  "torSettingsTitle": "Tor կարգավորումներ",
+  "torSettingsStatusNoInternetOrBlocked": "Ինտերնետ չկա կամ ցանցը գրաքննված է",
+  "torSettingsDescNoInternetOrBlocked": "Այս ցանցը ինտերնետ հասանելիություն չունի, կամ արգելափակում է Tor-ը։",
+  "recoverbullUseSnowflake": "Օգտագործել Snowflake"
 }

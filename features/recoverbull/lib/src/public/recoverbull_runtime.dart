@@ -221,6 +221,7 @@ final class RecoverBullRuntime {
         unavailable: unavailable,
         vault: vault,
         tor: _routes.watch(),
+        snowflakeAvailable: () => _routes.snowflakeAvailable,
       ),
       captured.network,
       monitoring == null

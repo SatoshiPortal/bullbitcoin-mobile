@@ -600,5 +600,8 @@
   "backupWalletHowToDecide": "วิธีการตัดสินใจ?",
   "backupWalletHowToDecideBackupModalTitle": "วิธีการตัดสินใจ",
   "backupSettingsSecurityWarning": "คําเตือน",
-  "torSettingsTitle": "ปุ่ม"
+  "torSettingsTitle": "ปุ่ม",
+  "torSettingsStatusNoInternetOrBlocked": "ไม่มีอินเทอร์เน็ตหรือเครือข่ายถูกเซ็นเซอร์",
+  "torSettingsDescNoInternetOrBlocked": "เครือข่ายนี้ไม่มีการเข้าถึงอินเทอร์เน็ต หรือบล็อก Tor",
+  "recoverbullUseSnowflake": "ใช้ Snowflake"
 }

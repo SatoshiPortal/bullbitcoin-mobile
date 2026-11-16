@@ -600,5 +600,8 @@
   "backupWalletHowToDecide": "چگونه تصمیم بگیریم؟?",
   "backupWalletHowToDecideBackupModalTitle": "چگونه تصمیم بگیریم",
   "backupSettingsSecurityWarning": "هشدار امنیتی",
-  "torSettingsTitle": "تنظیمات Tor"
+  "torSettingsTitle": "تنظیمات Tor",
+  "torSettingsStatusNoInternetOrBlocked": "اینترنت وجود ندارد یا شبکه سانسور شده است",
+  "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند.",
+  "recoverbullUseSnowflake": "استفاده از Snowflake"
 }

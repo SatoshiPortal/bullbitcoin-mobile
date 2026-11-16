@@ -305,6 +305,7 @@ final class _Sessions extends Fake implements KeyServerSessionRepository {
   Future<Result<KeyServerRepository, RecoverBullFailure>> open(
     Uri server, {
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async => Ok(this.server);
 }
 

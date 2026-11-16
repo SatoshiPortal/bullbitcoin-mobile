@@ -165,5 +165,8 @@
   "backupWalletHowToDecide": "Làm sao để quyết định?",
   "backupWalletHowToDecideBackupModalTitle": "Làm sao để quyết định",
   "backupSettingsSecurityWarning": "Cảnh báo bảo mật",
-  "torSettingsTitle": "Cài đặt Tor"
+  "torSettingsTitle": "Cài đặt Tor",
+  "torSettingsStatusNoInternetOrBlocked": "Không có internet hoặc mạng bị kiểm duyệt",
+  "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor.",
+  "recoverbullUseSnowflake": "Dùng Snowflake"
 }

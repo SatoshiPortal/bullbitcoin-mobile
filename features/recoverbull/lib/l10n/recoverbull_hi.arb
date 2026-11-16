@@ -642,5 +642,8 @@
   "backupWalletHowToDecide": "कैसे तय करें?",
   "backupWalletHowToDecideBackupModalTitle": "कैसे तय करें",
   "backupSettingsSecurityWarning": "सुरक्षा चेतावनी",
-  "torSettingsTitle": "Tor सेटिंग्स"
+  "torSettingsTitle": "Tor सेटिंग्स",
+  "torSettingsStatusNoInternetOrBlocked": "इंटरनेट नहीं है या नेटवर्क सेंसर है",
+  "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।",
+  "recoverbullUseSnowflake": "Snowflake का उपयोग करें"
 }

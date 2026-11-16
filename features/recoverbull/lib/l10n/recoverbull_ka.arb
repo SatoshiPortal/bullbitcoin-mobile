@@ -165,5 +165,8 @@
   "backupWalletHowToDecide": "როგორ გადავწყვიტო?",
   "backupWalletHowToDecideBackupModalTitle": "როგორ გადავწყვიტო",
   "backupSettingsSecurityWarning": "უსაფრთხოების გაფრთხილება",
-  "torSettingsTitle": "Tor-ის პარამეტრები"
+  "torSettingsTitle": "Tor-ის პარამეტრები",
+  "torSettingsStatusNoInternetOrBlocked": "ინტერნეტი არ არის ან ქსელი ცენზურირებულია",
+  "torSettingsDescNoInternetOrBlocked": "ამ ქსელს არ აქვს ინტერნეტთან წვდომა, ან ის ბლოკავს Tor-ს.",
+  "recoverbullUseSnowflake": "Snowflake-ის გამოყენება"
 }

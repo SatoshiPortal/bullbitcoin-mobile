@@ -600,5 +600,8 @@
   "backupWalletHowToDecide": "Nasıl karar verilir?",
   "backupWalletHowToDecideBackupModalTitle": "Nasıl karar verilir",
   "backupSettingsSecurityWarning": "Güvenlik Uyarısı",
-  "torSettingsTitle": "Tor Ayarları"
+  "torSettingsTitle": "Tor Ayarları",
+  "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
+  "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
+  "recoverbullUseSnowflake": "Snowflake kullan"
 }

@@ -270,5 +270,8 @@
   "backupWalletHowToDecide": "Як вирішити?",
   "backupWalletHowToDecideBackupModalTitle": "Як вирішити",
   "backupSettingsSecurityWarning": "Попередження про безпеку",
-  "torSettingsTitle": "Налаштування Tor"
+  "torSettingsTitle": "Налаштування Tor",
+  "torSettingsStatusNoInternetOrBlocked": "Немає інтернету або мережа під цензурою",
+  "torSettingsDescNoInternetOrBlocked": "Ця мережа не має доступу до інтернету або блокує Tor.",
+  "recoverbullUseSnowflake": "Використати Snowflake"
 }

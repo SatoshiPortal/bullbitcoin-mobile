@@ -270,5 +270,8 @@
   "backupWalletHowToDecide": "如何决定?",
   "backupWalletHowToDecideBackupModalTitle": "如何决定",
   "backupSettingsSecurityWarning": "安保预警",
-  "torSettingsTitle": "三、背景"
+  "torSettingsTitle": "三、背景",
+  "torSettingsStatusNoInternetOrBlocked": "无法连接互联网或网络受审查",
+  "torSettingsDescNoInternetOrBlocked": "此网络无法访问互联网，或屏蔽了 Tor。",
+  "recoverbullUseSnowflake": "使用 Snowflake"
 }

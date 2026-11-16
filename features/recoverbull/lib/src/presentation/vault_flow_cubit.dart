@@ -67,6 +67,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
   final CompleteVaultUsecase _complete;
   final RecoverBullFailure unavailable;
   StreamSubscription<TorConnectionState>? _torSubscription;
+  final bool Function() _snowflakeAvailable;
   bool _closing = false;
 
   VaultFlowCubit(
@@ -77,7 +78,9 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     required this.unavailable,
     EncryptedVault? vault,
     Stream<TorConnectionState>? tor,
-  }) : super(VaultFlowState(vault: vault)) {
+    bool Function()? snowflakeAvailable,
+  }) : _snowflakeAvailable = snowflakeAvailable ?? (() => false),
+       super(VaultFlowState(vault: vault)) {
     _torSubscription = tor?.listen((value) {
       if (_closing || isClosed) return;
       // A ready route stays ready through Tor's own directory refreshes, which
@@ -180,14 +183,21 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     await _run(() => _files.delete.execute(file));
   }
 
+  /// Whether the user's Tor settings let this flow restart through Snowflake.
+  bool get snowflakeAvailable => _snowflakeAvailable();
+
   /// Probes the key server through this flow's route; the connection screen
   /// calls it once consent is granted, and again on Retry or New route.
-  Future<void> connect({bool newRoute = false, bool restartTor = false}) async {
+  Future<void> connect({
+    bool newRoute = false,
+    bool restartTor = false,
+    bool viaSnowflake = false,
+  }) async {
     if (state.busy || _closing || isClosed) return;
     emit(
       _copy(
         keyServer: KeyServerStatus.connecting,
-        keyServerFailures: newRoute || restartTor ? 0 : null,
+        keyServerFailures: newRoute || restartTor || viaSnowflake ? 0 : null,
       ),
     );
     var connected = false;
@@ -196,6 +206,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
           await (_session?.connect(
                 newRoute: newRoute,
                 restartTor: restartTor,
+                viaSnowflake: viaSnowflake,
               ) ??
               Future.value(Err<void, RecoverBullFailure>(unavailable)));
       connected = result is Ok;

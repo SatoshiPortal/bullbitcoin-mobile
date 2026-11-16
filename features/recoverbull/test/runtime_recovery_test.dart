@@ -79,6 +79,7 @@ final class _Routes implements RecoverBullRoutePort {
   @override
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async {
     opens++;
     return const Err(RecoverBullUnexpectedFailure());
@@ -86,6 +87,9 @@ final class _Routes implements RecoverBullRoutePort {
 
   @override
   Stream<TorConnectionState> watch() => const Stream.empty();
+
+  @override
+  bool get snowflakeAvailable => false;
 }
 
 final class _Owners
