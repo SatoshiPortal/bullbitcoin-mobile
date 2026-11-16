@@ -383,21 +383,6 @@ m.Widget bullCheckboxUncheckedUseCase(m.BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(name: 'Default', type: BullDialPad)
-m.Widget bullDialPadUseCase(m.BuildContext context) {
-  return _frame(
-    context,
-    m.SizedBox(
-      width: 320,
-      child: BullDialPad(
-        onNumberPressed: (_) {},
-        onBackspacePressed: () {},
-        onlyDigits: context.knobs.boolean(label: 'only digits'),
-      ),
-    ),
-  );
-}
-
 @widgetbook.UseCase(name: 'QWERTY', type: BullMnemonicKeyboard)
 m.Widget bullMnemonicKeyboardUseCase(m.BuildContext context) {
   // Resize the viewport to watch the keys follow the available space.

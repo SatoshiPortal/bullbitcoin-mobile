@@ -144,7 +144,6 @@ export 'src/inputs/bull_bitcoin_amount_text.dart';
 export 'src/inputs/bull_amount_input_formatter.dart';
 export 'src/inputs/bull_checkbox.dart';
 export 'src/inputs/bull_copy_field.dart';
-export 'src/inputs/bull_dial_pad.dart';
 export 'src/inputs/bull_dropdown.dart';
 export 'src/inputs/bull_filter_chip.dart';
 export 'src/inputs/bull_input_text.dart';
