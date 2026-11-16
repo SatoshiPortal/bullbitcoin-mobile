@@ -122,6 +122,9 @@ final class RunArkBackgroundTaskUsecase {
       }
       final delivery = await _savedDelivery.execute(config.id);
       if (delivery case Err(:final failure)) failed ??= failure;
+    }
+    // No account's keyed work can strand another account's saved delivery.
+    for (final config in accounts) {
       if (!_budget.mayAdmitNextStage) {
         return const Err(ArkOperationBusyFailure());
       }
