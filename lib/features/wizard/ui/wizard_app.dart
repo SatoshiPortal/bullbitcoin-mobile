@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
     show ExchangeAvailability, ExchangeAccessResolving;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -92,7 +90,7 @@ class _WizardAppView extends StatelessWidget {
           home: WizardScreen(
             exchangeAllowed:
                 ExchangeAvailability.resolve(
-                  platformAllowed: !Platform.isIOS,
+                  platformAllowed: defaultTargetPlatform != TargetPlatform.iOS,
                   access: const ExchangeAccessResolving(),
                 ) !=
                 ExchangeAvailability.hidden,

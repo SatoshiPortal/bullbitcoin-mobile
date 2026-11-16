@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart'
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/exchange_exit_on_back.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -172,34 +173,39 @@ class ExchangeRouter {
           ),
         );
       }
+      // Support and the landing page open sign-in with `go`, which leaves
+      // nothing to go back to.
       return NoTransitionPage(
         key: state.pageKey,
-        child: _AuthAccessGate(
-          config: config,
-          child: BlocListener<ExchangeCubit, ExchangeState>(
-            listenWhen: (previous, current) =>
-                previous.notLoggedIn && !current.notLoggedIn,
-            listener: (context, exchangeState) {
-              if (fromSupport) {
-                final isIOSNonSuperuser =
-                    Platform.isIOS && !config.isSuperuser(context);
-                context.goNamed(
-                  ExchangeSupportChatFacade.routeName,
-                  queryParameters: isIOSNonSuperuser
-                      ? {}
-                      : {'from': 'exchange'},
-                  extra: draft,
-                );
-                return;
-              }
-              if (Platform.isIOS && !config.isSuperuser(context)) {
-                config.onExit(context);
-                return;
-              }
-              context.goNamed(ExchangeRoute.exchangeHome.name);
-            },
-            child: Scaffold(
-              body: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+        child: ExchangeExitOnBack(
+          onExit: () => config.onExit(context),
+          child: _AuthAccessGate(
+            config: config,
+            child: BlocListener<ExchangeCubit, ExchangeState>(
+              listenWhen: (previous, current) =>
+                  previous.notLoggedIn && !current.notLoggedIn,
+              listener: (context, exchangeState) {
+                if (fromSupport) {
+                  final isIOSNonSuperuser =
+                      Platform.isIOS && !config.isSuperuser(context);
+                  context.goNamed(
+                    ExchangeSupportChatFacade.routeName,
+                    queryParameters: isIOSNonSuperuser
+                        ? {}
+                        : {'from': 'exchange'},
+                    extra: draft,
+                  );
+                  return;
+                }
+                if (Platform.isIOS && !config.isSuperuser(context)) {
+                  config.onExit(context);
+                  return;
+                }
+                context.goNamed(ExchangeRoute.exchangeHome.name);
+              },
+              child: Scaffold(
+                body: ExchangeAuthScreen(onExit: () => config.onExit(context)),
+              ),
             ),
           ),
         ),

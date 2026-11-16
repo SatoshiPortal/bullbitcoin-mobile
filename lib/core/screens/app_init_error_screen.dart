@@ -2,12 +2,19 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/app_language_picker.dart';
+import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullShapesX, BullSnackBar, BullSupportButton, Gap;
+    show
+        BullButton,
+        BullLanguagePicker,
+        BullPickerItem,
+        BullShapesX,
+        BullSnackBar,
+        BullSupportButton,
+        Gap;
 
 class AppInitErrorScreen extends StatefulWidget {
   const AppInitErrorScreen({super.key, required this.error});
@@ -75,7 +82,7 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
-          // Seed Device.screen so AppLanguagePicker / TranslationWarningBottomSheet
+          // Seed Device.screen so TranslationWarningBottomSheet
           // (which read it synchronously) work on this pre-init screen.
           Device.init(context);
           return Scaffold(
@@ -96,9 +103,21 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        AppLanguagePicker(
+                        BullLanguagePicker<Language>(
                           value: _language,
-                          onChanged: (lang) => setState(() => _language = lang),
+                          languages: [
+                            for (final language in Language.values)
+                              BullPickerItem(
+                                value: language,
+                                label: language.label,
+                              ),
+                          ],
+                          onChanged: (lang) {
+                            setState(() => _language = lang);
+                            if (lang.isMachineTranslated) {
+                              TranslationWarningBottomSheet.show(context);
+                            }
+                          },
                         ),
                       ],
                     ),

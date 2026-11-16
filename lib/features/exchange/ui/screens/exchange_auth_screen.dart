@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -84,6 +85,12 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
     }
 
+    // Hosts of the Bull web app the site links back to.
+    final appHosts = {
+      Uri.parse(ApiServiceConstants.bbAppUrl).host,
+      if (isTestnet) Uri.parse(ApiServiceConstants.bbKycTestUrl).host,
+    }.toList();
+
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel(
@@ -101,55 +108,26 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {
-            // Direct JavaScript to handle "Back to App" button
+            // The site's "Back to App" control is a link to the Bull web app,
+            // which this WebView never loads: a tap on it leaves the screen
+            // like the back gesture does. Redirects to that host stay
+            // refused, so a sign-in that ends there is not cut short.
             _controller.runJavaScript('''
               (function() {
-                function handleBackToApp() {
-                  // NOTE : NEXT JS MAY CHANGE THE NAME OF THIS DIV!!!
-                  
-                  // Method 1: Direct click on the specific div structure
-                  const backDiv = document.querySelector('div.css-70qvj9');
-                  if (backDiv && !backDiv.hasAttribute('data-handled')) {
-                    backDiv.setAttribute('data-handled', 'true');
-                    backDiv.addEventListener('click', function(e) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      Flutter.postMessage('close');
-                      return false;
-                    });
-                  }
-                  
-                  // Method 2: Click on parent div
-                  // const parentDiv = document.querySelector('div.css-17lzdhk');
-                  // if (parentDiv && !parentDiv.hasAttribute('data-handled')) {
-                  //   parentDiv.setAttribute('data-handled', 'true');
-                  //   parentDiv.addEventListener('click', function(e) {
-                  //     e.preventDefault();
-                  //     e.stopPropagation();
-                  //     Flutter.postMessage('close');
-                  //     return false;
-                  //   });
-                  // }
-                }
-                
-                // Run immediately
-                handleBackToApp();
-                
-                // Run after delays to catch dynamic content
-                setTimeout(handleBackToApp, 500);
-                setTimeout(handleBackToApp, 1000);
-                setTimeout(handleBackToApp, 2000);
-                setTimeout(handleBackToApp, 5000);
-                
-                // Watch for DOM changes
-                const observer = new MutationObserver(function(mutations) {
-                  handleBackToApp();
-                });
-                
-                observer.observe(document.body, {
-                  childList: true,
-                  subtree: true
-                });
+                if (window.__bullBackToApp) return;
+                window.__bullBackToApp = true;
+                const hosts = ${jsonEncode(appHosts)};
+                document.addEventListener('click', function(e) {
+                  const link = e.target.closest && e.target.closest('a[href]');
+                  if (!link) return;
+                  let host;
+                  try { host = new URL(link.href, location.href).host; }
+                  catch (_) { return; }
+                  if (hosts.indexOf(host) === -1) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  Flutter.postMessage('close');
+                }, true);
               })();
             ''');
           },
