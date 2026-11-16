@@ -26,6 +26,41 @@ class _Scan extends Mock implements ScanOnboardingWalletUsecase {}
 
 void main() {
   setUpAll(() => registerFallbackValue(bip39.Language.english));
+  testWidgets('the keyboard offers every recovery phrase language', (
+    tester,
+  ) async {
+    const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (_) async => true);
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null),
+    );
+    final bloc = OnboardingBloc(
+      createOnboardingWalletUsecase: _Create(),
+      recoverOnboardingWalletUsecase: _Recover(),
+      scanOnboardingWalletUsecase: _Scan(),
+    );
+    addTearDown(bloc.close);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: bloc,
+          child: const OnboardingPhysicalRecovery(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(TextField).first);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('mnemonicLanguageKey')), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('an empty scan asks before recovering the wallet', (
     tester,
   ) async {
