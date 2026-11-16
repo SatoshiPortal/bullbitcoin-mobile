@@ -4611,5 +4611,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa.",
   "settingsDarkModeTitle": "Tumma tila",
-  "settingsSourceCodeTitle": "Lähdekoodi"
+  "settingsSourceCodeTitle": "Lähdekoodi",
+  "torSettingsStatusNoInternetOrBlocked": "Ei internetiä tai sensuroitu verkko",
+  "torSettingsDescNoInternetOrBlocked": "Tällä verkolla ei ole internetyhteyttä, tai se estää Torin."
 }

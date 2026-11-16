@@ -3514,5 +3514,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Không thể xác nhận giao dịch của bạn đã được phát sóng. Hãy kiểm tra trên trình khám phá khối trước khi thử lại.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Phát sóng trên mạng này chưa được bật trong cài đặt hiện tại.",
   "settingsDarkModeTitle": "Chế độ tối",
-  "settingsSourceCodeTitle": "Mã nguồn"
+  "settingsSourceCodeTitle": "Mã nguồn",
+  "torSettingsStatusNoInternetOrBlocked": "Không có internet hoặc mạng bị kiểm duyệt",
+  "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor."
 }

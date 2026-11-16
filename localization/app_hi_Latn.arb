@@ -11583,5 +11583,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Hum confirm nahin kar sake ki aapka transaction broadcast hua. Dobara try karne se pehle kisi block explorer mein check karein.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Maujooda settings mein is network par broadcast enabled nahin hai.",
   "settingsDarkModeTitle": "Dark mode",
-  "settingsSourceCodeTitle": "Source code"
+  "settingsSourceCodeTitle": "Source code",
+  "torSettingsStatusNoInternetOrBlocked": "Internet nahin hai ya network censored hai",
+  "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai."
 }

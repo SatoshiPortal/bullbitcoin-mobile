@@ -15439,5 +15439,13 @@
   "settingsSourceCodeTitle": "Source code",
   "@settingsSourceCodeTitle": {
     "description": "Settings entry opening the app's public source code repository."
+  },
+  "torSettingsStatusNoInternetOrBlocked": "No internet or censored network",
+  "@torSettingsStatusNoInternetOrBlocked": {
+    "description": "Status title when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"
+  },
+  "torSettingsDescNoInternetOrBlocked": "This network has no internet access, or it blocks Tor.",
+  "@torSettingsDescNoInternetOrBlocked": {
+    "description": "Status description when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"
   }
 }

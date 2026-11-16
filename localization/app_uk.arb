@@ -4620,5 +4620,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Не вдалося підтвердити, що транзакцію було трансльовано. Перевірте її в оглядачі блоків, перш ніж повторити спробу.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляцію в цій мережі не ввімкнено в поточних налаштуваннях.",
   "settingsDarkModeTitle": "Темний режим",
-  "settingsSourceCodeTitle": "Вихідний код"
+  "settingsSourceCodeTitle": "Вихідний код",
+  "torSettingsStatusNoInternetOrBlocked": "Немає інтернету або мережа під цензурою",
+  "torSettingsDescNoInternetOrBlocked": "Ця мережа не має доступу до інтернету або блокує Tor."
 }

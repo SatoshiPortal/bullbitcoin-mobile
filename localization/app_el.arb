@@ -11276,5 +11276,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Δεν μπορέσαμε να επιβεβαιώσουμε ότι η συναλλαγή σας μεταδόθηκε. Ελέγξτε σε έναν block explorer πριν δοκιμάσετε ξανά.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Η μετάδοση σε αυτό το δίκτυο δεν είναι ενεργοποιημένη στις τρέχουσες ρυθμίσεις.",
   "settingsDarkModeTitle": "Σκούρα λειτουργία",
-  "settingsSourceCodeTitle": "Πηγαίος κώδικας"
+  "settingsSourceCodeTitle": "Πηγαίος κώδικας",
+  "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
+  "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor."
 }

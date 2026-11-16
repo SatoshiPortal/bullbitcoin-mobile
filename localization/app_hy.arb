@@ -3514,5 +3514,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Չհաջողվեց հաստատել, որ ձեր գործարքը հեռարձակվել է։ Նորից փորձելուց առաջ ստուգեք բլոկների դիտարկիչում։",
   "broadcastSignedTxErrorNetworkNotEnabled": "Այս ցանցում հեռարձակումը միացված չէ ընթացիկ կարգավորումներում։",
   "settingsDarkModeTitle": "Մուգ ռեժիմ",
-  "settingsSourceCodeTitle": "Սկզբնական կոդ"
+  "settingsSourceCodeTitle": "Սկզբնական կոդ",
+  "torSettingsStatusNoInternetOrBlocked": "Ինտերնետ չկա կամ ցանցը գրաքննված է",
+  "torSettingsDescNoInternetOrBlocked": "Այս ցանցը ինտերնետ հասանելիություն չունի, կամ արգելափակում է Tor-ը։"
 }

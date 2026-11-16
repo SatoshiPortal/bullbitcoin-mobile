@@ -4844,5 +4844,7 @@
   "passphraseShow": "Passphrase anzeigen",
   "passphraseHide": "Passphrase verbergen",
   "settingsDarkModeTitle": "Dunkelmodus",
-  "settingsSourceCodeTitle": "Quellcode"
+  "settingsSourceCodeTitle": "Quellcode",
+  "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
+  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor."
 }

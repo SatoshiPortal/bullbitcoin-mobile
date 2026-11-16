@@ -11280,5 +11280,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
   "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
   "settingsDarkModeTitle": "โหมดมืด",
-  "settingsSourceCodeTitle": "ซอร์สโค้ด"
+  "settingsSourceCodeTitle": "ซอร์สโค้ด",
+  "torSettingsStatusNoInternetOrBlocked": "ไม่มีอินเทอร์เน็ตหรือเครือข่ายถูกเซ็นเซอร์",
+  "torSettingsDescNoInternetOrBlocked": "เครือข่ายนี้ไม่มีการเข้าถึงอินเทอร์เน็ต หรือบล็อก Tor"
 }

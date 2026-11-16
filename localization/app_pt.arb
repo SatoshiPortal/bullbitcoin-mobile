@@ -4659,5 +4659,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que a sua transação foi transmitida. Verifique num explorador de blocos antes de tentar novamente.",
   "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas definições atuais.",
   "settingsDarkModeTitle": "Modo escuro",
-  "settingsSourceCodeTitle": "Código-fonte"
+  "settingsSourceCodeTitle": "Código-fonte",
+  "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
+  "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor."
 }

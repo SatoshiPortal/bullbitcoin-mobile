@@ -11276,5 +11276,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.",
   "broadcastSignedTxErrorNetworkNotEnabled": "انتشار در این شبکه در تنظیمات فعلی فعال نیست.",
   "settingsDarkModeTitle": "حالت تیره",
-  "settingsSourceCodeTitle": "کد منبع"
+  "settingsSourceCodeTitle": "کد منبع",
+  "torSettingsStatusNoInternetOrBlocked": "اینترنت وجود ندارد یا شبکه سانسور شده است",
+  "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند."
 }

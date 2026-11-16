@@ -3637,5 +3637,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "ვერ დავადასტურეთ, რომ თქვენი ტრანზაქცია გავრცელდა. ხელახლა ცდამდე შეამოწმეთ ბლოკების მიმოხილველში.",
   "broadcastSignedTxErrorNetworkNotEnabled": "ამ ქსელში გავრცელება მიმდინარე პარამეტრებში ჩართული არ არის.",
   "settingsDarkModeTitle": "მუქი რეჟიმი",
-  "settingsSourceCodeTitle": "საწყისი კოდი"
+  "settingsSourceCodeTitle": "საწყისი კოდი",
+  "torSettingsStatusNoInternetOrBlocked": "ინტერნეტი არ არის ან ქსელი ცენზურირებულია",
+  "torSettingsDescNoInternetOrBlocked": "ამ ქსელს არ აქვს ინტერნეტთან წვდომა, ან ის ბლოკავს Tor-ს."
 }

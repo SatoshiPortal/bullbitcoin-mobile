@@ -225,7 +225,7 @@ final class TorRepositoryImpl implements TorRepository {
     void watchCensorship(TorDiagnostic? diagnostic) {
       final pending = censored;
       if (pending == null || pending.isCompleted) return;
-      if (diagnostic?.suggestsCensorship ?? false) {
+      if (diagnostic?.worthSnowflake ?? false) {
         censorshipTimer ??= Timer(_censorshipFallbackAfter, () {
           if (!pending.isCompleted) pending.complete();
         });
@@ -345,7 +345,7 @@ final class TorRepositoryImpl implements TorRepository {
   /// means relays are unreachable, which is how a network blocks Tor.
   TorDiagnostic? _classify(TorDiagnostic? diagnostic) =>
       diagnostic == TorDiagnostic.offline && (_network?.hasNetwork ?? false)
-      ? TorDiagnostic.cantReachTor
+      ? TorDiagnostic.noInternetOrBlocked
       : diagnostic;
 
   TorReady _readyOn(TorProxyEndpoint endpoint, TorTransport transport) =>
@@ -379,7 +379,7 @@ final class TorRepositoryImpl implements TorRepository {
   bool _shouldUseSnowflake(TorFailure failure) => switch (failure) {
     TorBootstrapTimeoutFailure() => true,
     TorBootstrapFailure(:final diagnostic) =>
-      _classify(diagnostic)?.suggestsCensorship ?? false,
+      _classify(diagnostic)?.worthSnowflake ?? false,
     _ => false,
   };
 

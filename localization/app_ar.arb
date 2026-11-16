@@ -11279,5 +11279,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
   "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
   "settingsDarkModeTitle": "الوضع الداكن",
-  "settingsSourceCodeTitle": "الشيفرة المصدرية"
+  "settingsSourceCodeTitle": "الشيفرة المصدرية",
+  "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
+  "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor."
 }

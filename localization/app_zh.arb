@@ -4623,5 +4623,7 @@
   "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
   "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。",
   "settingsDarkModeTitle": "深色模式",
-  "settingsSourceCodeTitle": "源代码"
+  "settingsSourceCodeTitle": "源代码",
+  "torSettingsStatusNoInternetOrBlocked": "无法连接互联网或网络受审查",
+  "torSettingsDescNoInternetOrBlocked": "此网络无法访问互联网，或屏蔽了 Tor。"
 }
