@@ -85,5 +85,6 @@
   "actualVtxos": "VTXO inclus",
   "skippedVtxos": "VTXO ignorés",
   "netInSats": "Montant net (sats)",
-  "feeInSats": "Frais (sats)"
+  "feeInSats": "Frais (sats)",
+  "reminderMigrationPending": "Certains anciens rappels Ark restent non résolus. De nouveaux rappels VTXO peuvent encore être programmés. Ouvrez Ark régulièrement."
 }

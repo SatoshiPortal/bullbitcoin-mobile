@@ -177,5 +177,7 @@
   "netInSats": "Net amount (sats)",
   "@netInSats": {},
   "feeInSats": "Fee (sats)",
-  "@feeInSats": {}
+  "@feeInSats": {},
+  "reminderMigrationPending": "Some older Ark reminders remain unresolved. New VTXO reminders can still be scheduled. Open Ark regularly.",
+  "@reminderMigrationPending": {}
 }
