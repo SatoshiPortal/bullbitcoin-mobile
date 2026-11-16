@@ -41,7 +41,7 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         options: Options(headers: {'x-api-version': _apiVersion}),
       );
 
-      final rejection = _rejectionOf(resp);
+      final rejection = _rejectionOf(resp, redactPayload: true);
       if (rejection != null) {
         _logRejection('create fiat recipient', rejection);
         return const Err(RecipientsSaveFailure());
@@ -236,7 +236,7 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         },
       );
 
-      final rejection = _rejectionOf(resp);
+      final rejection = _rejectionOf(resp, redactPayload: true);
       if (rejection != null) {
         _logRejection('check SINPE', rejection);
         return const Err(RecipientsSinpeLookupFailure());
@@ -358,13 +358,9 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
         return const RecipientsNetworkFailure();
       }
     }
-    // warning, not severe: a Dio error holds the request body (the recipient's
-    // bank details, or the Interac security answer) in requestOptions.data.
-    // Logging it here is safe only because the log writes error.toString(),
-    // and DioException.toString() prints the type, message and inner error,
-    // never the request body (dio 5.11). Never log requestOptions or the
-    // response data from this path.
-    log.warning('Failed to $operation', error: e, trace: st);
+    // Foreign exception messages can quote banking details or credentials.
+    // Keep their category, without carrying the payload into shareable logs.
+    log.warning('Failed to $operation category=${e.runtimeType}');
     return onApiFailure();
   }
 }
