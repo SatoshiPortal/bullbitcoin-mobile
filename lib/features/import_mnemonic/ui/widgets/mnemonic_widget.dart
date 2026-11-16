@@ -370,7 +370,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
       children: [
         BullText(
           context.loc.mnemonicWordCountLabel,
-          style: context.font.labelMedium,
+          role: .caption,
           color: context.appColors.textMuted,
         ),
         const Gap(6),
