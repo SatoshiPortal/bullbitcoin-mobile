@@ -256,20 +256,19 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           _buildBody(context),
           const Gap(24),
           _buildCopyAction(context),
-          if (!_showUri)
-            FutureBuilder<String?>(
-              future: _explorerUrl,
-              builder: (context, snapshot) => snapshot.data == null
-                  ? const SizedBox.shrink()
-                  : Column(
-                      children: [
-                        const Gap(16),
-                        _buildCopyLinkAction(context),
-                        const Gap(16),
-                        _buildOpenLinkAction(context),
-                      ],
-                    ),
-            ),
+          FutureBuilder<String?>(
+            future: _explorerUrl,
+            builder: (context, snapshot) => _showUri || snapshot.data == null
+                ? const SizedBox.shrink()
+                : Column(
+                    children: [
+                      const Gap(16),
+                      _buildCopyLinkAction(context),
+                      const Gap(16),
+                      _buildOpenLinkAction(context),
+                    ],
+                  ),
+          ),
         ],
       ),
     );
