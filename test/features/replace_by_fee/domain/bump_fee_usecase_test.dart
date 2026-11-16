@@ -80,8 +80,15 @@ void main() {
 
     test('builds in sync, signs, then broadcasts what was built', () async {
       bumpAnswers(Ok(unsigned));
-      when(() => walletRepository.signPsbt('unsigned-psbt', walletId: 'w1'))
-          .thenAnswer((_) async => 'signed-psbt');
+      when(
+        () => walletRepository.signPsbt(
+          'unsigned-psbt',
+          walletId: 'w1',
+          replacingTxid: 'old-txid',
+        ),
+      ).thenAnswer(
+        (_) async => const Ok((psbt: 'signed-psbt', isFinalized: true)),
+      );
       when(
         () => broadcastUsecase.execute(
           'signed-psbt',

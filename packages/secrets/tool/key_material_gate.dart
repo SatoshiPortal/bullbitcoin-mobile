@@ -314,14 +314,29 @@ bool _isException(String path, AstNode node, String symbol) {
       }.contains(member)) {
     return true;
   }
-  // This adapter replaces version bytes with the public xpub version before
-  // decoding. Elsewhere this mixed decoder could import private extended keys.
-  if (path == 'lib/core/utils/bip32_derivation.dart' &&
-      owner == 'Bip32Derivation' &&
-      function == 'getBip32Xpub' &&
-      member == 'Bip32Keys.fromBase58') {
+  if (path == _bitcoinSignerPath &&
+      owner == 'BitcoinSigner' &&
+      function == 'signDescriptorPsbt' &&
+      {
+        'DescriptorSecretKey.fromString',
+        'DescriptorSecretKey.derive',
+        'DescriptorSecretKey.toString',
+        'DescriptorSecretKey.dispose',
+      }.contains(member)) {
     return true;
   }
+  // This adapter replaces version bytes with the public xpub version before
+  // decoding. Elsewhere this mixed decoder could import private extended keys.
+  if (member == 'Bip32Keys.fromBase58' &&
+      ((path == 'lib/core/utils/bip32_derivation.dart' &&
+              owner == 'Bip32Derivation' &&
+              function == 'getBip32Xpub') ||
+          (path == 'packages/sync/lib/src/data/codec/public_account_key.dart' &&
+              owner == null &&
+              function == 'publicAccountKey'))) {
+    return true;
+  }
+
   // The exported swap master key is a documented, independent child secret.
   if (path == 'lib/core/swaps/data/models/swap_master_key_model.dart' &&
       owner == 'SwapMasterKeyModel') {

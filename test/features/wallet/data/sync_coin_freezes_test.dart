@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -8,8 +12,6 @@ import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart'
     as app
     show Network;
@@ -144,13 +146,22 @@ void main() {
 WalletMetadataModel _row(String id) => WalletMetadataModel(
   id: id,
   networkCode: app.Network.bitcoinTestnet.name,
-  masterFingerprint: '73c5da0a',
-  xpubFingerprint: 'deadbeef',
   isEncryptedVaultTested: false,
   isPhysicalBackupTested: false,
-  xpub: 'public-test-key',
-  externalPublicDescriptor: 'wpkh(public-test-key/0/*)',
-  internalPublicDescriptor: 'wpkh(public-test-key/1/*)',
-  signer: Signer.local,
   isDefault: true,
+  signers: [
+    walletSignerModel(
+      id: 'signer-0',
+      descriptorKeyId: 'key-0',
+      masterFingerprint: '73c5da0a',
+      xpubFingerprint: 'deadbeef',
+      xpub: 'public-test-key',
+      signer: Signer.local,
+      signerDevice: null,
+    ),
+  ],
+  publicDescriptor: ('wpkh(public-test-key/0/*)')
+      .split('#')
+      .first
+      .replaceAll('/0/*', '/<0;1>/*'),
 );

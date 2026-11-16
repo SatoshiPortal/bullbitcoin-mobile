@@ -9,3 +9,5 @@ library;
 export 'mnemonic_challenge.dart' show MnemonicChallenge, MnemonicTile;
 export 'mnemonic_view.dart' show MnemonicView;
 export 'secret_widgets.dart' show SecretWidgets;
+
+export 'ephemeral_mnemonic_extension.dart' show EphemeralMnemonicExtension;

@@ -6,11 +6,14 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/wallet/domain/bitcoin_send_port.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_coin_selection_exception.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/bitcoin_policy.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/unsupported_bitcoin_policy_path_exception.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
 typedef PreparedBitcoinSend = ({
@@ -45,6 +48,7 @@ class PrepareBitcoinSendUsecase {
     List<WalletUtxo>? selectedInputs,
     bool selectedOnly = false,
     bool replaceByFee = true,
+    BitcoinPolicyPath? policyPath,
   }) async {
     validateBitcoinTransactionRecipients(recipients);
     try {
@@ -86,6 +90,7 @@ class PrepareBitcoinSendUsecase {
         selected: filteredSelectedInputs,
         selectedOnly: selectedOnly,
         replaceByFee: replaceByFee,
+        policyPath: policyPath,
       );
       final String psbt;
       switch (built) {
@@ -94,7 +99,10 @@ class PrepareBitcoinSendUsecase {
         case Err(:final failure):
           return Err(failure);
       }
-      final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt);
+      final size = await _bitcoinWalletRepository.getTxSize(
+        psbt: psbt,
+        walletId: walletId,
+      );
       final isToSelf = await _bitcoinWalletRepository.areAddressesOfWallet([
         for (final recipient in recipients) recipient.address,
       ], walletId: walletId);
@@ -115,6 +123,10 @@ class PrepareBitcoinSendUsecase {
     } on WalletSpendBlockedException {
       // The spend gate is not a build failure: the caller names it.
       rethrow;
+    } on SelectedBitcoinCoinsUnavailableException {
+      return const Err(WalletSelectedInputsUnavailableFailure());
+    } on SelectedBitcoinCoinsInsufficientException {
+      return const Err(WalletInsufficientFundsFailure());
     } on NoSpendableUtxoException {
       return Err(
         selectedOnly || (selectedInputs?.isNotEmpty ?? false)
@@ -123,6 +135,10 @@ class PrepareBitcoinSendUsecase {
       );
     } on InsufficientFundsException {
       return const Err(WalletInsufficientFundsFailure());
+    } on UnsupportedBitcoinPolicyPathException {
+      return const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
+      );
     } on Exception catch (error, trace) {
       log.warning(
         'Bitcoin transaction preparation failed',

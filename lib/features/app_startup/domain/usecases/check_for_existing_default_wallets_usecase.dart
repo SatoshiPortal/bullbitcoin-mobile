@@ -81,7 +81,7 @@ class CheckForExistingDefaultWalletsUsecase {
       );
       try {
         final secret = switch (await _secrets.fetch(
-          Fingerprint(defaultWallets.first.masterFingerprint),
+          Fingerprint(defaultWallets.first.localSeedFingerprints.single),
         )) {
           Ok(:final value) => value,
           Err(:final failure) => throw StateError(
@@ -129,7 +129,9 @@ class CheckForExistingDefaultWalletsUsecase {
     // treating that as an absence would be offering to replace a seed that
     // is still there.
     for (final wallet in defaultWallets) {
-      switch (await _secrets.fetch(Fingerprint(wallet.masterFingerprint))) {
+      switch (await _secrets.fetch(
+        Fingerprint(wallet.localSeedFingerprints.single),
+      )) {
         case Ok():
           log.fine('FINE: Seed Found');
         case Err(failure: KeystoreLockedFailure()):
@@ -148,7 +150,8 @@ class CheckForExistingDefaultWalletsUsecase {
               .where(
                 (candidate) =>
                     candidate.isBitcoin &&
-                    candidate.masterFingerprint == wallet.masterFingerprint,
+                    candidate.localSeedFingerprints.single ==
+                        wallet.localSeedFingerprints.single,
               )
               .toList();
           if (bitcoinDefaults.length != 1) {
@@ -160,7 +163,7 @@ class CheckForExistingDefaultWalletsUsecase {
           }
           return Err(
             AppStartupMissingDefaultSecretFailure(
-              wallet.masterFingerprint,
+              wallet.localSeedFingerprints.single,
               walletId: bitcoinDefaults.single.id,
             ),
           );

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/test_wallet_backup_failure.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_secret_from_fingerprint_usecase.dart';
@@ -49,14 +50,17 @@ Wallet _wallet({required bool isDefault, required String origin}) => Wallet(
   label: 'Test',
   network: Network.bitcoinMainnet,
   isDefault: isDefault,
-  masterFingerprint: _fingerprint,
-  xpubFingerprint: _fingerprint,
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'desc',
-  internalPublicDescriptor: 'desc',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'wpkh(xpub/<0;1>/*)',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: _fingerprint,
+      xpubFingerprint: _fingerprint,
+      xpub: 'xpub',
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   balanceSat: BigInt.zero,
 );
 
@@ -98,6 +102,43 @@ void main() {
       await bloc.close();
     });
 
+    test('selects the wallet that owns a requested seed fingerprint', () async {
+      final defaultWallet = _wallet(isDefault: true, origin: 'a');
+      final requestedWallet = Wallet(
+        origin: 'b',
+        label: 'Requested',
+        network: Network.bitcoinMainnet,
+        publicDescriptor: 'wpkh([beef1234/84h/0h/0h]xpub/<0;1>/*)',
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: 'beef1234',
+            xpubFingerprint: 'beef1234',
+            xpub: 'xpub',
+            derivationPath: "m/84'/0'/0'",
+            signer: SignerEntity.local,
+            signerDevice: null,
+          ),
+        ],
+        scriptType: ScriptType.bip84,
+        balanceSat: BigInt.zero,
+      );
+      when(() => loadWalletsUsecase.execute())
+          .thenAnswer((_) async => Ok([defaultWallet, requestedWallet]));
+      final bloc = buildBloc();
+
+      final expectation = expectLater(
+        bloc.stream,
+        emits(
+          predicate<TestWalletBackupState>(
+            (state) => state.selectedWallet == requestedWallet,
+          ),
+        ),
+      );
+      bloc.add(const LoadWallets(fingerprint: 'BEEF1234'));
+      await expectation;
+      await bloc.close();
+    });
+
     test(
       'records the backup once the sealed challenge has judged it',
       () async {
@@ -105,7 +146,7 @@ void main() {
         // through `secret.verify.mnemonic`, inside the package, and the event
         // that reaches this bloc carries no words at all. What is left to test
         // is the bookkeeping.
-        when(() => completeUsecase.execute())
+        when(() => completeUsecase.execute(fingerprint: _fingerprint))
             .thenAnswer((_) async => const Ok(null));
         final bloc = buildBloc();
         bloc.seed(
@@ -125,7 +166,8 @@ void main() {
         bloc.add(const VerifyPhysicalBackup());
         await expectation;
 
-        verify(() => completeUsecase.execute()).called(1);
+        verify(() => completeUsecase.execute(fingerprint: _fingerprint))
+            .called(1);
         await bloc.close();
       },
     );
@@ -144,7 +186,7 @@ void main() {
       bloc.add(const VerifyPhysicalBackup());
       await expectation;
 
-      verifyNever(() => completeUsecase.execute());
+      verifyNever(() => completeUsecase.execute(fingerprint: _fingerprint));
       await bloc.close();
     });
 
@@ -193,7 +235,7 @@ void main() {
     });
 
     test('reports a failed completion instead of claiming success', () async {
-      when(() => completeUsecase.execute()).thenAnswer(
+      when(() => completeUsecase.execute(fingerprint: _fingerprint)).thenAnswer(
         (_) async =>
             const Err(TestWalletBackupCompletionFailure('drift: locked')),
       );

@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:primitives/primitives.dart' show BitcoinUnit, Err, Ok;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -75,7 +79,17 @@ void main() {
           Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
         };
         final row = _Row();
-        when(() => row.masterFingerprint).thenReturn(secret.id.hex);
+        when(() => row.signers).thenReturn([
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: secret.id.hex,
+            xpubFingerprint: '',
+            xpub: '',
+            signer: Signer.local,
+            signerDevice: null,
+          ),
+        ]);
         when(() => row.networkCode).thenReturn('bitcoinMainnet');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
         final duplicate = await usecase.execute(
@@ -120,7 +134,17 @@ void main() {
     test('rejects a referenced secret only on the target network', () async {
       expect(await secrets.import(words: words), isA<Ok>());
       final row = _Row();
-      when(() => row.masterFingerprint).thenReturn('73c5da0a');
+      when(() => row.signers).thenReturn([
+        walletSignerModel(
+          id: 'signer-0',
+          descriptorKeyId: 'key-0',
+          masterFingerprint: '73c5da0a',
+          xpubFingerprint: '',
+          xpub: '',
+          signer: Signer.local,
+          signerDevice: null,
+        ),
+      ]);
       when(() => row.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
       when(() => row.networkCode).thenReturn('bitcoinMainnet');
       when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
@@ -145,7 +169,17 @@ void main() {
       () async {
         expect(await secrets.import(words: words), isA<Ok>());
         final invalid = _Row();
-        when(() => invalid.masterFingerprint).thenReturn('73c5da0a');
+        when(() => invalid.signers).thenReturn([
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: '73c5da0a',
+            xpubFingerprint: '',
+            xpub: '',
+            signer: Signer.local,
+            signerDevice: null,
+          ),
+        ]);
         when(() => invalid.id).thenReturn('invalid origin');
         when(() => invalid.networkCode).thenReturn('unresolved');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [invalid]);
@@ -154,7 +188,17 @@ void main() {
           isA<Ok<void, ImportMnemonicFailure>>(),
         );
         final valid = _Row();
-        when(() => valid.masterFingerprint).thenReturn('73c5da0a');
+        when(() => valid.signers).thenReturn([
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: '73c5da0a',
+            xpubFingerprint: '',
+            xpub: '',
+            signer: Signer.local,
+            signerDevice: null,
+          ),
+        ]);
         when(() => valid.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
         when(() => valid.networkCode).thenReturn('bitcoinMainnet');
         when(() => metadata.fetchAll())

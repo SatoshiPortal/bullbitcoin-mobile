@@ -6,10 +6,11 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/watch_payjoin_policy_usecase.dart';
-import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
+import 'package:bb_mobile/features/settings/public/settings_entry_registry.dart';
 
 export '../domain/settings_entity.dart';
 export '../domain/settings_failure.dart';
@@ -18,6 +19,10 @@ export '../ui/settings_router.dart' show SettingsRoute;
 export 'payjoin_disclaimer_dialog.dart';
 export '../reporting_setup.dart' show refreshReportingConsent;
 export '../background_setup.dart' show setupBackgroundPreferences;
+
+export 'settings_entry_registry.dart'
+    show SettingsEntryContribution, SettingsEntrySection;
+export 'wallet_registration_request.dart';
 
 part '../ui/amount_preferences_binder.dart';
 
@@ -30,11 +35,17 @@ class SettingsFacade {
 
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
   final WatchPayjoinPolicyUsecase _watchPayjoinPolicyUsecase;
+  final SettingsEntryRegistry _entryRegistry;
 
   SettingsFacade({
     required this._setPayjoinEnabledUsecase,
     required this._watchPayjoinPolicyUsecase,
-  });
+    required SettingsEntryRegistry entryRegistry,
+  }) : _entryRegistry = entryRegistry; // ignore: prefer_initializing_formals
+
+  void registerEntry(SettingsEntryContribution contribution) {
+    _entryRegistry.register(contribution);
+  }
 
   /// Payjoin when receiving from other users, behind the disclaimer.
   Future<Result<bool, SettingsFailure>> setPayjoinReceiveEnabled(

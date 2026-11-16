@@ -1,0 +1,738 @@
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/sync.dart' show SyncReason;
+import 'package:bb_mobile/core/entities/signer_device_entity.dart';
+import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:primitives/primitives.dart' show Ok, BitcoinNetwork;
+import 'package:secrets/secrets.dart';
+import 'package:secrets/testing.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
+import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_metadata_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_signer_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_descriptor_key_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_signer_model.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_descriptor_key.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_signer_device_port.dart';
+import 'package:bb_mobile/core/utils/bip32_derivation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockWalletMetadataDatasource extends Mock
+    implements WalletMetadataDatasource {}
+
+class _MockValues extends Mock implements SyncWalletValuesDatasource {}
+
+class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
+
+class _MockLwkWalletDatasource extends Mock implements LwkWalletDatasource {}
+
+class _FakeWalletMetadataModel extends Fake implements WalletMetadataModel {}
+
+const _fingerprint = '86241f88';
+const _xpub =
+    'xpub6DJwRncrB8eNrzUq8XxgjwCZsEeWP8FeqBJbJQZ8JfuDwLdAzyjhHiHJieNuar1wjQTyihhMWtaKGE4DUd8uBgtyrNJqF5drwbNVUqb83b7';
+const _multipathDescriptor =
+    'wpkh([$_fingerprint/84h/0h/0h]$_xpub/<0;1>/*)#n8txaeah';
+const _originlessMultipathDescriptor = 'wpkh($_xpub/<0;1>/*)';
+const _externalDescriptor =
+    'wpkh([$_fingerprint/84h/0h/0h]$_xpub/0/*)#p2w8v3yd';
+const _internalDescriptor =
+    'wpkh([$_fingerprint/84h/0h/0h]$_xpub/1/*)#0vj8t9e9';
+const _singleScriptIdentity = 'single-script-identity';
+const _secondFingerprint = '12345678';
+const _multisigDescriptor =
+    'wsh(sortedmulti(2,[$_fingerprint/48h/0h/0h/2h]$_xpub/<0;1>/*,[$_secondFingerprint/48h/0h/0h/2h]$_xpub/<0;1>/*))';
+const _multisigExternalDescriptor =
+    'wsh(sortedmulti(2,[$_fingerprint/48h/0h/0h/2h]$_xpub/0/*,[$_secondFingerprint/48h/0h/0h/2h]$_xpub/0/*))';
+const _multisigInternalDescriptor =
+    'wsh(sortedmulti(2,[$_fingerprint/48h/0h/0h/2h]$_xpub/1/*,[$_secondFingerprint/48h/0h/0h/2h]$_xpub/1/*))';
+const _multisigScriptIdentity = 'multisig-script-identity';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late _MockWalletMetadataDatasource metadataDatasource;
+  late _MockBdkWalletDatasource bdkDatasource;
+  late WalletRepository repository;
+  late _MockValues values;
+
+  setUpAll(() {
+    registerFallbackValue(_FakeWalletMetadataModel());
+    registerFallbackValue(Signer.none);
+    registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(
+      const WalletModel.publicBdk(
+        id: 'fallback',
+        descriptor: _multipathDescriptor,
+        network: Network.bitcoinMainnet,
+      ),
+    );
+  });
+
+  setUp(() {
+    FakeSecureStoragePlatform().install();
+    metadataDatasource = _MockWalletMetadataDatasource();
+    bdkDatasource = _MockBdkWalletDatasource();
+    final lwkDatasource = _MockLwkWalletDatasource();
+    values = _MockValues();
+    repository = WalletRepository(
+      native: _Native(),
+      walletMetadataDatasource: metadataDatasource,
+      bdkWalletDatasource: bdkDatasource,
+      lwkWalletDatasource: lwkDatasource,
+      walletValuesDatasource: values,
+      synchronize: (
+        _, {
+        discover = false,
+        allowInitialScan = true,
+        reason = SyncReason.auto,
+      }) async {},
+      isSyncing: ({walletId}) => false,
+      syncStarted: const Stream.empty(),
+      syncFinished: const Stream.empty(),
+      electrumSyncResultStream: const Stream.empty(),
+    );
+
+    when(
+      () => bdkDatasource.parsePublicTwoPathDescriptor(
+        descriptor: _multipathDescriptor,
+        network: Network.bitcoinMainnet,
+      ),
+    ).thenReturn(
+      const BdkTwoPathDescriptor(
+        descriptor: _multipathDescriptor,
+        externalDescriptor: _externalDescriptor,
+        internalDescriptor: _internalDescriptor,
+        scriptIdentity: _singleScriptIdentity,
+        scriptType: ScriptType.bip84,
+        keys: [
+          BdkDescriptorKey(
+            masterFingerprint: _fingerprint,
+            xpubFingerprint: 'e0c5d18b',
+            xpub: _xpub,
+            derivationPath: 'm/84h/0h/0h',
+          ),
+        ],
+      ),
+    );
+    when(
+      () => bdkDatasource.parsePublicTwoPathDescriptor(
+        descriptor: _multisigDescriptor,
+        network: Network.bitcoinMainnet,
+      ),
+    ).thenReturn(
+      const BdkTwoPathDescriptor(
+        descriptor: _multisigDescriptor,
+        externalDescriptor: _multisigExternalDescriptor,
+        internalDescriptor: _multisigInternalDescriptor,
+        scriptIdentity: _multisigScriptIdentity,
+        scriptType: null,
+        keys: [
+          BdkDescriptorKey(
+            masterFingerprint: _fingerprint,
+            xpubFingerprint: 'e0c5d18b',
+            xpub: _xpub,
+            derivationPath: 'm/48h/0h/0h/2h',
+          ),
+          BdkDescriptorKey(
+            masterFingerprint: _secondFingerprint,
+            xpubFingerprint: 'e0c5d18b',
+            xpub: _xpub,
+            derivationPath: 'm/48h/0h/0h/2h',
+          ),
+        ],
+      ),
+    );
+    when(
+      () => bdkDatasource.parsePublicTwoPathDescriptor(
+        descriptor: _originlessMultipathDescriptor,
+        network: Network.bitcoinMainnet,
+      ),
+    ).thenReturn(
+      const BdkTwoPathDescriptor(
+        descriptor: _originlessMultipathDescriptor,
+        externalDescriptor: 'wpkh($_xpub/0/*)',
+        internalDescriptor: 'wpkh($_xpub/1/*)',
+        scriptIdentity: _singleScriptIdentity,
+        scriptType: ScriptType.bip84,
+        keys: [
+          BdkDescriptorKey(
+            masterFingerprint: '',
+            xpubFingerprint: 'e0c5d18b',
+            xpub: _xpub,
+            derivationPath: null,
+          ),
+        ],
+      ),
+    );
+    when(() => values.getBalance(wallet: any(named: 'wallet')))
+        .thenAnswer((_) async => _zeroBalance);
+    when(metadataDatasource.fetchAll).thenAnswer((_) async => []);
+    when(() => metadataDatasource.fetch(any())).thenAnswer((_) async => null);
+    when(() => metadataDatasource.insert(any())).thenAnswer((_) async {});
+    when(() => metadataDatasource.store(any())).thenAnswer((_) async {});
+    when(
+      () => metadataDatasource.updateSignerDevice(
+        walletId: any(named: 'walletId'),
+        signerId: any(named: 'signerId'),
+        signer: any(named: 'signer'),
+        signerDevice: any(named: 'signerDevice'),
+      ),
+    ).thenAnswer((_) async => true);
+  });
+
+  test(
+    'reports persisted BIP48 accounts for ownership reconciliation',
+    () async {
+      final local = _signer(
+        masterFingerprint: _fingerprint,
+        signer: SignerEntity.local,
+        localSeedFingerprint: 'abcdef12',
+      );
+      final remote = _signer(
+        id: 'signer-1',
+        descriptorKeyId: 'key-1',
+        masterFingerprint: _secondFingerprint,
+        signer: SignerEntity.remote,
+      );
+      when(metadataDatasource.fetchAll).thenAnswer(
+        (_) async => [
+          WalletMetadataModel(
+            id: 'wallet-id',
+            signers: [local.toModel(), remote.toModel()],
+            isEncryptedVaultTested: false,
+            isPhysicalBackupTested: false,
+            publicDescriptor: _multisigDescriptor,
+            isDefault: false,
+            networkCode: 'bitcoinMainnet',
+          ),
+        ],
+      );
+
+      final usages = await repository.getBip48AccountUsages();
+
+      expect(usages, hasLength(2));
+      expect(
+        usages.map((usage) => usage.seedFingerprint),
+        containsAll([_fingerprint, _secondFingerprint]),
+      );
+      final localUsage = usages.firstWhere(
+        (usage) => usage.seedFingerprint == _fingerprint,
+      );
+      expect(localUsage.coinType, 0);
+      expect(localUsage.account, 0);
+      expect(localUsage.derivationPath, "m/48h/0h/0h/2h");
+      expect(localUsage.xpub, _xpub);
+      expect(localUsage.localSeedFingerprint, 'abcdef12');
+    },
+  );
+
+  test(
+    'returns a provisioned hidden wallet when balance is unavailable',
+    () async {
+      when(() => values.getBalance(wallet: any(named: 'wallet')))
+          .thenThrow(Exception('balance unavailable'));
+      final wallet = await repository.importDescriptor(
+        descriptor: _multipathDescriptor,
+        network: Network.bitcoinMainnet,
+        label: 'Vault',
+        isHidden: true,
+      );
+      final stored =
+          verify(() => metadataDatasource.insert(captureAny())).captured.single
+              as WalletMetadataModel;
+      expect(wallet.id, stored.id);
+      expect(wallet.isHidden, isTrue);
+      expect(wallet.balanceSat, isNull);
+      verifyNever(() => metadataDatasource.delete(any()));
+    },
+  );
+
+  test('imports descriptors with structured signer metadata', () async {
+    final wallet = await repository.importDescriptor(
+      descriptor: _multipathDescriptor,
+      network: Network.bitcoinMainnet,
+      label: 'Ledger wallet',
+      signers: [
+        _signer(
+          masterFingerprint: _fingerprint,
+          signer: SignerEntity.remote,
+          signerDevice: SignerDeviceEntity.ledgerFlex,
+          derivationPath: "m/84h/0h/0h",
+        ),
+      ],
+    );
+
+    final stored =
+        verify(() => metadataDatasource.insert(captureAny())).captured.single
+            as WalletMetadataModel;
+    expect(stored.publicDescriptor, _multipathDescriptor);
+    expect(stored.inferredScriptType, ScriptType.bip84);
+    expect(stored.signers, hasLength(1));
+    expect(
+      stored.signers.single.descriptorKeys.single.masterFingerprint,
+      _fingerprint,
+    );
+    expect(stored.signers.single.signer, Signer.remote);
+    expect(stored.signers.single.signerDevice, SignerDevice.ledgerFlex);
+    expect(wallet.label, 'Ledger wallet');
+    expect(wallet.isHardwareWallet, isTrue);
+  });
+
+  test('stores each multisig signer annotation independently', () async {
+    final localKey = _signer(
+      masterFingerprint: _fingerprint,
+      signer: SignerEntity.local,
+    ).descriptorKeys.single;
+    final wallet = await repository.importDescriptor(
+      descriptor: _multisigDescriptor,
+      network: Network.bitcoinMainnet,
+      label: 'Multisig wallet',
+      signers: [
+        WalletSigner(
+          id: 'signer-0',
+          signer: SignerEntity.local,
+          signerDevice: null,
+          descriptorKeys: [localKey.copyWith(requiresPassphrase: true)],
+        ),
+        _signer(
+          id: 'signer-1',
+          descriptorKeyId: 'key-1',
+          masterFingerprint: _secondFingerprint,
+          signer: SignerEntity.remote,
+          signerDevice: SignerDeviceEntity.bitbox02,
+        ),
+      ],
+    );
+
+    final stored =
+        verify(() => metadataDatasource.insert(captureAny())).captured.single
+            as WalletMetadataModel;
+    expect(stored.signers, hasLength(2));
+    expect(stored.signers.first.signer, Signer.local);
+    expect(stored.signers.first.signerDevice, isNull);
+    expect(
+      stored.signers.first.descriptorKeys.single.requiresPassphrase,
+      isTrue,
+    );
+    expect(stored.signers.last.signer, Signer.remote);
+    expect(stored.signers.last.signerDevice, SignerDevice.bitbox02);
+    expect(wallet.isWatchOnly, isFalse);
+    expect(wallet.hasLocalSigner, isTrue);
+    expect(wallet.hasRemoteSigner, isTrue);
+  });
+
+  test('updates an external signer device without changing its keys', () async {
+    final signer = _signer(
+      masterFingerprint: _fingerprint,
+      signer: SignerEntity.remote,
+      signerDevice: SignerDeviceEntity.ledgerFlex,
+    );
+    final metadata = WalletMetadataModel(
+      id: 'wallet-id',
+      signers: [signer.toModel()],
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      publicDescriptor: _multipathDescriptor,
+      isDefault: false,
+      networkCode: 'bitcoinMainnet',
+    );
+    when(() => metadataDatasource.fetch('wallet-id'))
+        .thenAnswer((_) async => metadata);
+
+    final wallet = await repository.updateSignerDevice(
+      walletId: 'wallet-id',
+      signerId: signer.id,
+      signerDevice: SignerDeviceEntity.jade,
+    );
+
+    verify(
+      () => metadataDatasource.updateSignerDevice(
+        walletId: 'wallet-id',
+        signerId: signer.id,
+        signer: Signer.remote,
+        signerDevice: SignerDevice.jade,
+      ),
+    ).called(1);
+    expect(wallet.signers.single.descriptorKeys, signer.descriptorKeys);
+    expect(wallet.signers.single.signerDevice, SignerDeviceEntity.jade);
+  });
+
+  test('does not reclassify the Bull on-device signer', () async {
+    final signer = _signer(
+      masterFingerprint: _fingerprint,
+      signer: SignerEntity.local,
+    );
+    final metadata = WalletMetadataModel(
+      id: 'wallet-id',
+      signers: [signer.toModel()],
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      publicDescriptor: _multipathDescriptor,
+      isDefault: false,
+      networkCode: 'bitcoinMainnet',
+    );
+    when(() => metadataDatasource.fetch('wallet-id'))
+        .thenAnswer((_) async => metadata);
+
+    await expectLater(
+      repository.updateSignerDevice(
+        walletId: 'wallet-id',
+        signerId: signer.id,
+        signerDevice: SignerDeviceEntity.jade,
+      ),
+      throwsA(isA<WalletSignerDeviceUpdateException>()),
+    );
+
+    verifyNever(
+      () => metadataDatasource.updateSignerDevice(
+        walletId: any(named: 'walletId'),
+        signerId: any(named: 'signerId'),
+        signer: any(named: 'signer'),
+        signerDevice: any(named: 'signerDevice'),
+      ),
+    );
+  });
+
+  test('applies one signer annotation to each xpub with its fingerprint', () async {
+    final secrets = Secrets(scratchDirectory: () async => '');
+    final secret = (await secrets.import(
+      words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+          .split(' '),
+    ) as Ok<Secret, SecretFailure>).value;
+    final firstXpub = (await secret.derive.account(
+      derivationPath: "m/84'/0'/0'",
+      network: BitcoinNetwork.mainnet,
+    ) as Ok<PublicAccountKey, SecretFailure>).value.xpub;
+    final secondXpub = (await secret.derive.account(
+      derivationPath: "m/84'/0'/1'",
+      network: BitcoinNetwork.mainnet,
+    ) as Ok<PublicAccountKey, SecretFailure>).value.xpub;
+    final descriptor =
+        'wsh(or_d(pk([$_fingerprint/84h/0h/0h]$firstXpub/<0;1>/*),pk([$_fingerprint/84h/0h/1h]$secondXpub/<0;1>/*)))';
+    final externalDescriptor =
+        'wsh(or_d(pk([$_fingerprint/84h/0h/0h]$firstXpub/0/*),pk([$_fingerprint/84h/0h/1h]$secondXpub/0/*)))';
+    final internalDescriptor =
+        'wsh(or_d(pk([$_fingerprint/84h/0h/0h]$firstXpub/1/*),pk([$_fingerprint/84h/0h/1h]$secondXpub/1/*)))';
+    when(
+      () => bdkDatasource.parsePublicTwoPathDescriptor(
+        descriptor: descriptor,
+        network: Network.bitcoinMainnet,
+      ),
+    ).thenReturn(
+      BdkTwoPathDescriptor(
+        descriptor: descriptor,
+        externalDescriptor: externalDescriptor,
+        internalDescriptor: internalDescriptor,
+        scriptIdentity: 'recovery-script-identity',
+        scriptType: null,
+        keys: [
+          BdkDescriptorKey(
+            masterFingerprint: _fingerprint,
+            xpubFingerprint: Bip32Derivation.getBip32Xpub(firstXpub)
+                .fingerprintHex,
+            xpub: firstXpub,
+            derivationPath: 'm/84h/0h/0h',
+          ),
+          BdkDescriptorKey(
+            masterFingerprint: _fingerprint,
+            xpubFingerprint: Bip32Derivation.getBip32Xpub(secondXpub)
+                .fingerprintHex,
+            xpub: secondXpub,
+            derivationPath: 'm/84h/0h/1h',
+          ),
+        ],
+      ),
+    );
+
+    await repository.importDescriptor(
+      descriptor: descriptor,
+      network: Network.bitcoinMainnet,
+      label: 'Recovery wallet',
+      signers: [
+        WalletSigner(
+          id: 'signer-0',
+          signer: SignerEntity.remote,
+          signerDevice: SignerDeviceEntity.coldcardQ,
+          descriptorKeys: [
+            WalletDescriptorKey(
+              id: 'key-0',
+              signerId: 'signer-0',
+              masterFingerprint: _fingerprint,
+              xpubFingerprint: Bip32Derivation.getBip32Xpub(firstXpub)
+                  .fingerprintHex,
+              xpub: firstXpub,
+              derivationPath: 'm/84h/0h/0h',
+            ),
+            WalletDescriptorKey(
+              id: 'key-1',
+              signerId: 'signer-0',
+              masterFingerprint: _fingerprint,
+              xpubFingerprint: Bip32Derivation.getBip32Xpub(secondXpub)
+                  .fingerprintHex,
+              xpub: secondXpub,
+              derivationPath: 'm/84h/0h/1h',
+            ),
+          ],
+        ),
+      ],
+    );
+
+    final stored =
+        verify(() => metadataDatasource.insert(captureAny())).captured.single
+            as WalletMetadataModel;
+    expect(stored.signers, hasLength(1));
+    expect(stored.signers.single.signerDevice, SignerDevice.coldcardQ);
+    expect(stored.signers.single.descriptorKeys, hasLength(2));
+  });
+
+  test('rejects matching descriptors regardless of wallet id', () async {
+    when(metadataDatasource.fetchAll).thenAnswer(
+      (_) async => [
+        const WalletMetadataModel(
+          id: 'legacy-origin-id',
+          signers: [],
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          publicDescriptor: _multipathDescriptor,
+          isDefault: false,
+          networkCode: 'bitcoinMainnet',
+        ),
+      ],
+    );
+
+    await expectLater(
+      repository.importDescriptor(
+        descriptor: _multipathDescriptor,
+        network: Network.bitcoinMainnet,
+        label: 'Duplicate wallet',
+      ),
+      throwsA(isA<WalletAlreadyExistsException>()),
+    );
+    verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
+    verifyNever(() => metadataDatasource.store(any()));
+  });
+
+  test('reuses a matching wallet when creating a default', () async {
+    const existing = WalletMetadataModel(
+      id: 'descriptor-wallet',
+      signers: [],
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      publicDescriptor: _multipathDescriptor,
+      isDefault: false,
+      networkCode: 'bitcoinMainnet',
+    );
+    when(metadataDatasource.fetchAll).thenAnswer((_) async => [existing]);
+    when(() => metadataDatasource.fetch('descriptor-wallet'))
+        .thenAnswer((_) async => existing);
+    when(
+      () => bdkDatasource.parsePublicTwoPathDescriptor(
+        descriptor: any(named: 'descriptor'),
+        network: Network.bitcoinMainnet,
+      ),
+    ).thenReturn(
+      const BdkTwoPathDescriptor(
+        descriptor: _multipathDescriptor,
+        externalDescriptor: _externalDescriptor,
+        internalDescriptor: _internalDescriptor,
+        scriptIdentity: _singleScriptIdentity,
+        scriptType: ScriptType.bip84,
+        keys: [],
+      ),
+    );
+    final secrets = Secrets(scratchDirectory: () async => '');
+    final secret = (await secrets.import(
+      words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+          .split(' '),
+    ) as Ok<Secret, SecretFailure>).value;
+
+    final wallet = await repository.createWallet(
+      secret: secret,
+      network: Network.bitcoinMainnet,
+      scriptType: ScriptType.bip84,
+      isDefault: true,
+    );
+
+    final stored =
+        verify(() => metadataDatasource.store(captureAny())).captured.single
+            as WalletMetadataModel;
+    expect(stored.id, existing.id);
+    expect(stored.isDefault, isTrue);
+    expect(stored.signers.single.signer, Signer.local);
+    expect(wallet.id, existing.id);
+  });
+
+  test('rejects the same wallet with different key-origin metadata', () async {
+    when(metadataDatasource.fetchAll).thenAnswer(
+      (_) async => [
+        const WalletMetadataModel(
+          id: 'legacy-origin-id',
+          signers: [],
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: false,
+          publicDescriptor: _multipathDescriptor,
+          isDefault: false,
+          networkCode: 'bitcoinMainnet',
+        ),
+      ],
+    );
+
+    await expectLater(
+      repository.importDescriptor(
+        descriptor: _originlessMultipathDescriptor,
+        network: Network.bitcoinMainnet,
+        label: 'Duplicate wallet',
+      ),
+      throwsA(isA<WalletAlreadyExistsException>()),
+    );
+    verifyNever(() => values.getBalance(wallet: any(named: 'wallet')));
+    verifyNever(() => metadataDatasource.store(any()));
+  });
+
+  test('upgrades a matching watch-only wallet with its seed', () async {
+    const existing = WalletMetadataModel(
+      id: 'imported-script-id',
+      signers: [
+        WalletSignerModel(
+          id: 'signer-0',
+          signer: Signer.remote,
+          signerDevice: null,
+          descriptorKeys: [
+            WalletDescriptorKeyModel(
+              id: 'key-0',
+              signerId: 'signer-0',
+              masterFingerprint: _fingerprint,
+              xpubFingerprint: 'e0c5d18b',
+              xpub: _xpub,
+              derivationPath: 'm/84h/0h/0h',
+              descriptorPath: '/<0;1>/*',
+            ),
+          ],
+        ),
+      ],
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      publicDescriptor: _originlessMultipathDescriptor,
+      isDefault: false,
+      label: 'Existing wallet',
+      networkCode: 'bitcoinMainnet',
+    );
+    when(metadataDatasource.fetchAll).thenAnswer((_) async => [existing]);
+    when(() => metadataDatasource.fetch('imported-script-id'))
+        .thenAnswer((_) async => existing);
+    when(
+      () => bdkDatasource.parsePublicTwoPathDescriptor(
+        descriptor: any(named: 'descriptor'),
+        network: Network.bitcoinMainnet,
+      ),
+    ).thenReturn(
+      const BdkTwoPathDescriptor(
+        descriptor: _multipathDescriptor,
+        externalDescriptor: _externalDescriptor,
+        internalDescriptor: _internalDescriptor,
+        scriptIdentity: _singleScriptIdentity,
+        scriptType: ScriptType.bip84,
+        keys: [],
+      ),
+    );
+    final secrets = Secrets(scratchDirectory: () async => '');
+    final secret = (await secrets.import(
+      words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+          .split(' '),
+    ) as Ok<Secret, SecretFailure>).value;
+
+    final wallet = await repository.createWallet(
+      secret: secret,
+      network: Network.bitcoinMainnet,
+      scriptType: ScriptType.bip84,
+    );
+
+    final stored =
+        verify(() => metadataDatasource.store(captureAny())).captured.single
+            as WalletMetadataModel;
+    expect(stored.id, existing.id);
+    expect(stored.label, existing.label);
+    expect(stored.signers.single.signer, Signer.local);
+    expect(wallet.id, existing.id);
+  });
+
+  test('rejects descriptor parsing for a Liquid network', () {
+    expect(
+      () => repository.parseBitcoinDescriptor(
+        descriptor: _multipathDescriptor,
+        network: Network.liquidMainnet,
+      ),
+      throwsArgumentError,
+    );
+    verifyNever(
+      () => bdkDatasource.parsePublicTwoPathDescriptor(
+        descriptor: any(named: 'descriptor'),
+        network: any(named: 'network'),
+      ),
+    );
+  });
+
+  test('rejects descriptor import for a Liquid network', () async {
+    await expectLater(
+      repository.importDescriptor(
+        descriptor: _multipathDescriptor,
+        network: Network.liquidTestnet,
+        label: 'Invalid network',
+      ),
+      throwsArgumentError,
+    );
+    verifyNever(() => metadataDatasource.store(any()));
+  });
+}
+
+WalletSigner _signer({
+  String id = 'signer-0',
+  String descriptorKeyId = 'key-0',
+  required String masterFingerprint,
+  required SignerEntity signer,
+  SignerDeviceEntity? signerDevice,
+  String? localSeedFingerprint,
+  String xpub = _xpub,
+  String derivationPath = "m/48h/0h/0h/2h",
+}) {
+  final walletSigner = WalletSigner.single(
+    id: id,
+    descriptorKeyId: descriptorKeyId,
+    masterFingerprint: masterFingerprint,
+    xpubFingerprint: 'e0c5d18b',
+    xpub: xpub,
+    derivationPath: derivationPath,
+    signer: signer,
+    signerDevice: signerDevice,
+  );
+  return localSeedFingerprint == null
+      ? walletSigner
+      : walletSigner.copyWith(localSeedFingerprint: localSeedFingerprint);
+}
+
+final _zeroBalance = BalanceModel(
+  immatureSat: BigInt.zero,
+  trustedPendingSat: BigInt.zero,
+  untrustedPendingSat: BigInt.zero,
+  confirmedSat: BigInt.zero,
+  spendableSat: BigInt.zero,
+  totalSat: BigInt.zero,
+);
+
+class _Native extends Fake implements WalletNativeLifecycle {
+  @override
+  Future<void> prepareCreate(WalletMetadataModel metadata) async {}
+  @override
+  Future<void> create(WalletMetadataModel metadata) async {}
+}

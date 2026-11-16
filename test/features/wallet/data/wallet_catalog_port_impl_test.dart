@@ -1,7 +1,11 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
+
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -29,20 +33,38 @@ final class _Catalog implements WalletMetadataDatasource {
 WalletMetadataModel _row(
   String origin, {
   String networkCode = 'bitcoinMainnet',
-  String external = 'wpkh(public)',
+  String? external,
   String internal = 'wpkh(change)',
 }) => WalletMetadataModel(
   id: origin,
   networkCode: networkCode,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
   isEncryptedVaultTested: false,
   isPhysicalBackupTested: false,
-  xpub: 'public',
-  externalPublicDescriptor: external,
-  internalPublicDescriptor: internal,
-  signer: Signer.none,
   isDefault: false,
+  signers: [
+    walletSignerModel(
+      id: 'signer-0',
+      descriptorKeyId: 'key-0',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: 'aabbccdd',
+      xpub: 'public',
+      signer: Signer.none,
+      signerDevice: null,
+    ),
+  ],
+  publicDescriptor:
+      external ??
+      watchOnlyMetadata(
+        xpub: networkCode == 'bitcoinMainnet'
+            ? 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj'
+            : 'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc',
+        network: networkCode == 'bitcoinMainnet'
+            ? app.Network.bitcoinMainnet
+            : app.Network.bitcoinTestnet,
+        scriptType: origin.startsWith('sh(')
+            ? app.ScriptType.bip49
+            : app.ScriptType.bip84,
+      ).publicDescriptor,
 );
 
 void main() {
@@ -92,8 +114,8 @@ void main() {
             :final externalDescriptor,
             :final internalDescriptor,
           ):
-            expect(externalDescriptor, 'wpkh(public)');
-            expect(internalDescriptor, 'wpkh(change)');
+            expect(externalDescriptor, contains('/0/*'));
+            expect(internalDescriptor, contains('/1/*'));
           case LiquidWalletDescriptor(:final combinedCtDescriptor):
             expect(combinedCtDescriptor, confidential);
             expect(
@@ -125,7 +147,7 @@ void main() {
     const bitcoin = 'wpkh([aabbccdd/84h/0h/0h])';
     const liquid = 'elwpkh([aabbccdd/84h/1776h/0h])';
     for (final invalid in [
-      _row('invalid'),
+      _row('invalid', networkCode: 'unresolved'),
       _row(bitcoin, external: 'wpkh(xprvINVALID)'),
       _row(liquid, external: 'elwpkh(public)'),
     ]) {

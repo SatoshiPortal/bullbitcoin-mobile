@@ -102,6 +102,11 @@ graph TB
     AUTOSWAP[Autoswap]
     SP[Silent Payments]
     AUTOBUY[AutoBuy]
+    PSBT_SIGNING[PSBT Signing]
+    PSBT_FLOW[PSBT Flow]
+    BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
+    IMPORT_WALLET[Import Wallet]
+    BULLVAULT[BullVault]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -169,6 +174,7 @@ graph TB
     BACKUPS --> APP_UNLOCK
     BACKUPS --> TOR
     BACKUPS --> WALLETS
+    BACKUPS --> SECRETS
     BTC_PRICE --> SETTINGS
     BUY -->|public targeted routine sync| WALLETS
     BUY --> EXCHANGE
@@ -183,6 +189,7 @@ graph TB
     IMPORT_WALLET --> SETTINGS
     SETTINGS --> SWAPS
     SETTINGS --> DEFAULT_WALLETS
+    SETTINGS --> SECRETS
     SETTINGS --> EXCHANGE
     SETTINGS --> EXCHANGE_SETTINGS
     EXCHANGE_SETTINGS --> EXCHANGE
@@ -211,8 +218,15 @@ graph TB
     PAY --> RECIPIENTS
     PAY --> BULL_PAYJOIN
     PIN_CODE --> CORE
+    PSBT_FLOW --> BROADCAST_SIGNED_TX
+    PSBT_SIGNING --> PSBT_FLOW
+    SEND --> PSBT_FLOW
+    SETTINGS --> PSBT_SIGNING
+    SETTINGS --> HW_WALLETS
+    RECEIVE --> HW_WALLETS
     RECEIVE --> BULL_PAYJOIN
     RECEIVE -->|public targeted routine sync| WALLETS
+    RECEIVE --> BULLVAULT
     RECEIVE --> SETTINGS
     RECEIVE --> SWAPS
     RECEIVE --> TX_HISTORY
@@ -226,6 +240,8 @@ graph TB
     BROADCAST_SIGNED_TX --> SEND
     SEND --> CONSOLIDATION
     SEND --> FEES
+    SEND --> LABELS
+    SEND --> HW_WALLETS
     SEND --> NETWORK
     SEND --> BULL_PAYJOIN
     SEND --> SP
@@ -239,6 +255,13 @@ graph TB
     SETTINGS --> RECOVERBULL
     SETTINGS --> TOR_SETTINGS
     TOR_SETTINGS --> TOR
+    BULLVAULT -->|Mnemonic display, verification and backup status| BACKUPS
+    BULLVAULT -->|Mnemonic entry| IMPORT_MNEMONIC
+    BULLVAULT --> SECRETS
+    BULLVAULT -->|Selected-seed setup and certified backup status| RECOVERBULL
+    BULLVAULT --> SEND
+    BULLVAULT -->|Ledger, BitBox, QR import| HW_WALLETS
+    BULLVAULT --> SETTINGS
     STATUS --> BULL_PAYJOIN
     STATUS --> TOR
     SWAPS --> BULL_PAYJOIN
@@ -277,6 +300,7 @@ graph TB
     SP --> SECRETS
     WALLETS --> SETTINGS
     WALLETS -->|public orders + swap scheduling port| SWAPS
+    WALLETS -->|Navigation| SEND
     WITHDRAWAL --> RECIPIENTS
 
     %% Reviewed source dependencies exposed by network owner moves (2026-11-07)
@@ -309,7 +333,6 @@ graph TB
     MEMPOOL_SETTINGS --> SETTINGS
     PAY --> FEES
     PAY --> SETTINGS
-    PSBT_FLOW --> WALLETS
     RECIPIENTS --> SETTINGS
     REPLACE_BY_FEE --> FEES
     REPLACE_BY_FEE --> SEND
@@ -333,7 +356,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
-    class IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class IMPORT_MNEMONIC,ONBOARDING,PSBT_SIGNING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_PSBT_SIGNING,SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,PSBT_FLOW,BROADCAST_SIGNED_TX,IMPORT_WALLET,BULLVAULT featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -355,6 +378,8 @@ graph TB
    - Dependency cardinality (required vs optional)
 
 ## Dependency Rules
+
+The app shell composes Send's pending-transaction contribution into wallet details through Wallet's generic sliver builder. Send owns its pending-transaction state and actions; Wallet retains navigation to Send.
 
 1. **No Cyclic Dependencies**: Features must not create circular dependency chains
 2. **Core Independence**: Core must not depend on any feature
@@ -400,15 +425,15 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
 - **Core**: Foundation for all features
 - **Store vocabulary**: `packages/novlang` — the real words live in the root catalogue; `novlang` holds sparse per-store overrides (`novlang_<lang>.arb`, listed in `manifest.yaml`) and the pure `resolveNovlangPolicy(platform, isSuperuser)`. `tools/novlang_bridge.dart` (run by `make translations`) generates the `AppLocalizations` subclasses and `NovlangAppLocalizationsDelegate` that the shell composes before `AppLocalizations.delegate`. A new user-visible word a store forces is added to the manifest and to all 27 `novlang_<lang>.arb`; nothing else in the app chooses vocabulary.
 - **Tor**: `packages/bull_tor` — embedded Onion lifecycle with isolated RecoverBull and Bitcoin Electrum `.onion` sessions, plus provider-agnostic local SOCKS5 verification. Depends on Flutter for app-directory storage and an iOS plugin that excludes Tor state from backups, which are infrastructure-package exceptions in AGENTS.md
-- **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
-- **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
-- **Settings**: Used by Wallets, BIP85, Bitcoin Price
+- **Wallets**: Used by UTXO Management, Transaction History, Backups, App Startup
+- **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments, BullVault and Settings
+- **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 
 ### Leaf Features (Depend on Many, Few Depend on Them)
 
-- **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
+- **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management
 - **Receive**: Depends on Payjoin, Swaps
 - **Backups**: Depends on BIP85, Tor, Wallets
 
@@ -506,3 +531,16 @@ Develop also removes the price chart’s shell locator import; its obsolete entr
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
 RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, status_check, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. App startup and onboarding consume the published mnemonic-language facade through their import_mnemonic dependencies.
+
+## BullVault integration with the wallet and sync owners
+
+The reviewed source-edge baseline includes BullVault’s public hardware, mnemonic,
+RecoverBull, backup, settings and send flows; standalone PSBT signing uses the
+PSBT-flow facade. Receive consumes the BullVault facade for the hardware-address
+reminder, and Settings consumes the hardware and standalone-signing facades.
+BullVault and standalone signing retain their existing wallet-model and address
+widget dependencies at the relocated wallet owner; these are relocation debt,
+not permission for new internal feature dependencies. New contribution widgets
+and routes resolve their own presentation from GetIt without importing the shell.
+
+The wallet-to-watch-only-import and PSBT-flow-to-wallet source edges are retired: descriptor import now receives published wallet types, and the QR flow carries its own result.

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -161,16 +162,13 @@ void main() {
       keychainKind: bdk.KeychainKind.external_,
       networkKind: bdk.NetworkKind.test,
     );
-    final internal = bdk.Descriptor.newBip84(
-      secretKey: secretKey,
-      keychainKind: bdk.KeychainKind.internal,
-      networkKind: bdk.NetworkKind.test,
-    );
-
     walletModel = WalletModel.publicBdk(
       id: 'bdk-wallet-datasource-test',
-      externalDescriptor: external.toString(),
-      internalDescriptor: internal.toString(),
+      descriptor: external
+          .toString()
+          .split('#')
+          .first
+          .replaceAll('/0/*', '/<0;1>/*'),
       network: Network.bitcoinTestnet,
     ) as PublicBdkWalletModel;
 
@@ -273,8 +271,7 @@ void main() {
     final before = await file.readAsBytes();
     final mismatched = WalletModel.publicBdk(
       id: walletModel.id,
-      externalDescriptor: walletModel.internalDescriptor,
-      internalDescriptor: walletModel.externalDescriptor,
+      descriptor: walletModel.descriptor.replaceAll('/<0;1>/*', '/<1;0>/*'),
       network: Network.bitcoinTestnet,
     );
     await expectLater(BdkTestStore.createWallet(mismatched), throwsA(anything));
@@ -949,7 +946,12 @@ void main() {
 final class _Datasource {
   final BdkWalletDatasource _datasource;
   _Datasource(SyncSpendFixture fixture)
-    : _datasource = BdkWalletDatasource(wallet: fixture.wallet);
+    : _datasource = BdkWalletDatasource(
+        wallet: fixture.wallet,
+        walletValuesDatasource: SyncWalletValuesDatasource(
+          load: (key) => fixture.wallet(key.id),
+        ),
+      );
 
   Future<String> buildPsbt({
     required List<BitcoinTransactionRecipientModel> recipients,

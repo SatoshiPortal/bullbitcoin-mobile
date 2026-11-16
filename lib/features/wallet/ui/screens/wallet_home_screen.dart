@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
@@ -17,7 +18,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_refresh_body.dart';
 
+typedef WalletHomeFeatureWarningsBuilder = Widget Function(
+  BuildContext context,
+  List<Wallet> wallets,
+);
+
 class WalletHomeScreen extends StatefulWidget {
+  final WalletHomeFeatureWarningsBuilder? featureWarningsBuilder;
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
   final VoidCallback onImportNetworkWallet;
@@ -27,6 +34,7 @@ class WalletHomeScreen extends StatefulWidget {
 
   const WalletHomeScreen({
     super.key,
+    this.featureWarningsBuilder,
     required this.createSetupCubit,
     required this.onEmptyMainnet,
     required this.onImportNetworkWallet,
@@ -112,6 +120,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final wallets = context.select((WalletBloc bloc) => bloc.state.wallets);
     final noWallets = context.select(
       (WalletBloc bloc) => bloc.state.noWalletsFound,
     );
@@ -166,6 +175,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
               ),
               const SliverToBoxAdapter(child: AnnouncementCarousel()),
               const SliverToBoxAdapter(child: HomeWarnings()),
+              if (widget.featureWarningsBuilder case final builder?)
+                SliverToBoxAdapter(child: builder(context, wallets)),
               const SliverToBoxAdapter(child: HomeConsolidationBanner()),
               SliverToBoxAdapter(
                 child: WalletCards(

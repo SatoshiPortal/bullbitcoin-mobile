@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show WalletFacade;
@@ -8,7 +9,7 @@ import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transac
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/bitcoin_signing_port.dart';
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
@@ -27,8 +28,7 @@ class _MockPrepareBitcoinSend extends Mock
 class _MockLiquidWalletRepository extends Mock
     implements LiquidWalletRepository {}
 
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+class _MockBitcoinSigningPort extends Mock implements BitcoinSigningPort {}
 
 class _MockBroadcastBitcoin extends Mock
     implements BroadcastBitcoinTransactionUsecase {}
@@ -84,6 +84,14 @@ void main() {
               networkFee: const NetworkFee.absolute(200),
               amountSat: 100000,
             );
+
+    test('unavailable selected coins have a specific failure', () async {
+      stubFailure(const WalletSelectedInputsUnavailableFailure());
+      expect(
+        (await run() as Err<PreparedPayBitcoinPayin, PayFailure>).failure,
+        isA<PaySelectedCoinsUnavailableFailure>(),
+      );
+    });
 
     test('a build failure is sanitized, reason kept for logs only', () async {
       stubFailure(const WalletTransactionBuildFailure(_rawReason));
@@ -196,16 +204,67 @@ void main() {
   });
 
   group('SignPayPayinUsecase', () {
+    test('returns only finalized Bitcoin transactions', () async {
+      final port = _MockBitcoinSigningPort();
+      final usecase = SignPayPayinUsecase(
+        bitcoinSigningPort: port,
+        liquidWalletRepository: _MockLiquidWalletRepository(),
+      );
+      when(
+        () => port.signPsbt('psbt', walletId: 'wallet-1'),
+      ).thenAnswer((_) async => const Ok((psbt: 'signed', isFinalized: true)));
+      when(() => port.getTxSize(psbt: 'signed', walletId: 'wallet-1'))
+          .thenAnswer((_) async => 110);
+      final result = await usecase.bitcoin(psbt: 'psbt', walletId: 'wallet-1');
+      expect(
+        (result as Ok<({String signedPsbt, int txSize}), PayFailure>).value,
+        (signedPsbt: 'signed', txSize: 110),
+      );
+    });
+
+    test('refuses partial or rejected Bitcoin signatures', () async {
+      final port = _MockBitcoinSigningPort();
+      final usecase = SignPayPayinUsecase(
+        bitcoinSigningPort: port,
+        liquidWalletRepository: _MockLiquidWalletRepository(),
+      );
+      for (final signingResult
+          in <Result<({String psbt, bool isFinalized}), BitcoinSigningFailure>>[
+            const Ok((psbt: 'partial', isFinalized: false)),
+            const Err(
+              BitcoinSigningFailure(BitcoinSigningFailureKind.walletMismatch),
+            ),
+          ]) {
+        when(() => port.signPsbt('psbt', walletId: 'wallet-1'))
+            .thenAnswer((_) async => signingResult);
+        final result = await usecase.bitcoin(
+          psbt: 'psbt',
+          walletId: 'wallet-1',
+        );
+        expect(
+          (result as Err<({String signedPsbt, int txSize}), PayFailure>)
+              .failure,
+          isA<PayTransactionSigningFailedFailure>(),
+        );
+      }
+      verifyNever(
+        () => port.getTxSize(
+          psbt: any(named: 'psbt'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
+    });
+
     test(
       'a Bitcoin signing failure never carries the descriptor out',
       () async {
-        final bitcoinWallet = _MockBitcoinWalletRepository();
+        final bitcoinWallet = _MockBitcoinSigningPort();
         when(
           () => bitcoinWallet.signPsbt(any(), walletId: any(named: 'walletId')),
         ).thenThrow(Exception(_rawReason));
 
         final result = await SignPayPayinUsecase(
-          bitcoinWalletRepository: bitcoinWallet,
+          bitcoinSigningPort: bitcoinWallet,
           liquidWalletRepository: _MockLiquidWalletRepository(),
         ).bitcoin(psbt: 'psbt', walletId: 'wallet-1');
 
@@ -227,7 +286,7 @@ void main() {
       ).thenThrow(Exception(_rawReason));
 
       final result = await SignPayPayinUsecase(
-        bitcoinWalletRepository: _MockBitcoinWalletRepository(),
+        bitcoinSigningPort: _MockBitcoinSigningPort(),
         liquidWalletRepository: liquidWallet,
       ).liquid(pset: 'pset', walletId: 'wallet-1');
 
@@ -254,6 +313,7 @@ void main() {
           await BroadcastPayPayinUsecase(
             wallet: const WalletFacade(Stream.empty()),
             send: SendFacade(
+              watchPendingBitcoinTransactionsUsecase: _MockPendingWatcher(),
               bitcoin: broadcast.execute,
               liquid: _MockBroadcastLiquid().execute,
             ),
@@ -287,3 +347,6 @@ void main() {
     });
   });
 }
+
+class _MockPendingWatcher extends Mock
+    implements WatchPendingBitcoinTransactionsUsecase {}

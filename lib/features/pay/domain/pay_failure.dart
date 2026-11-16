@@ -107,3 +107,15 @@ final class PaySpendBlockedFailure extends PayFailure {
 final class PayPayjoinPausedFailure extends PayFailure {
   const PayPayjoinPausedFailure();
 }
+
+final class PayTransactionSigningFailedFailure extends PayFailure {
+  const PayTransactionSigningFailedFailure();
+}
+
+final class PaySelectedCoinsUnavailableFailure extends PayFailure {
+  const PaySelectedCoinsUnavailableFailure();
+}
+
+final class PaySelectedCoinsInsufficientFailure extends PayFailure {
+  const PaySelectedCoinsInsufficientFailure();
+}

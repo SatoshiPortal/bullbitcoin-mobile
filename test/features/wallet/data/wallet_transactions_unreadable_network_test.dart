@@ -1,6 +1,8 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
@@ -18,15 +20,24 @@ class _Values extends Mock implements SyncWalletValuesDatasource {}
 WalletMetadataModel _row(String id, String networkCode) => WalletMetadataModel(
   networkCode: networkCode,
   id: id,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
   isEncryptedVaultTested: false,
   isPhysicalBackupTested: false,
-  xpub: 'public',
-  externalPublicDescriptor: 'wpkh(public)',
-  internalPublicDescriptor: 'wpkh(change)',
-  signer: Signer.none,
   isDefault: false,
+  signers: [
+    walletSignerModel(
+      id: 'signer-0',
+      descriptorKeyId: 'key-0',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: 'aabbccdd',
+      xpub: 'public',
+      signer: Signer.none,
+      signerDevice: null,
+    ),
+  ],
+  publicDescriptor: ('wpkh(public)')
+      .split('#')
+      .first
+      .replaceAll('/0/*', '/<0;1>/*'),
 );
 
 void main() {

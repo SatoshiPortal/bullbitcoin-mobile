@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -26,15 +28,24 @@ void main() {
       final row = WalletMetadataModel(
         networkCode: 'liquidMainnet',
         id: id,
-        masterFingerprint: 'aabbccdd',
-        xpubFingerprint: 'aabbccdd',
         isEncryptedVaultTested: false,
         isPhysicalBackupTested: false,
-        xpub: 'public',
-        externalPublicDescriptor: 'ct(slip77(public),elwpkh(public))',
-        internalPublicDescriptor: '',
-        signer: Signer.none,
         isDefault: false,
+        signers: [
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: 'aabbccdd',
+            xpubFingerprint: 'aabbccdd',
+            xpub: 'public',
+            signer: Signer.none,
+            signerDevice: null,
+          ),
+        ],
+        publicDescriptor: ('ct(slip77(public),elwpkh(public))')
+            .split('#')
+            .first
+            .replaceAll('/0/*', '/<0;1>/*'),
       );
       registerFallbackValue(WalletModel.fromMetadata(row));
       final metadata = _Metadata();

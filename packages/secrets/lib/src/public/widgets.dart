@@ -4,4 +4,9 @@
 library;
 
 export 'package:secrets/src/widgets/widgets.dart'
-    show MnemonicChallenge, MnemonicTile, MnemonicView, SecretWidgets;
+    show
+        EphemeralMnemonicExtension,
+        MnemonicChallenge,
+        MnemonicTile,
+        MnemonicView,
+        SecretWidgets;

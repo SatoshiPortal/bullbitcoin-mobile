@@ -1,5 +1,9 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_catalog_port_impl.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
@@ -12,15 +16,25 @@ import 'package:sync/sync.dart';
 WalletMetadataModel _row(String id, String code) => WalletMetadataModel(
   id: id,
   networkCode: code,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
   isEncryptedVaultTested: false,
   isPhysicalBackupTested: false,
-  xpub: 'public',
-  externalPublicDescriptor: 'wpkh(public)',
-  internalPublicDescriptor: 'wpkh(change)',
-  signer: Signer.none,
   isDefault: false,
+  signers: [
+    walletSignerModel(
+      id: 'signer-0',
+      descriptorKeyId: 'key-0',
+      masterFingerprint: 'aabbccdd',
+      xpubFingerprint: 'aabbccdd',
+      xpub: 'public',
+      signer: Signer.none,
+      signerDevice: null,
+    ),
+  ],
+  publicDescriptor: watchOnlyMetadata(
+    xpub: 'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc',
+    network: app.Network.bitcoinTestnet,
+    scriptType: app.ScriptType.bip84,
+  ).publicDescriptor,
 );
 
 void main() {
@@ -34,14 +48,21 @@ void main() {
       final wallet = app.Wallet(
         origin: origin,
         network: network,
-        xpubFingerprint: 'aabbccdd',
         scriptType: app.ScriptType.bip84,
-        xpub: 'public',
-        externalPublicDescriptor: 'public-receive',
-        internalPublicDescriptor: 'public-change',
-        signer: SignerEntity.none,
-        signerDevice: null,
         balanceSat: null,
+        signers: [
+          WalletSigner.single(
+            masterFingerprint: '',
+            xpubFingerprint: 'aabbccdd',
+            xpub: 'public',
+            signer: SignerEntity.none,
+            signerDevice: null,
+          ),
+        ],
+        publicDescriptor: ('public-receive')
+            .split('#')
+            .first
+            .replaceAll('/0/*', '/<0;1>/*'),
       );
       expect(wallet.origin, origin);
       expect(
@@ -111,7 +132,10 @@ void main() {
           isA<Err<PublicWalletDescriptor, SyncFailure>>(),
         );
         // A row remains usable for cross-network custody reference checks.
-        expect(row.seedFingerprint?.hex, 'aabbccdd');
+        expect(
+          row.signers.single.descriptorKeys.single.masterFingerprint,
+          'aabbccdd',
+        );
       }
     },
   );

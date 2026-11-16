@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:secrets/secrets.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
@@ -119,6 +120,9 @@ class ImportWalletUsecase {
 
       return Ok(wallet);
     } catch (e) {
+      if (e is WalletAlreadyExistsException) {
+        return const Err(ImportMnemonicDuplicateFailure());
+      }
       // Provisioning may already have committed a catalog row. Preserve custody;
       // orphan cleanup is an explicit user action, never failure compensation.
       log.severe(

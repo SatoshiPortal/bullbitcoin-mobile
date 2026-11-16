@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/receive/domain/usecases/check_receive_bullvault_usecase.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -91,6 +92,8 @@ class _MockSetReceivePayjoinEnabledUsecase extends Mock
 class _MockWatchReceivePayjoinMinAmountUsecase extends Mock
     implements WatchReceivePayjoinMinAmountUsecase {}
 
+class _BullVault extends Mock implements CheckReceiveBullVaultUsecase {}
+
 void main() {
   for (final unsupported in [true, false]) {
     testWidgets(
@@ -126,6 +129,7 @@ void main() {
         runZonedGuarded(
           () {
             bloc = ReceiveBloc(
+              checkReceiveBullVaultUsecase: _BullVault(),
               getReceiveWalletsUsecase: wallets,
               getReceiveSettingsUsecase: GetReceiveSettingsUsecase(settings),
               convertReceiveAmountUsecase: _MockConvertReceiveAmountUsecase(),

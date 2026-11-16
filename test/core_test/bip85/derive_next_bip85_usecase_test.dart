@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/bip85/domain/derive_next_bip85_hex_from_default_wallet_usecase.dart';
@@ -53,14 +54,17 @@ void main() {
     label: 'Test',
     network: Network.bitcoinMainnet,
     isDefault: true,
-    masterFingerprint: fingerprint,
-    xpubFingerprint: fingerprint,
     scriptType: ScriptType.bip84,
-    xpub: 'xpub',
-    externalPublicDescriptor: 'desc',
-    internalPublicDescriptor: 'desc',
-    signer: SignerEntity.local,
-    signerDevice: null,
+    publicDescriptor: 'desc',
+    signers: [
+      WalletSigner.single(
+        masterFingerprint: fingerprint,
+        xpubFingerprint: fingerprint,
+        xpub: 'xpub',
+        signer: SignerEntity.local,
+        signerDevice: null,
+      ),
+    ],
     balanceSat: BigInt.zero,
   );
 

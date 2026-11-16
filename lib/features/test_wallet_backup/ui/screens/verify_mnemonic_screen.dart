@@ -21,10 +21,23 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 import 'package:secrets/secrets.dart'
-    show MnemonicTile, Secret, SecretExtension;
+    show MnemonicTile, Secret, SecretExtension, SecretWidgets;
 
 class VerifyMnemonicScreen extends StatefulWidget {
-  const VerifyMnemonicScreen({super.key});
+  final SecretWidgets? _mnemonicWidgets;
+  final String? _title;
+  final VoidCallback? onVerified;
+
+  const VerifyMnemonicScreen({super.key, this.onVerified})
+    : _mnemonicWidgets = null,
+      _title = null;
+
+  const VerifyMnemonicScreen.forMnemonicWidgets({
+    super.key,
+    required SecretWidgets mnemonic,
+    required String this._title,
+    required this.onVerified,
+  }) : _mnemonicWidgets = mnemonic;
 
   @override
   State<VerifyMnemonicScreen> createState() => _VerifyMnemonicScreenState();
@@ -74,12 +87,13 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (widget._mnemonicWidgets != null) return;
     _syncSecret(
       context
           .read<TestWalletBackupBloc>()
           .state
           .selectedWallet
-          ?.masterFingerprint,
+          ?.singleLocalSeedFingerprint,
     );
   }
 
@@ -161,14 +175,15 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
         _privacyFuture = enableScreenPrivacy();
       }),
       builder: (context) {
+        if (widget._title case final title?) return _screen(context, title);
         return BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
           listenWhen: (previous, current) =>
-              previous.selectedWallet?.masterFingerprint !=
-                  current.selectedWallet?.masterFingerprint ||
+              previous.selectedWallet?.singleLocalSeedFingerprint !=
+                  current.selectedWallet?.singleLocalSeedFingerprint ||
               previous.verificationStatus != current.verificationStatus ||
               previous.failure != current.failure,
           listener: (context, state) {
-            if (_syncSecret(state.selectedWallet?.masterFingerprint)) {
+            if (_syncSecret(state.selectedWallet?.singleLocalSeedFingerprint)) {
               setState(() {});
             }
             if (state.failure case final failure?) {
@@ -187,6 +202,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             switch (state.verificationStatus) {
               case BackupVerificationStatus.success:
                 context.read<TestWalletBackupBloc>().add(const ClearFailure());
+                if (widget.onVerified case final verified?) {
+                  verified();
+                  return;
+                }
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => const BackupTestSuccessScreen(),
@@ -198,119 +217,126 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             }
           },
           builder: (context, state) {
-            // Selection can arrive before the privacy gate mounts this
-            // consumer, so its listener may not have seen that transition.
-            _syncSecret(state.selectedWallet?.masterFingerprint);
+            // Selection can arrive before the privacy gate mounts the listener.
+            _syncSecret(state.selectedWallet?.singleLocalSeedFingerprint);
             final walletName = state.selectedWallet?.isDefault ?? false
                 ? context.loc.testBackupDefaultWallets
                 : state.selectedWallet?.displayLabel(context) ?? '';
             final title = context.loc.testBackupWalletTitle(walletName);
-            final showPrompt = _total == 0 || _placed < _total;
-
-            return Scaffold(
-              backgroundColor: context.appColors.onSecondary,
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight),
-                child: AppBarWidget(title: title),
-              ),
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: .stretch,
-                    children: [
-                      BullText(
-                        context.loc.testBackupTapWordsInOrder,
-                        textAlign: .center,
-                        maxLines: 2,
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: .w600,
-                          fontSize: 16,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                      const Gap(20),
-                      if (showPrompt)
-                        BullText(
-                          context.loc.testBackupWhatIsWordNumber(_placed + 1),
-                          textAlign: .center,
-                          style: context.font.labelMedium?.copyWith(
-                            fontWeight: .w700,
-                            color: context.appColors.outline,
-                            letterSpacing: 0,
-                            fontSize: 12,
-                          ),
-                        )
-                      else
-                        BullText(
-                          context.loc.testBackupAllWordsSelected,
-                          textAlign: .center,
-                          style: context.font.labelMedium?.copyWith(
-                            fontWeight: .w700,
-                            color: context.appColors.surface,
-                            letterSpacing: 0,
-                            fontSize: 14,
-                          ),
-                        ),
-                      const Gap(16),
-                      if (_passphraseSecret != null) ...[
-                        BullText(
-                          context.loc.passphraseBackupPrompt,
-                          style: context.font.bodyMedium,
-                        ),
-                        const Gap(16),
-                        BullSecretTextInput(
-                          key: ValueKey(_passphraseGeneration),
-                          label: context.loc.passphraseLabel,
-                          showLabel: context.loc.passphraseShow,
-                          hideLabel: context.loc.passphraseHide,
-                          onChanged: (value) =>
-                              setState(() => _passphrase = value),
-                        ),
-                        if (_passphrase != _passphrase.trim())
-                          BullText(
-                            context.loc.passphraseWhitespaceWarning,
-                            style: context.font.bodyMedium,
-                          ),
-                        if (_passphraseError case final error?)
-                          BullText(
-                            error,
-                            style: context.font.bodyMedium,
-                            color: context.appColors.error,
-                          ),
-                        const Gap(16),
-                        BullButton.small(
-                          label: context.loc.continueButton,
-                          onPressed: _verifyPassphrase,
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
-                        ),
-                      ] else
-                        _Challenge(
-                          // Keyed by wallet: a FutureBuilder handed a new future
-                          // keeps the previous snapshot's data until it resolves,
-                          // which would draw the previous wallet's words under
-                          // the newly selected one.
-                          key: ValueKey<String?>(_fingerprint),
-                          secret: _secret,
-                          unavailable: _unavailable,
-                          onSolved: _solved,
-                          onProgress: (placed, total) {
-                            if (!mounted) return;
-                            setState(() {
-                              _placed = placed;
-                              _total = total;
-                            });
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            );
+            return _screen(context, title);
           },
         );
       },
+    );
+  }
+
+  Widget _screen(BuildContext context, String title) {
+    final showPrompt = _total == 0 || _placed < _total;
+
+    return Scaffold(
+      backgroundColor: context.appColors.onSecondary,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppBarWidget(
+          title: title,
+          showWalletPicker: widget._mnemonicWidgets == null,
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: .stretch,
+            children: [
+              BullText(
+                context.loc.testBackupTapWordsInOrder,
+                textAlign: .center,
+                maxLines: 2,
+                style: context.font.headlineLarge?.copyWith(
+                  fontWeight: .w600,
+                  fontSize: 16,
+                  letterSpacing: 0,
+                ),
+              ),
+              const Gap(20),
+              if (showPrompt)
+                BullText(
+                  context.loc.testBackupWhatIsWordNumber(_placed + 1),
+                  textAlign: .center,
+                  style: context.font.labelMedium?.copyWith(
+                    fontWeight: .w700,
+                    color: context.appColors.outline,
+                    letterSpacing: 0,
+                    fontSize: 12,
+                  ),
+                )
+              else
+                BullText(
+                  context.loc.testBackupAllWordsSelected,
+                  textAlign: .center,
+                  style: context.font.labelMedium?.copyWith(
+                    fontWeight: .w700,
+                    color: context.appColors.surface,
+                    letterSpacing: 0,
+                    fontSize: 14,
+                  ),
+                ),
+              const Gap(16),
+              if (_passphraseSecret != null) ...[
+                BullText(
+                  context.loc.passphraseBackupPrompt,
+                  style: context.font.bodyMedium,
+                ),
+                const Gap(16),
+                BullSecretTextInput(
+                  key: ValueKey(_passphraseGeneration),
+                  label: context.loc.passphraseLabel,
+                  showLabel: context.loc.passphraseShow,
+                  hideLabel: context.loc.passphraseHide,
+                  onChanged: (value) => setState(() => _passphrase = value),
+                ),
+                if (_passphrase != _passphrase.trim())
+                  BullText(
+                    context.loc.passphraseWhitespaceWarning,
+                    style: context.font.bodyMedium,
+                  ),
+                if (_passphraseError case final error?)
+                  BullText(
+                    error,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.error,
+                  ),
+                const Gap(16),
+                BullButton.small(
+                  label: context.loc.continueButton,
+                  onPressed: _verifyPassphrase,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
+                ),
+              ] else
+                _Challenge(
+                  // Keyed by wallet: a FutureBuilder handed a new future
+                  // keeps the previous snapshot's data until it resolves,
+                  // which would draw the previous wallet's words under
+                  // the newly selected one.
+                  key: ValueKey<String?>(_fingerprint),
+                  secret: _secret,
+                  mnemonicWidgets: widget._mnemonicWidgets,
+                  onSolved: _solved,
+                  onEphemeralSolved: widget.onVerified,
+                  unavailable: _unavailable,
+                  onProgress: (placed, total) {
+                    if (!mounted) return;
+                    setState(() {
+                      _placed = placed;
+                      _total = total;
+                    });
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -325,15 +351,22 @@ class _Challenge extends StatelessWidget {
     required this.unavailable,
     required this.onProgress,
     required this.onSolved,
+    this.mnemonicWidgets,
+    this.onEphemeralSolved,
   });
 
   final Future<Result<Secret, TestWalletBackupFailure>>? secret;
+  final SecretWidgets? mnemonicWidgets;
+  final void Function(Secret) onSolved;
+  final VoidCallback? onEphemeralSolved;
   final TestWalletBackupFailure? unavailable;
   final void Function(int placed, int total) onProgress;
-  final void Function(Secret) onSolved;
 
   @override
   Widget build(BuildContext context) {
+    if (mnemonicWidgets case final widgets?) {
+      return _challenge(context, widgets, onSolved: onEphemeralSolved);
+    }
     return FutureBuilder<Result<Secret, TestWalletBackupFailure>>(
       future: secret,
       builder: (context, snapshot) {
@@ -366,55 +399,67 @@ class _Challenge extends StatelessWidget {
         if (value == null) {
           return const Center(child: CircularProgressIndicator());
         }
-        return value.widgets.mnemonicChallenge(
-          style: context.font.bodyLarge?.copyWith(
-            fontWeight: .w700,
-            fontSize: 14,
-            color: context.appColors.secondary,
-          ),
-          placeholder: const Center(child: CircularProgressIndicator()),
-          failureBuilder: (context, failure, retry) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              BullText(
-                context.loc.oopsSomethingWentWrong,
-                textAlign: .center,
-                style: context.font.bodyLarge?.copyWith(
-                  color: context.appColors.error,
-                ),
-              ),
-              const Gap(16),
-              BullButton.small(
-                label: context.loc.retry,
-                onPressed: retry,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-              ),
-            ],
-          ),
-          onProgress: onProgress,
+        return _challenge(
+          context,
+          value.widgets,
           onSolved: () => onSolved(value),
-          onMistake: () => BullSnackBar.show(
-            context,
-            message: context.loc.testBackupErrorIncorrectOrder,
-          ),
-          tileBuilder: (context, tile) => Expanded(child: _Tile(tile: tile)),
-          layoutBuilder: (context, tiles) => Column(
-            children: [
-              for (var i = 0; i < (tiles.length + 1) ~/ 2; i++)
-                Row(
-                  children: [
-                    tiles[i],
-                    if (i + (tiles.length + 1) ~/ 2 < tiles.length)
-                      tiles[i + (tiles.length + 1) ~/ 2]
-                    else
-                      const Expanded(child: SizedBox()),
-                  ],
-                ),
-            ],
-          ),
         );
       },
+    );
+  }
+
+  Widget _challenge(
+    BuildContext context,
+    SecretWidgets widgets, {
+    required VoidCallback? onSolved,
+  }) {
+    return widgets.mnemonicChallenge(
+      style: context.font.bodyLarge?.copyWith(
+        fontWeight: .w700,
+        fontSize: 14,
+        color: context.appColors.secondary,
+      ),
+      placeholder: const Center(child: CircularProgressIndicator()),
+      failureBuilder: (context, failure, retry) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          BullText(
+            context.loc.oopsSomethingWentWrong,
+            textAlign: .center,
+            style: context.font.bodyLarge?.copyWith(
+              color: context.appColors.error,
+            ),
+          ),
+          const Gap(16),
+          BullButton.small(
+            label: context.loc.retry,
+            onPressed: retry,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+          ),
+        ],
+      ),
+      onProgress: onProgress,
+      onSolved: () => onSolved?.call(),
+      onMistake: () => BullSnackBar.show(
+        context,
+        message: context.loc.testBackupErrorIncorrectOrder,
+      ),
+      tileBuilder: (context, tile) => Expanded(child: _Tile(tile: tile)),
+      layoutBuilder: (context, tiles) => Column(
+        children: [
+          for (var i = 0; i < (tiles.length + 1) ~/ 2; i++)
+            Row(
+              children: [
+                tiles[i],
+                if (i + (tiles.length + 1) ~/ 2 < tiles.length)
+                  tiles[i + (tiles.length + 1) ~/ 2]
+                else
+                  const Expanded(child: SizedBox()),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

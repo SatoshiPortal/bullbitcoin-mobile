@@ -43,3 +43,15 @@ final class SettingsNetworkUnavailableFailure extends SettingsFailure {
 
   const SettingsNetworkUnavailableFailure(this.network);
 }
+
+final class SettingsSigningKeyExportFailure extends SettingsFailure {
+  const SettingsSigningKeyExportFailure([super.logMessage]);
+}
+
+final class SettingsWalletPolicyFailure extends SettingsFailure {
+  const SettingsWalletPolicyFailure([super.logMessage]);
+}
+
+final class SettingsWalletRegistrationFailure extends SettingsFailure {
+  const SettingsWalletRegistrationFailure([super.logMessage]);
+}

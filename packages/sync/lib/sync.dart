@@ -65,6 +65,7 @@ export 'src/data/codec/liquid_codec.dart'
         maxLiquidTransactionBytes;
 export 'src/data/chain/electrum_chain.dart'
     show
+        bitcoinPolicyChainState,
         bitcoinTransactionKnown,
         broadcastBitcoinTransaction,
         broadcastBitcoinTransactionTo,
@@ -74,3 +75,10 @@ export 'src/data/chain/electrum_chain.dart'
 export 'src/data/chain/bitcoin_prescan.dart' show prescanBitcoinWallet;
 export 'src/data/write/datasources/native_store_errors.dart'
     show isLiquidStatusConflict;
+
+export 'src/domain/bitcoin_policy_descriptor.dart';
+export 'src/domain/parsed_bitcoin_policy.dart';
+export 'src/domain/bitcoin_psbt_inspection.dart';
+export 'src/domain/bitcoin_hash_preimage.dart';
+export 'src/data/write/bitcoin_policy_codec.dart' show BitcoinPolicyCodec;
+export 'src/data/codec/bitcoin_psbt_encoding.dart';

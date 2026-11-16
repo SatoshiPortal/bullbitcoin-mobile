@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Fingerprint, Ok;
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -8,6 +12,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
@@ -156,7 +161,17 @@ void main() {
         ).called(1);
         // The first successful provisioning now references this secret on mainnet.
         final row = _MockMetadataRow();
-        when(() => row.masterFingerprint).thenReturn(secret.id.hex);
+        when(() => row.signers).thenReturn([
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: secret.id.hex,
+            xpubFingerprint: '',
+            xpub: '',
+            signer: Signer.local,
+            signerDevice: null,
+          ),
+        ]);
         when(() => row.networkCode).thenReturn('bitcoinMainnet');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
         final duplicate = await usecase.execute(
@@ -240,6 +255,22 @@ void main() {
     );
 
     test(
+      'a duplicate descriptor does not delete the imported secret',
+      () async {
+        stubCreateWallet(
+          () async =>
+              throw const WalletAlreadyExistsException('descriptor-wallet'),
+        );
+        final result = await usecase.execute(mnemonicWords: words);
+        expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
+        expect(
+          storage.entries.keys.where((key) => key.startsWith('seed_')),
+          hasLength(1),
+        );
+      },
+    );
+
+    test(
       'strict import rejects a referenced duplicate without cleanup',
       () async {
         when(() => checkDuplicate.isReferenced(any(), any()))
@@ -307,12 +338,11 @@ void main() {
       () async {
         final wallet = _MockWallet();
         stubCreateWallet(() async {
-          when(() => wallet.signsLocally).thenReturn(true);
-          when(() => wallet.masterFingerprint).thenReturn(
+          when(() => wallet.localSeedFingerprints).thenReturn([
             storage.entries.keys
                 .singleWhere((key) => key.startsWith('seed_'))
                 .substring(5),
-          );
+          ]);
           when(
             () => walletRepository.getWallets(),
           ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));

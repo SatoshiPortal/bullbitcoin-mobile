@@ -37,12 +37,26 @@ WalletFrameData bitcoinFrameData(bdk.Wallet wallet, WalletRevision revision) {
   // listOutput covers spent outputs too and hits no network.
   final changeOutpoints = <Outpoint>{};
   final ownedOutpoints = <Outpoint>{};
+  final ownedOutputs = <Outpoint, BitcoinOwnedOutput>{};
   for (final output in wallet.listOutput()) {
     final outpoint = (
       txId: _txid(output.outpoint.txid),
       vout: output.outpoint.vout,
     );
     ownedOutpoints.add(outpoint);
+    ownedOutputs[outpoint] = BitcoinOwnedOutput(
+      amountSat: BigInt.from(output.txout.value.toSat()),
+      scriptPubkey: output.txout.scriptPubkey.toBytes(),
+      keychain: output.keychain == bdk.KeychainKind.internal
+          ? Keychain.internal
+          : Keychain.external,
+      isSpent: output.isSpent,
+      confirmationHeight: switch (output.chainPosition) {
+        final bdk.ConfirmedChainPosition position =>
+          position.confirmationBlockTime.blockId.height,
+        _ => null,
+      },
+    );
     if (output.keychain == bdk.KeychainKind.internal) {
       changeOutpoints.add(outpoint);
     }
@@ -118,6 +132,7 @@ WalletFrameData bitcoinFrameData(bdk.Wallet wallet, WalletRevision revision) {
 
   final receive = <DerivedAddress>[];
   final change = <DerivedAddress>[];
+  final scriptDerivations = <String, ({int index, Keychain keychain})>{};
   final scripts = <Uint8List>[];
   for (final (keychain, kind, list) in [
     (Keychain.external, bdk.KeychainKind.external_, receive),
@@ -136,7 +151,14 @@ WalletFrameData bitcoinFrameData(bdk.Wallet wallet, WalletRevision revision) {
           ),
         );
       }
-      scripts.add(info.address.scriptPubkey().toBytes());
+      final bytes = info.address.scriptPubkey().toBytes();
+      scripts.add(bytes);
+      scriptDerivations[bytes
+          .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
+          .join()] = (
+        index: index,
+        keychain: keychain,
+      );
       info.address.dispose();
     }
   }
@@ -155,7 +177,16 @@ WalletFrameData bitcoinFrameData(bdk.Wallet wallet, WalletRevision revision) {
     ownership: OwnershipIndex(
       revision: revision,
       scripts: scripts,
+      scriptDerivations: scriptDerivations,
       outpoints: ownedOutpoints,
+      tipHeight: tip,
+      outputs: ownedOutputs,
+      transactionInputs: {
+        for (final transaction in transactions.whereType<BitcoinTransaction>())
+          transaction.txid: [
+            for (final input in transaction.inputs) input.previousOutput,
+          ],
+      },
     ),
   );
 }

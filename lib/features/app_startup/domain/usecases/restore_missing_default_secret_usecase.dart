@@ -1,3 +1,4 @@
+import 'package:sync/sync.dart' show BitcoinPolicyCodec;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -90,13 +91,14 @@ class RestoreMissingDefaultSecretUsecase {
       return const Err(AppStartupRestoreFailure('wallet metadata unavailable'));
     }
     final bitcoin = wallets
-        .where((w) => w.signsLocally && w.isBitcoin)
+        .where((w) => w.singleLocalSeedFingerprint != null && w.isBitcoin)
         .toList();
     final defaults = bitcoin
         .where(
           (wallet) =>
               wallet.isDefault &&
-              Fingerprint.tryParse(wallet.masterFingerprint) == expected &&
+              Fingerprint.tryParse(wallet.singleLocalSeedFingerprint ?? '') ==
+                  expected &&
               (expectedWalletId == null || wallet.id == expectedWalletId),
         )
         .toList();
@@ -112,21 +114,37 @@ class RestoreMissingDefaultSecretUsecase {
     final List<Wallet> candidates = [
       ...defaults,
       ...bitcoin.where(
-        (wallet) => Fingerprint.tryParse(wallet.masterFingerprint) != expected,
+        (wallet) =>
+            Fingerprint.tryParse(wallet.singleLocalSeedFingerprint ?? '') !=
+            expected,
       ),
     ];
     final accepted = <Fingerprint>{};
     for (final wallet in candidates) {
-      final fingerprint = Fingerprint.tryParse(wallet.masterFingerprint);
-      if (fingerprint == null) continue;
+      final fingerprint = Fingerprint.tryParse(
+        wallet.singleLocalSeedFingerprint ?? '',
+      );
+      final scriptType = wallet.scriptType;
+      if (fingerprint == null || scriptType == null) continue;
+      final parsed = const BitcoinPolicyCodec().parseDescriptor(
+        descriptor: wallet.publicDescriptor,
+        network: wallet.network.bitcoin,
+      );
+      final descriptors = switch (parsed) {
+        Ok(:final value) => value,
+        Err() => null,
+      };
+      if (descriptors == null) {
+        return const Err(AppStartupRestoreFailure('invalid wallet descriptor'));
+      }
       final result = await _secrets.preview.matchesBitcoinDescriptors(
         words: words,
         passphrase: passphrase,
         network: wallet.network.bitcoin,
-        scriptType: wallet.scriptType.shared,
+        scriptType: scriptType.shared,
         expected: (
-          external: wallet.externalPublicDescriptor,
-          internal: wallet.internalPublicDescriptor,
+          external: descriptors.externalDescriptor,
+          internal: descriptors.internalDescriptor,
         ),
       );
       switch (result) {

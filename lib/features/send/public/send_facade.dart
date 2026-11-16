@@ -1,11 +1,14 @@
-import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/usecases/verify_signed_tx_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:meta/meta.dart';
 
 export 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show Network;
+import 'package:bb_mobile/features/send/domain/pending_bitcoin_transaction.dart';
+import 'package:bb_mobile/features/send/domain/send_failure.dart';
+import 'package:bb_mobile/features/send/domain/usecases/watch_pending_bitcoin_transactions_usecase.dart';
 
+export '../domain/pending_bitcoin_transaction.dart';
 export '../domain/send_failure.dart';
 export 'send_route.dart';
 export 'send_route_args.dart';
@@ -25,11 +28,14 @@ final class SendFacade {
   _bitcoin;
   final Future<String> Function(String) _liquid;
   final VerifySignedTxUsecase _verifySignedTxUsecase;
+  final WatchPendingBitcoinTransactionsUsecase
+  _watchPendingBitcoinTransactionsUsecase;
 
   SendFacade({
     required this._bitcoin,
     required this._liquid,
     VerifySignedTxUsecase? verifySignedTxUsecase,
+    required this._watchPendingBitcoinTransactionsUsecase,
   }) : _verifySignedTxUsecase =
            verifySignedTxUsecase ?? VerifySignedTxUsecase();
 
@@ -56,4 +62,8 @@ final class SendFacade {
     signedTransaction: signedTransaction,
     isPsbt: isPsbt,
   );
+
+  Stream<Result<PendingBitcoinTransactionSnapshot, SendFailure>> watchPending(
+    String walletId,
+  ) => _watchPendingBitcoinTransactionsUsecase.execute(walletId);
 }

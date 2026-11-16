@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 
 // Regression test for a send-to-self recorded with the whole value of the
 // utxos it consumed instead of the amount paid. `sentAndReceived.sent` is the
@@ -22,6 +22,8 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.d
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'bdk_wallet_test_fixture.dart';
 
 // The canonical BIP39 test mnemonic ("abandon" x11 + "about"). Public
 // knowledge, no funds, safe to hardcode.
@@ -142,8 +144,7 @@ void main() {
 
     walletModel = WalletModel.publicBdk(
       id: 'bdk-self-send-test',
-      externalDescriptor: external.toString(),
-      internalDescriptor: internal.toString(),
+      descriptor: twoPathDescriptor(external.toString(), internal.toString()),
       network: Network.bitcoinTestnet,
     ) as PublicBdkWalletModel;
 

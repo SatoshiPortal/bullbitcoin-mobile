@@ -38,6 +38,7 @@ void main() {
 
   test('returns the wallets it was given', () async {
     final wallet = _MockWallet();
+    when(() => wallet.isHidden).thenReturn(false);
     when(
       () => walletRepository.getWallets(
         environment: any(named: 'environment'),

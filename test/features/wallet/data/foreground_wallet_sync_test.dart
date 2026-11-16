@@ -1,3 +1,14 @@
+import 'package:crypto/crypto.dart';
+
+import 'dart:convert';
+
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
+
+import 'package:bb_mobile/features/wallet/data/bitcoin_descriptor_codec.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
 
@@ -18,10 +29,6 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:satoshifier/satoshifier.dart' as satoshifier;
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -42,10 +49,6 @@ import 'package:sync/write.dart';
 class _Swaps extends Mock implements BoltzSwapRepository {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
-
-class _WatchOnly extends Mock implements satoshifier.WatchOnlyDescriptor {}
-
-class _Descriptor extends Mock implements satoshifier.Descriptor {}
 
 class _Labels extends Mock implements LabelsFacade {}
 
@@ -85,18 +88,29 @@ void main() {
   final row = WalletMetadataModel(
     networkCode: 'bitcoinTestnet',
     id: id,
-    masterFingerprint: 'aabbccdd',
-    xpubFingerprint: 'aabbccdd',
     isEncryptedVaultTested: false,
     isPhysicalBackupTested: false,
-    xpub: 'public',
-    externalPublicDescriptor: 'wpkh(public)',
-    internalPublicDescriptor: 'wpkh(change)',
-    signer: Signer.none,
     isDefault: false,
+    signers: [
+      walletSignerModel(
+        id: 'signer-0',
+        descriptorKeyId: 'key-0',
+        masterFingerprint: 'aabbccdd',
+        xpubFingerprint: 'aabbccdd',
+        xpub: 'public',
+        signer: Signer.none,
+        signerDevice: null,
+      ),
+    ],
+    publicDescriptor: watchOnlyMetadata(
+      xpub: 'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc',
+      network: app.Network.bitcoinTestnet,
+      scriptType: app.ScriptType.bip84,
+    ).publicDescriptor,
   );
   registerFallbackValue(WalletModel.fromMetadata(row));
   registerFallbackValue(row);
+  registerFallbackValue(DateTime.utc(2026));
   late Directory directory;
   late _Policy policy;
   late _Metadata metadata;
@@ -112,6 +126,12 @@ void main() {
     bdk = _Bdk();
     values = _Values();
     when(() => metadata.fetch(id)).thenAnswer((_) async => row);
+    when(
+      () => metadata.updateSyncedAt(
+        walletId: id,
+        syncedAt: any(named: 'syncedAt'),
+      ),
+    ).thenAnswer((_) async => true);
     when(() => metadata.store(any())).thenAnswer((_) async {});
     when(() => metadata.insert(any())).thenAnswer((_) async {});
     when(() => values.getBalance(wallet: any(named: 'wallet'))).thenAnswer(
@@ -191,8 +211,17 @@ void main() {
           words: [...List.filled(11, 'abandon'), 'about'],
         ) as Ok<Secret, SecretFailure>;
         final local = row.copyWith(
-          signer: Signer.local,
-          masterFingerprint: secret.value.id.hex,
+          signers: [
+            walletSignerModel(
+              id: 'signer-0',
+              descriptorKeyId: 'key-0',
+              masterFingerprint: secret.value.id.hex,
+              xpubFingerprint: '',
+              xpub: '',
+              signer: Signer.local,
+              signerDevice: null,
+            ),
+          ],
         );
         final remaining = local.copyWith(id: 'invalid');
         when(() => metadata.fetch(id)).thenAnswer((_) async => local);
@@ -248,11 +277,44 @@ void main() {
         (_) async => [
           row.copyWith(
             id: 'invalid',
-            signer: Signer.local,
-            masterFingerprint: 'AABBCCDD',
+            signers: [
+              walletSignerModel(
+                id: 'signer-0',
+                descriptorKeyId: 'key-0',
+                masterFingerprint: 'AABBCCDD',
+                xpubFingerprint: '',
+                xpub: '',
+                signer: Signer.local,
+                signerDevice: null,
+              ),
+            ],
           ),
-          row.copyWith(signer: Signer.none, masterFingerprint: 'invalid'),
-          row.copyWith(signer: Signer.remote, masterFingerprint: '11223344'),
+          row.copyWith(
+            signers: [
+              walletSignerModel(
+                id: 'signer-0',
+                descriptorKeyId: 'key-0',
+                masterFingerprint: 'invalid',
+                xpubFingerprint: '',
+                xpub: '',
+                signer: Signer.none,
+                signerDevice: null,
+              ),
+            ],
+          ),
+          row.copyWith(
+            signers: [
+              walletSignerModel(
+                id: 'signer-0',
+                descriptorKeyId: 'key-0',
+                masterFingerprint: '11223344',
+                xpubFingerprint: '',
+                xpub: '',
+                signer: Signer.remote,
+                signerDevice: null,
+              ),
+            ],
+          ),
         ],
       );
       final result = await repository.getCustodyFingerprints();
@@ -265,8 +327,32 @@ void main() {
   test('custody query refuses an incomplete local fingerprint set', () async {
     when(() => metadata.fetchAll()).thenAnswer(
       (_) async => [
-        row.copyWith(signer: Signer.local),
-        row.copyWith(signer: Signer.local, masterFingerprint: 'invalid'),
+        row.copyWith(
+          signers: [
+            walletSignerModel(
+              id: 'signer-0',
+              descriptorKeyId: 'key-0',
+              masterFingerprint: 'aabbccdd',
+              xpubFingerprint: '',
+              xpub: '',
+              signer: Signer.local,
+              signerDevice: null,
+            ),
+          ],
+        ),
+        row.copyWith(
+          signers: [
+            walletSignerModel(
+              id: 'signer-0',
+              descriptorKeyId: 'key-0',
+              masterFingerprint: 'invalid',
+              xpubFingerprint: '',
+              xpub: '',
+              signer: Signer.local,
+              signerDevice: null,
+            ),
+          ],
+        ),
       ],
     );
     expect(await repository.getCustodyFingerprints(), isA<Err>());
@@ -275,9 +361,13 @@ void main() {
     expect(await repository.getCustodyFingerprints(), isA<Err>());
   });
 
-  test('invalid catalog origin does not hide a healthy wallet', () async {
-    when(() => metadata.fetchAll())
-        .thenAnswer((_) async => [row.copyWith(id: 'invalid'), row]);
+  test('unresolved catalog network does not hide a healthy wallet', () async {
+    when(() => metadata.fetchAll()).thenAnswer(
+      (_) async => [
+        row.copyWith(id: 'invalid', networkCode: 'unresolved'),
+        row,
+      ],
+    );
     final result = await repository.getWallets();
     expect(result, isA<Ok>());
     if (result case Ok(:final value)) {
@@ -608,21 +698,25 @@ void main() {
   test(
     'descriptor import persists catalog then creates offline before sync',
     () async {
-      final descriptor = _Descriptor();
-      when(() => descriptor.network)
-          .thenReturn(satoshifier.Network.bitcoinTestnet);
-      when(() => descriptor.derivation)
-          .thenReturn(satoshifier.Derivation.bip84);
-      when(() => descriptor.external).thenReturn('wpkh(public)');
-      when(() => descriptor.internal).thenReturn('wpkh(change)');
-      when(() => descriptor.pubkey).thenReturn(
-        'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj',
+      when(
+        () => bdk.parsePublicTwoPathDescriptor(
+          descriptor: 'wpkh(public)',
+          network: app.Network.bitcoinTestnet,
+        ),
+      ).thenReturn(
+        const BdkTwoPathDescriptor(
+          descriptor: 'wpkh(public)',
+          externalDescriptor: 'wpkh(public)',
+          internalDescriptor: 'wpkh(change)',
+          scriptIdentity: 'import-script',
+          scriptType: app.ScriptType.bip84,
+        ),
       );
-      when(() => descriptor.fingerprint).thenReturn('aabbccdd');
-      final watchOnly = _WatchOnly();
-      when(() => watchOnly.descriptor).thenReturn(descriptor);
+      final importedId = sha256
+          .convert(utf8.encode('bitcoinTestnet:import-script'))
+          .toString();
       when(() => metadata.fetchAll()).thenAnswer((_) async => []);
-      when(() => metadata.fetch(id)).thenAnswer((_) async => null);
+      when(() => metadata.fetch(importedId)).thenAnswer((_) async => null);
       var provisioned = false;
       final native = _Native();
       when(() => native.prepareCreate(any())).thenAnswer((_) async {
@@ -657,7 +751,7 @@ void main() {
               SyncReason reason = SyncReason.auto,
             }) async {
               expect(provisioned, isTrue);
-              expect(value.id, id);
+              expect(value.id, importedId);
               verify(() => native.create(any())).called(1);
               synchronized = true;
             },
@@ -667,13 +761,13 @@ void main() {
         electrumSyncResultStream: const Stream.empty(),
       );
       final wallet = await importing.importDescriptor(
-        watchOnlyDescriptor: WatchOnlyDescriptorEntity(
-          watchOnlyDescriptor: watchOnly,
-        ),
+        descriptor: 'wpkh(public)',
+        network: app.Network.bitcoinTestnet,
+        label: 'import',
         sync: true,
       );
       expect(synchronized, isTrue);
-      expect(wallet.id, id);
+      expect(wallet.id, importedId);
       verify(() => values.getBalance(wallet: any(named: 'wallet'))).called(1);
     },
   );

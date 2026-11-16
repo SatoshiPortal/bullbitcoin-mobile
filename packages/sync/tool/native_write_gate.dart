@@ -264,7 +264,7 @@ class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
     if (method == null || owner is! ClassDeclaration) return false;
     if (path == 'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart' &&
         owner.namePart.typeName.lexeme == 'BitcoinSigner' &&
-        method.name.lexeme == '_wallet') {
+        {'_wallet', 'signDescriptorPsbt'}.contains(method.name.lexeme)) {
       final proof = _SignerMemoryProof();
       method.accept(proof);
       return proof.valid && proof.allows(element, node);
@@ -606,6 +606,7 @@ class _SignerMemoryProof extends RecursiveAstVisitor<void> {
       final target = switch (access) {
         MethodInvocation() => access.target,
         PropertyAccess() => access.target,
+        PrefixedIdentifier() => access.prefix,
         _ => null,
       };
       return target is SimpleIdentifier &&

@@ -1,3 +1,7 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/prepare_receive_address_usecase.dart';
@@ -9,8 +13,6 @@ import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:bull_sdk/src/rust/frb_generated.dart' show BullSdk, BullSdkApi;
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
-    show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -54,15 +56,24 @@ void main() {
         networkCode: origin.startsWith('el')
             ? 'liquidMainnet'
             : 'bitcoinMainnet',
-        masterFingerprint: 'aabbccdd',
-        xpubFingerprint: 'aabbccdd',
         isEncryptedVaultTested: false,
         isPhysicalBackupTested: false,
-        xpub: 'public',
-        externalPublicDescriptor: 'public',
-        internalPublicDescriptor: '',
-        signer: Signer.none,
         isDefault: false,
+        signers: [
+          walletSignerModel(
+            id: 'signer-0',
+            descriptorKeyId: 'key-0',
+            masterFingerprint: 'aabbccdd',
+            xpubFingerprint: 'aabbccdd',
+            xpub: 'public',
+            signer: Signer.none,
+            signerDevice: null,
+          ),
+        ],
+        publicDescriptor: ('public')
+            .split('#')
+            .first
+            .replaceAll('/0/*', '/<0;1>/*'),
       );
       late _Reporter reporter;
       setUp(() async {

@@ -21,9 +21,11 @@ wallet.history.watch().listen(render);
 
 Values are mapped from the native wallet once per revision, built into one immutable frame, then published by a single pointer assignment before any notification: several `now` reads without an `await` between them see the same revision. Who republishes after a commit made elsewhere: the revision reader emits a change whenever a read finds a new state, and the foreground reads after every worker outcome (`WalletNativeRuntime.refresh`); a change for a wallet that has values or subscribers schedules a reload.
 
-⚠️ A protocol decision never reads `now`. `wallet.ownership()` (scripts the index derives, revealed plus lookahead, and every output held, spent ones included) and `wallet.unspent()` load the exact committed revision and return `SyncBusyFailure` when the reader can only serve an older one, for instance while the writer holds the store. Payjoin's ownership checks and spendable coins and the Liquid build's coin filter use them. Liquid has no ownership index: LWK does not expose it.
+⚠️ A protocol decision never reads `now`. `wallet.ownership()` (scripts the index derives, revealed plus lookahead, and every output held, spent ones included) and `wallet.unspent()` load the exact committed revision and return `SyncBusyFailure` when the reader can only serve an older one, for instance while the writer holds the store. Payjoin's ownership checks and spendable coins and the Liquid build's coin filter use them. The index also carries the checkpoint height, prevout amounts and scripts, confirmation heights, known derivations and original transaction inputs, all from that same revision. Liquid has no ownership index: LWK does not expose it.
 
 ## Transactions
+
+`BitcoinSpendRequest.policy` selects each keychain's descriptor paths and optionally narrows eligible coins. The writer combines these restrictions with freezes and reservations; it preserves relative-lock sequences even when replaceability is disabled. Required public key occurrences select the matching PSBT signing paths.
 
 `wallet.tx` holds the native spends, as commands of the single writer: `build(SpendRequest)` (a `BitcoinSpendRequest` or a `LiquidSpendRequest`), `bump(BumpFeeRequest)` and `consolidate(ConsolidationRequest)` return an `UnsignedSpend` (or a list of them) carrying the wallet's revision and generation, the encoded PSBT or PSET and its effective inputs. Each command runs one order: guard and generation admission, writer lock, durable intent, a native wallet opened fresh from its store, freezes and reservations read, one build, a check of the effective inputs, outputs, network and owner, persistence of the native changes, a refused build included, native close, release, hand-out. No native wallet outlives its command, so abandoned previews and bumps reveal no new change index; a persistence failure never hands a transaction out. Failures are `SyncSpendFailure`s (`SyncSpendBlockedFailure`, `SyncProtectedInputsFailure`, `SyncInsufficientFundsFailure`, …), `SyncBusyFailure` or `SyncStorageFailure`.
 
@@ -43,9 +45,10 @@ Sync reads and changes user freezes; the app keeps them in its published `frozen
 
 ⚠️ A store that cannot answer is an `Err`, never an empty list. Spend construction checks its effective inputs against `FreezeAuthority.forbiddenInputs()`, or `guard()`, which reads the freezes and runs the check in the queue every freeze and unfreeze goes through, so none commits meanwhile: sync is the table's only writer, from the foreground, so that queue suffices. A failed read never runs the check.
 
-Library functions open no wallet and create no store:
+Library helpers open no persistent wallet and create no store:
 
 - Codecs. `decodeBitcoinTransaction` and `decodeBitcoinPsbt` are synchronous for Payjoin's stream transforms and throw a `FormatException` on refusal; `canonicalBitcoinPsbt`, `finalizeBitcoinPsbts` (combine a signer's trimmed reply with the PSBT it was given, then finalize), `parseBitcoinAddress`, `bitcoinScriptAddress`, `bitcoinAddressScript`, `decodeLiquidTransaction`, `decodeLiquidPset`, `liquidAddressNetwork` and `validateAddress` return a `SyncChainFailure` or another `SyncFailure`. Input is bounded before it reaches a native parser, and a Liquid amount the transaction keeps confidential stays `null`, never zero.
+- Descriptor policies. `BitcoinPolicyCodec` parses public descriptors and policies, reviews PSBTs, validates inputs against an exact `OwnershipIndex`, and combines or verifies signer results. Its scratch native wallets are public and in memory. `bitcoinPolicyChainState` reads the tip and the median times needed for absolute and relative recovery paths through a supplied `WalletConnection`.
 - Chain access. `broadcastBitcoinTransaction` and `broadcastLiquidTransaction` go through the servers the owner's `WalletConnectionPort` selects; `broadcastBitcoinTransactionTo`, `bitcoinTransactionKnown`, `probeBitcoinServer` and `estimateBitcoinFees` take the one `WalletConnection` a caller running its own fallback hands them. Native errors and the servers' replies are reduced here to rejected, already in chain, connection or unknown outcome, never kept as text. Across servers a single cause is reported only when every server agreed: a retry after an uncertain attempt is never read as a rejection, and nothing is retried once the servers are exhausted. These functions do not admit a spend: a wallet's spend goes through `wallet.tx.broadcast`.
 - Wallet-free reads. `bitcoinPsbtFee`, `liquidPsetFees`, `bitcoinPublicDescriptor` (an account key's descriptor with its origin) and `isLiquidStatusConflict`; `prescanBitcoinWallet` full-scans a wallet not yet imported in an in-memory wallet, in an isolate of its own.
 
@@ -114,6 +117,24 @@ BackgroundSync
 |-- refresh(key, [collectIncoming: false]) -> SyncCompletion
 |-- revision(key) -> BackgroundRevision
 `-- close() -> Future<void>
+```
+
+```text
+BitcoinPolicyCodec
+|-- parseDescriptor(descriptor:, network:) -> Result<ParsedBitcoinDescriptor, SyncFailure>
+|-- combineDescriptorPair(externalDescriptor:, internalDescriptor:, network:) -> Result<String, SyncFailure>
+|-- analyzePolicy(wallet:, [descriptorKeys: const []]) -> Result<ParsedBitcoinPolicy, SyncFailure>
+|-- inspectPsbt(psbt, wallet:, walletFingerprints:, [ownership:]) -> Result<BitcoinPsbtInspection, SyncFailure>
+|-- transactionVsize(psbt, wallet:) -> Result<int, SyncFailure>
+|-- prepareSigning(psbt, [foreignInputWallet:]) -> Result<({String psbt, bool signWithTapInternalKey}), SyncFailure>
+|-- validateInputs(psbt, ownership:, [frozenOutpoints: const {}], [replacingTxid:], [allowSpentWalletInputs: false]) -> Result<void, SyncFailure>
+|-- validatePreimage(preimage) -> Result<bool, SyncFailure>
+|-- applyPreimages(psbt, preimages) -> Result<String, SyncFailure>
+|-- verifyFinalTransaction(psbtBase64:, transactionHex:) -> Result<({String transaction, int txSize}), SyncFailure>
+|-- completeSigning(originalPsbt:, signedPsbt:, [tryFinalize: true]) -> Result<({bool isFinalized, String psbt}), SyncFailure>
+|-- combinePsbts(first:, second:) -> Result<String, SyncFailure>
+|-- validateExternalPartialPsbt(currentPsbtBase64:, signedPsbtBase64:) -> Result<String, SyncFailure>
+`-- finalizePsbt(psbt) -> Result<({bool isFinalized, String psbt}), SyncFailure>
 ```
 
 <!-- sync-api:end -->

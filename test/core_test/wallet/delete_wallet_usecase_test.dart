@@ -55,9 +55,8 @@ void main() {
   _MockWallet buildWallet({String? masterFingerprint, bool local = true}) {
     final wallet = _MockWallet();
     when(() => wallet.isDefault).thenReturn(false);
-    when(() => wallet.signsLocally).thenReturn(local);
-    when(() => wallet.masterFingerprint)
-        .thenReturn(masterFingerprint ?? fingerprint);
+    when(() => wallet.localSeedFingerprints)
+        .thenReturn(local ? [masterFingerprint ?? fingerprint] : const []);
     return wallet;
   }
 
@@ -158,11 +157,10 @@ void main() {
       },
     );
 
-    test('never touches a secret for a watch-only wallet', () async {
-      when(() => walletRepository.getWallet(walletId)).thenAnswer(
-        (_) async =>
-            Ok<Wallet, WalletFailure>(buildWallet(masterFingerprint: '')),
-      );
+    test('never touches a seed for a watch-only wallet', () async {
+      final wallet = buildWallet(masterFingerprint: '');
+      when(() => walletRepository.getWallet(walletId))
+          .thenAnswer((_) async => Ok<Wallet, WalletFailure>(wallet));
 
       final result = await usecase.execute(walletId: walletId);
 

@@ -88,6 +88,34 @@ class BitcoinSigner {
 """;
       expect(await inspect('signer_xprv', xprv, policyPath: path), isEmpty);
       expect(await inspect('outside_signer', xprv), isNotEmpty);
+      const descriptor = """
+import 'package:bull_sdk/bdk.dart' as bdk;
+class BitcoinSigner {
+  void signDescriptorPsbt(String value, bdk.DerivationPath path) {
+    final root = bdk.DescriptorSecretKey.fromString(privateKey: value);
+    final account = root.derive(path: path);
+    account.toString();
+    account.dispose();
+    root.dispose();
+  }
+}
+""";
+      expect(
+        await inspect('descriptor_signer', descriptor, policyPath: path),
+        isEmpty,
+      );
+      expect(
+        await inspect('descriptor_outside_signer', descriptor),
+        isNotEmpty,
+      );
+      expect(
+        await inspect(
+          'descriptor_wrong_method',
+          descriptor.replaceAll('signDescriptorPsbt', '_other'),
+          policyPath: path,
+        ),
+        isNotEmpty,
+      );
       const words = """
 import 'package:bull_sdk/bdk.dart' as bdk;
 class BitcoinSigner {
@@ -96,6 +124,14 @@ class BitcoinSigner {
 """;
       expect(
         await inspect('signer_words', words, policyPath: path),
+        isNotEmpty,
+      );
+      expect(
+        await inspect(
+          'descriptor_words',
+          words.replaceAll('_wallet', 'signDescriptorPsbt'),
+          policyPath: path,
+        ),
         isNotEmpty,
       );
       expect(
@@ -161,42 +197,56 @@ final factory = Root.fromBase58;
     expect(violations, contains(endsWith('#Bip32Keys.fromBase58')));
   });
 
-  test(
-    'Base58 exemption requires the public adapter file and method',
-    () async {
-      const path = 'lib/core/utils/bip32_derivation.dart';
-      const source = '''
+  test('Base58 exemption requires the public adapter file and method', () async {
+    const syncPath = 'packages/sync/lib/src/data/codec/public_account_key.dart';
+    const syncSource =
+        "import 'package:bip32_keys/bip32_keys.dart'; "
+        'Bip32Keys publicAccountKey(String value) => Bip32Keys.fromBase58(value);';
+    expect(
+      await inspect('sync_public_adapter', syncSource, policyPath: syncPath),
+      isEmpty,
+    );
+    expect(
+      await inspect('sync_wrong_adapter', syncSource),
+      contains(endsWith('#Bip32Keys.fromBase58')),
+    );
+    expect(
+      await inspect(
+        'sync_wrong_method',
+        syncSource.replaceAll('publicAccountKey', 'other'),
+        policyPath: syncPath,
+      ),
+      contains(endsWith('#Bip32Keys.fromBase58')),
+    );
+    const path = 'lib/core/utils/bip32_derivation.dart';
+    const source = '''
 import 'package:bip32_keys/bip32_keys.dart';
 class Bip32Derivation {
   static Bip32Keys getBip32Xpub(String value) => Bip32Keys.fromBase58(value);
 }
 ''';
-      expect(
-        await inspect('public_adapter', source, policyPath: path),
-        isEmpty,
-      );
-      expect(
-        await inspect('wrong_adapter_file', source),
-        contains(endsWith('#Bip32Keys.fromBase58')),
-      );
-      expect(
-        await inspect(
-          'wrong_adapter_method',
-          source.replaceAll('getBip32Xpub', 'other'),
-          policyPath: path,
-        ),
-        contains(endsWith('#Bip32Keys.fromBase58')),
-      );
-      expect(
-        await inspect(
-          'wrong_adapter_class',
-          source.replaceAll('Bip32Derivation', 'Other'),
-          policyPath: path,
-        ),
-        contains(endsWith('#Bip32Keys.fromBase58')),
-      );
-    },
-  );
+    expect(await inspect('public_adapter', source, policyPath: path), isEmpty);
+    expect(
+      await inspect('wrong_adapter_file', source),
+      contains(endsWith('#Bip32Keys.fromBase58')),
+    );
+    expect(
+      await inspect(
+        'wrong_adapter_method',
+        source.replaceAll('getBip32Xpub', 'other'),
+        policyPath: path,
+      ),
+      contains(endsWith('#Bip32Keys.fromBase58')),
+    );
+    expect(
+      await inspect(
+        'wrong_adapter_class',
+        source.replaceAll('Bip32Derivation', 'Other'),
+        policyPath: path,
+      ),
+      contains(endsWith('#Bip32Keys.fromBase58')),
+    );
+  });
 
   test('test keystore aliases and re-exports retain identity', () async {
     final violations = await inspect('fake_keystore', '''

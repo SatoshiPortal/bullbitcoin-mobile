@@ -10,12 +10,13 @@ class GetAddressAtIndexUsecase {
   Future<WalletAddress> execute({
     required String walletId,
     required int index,
+    bool isChange = false,
   }) async {
     try {
       final address = await _walletAddressRepository.getAddressAtIndex(
         walletId: walletId,
         index: index,
-        isChange: false,
+        isChange: isChange,
       );
 
       return address;

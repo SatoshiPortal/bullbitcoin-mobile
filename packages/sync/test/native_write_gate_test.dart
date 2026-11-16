@@ -318,14 +318,15 @@ class LiquidSigner {
     },
   );
 
-  test('Bitcoin signer proves its single in-memory assignment', () async {
-    const signerPath =
-        'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
-    String source(String factory) =>
-        '''
+  for (final method in ['_wallet', 'signDescriptorPsbt']) {
+    test('Bitcoin signer $method proves its in-memory assignment', () async {
+      const signerPath =
+          'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
+      String source(String factory) =>
+          '''
 import 'package:bull_sdk/bdk.dart' as bdk;
 class BitcoinSigner {
-  bdk.Wallet _wallet(bdk.Descriptor descriptor) {
+  bdk.Wallet $method(bdk.Descriptor descriptor) {
     bdk.Persister? persister;
     try {
       persister = $factory;
@@ -334,34 +335,35 @@ class BitcoinSigner {
   }
 }
 ''';
-    expect(
-      await inspect(
-        'memory_signer',
-        source('bdk.Persister.newInMemory()'),
-        path: signerPath,
-      ),
-      isEmpty,
-    );
-    expect(
-      await inspect(
-        'memory_signer_dispose_tearoff',
-        source('bdk.Persister.newInMemory()').replaceFirst(
-          'persister?.dispose();',
-          'final releases = [persister?.dispose]; for (final release in releases.nonNulls) { release(); }',
+      expect(
+        await inspect(
+          'memory_signer',
+          source('bdk.Persister.newInMemory()'),
+          path: signerPath,
         ),
-        path: signerPath,
-      ),
-      isEmpty,
-    );
-    expect(
-      await inspect(
-        'disk_signer',
-        source("bdk.Persister.newSqlite(path: 'disk')"),
-        path: signerPath,
-      ),
-      isNotEmpty,
-    );
-  });
+        isEmpty,
+      );
+      expect(
+        await inspect(
+          'memory_signer_dispose_tearoff',
+          source('bdk.Persister.newInMemory()').replaceFirst(
+            'persister?.dispose();',
+            'final releases = [persister?.dispose]; for (final release in releases.nonNulls) { release(); }',
+          ),
+          path: signerPath,
+        ),
+        isEmpty,
+      );
+      expect(
+        await inspect(
+          'disk_signer',
+          source("bdk.Persister.newSqlite(path: 'disk')"),
+          path: signerPath,
+        ),
+        isNotEmpty,
+      );
+    });
+  }
 
   Future<List<String>> inspectImports(
     String name,

@@ -1,9 +1,11 @@
 import 'package:bb_mobile/features/bitbox/bitbox_action.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
+import 'package:bb_mobile/features/bitbox/public/bitbox_facade.dart';
 import 'package:go_router/go_router.dart';
 
 enum BitBoxRoute {
   importBitBox('/bitbox-import'),
+  bitboxRegisterWalletPolicy('/bitbox-register-wallet-policy'),
   bitboxSignTransaction('/bitbox-sign-transaction'),
   bitboxVerifyAddress('/bitbox-verify-address');
 
@@ -18,10 +20,23 @@ class BitBoxRouter {
       name: BitBoxRoute.importBitBox.name,
       path: BitBoxRoute.importBitBox.path,
       builder: (context, state) {
-        final extra = state.extra as BitBoxRouteParams?;
+        final extra = state.extra;
         return BitBoxActionScreen(
           action: const BitBoxAction.importWallet(),
-          parameters: extra,
+          parameters: extra is ReadBitBoxAccountKeyRequest
+              ? BitBoxRouteParams(accountKey: extra)
+              : extra as BitBoxRouteParams?,
+        );
+      },
+    ),
+    GoRoute(
+      name: BitBoxRoute.bitboxRegisterWalletPolicy.name,
+      path: BitBoxRoute.bitboxRegisterWalletPolicy.path,
+      builder: (context, state) {
+        final request = state.extra as RegisterBitBoxWalletPolicyRequest;
+        return BitBoxActionScreen(
+          action: const BitBoxAction.registerWalletPolicy(),
+          parameters: BitBoxRouteParams(walletPolicy: request),
         );
       },
     ),
@@ -29,10 +44,12 @@ class BitBoxRouter {
       name: BitBoxRoute.bitboxSignTransaction.name,
       path: BitBoxRoute.bitboxSignTransaction.path,
       builder: (context, state) {
-        final extra = state.extra as BitBoxRouteParams?;
+        final extra = state.extra;
         return BitBoxActionScreen(
           action: const BitBoxAction.signTransaction(),
-          parameters: extra,
+          parameters: extra is SignBitBoxWalletPolicyRequest
+              ? BitBoxRouteParams(walletPolicy: extra)
+              : extra as BitBoxRouteParams?,
         );
       },
     ),
@@ -40,10 +57,12 @@ class BitBoxRouter {
       name: BitBoxRoute.bitboxVerifyAddress.name,
       path: BitBoxRoute.bitboxVerifyAddress.path,
       builder: (context, state) {
-        final extra = state.extra as BitBoxRouteParams?;
+        final extra = state.extra;
         return BitBoxActionScreen(
           action: const BitBoxAction.verifyAddress(),
-          parameters: extra,
+          parameters: extra is VerifyBitBoxWalletPolicyAddressRequest
+              ? BitBoxRouteParams(walletPolicy: extra)
+              : extra as BitBoxRouteParams?,
         );
       },
     ),

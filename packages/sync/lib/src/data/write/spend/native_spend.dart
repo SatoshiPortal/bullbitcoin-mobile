@@ -8,6 +8,8 @@ import 'package:primitives/primitives.dart';
 
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/spend.dart';
+import '../../../domain/wallet_values.dart';
+import '../bitcoin_policy_codec.dart';
 import '../../../domain/sync_failure.dart';
 import '../../codec/liquid_codec.dart';
 import '../../codec/liquid_codec.dart' as codec show liquidAddressNetwork;
@@ -217,18 +219,43 @@ final class _BitcoinSpend implements NativeBitcoinSpend {
               amount: bdk.Amount.fromSat(satoshi: amount),
             );
     }
+    final policy = request.policy;
+    final ineligible = <Outpoint>{};
+    if (policy != null) {
+      for (final (choices, keychain) in [
+        (policy.external, bdk.KeychainKind.external_),
+        (policy.internal, bdk.KeychainKind.internal),
+      ]) {
+        if (choices.isNotEmpty) {
+          builder = builder.policyPath(policyPath: choices, keychain: keychain);
+        }
+      }
+      for (final output in _wallet.listUnspent()) {
+        final eligible = output.keychain == bdk.KeychainKind.internal
+            ? policy.eligibleInternal
+            : policy.eligibleExternal;
+        final outpoint = _outpoint(output.outpoint);
+        if (eligible != null && !eligible.contains(outpoint)) {
+          ineligible.add(outpoint);
+        }
+      }
+    }
+    final excludedInputs = {...excluded, ...ineligible};
     final selected = request.selected;
     if (request.selectedOnly && (selected == null || selected.isEmpty)) {
       throw const SpendRefusal(SyncNoSpendableInputsFailure());
     }
     if (selected != null && selected.isNotEmpty) {
+      if (selected.any(ineligible.contains)) {
+        throw const SpendRefusal(SyncSpendRefusedFailure());
+      }
       // The builder is immutable: keep the builder each call returns.
       builder = builder
           .addUtxos(outpoints: [for (final input in selected) _native(input)])
           .manuallySelectedOnly();
     }
     // BDK signals replaceability by default (nSequence 0xFFFFFFFD).
-    if (!request.replaceable) {
+    if (!request.replaceable && policy?.requiresRelativeTimelock != true) {
       builder = builder.setExactSequence(nsequence: 0xFFFFFFFE);
     }
     builder = switch (request.fee) {
@@ -240,12 +267,12 @@ final class _BitcoinSpend implements NativeBitcoinSpend {
         feeRate: bdk.FeeRate.fromSatPerKwu(satKwu: satPerKwu),
       ),
     };
-    if (excluded.isNotEmpty) {
-      if (unspent().difference(excluded).isEmpty) {
+    if (excludedInputs.isNotEmpty) {
+      if (unspent().difference(excludedInputs).isEmpty) {
         throw const SpendRefusal(SyncNoSpendableInputsFailure());
       }
       builder = builder.unspendable(
-        unspendable: [for (final input in excluded) _native(input)],
+        unspendable: [for (final input in excludedInputs) _native(input)],
       );
     }
     final bdk.Psbt psbt;
@@ -283,7 +310,19 @@ final class _BitcoinSpend implements NativeBitcoinSpend {
           throw const SpendRefusal(SyncInsufficientFundsFailure());
         }
       }
-      return BuiltTransaction(psbt.serialize(), decoded.inputs);
+      final prepared = prepareBuiltPolicyPsbt(
+        psbt.serialize(),
+        keychains: {
+          for (final output in _wallet.listUnspent())
+            _outpoint(
+              output.outpoint,
+            ): output.keychain == bdk.KeychainKind.internal
+                ? Keychain.internal
+                : Keychain.external,
+        },
+        requiredKeys: request.policy?.requiredKeys,
+      );
+      return BuiltTransaction(prepared, decoded.inputs);
     } finally {
       psbt.dispose();
     }

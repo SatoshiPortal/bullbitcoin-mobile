@@ -1,5 +1,4 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bb_mobile/features/send/ui/widgets/send_action_buttons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -83,13 +83,9 @@ void main() {
             Wallet(
               origin: 'liquid-wallet',
               network: Network.liquidMainnet,
-              xpubFingerprint: '00000000',
               scriptType: ScriptType.bip84,
-              xpub: '',
-              externalPublicDescriptor: '',
-              internalPublicDescriptor: '',
-              signer: SignerEntity.local,
-              signerDevice: null,
+              publicDescriptor: '',
+              signers: [],
               balanceSat: BigInt.from(100000),
             ),
           ),

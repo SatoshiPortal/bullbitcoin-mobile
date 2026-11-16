@@ -1,8 +1,11 @@
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
+
+import '../../../core_test/wallet/wallet_signer_test_fixture.dart';
+
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart' show SyncReason;
 import 'package:primitives/primitives.dart' show Fingerprint, Ok;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -26,15 +29,24 @@ WalletMetadataModel _row(Network network) {
   return WalletMetadataModel(
     id: network == Network.bitcoinRegtest ? '$origin:regtest' : origin,
     networkCode: network.name,
-    masterFingerprint: '73c5da0a',
-    xpubFingerprint: 'deadbeef',
     isEncryptedVaultTested: false,
     isPhysicalBackupTested: false,
-    xpub: 'public-test-key',
-    externalPublicDescriptor: 'wpkh(public-test-key/0/*)',
-    internalPublicDescriptor: 'wpkh(public-test-key/1/*)',
-    signer: Signer.local,
     isDefault: true,
+    signers: [
+      walletSignerModel(
+        id: 'signer-0',
+        descriptorKeyId: 'key-0',
+        masterFingerprint: '73c5da0a',
+        xpubFingerprint: 'deadbeef',
+        xpub: 'public-test-key',
+        signer: Signer.local,
+        signerDevice: null,
+      ),
+    ],
+    publicDescriptor: ('wpkh(public-test-key/0/*)')
+        .split('#')
+        .first
+        .replaceAll('/0/*', '/<0;1>/*'),
   );
 }
 
@@ -119,7 +131,7 @@ void main() {
         );
         expect(result.fold((value) => value, (_) => false), true);
         when(metadata.fetchAll)
-            .thenAnswer((_) async => [row.copyWith(signer: Signer.none)]);
+            .thenAnswer((_) async => [row.copyWith(signers: const [])]);
         final watchOnly = await repository.hasSecretReference(
           Fingerprint('73c5da0a'),
         );

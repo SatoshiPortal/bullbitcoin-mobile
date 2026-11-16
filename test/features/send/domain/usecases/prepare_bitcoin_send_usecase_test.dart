@@ -82,8 +82,12 @@ void main() {
         replaceByFee: any(named: 'replaceByFee'),
       ),
     ).thenAnswer((_) async => const Ok('psbt'));
-    when(() => bitcoinWallet.getTxSize(psbt: any(named: 'psbt')))
-        .thenAnswer((_) async => 110);
+    when(
+      () => bitcoinWallet.getTxSize(
+        psbt: any(named: 'psbt'),
+        walletId: any(named: 'walletId'),
+      ),
+    ).thenAnswer((_) async => 110);
     when(
       () => bitcoinWallet.getRecipientAmounts(
         psbt: any(named: 'psbt'),
@@ -233,6 +237,35 @@ void main() {
       );
     },
   );
+
+  test('unsupported policy failures are preserved', () async {
+    when(() => walletUtxo.getAllFrozenOutpoints()).thenAnswer((_) async => []);
+    when(() => payjoin.reservedOutpoints())
+        .thenAnswer((_) async => const Ok(<Outpoint>{}));
+    when(
+      () => bitcoinWallet.buildPsbt(
+        walletId: any(named: 'walletId'),
+        recipients: any(named: 'recipients'),
+        networkFee: any(named: 'networkFee'),
+        unspendable: any(named: 'unspendable'),
+        selected: any(named: 'selected'),
+        replaceByFee: any(named: 'replaceByFee'),
+      ),
+    ).thenAnswer(
+      (_) async => const Err(
+        BitcoinSigningFailure(BitcoinSigningFailureKind.unsupportedPolicyPath),
+      ),
+    );
+
+    await expectLater(
+      usecase.execute(
+        walletId: walletId,
+        recipients: fixedRecipients,
+        networkFee: networkFee,
+      ),
+      failsWith(isA<BitcoinSigningFailure>()),
+    );
+  });
 
   test(
     'user-frozen ∪ payjoin-derived are merged + deduped into unspendable',

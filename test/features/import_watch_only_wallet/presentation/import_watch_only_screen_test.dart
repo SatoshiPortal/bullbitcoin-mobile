@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/wallet/domain/bitcoin_descriptor_port.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_input_parser.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -6,13 +8,16 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_de
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/parse_watch_only_input_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/import_watch_only_screen.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/generated/l10n/localization_en.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+class _Parser extends Mock implements ParseWatchOnlyInputUsecase {}
+
+class _DescriptorPort extends Mock implements BitcoinDescriptorPort {}
 
 class _Settings extends Mock implements SettingsRepository {}
 
@@ -28,8 +33,12 @@ void main() {
         // Published BIP84 test account, as entered in the FIX device campaign.
         const vpub =
             'vpub5Y6cjg78GGuNLsaPhmYsiw4gYX3HoQiRBiSwDaBXKUafCt9bNwWQiitDk5VZ5BVxYnQdwoTyXSs2JHRPAgjAvtbBrf8ZhDYe2jWAqvZVnsc';
-        final wallet = (await WatchOnlyWalletEntity.parse(vpub))
-            .copyWith(label: labelCorrection ? '' : 'NeverScanned');
+        final parsed = await WatchOnlyInputParser(_DescriptorPort())
+            .parseXpub(vpub);
+        if (parsed == null) fail('Invalid fixture xpub');
+        final wallet = parsed.copyWith(
+          label: labelCorrection ? '' : 'NeverScanned',
+        );
         final settings = _Settings();
         final importer = _Xpub();
         when(settings.fetch).thenAnswer(
@@ -46,9 +55,7 @@ void main() {
         locator.registerSingleton<ImportWatchOnlyDescriptorUsecase>(
           _Descriptor(),
         );
-        locator.registerSingleton<ParseWatchOnlyInputUsecase>(
-          ParseWatchOnlyInputUsecase(),
-        );
+        locator.registerSingleton<ParseWatchOnlyInputUsecase>(_Parser());
         addTearDown(locator.reset);
         await tester.pumpWidget(
           MaterialApp(

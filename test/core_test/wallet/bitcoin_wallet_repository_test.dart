@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart'
     show
@@ -14,8 +17,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;
 
-// Unit tests for the repository boundary of
-// `BitcoinWalletRepository.buildPsbt`, over a mocked datasource:
+// Unit tests for the repository-boundary guarantees of
+// `BitcoinWalletRepository.buildPsbt`:
 //
 //  1. Freezes and Payjoin reservations are enforced by sync's writer, which
 //     reads them itself and checks the effective inputs of every build (see
@@ -29,11 +32,9 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_signer_table.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/features/wallet/data/sync_freezes_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/bitcoin_transaction_recipient_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/features/wallet/data/bitcoin_wallet_repository.dart';
@@ -41,10 +42,14 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'wallet_signer_test_fixture.dart';
+
 class _MockWalletMetadataDatasource extends Mock
     implements WalletMetadataDatasource {}
 
 class _MockBdkWalletDatasource extends Mock implements BdkWalletDatasource {}
+
+class _MockFreezes extends Mock implements SyncFreezesDatasource {}
 
 class _MockValues extends Mock implements SyncWalletValuesDatasource {}
 
@@ -82,18 +87,26 @@ void main() {
   late Result<UnsignedSpend, SyncFailure> built;
   late BitcoinWalletRepository repository;
 
-  const metadata = WalletMetadataModel(
-    networkCode: 'bitcoinTestnet',
+  final metadata = WalletMetadataModel(
     id: _walletId,
-    masterFingerprint: '73c5da0a',
-    xpubFingerprint: 'deadbeef',
+    signers: [
+      walletSignerModel(
+        id: 'signer-0',
+        descriptorKeyId: 'key-0',
+        masterFingerprint: '73c5da0a',
+        xpubFingerprint: 'deadbeef',
+        xpub: 'tpub-test',
+        derivationPath: "m/84'/1'/0'",
+        descriptorPath: '/<0;1>/*',
+        signer: Signer.local,
+        signerDevice: null,
+      ),
+    ],
     isEncryptedVaultTested: false,
     isPhysicalBackupTested: false,
-    xpub: 'tpub-test',
-    externalPublicDescriptor: 'wpkh(external)',
-    internalPublicDescriptor: 'wpkh(internal)',
-    signer: Signer.local,
+    publicDescriptor: 'wpkh([73c5da0a/84h/1h/0h]tpub-test/<0;1>/*)',
     isDefault: true,
+    networkCode: 'bitcoinTestnet',
   );
 
   setUpAll(() {
@@ -121,10 +134,10 @@ void main() {
     );
     repository = BitcoinWalletRepository(
       walletMetadataDatasource: metadataDatasource,
-      // `Secrets` is final: the seam is the keystore below it, installed in `setUp`. No secret is stored — these cases never reach one.
-      secrets: Secrets(scratchDirectory: () async => '/tmp'),
+      secrets: Secrets(scratchDirectory: () async => ''),
       bdkWalletDatasource: bdkDatasource,
       walletValuesDatasource: values,
+      frozenWalletUtxoDatasource: _MockFreezes(),
     );
 
     when(() => metadataDatasource.fetch(_walletId))

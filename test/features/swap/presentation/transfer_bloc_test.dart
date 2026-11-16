@@ -24,6 +24,7 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_signer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/validate_bitcoin_selection_usecase.dart';
@@ -628,8 +629,12 @@ void main() {
           walletId: 'wallet-1',
         ),
       ).thenAnswer((_) async {});
-      when(() => signBitcoin.execute(walletId: 'wallet-1', psbt: 'edited'))
-          .thenAnswer((_) async => (signedPsbt: 'edited-signed', txSize: 100));
+      when(
+        () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'edited'),
+      ).thenAnswer(
+        (_) async =>
+            Ok((signedPsbt: 'edited-signed', txSize: 100, isFinalized: true)),
+      );
       when(() => calculateBitcoin.execute(psbt: 'edited-signed'))
           .thenAnswer((_) async => 1200);
       when(
@@ -1351,7 +1356,10 @@ void main() {
     when(
       () =>
           signBitcoin.execute(walletId: 'wallet-1', psbt: 'old-unsigned-psbt'),
-    ).thenAnswer((_) async => (signedPsbt: 'old-signed-psbt', txSize: 100));
+    ).thenAnswer(
+      (_) async =>
+          Ok((signedPsbt: 'old-signed-psbt', txSize: 100, isFinalized: true)),
+    );
     when(() => calculateBitcoin.execute(psbt: 'old-signed-psbt'))
         .thenAnswer((_) async => 1200);
     bloc.emit(
@@ -1458,7 +1466,13 @@ void main() {
       });
       when(
         () => signBitcoin.execute(walletId: 'wallet-1', psbt: 'unsigned-psbt'),
-      ).thenAnswer((_) async => (signedPsbt: 'signed-psbt', txSize: 100));
+      ).thenAnswer(
+        (_) async => const Ok((
+          signedPsbt: 'signed-psbt',
+          txSize: 100,
+          isFinalized: true,
+        )),
+      );
       when(() => calculateBitcoin.execute(psbt: 'signed-psbt'))
           .thenAnswer((_) async => 1200);
       bloc.emit(
@@ -1562,7 +1576,13 @@ void main() {
           walletId: 'wallet-1',
           psbt: 'new-unsigned-psbt',
         ),
-      ).thenAnswer((_) async => (signedPsbt: 'new-signed-psbt', txSize: 100));
+      ).thenAnswer(
+        (_) async => const Ok((
+          signedPsbt: 'new-signed-psbt',
+          txSize: 100,
+          isFinalized: true,
+        )),
+      );
       when(() => calculateBitcoin.execute(psbt: 'new-signed-psbt'))
           .thenAnswer((_) async => 1200);
       when(
@@ -1629,7 +1649,13 @@ void main() {
     when(
       () =>
           signBitcoin.execute(walletId: 'wallet-1', psbt: 'new-unsigned-psbt'),
-    ).thenAnswer((_) async => (signedPsbt: 'new-signed-psbt', txSize: 100));
+    ).thenAnswer(
+      (_) async => const Ok((
+        signedPsbt: 'new-signed-psbt',
+        txSize: 100,
+        isFinalized: true,
+      )),
+    );
     when(() => calculateBitcoin.execute(psbt: 'new-signed-psbt'))
         .thenAnswer((_) async => 1200);
     when(
@@ -2064,13 +2090,19 @@ ChainSwap _swap() => Swap.chain(
 Wallet _wallet({BigInt? balanceSat}) => Wallet(
   origin: 'wallet-1',
   network: Network.bitcoinTestnet,
-  xpubFingerprint: 'fingerprint',
+  signers: [
+    WalletSigner.single(
+      masterFingerprint: 'fingerprint',
+      xpubFingerprint: 'fingerprint',
+      xpub: 'xpub',
+      derivationPath: "m/84'/1'/0'",
+      descriptorPath: standardSingleSignatureDescriptorPath,
+      signer: SignerEntity.local,
+      signerDevice: null,
+    ),
+  ],
   scriptType: ScriptType.bip84,
-  xpub: 'xpub',
-  externalPublicDescriptor: 'external',
-  internalPublicDescriptor: 'internal',
-  signer: SignerEntity.local,
-  signerDevice: null,
+  publicDescriptor: 'external',
   balanceSat: balanceSat ?? BigInt.zero,
 );
 
@@ -2087,13 +2119,17 @@ Wallet _liquidWallet({String id = 'wallet-1', bool isDefault = false}) =>
     Wallet(
       origin: id,
       network: Network.liquidTestnet,
-      xpubFingerprint: 'fingerprint-1',
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: 'fingerprint-1',
+          xpubFingerprint: 'fingerprint-1',
+          xpub: 'xpub-1',
+          signer: SignerEntity.local,
+          signerDevice: null,
+        ),
+      ],
       scriptType: ScriptType.bip84,
-      xpub: 'xpub-1',
-      externalPublicDescriptor: 'external-1',
-      internalPublicDescriptor: 'internal-1',
-      signer: SignerEntity.local,
-      signerDevice: null,
+      publicDescriptor: 'external-1',
       isDefault: isDefault,
       balanceSat: BigInt.zero,
     );
@@ -2102,13 +2138,19 @@ Wallet _destinationWallet({String id = 'wallet-2', bool isDefault = false}) =>
     Wallet(
       origin: id,
       network: Network.bitcoinTestnet,
-      xpubFingerprint: 'fingerprint-2',
+      signers: [
+        WalletSigner.single(
+          masterFingerprint: 'fingerprint-2',
+          xpubFingerprint: 'fingerprint-2',
+          xpub: 'xpub-2',
+          derivationPath: "m/84'/1'/0'",
+          descriptorPath: standardSingleSignatureDescriptorPath,
+          signer: SignerEntity.local,
+          signerDevice: null,
+        ),
+      ],
       scriptType: ScriptType.bip84,
-      xpub: 'xpub-2',
-      externalPublicDescriptor: 'external-2',
-      internalPublicDescriptor: 'internal-2',
-      signer: SignerEntity.local,
-      signerDevice: null,
+      publicDescriptor: 'external-2',
       isDefault: isDefault,
       balanceSat: BigInt.from(2000),
     );

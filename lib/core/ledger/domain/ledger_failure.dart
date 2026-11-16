@@ -45,6 +45,10 @@ final class LedgerBitcoinAppNotOpenFailure extends LedgerFailure {
   const LedgerBitcoinAppNotOpenFailure([super.logMessage]);
 }
 
+final class LedgerBitcoinAppUpdateRequiredFailure extends LedgerFailure {
+  const LedgerBitcoinAppUpdateRequiredFailure([super.logMessage]);
+}
+
 /// No active connection to a device. Raised both by the datasource (when an
 /// operation needs a live connection it doesn't have) and by the UI pre-check
 /// before an operation is requested; both surface the same message.
@@ -76,6 +80,22 @@ final class LedgerMissingDerivationPathFailure extends LedgerFailure {
 /// A required script type parameter was missing.
 final class LedgerMissingScriptTypeFailure extends LedgerFailure {
   const LedgerMissingScriptTypeFailure([super.logMessage]);
+}
+
+final class LedgerMissingWalletPolicyFailure extends LedgerFailure {
+  const LedgerMissingWalletPolicyFailure([super.logMessage]);
+}
+
+final class LedgerUnsupportedWalletPolicyFailure extends LedgerFailure {
+  const LedgerUnsupportedWalletPolicyFailure([super.logMessage]);
+}
+
+final class LedgerWalletPolicyNotRegisteredFailure extends LedgerFailure {
+  const LedgerWalletPolicyNotRegisteredFailure([super.logMessage]);
+}
+
+final class LedgerAddressMismatchFailure extends LedgerFailure {
+  const LedgerAddressMismatchFailure([super.logMessage]);
 }
 
 /// Catch-all. [logMessage] is for logs ONLY and MUST never reach the UI — the

@@ -54,6 +54,7 @@ abstract class ReceiveState with _$ReceiveState {
     WalletTransaction? tx,
     ReceiveFailure? failure,
     @Default(false) bool creatingSwap,
+    @Default(false) bool isBullVault,
   }) = _ReceiveState;
   const ReceiveState._();
 
@@ -359,7 +360,7 @@ abstract class ReceiveState with _$ReceiveState {
           selectedWallet.network.shared,
           NetworkCapability.payjoin,
         ) &&
-        selectedWallet.signsLocally &&
+        selectedWallet.isStandardLocalSingleSignatureWallet &&
         payjoinGloballyEnabled == true &&
         !hasUtxos &&
         payjoin == null;
@@ -367,7 +368,9 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isPayjoinAvailable {
     if (type == ReceiveType.bitcoin) {
-      return wallet != null && wallet!.signsLocally && payjoin != null;
+      return wallet != null &&
+          wallet!.isStandardLocalSingleSignatureWallet &&
+          payjoin != null;
     }
     return false;
   }
@@ -391,7 +394,7 @@ abstract class ReceiveState with _$ReceiveState {
           currentWallet.network.shared,
           NetworkCapability.payjoin,
         ) &&
-        currentWallet.signsLocally &&
+        currentWallet.isStandardLocalSingleSignatureWallet &&
         hasUtxos;
   }
 

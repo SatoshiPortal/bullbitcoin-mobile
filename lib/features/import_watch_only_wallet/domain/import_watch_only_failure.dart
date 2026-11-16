@@ -20,6 +20,14 @@ final class InvalidFormatFailure extends ImportWatchOnlyFailure {
   const InvalidFormatFailure();
 }
 
+final class FixedPublicKeyUnsupportedFailure extends ImportWatchOnlyFailure {
+  const FixedPublicKeyUnsupportedFailure();
+}
+
+final class SignerOriginRequiredFailure extends ImportWatchOnlyFailure {
+  const SignerOriginRequiredFailure();
+}
+
 final class ImportFailedFailure extends ImportWatchOnlyFailure {
   const ImportFailedFailure();
 }

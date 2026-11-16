@@ -35,7 +35,7 @@ class BdkBitcoinBlockchainDatasource {
     String finalizedPsbt, {
     required ElectrumConnection connection,
   }) => broadcastTransaction(
-    decodeBitcoinPsbt(finalizedPsbt).bytes,
+    decodeBitcoinPsbt(normalizeBitcoinPsbt(finalizedPsbt)).bytes,
     connection: connection,
   );
 

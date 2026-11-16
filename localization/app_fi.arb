@@ -2159,7 +2159,15 @@
   "psbtImDone": "Valmis",
   "psbtFlowSignTransaction": "Allekirjoita transaktio",
   "psbtFlowInstructions": "Ohjeet",
-  "psbtFlowDone": "Valmis",
+  "psbtFlowError": "Virhe: {error}",
+  "@psbtFlowError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "psbtFlowNoPartsToDisplay": "Ei osia näytettäväksi",
   "psbtFlowPartProgress": "Osa {current}/{total}",
   "@psbtFlowPartProgress": {
     "placeholders": {

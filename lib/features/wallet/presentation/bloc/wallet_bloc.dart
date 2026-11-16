@@ -57,6 +57,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     });
     on<WalletRevisionChanged>(_onRevisionChanged);
     on<WalletStarted>(_onStarted, transformer: restartable());
+    on<WalletUpdated>(_onUpdated);
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
@@ -273,6 +274,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       (state) => !state.isRefreshing,
       orElse: () => state,
     );
+  }
+
+  void _onUpdated(WalletUpdated event, Emitter<WalletState> emit) {
+    final index = state.wallets.indexWhere(
+      (wallet) => wallet.id == event.wallet.id,
+    );
+    if (index == -1) return;
+
+    final wallets = [...state.wallets];
+    wallets[index] = event.wallet;
+    emit(state.copyWith(wallets: wallets));
   }
 
   /// Pull-to-refresh entry point for the UI. Dispatches a user-triggered
