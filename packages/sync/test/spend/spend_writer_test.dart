@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
@@ -772,6 +773,37 @@ void main() {
         isA<SyncSpendRefusedFailure>(),
       );
     });
+
+    test(
+      'successful funding rearms failure diagnostics for the next episode',
+      () async {
+        final messages = <String>[];
+        final subscription = log.logger.logger.onRecord.listen((record) {
+          if (record.message.contains(
+            'Wallet writer unexpected storage failure category=storage',
+          )) {
+            messages.add(record.message);
+          }
+        });
+        try {
+          funding.failBeforeCommit = true;
+          expect(err(await prepare()), isA<SyncStorageFailure>());
+          expect(err(await prepare()), isA<SyncStorageFailure>());
+          await Future<void>.delayed(Duration.zero);
+          expect(messages, hasLength(1));
+          funding.failBeforeCommit = false;
+          ok(await prepare());
+          funding.beforeReserve = () async {
+            throw const FormatException('fixture reserve');
+          };
+          expect(err(await prepare()), isA<SyncStorageFailure>());
+          await Future<void>.delayed(Duration.zero);
+          expect(messages, hasLength(2));
+        } finally {
+          await subscription.cancel();
+        }
+      },
+    );
 
     test(
       'native persistence and policy read failures never reach reserve',
