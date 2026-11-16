@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;
@@ -202,11 +203,13 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                             navigatorKey: AppRouter.rootNavigatorKey,
                             child: BullSupportScope(
                               onContactSupport: SupportFacade.contactSupport,
-                              child: AppStartupWidget(
-                                app: locator<RecoverBullFeature>().withAlerts(
-                                  child,
-                                  onOpen: () => AppRouter.router.pushNamed(
-                                    'recoverbullFlows',
+                              child: BackupReminderScope(
+                                child: AppStartupWidget(
+                                  app: locator<RecoverBullFeature>().withAlerts(
+                                    child,
+                                    onOpen: () => AppRouter.router.pushNamed(
+                                      'recoverbullFlows',
+                                    ),
                                   ),
                                 ),
                               ),

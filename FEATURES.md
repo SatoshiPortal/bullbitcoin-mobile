@@ -78,6 +78,7 @@ graph TB
     RECIPIENTS[Recipients]
     FUNDING[Funding]
     BACKUPS[Backups]
+    BACKUP_SETTINGS[Backup Settings]
     SWAPS[Swaps]
     WITHDRAWAL[Withdrawal]
     STATUS[Status]
@@ -349,6 +350,8 @@ graph TB
 
     IMPORT_MNEMONIC --> ELECTRUM_SETTINGS
 
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa
