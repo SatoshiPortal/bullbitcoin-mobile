@@ -3,33 +3,40 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullBottomSheet,
+        BullLanguagePicker,
+        BullPickerChip,
         BullPickerItem,
-        BullPickerMenu,
-        BullPickerSheet,
         BullSettingsEntryItem,
+        BullSwitch,
         BullText;
 
+/// Settings page of the wizard, built from the controls of the app settings:
+/// switches for dark mode and the exchange, menus for the language and the
+/// default currency.
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
     super.key,
-    required this.themeMode,
+    required this.exchangeAccess,
     required this.language,
     required this.defaultCurrency,
     required this.onThemePicked,
+    required this.onExchangePicked,
     required this.onLanguagePicked,
     required this.onCurrencyPicked,
   });
 
-  final AppThemeMode themeMode;
+  /// `null` hides the exchange row, where the platform does not allow it.
+  final bool? exchangeAccess;
   final Language language;
   final String defaultCurrency;
   final ValueChanged<AppThemeMode> onThemePicked;
+  final ValueChanged<bool> onExchangePicked;
   final ValueChanged<Language> onLanguagePicked;
   final ValueChanged<String> onCurrencyPicked;
 
@@ -37,6 +44,8 @@ class CustomizeStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = context.loc;
     final vGap = Device.screen.height * 0.02;
+    final divider = Divider(height: 1, color: context.appColors.border);
+    final exchange = exchangeAccess;
     return WizardStepLayout(
       page: WizardPage.customize,
       title: loc.wizardCustomizeTitle,
@@ -51,118 +60,75 @@ class CustomizeStep extends StatelessWidget {
             ),
           ),
           SizedBox(height: vGap),
-          BullSettingsEntryItem(
-            icon: Icons.brightness_6_outlined,
-            title: loc.settingsThemeTitle,
-            trailing: _TrailingValue(text: _themeLabel(context, themeMode)),
-            contentPadding: EdgeInsets.zero,
-            onTap: () async {
-              final picked = await _showThemeSheet(context, themeMode);
-              if (picked != null) onThemePicked(picked);
-            },
+          MergeSemantics(
+            child: BullSettingsEntryItem(
+              icon: Icons.dark_mode_outlined,
+              title: loc.settingsDarkModeTitle,
+              contentPadding: EdgeInsets.zero,
+              // Shows the theme in use, as the dark mode switch of the app
+              // settings does.
+              trailing: BullSwitch(
+                value: Theme.of(context).brightness == Brightness.dark,
+                onChanged: (dark) => onThemePicked(
+                  dark ? AppThemeMode.dark : AppThemeMode.light,
+                ),
+              ),
+            ),
           ),
-          Divider(height: 1, color: context.appColors.border),
+          if (exchange != null) ...[
+            divider,
+            MergeSemantics(
+              child: BullSettingsEntryItem(
+                icon: Icons.currency_exchange,
+                title: loc.wizardExchangeTitle,
+                subtitle: loc.wizardExchangeDescription,
+                contentPadding: EdgeInsets.zero,
+                trailing: BullSwitch(
+                  value: exchange,
+                  onChanged: onExchangePicked,
+                ),
+              ),
+            ),
+          ],
+          divider,
           BullSettingsEntryItem(
             icon: Icons.language,
             title: loc.settingsLanguageTitle,
-            trailing: _TrailingValue(text: language.label),
             contentPadding: EdgeInsets.zero,
-            onTap: () async {
-              final picked = await _showLanguageSheet(context, language);
-              if (picked != null) onLanguagePicked(picked);
-            },
+            trailing: BullLanguagePicker<Language>(
+              value: language,
+              languages: [
+                for (final language in Language.values)
+                  BullPickerItem(value: language, label: language.label),
+              ],
+              onChanged: (picked) {
+                onLanguagePicked(picked);
+                if (picked.isMachineTranslated) {
+                  TranslationWarningBottomSheet.show(context);
+                }
+              },
+            ),
           ),
-          Divider(height: 1, color: context.appColors.border),
-          BullPickerMenu<String>(
-            value: defaultCurrency,
-            items: [
-              for (final currency in SupportedCurrency.values)
-                BullPickerItem(
-                  value: currency.code,
-                  label: '${currency.flag} ${currency.code}',
-                ),
-            ],
-            onChanged: onCurrencyPicked,
-            child: BullSettingsEntryItem(
-              icon: Icons.attach_money,
-              title: loc.wizardCustomizeDefaultCurrency,
-              trailing: _TrailingValue(text: defaultCurrency),
-              contentPadding: EdgeInsets.zero,
+          divider,
+          BullSettingsEntryItem(
+            icon: Icons.attach_money,
+            title: loc.wizardCustomizeDefaultCurrency,
+            contentPadding: EdgeInsets.zero,
+            trailing: BullPickerChip<String>(
+              tooltip: loc.wizardCustomizeDefaultCurrency,
+              value: defaultCurrency,
+              items: [
+                for (final currency in SupportedCurrency.values)
+                  BullPickerItem(
+                    value: currency.code,
+                    label: '${currency.flag} ${currency.code}',
+                  ),
+              ],
+              onChanged: onCurrencyPicked,
             ),
           ),
         ],
       ),
     );
   }
-}
-
-class _TrailingValue extends StatelessWidget {
-  const _TrailingValue({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        BullText(
-          text,
-          style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.onSurface,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        SizedBox(width: Device.screen.width * 0.01),
-        Icon(Icons.chevron_right, color: context.appColors.onSurface),
-      ],
-    );
-  }
-}
-
-String _themeLabel(BuildContext context, AppThemeMode mode) {
-  switch (mode) {
-    case AppThemeMode.light:
-      return context.loc.themeLight;
-    case AppThemeMode.dark:
-      return context.loc.themeDark;
-    case AppThemeMode.system:
-      return context.loc.themeSystem;
-  }
-}
-
-// Wizard intentionally exposes only Light + Dark — System is omitted per
-// product decision. Default for the wizard is set explicitly to match the
-// device brightness in `WizardScreen.initState`, so `themeMode == system`
-// should never be the rendered state by the time this sheet is opened.
-const List<AppThemeMode> _wizardThemeModes = [
-  AppThemeMode.light,
-  AppThemeMode.dark,
-];
-
-Future<AppThemeMode?> _showThemeSheet(
-  BuildContext context,
-  AppThemeMode current,
-) {
-  return BullBottomSheet.show<AppThemeMode>(
-    context: context,
-    child: BullPickerSheet<AppThemeMode>(
-      title: context.loc.settingsThemeTitle,
-      options: _wizardThemeModes,
-      isSelected: (mode) => mode == current,
-      label: (mode) => _themeLabel(context, mode),
-    ),
-  );
-}
-
-Future<Language?> _showLanguageSheet(BuildContext context, Language current) {
-  return BullBottomSheet.show<Language>(
-    context: context,
-    child: BullPickerSheet<Language>(
-      title: context.loc.settingsLanguageTitle,
-      options: Language.values,
-      isSelected: (lang) => lang == current,
-      label: (lang) => lang.label,
-    ),
-  );
 }

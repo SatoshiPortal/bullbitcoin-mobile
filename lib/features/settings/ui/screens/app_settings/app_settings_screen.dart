@@ -4,7 +4,7 @@ import '../../widgets/background_preferences.dart';
 
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/app_language_picker.dart';
+import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bull_ui/bull_ui.dart' show BullLanguagePicker, BullPickerItem;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,9 +29,18 @@ class AppSettingsScreen extends StatelessWidget {
     final items = settingsItemsOf(context);
 
     Widget? trailingFor(SettingsItemId id) => switch (id) {
-      SettingsItemId.language => AppLanguagePicker(
+      SettingsItemId.language => BullLanguagePicker<Language>(
         value: currentLanguage,
-        onChanged: (lang) => context.read<SettingsCubit>().changeLanguage(lang),
+        languages: [
+          for (final language in Language.values)
+            BullPickerItem(value: language, label: language.label),
+        ],
+        onChanged: (lang) {
+          context.read<SettingsCubit>().changeLanguage(lang);
+          if (lang.isMachineTranslated) {
+            TranslationWarningBottomSheet.show(context);
+          }
+        },
       ),
       SettingsItemId.theme => const DarkModeSwitch(),
       SettingsItemId.screenPrivacy => const ScreenCaptureProtectionSwitch(),

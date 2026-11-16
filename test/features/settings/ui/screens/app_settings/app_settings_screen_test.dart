@@ -27,7 +27,7 @@ Widget _buildPage({required SettingsCubit settingsCubit}) => MaterialApp(
   theme: AppTheme.themeData(AppThemeType.light),
   localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
-  // AppLanguagePicker sizes itself off Device.screen, which main() seeds at
+  // The translation warning sizes itself off Device.screen, which main() seeds at
   // startup; do the same here rather than stubbing the picker out.
   home: Builder(
     builder: (context) {
