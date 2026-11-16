@@ -111,6 +111,7 @@ void main() {
         length: any(named: 'length'),
         index: any(named: 'index'),
         alias: any(named: 'alias'),
+        language: bip39.Language.english,
       ),
     ).thenAnswer((_) async => const Ok("83696968'/39'/0'/12'/0'"));
     when(
