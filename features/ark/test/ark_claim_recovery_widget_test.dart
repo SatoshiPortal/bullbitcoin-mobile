@@ -10,6 +10,8 @@ import 'package:bull_ark/src/domain/usecases/rebroadcast_ark_claim_usecase.dart'
 import 'package:bull_ark/src/presentation/ark_claim_recovery_cubit.dart';
 import 'package:bull_ark/src/ui/ark_claim_recovery_screen.dart';
 import 'package:bull_ui/testing.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullDetailsTable, BullDetailsTableItem;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
@@ -58,6 +60,20 @@ void main() {
     expect(find.text('saved-public-destination'), findsOneWidget);
     expect(find.text('900'), findsOneWidget);
     expect(find.text('100'), findsOneWidget);
+    expect(find.text('Net amount (sats)'), findsOneWidget);
+    expect(find.text('Fee (sats)'), findsOneWidget);
+    final rows = tester
+        .widget<BullDetailsTable>(find.byType(BullDetailsTable))
+        .items
+        .whereType<BullDetailsTableItem>();
+    expect(
+      rows.singleWhere((row) => row.label == 'Net amount (sats)').displayValue,
+      '900',
+    );
+    expect(
+      rows.singleWhere((row) => row.label == 'Fee (sats)').displayValue,
+      '100',
+    );
     expect(client.calls, ['read']);
     await tester.pumpWidget(app(cubit));
     await tester.pumpAndSettle();
