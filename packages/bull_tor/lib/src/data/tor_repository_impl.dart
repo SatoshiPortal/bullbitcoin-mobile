@@ -18,6 +18,12 @@ const defaultDirectBudget = Duration(minutes: 2);
 /// took 499 s, rounded up here.
 const defaultSnowflakeBudget = Duration(minutes: 10);
 
+/// On an open network a direct bootstrap gains progress within a second or
+/// two. On a Wi-Fi blocking relays it sat at 0% for 61 s before Arti said
+/// "offline", or at 85% without ever carrying traffic: no progress for this
+/// long hands a direct attempt that has a fallback over to Snowflake.
+const defaultStallFallbackAfter = Duration(seconds: 20);
+
 /// Marks a direct attempt ended by a persistent censorship verdict.
 final _censoredOutcome = Object();
 
@@ -32,6 +38,9 @@ final class TorRepositoryImpl implements TorRepository {
   /// How long a censorship verdict must hold before automatic mode stops the
   /// direct attempt and switches to Snowflake.
   final Duration _censorshipFallbackAfter;
+
+  /// How long a direct attempt with a fallback may go without new progress.
+  final Duration _stallFallbackAfter;
   final Duration _directBudget;
   final Duration _snowflakeBudget;
   final DateTime Function() _now;
@@ -63,6 +72,7 @@ final class TorRepositoryImpl implements TorRepository {
     Future<void> Function(TorTransport)? onSuccessfulTransport,
     NetworkPresencePort? network,
     Duration censorshipFallbackAfter = const Duration(seconds: 15),
+    Duration stallFallbackAfter = defaultStallFallbackAfter,
     Duration directBudget = defaultDirectBudget,
     Duration snowflakeBudget = defaultSnowflakeBudget,
     DateTime Function()? now,
@@ -73,6 +83,7 @@ final class TorRepositoryImpl implements TorRepository {
     onSuccessfulTransport,
     network,
     censorshipFallbackAfter,
+    stallFallbackAfter,
     directBudget,
     snowflakeBudget,
     now ?? DateTime.now,
@@ -85,6 +96,7 @@ final class TorRepositoryImpl implements TorRepository {
     this._onSuccessfulTransport,
     this._network,
     this._censorshipFallbackAfter,
+    this._stallFallbackAfter,
     this._directBudget,
     this._snowflakeBudget,
     this._now,
@@ -231,6 +243,20 @@ final class TorRepositoryImpl implements TorRepository {
     DateTime? deadline;
     Completer<void>? censored;
     Timer? censorshipTimer;
+    // Stall watch: Arti's progress is not monotonic, so only a new best counts.
+    var best = -1.0;
+    Timer? stallTimer;
+    void watchProgress(double progress) {
+      final pending = censored;
+      if (pending == null || pending.isCompleted) return;
+      if (progress <= best && stallTimer != null) return;
+      best = progress > best ? progress : best;
+      stallTimer?.cancel();
+      stallTimer = Timer(_stallFallbackAfter, () {
+        if (!pending.isCompleted) pending.complete();
+      });
+    }
+
     void watchCensorship(TorDiagnostic? diagnostic) {
       final pending = censored;
       if (pending == null || pending.isCompleted) return;
@@ -254,6 +280,7 @@ final class TorRepositoryImpl implements TorRepository {
         ):
           final classified = _classify(diagnostic);
           watchCensorship(classified);
+          watchProgress(progress);
           _emit(
             TorConnecting(
               source: TorSource.embedded,
@@ -281,6 +308,11 @@ final class TorRepositoryImpl implements TorRepository {
       censorshipTimer = null;
       final pendingCensorship = hasFallback ? Completer<void>() : null;
       censored = pendingCensorship;
+      // Armed before the first event: a bootstrap that never reports is a stall too.
+      stallTimer?.cancel();
+      stallTimer = null;
+      best = -1;
+      watchProgress(0);
       final budget = transport == TorTransport.snowflake
           ? _snowflakeBudget
           : _directBudget;
@@ -342,6 +374,8 @@ final class TorRepositoryImpl implements TorRepository {
         budgetTimer.cancel();
         censorshipTimer?.cancel();
         censorshipTimer = null;
+        stallTimer?.cancel();
+        stallTimer = null;
       }
     }
     return _fail(
