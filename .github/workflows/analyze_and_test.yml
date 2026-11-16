@@ -242,6 +242,11 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make unit-test-shard-test
 
+      # Debug builds and tests run on the JIT, so only this catches a Dart AOT compiler crash before a release build does (dart-lang/sdk#64917).
+      - name: Release AOT snapshot compiles
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make aot-check
+
       # Default success() gate on purpose: if any static check above is red,
       # skip the tests — the PR needs another push anyway.
       # This job runs shard 0 of the unit tests; unit-shards runs the others in parallel.
