@@ -278,4 +278,10 @@ class ArkLocalizationsEn extends ArkLocalizations {
 
   @override
   String get skippedVtxos => 'Skipped VTXOs';
+
+  @override
+  String get netInSats => 'Net amount (sats)';
+
+  @override
+  String get feeInSats => 'Fee (sats)';
 }

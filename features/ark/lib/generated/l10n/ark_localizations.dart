@@ -601,6 +601,18 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Skipped VTXOs'**
   String get skippedVtxos;
+
+  /// No description provided for @netInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'Net amount (sats)'**
+  String get netInSats;
+
+  /// No description provided for @feeInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee (sats)'**
+  String get feeInSats;
 }
 
 class _ArkLocalizationsDelegate

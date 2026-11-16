@@ -281,4 +281,10 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get skippedVtxos => 'VTXO ignorés';
+
+  @override
+  String get netInSats => 'Montant net (sats)';
+
+  @override
+  String get feeInSats => 'Frais (sats)';
 }
