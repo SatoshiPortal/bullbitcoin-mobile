@@ -117,6 +117,7 @@ class SwapStorage {
       swapMasterKey.boltzNetwork,
       walletFingerprint,
     );
+    if (await _secrets.read(key) != null) return;
     await _secrets.write(key, jsonEncode(swapMasterKey.toJson()));
   }
 
@@ -124,14 +125,10 @@ class SwapStorage {
     BoltzNetwork network, {
     required String walletFingerprint,
   }) async {
-    try {
-      final value = await _secrets.read(
-        _swapMasterKeyStorageKey(network, walletFingerprint),
-      );
-      return value != null;
-    } catch (_) {
-      return false;
-    }
+    final value = await _secrets.read(
+      _swapMasterKeyStorageKey(network, walletFingerprint),
+    );
+    return value != null;
   }
 
   Future<SwapMasterKeyModel> fetchSwapMasterKey(

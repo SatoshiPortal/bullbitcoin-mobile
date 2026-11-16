@@ -13,6 +13,7 @@ class _MockRowStore extends Mock implements SwapRowStore {}
 class _MemorySecretStore implements SecretStore {
   final values = <String, String>{};
   final held = <String, Completer<void>>{};
+  var readsFail = false;
 
   @override
   Future<void> write(String key, String value) async => values[key] = value;
@@ -20,6 +21,7 @@ class _MemorySecretStore implements SecretStore {
   @override
   Future<String?> read(String key) async {
     await held[key]?.future;
+    if (readsFail) throw StateError('keychain unavailable');
     return values[key];
   }
 
@@ -72,6 +74,39 @@ void main() {
     expect(secrets.values, isEmpty);
     await expectLater(
       boltz.getSwapMasterKey(isTestnet: true),
+      throwsA(isA<StateError>()),
+    );
+  });
+
+  test('a stored key is never overwritten by a later derivation', () async {
+    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+
+    await boltz.storeSwapMasterKey(
+      key: const DerivedSwapMasterKey(
+        walletFingerprint: 'f00dbabe',
+        xprv: 'xprv-passphrase',
+        xpub: 'xpub-passphrase',
+        mnemonic: 'other words',
+        fingerprint: 'cafe0002',
+        isTestnet: false,
+      ),
+      isTestnet: false,
+    );
+
+    final stored = await boltz.getSwapMasterKey(isTestnet: false);
+    expect(stored.fingerprint, 'cafe0001');
+  });
+
+  test('a keychain read failure is not read as a missing key', () async {
+    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+    secrets.readsFail = true;
+
+    await expectLater(
+      boltz.swapMasterKeyReady(walletFingerprint: 'f00dbabe', isTestnet: false),
+      throwsA(isA<StateError>()),
+    );
+    await expectLater(
+      boltz.storeSwapMasterKey(key: key, isTestnet: false),
       throwsA(isA<StateError>()),
     );
   });
