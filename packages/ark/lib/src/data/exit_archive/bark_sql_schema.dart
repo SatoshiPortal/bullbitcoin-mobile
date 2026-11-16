@@ -115,7 +115,9 @@ final class BarkSqlSchema {
       final version = db.select(
         'SELECT value FROM migrations ORDER BY value DESC LIMIT 1',
       );
-      if (version.length != 1 || version.single['value'] != 42) {
+      if (version.length != 1 ||
+          version.single['value'] is! int ||
+          version.single['value'] != 42) {
         throw const FormatException();
       }
       for (final table in layouts.keys) {
