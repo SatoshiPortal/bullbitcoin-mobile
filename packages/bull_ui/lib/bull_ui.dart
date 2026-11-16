@@ -59,6 +59,7 @@ export 'package:flutter/widgets.dart'
         Key,
         LayoutBuilder,
         Locale,
+        Localizations,
         LocalizationsDelegate,
         ListView,
         LongPressDraggable,
