@@ -613,6 +613,12 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Fee (sats)'**
   String get feeInSats;
+
+  /// No description provided for @reminderMigrationPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Some older Ark reminders remain unresolved. New VTXO reminders can still be scheduled. Open Ark regularly.'**
+  String get reminderMigrationPending;
 }
 
 class _ArkLocalizationsDelegate

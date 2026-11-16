@@ -287,4 +287,8 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get feeInSats => 'Frais (sats)';
+
+  @override
+  String get reminderMigrationPending =>
+      'Certains anciens rappels Ark restent non résolus. De nouveaux rappels VTXO peuvent encore être programmés. Ouvrez Ark régulièrement.';
 }
