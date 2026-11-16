@@ -374,41 +374,49 @@ void main() {
     });
   }
 
-  test('legacy adoption is explicit foreground-only and preserves deadlines and ids', () async {
-    await apply();
-    final original = row();
-    await store.close();
-    File('$path.initialized').writeAsStringSync('ark-reminders:1\n');
-    File('$path.guard').deleteSync(); // Construct the prior unreleased layout.
-    for (final foreground in [false, true]) {
-      final refused = SqliteArkReminderRepository.open(
-        path: path,
-        notifications: Gateway(),
-        title: 'Urgent',
-        body: 'Open Ark',
-        foreground: foreground,
-        initializeNew: true,
-        migrateLegacy: !foreground,
-      );
-      expect(refused, isA<Err>());
-      expect(File('$path.guard').existsSync(), false);
-    }
-    final restarted = Gateway();
-    store = value(
-      SqliteArkReminderRepository.open(
-        path: path,
-        notifications: restarted,
-        title: 'Urgent',
-        body: 'Open Ark',
-        foreground: true,
-        migrateLegacy: true,
-      ),
+  for (final retainGuard in [false, true]) {
+    test(
+      'legacy adoption preserves state after guardCreated=$retainGuard',
+      () async {
+        await apply();
+        final original = row();
+        await store.close();
+        File('$path.initialized').writeAsStringSync('ark-reminders:1\n');
+        if (!retainGuard) File('$path.guard').deleteSync();
+        for (final foreground in [false, true]) {
+          final refused = SqliteArkReminderRepository.open(
+            path: path,
+            notifications: Gateway(),
+            title: 'Urgent',
+            body: 'Open Ark',
+            foreground: foreground,
+            initializeNew: true,
+            migrateLegacy: !foreground,
+          );
+          expect(refused, isA<Err>());
+          expect(File('$path.guard').existsSync(), retainGuard);
+        }
+        final restarted = Gateway();
+        store = value(
+          SqliteArkReminderRepository.open(
+            path: path,
+            notifications: restarted,
+            title: 'Urgent',
+            body: 'Open Ark',
+            foreground: true,
+            migrateLegacy: true,
+          ),
+        );
+        expect(row(), original);
+        expect(
+          File('$path.initialized').readAsStringSync(),
+          'ark-reminders:2\n',
+        );
+        expect(await store.reapplyStored(), isA<Ok>());
+        expect(restarted.actions.single, (id: -1, at: later.notifyAt));
+      },
     );
-    expect(row(), original);
-    expect(File('$path.initialized').readAsStringSync(), 'ark-reminders:2\n');
-    expect(await store.reapplyStored(), isA<Ok>());
-    expect(restarted.actions.single, (id: -1, at: later.notifyAt));
-  });
+  }
 
   for (final checkpoint in ['guard only', 'ledger committed']) {
     test(
