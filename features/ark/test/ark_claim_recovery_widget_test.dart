@@ -34,6 +34,19 @@ class Client extends FakeArkClient {
   }
 }
 
+class DelayedReadClient extends Client {
+  final firstRead = Completer<Result<ArkSnapshot, ArkWalletFailure>>();
+  bool _first = true;
+  @override
+  Future<Result<ArkSnapshot, ArkWalletFailure>> read(ArkAccountId account) {
+    if (!_first) return super.read(account);
+    _first = false;
+    calls.add('read');
+    arguments.add(account);
+    return firstRead.future;
+  }
+}
+
 ArkClaimRecoveryCubit controller(Client client) {
   final repository = ArkRepositoryImpl(client);
   return ArkClaimRecoveryCubit(
@@ -188,6 +201,106 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
       router.dispose();
       expect(client.calls, ['read']);
+    },
+  );
+  testWidgets(
+    'route account and client replacement retire old controllers and reload identity',
+    (tester) async {
+      final first = DelayedReadClient()..snapshot = Ok(journal());
+      final other = ArkAccountId(
+        parent: account().parent,
+        network: BitcoinNetwork.mainnet,
+        serverIdentity: 'other-public-server',
+      );
+      ArkOperation replacement(String destination, String byte) => ArkOperation(
+        id: 'original-claim',
+        kind: ArkOperationKind.claim,
+        status: ArkOperationStatus.outcomeUnknown,
+        chainSource: Uri.parse('https://captured-chain.example'),
+        configGeneration: 3,
+        claimRecovery: ArkClaimRecovery(
+          txid: List.filled(32, byte).join(),
+          destination: destination,
+          net: Sats.fromInt(800),
+          fee: Sats.fromInt(200),
+        ),
+      );
+      final second = Client()
+        ..snapshot = Ok(
+          journal(
+            id: other,
+            operations: [replacement('second-client-destination', '66')],
+          ),
+        );
+      final home = GoRoute(
+        path: '/',
+        builder: (context, state) => const SizedBox.shrink(),
+      );
+      final configuration = ValueNotifier(
+        RoutingConfig(
+          routes: [
+            home,
+            ...createArkClaimRecoveryRoutes(client: first),
+          ],
+        ),
+      );
+      final router = GoRouter.routingConfig(routingConfig: configuration);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          theme: ThemeData(extensions: testBullExtensions),
+          routerConfig: router,
+        ),
+      );
+      router.go(
+        '/ark/claim-recovery',
+        extra: ArkClaimRecoveryEntry(account(), 'original-claim'),
+      );
+      await tester.pumpAndSettle();
+      final originalController = tester
+          .widget<ArkClaimRecoveryScreen>(find.byType(ArkClaimRecoveryScreen))
+          .cubit;
+      first.snapshot = Ok(
+        journal(
+          id: other,
+          operations: [replacement('other-account-destination', '24')],
+        ),
+      );
+      router.go(
+        '/ark/claim-recovery',
+        extra: ArkClaimRecoveryEntry(other, 'original-claim'),
+      );
+      await tester.pumpAndSettle();
+      expect(originalController.isClosed, true);
+      expect(first.arguments, [account(), other]);
+      expect(find.text('saved-public-destination'), findsNothing);
+      expect(find.text('other-account-destination'), findsOneWidget);
+      first.firstRead.complete(Ok(journal()));
+      await tester.pumpAndSettle();
+      expect(find.text('saved-public-destination'), findsNothing);
+      expect(find.text('other-account-destination'), findsOneWidget);
+      final accountController = tester
+          .widget<ArkClaimRecoveryScreen>(find.byType(ArkClaimRecoveryScreen))
+          .cubit;
+      configuration.value = RoutingConfig(
+        routes: [
+          home,
+          ...createArkClaimRecoveryRoutes(client: second),
+        ],
+      );
+      await tester.pumpAndSettle();
+      expect(accountController.isClosed, true);
+      expect(second.arguments, [other]);
+      expect(find.text('other-account-destination'), findsNothing);
+      expect(find.text('second-client-destination'), findsOneWidget);
+      expect(first.calls, ['read', 'read']);
+      expect(second.calls, ['read']);
+      expect(first.commands, isEmpty);
+      expect(second.commands, isEmpty);
+      await tester.pumpWidget(const SizedBox.shrink());
+      router.dispose();
+      configuration.dispose();
+      expect(first.calls, ['read', 'read']);
+      expect(second.calls, ['read']);
     },
   );
 }
