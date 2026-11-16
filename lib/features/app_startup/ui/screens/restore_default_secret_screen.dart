@@ -53,14 +53,15 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
     return true;
   }
 
-  Future<void> _submit(List<String> words, String passphrase) async {
+  Future<void> _submit(Mnemonic mnemonic) async {
     setState(() {
       _busy = true;
       _error = null;
     });
     final result = await context.read<AppStartupBloc>().restoreDefaultSecret(
-      words,
-      passphrase: passphrase,
+      mnemonic.words,
+      language: mnemonic.language,
+      passphrase: mnemonic.passphrase,
     );
     if (!mounted) return;
     setState(() {
@@ -101,8 +102,7 @@ class _RestoreDefaultSecretScreenState extends State<RestoreDefaultSecretScreen>
               allowPassphrase: true,
               externalError: _error,
               submitLabel: context.loc.onboardingRecover,
-              onSubmit: (mnemonic) =>
-                  unawaited(_submit(mnemonic.words, mnemonic.passphrase)),
+              onSubmit: (mnemonic) => unawaited(_submit(mnemonic)),
             ),
           ),
         ),

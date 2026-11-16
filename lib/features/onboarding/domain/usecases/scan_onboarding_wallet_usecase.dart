@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/import_mnemonic/public/import_mnemonic_scan_facade.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:meta/meta.dart';
 
 class ScanOnboardingWalletUsecase {
@@ -10,9 +11,11 @@ class ScanOnboardingWalletUsecase {
   @useResult
   Future<Result<bool, OnboardingFailure>> execute({
     required List<String> words,
+    required Language language,
     required String passphrase,
   }) async => switch (await _scan.hasBitcoinHistory(
     words: words,
+    language: language,
     passphrase: passphrase,
   )) {
     Ok(:final value) => Ok(value),
