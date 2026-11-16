@@ -34,12 +34,12 @@ ElectrumServer _server(String url, {bool isCustom = false, int priority = 0}) {
   );
 }
 
-ElectrumSettings _settings({String? socks5}) {
+ElectrumSettings _settings({String? socks5, bool validateDomain = true}) {
   return ElectrumSettings(
     stopGap: 20,
     timeout: 10,
     retry: 3,
-    validateDomain: true,
+    validateDomain: validateDomain,
     network: _network,
     socks5: socks5,
   );
@@ -130,6 +130,25 @@ void main() {
       verifyZeroInteractions(settingsRepo);
       verifyZeroInteractions(torSessionPort);
     });
+  }
+
+  for (final custom in [false, true]) {
+    for (final validate in [false, true]) {
+      test(
+        'certificate validation custom=$custom preference=$validate',
+        () async {
+          stub(
+            servers: [_server('ssl://a:50002', isCustom: custom)],
+            settings: _settings(validateDomain: validate),
+          );
+          final actual = await adapter.runWithFallback<bool>(
+            network: _network,
+            operation: (connection) async => connection.validateDomain,
+          );
+          expect(actual, !custom || validate);
+        },
+      );
+    }
   }
 
   group('runWithFallback — fallback semantics', () {
