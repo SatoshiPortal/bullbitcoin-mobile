@@ -512,6 +512,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'BullMnemonicKeyboard',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'AZERTY with accents',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullMnemonicKeyboardAccentsUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Character grid',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullMnemonicKeyboardGridUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'QWERTY',
             builder: _bull_ui_catalogue_use_cases_use_cases
                 .bullMnemonicKeyboardUseCase,
