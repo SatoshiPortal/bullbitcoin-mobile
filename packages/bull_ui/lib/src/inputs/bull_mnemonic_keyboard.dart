@@ -533,12 +533,14 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
         onTap: () => _type(value),
         height: metrics.keyHeight,
         suppressAnimation: widget.shuffleActive,
-        fill: colors.background,
+        // A letter that cannot continue the word loses its key: no fill, so
+        // it sinks into the panel, and a faint glyph.
+        fill: enabled ? colors.background : colors.transparent,
         child: BullText(
           BullMnemonicKeyboard.keyLabel(value),
           style: Theme.of(context).textTheme.headlineLarge
               ?.copyWith(fontSize: metrics.glyphSize),
-          color: enabled ? colors.onSurface : colors.textMuted,
+          color: enabled ? colors.onSurface : colors.outline,
         ),
       ),
     );
