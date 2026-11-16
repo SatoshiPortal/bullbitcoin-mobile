@@ -134,7 +134,7 @@ ThemeData catalogueThemeData(Brightness brightness) {
     brightness: brightness,
     fontFamily: 'Golos Text',
     textTheme: _catalogueTextTheme,
-    extensions: [bull, BullShapes.standard],
+    extensions: [bull, BullShapes.standard, BullTypography.standard],
     colorScheme: ColorScheme.fromSeed(
       seedColor: bull.primary,
       brightness: brightness,

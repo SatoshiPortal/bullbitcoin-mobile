@@ -53,6 +53,7 @@ const testBullTheme = BullTheme(
 const testBullExtensions = <ThemeExtension<dynamic>>[
   testBullTheme,
   BullShapes.standard,
+  BullTypography.standard,
 ];
 
 /// Wraps [child] in a `MaterialApp` carrying [testBullExtensions].
