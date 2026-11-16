@@ -4786,5 +4786,5 @@
   "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
   "settingsDarkModeTitle": "Mode sombre",
   "settingsSourceCodeTitle": "Code source",
-  "parentCustodyMetadataUnavailable": "Les données de sécurité du portefeuille sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer."
+  "parentCustodyMetadataUnavailable": "Les données de sécurité du wallet sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer."
 }
