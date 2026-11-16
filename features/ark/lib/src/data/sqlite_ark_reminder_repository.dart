@@ -14,6 +14,15 @@ import '../domain/ark_failure.dart';
 import '../domain/ark_expiry_warning.dart';
 import '../domain/repositories/ark_reminder_repository.dart';
 
+typedef _Policy = ({
+  bool current,
+  String? original,
+  Map<String, int> bounds,
+  Set<String> copied,
+  Set<String> funding,
+  bool cancel,
+});
+
 /// A separate durable reminder ledger. Negative platform IDs cannot collide
 /// with the payment outbox's positive IDs. A permanent sibling guard serializes
 /// committed desired actions and their platform effects across all engines.
@@ -113,9 +122,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
       db.select(
         'SELECT account,platform_id,revision,tip,signature,scheduled_at,deadline_bounds FROM ark_reminders LIMIT 0',
       );
-      for (final row in db.select('SELECT * FROM ark_reminders')) {
-        _validateDesired(row);
-      }
+      _validateRows(db.select('SELECT * FROM ark_reminders'));
       if (db.select('PRAGMA quick_check').single.values.single != 'ok') {
         throw const FormatException('Invalid reminder ledger');
       }
@@ -146,10 +153,20 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     required bool authoritativeEmpty,
     required int revision,
     required int tipHeight,
+    ArkReminderPolicyEvidence? policyEvidence,
   }) async {
     if (_closed) return const Err(ArkFeatureStorageFailure());
     if (_active != null) return const Err(ArkOperationBusyFailure());
-    if (warning == null && !authoritativeEmpty) return const Ok(null);
+    if ((warning != null &&
+            (warning.account != account ||
+                warning.revision != revision ||
+                warning.tipHeight != tipHeight)) ||
+        (policyEvidence != null &&
+            (policyEvidence.account != account ||
+                policyEvidence.revision != revision ||
+                policyEvidence.tipHeight != tipHeight))) {
+      return const Err(ArkInvalidRequestFailure());
+    }
     final settled = Completer<void>();
     _active = settled;
     var admitted = false;
@@ -159,85 +176,126 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
       guarded = true;
       _db.execute('BEGIN IMMEDIATE');
       admitted = true;
-      for (final existing in _db.select('SELECT * FROM ark_reminders')) {
-        _validateDesired(existing);
-      }
-      final rows = _db.select('SELECT * FROM ark_reminders WHERE account=?', [
-        account.canonical,
-      ]);
-      final row = rows.isEmpty ? null : rows.single;
-      if (row != null &&
-          (revision < (row['revision'] as int) ||
-              tipHeight < (row['tip'] as int))) {
+      final rows = _db.select('SELECT * FROM ark_reminders');
+      _validateRows(rows);
+      final legacy = rows
+          .where((r) => r['account'] == account.canonical)
+          .firstOrNull;
+      final currentKey = _vtxoKey(account.canonical);
+      final current = rows.where((r) => r['account'] == currentKey).firstOrNull;
+      if ([legacy, current].whereType<Row>().any(
+        (r) =>
+            revision < (r['revision'] as int) || tipHeight < (r['tip'] as int),
+      )) {
         _db.execute('COMMIT');
         admitted = false;
-        return const Ok(null);
+        return legacy != null && _policy(legacy)?.cancel == false
+            ? const Err(ArkReminderMigrationFailure())
+            : const Ok(null);
       }
-      final int platformId;
-      if (row != null) {
-        platformId = row['platform_id'] as int;
-      } else {
-        platformId =
+      final old = legacy == null ? null : _policy(legacy);
+      final copied = {...?old?.copied};
+      final funding = {...?old?.funding};
+      if (old != null && policyEvidence != null) {
+        final vtxos = policyEvidence.vtxoKeys.map(_keyHash).toSet();
+        final boards = policyEvidence.fundingKeys.map(_keyHash).toSet();
+        copied.addAll(
+          old.bounds.keys.where(
+            (k) =>
+                vtxos.contains(k) &&
+                !boards.contains(k) &&
+                !funding.contains(k),
+          ),
+        );
+        funding.addAll(
+          old.bounds.keys.where(
+            (k) =>
+                boards.contains(k) && !vtxos.contains(k) && !copied.contains(k),
+          ),
+        );
+      }
+      final deadlines = current == null
+          ? <String, int>{}
+          : {...?_policy(current)?.bounds};
+      void retain(String key, int at) {
+        final previous = deadlines[key];
+        if (previous == null || at < previous) deadlines[key] = at;
+      }
+
+      if (old != null) {
+        for (final key in copied.difference(old.copied)) {
+          final at = old.bounds[key];
+          if (at == null) throw const FormatException('Missing copied bound');
+          retain(key, at);
+        }
+      }
+      if (warning != null) {
+        for (final e in warning.deadlines.entries) {
+          retain(_keyHash(e.key), e.value.microsecondsSinceEpoch);
+        }
+        for (final key in warning.retiredKeys) {
+          deadlines.remove(_keyHash(key));
+        }
+      }
+      if (authoritativeEmpty) deadlines.clear();
+      if (current != null || deadlines.isNotEmpty || copied.isNotEmpty) {
+        final id =
+            current?['platform_id'] as int? ??
             (_db
                     .select(
                       'SELECT COALESCE(MIN(platform_id),0)-1 AS next FROM ark_reminders',
                     )
                     .single['next']
                 as int);
-        if (platformId < -2147483647) {
-          _db.execute('ROLLBACK');
-          admitted = false;
-          return const Err(ArkFeatureStorageFailure());
+        if (id < -2147483647) {
+          throw const FormatException('Reminder ids exhausted');
         }
+        final at = deadlines.isEmpty
+            ? null
+            : deadlines.values.reduce((a, b) => a < b ? a : b);
+        final signature = at == null
+            ? null
+            : sha256.convert(utf8.encode(jsonEncode(deadlines))).toString();
+        _db.execute(
+          'INSERT INTO ark_reminders VALUES(?,?,?,?,?,?,?) ON CONFLICT(account) DO UPDATE SET revision=excluded.revision,tip=excluded.tip,signature=excluded.signature,scheduled_at=excluded.scheduled_at,deadline_bounds=excluded.deadline_bounds',
+          [
+            currentKey,
+            id,
+            revision,
+            tipHeight,
+            signature,
+            at,
+            jsonEncode({'format': 2, 'family': 'vtxo', 'bounds': deadlines}),
+          ],
+        );
       }
-      String? signature;
-      String? boundsJson;
-      DateTime? at;
-      if (warning != null) {
-        final entries = warning.expiries.entries.toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
-        signature = sha256
-            .convert(
-              utf8.encode(
-                jsonEncode({for (final e in entries) e.key: e.value}),
-              ),
-            )
-            .toString();
-        final deadlines = <String, int>{
-          for (final entry in warning.deadlines.entries)
-            _keyHash(entry.key): entry.value.microsecondsSinceEpoch,
-        };
-        if (row?['signature'] != null) {
-          final previous = _readBounds(row?['deadline_bounds']);
-          if (previous == null) return const Err(ArkFeatureStorageFailure());
-          final retired = warning.retiredKeys.map(_keyHash).toSet();
-          for (final entry in previous.entries) {
-            if (retired.contains(entry.key)) continue;
-            final current = deadlines[entry.key];
-            if (current == null || entry.value < current) {
-              deadlines[entry.key] = entry.value;
-            }
-          }
-        }
-        final earliest = deadlines.values.reduce((a, b) => a < b ? a : b);
-        at = DateTime.fromMicrosecondsSinceEpoch(earliest, isUtc: true);
-        boundsJson = jsonEncode(deadlines);
+      if (old != null) {
+        final cancel = copied.length + funding.length == old.bounds.length;
+        _db.execute(
+          'UPDATE ark_reminders SET revision=?,tip=?,scheduled_at=?,deadline_bounds=? WHERE account=?',
+          [
+            revision,
+            tipHeight,
+            cancel ? null : legacy?['scheduled_at'],
+            jsonEncode({
+              'format': 2,
+              'family': 'legacy',
+              'original': old.original,
+              'vtxo': copied.toList(),
+              'funding': funding.toList(),
+              'intent': cancel ? 'cancel' : 'hold',
+            }),
+            account.canonical,
+          ],
+        );
       }
-      _db.execute(
-        'INSERT INTO ark_reminders(account,platform_id,revision,tip,signature,scheduled_at,deadline_bounds) VALUES(?,?,?,?,?,?,?) ON CONFLICT(account) DO UPDATE SET revision=excluded.revision,tip=excluded.tip,signature=excluded.signature,scheduled_at=excluded.scheduled_at,deadline_bounds=excluded.deadline_bounds',
-        [
-          account.canonical,
-          platformId,
-          revision,
-          tipHeight,
-          signature,
-          at?.microsecondsSinceEpoch,
-          boundsJson,
-        ],
-      );
+      final desired = _db.select('SELECT * FROM ark_reminders');
+      _validateRows(desired);
       _db.execute('COMMIT');
       admitted = false;
-      return await _apply(platformId, at);
+      return await _replay(
+        desired.where((r) => _owner(r) == account.canonical).toList(),
+      );
     } on Exception catch (_) {
       return const Err(ArkFeatureStorageFailure());
     } finally {
@@ -295,20 +353,185 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         tip < 0) {
       throw const FormatException('Invalid reminder identity');
     }
-    if (signature == null) {
-      if (at != null || bounds != null) {
+    final policy = _policy(row);
+    if (policy == null) {
+      if (signature != null ||
+          at != null ||
+          bounds != null ||
+          account.startsWith('[')) {
         throw const FormatException('Invalid reminder cancellation');
       }
     } else {
-      final decoded = _readBounds(bounds);
-      if (signature is! String ||
+      _owner(row);
+      if (policy.cancel) {
+        if (at != null ||
+            (!policy.current &&
+                (signature is! String ||
+                    !RegExp(r'^[0-9a-f]{64}$').hasMatch(signature))) ||
+            (policy.current &&
+                (signature != null || policy.bounds.isNotEmpty))) {
+          throw const FormatException('Invalid policy cancellation');
+        }
+      } else if (signature is! String ||
           !RegExp(r'^[0-9a-f]{64}$').hasMatch(signature) ||
           at is! int ||
-          decoded == null ||
-          at != decoded.values.reduce((a, b) => a < b ? a : b)) {
-        throw const FormatException('Invalid reminder schedule');
+          policy.bounds.isEmpty ||
+          at != policy.bounds.values.reduce((a, b) => a < b ? a : b)) {
+        throw const FormatException('Invalid policy schedule');
       }
     }
+  }
+
+  static String _vtxoKey(String owner) =>
+      jsonEncode(['ark-vtxo-intent:2', owner]);
+  static String _owner(Row row) {
+    final key = row['account'] as String;
+    if (_policy(row)?.current != true) {
+      if (key.startsWith('[')) {
+        throw const FormatException('Legacy purpose mismatch');
+      }
+      return key;
+    }
+    final Object? decoded = jsonDecode(key);
+    if (decoded case ['ark-vtxo-intent:2', final String owner]
+        when owner.isNotEmpty && _vtxoKey(owner) == key) {
+      return owner;
+    }
+    throw const FormatException('VTXO purpose mismatch');
+  }
+
+  static Set<String> _classifications(
+    Object? encoded,
+    Map<String, int> bounds,
+  ) {
+    if (encoded is! List) {
+      throw const FormatException('Invalid policy classification');
+    }
+    final result = encoded.whereType<String>().toSet();
+    if (result.length != encoded.length || !result.every(bounds.containsKey)) {
+      throw const FormatException('Invalid policy classification');
+    }
+    return result;
+  }
+
+  static _Policy? _policy(Row row) {
+    final encoded = row['deadline_bounds'];
+    if (encoded == null) return null;
+    if (encoded is! String) {
+      throw const FormatException('Invalid reminder encoding');
+    }
+    final Object? value = jsonDecode(encoded);
+    if (value is! Map<String, dynamic>) {
+      throw const FormatException('Invalid reminder encoding');
+    }
+    if (!value.containsKey('format')) {
+      return (
+        current: false,
+        original: encoded,
+        bounds:
+            _readBounds(encoded) ??
+            (throw const FormatException('Invalid legacy bounds')),
+        copied: <String>{},
+        funding: <String>{},
+        cancel: false,
+      );
+    }
+    if (value['format'] is! int || value['format'] != 2) {
+      throw const FormatException('Unsupported reminder policy');
+    }
+    if (value['family'] == 'vtxo' && value.length == 3) {
+      final raw = value['bounds'];
+      final bounds = raw is Map && raw.isEmpty && row['signature'] == null
+          ? <String, int>{}
+          : _readBounds(jsonEncode(raw));
+      if (bounds == null) throw const FormatException('Invalid VTXO bounds');
+      return (
+        current: true,
+        original: null,
+        bounds: bounds,
+        copied: <String>{},
+        funding: <String>{},
+        cancel: row['signature'] == null,
+      );
+    }
+    final original = value['original'];
+    if (value['family'] != 'legacy' ||
+        value.length != 6 ||
+        original is! String) {
+      throw const FormatException('Invalid legacy envelope');
+    }
+    final bounds = _readBounds(original);
+    if (bounds == null) throw const FormatException('Invalid original bounds');
+    final copied = _classifications(value['vtxo'], bounds);
+    final funding = _classifications(value['funding'], bounds);
+    final cancel = copied.length + funding.length == bounds.length;
+    if (copied.intersection(funding).isNotEmpty ||
+        value['intent'] != (cancel ? 'cancel' : 'hold')) {
+      throw const FormatException('Invalid legacy policy state');
+    }
+    return (
+      current: false,
+      original: original,
+      bounds: bounds,
+      copied: copied,
+      funding: funding,
+      cancel: cancel,
+    );
+  }
+
+  static void _validateRows(List<Row> rows) {
+    for (final row in rows) {
+      _validateDesired(row);
+    }
+    for (final row in rows) {
+      final policy = _policy(row);
+      if (policy != null &&
+          !policy.current &&
+          policy.copied.isNotEmpty &&
+          !rows.any(
+            (r) =>
+                r['account'] == _vtxoKey(_owner(row)) &&
+                _policy(r)?.current == true,
+          )) {
+        throw const FormatException('Missing VTXO replacement');
+      }
+    }
+  }
+
+  Future<Result<void, ArkFailure>> _replay(List<Row> rows) async {
+    ArkFailure? failed;
+    var unresolved = false;
+    final replacements = <String, bool>{};
+    for (final row in rows.where((r) => _policy(r)?.current == true)) {
+      final at = row['scheduled_at'] as int?;
+      final result = await _apply(
+        row['platform_id'] as int,
+        at == null
+            ? null
+            : DateTime.fromMicrosecondsSinceEpoch(at, isUtc: true),
+      );
+      replacements[_owner(row)] = result is Ok;
+      if (result case Err(:final failure)) failed ??= failure;
+    }
+    for (final row in rows.where((r) => _policy(r)?.current != true)) {
+      final policy = _policy(row);
+      if (policy?.cancel == false) {
+        unresolved = true;
+        continue;
+      }
+      if (policy != null &&
+          policy.copied.isNotEmpty &&
+          replacements[_owner(row)] != true) {
+        continue;
+      }
+      final result = await _apply(row['platform_id'] as int, null);
+      if (result case Err(:final failure)) failed ??= failure;
+    }
+    return failed != null
+        ? Err(failed)
+        : unresolved
+        ? const Err(ArkReminderMigrationFailure())
+        : const Ok(null);
   }
 
   static String _keyHash(String key) =>
@@ -351,23 +574,10 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
       _db.execute('BEGIN IMMEDIATE');
       admitted = true;
       final desired = _db.select('SELECT * FROM ark_reminders');
-      for (final row in desired) {
-        _validateDesired(row);
-      }
+      _validateRows(desired);
       _db.execute('COMMIT');
       admitted = false;
-      for (final row in desired) {
-        final id = row['platform_id'] as int;
-        final at = row['scheduled_at'] as int?;
-        final result = await _apply(
-          id,
-          at == null
-              ? null
-              : DateTime.fromMicrosecondsSinceEpoch(at, isUtc: true),
-        );
-        if (result is Err) return result;
-      }
-      return const Ok(null);
+      return await _replay(desired);
     } on Exception catch (_) {
       return const Err(ArkFeatureStorageFailure());
     } finally {

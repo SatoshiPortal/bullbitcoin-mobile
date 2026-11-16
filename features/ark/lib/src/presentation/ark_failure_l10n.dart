@@ -16,6 +16,7 @@ extension ArkFailureL10n on ArkFailure {
       ArkSubmissionUncertainFailure() => l10n.uncertain,
       ArkPrivacyDisclosureFailure() => l10n.privacy,
       ArkReminderUnavailableFailure() => l10n.notificationsUnavailable,
+      ArkReminderMigrationFailure() => l10n.reminderMigrationPending,
       ArkServiceUnavailableFailure() ||
       ArkFeatureStorageFailure() ||
       ArkNetworkUnavailableFailure() ||

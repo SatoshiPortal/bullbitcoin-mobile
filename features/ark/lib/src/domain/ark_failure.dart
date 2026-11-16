@@ -57,6 +57,10 @@ final class ArkReminderUnavailableFailure extends ArkFailure {
   const ArkReminderUnavailableFailure();
 }
 
+final class ArkReminderMigrationFailure extends ArkFailure {
+  const ArkReminderMigrationFailure();
+}
+
 final class ArkChildCollisionFailure extends ArkFailure {
   const ArkChildCollisionFailure();
 }

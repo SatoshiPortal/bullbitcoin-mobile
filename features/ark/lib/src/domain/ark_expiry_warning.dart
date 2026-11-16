@@ -3,12 +3,14 @@ import 'package:ark/ark.dart';
 /// An estimate, not a claim that Bitcoin blocks follow a clock. Safety UI must
 /// retain the warning until an authoritative observation replaces the inputs.
 final class ArkExpiryWarning {
+  final ArkAccountId account;
   final Map<String, int> expiries;
   final DateTime notifyAt;
   final int revision;
   final int tipHeight;
   final Set<String> retiredKeys;
   ArkExpiryWarning._(
+    this.account,
     this.expiries,
     this.notifyAt,
     this.revision,
@@ -21,6 +23,7 @@ final class ArkExpiryWarning {
     if (tip == null) {
       return null;
     }
+    final pendingBoards = snapshot.pendingBoards.map((b) => b.vtxoId).toSet();
     final live = snapshot.vtxos
         .where(
           (v) =>
@@ -56,36 +59,19 @@ final class ArkExpiryWarning {
         retiredIds.addAll(movement.inputVtxoIds);
       }
     }
-    final retired = <String>{
-      for (final id in retiredIds) 'vtxo:$id',
-      for (final id in retiredIds)
-        if (!snapshot.pendingBoards.any((board) => board.vtxoId == id))
-          'board:$id',
+    final retired = {for (final id in retiredIds) 'vtxo:$id'};
+    final expiries = {
+      for (final v in live)
+        if (!pendingBoards.contains(v.id) || v.state == ArkVtxoState.spendable)
+          'vtxo:${v.id}': v.expiryHeight,
     };
-    // Board operation.nativeReference is a funding transaction id, not a
-    // VTXO id. Without durable exact alias history retain its prior bound.
-    final expiries = {for (final v in live) 'vtxo:${v.id}': v.expiryHeight};
-    for (final board in snapshot.pendingBoards) {
-      final expiry = board.expiryHeight;
-      if (expiry == null) continue;
-      expiries['board:${board.vtxoId}'] = expiry;
-    }
-    for (final operation in snapshot.operations) {
-      if (operation.kind != ArkOperationKind.board ||
-          operation.status == ArkOperationStatus.succeeded ||
-          operation.status == ArkOperationStatus.failed) {
-        continue;
-      }
-      final funding = operation.boardFunding;
-      if (funding == null) continue;
-      expiries['funding:${operation.id}'] = funding.expiryHeight;
-    }
     if (expiries.isEmpty) return null;
     final earliest = expiries.values.reduce((a, b) => a < b ? a : b);
     final estimatedExpiry = snapshot.observedAt.add(
       Duration(minutes: (earliest - tip) * 10),
     );
     return ArkExpiryWarning._(
+      snapshot.account,
       Map.unmodifiable(expiries),
       estimatedExpiry.subtract(const Duration(hours: 24)),
       snapshot.revision,

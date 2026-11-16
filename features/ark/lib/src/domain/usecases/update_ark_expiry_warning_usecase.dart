@@ -16,23 +16,12 @@ final class UpdateArkExpiryWarningUsecase {
         !snapshot.stale &&
         snapshot.vtxoInventoryComplete &&
         snapshot.tipHeight != null &&
-        snapshot.obligations == ArkObligationStatus.none &&
-        snapshot.pendingBoards.isEmpty &&
-        !snapshot.operations.any(
-          (operation) =>
-              operation.kind == ArkOperationKind.board &&
-              operation.status != ArkOperationStatus.succeeded &&
-              operation.status != ArkOperationStatus.failed,
-        ) &&
         snapshot.recovery == ArkRecoveryStatus.complete &&
         snapshot.renewal != ArkRenewalStatus.delegated &&
         snapshot.vtxos.every(
           (v) =>
               v.state == ArkVtxoState.spent || v.state == ArkVtxoState.exited,
         );
-    if (warning == null && !authoritativeEmpty) {
-      return Future.value(const Ok(null));
-    }
     final tip = snapshot.tipHeight;
     if (tip == null) return Future.value(const Ok(null));
     return _reminders.reconcile(
@@ -41,6 +30,7 @@ final class UpdateArkExpiryWarningUsecase {
       authoritativeEmpty: authoritativeEmpty,
       revision: snapshot.revision,
       tipHeight: tip,
+      policyEvidence: ArkReminderPolicyEvidence.fromSnapshot(snapshot),
     );
   }
 }

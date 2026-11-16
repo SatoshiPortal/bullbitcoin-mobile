@@ -4,6 +4,9 @@ import 'package:primitives/primitives.dart';
 
 import '../ark_failure.dart';
 import '../ark_expiry_warning.dart';
+import '../ark_reminder_policy_evidence.dart';
+
+export '../ark_reminder_policy_evidence.dart';
 
 /// Implementations serialize reconciliation per account across engines. A
 /// reminder survives restart; an unknown observation must never clear it.
@@ -15,5 +18,6 @@ abstract interface class ArkReminderRepository {
     required bool authoritativeEmpty,
     required int revision,
     required int tipHeight,
+    ArkReminderPolicyEvidence? policyEvidence,
   });
 }
