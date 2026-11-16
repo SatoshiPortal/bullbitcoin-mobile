@@ -78,13 +78,9 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
       throw FormatException('Watch-only imports require public extended keys');
     }
     final trimmed = value.trim();
-    if (selectedNetwork == Network.bitcoinRegtest &&
-        trimmed.startsWith('[') &&
-        !RegExp(r"^\[[0-9a-fA-F]{8}/84[h']/1[h']/[0-9]+[h']\]")
-            .hasMatch(trimmed)) {
-      throw const FormatException(
-        'Regtest key origin must be BIP84 test-family',
-      );
+    final origin = RegExp(r'^\[[^\]]+\]').firstMatch(trimmed)?.group(0);
+    if (selectedNetwork == Network.bitcoinRegtest) {
+      _validateRegtestKeyOrigin(origin, declared: trimmed.startsWith('['));
     }
     final normalized = trimmed.replaceFirst(RegExp(r'^\[[^\]]+\]'), '');
     final satoshified = await satoshifier.Satoshifier.parse(normalized);
@@ -102,7 +98,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
     } else if (satoshified is satoshifier.WatchOnlyXpub) {
       final entity = WatchOnlyWalletEntity.xpub(
         watchOnlyXpub: satoshified,
-        keyOrigin: RegExp(r'^\[[^\]]+\]').firstMatch(trimmed)?.group(0),
+        keyOrigin: origin,
         hardwareRequested: signerDevice != null,
       );
       return selectedNetwork == null
@@ -110,6 +106,20 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
           : entity.captureNetwork(selectedNetwork);
     }
     throw Exception('Unsupported watch only format');
+  }
+
+  static void _validateRegtestKeyOrigin(
+    String? origin, {
+    bool declared = false,
+  }) {
+    if ((origin == null && declared) ||
+        (origin != null &&
+            !RegExp(r"^\[[0-9a-fA-F]{8}/84[h']/1[h']/[0-9]+[h']\]$")
+                .hasMatch(origin))) {
+      throw const FormatException(
+        'Regtest key origin must be BIP84 test-family',
+      );
+    }
   }
 
   String get pubkey => when(
@@ -150,14 +160,7 @@ abstract class WatchOnlyWalletEntity with _$WatchOnlyWalletEntity {
             'Hardware import is unavailable on regtest',
           );
         }
-        final origin = entity.keyOrigin;
-        if (origin != null &&
-            !RegExp(r"^\[[0-9a-fA-F]{8}/84[h']/1[h']/[0-9]+[h']\]$")
-                .hasMatch(origin)) {
-          throw const FormatException(
-            'Regtest key origin must be BIP84 test-family',
-          );
-        }
+        _validateRegtestKeyOrigin(entity.keyOrigin);
         // A plain tpub has no script declaration. Only this explicit
         // BIP84 context may resolve it, preserving the original public key.
         if (entity.pubkey.startsWith('tpub')) {
