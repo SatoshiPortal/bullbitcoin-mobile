@@ -21,7 +21,11 @@ final class BarkNativeOpener implements ArkNativeOpener {
     required String mnemonic,
     required Uri chainSource,
     required bool create,
+    required String? expectedFingerprint,
     required ArkStageRunner stages,
+    required void Function() onOnchainOpened,
+    required void Function(ArkRecoveryStatus recovery, String fingerprint)
+    onOpened,
   }) async {
     final network = switch (config.id.network) {
       BitcoinNetwork.mainnet => bark.Network.bitcoin,
@@ -36,7 +40,10 @@ final class BarkNativeOpener implements ArkNativeOpener {
     if (!create && existing == null) {
       throw const ArkBoundaryException(ArkRecoveryRequiredFailure());
     }
-    if (existing != null && existing.network != network) {
+    if (existing != null &&
+        (existing.network != network ||
+            (expectedFingerprint != null &&
+                existing.fingerprint != expectedFingerprint))) {
       throw const ArkBoundaryException(
         ArkValidationFailure(ArkFailureReason.identityMismatch),
       );
@@ -56,9 +63,9 @@ final class BarkNativeOpener implements ArkNativeOpener {
       ),
     );
     try {
-      final wallet = await stages.run(
-        'open-ark',
-        () => bark.Wallet.open(
+      onOnchainOpened();
+      final wallet = await stages.run('open-ark', () async {
+        final wallet = await bark.Wallet.open(
           network: network,
           mnemonicOrSeed: mnemonic,
           config: nativeConfig,
@@ -66,10 +73,22 @@ final class BarkNativeOpener implements ArkNativeOpener {
             runDaemon: false,
             datadir: datadir,
             onchain: onchain,
-            createIfNotExists: create,
+            createIfNotExists: create && existing == null,
           ),
-        ),
-      );
+        );
+        try {
+          // Persist the admitted open's outcome before budget can revoke any
+          // subsequent stage. NotRun cannot erase a prior recovery result.
+          onOpened(
+            mapBarkRecovery(wallet.recoveryStatus()),
+            wallet.fingerprint(),
+          );
+          return wallet;
+        } catch (_) {
+          wallet.dispose();
+          rethrow;
+        }
+      });
       return BarkNativeSession(wallet, onchain, stages, config);
     } catch (_) {
       onchain.dispose();
@@ -932,3 +951,13 @@ final class BarkNativeSession implements ArkNativeSession {
     }
   }
 }
+
+ArkRecoveryStatus mapBarkRecovery(bark.RecoveryStatus value) => switch (value) {
+  bark.CompletedRecoveryStatus(:final report) =>
+    report.isComplete
+        ? ArkRecoveryStatus.complete
+        : ArkRecoveryStatus.incomplete,
+  bark.FailedRecoveryStatus() => ArkRecoveryStatus.failed,
+  bark.NotRunRecoveryStatus() => ArkRecoveryStatus.notRun,
+  _ => ArkRecoveryStatus.unknown,
+};

@@ -142,7 +142,7 @@ final class BarkArkClient implements ArkClient {
     }
     if (previous == null) {
       store.put('config', configToJson(config));
-      store.put('lifecycle', {'state': 'creating'});
+      store.put('lifecycle', {'state': 'creating', 'phase': 'not-opened'});
     }
     return _session(store, path, config.id, (session, source, stages) async {
       if (store.get('lifecycle')?['state'] != 'ready') {
@@ -154,7 +154,7 @@ final class BarkArkClient implements ArkClient {
         'nativeVersion': '0.27.0+bark-0.8.1',
       });
       return Ok(snapshot);
-    }, allowCreate: previous == null);
+    }, allowCreate: store.get('lifecycle')?['state'] == 'creating');
   }, create: true);
 
   @override
@@ -276,12 +276,54 @@ final class BarkArkClient implements ArkClient {
     return childProvider.withChild(account, (mnemonic) async {
       ArkNativeSession? session;
       try {
+        if (store.get('recovery') == null) {
+          store.put('recovery', {
+            'status': ArkRecoveryStatus.unknown.name,
+            'interrupted': true,
+          });
+        }
+        final lifecycle = store.get('lifecycle');
+        if (lifecycle != null && lifecycle['state'] == 'creating') {
+          lifecycle['phase'] = 'opening-native';
+          store.put('lifecycle', lifecycle);
+        }
         session = await opener.open(
           config: config,
           datadir: datadir,
           mnemonic: mnemonic,
           chainSource: source,
-          create: allowCreate && !exists,
+          create: allowCreate,
+          expectedFingerprint:
+              store.get('native-identity')?['fingerprint'] as String?,
+          onOnchainOpened: () {
+            final state = store.get('lifecycle') ?? <String, Object?>{};
+            if (state['state'] == 'creating') {
+              state['phase'] = 'onchain-opened';
+              store.put('lifecycle', state);
+            }
+          },
+          onOpened: (recovery, fingerprint) {
+            final previous = store.get('native-identity');
+            if (previous != null && previous['fingerprint'] != fingerprint) {
+              throw const ArkBoundaryException(
+                ArkValidationFailure(ArkFailureReason.identityMismatch),
+              );
+            }
+            store.put('native-identity', {'fingerprint': fingerprint});
+            if (recovery != ArkRecoveryStatus.notRun) {
+              store.put('recovery', {'status': recovery.name});
+            } else if (store.get('recovery') == null) {
+              store.put('recovery', {
+                'status': ArkRecoveryStatus.unknown.name,
+                'interrupted': true,
+              });
+            }
+            final state = store.get('lifecycle') ?? <String, Object?>{};
+            if (state['state'] == 'creating') {
+              state['phase'] = 'ark-opened';
+              store.put('lifecycle', state);
+            }
+          },
           stages: stages,
         );
         return await action(session, source, stages);
@@ -289,6 +331,13 @@ final class BarkArkClient implements ArkClient {
         session?.close();
       }
     });
+  }
+
+  ArkRecoveryStatus _storedRecovery(ArkStore store, ArkSnapshot? previous) {
+    final name = store.get('recovery')?['status'];
+    return name is String
+        ? ArkRecoveryStatus.values.byName(name)
+        : previous?.recovery ?? ArkRecoveryStatus.unknown;
   }
 
   Future<ArkSnapshot> _observe(
@@ -304,7 +353,7 @@ final class BarkArkClient implements ArkClient {
       now: now().toUtc(),
       chainSource: source,
       operations: store.operations,
-      previousRecovery: previous?.recovery ?? ArkRecoveryStatus.unknown,
+      previousRecovery: _storedRecovery(store, previous),
     );
     var reserveAddress = store.get('reserve-address')?['address'] as String?;
     if (reserveAddress == null &&
@@ -793,7 +842,7 @@ final class BarkArkClient implements ArkClient {
       now: now(),
       chainSource: quote.chainSource,
       operations: store.operations,
-      previousRecovery: previous.recovery,
+      previousRecovery: _storedRecovery(store, previous),
     );
     if (fresh.stale ||
         fresh.tipHeight != quote.observedTip ||

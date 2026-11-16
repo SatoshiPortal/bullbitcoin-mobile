@@ -8,7 +8,11 @@ abstract interface class ArkNativeOpener {
     required String mnemonic,
     required Uri chainSource,
     required bool create,
+    required String? expectedFingerprint,
     required ArkStageRunner stages,
+    required void Function() onOnchainOpened,
+    required void Function(ArkRecoveryStatus recovery, String fingerprint)
+    onOpened,
   });
   bool datadirExists(String datadir);
 }
