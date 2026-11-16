@@ -43,6 +43,7 @@ final class FakeBudget implements ArkStageBudget {
 final class FakePreflight implements ArkChainPreflight {
   int calls = 0;
   int failuresRemaining = 0;
+  Future<void> Function()? beforeSelect;
   bool primaryUnreachable = false;
   final List<Uri?> requiredSources = [];
   @override
@@ -53,6 +54,10 @@ final class FakePreflight implements ArkChainPreflight {
   }) async {
     calls++;
     requiredSources.add(requiredSource);
+    final wait = beforeSelect;
+    if (wait != null) {
+      await wait();
+    }
     if (failuresRemaining > 0) {
       failuresRemaining--;
       return const Err(ArkUnavailableFailure());
