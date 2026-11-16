@@ -1,5 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/gestures.dart' show kLongPressTimeout;
+import 'package:flutter/semantics.dart' show SemanticsAction;
 import 'package:bull_ui/src/inputs/bull_keypad.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -322,6 +323,34 @@ void main() {
       await tester.pumpAndSettle();
       expect(typed, [eGrave]);
       expect(find.text(eAcute), findsNothing);
+    });
+
+    testWidgets('a key with variants exposes no long press action', (
+      tester,
+    ) async {
+      // Variants depend on the prefix typed, so an action that comes and
+      // goes would tell an accessibility service about the secret word.
+      final handle = tester.ensureSemantics();
+      try {
+        await pumpKeyboard(
+          tester,
+          layout: azerty,
+          rows: const [10, 10, 6],
+          accents: const [eAcute, eGrave],
+          variants: const {
+            'e': [eAcute, eGrave],
+          },
+        );
+        expect(
+          find.semantics.byPredicate(
+            (node) =>
+                node.getSemanticsData().hasAction(SemanticsAction.longPress),
+          ),
+          findsNothing,
+        );
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('sliding onto a variant and releasing types it', (
