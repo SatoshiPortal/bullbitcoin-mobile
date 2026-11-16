@@ -9,6 +9,8 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
 
+import '../support/bark_sql_fixture.dart' as fixture;
+
 T value<T>(Result<T, ArkWalletFailure> result) {
   expect(result, isA<Ok<T, ArkWalletFailure>>());
   return (result as Ok<T, ArkWalletFailure>).value;
@@ -896,4 +898,81 @@ void main() {
       },
     );
   }
+  void installWriterSettingsProbe() => sql(
+    (db) => db.execute("""
+    CREATE TABLE settings_probe(mode TEXT,value INTEGER);
+    CREATE TRIGGER probe_writer_settings AFTER INSERT ON capture_intents BEGIN
+      INSERT INTO settings_probe SELECT journal_mode,synchronous
+        FROM pragma_journal_mode,pragma_synchronous;
+    END;
+  """),
+  );
+  void assertActualWriterSettings() => sql((db) {
+    final measured = db.select('SELECT * FROM settings_probe').single;
+    // Recorded INSIDE the archive writer's trigger, not this test connection.
+    expect(measured['mode'], 'delete');
+    expect(measured['value'], 3);
+  });
+  test('new archive actual writer verifies DELETE and EXTRA', () async {
+    installWriterSettingsProbe();
+    await begin();
+    assertActualWriterSettings();
+  });
+  test(
+    'validated existing own WAL archive becomes DELETE with EXTRA writer',
+    () async {
+      await archive.close();
+      sql((db) => db.execute('PRAGMA journal_mode=WAL'));
+      archive = value(SqliteExitArchive.open(path, account, create: false));
+      installWriterSettingsProbe();
+      await begin();
+      assertActualWriterSettings();
+    },
+  );
+  test(
+    'native schema WAL is refused without changing its journal or main bytes',
+    () {
+      final nativePath = '${temp.path}/native.sqlite';
+      final native = sqlite3.open(nativePath);
+      fixture.seed(native);
+      native.execute('PRAGMA journal_mode=WAL');
+      native.close();
+      final before = File(nativePath).readAsBytesSync();
+      expect(
+        SqliteExitArchive.open(nativePath, account, create: true),
+        isA<Err>(),
+      );
+      final inspect = sqlite3.open(nativePath, mode: OpenMode.readOnly);
+      try {
+        expect(
+          inspect.select('PRAGMA journal_mode').single.values.single,
+          'wal',
+        );
+        expect(
+          inspect.select('SELECT value FROM migrations').single['value'],
+          42,
+        );
+        expect(
+          inspect.select(
+            "SELECT name FROM sqlite_schema WHERE name='archive_meta'",
+          ),
+          isEmpty,
+        );
+      } finally {
+        inspect.close();
+      }
+      expect(File(nativePath).readAsBytesSync(), before);
+    },
+  );
+  test(
+    'foreign-account own WAL archive refuses before journal change',
+    () async {
+      await archive.close();
+      sql((db) => db.execute('PRAGMA journal_mode=WAL'));
+      expect(SqliteExitArchive.open(path, foreign, create: true), isA<Err>());
+      sql((db) {
+        expect(db.select('PRAGMA journal_mode').single.values.single, 'wal');
+      });
+    },
+  );
 }
