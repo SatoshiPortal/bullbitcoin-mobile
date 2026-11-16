@@ -59,7 +59,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
       opened = db;
       db.execute('PRAGMA busy_timeout = 0');
       final version = db.userVersion;
-      if (version == 0 && foreground && initializeNew) {
+      if (version == 0 && foreground && initializeNew && !markerExists) {
         if (db
             .select(
               "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",

@@ -43,7 +43,7 @@ final class SqliteArkAccountRegistry
       );
       opened = db;
       db.execute('PRAGMA busy_timeout=0');
-      if (db.userVersion == 0 && foreground && initializeNew) {
+      if (db.userVersion == 0 && foreground && initializeNew && !markerExists) {
         if (db
             .select(
               "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
