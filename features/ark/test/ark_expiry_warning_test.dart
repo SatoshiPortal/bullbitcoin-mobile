@@ -78,19 +78,74 @@ void main() {
       expect(warning?.expiries, {'vtxo:later': 900, 'vtxo:first': 388});
     },
   );
-  test('unknown height and stale inventory never fabricate a schedule', () {
+  test('unknown height never fabricates a schedule', () {
     expect(
       ArkExpiryWarning.fromSnapshot(
         observed(tip: null, vtxos: [vtxo('id', 200)]),
       ),
       isNull,
     );
-    expect(
-      ArkExpiryWarning.fromSnapshot(
-        observed(stale: true, vtxos: [vtxo('id', 200)]),
+  });
+  test(
+    'known expiry is admitted despite unrelated stale observation',
+    () async {
+      final repository = Reminders();
+      await UpdateArkExpiryWarningUsecase(repository)
+          .execute(observed(stale: true, vtxos: [vtxo('known', 200)]));
+      expect(repository.calls.single.warning?.expiries, {'vtxo:known': 200});
+      expect(repository.calls.single.empty, false);
+    },
+  );
+  test(
+    'known expiry is admitted from incomplete inventory without cancellation',
+    () async {
+      final repository = Reminders();
+      await UpdateArkExpiryWarningUsecase(repository).execute(
+        ArkSnapshot(
+          account: account(),
+          revision: 6,
+          observedAt: DateTime.utc(2026, 11, 16),
+          tipHeight: 100,
+          stale: true,
+          vtxoCompleteness: ArkSectionCompleteness.incomplete,
+          vtxos: [vtxo('known', 200)],
+        ),
+      );
+      expect(repository.calls.single.warning?.expiries, {'vtxo:known': 200});
+      expect(repository.calls.single.empty, false);
+    },
+  );
+  test('unknown board expiry cannot suppress another known expiry', () {
+    final warning = ArkExpiryWarning.fromSnapshot(
+      observed(
+        vtxos: [vtxo('known', 200)],
+        boards: [
+          ArkPendingBoard(
+            vtxoId: 'unknown',
+            fundingTxid: 'tx',
+            amount: Sats.fromInt(1),
+          ),
+        ],
       ),
-      isNull,
     );
+    expect(warning?.expiries, {'vtxo:known': 200});
+  });
+  test('unknown board operation cannot suppress another known expiry', () {
+    final warning = ArkExpiryWarning.fromSnapshot(
+      observed(
+        vtxos: [vtxo('known', 200)],
+        operations: [
+          ArkOperation(
+            id: 'unknown',
+            kind: ArkOperationKind.board,
+            status: ArkOperationStatus.outcomeUnknown,
+            chainSource: Uri.parse('https://example.com'),
+            configGeneration: 1,
+          ),
+        ],
+      ),
+    );
+    expect(warning?.expiries, {'vtxo:known': 200});
   });
   test('delegated renewal retains old input expiry and warning', () async {
     final repository = Reminders();
