@@ -53,6 +53,18 @@ Widget recovery(VaultFlowPresentation presentation) => app(
   ),
 );
 
+/// The new-backup PIN screen of [presentation]'s flow.
+Widget secure(VaultFlowPresentation presentation) => app(
+  RecoverBullFlowHost(
+    flow: RecoverBullFlow.secureVault,
+    presentation: presentation,
+    page: const PasswordInputPage(),
+    copiedMessage: 'Copied',
+    onTestVault: () {},
+    onFinished: () {},
+  ),
+);
+
 VaultFlowPresentation flow({
   VaultRepository? vaults,
   RecoverBullWalletPort? wallets,
@@ -196,6 +208,50 @@ void main() {
     expect(find.text('Wrong password for this backup file'), findsOneWidget);
     // Let the snack bar dismiss itself before the tree is torn down.
     await tester.pump(const Duration(seconds: 10));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('a new backup refuses a short or common PIN', (tester) async {
+    usePhoneScreen(tester);
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (_) async => true,
+    );
+    await tester.pumpWidget(secure(flow()));
+    await tester.pumpAndSettle();
+
+    Future<void> submit(String pin) async {
+      for (var i = 0; i < 8; i++) {
+        await tester.tap(find.byIcon(Icons.backspace_outlined).first);
+      }
+      for (final digit in pin.split('')) {
+        await tester.tap(
+          find.descendant(
+            of: find.byType(BullDialPad),
+            matching: find.text(digit),
+          ),
+        );
+      }
+      await tester.ensureVisible(find.text('Continue'));
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+    }
+
+    await submit('12345');
+    expect(
+      find.text('Password must be at least 6 characters long'),
+      findsOneWidget,
+    );
+    await submit('123456');
+    expect(
+      find.text('This password is too common. Please choose a different one'),
+      findsOneWidget,
+    );
+    await submit('482913');
+    expect(find.textContaining('too common'), findsNothing);
+    expect(find.textContaining('at least 6'), findsNothing);
+    expect(find.text('Confirm PIN'), findsWidgets);
+    await tester.pumpWidget(app(const SizedBox.shrink()));
     await tester.pumpAndSettle();
   });
 
