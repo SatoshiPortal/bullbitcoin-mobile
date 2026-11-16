@@ -101,7 +101,10 @@ void main() {
   group('CheckDuplicateMnemonicUsecase', () {
     test('returns Ok when the mnemonic is not stored', () async {
       expect(
-        await usecase.execute(mnemonicWords: words),
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
         isA<Ok<void, ImportMnemonicFailure>>(),
       );
     });
@@ -112,7 +115,10 @@ void main() {
         isA<Ok<Secret, SecretFailure>>(),
       );
 
-      final result = await usecase.execute(mnemonicWords: words);
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        language: bip39.Language.english,
+      );
 
       expect(result, isA<Ok<void, ImportMnemonicFailure>>());
     });
@@ -128,7 +134,10 @@ void main() {
       when(() => row.networkCode).thenReturn('bitcoinMainnet');
       when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
       expect(
-        await usecase.execute(mnemonicWords: words),
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
         isA<Err<void, ImportMnemonicFailure>>().having(
           (result) => result.failure,
           'failure',
@@ -138,7 +147,10 @@ void main() {
       when(() => row.id).thenReturn('wpkh([73c5da0a/84h/1h/0h])');
       when(() => row.networkCode).thenReturn('bitcoinTestnet');
       expect(
-        await usecase.execute(mnemonicWords: words),
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
         isA<Ok<void, ImportMnemonicFailure>>(),
       );
     });
@@ -156,7 +168,10 @@ void main() {
         when(() => invalid.networkCode).thenReturn('unresolved');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [invalid]);
         expect(
-          await usecase.execute(mnemonicWords: words),
+          await usecase.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ),
           isA<Ok<void, ImportMnemonicFailure>>(),
         );
         final valid = _Row();
@@ -166,7 +181,10 @@ void main() {
         when(() => metadata.fetchAll())
             .thenAnswer((_) async => [invalid, valid]);
         expect(
-          await usecase.execute(mnemonicWords: words),
+          await usecase.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ),
           isA<Err<void, ImportMnemonicFailure>>().having(
             (result) => result.failure,
             'failure',
@@ -185,6 +203,7 @@ void main() {
       final result = await usecase.execute(
         mnemonicWords: words,
         passphrase: 'TREZOR',
+        language: bip39.Language.english,
       );
 
       expect(result, isA<Ok<void, ImportMnemonicFailure>>());
@@ -201,7 +220,10 @@ void main() {
         // contains now reads and compares the stored seed, so every retry must fail.
         storage.scripted.addAll(List.filled(5, Exception(sentinel)));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         final failure = (result as Err).failure;
         expect(failure, isA<ImportMnemonicUnexpectedFailure>());

@@ -670,7 +670,7 @@ class MnemonicWord extends StatelessWidget {
 
   const MnemonicWord({
     super.key,
-    this.language = bip39.Language.english,
+    required this.language,
     required this.index,
     required this.controller,
     required this.focusNode,

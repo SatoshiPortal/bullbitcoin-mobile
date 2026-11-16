@@ -37,7 +37,7 @@ class Bip39WordList {
   /// [language].
   static List<String>? lastWordCandidates({
     required List<String> words,
-    bip39.Language language = bip39.Language.english,
+    required bip39.Language language,
   }) {
     try {
       return bip39.Mnemonic.lastWordCandidates(
@@ -70,7 +70,7 @@ class Bip39WordList {
   /// trie is warranted. The set iterates in wordlist order.
   static Set<String> allowedNextLetters({
     required String prefix,
-    bip39.Language language = bip39.Language.english,
+    required bip39.Language language,
   }) {
     prefix = nfkd(prefix.trim());
     final letters = <String>{};
@@ -105,7 +105,7 @@ class Bip39WordList {
   /// jamo stays a key of its own.
   static Set<String> allowedNextKeys({
     required String prefix,
-    bip39.Language language = bip39.Language.english,
+    required bip39.Language language,
   }) {
     if (!isAlphabetic(language)) {
       return allowedNextLetters(prefix: prefix, language: language);
@@ -167,7 +167,7 @@ class Bip39WordList {
   /// alphabets read best sorted.
   static List<String> orderedNextLetters({
     required String prefix,
-    bip39.Language language = bip39.Language.english,
+    required bip39.Language language,
   }) {
     final letters = allowedNextLetters(
       prefix: prefix,

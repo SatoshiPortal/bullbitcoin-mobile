@@ -85,6 +85,7 @@ void main() {
       () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
+        language: bip39.Language.english,
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(() => checkDuplicate.isReferenced(any(), any()))
@@ -143,6 +144,7 @@ void main() {
       final result = await usecase.execute(
         mnemonicWords: words,
         passphrase: 'TREZOR',
+        language: bip39.Language.english,
       );
 
       expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
@@ -188,8 +190,8 @@ void main() {
       );
 
       await Future.wait([
-        usecase.execute(mnemonicWords: words),
-        usecase.execute(mnemonicWords: words),
+        usecase.execute(mnemonicWords: words, language: bip39.Language.english),
+        usecase.execute(mnemonicWords: words, language: bip39.Language.english),
       ]);
 
       expect(
@@ -211,7 +213,10 @@ void main() {
         when(() => settingsRepository.fetch())
             .thenThrow(Exception('settings unavailable'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
         expect(storedSecrets(), hasLength(1));
@@ -228,7 +233,10 @@ void main() {
         const WalletAlreadyExistsException('existing-wallet-id'),
       );
 
-      final result = await usecase.execute(mnemonicWords: words);
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        language: bip39.Language.english,
+      );
 
       expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
       expect(
@@ -267,7 +275,10 @@ void main() {
         );
         failCreateWalletWith(Exception('electrum unreachable'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
         expect(
@@ -285,7 +296,10 @@ void main() {
             .thenAnswer((_) async => settings);
         failCreateWalletWith(Exception('electrum unreachable'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
         expect(
