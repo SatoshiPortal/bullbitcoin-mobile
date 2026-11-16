@@ -226,6 +226,55 @@ void main() {
     },
   );
 
+  testWidgets('a server failure names its cause under the message', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    tor.add(
+      TorReady(
+        TorRoute(
+          source: TorSource.embedded,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9150),
+          evidence: TorReadinessEvidence.embeddedBootstrap,
+          transport: TorTransport.direct,
+        ),
+      ),
+    );
+    sessions.pending.complete(
+      const Err(
+        KeyServerFailure(
+          KeyServerFailureKind.unavailable,
+          cause: KeyServerUnreachableCause.proxyGone,
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('The Tor connection stopped responding.'), findsOneWidget);
+    expect(find.text('Tor: session closed'), findsOneWidget);
+    expect(find.widgetWithText(BullButton, 'New route'), findsOneWidget);
+    await leave(tester);
+  });
+
+  testWidgets('an unreachable own proxy is named and leads to Tor settings', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    sessions.pending.complete(const Err(ExternalTorProxyUnavailableFailure()));
+    await tester.pump();
+    await tester.pump();
+
+    expect(
+      find.text('Bull could not connect to the configured SOCKS5 proxy.'),
+      findsOneWidget,
+    );
+    expect(find.widgetWithText(BullButton, 'New route'), findsNothing);
+    await tester.tap(find.widgetWithText(BullButton, 'Tor Settings'));
+    expect(torSettingsOpened, 1);
+    await leave(tester);
+  });
+
   testWidgets('the Tor phase counts down to the attempt deadline', (
     tester,
   ) async {
