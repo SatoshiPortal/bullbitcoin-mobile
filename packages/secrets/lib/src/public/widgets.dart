@@ -9,4 +9,5 @@ export 'package:secrets/src/widgets/widgets.dart'
         MnemonicChallenge,
         MnemonicTile,
         MnemonicView,
+        NostrKeyView,
         SecretWidgets;

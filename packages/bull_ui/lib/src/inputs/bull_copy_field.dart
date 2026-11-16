@@ -18,9 +18,25 @@ class BullCopyField extends StatelessWidget {
     required this.copiedMessage,
     this.clipboardText,
     this.onCopy,
+    this.copyLabel,
     this.maxLines,
     this.overflow,
-  });
+  }) : _content = null;
+
+  /// Renders a sealed value whose owner handles copying and confirmation.
+  const BullCopyField.content({
+    super.key,
+    required Widget child,
+    required VoidCallback this.onCopy,
+    this.copyLabel,
+  }) : _content = child,
+       text = '',
+       copiedMessage = '',
+       clipboardText = null,
+       maxLines = null,
+       overflow = null;
+
+  final Widget? _content;
 
   /// The value shown.
   final String text;
@@ -34,6 +50,9 @@ class BullCopyField extends StatelessWidget {
   /// Optional owner of copying and confirmation, for values requiring a
   /// lifetime policy such as secret clipboard expiry.
   final VoidCallback? onCopy;
+
+  /// Localized tooltip for the copy action.
+  final String? copyLabel;
 
   final int? maxLines;
   final TextOverflow? overflow;
@@ -54,18 +73,21 @@ class BullCopyField extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                text,
-                style: context.bullText.bodyLarge?.copyWith(
-                  color: colors.secondary,
-                ),
-                maxLines: maxLines,
-                overflow: overflow,
-              ),
+              child:
+                  _content ??
+                  Text(
+                    text,
+                    style: context.bullText.bodyLarge?.copyWith(
+                      color: colors.secondary,
+                    ),
+                    maxLines: maxLines,
+                    overflow: overflow,
+                  ),
             ),
           ),
-          if (toCopy.isNotEmpty)
+          if (_content != null || toCopy.isNotEmpty)
             IconButton(
+              tooltip: copyLabel,
               visualDensity: VisualDensity.compact,
               iconSize: 20,
               icon: Icon(Icons.copy_sharp, color: colors.secondary),

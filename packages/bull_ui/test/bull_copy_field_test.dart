@@ -7,42 +7,53 @@ import 'test_app.dart';
 
 void main() {
   group('BullCopyField', () {
-    testWidgets('delegates sensitive copying to its owner', (tester) async {
-      var copied = false;
-      final calls = <MethodCall>[];
-      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        (call) async {
-          calls.add(call);
-          return null;
+    for (final sealedContent in [false, true]) {
+      testWidgets(
+        'delegates ${sealedContent ? 'sealed content' : 'sensitive text'} copying to its owner',
+        (tester) async {
+          var copied = false;
+          final calls = <MethodCall>[];
+          tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            SystemChannels.platform,
+            (call) async {
+              calls.add(call);
+              return null;
+            },
+          );
+          addTearDown(
+            () => tester.binding.defaultBinaryMessenger
+                .setMockMethodCallHandler(SystemChannels.platform, null),
+          );
+          await tester.pumpWidget(
+            wrapWithTheme(
+              Scaffold(
+                body: sealedContent
+                    ? BullCopyField.content(
+                        child: const BullText(
+                          'Sealed value',
+                          style: TextStyle(),
+                        ),
+                        onCopy: () => copied = true,
+                      )
+                    : BullCopyField(
+                        text: 'hidden',
+                        copiedMessage: 'Copied',
+                        onCopy: () => copied = true,
+                      ),
+              ),
+            ),
+          );
+          await tester.tap(find.byIcon(Icons.copy_sharp));
+          await tester.pump();
+          expect(copied, isTrue);
+          expect(
+            calls.where((call) => call.method == 'Clipboard.setData'),
+            isEmpty,
+          );
+          expect(find.text('Copied'), findsNothing);
         },
       );
-      addTearDown(
-        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-          SystemChannels.platform,
-          null,
-        ),
-      );
-      await tester.pumpWidget(
-        wrapWithTheme(
-          Scaffold(
-            body: BullCopyField(
-              text: 'hidden',
-              copiedMessage: 'Copied',
-              onCopy: () => copied = true,
-            ),
-          ),
-        ),
-      );
-      await tester.tap(find.byIcon(Icons.copy_sharp));
-      await tester.pump();
-      expect(copied, isTrue);
-      expect(
-        calls.where((call) => call.method == 'Clipboard.setData'),
-        isEmpty,
-      );
-      expect(find.text('Copied'), findsNothing);
-    });
+    }
     testWidgets('copies the value and confirms it in a toast', (tester) async {
       final calls = <MethodCall>[];
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(

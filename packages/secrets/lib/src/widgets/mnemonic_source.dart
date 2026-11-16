@@ -78,3 +78,9 @@ final class DataRecoveryMnemonicSource extends MnemonicSource {
         (value) => value.words.join(' ') == words.join(' '),
       );
 }
+
+@internal
+Secret requireStoredSecret(MnemonicSource source) => switch (source) {
+  StoredMnemonicSource(:final _secret) => _secret,
+  _ => throw StateError('This view requires a stored secret'),
+};
