@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.da
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullMnemonicKeyboard, BullSegmented;
+    show BullButton, BullMnemonicKeyboard, BullSegmented, BullTypography;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
@@ -191,25 +191,26 @@ Future<void> submit(WidgetTester tester) async {
   await tester.pump();
 }
 
-/// The color of the square index badge of field [index] - the widget that
-/// answers "is this word acceptable".
-Color badgeColor(WidgetTester tester, int index) {
+/// The color of the index badge of field [index] - the widget that answers "is this word acceptable". The badge is the nearest decorated box around its label inside that field, whatever its size.
+Color? badgeColor(WidgetTester tester, int index) {
   final displayIndex = index + 1;
   final label = displayIndex < 10 ? '0$displayIndex' : '$displayIndex';
   final badge = tester.widget<Container>(
     find
         .ancestor(
-          of: find.text(label),
+          of: find.descendant(
+            of: find.byType(MnemonicWord).at(index),
+            matching: find.text(label),
+          ),
           matching: find.byWidgetPredicate(
             (widget) =>
-                widget is Container &&
-                widget.constraints?.maxWidth == 26 &&
-                widget.constraints?.maxHeight == 24,
+                widget is Container && widget.decoration is BoxDecoration,
           ),
         )
         .first,
   );
-  return (badge.decoration! as BoxDecoration).color!;
+  final decoration = badge.decoration;
+  return decoration is BoxDecoration ? decoration.color : null;
 }
 
 void main() {
@@ -464,14 +465,47 @@ void main() {
       expect(find.byKey(const Key('mnemonicLengthPicker')), findsNothing);
     });
 
-    testWidgets('word fields are compact', (tester) async {
+    testWidgets('word fields are compact and read at body size', (
+      tester,
+    ) async {
       await pumpWidget(tester, onSubmit: (_) {});
       final first = tester.getRect(find.byType(MnemonicWord).at(0));
       final second = tester.getRect(find.byType(MnemonicWord).at(1));
       final right = tester.getRect(find.byType(MnemonicWord).at(6));
-      expect(first.height, 32);
+      expect(first.height, 40);
       expect(second.top - first.bottom, 8);
       expect(right.left - first.right, 16);
+      final word = find.descendant(
+        of: find.byType(MnemonicWord).first,
+        matching: find.byType(TextField),
+      );
+      final body = BullTypography.standard.body;
+      final wordStyle = tester.widget<TextField>(word).style;
+      final badgeStyle = tester.widget<Text>(find.text('01')).style;
+      expect(wordStyle?.fontSize, body.fontSize);
+      expect(wordStyle?.height, body.height);
+      expect(badgeStyle?.fontSize, body.fontSize);
+      expect(badgeStyle?.height, body.height);
+      expect(badgeStyle?.fontWeight, FontWeight.w700);
+    });
+
+    testWidgets('word fields grow with the system text size', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpWidget(tester, onSubmit: (_) {});
+      final field = tester.getRect(find.byType(MnemonicWord).first);
+      final badge = tester.getRect(find.text('01'));
+      final text = tester.getRect(
+        find.descendant(
+          of: find.byType(MnemonicWord).first,
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(field.height, greaterThan(40));
+      for (final inner in [badge, text]) {
+        expect(inner.top, greaterThanOrEqualTo(field.top));
+        expect(inner.bottom, lessThanOrEqualTo(field.bottom));
+      }
     });
 
     testWidgets('submit is pinned at the bottom, hidden while typing', (
