@@ -354,6 +354,7 @@ void main() {
               account,
               create: true,
               sqlSchema: schema,
+              derivationProfile: 'regtest-sql-opaque',
             ),
           );
           archive = opened;
@@ -420,9 +421,14 @@ void main() {
               account,
               create: false,
               sqlSchema: schema,
+              derivationProfile: 'regtest-sql-opaque',
             ),
           );
           archive = reopened;
+          check(
+            reopened.identity.derivationProfile == 'regtest-sql-opaque',
+            'Standalone archive profile changed after reopen',
+          );
           check(
             !value(await reopened.appendSqlObservation(observation)),
             'Opaque dedup changed after reopen',
