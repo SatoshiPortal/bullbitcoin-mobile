@@ -571,4 +571,17 @@ void main() {
       isTrue,
     );
   });
+  test(
+    'lost native files after a persisted opening outcome refuse recreation',
+    () async {
+      native.failInitialScan = true;
+      expect(await client.create(config), isA<Err>());
+      expect(native.creates, 1);
+      final opened = native.opens;
+      native.exists = false;
+      expect(await client.create(config), isA<Err>());
+      expect(native.opens, opened);
+      expect(native.creates, 1);
+    },
+  );
 }

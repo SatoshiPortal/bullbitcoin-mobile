@@ -93,12 +93,18 @@ final class FakeOpener implements ArkNativeOpener {
     required Uri chainSource,
     required bool create,
     required String? expectedFingerprint,
+    required bool nativePreviouslyAdmitted,
+    required void Function() onNativeAdmission,
     required ArkStageRunner stages,
     required void Function() onOnchainOpened,
     required void Function(ArkRecoveryStatus recovery, String fingerprint)
     onOpened,
   }) async {
     return stages.run('open', () async {
+      if (nativePreviouslyAdmitted && !exists) {
+        throw const ArkBoundaryException(ArkRecoveryRequiredFailure());
+      }
+      onNativeAdmission();
       opens++;
       if (create && !exists) creates++;
       exists = true;
