@@ -3216,17 +3216,16 @@ class SendCubit extends Cubit<SendState>
               // conflict). When this payment's session is persisted, adopt it
               // and proceed exactly as a successful start; otherwise fall
               // through to the error path.
+              final keptOriginal = failure is SendTransactionConfirmationFailure
+                  ? failure.keptPayjoinOriginalTxId
+                  : null;
               final persisted = await _getAdoptablePayjoinSenderUsecase.execute(
                 sessionId: paymentRequest.uri,
                 walletId: wallet.id,
                 amountSat: state.confirmedAmountSat,
+                expectedOriginalTxId: keptOriginal,
               );
-              final keptOriginal = failure is SendTransactionConfirmationFailure
-                  ? failure.keptPayjoinOriginalTxId
-                  : null;
-              if (persisted == null ||
-                  (keptOriginal != null &&
-                      persisted.originalTxId != keptOriginal)) {
+              if (persisted == null) {
                 emit(
                   state.copyWith(failure: failure, signingTransaction: false),
                 );

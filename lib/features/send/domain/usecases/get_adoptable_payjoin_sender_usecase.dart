@@ -22,6 +22,7 @@ class GetAdoptablePayjoinSenderUsecase {
 
   const GetAdoptablePayjoinSenderUsecase(this._sessions);
 
+  /// A retained start can require its persisted original transaction identity.
   /// A storage read failure also returns null: the caller falls back to the
   /// plain error path, where any retry is fail-closed anyway — with payjoin
   /// storage unreadable, coin selection refuses to build a transaction at
@@ -30,6 +31,7 @@ class GetAdoptablePayjoinSenderUsecase {
     required String sessionId,
     required String walletId,
     required int? amountSat,
+    String? expectedOriginalTxId,
   }) async {
     final result = await _sessions.byId(sessionId);
     final session = switch (result) {
@@ -39,7 +41,9 @@ class GetAdoptablePayjoinSenderUsecase {
     if (session is! PayjoinSenderSession ||
         !session.isOngoing ||
         session.walletId != walletId ||
-        session.amountSat != amountSat) {
+        session.amountSat != amountSat ||
+        (expectedOriginalTxId != null &&
+            session.originalTxId != expectedOriginalTxId)) {
       return null;
     }
     return session;
