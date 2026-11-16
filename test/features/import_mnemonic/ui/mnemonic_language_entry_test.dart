@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show BullSecretTextInput;
+import 'package:bull_ui/bull_ui.dart'
+    show BullMnemonicKeyboard, BullSecretTextInput;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';
@@ -101,7 +101,7 @@ Future<void> focusFirstField(WidgetTester tester) async {
 }
 
 Finder key(String label) => find.descendant(
-  of: find.byType(MnemonicKeyboard),
+  of: find.byType(BullMnemonicKeyboard),
   matching: find.text(label),
 );
 
@@ -140,8 +140,8 @@ void main() {
     (tester) async {
       await host(tester, onSubmit: (_) {});
       await focusFirstField(tester);
-      final oldKeyboard = tester.widget<MnemonicKeyboard>(
-        find.byType(MnemonicKeyboard),
+      final oldKeyboard = tester.widget<BullMnemonicKeyboard>(
+        find.byType(BullMnemonicKeyboard),
       );
       await pick(tester, bip39.Language.french);
       await focusFirstField(tester);
@@ -149,8 +149,8 @@ void main() {
       await tester.pump();
       expect(fieldText(tester, 0), isEmpty);
 
-      final currentKeyboard = tester.widget<MnemonicKeyboard>(
-        find.byType(MnemonicKeyboard),
+      final currentKeyboard = tester.widget<BullMnemonicKeyboard>(
+        find.byType(BullMnemonicKeyboard),
       );
       final second = find.byType(TextField).at(1);
       await tester.ensureVisible(second);
@@ -231,8 +231,8 @@ void main() {
         .first;
     final oldTap = tester.widget<InkWell>(firstHint).onTap;
     if (oldTap == null) fail('suggestion has no tap callback');
-    final keyboard = tester.widget<MnemonicKeyboard>(
-      find.byType(MnemonicKeyboard),
+    final keyboard = tester.widget<BullMnemonicKeyboard>(
+      find.byType(BullMnemonicKeyboard),
     );
     keyboard.onLetter('b');
     await tester.pumpAndSettle();
@@ -257,8 +257,8 @@ void main() {
       await tester.pumpAndSettle();
       for (final character in nfkd(word).split('')) {
         final key = find.descendant(
-          of: find.byType(MnemonicKeyboard),
-          matching: find.text(MnemonicKeyboard.keyLabel(character)),
+          of: find.byType(BullMnemonicKeyboard),
+          matching: find.text(BullMnemonicKeyboard.keyLabel(character)),
         );
         await tester.scrollUntilVisible(
           key,
@@ -587,7 +587,7 @@ void main() {
       await host(tester, language: language, onSubmit: (_) {});
       await focusFirstField(tester);
       final layout = tester
-          .widget<MnemonicKeyboard>(find.byType(MnemonicKeyboard))
+          .widget<BullMnemonicKeyboard>(find.byType(BullMnemonicKeyboard))
           .layout;
       expect(layout, hasLength(2048));
       expect(layout, language.list.map(nfkd).toList());

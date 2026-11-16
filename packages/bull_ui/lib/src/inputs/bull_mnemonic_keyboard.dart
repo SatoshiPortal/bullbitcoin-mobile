@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/src/data_display/bull_text.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText;
 
 /// Letters-only keyboard for mnemonic entry.
 ///
@@ -19,7 +20,7 @@ import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText;
 /// [layout] is just the display order: pass [qwerty] for a familiar keyboard,
 /// or a shuffled alphabet for the paranoid mode, where randomised key
 /// positions defeat shoulder-surfing and tap-position inference.
-class MnemonicKeyboard extends StatelessWidget {
+class BullMnemonicKeyboard extends StatelessWidget {
   /// A familiar QWERTY order, split 10 / 9 / 7 across the three rows.
   static const List<String> qwerty = [
     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', //
@@ -104,7 +105,7 @@ class MnemonicKeyboard extends StatelessWidget {
   /// localization.
   final String shuffleHint;
 
-  const MnemonicKeyboard({
+  const BullMnemonicKeyboard({
     super.key,
     required this.enabledLetters,
     required this.canBackspace,
@@ -126,7 +127,7 @@ class MnemonicKeyboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: context.appColors.surfaceContainer,
+      color: context.bull.surfaceContainer,
       child: SafeArea(
         top: false,
         child: Padding(
@@ -297,11 +298,9 @@ class _LetterKey extends StatelessWidget {
         onTap: onTap,
         suppressAnimation: paranoid,
         child: BullText(
-          MnemonicKeyboard.keyLabel(letter),
-          style: context.font.headlineLarge,
-          color: enabled
-              ? context.appColors.onSurface
-              : context.appColors.textMuted,
+          BullMnemonicKeyboard.keyLabel(letter),
+          style: Theme.of(context).textTheme.headlineLarge,
+          color: enabled ? context.bull.onSurface : context.bull.textMuted,
         ),
       ),
     );
@@ -322,9 +321,7 @@ class _BackspaceKey extends StatelessWidget {
       child: Icon(
         Icons.backspace_outlined,
         size: 20,
-        color: enabled
-            ? context.appColors.onSurface
-            : context.appColors.textMuted,
+        color: enabled ? context.bull.onSurface : context.bull.textMuted,
       ),
     );
   }
@@ -350,9 +347,7 @@ class _EnterKey extends StatelessWidget {
       child: Icon(
         Icons.keyboard_return,
         size: 20,
-        color: enabled
-            ? context.appColors.onSurface
-            : context.appColors.textMuted,
+        color: enabled ? context.bull.onSurface : context.bull.textMuted,
       ),
     );
   }
@@ -381,9 +376,7 @@ class _ShuffleKey extends StatelessWidget {
         child: Icon(
           Icons.shuffle,
           size: 20,
-          color: active
-              ? context.appColors.primary
-              : context.appColors.onSurface,
+          color: active ? context.bull.primary : context.bull.onSurface,
         ),
       ),
     );
@@ -422,17 +415,15 @@ class _KeyCap extends StatelessWidget {
         // animate a key cap.
         animationDuration: Duration.zero,
         color: enabled
-            ? context.appColors.surface
-            : context.appColors.surfaceContainerHighest,
+            ? context.bull.surface
+            : context.bull.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(context.bullShapes.key),
         child: InkWell(
           // A key must never take focus from the word field being typed into.
           canRequestFocus: false,
           borderRadius: BorderRadius.circular(context.bullShapes.key),
           splashFactory: suppressAnimation ? NoSplash.splashFactory : null,
-          highlightColor: suppressAnimation
-              ? context.appColors.transparent
-              : null,
+          highlightColor: suppressAnimation ? context.bull.transparent : null,
           onTap: enabled ? onTap : null,
           child: Container(
             height: 44,

@@ -58,7 +58,7 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 
 **Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText`,
 `BullLabeledTextInput`, `BullSecretTextInput`, `BullPasteInput`, `BullDropdown`,
-`BullSelectableList` + `BullSelectableListItem`, `BullDialPad`,
+`BullSelectableList` + `BullSelectableListItem`, `BullDialPad`, `BullMnemonicKeyboard`,
 `BullAmountInputFormatter`, `BullLowerCaseTextFormatter`.
 
 **Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch`.

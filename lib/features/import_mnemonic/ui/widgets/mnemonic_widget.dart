@@ -6,13 +6,13 @@ import 'package:bb_mobile/features/import_mnemonic/domain/mnemonic_entry_failure
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/bip39_word_list.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/mnemonic_entry_failure_l10n.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullLabeledTextInput,
+        BullMnemonicKeyboard,
         BullSecretTextInput,
         BullShapesX,
         BullSwitch,
@@ -597,7 +597,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
 ///
 /// The field is **read-only**: it never opens the platform keyboard and
 /// refuses paste and the selection toolbar. Its controller is written only by
-/// the in-app [MnemonicKeyboard], so the recovery phrase never travels through
+/// the in-app [BullMnemonicKeyboard], so the recovery phrase never travels through
 /// a third-party IME. The field is purely a display of that controller.
 class MnemonicWord extends StatelessWidget {
   final bip39.Language language;
@@ -674,7 +674,7 @@ class MnemonicWord extends StatelessWidget {
           Expanded(
             // Read-only: the platform keyboard never opens, paste and the
             // selection toolbar are suppressed. The only writer of this
-            // controller is the in-app MnemonicKeyboard, so no keystroke of
+            // controller is the in-app BullMnemonicKeyboard, so no keystroke of
             // the seed leaves the app process.
             child: TextField(
               readOnly: true,
@@ -770,7 +770,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   /// The current randomised order, regenerated on every key tap while paranoid
   /// so a key never sits in the same place twice — nothing can be learned from
   /// watching finger positions or a screen recording.
-  List<String> _shuffledLayout = MnemonicKeyboard.qwerty;
+  List<String> _shuffledLayout = BullMnemonicKeyboard.qwerty;
   final Random _random = Random.secure();
 
   /// Caches the shuffled suggestion order for one _hint query, so the chips
@@ -1063,7 +1063,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     final previous = _shuffledLayout;
     List<String> next;
     do {
-      next = List.of(MnemonicKeyboard.qwerty)..shuffle(_random);
+      next = List.of(BullMnemonicKeyboard.qwerty)..shuffle(_random);
     } while (_samePositions(next, previous) > 6);
     _shuffledLayout = next;
   }
@@ -1145,10 +1145,12 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
         }
         final language = widget.language;
         final controller = widget.controllers[query.index];
-        return MnemonicKeyboard(
+        return BullMnemonicKeyboard(
           scrollable: widget.language != bip39.Language.english,
           layout: widget.language == bip39.Language.english
-              ? (_paranoid.value ? _shuffledLayout : MnemonicKeyboard.qwerty)
+              ? (_paranoid.value
+                    ? _shuffledLayout
+                    : BullMnemonicKeyboard.qwerty)
               : layout,
           enabledLetters: layout.toSet(),
           canBackspace: prefix.isNotEmpty,
