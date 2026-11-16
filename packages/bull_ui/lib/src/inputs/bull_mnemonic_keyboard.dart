@@ -1,5 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:bull_ui/src/data_display/bull_text.dart';
-import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/inputs/bull_keypad.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -124,6 +126,20 @@ class BullMnemonicKeyboard extends StatelessWidget {
          'any other length throws a RangeError at build time.',
        );
 
+  /// Keys follow the QWERTY grid: ten across, three rows. They grow with the
+  /// width up to a desktop-sized cap, and stay usable in a short landscape
+  /// window, where the rows may take about a third of the height.
+  static const grid = BullKeypadGrid(
+    columns: 10,
+    rows: 3,
+    aspectRatio: 1.4,
+    minKeyHeight: 36,
+    maxKeyHeight: 60,
+    maxKeyWidth: 64,
+    gap: 4,
+    screenShare: 0.3,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -132,141 +148,161 @@ class BullMnemonicKeyboard extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (scrollable) ...[
-                // ExcludeSemantics: a scrollable grid publishes its child count
-                // and extent, and the number of keys left after a prefix
-                // narrows down the word being typed.
-                ExcludeSemantics(
-                  child: SizedBox(
-                    height: (MediaQuery.sizeOf(context).height * 0.22).clamp(
-                      60.0,
-                      150.0,
-                    ),
-                    child: GridView.builder(
-                      key: ValueKey(Object.hashAll(layout)),
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 54,
-                            mainAxisExtent: 50,
-                          ),
-                      itemCount: layout.length,
-                      itemBuilder: (context, index) => _LetterKey(
-                        letter: layout[index],
-                        enabled: enabledLetters.contains(layout[index]),
-                        paranoid: shuffleActive,
-                        onTap: () => onLetter(layout[index]),
-                      ),
-                    ),
-                  ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final metrics = grid.resolve(
+                constraints,
+                MediaQuery.sizeOf(context),
+              );
+              return Center(
+                child: SizedBox(
+                  width: metrics.width,
+                  child: scrollable ? _buildGrid(metrics) : _buildRows(metrics),
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _BackspaceKey(
-                        enabled: canBackspace,
-                        onTap: onBackspace,
-                      ),
-                    ),
-                    Expanded(
-                      child: _ShuffleKey(
-                        active: shuffleActive,
-                        hint: shuffleHint,
-                        onTap: onToggleShuffle,
-                      ),
-                    ),
-                    Expanded(
-                      child: _EnterKey(enabled: canAdvance, onTap: onEnter),
-                    ),
-                  ],
-                ),
-              ] else ...[
-                _LetterRow(
-                  letters: layout.sublist(0, 10),
-                  enabledLetters: enabledLetters,
-                  onLetter: onLetter,
-                  paranoid: shuffleActive,
-                ),
-                _LetterRow(
-                  letters: layout.sublist(10, 19),
-                  enabledLetters: enabledLetters,
-                  onLetter: onLetter,
-                  paranoid: shuffleActive,
-                  trailing: _BackspaceKey(
-                    enabled: canBackspace,
-                    onTap: onBackspace,
-                  ),
-                ),
-                _LetterRow(
-                  letters: layout.sublist(19, 26),
-                  enabledLetters: enabledLetters,
-                  onLetter: onLetter,
-                  paranoid: shuffleActive,
-                  trailingKeys: 2,
-                  // The shuffle toggle shares its slot with enter
-                  trailing: Row(
-                    children: [
-                      Expanded(
-                        child: _ShuffleKey(
-                          active: shuffleActive,
-                          hint: shuffleHint,
-                          onTap: onToggleShuffle,
-                        ),
-                      ),
-                      Expanded(
-                        child: _EnterKey(enabled: canAdvance, onTap: onEnter),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
+              );
+            },
           ),
         ),
       ),
     );
   }
+
+  Widget _buildGrid(BullKeypadMetrics metrics) {
+    final keyExtent = math.max(metrics.keyWidth, metrics.keyHeight);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // ExcludeSemantics: a scrollable grid publishes its child count and
+        // extent, and the number of keys left after a prefix narrows down the
+        // word being typed. Its height is fixed for the same reason.
+        ExcludeSemantics(
+          child: SizedBox(
+            height:
+                metrics.keyHeight * grid.rows + metrics.gap * (grid.rows - 1),
+            child: GridView.builder(
+              key: ValueKey(Object.hashAll(layout)),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: keyExtent + metrics.gap,
+                mainAxisExtent: metrics.keyHeight,
+                crossAxisSpacing: metrics.gap,
+                mainAxisSpacing: metrics.gap,
+              ),
+              itemCount: layout.length,
+              itemBuilder: (context, index) => _LetterKey(
+                letter: layout[index],
+                enabled: enabledLetters.contains(layout[index]),
+                paranoid: shuffleActive,
+                metrics: metrics,
+                onTap: () => onLetter(layout[index]),
+              ),
+            ),
+          ),
+        ),
+        _KeyRow(
+          gap: metrics.gap,
+          keys: [
+            (
+              1,
+              _BackspaceKey(
+                enabled: canBackspace,
+                metrics: metrics,
+                onTap: onBackspace,
+              ),
+            ),
+            (
+              1,
+              _ShuffleKey(
+                active: shuffleActive,
+                hint: shuffleHint,
+                metrics: metrics,
+                onTap: onToggleShuffle,
+              ),
+            ),
+            (
+              1,
+              _EnterKey(enabled: canAdvance, metrics: metrics, onTap: onEnter),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRows(BullKeypadMetrics metrics) {
+    List<(int, Widget)> letters(int start, int end) => [
+      for (final letter in layout.sublist(start, end))
+        (
+          1,
+          _LetterKey(
+            letter: letter,
+            enabled: enabledLetters.contains(letter),
+            paranoid: shuffleActive,
+            metrics: metrics,
+            onTap: () => onLetter(letter),
+          ),
+        ),
+    ];
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _KeyRow(gap: metrics.gap, keys: letters(0, 10)),
+        _KeyRow(
+          gap: metrics.gap,
+          keys: [
+            ...letters(10, 19),
+            (
+              1,
+              _BackspaceKey(
+                enabled: canBackspace,
+                metrics: metrics,
+                onTap: onBackspace,
+              ),
+            ),
+          ],
+        ),
+        _KeyRow(
+          gap: metrics.gap,
+          keys: [
+            ...letters(19, 26),
+            // The shuffle toggle shares the last two slots with enter.
+            (
+              1,
+              _ShuffleKey(
+                active: shuffleActive,
+                hint: shuffleHint,
+                metrics: metrics,
+                onTap: onToggleShuffle,
+              ),
+            ),
+            (
+              1,
+              _EnterKey(enabled: canAdvance, metrics: metrics, onTap: onEnter),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
-class _LetterRow extends StatelessWidget {
-  final List<String> letters;
-  final Set<String> enabledLetters;
-  final void Function(String letter) onLetter;
-  final bool paranoid;
-  final Widget? trailing;
+/// One row of keys, each taking its flex share of the width, with a gap
+/// between keys and below the row.
+class _KeyRow extends StatelessWidget {
+  final double gap;
+  final List<(int, Widget)> keys;
 
-  /// How many keys [trailing] lays out, used to size its slot.
-  final int trailingKeys;
-
-  const _LetterRow({
-    required this.letters,
-    required this.enabledLetters,
-    required this.onLetter,
-    required this.paranoid,
-    this.trailing,
-    this.trailingKeys = 1,
-  });
+  const _KeyRow({required this.gap, required this.keys});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+      padding: EdgeInsets.only(top: gap),
       child: Row(
         children: [
-          for (final letter in letters)
-            Expanded(
-              child: _LetterKey(
-                letter: letter,
-                enabled: enabledLetters.contains(letter),
-                paranoid: paranoid,
-                onTap: () => onLetter(letter),
-              ),
-            ),
-          // One unit per key, so trailing keys stay a letter wide.
-          if (trailing case final child?)
-            Expanded(flex: trailingKeys, child: child),
+          for (final (index, (flex, key)) in keys.indexed) ...[
+            if (index > 0) SizedBox(width: gap),
+            Expanded(flex: flex, child: key),
+          ],
         ],
       ),
     );
@@ -277,12 +313,14 @@ class _LetterKey extends StatelessWidget {
   final String letter;
   final bool enabled;
   final bool paranoid;
+  final BullKeypadMetrics metrics;
   final VoidCallback onTap;
 
   const _LetterKey({
     required this.letter,
     required this.enabled,
     required this.paranoid,
+    required this.metrics,
     required this.onTap,
   });
 
@@ -293,13 +331,15 @@ class _LetterKey extends StatelessWidget {
     // letter as it is typed. This makes the keyboard unusable with a screen
     // reader by design — the recovery phrase is too sensitive to narrate.
     return ExcludeSemantics(
-      child: _KeyCap(
+      child: BullKeyCap(
         enabled: enabled,
         onTap: onTap,
+        height: metrics.keyHeight,
         suppressAnimation: paranoid,
         child: BullText(
           BullMnemonicKeyboard.keyLabel(letter),
-          style: Theme.of(context).textTheme.headlineLarge,
+          style: Theme.of(context).textTheme.headlineLarge
+              ?.copyWith(fontSize: metrics.glyphSize),
           color: enabled ? context.bull.onSurface : context.bull.textMuted,
         ),
       ),
@@ -309,18 +349,24 @@ class _LetterKey extends StatelessWidget {
 
 class _BackspaceKey extends StatelessWidget {
   final bool enabled;
+  final BullKeypadMetrics metrics;
   final VoidCallback onTap;
 
-  const _BackspaceKey({required this.enabled, required this.onTap});
+  const _BackspaceKey({
+    required this.enabled,
+    required this.metrics,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return _KeyCap(
+    return BullKeyCap(
       enabled: enabled,
       onTap: onTap,
+      height: metrics.keyHeight,
       child: Icon(
         Icons.backspace_outlined,
-        size: 20,
+        size: metrics.glyphSize,
         color: enabled ? context.bull.onSurface : context.bull.textMuted,
       ),
     );
@@ -334,19 +380,25 @@ class _BackspaceKey extends StatelessWidget {
 /// user did not choose into a recovery phrase.
 class _EnterKey extends StatelessWidget {
   final bool enabled;
+  final BullKeypadMetrics metrics;
   final VoidCallback onTap;
 
-  const _EnterKey({required this.enabled, required this.onTap});
+  const _EnterKey({
+    required this.enabled,
+    required this.metrics,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return _KeyCap(
+    return BullKeyCap(
       key: const Key('mnemonicEnterKey'),
       enabled: enabled,
       onTap: onTap,
+      height: metrics.keyHeight,
       child: Icon(
         Icons.keyboard_return,
-        size: 20,
+        size: metrics.glyphSize,
         color: enabled ? context.bull.onSurface : context.bull.textMuted,
       ),
     );
@@ -357,11 +409,13 @@ class _EnterKey extends StatelessWidget {
 class _ShuffleKey extends StatelessWidget {
   final bool active;
   final String hint;
+  final BullKeypadMetrics metrics;
   final VoidCallback onTap;
 
   const _ShuffleKey({
     required this.active,
     required this.hint,
+    required this.metrics,
     required this.onTap,
   });
 
@@ -369,67 +423,15 @@ class _ShuffleKey extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: hint,
-      child: _KeyCap(
+      child: BullKeyCap(
         key: const Key('mnemonicParanoidToggle'),
         enabled: true,
         onTap: onTap,
+        height: metrics.keyHeight,
         child: Icon(
           Icons.shuffle,
-          size: 20,
+          size: metrics.glyphSize,
           color: active ? context.bull.primary : context.bull.onSurface,
-        ),
-      ),
-    );
-  }
-}
-
-/// The shared key shell: sizing, colour, and tap surface. A disabled key has
-/// no tap handler at all, so it cannot fire even through automation.
-class _KeyCap extends StatelessWidget {
-  final bool enabled;
-  final VoidCallback onTap;
-  final Widget child;
-
-  /// When true, the key changes appearance as an instant cut with no ink
-  /// splash. Used while the layout is reshuffling on every tap: an animated
-  /// colour fade or a splash that outlives the reshuffle would mark, for a
-  /// frame, which slot was just pressed — letting an observer follow a letter
-  /// across the shuffle and defeating it.
-  final bool suppressAnimation;
-
-  const _KeyCap({
-    super.key,
-    required this.enabled,
-    required this.onTap,
-    required this.child,
-    this.suppressAnimation = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: Material(
-        // Zero duration: even in basic mode an enable/disable colour tween is
-        // an extra frame of state history for a camera; there is no reason to
-        // animate a key cap.
-        animationDuration: Duration.zero,
-        color: enabled
-            ? context.bull.surface
-            : context.bull.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(context.bullShapes.key),
-        child: InkWell(
-          // A key must never take focus from the word field being typed into.
-          canRequestFocus: false,
-          borderRadius: BorderRadius.circular(context.bullShapes.key),
-          splashFactory: suppressAnimation ? NoSplash.splashFactory : null,
-          highlightColor: suppressAnimation ? context.bull.transparent : null,
-          onTap: enabled ? onTap : null,
-          child: Container(
-            height: 44,
-            alignment: Alignment.center,
-            child: child,
-          ),
         ),
       ),
     );
