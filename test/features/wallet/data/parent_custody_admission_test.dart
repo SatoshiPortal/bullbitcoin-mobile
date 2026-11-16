@@ -144,7 +144,7 @@ void main() {
       isA<Err>().having(
         (result) => result.failure,
         'missing state',
-        isA<ParentCustodyStateFailure>(),
+        isA<ParentCustodyMetadataFailure>(),
       ),
     );
     expect(File(statePath()).existsSync(), isFalse);
