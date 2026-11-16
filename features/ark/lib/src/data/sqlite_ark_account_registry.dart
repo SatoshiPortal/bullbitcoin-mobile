@@ -17,13 +17,24 @@ final class SqliteArkAccountRegistry
   final Database _db;
   bool _closed = false;
   SqliteArkAccountRegistry._(this._db);
+
+  /// Ordinary startup, including foreground, is existing-only. Set
+  /// initializeNew only when the host has established this is first setup;
+  /// it never overrides an initialized marker whose metadata disappeared.
   static Result<SqliteArkAccountRegistry, ArkFailure> open(
     String path, {
     required bool foreground,
+    bool initializeNew = false,
   }) {
     Database? opened;
     try {
-      if (!foreground && !File(path).existsSync()) {
+      final databaseExists = File(path).existsSync();
+      final marker = File('$path.initialized');
+      final markerExists = marker.existsSync();
+      if ((markerExists &&
+              (!databaseExists ||
+                  marker.readAsStringSync() != 'ark-accounts:1\n')) ||
+          (!markerExists && (!foreground || !initializeNew))) {
         return const Err(ArkFeatureStorageFailure());
       }
       final db = sqlite3.open(
@@ -32,7 +43,16 @@ final class SqliteArkAccountRegistry
       );
       opened = db;
       db.execute('PRAGMA busy_timeout=0');
-      if (db.userVersion == 0 && foreground) {
+      if (db.userVersion == 0 && foreground && initializeNew) {
+        if (db
+            .select(
+              "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'",
+            )
+            .isNotEmpty) {
+          db.close();
+          opened = null;
+          return const Err(ArkFeatureStorageFailure());
+        }
         db.execute('BEGIN IMMEDIATE');
         try {
           db.execute(
@@ -48,6 +68,9 @@ final class SqliteArkAccountRegistry
         db.close();
         opened = null;
         return const Err(ArkFeatureStorageFailure());
+      }
+      if (!markerExists) {
+        marker.writeAsStringSync('ark-accounts:1\n', flush: true);
       }
       return Ok(SqliteArkAccountRegistry._(db));
     } on Exception catch (_) {
