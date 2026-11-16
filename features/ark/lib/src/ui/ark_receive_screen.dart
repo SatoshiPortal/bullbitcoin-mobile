@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ark/ark.dart' show ArkDestinationKind;
 import 'package:bull_ui/bull_ui.dart';
 
 import '../presentation/ark_l10n.dart';
@@ -96,12 +97,19 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
               if (state is ArkReceiveLoading)
                 BullText(l10n.loading, style: null),
               if (state case ArkReceiveReady(:final destination)) ...[
+                BullQrCode(
+                  data: destination.value,
+                  size: 280,
+                  semanticsLabel: _destinationLabel(context, destination.kind),
+                  errorBuilder: (context) => BullInfoBar(
+                    message: arkLocalizationsOf(context).unavailable,
+                  ),
+                ),
+                const Gap(BullSpacing.md),
                 BullDetailsTable(
                   items: [
                     BullDetailsTableItem(
-                      label: _lightning
-                          ? l10n.lightningInvoice
-                          : l10n.arkAddress,
+                      label: _destinationLabel(context, destination.kind),
                       displayValue: destination.value,
                       copyValue: destination.value,
                       copiedMessage: l10n.copied,
@@ -140,6 +148,15 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
         ),
       ),
     );
+  }
+
+  String _destinationLabel(BuildContext context, ArkDestinationKind kind) {
+    final l10n = arkLocalizationsOf(context);
+    return switch (kind) {
+      ArkDestinationKind.ark => l10n.arkAddress,
+      ArkDestinationKind.bolt11 => l10n.lightningInvoice,
+      ArkDestinationKind.bitcoin => l10n.unknown,
+    };
   }
 
   Widget _button(
