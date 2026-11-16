@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart';
 import 'package:bull_ark/src/data/ark_network_execution_policy.dart';
+import 'package:bull_ark/ark_setup.dart' show createArkNativeClient;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -20,8 +21,51 @@ class Authority implements ArkExecutionPolicyPort {
   }
 }
 
+class NeverUsed implements ArkChildProviderPort, ArkTransactionVerifierPort {
+  int calls = 0;
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    calls++;
+    throw StateError('Unexpected key or verifier admission');
+  }
+}
+
 void main() {
   for (final mode in ArkExecutionMode.values) {
+    test(
+      'real public factory refuses mainnet before local or child admission in $mode',
+      () async {
+        final directory = Directory.systemTemp.createTempSync('ark-policy-');
+        addTearDown(() => directory.deleteSync(recursive: true));
+        final blocked = ArkAccountId(
+          parent: account().parent,
+          network: BitcoinNetwork.mainnet,
+          serverIdentity: account().serverIdentity,
+        );
+        final authority = Authority()..protected.add(blocked);
+        final ports = NeverUsed();
+        final client = createArkNativeClient(
+          storagePath: '${directory.path}/absent',
+          childProvider: ports,
+          transactionVerifier: ports,
+          executionPolicy: authority,
+          executionMode: mode,
+          stageBudget: const ArkUnlimitedStageBudget(),
+        );
+        addTearDown(client.close);
+        expect(
+          await client.synchronize(blocked, renew: true),
+          isA<Err<ArkPassOutcome, ArkWalletFailure>>().having(
+            (r) => r.failure.reason,
+            'policy refused before account-missing admission',
+            ArkFailureReason.budgetExhausted,
+          ),
+        );
+        expect(authority.calls, isEmpty);
+        expect(ports.calls, 0);
+        expect(Directory('${directory.path}/absent').existsSync(), false);
+      },
+    );
     test('canonical network refusal precedes authority in $mode', () {
       final authority = Authority()..protected.add(account());
       final policy = ArkNetworkExecutionPolicy(authority);
