@@ -58,17 +58,18 @@ final class ArkMovement {
   final List<String> inputVtxoIds;
   final List<String> outputVtxoIds;
   final String? transactionId;
-  const ArkMovement({
+  ArkMovement({
     required this.id,
     required this.kind,
     required this.status,
     this.amount,
     this.fee,
     this.createdAt,
-    this.inputVtxoIds = const [],
-    this.outputVtxoIds = const [],
+    List<String> inputVtxoIds = const [],
+    List<String> outputVtxoIds = const [],
     this.transactionId,
-  });
+  }) : inputVtxoIds = List.unmodifiable(inputVtxoIds),
+       outputVtxoIds = List.unmodifiable(outputVtxoIds);
 }
 
 final class ArkServerInfo {
@@ -157,6 +158,7 @@ final class ArkSnapshot {
   /// Safe for disabling/new-route policy; never safe for deleting custody.
   bool get hasFundsOrObligations =>
       stale ||
+      !vtxoInventoryComplete ||
       obligations != ArkObligationStatus.none ||
       recovery != ArkRecoveryStatus.complete ||
       [

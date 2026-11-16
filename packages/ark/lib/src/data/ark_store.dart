@@ -16,17 +16,28 @@ final class ArkStore {
   static String accountPath(String root, ArkAccountId id) =>
       '$root/${sha256.convert(utf8.encode(id.canonical))}';
 
-  static ArkStore open(String path, {required bool create}) {
+  static ArkStore open(
+    String path, {
+    required bool create,
+    bool readOnly = false,
+  }) {
+    if (readOnly && create) {
+      throw const FormatException('Read-only creation refused');
+    }
     if (!create && !File(path).existsSync()) {
       throw const FileSystemException('Ark metadata missing');
     }
     final db = sqlite3.open(
       path,
-      mode: create ? OpenMode.readWriteCreate : OpenMode.readWrite,
+      mode: readOnly
+          ? OpenMode.readOnly
+          : create
+          ? OpenMode.readWriteCreate
+          : OpenMode.readWrite,
     );
     try {
       db.execute('PRAGMA busy_timeout=0');
-      db.execute('PRAGMA synchronous=FULL');
+      if (!readOnly) db.execute('PRAGMA synchronous=FULL');
       final version = db.select('PRAGMA user_version').single.values.single;
       if (version == 0 && create) {
         if (db

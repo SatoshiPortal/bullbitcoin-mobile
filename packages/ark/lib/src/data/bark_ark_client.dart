@@ -164,7 +164,11 @@ final class BarkArkClient implements ArkClient {
     final path = ArkStore.accountPath(storagePath, account);
     ArkStore? store;
     try {
-      store = ArkStore.open('$path/state.sqlite', create: false);
+      store = ArkStore.open(
+        '$path/state.sqlite',
+        create: false,
+        readOnly: true,
+      );
       final snapshot = store.snapshot;
       if (snapshot == null) {
         return const Err(
@@ -344,8 +348,9 @@ final class BarkArkClient implements ArkClient {
     ArkStore store,
     ArkNativeSession session,
     ArkAccountId account,
-    Uri source,
-  ) async {
+    Uri source, {
+    bool commit = true,
+  }) async {
     final previous = store.snapshot;
     var observed = await session.observe(
       account: account,
@@ -369,40 +374,49 @@ final class BarkArkClient implements ArkClient {
         ArkUnavailableFailure(ArkFailureReason.chainUnreachable),
       );
     }
-    if (previous != null &&
-        previous.vtxos.any(
-          (old) =>
-              old.state != ArkVtxoState.spent &&
-              !observed.vtxos.any((v) => v.id == old.id),
-        )) {
-      observed = copySnapshot(
-        observed,
-        stale: true,
-        vtxoCompleteness: ArkSectionCompleteness.incomplete,
-      );
+    final inventory = store.get('complete-inventory');
+    final baseline = inventory == null
+        ? previous?.vtxos ?? const <ArkVtxo>[]
+        : maps(inventory['vtxos']).map(vtxoFromJson).toList();
+    bool provenSpent(String id) => observed.movements.any(
+      (movement) =>
+          movement.status == ArkMovementStatus.successful &&
+          movement.inputVtxoIds.contains(id) &&
+          (movement.kind != ArkMovementKind.renewal ||
+              movement.outputVtxoIds.isNotEmpty) &&
+          movement.outputVtxoIds.every(
+            (id) => observed.vtxos.any((v) => v.id == id),
+          ),
+    );
+    final unresolved = <ArkVtxo>[];
+    for (final old in baseline.where(
+      (v) => v.state != ArkVtxoState.spent && v.state != ArkVtxoState.exited,
+    )) {
+      final current = observed.vtxos.where((v) => v.id == old.id).firstOrNull;
+      if ((current == null || current.state == ArkVtxoState.spent) &&
+          !provenSpent(old.id)) {
+        unresolved.add(
+          ArkVtxo(
+            id: old.id,
+            amount: old.amount,
+            expiryHeight: old.expiryHeight,
+            state: ArkVtxoState.unknown,
+            anchor: old.anchor,
+            pendingRound: old.pendingRound,
+          ),
+        );
+      }
     }
-    if (previous != null &&
-        previous.vtxos.any(
-          (old) =>
-              old.state != ArkVtxoState.spent &&
-              observed.vtxos.any(
-                (v) => v.id == old.id && v.state == ArkVtxoState.spent,
-              ) &&
-              !observed.movements.any(
-                (movement) =>
-                    movement.status == ArkMovementStatus.successful &&
-                    movement.inputVtxoIds.contains(old.id) &&
-                    (movement.kind != ArkMovementKind.renewal ||
-                        movement.outputVtxoIds.isNotEmpty) &&
-                    movement.outputVtxoIds.every(
-                      (id) => observed.vtxos.any((v) => v.id == id),
-                    ),
-              ),
-        )) {
+    if (unresolved.isNotEmpty) {
+      final unresolvedIds = unresolved.map((v) => v.id).toSet();
       observed = copySnapshot(
         observed,
         stale: true,
         vtxoCompleteness: ArkSectionCompleteness.incomplete,
+        vtxos: [
+          ...observed.vtxos.where((v) => !unresolvedIds.contains(v.id)),
+          ...unresolved,
+        ],
       );
     }
     final pinned = store.get('server');
@@ -413,9 +427,18 @@ final class BarkArkClient implements ArkClient {
       );
     }
     if (pinned == null && key != null) store.put('server', {'key': key});
-    store.saveSnapshot(observed);
-    _changes[account.canonical]?.add(Ok(observed));
+    if (commit) _commitObservation(store, observed);
     return observed;
+  }
+
+  void _commitObservation(ArkStore store, ArkSnapshot snapshot) {
+    if (snapshot.vtxoInventoryComplete && !snapshot.stale) {
+      store.put('complete-inventory', {
+        'vtxos': snapshot.vtxos.map(vtxoToJson).toList(),
+      });
+    }
+    store.saveSnapshot(snapshot);
+    _changes[snapshot.account.canonical]?.add(Ok(snapshot));
   }
 
   @override
@@ -477,7 +500,13 @@ final class BarkArkClient implements ArkClient {
       }
       ArkSnapshot snapshot;
       try {
-        snapshot = await _observe(store, session, account, source);
+        snapshot = await _observe(
+          store,
+          session,
+          account,
+          source,
+          commit: false,
+        );
         completed.add(ArkStage.vtxos);
       } on ArkStageDeferred {
         final previous = store.snapshot;
@@ -492,7 +521,6 @@ final class BarkArkClient implements ArkClient {
           operations: store.operations,
           vtxoCompleteness: ArkSectionCompleteness.incomplete,
         );
-        store.saveSnapshot(snapshot);
         failed.add('deferred');
         failedKinds.add(ArkStage.vtxos);
       }
@@ -581,8 +609,7 @@ final class BarkArkClient implements ArkClient {
       if (failed.isNotEmpty || rounds.isNotEmpty) {
         snapshot = copySnapshot(snapshot, stale: true);
       }
-      store.saveSnapshot(snapshot);
-      _changes[account.canonical]?.add(Ok(snapshot));
+      _commitObservation(store, snapshot);
       return Ok(
         ArkPassOutcome(
           snapshot: snapshot,
@@ -607,7 +634,9 @@ final class BarkArkClient implements ArkClient {
       if (request is! ArkEmergencyExitQuoteRequest &&
           request is! ArkExitProgressQuoteRequest &&
           request is! ArkClaimQuoteRequest &&
-          snapshot.recovery != ArkRecoveryStatus.complete) {
+          (snapshot.recovery != ArkRecoveryStatus.complete ||
+              snapshot.stale ||
+              !snapshot.vtxoInventoryComplete)) {
         return const Err(ArkRecoveryRequiredFailure());
       }
       if (request case ArkClaimQuoteRequest(
@@ -1146,6 +1175,7 @@ ArkSnapshot copySnapshot(
   ArkRenewalStatus? renewal,
   ArkSectionCompleteness? vtxoCompleteness,
   String? reserveAddress,
+  List<ArkVtxo>? vtxos,
 }) => ArkSnapshot(
   account: value.account,
   revision: value.revision,
@@ -1155,7 +1185,7 @@ ArkSnapshot copySnapshot(
   spendable: value.spendable,
   pending: value.pending,
   confirmedReserve: value.confirmedReserve,
-  vtxos: value.vtxos,
+  vtxos: vtxos ?? value.vtxos,
   movements: value.movements,
   operations: operations ?? value.operations,
   serverInfo: value.serverInfo,
