@@ -43,12 +43,15 @@ final class ConfirmArkOperationUsecase {
           break;
       }
     }
-    return _repository.submit(
+    // After dispatch, a typed failure does not establish absence of effects.
+    // Retain our original attempt even if the backend could not save its result.
+    final result = await _repository.submit(
       account,
       ArkSubmission.confirmQuote(
         quoteId: reviewedQuote.id,
         operationId: operationId,
       ),
     );
+    return result.mapErr((_) => ArkSubmissionUncertainFailure(operationId));
   }
 }
