@@ -15,7 +15,7 @@ import '../domain/repositories/ark_reminder_repository.dart';
 /// A separate durable reminder ledger. Negative platform IDs cannot collide
 /// with the payment outbox's positive IDs. BEGIN IMMEDIATE serializes platform
 /// side effects across foreground/background engines. A crash after scheduling
-/// but before commit safely re-applies the same id on the next observation.
+/// but before commit remains a known lifecycle gap pending durable intent.
 final class SqliteArkReminderRepository implements ArkReminderRepository {
   final Database _db;
   final ScheduledNotificationPort _notifications;
@@ -72,7 +72,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         db.execute('BEGIN IMMEDIATE');
         try {
           db.execute(
-            'CREATE TABLE IF NOT EXISTS ark_reminders (account TEXT PRIMARY KEY, platform_id INTEGER NOT NULL UNIQUE CHECK(platform_id<0), revision INTEGER NOT NULL, tip INTEGER NOT NULL, signature TEXT, scheduled_at INTEGER)',
+            'CREATE TABLE IF NOT EXISTS ark_reminders (account TEXT PRIMARY KEY, platform_id INTEGER NOT NULL UNIQUE CHECK(platform_id<0), revision INTEGER NOT NULL, tip INTEGER NOT NULL, signature TEXT, scheduled_at INTEGER, deadline_bounds TEXT)',
           );
           db.userVersion = 1;
           db.execute('COMMIT');
@@ -85,6 +85,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         opened = null;
         return const Err(ArkFeatureStorageFailure());
       }
+      db.select('SELECT deadline_bounds FROM ark_reminders LIMIT 0');
       if (!markerExists) {
         marker.writeAsStringSync('ark-reminders:1\n', flush: true);
       }
@@ -148,6 +149,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         }
       }
       String? signature;
+      String? boundsJson;
       DateTime? at;
       Result<void, NotificationsFailure> changed;
       if (warning != null) {
@@ -160,10 +162,25 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
               ),
             )
             .toString();
-        final previousAt = row?['scheduled_at'] as int?;
-        at = row?['signature'] == signature && previousAt != null
-            ? DateTime.fromMicrosecondsSinceEpoch(previousAt, isUtc: true)
-            : warning.notifyAt;
+        final deadlines = <String, int>{
+          for (final entry in warning.deadlines.entries)
+            _keyHash(entry.key): entry.value.microsecondsSinceEpoch,
+        };
+        if (row?['signature'] != null) {
+          final previous = _readBounds(row?['deadline_bounds']);
+          if (previous == null) return const Err(ArkFeatureStorageFailure());
+          final retired = warning.retiredKeys.map(_keyHash).toSet();
+          for (final entry in previous.entries) {
+            if (retired.contains(entry.key)) continue;
+            final current = deadlines[entry.key];
+            if (current == null || entry.value < current) {
+              deadlines[entry.key] = entry.value;
+            }
+          }
+        }
+        final earliest = deadlines.values.reduce((a, b) => a < b ? a : b);
+        at = DateTime.fromMicrosecondsSinceEpoch(earliest, isUtc: true);
+        boundsJson = jsonEncode(deadlines);
         changed = await _notifications.schedule(
           LocalNotification(
             eventId: 'ark-expiry',
@@ -183,7 +200,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         return const Err(ArkReminderUnavailableFailure());
       }
       _db.execute(
-        'INSERT INTO ark_reminders(account,platform_id,revision,tip,signature,scheduled_at) VALUES(?,?,?,?,?,?) ON CONFLICT(account) DO UPDATE SET revision=excluded.revision,tip=excluded.tip,signature=excluded.signature,scheduled_at=excluded.scheduled_at',
+        'INSERT INTO ark_reminders(account,platform_id,revision,tip,signature,scheduled_at,deadline_bounds) VALUES(?,?,?,?,?,?,?) ON CONFLICT(account) DO UPDATE SET revision=excluded.revision,tip=excluded.tip,signature=excluded.signature,scheduled_at=excluded.scheduled_at,deadline_bounds=excluded.deadline_bounds',
         [
           account.canonical,
           platformId,
@@ -191,6 +208,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
           tipHeight,
           signature,
           at?.microsecondsSinceEpoch,
+          boundsJson,
         ],
       );
       _db.execute('COMMIT');
@@ -208,6 +226,30 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         settled.complete();
       }
     }
+  }
+
+  static String _keyHash(String key) =>
+      sha256.convert(utf8.encode(key)).toString();
+  static Map<String, int>? _readBounds(Object? encoded) {
+    if (encoded is! String) return null;
+    final Object? decoded;
+    try {
+      decoded = jsonDecode(encoded);
+    } on FormatException {
+      return null;
+    }
+    if (decoded is! Map<String, dynamic> || decoded.isEmpty) return null;
+    final result = <String, int>{};
+    for (final entry in decoded.entries) {
+      final value = entry.value;
+      if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(entry.key) ||
+          value is! int ||
+          value.abs() > 8640000000000000000) {
+        return null;
+      }
+      result[entry.key] = value;
+    }
+    return result;
   }
 
   /// Startup must restore previously admitted alarms even while offline or

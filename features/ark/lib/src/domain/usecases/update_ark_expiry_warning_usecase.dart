@@ -17,6 +17,13 @@ final class UpdateArkExpiryWarningUsecase {
         snapshot.vtxoInventoryComplete &&
         snapshot.tipHeight != null &&
         snapshot.obligations == ArkObligationStatus.none &&
+        snapshot.pendingBoards.isEmpty &&
+        !snapshot.operations.any(
+          (operation) =>
+              operation.kind == ArkOperationKind.board &&
+              operation.status != ArkOperationStatus.succeeded &&
+              operation.status != ArkOperationStatus.failed,
+        ) &&
         snapshot.recovery == ArkRecoveryStatus.complete &&
         snapshot.renewal != ArkRenewalStatus.delegated &&
         snapshot.vtxos.every(
