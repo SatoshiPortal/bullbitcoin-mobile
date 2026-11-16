@@ -1,5 +1,5 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:primitives/primitives.dart';
+import 'package:primitives/primitives.dart' hide Network;
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -24,19 +24,27 @@ class ImportWatchOnlyDescriptorUsecase {
       return const Err(InvalidFormatFailure());
     }
     try {
+      final validated = watchOnlyDescriptor.captureNetwork(
+        watchOnlyDescriptor.network,
+      );
+      if (validated is! WatchOnlyDescriptorEntity) {
+        return const Err(InvalidFormatFailure());
+      }
       final wallet = await _wallet.importDescriptor(
-        watchOnlyDescriptor: watchOnlyDescriptor,
+        watchOnlyDescriptor:
+            watchOnlyDescriptor.network == Network.bitcoinRegtest
+            ? validated
+            : watchOnlyDescriptor,
       );
       return Ok(wallet);
-    } catch (e, st) {
-      // Keep the raw descriptor/BDK rejection reason in the logs; the UI shows
-      // a generic localized message. A rejected descriptor is an expected
-      // user-facing condition (malformed input), so this is a warning.
-      log.warning(
-        'Failed to import watch-only descriptor',
-        error: e,
-        trace: st,
-      );
+    } on WatchOnlyNetworkMismatchException {
+      return const Err(NetworkMismatchFailure());
+    } on FormatException {
+      return const Err(InvalidFormatFailure());
+    } catch (e) {
+      if (e is Error) rethrow;
+      // Do not log imported material or a foreign exception containing it.
+      log.warning('Failed to import watch-only descriptor');
       return switch (e) {
         WalletAlreadyExistsException() => const Err(
           WalletAlreadyExistsFailure(),
