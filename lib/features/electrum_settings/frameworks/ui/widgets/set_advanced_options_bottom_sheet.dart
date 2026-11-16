@@ -417,7 +417,7 @@ class _SetAdvancedOptionsBottomSheetState
                         onFieldSubmitted: (_) => _confirm(),
                       ),
                       const SizedBox(height: 12),
-                      SwitchListTile.adaptive(
+                      SwitchListTile(
                         shape: const RoundedRectangleBorder(
                           side: BorderSide.none,
                         ),
