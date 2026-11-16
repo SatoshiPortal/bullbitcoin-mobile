@@ -834,6 +834,21 @@ void main() {
       expect(find.text('zoo'), findsOneWidget);
     });
 
+    testWidgets('the shortest words lead, nothing before the first letter', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await focusField(tester, 0);
+      BullMnemonicKeyboard keyboard() => tester.widget<BullMnemonicKeyboard>(
+        find.byType(BullMnemonicKeyboard),
+      );
+      expect(keyboard().suggestions, isEmpty);
+
+      await typeWord(tester, 0, 'ab');
+      // 'able' is the shortest word after 'ab', then 'about' and 'above'.
+      expect(keyboard().suggestions, ['able', 'about', 'above']);
+    });
+
     testWidgets('tapping a suggestion fills the focused field', (tester) async {
       await pumpWidget(tester, onSubmit: (_) {});
       await typeWord(tester, 0, 'zo');
