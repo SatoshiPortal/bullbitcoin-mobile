@@ -1,3 +1,8 @@
+import 'package:bb_mobile/core/storage/database_seeds.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_active_network_usecase.dart';
+import 'package:bb_mobile/features/electrum_settings/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
     show ElectrumSettingsFacade, RegtestElectrumProfile;
 
@@ -45,6 +50,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(ElectrumServerNetwork.liquidRegtest);
+    registerFallbackValue(Environment.mainnet);
   });
 
   setUp(() async {
@@ -115,6 +121,37 @@ void main() {
     torSessionPort: tor,
     settingsRepository: app,
   );
+
+  Future<Result<LoadElectrumServerDataResponse, ElectrumFailure>> loadNetwork(
+    ElectrumServerNetwork network,
+  ) {
+    when(() => environment.getEnvironment())
+        .thenAnswer((_) async => network.environment);
+    return loader().execute(
+      LoadElectrumServerDataRequest(isLiquid: network.isLiquid),
+    );
+  }
+
+  SetActiveNetworkUsecase selector() => SetActiveNetworkUsecase(
+    settingsRepository: app,
+    electrumSettings: ElectrumSettingsFacade(provisioner),
+  );
+
+  Future<void> seedProductionCatalogs() async {
+    await DatabaseSeeds.seedDefaultElectrumServers(database);
+    await DatabaseSeeds.seedDefaultElectrumSettings(database);
+    for (final network in [
+      ElectrumServerNetwork.bitcoinRegtest,
+      ElectrumServerNetwork.liquidRegtest,
+    ]) {
+      await database.managers.electrumSettings
+          .filter((f) => f.network(network))
+          .delete();
+      await database.managers.electrumServers
+          .filter((f) => f.network.equals(network.storageName))
+          .delete();
+    }
+  }
 
   test(
     'foreground provisioning completes before the first parallel readers',
@@ -218,6 +255,7 @@ void main() {
 
   test('read-only background never repairs missing rows', () async {
     final readonly = ElectrumDefaultsProvisioner(database, readOnly: true);
+    expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Err>());
     expect(
       await readonly.prepareForegroundStorage(NetworkEnv.regtest),
       isA<Err>(),
@@ -225,7 +263,9 @@ void main() {
     expect(await database.select(database.electrumSettings).get(), isEmpty);
     expect(await database.select(database.electrumServers).get(), isEmpty);
     await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+    expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
     await database.delete(database.electrumServers).go();
+    expect(await loadNetwork(ElectrumServerNetwork.bitcoinRegtest), isA<Err>());
     expect(await database.select(database.electrumServers).get(), isEmpty);
   });
 
@@ -241,11 +281,16 @@ void main() {
       );
       expect(await database.select(database.electrumSettings).get(), isEmpty);
       expect(await database.select(database.electrumServers).get(), isEmpty);
+      expect(
+        await loadNetwork(ElectrumServerNetwork.liquidRegtest),
+        isA<Err>(),
+      );
       await database.customStatement('DROP TRIGGER interrupt_liquid');
       expect(
         await provisioner.prepareForegroundStorage(NetworkEnv.regtest),
         isA<Ok>(),
       );
+      expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
     },
   );
 
@@ -328,6 +373,9 @@ void main() {
       (values) => expect(values.single.url, 'tcp://custom.example:60001'),
       (failure) => fail('Unexpected ${failure.runtimeType}'),
     );
+    expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
+    // A fresh read-only reader uses persisted endpoints without a process-local gate.
+    expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
   });
 
   for (final boot in [NetworkEnv.mainnet, NetworkEnv.testnet]) {
@@ -364,6 +412,9 @@ void main() {
               );
         }
         expect(await provisioner.prepareForegroundStorage(boot), isA<Ok>());
+        for (final network in productionNetworks) {
+          expect(await loadNetwork(network), isA<Ok>());
+        }
         expect(
           await database.select(database.electrumSettings).get(),
           hasLength(4),
@@ -383,4 +434,214 @@ void main() {
       expect(await database.select(database.electrumServers).get(), isEmpty);
     });
   }
+  test(
+    'hot selector production boot to regtest provisions before activation',
+    () async {
+      await seedProductionCatalogs();
+      expect(
+        await provisioner.prepareForegroundStorage(NetworkEnv.mainnet),
+        isA<Ok>(),
+      );
+      var selected = Environment.mainnet;
+      var callbacks = 0;
+      var catalogPresentAtActivation = false;
+      when(() => app.fetch()).thenAnswer(
+        (_) async => SettingsEntity(
+          environment: selected,
+          isSuperuser: true,
+          isDevModeEnabled: true,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(() => app.setEnvironment(any())).thenAnswer((invocation) async {
+        callbacks++;
+        final rows = await servers.fetchAll(
+          network: ElectrumServerNetwork.liquidRegtest,
+        );
+        catalogPresentAtActivation = rows.fold(
+          (value) => value.isNotEmpty,
+          (_) => false,
+        );
+        selected = invocation.positionalArguments.single as Environment;
+        return const Ok(null);
+      });
+      expect(await selector().execute(NetworkEnv.regtest), isA<Ok>());
+      expect(catalogPresentAtActivation, isTrue);
+      expect(selected, Environment.regtest);
+      expect(callbacks, 1);
+      expect(
+        await loadNetwork(ElectrumServerNetwork.bitcoinRegtest),
+        isA<Ok>(),
+      );
+      expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
+    },
+  );
+
+  for (final target in [Environment.mainnet, Environment.testnet]) {
+    test(
+      'hot selector regtest boot to $target leaves production readers usable',
+      () async {
+        await seedProductionCatalogs();
+        expect(
+          await provisioner.prepareForegroundStorage(NetworkEnv.regtest),
+          isA<Ok>(),
+        );
+        var selected = Environment.regtest;
+        when(() => app.fetch()).thenAnswer(
+          (_) async => SettingsEntity(
+            environment: selected,
+            isSuperuser: true,
+            isDevModeEnabled: true,
+            bitcoinUnit: BitcoinUnit.sats,
+            currencyCode: 'USD',
+          ),
+        );
+        when(() => app.setEnvironment(any())).thenAnswer((invocation) async {
+          selected = invocation.positionalArguments.single as Environment;
+          return const Ok(null);
+        });
+        expect(await selector().execute(target.networkEnv), isA<Ok>());
+        expect(selected, target);
+        for (final liquid in [false, true]) {
+          final network = ElectrumServerNetwork.fromNetworkEnv(
+            target.networkEnv,
+            isLiquid: liquid,
+          );
+          expect(await loadNetwork(network), isA<Ok>());
+          final connection = await adapter().runWithFallback(
+            network: network,
+            operation: (connection) async => connection,
+          );
+          expect(connection.url, isNotEmpty);
+        }
+      },
+    );
+  }
+
+  test('hot selector provisioning failure rolls back both tables and never activates', () async {
+    var selected = Environment.mainnet;
+    var callbacks = 0;
+    when(() => app.fetch()).thenAnswer(
+      (_) async => SettingsEntity(
+        environment: selected,
+        isSuperuser: true,
+        isDevModeEnabled: true,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(() => app.setEnvironment(any())).thenAnswer((invocation) async {
+      callbacks++;
+      selected = invocation.positionalArguments.single as Environment;
+      return const Ok(null);
+    });
+    await database.customStatement(
+      "CREATE TRIGGER fail_select_regtest BEFORE INSERT ON electrum_servers WHEN NEW.network = 'liquidRegtest' BEGIN SELECT RAISE(ABORT, 'fixture provisioning failure'); END",
+    );
+    expect(await selector().execute(NetworkEnv.regtest), isA<Err>());
+    expect(selected, Environment.mainnet);
+    expect(callbacks, 0);
+    expect(await database.select(database.electrumServers).get(), isEmpty);
+    expect(await database.select(database.electrumSettings).get(), isEmpty);
+  });
+
+  test('colliding custom default survives provisioning then delete restores and reloads it', () async {
+    final profile = RegtestElectrumProfile(host: 'stack.example');
+    final datasource = ElectrumServerStorageDatasource(
+      sqlite: database,
+      regtestProfile: profile,
+    );
+    servers = DriftElectrumServerRepository(
+      electrumServerStorageDatasource: datasource,
+    );
+    expect(
+      await provisioner.prepareForegroundStorage(
+        NetworkEnv.regtest,
+        regtestProfile: profile,
+      ),
+      isA<Ok>(),
+    );
+    final url = profile.endpoint(isLiquid: true);
+    await datasource.store(
+      ElectrumServerModel(
+        url: url,
+        network: ElectrumServerNetwork.liquidRegtest,
+        priority: 12,
+        isCustom: true,
+      ),
+    );
+    await provisioner.prepareForegroundStorage(
+      NetworkEnv.regtest,
+      regtestProfile: profile,
+    );
+    final preserved = await datasource.fetchByUrl(
+      url,
+      network: ElectrumServerNetwork.liquidRegtest,
+    );
+    expect(preserved?.isCustom, isTrue);
+    expect(preserved?.priority, 12);
+    expect(
+      await servers.delete(
+        url: url,
+        network: ElectrumServerNetwork.liquidRegtest,
+      ),
+      isA<Ok>(),
+    );
+    final restored = await datasource.fetchByUrl(
+      url,
+      network: ElectrumServerNetwork.liquidRegtest,
+    );
+    expect(restored?.isCustom, isFalse);
+    expect(restored?.priority, 0);
+    expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
+  });
+
+  test(
+    'colliding custom restore failure rolls back the deletion transaction',
+    () async {
+      await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+      const url = 'tcp://127.0.0.1:50001';
+      final datasource = ElectrumServerStorageDatasource(sqlite: database);
+      await datasource.store(
+        ElectrumServerModel(
+          url: url,
+          network: ElectrumServerNetwork.liquidRegtest,
+          priority: 9,
+          isCustom: true,
+        ),
+      );
+      await database.customStatement(
+        "CREATE TRIGGER fail_default_restore BEFORE INSERT ON electrum_servers WHEN NEW.network = 'liquidRegtest' AND NEW.is_custom = 0 BEGIN SELECT RAISE(ABORT, 'fixture restore failure'); END",
+      );
+      expect(
+        await servers.delete(
+          url: url,
+          network: ElectrumServerNetwork.liquidRegtest,
+        ),
+        isA<Err>(),
+      );
+      final retained = await datasource.fetchByUrl(
+        url,
+        network: ElectrumServerNetwork.liquidRegtest,
+      );
+      expect(retained?.isCustom, isTrue);
+      expect(retained?.priority, 9);
+    },
+  );
+  test('Liquid readers do not depend on the sibling Bitcoin catalog', () async {
+    await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+    await database.managers.electrumSettings
+        .filter((f) => f.network(ElectrumServerNetwork.bitcoinRegtest))
+        .delete();
+    await database.managers.electrumServers
+        .filter((f) => f.network.equals('bitcoinRegtest'))
+        .delete();
+    expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
+    final connection = await adapter().runWithFallback(
+      network: ElectrumServerNetwork.liquidRegtest,
+      operation: (connection) async => connection,
+    );
+    expect(connection.url, 'tcp://127.0.0.1:50001');
+  });
 }

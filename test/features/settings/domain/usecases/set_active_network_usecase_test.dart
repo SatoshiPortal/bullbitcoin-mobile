@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -132,4 +134,52 @@ void main() {
       expect(settings.activeNetwork.name, environment.name);
     }
   });
+  test('regtest preparation failure leaves the network unchanged', () async {
+    when(() => repository.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+        isSuperuser: true,
+        isDevModeEnabled: true,
+      ),
+    );
+    when(() => electrum.prepareForegroundStorage(NetworkEnv.regtest))
+        .thenAnswer((_) async => const Err(ElectrumSaveFailure()));
+    final result = await usecase.execute(NetworkEnv.regtest);
+    expect(result, isA<Err<void, SettingsFailure>>());
+    expect(
+      (result as Err<void, SettingsFailure>).failure,
+      isA<SettingsNetworkUnavailableFailure>(),
+    );
+    verifyNever(() => repository.setEnvironment(Environment.regtest));
+  });
+
+  test(
+    'consent revoked during provisioning prevents regtest activation',
+    () async {
+      var permitted = true;
+      final gate = Completer<Result<void, ElectrumFailure>>();
+      when(() => repository.fetch()).thenAnswer(
+        (_) async => SettingsEntity(
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'CAD',
+          isSuperuser: true,
+          isDevModeEnabled: permitted,
+        ),
+      );
+      when(() => electrum.prepareForegroundStorage(NetworkEnv.regtest))
+          .thenAnswer((_) => gate.future);
+      final result = usecase.execute(NetworkEnv.regtest);
+      await Future<void>.delayed(Duration.zero);
+      permitted = false;
+      gate.complete(const Ok(null));
+      expect(
+        (await result as Err<void, SettingsFailure>).failure,
+        isA<SettingsConsentFailure>(),
+      );
+      verifyNever(() => repository.setEnvironment(Environment.regtest));
+    },
+  );
 }
