@@ -44,7 +44,8 @@ void main() {
     )
     ..writeln('// Regenerated on every `make integration-test`.')
     ..writeln("import 'package:bb_mobile/init.dart';")
-    ..writeln("import 'package:flutter_test/flutter_test.dart';");
+    ..writeln("import 'package:flutter_test/flutter_test.dart';")
+    ..writeln("import 'package:primitives/primitives.dart' show Ok;");
   for (final f in files) {
     b.writeln("import '$f' as ${alias[f]};");
   }
@@ -52,7 +53,7 @@ void main() {
     ..writeln()
     ..writeln('Future<void> main() async {')
     ..writeln('  TestWidgetsFlutterBinding.ensureInitialized();')
-    ..writeln('  await Bull.init();')
+    ..writeln('  expect(await Bull.init(), isA<Ok>());')
     ..writeln();
   for (final f in files) {
     b.writeln('  await ${alias[f]}.main(isInitialized: true);');

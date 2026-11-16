@@ -24,7 +24,7 @@ import 'developer_network.dart';
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    await Bull.init();
+    expect(await Bull.init(), isA<Ok>());
   }
 
   final walletRepository = locator<WalletRepository>();

@@ -246,6 +246,7 @@ graph TB
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
+    SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM_SETTINGS
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
     SP -->|legacy: wallet repository via core barrel| WALLETS

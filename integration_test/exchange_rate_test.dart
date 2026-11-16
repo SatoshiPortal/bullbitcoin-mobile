@@ -6,7 +6,9 @@ import 'package:primitives/primitives.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    expect(await Bull.init(), isA<Ok>());
+  }
 
   group('Exchange Rate Integration Tests', () {
     test('the Bull Bitcoin API prices every supported currency', () async {

@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
 import 'package:bb_mobile/locator.dart';
@@ -6,7 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    expect(await Bull.init(), isA<Ok>());
+  }
 
   final sqlite = locator<SqliteDatabase>();
   final transactionPort = locator<TransactionPort>();

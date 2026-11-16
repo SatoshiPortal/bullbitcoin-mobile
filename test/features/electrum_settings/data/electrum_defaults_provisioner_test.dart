@@ -101,16 +101,13 @@ void main() {
   });
   tearDown(() => database.close());
 
-  ElectrumServersAdapter adapter(ElectrumDefaultsProvisioner readiness) =>
-      ElectrumServersAdapter(
-        storageReadiness: readiness,
-        serverRepository: servers,
-        settingsRepository: settings,
-        appSettingsRepository: app,
-        torSessionPort: tor,
-      );
+  ElectrumServersAdapter adapter() => ElectrumServersAdapter(
+    serverRepository: servers,
+    settingsRepository: settings,
+    appSettingsRepository: app,
+    torSessionPort: tor,
+  );
   LoadElectrumServerDataUsecase loader() => LoadElectrumServerDataUsecase(
-    storageReadiness: provisioner,
     electrumServerRepository: servers,
     electrumSettingsRepository: settings,
     environmentPort: environment,
@@ -120,18 +117,17 @@ void main() {
   );
 
   test(
-    'both first parallel readers wait for the same foreground transaction',
+    'foreground provisioning completes before the first parallel readers',
     () async {
-      final preparation = provisioner.prepareForegroundStorage(
+      final prepared = await provisioner.prepareForegroundStorage(
         NetworkEnv.regtest,
       );
-      final (connection, response, prepared) = await (
-        adapter(provisioner).runWithFallback(
+      final (connection, response) = await (
+        adapter().runWithFallback(
           network: ElectrumServerNetwork.liquidRegtest,
           operation: (connection) async => connection,
         ),
         loader().execute(LoadElectrumServerDataRequest(isLiquid: true)),
-        preparation,
       ).wait;
       expect(prepared, isA<Ok>());
       expect(connection.url, 'tcp://127.0.0.1:50001');
@@ -152,11 +148,11 @@ void main() {
       isA<Err>(),
     );
     await expectLater(
-      adapter(provisioner).runWithFallback(
+      adapter().runWithFallback(
         network: ElectrumServerNetwork.liquidRegtest,
         operation: (_) async => fail('Unexpected transport'),
       ),
-      throwsA(isA<ElectrumStorageNotReadyException>()),
+      throwsException,
     );
     expect(await database.select(database.electrumSettings).get(), isEmpty);
     expect(await database.select(database.electrumServers).get(), isEmpty);
@@ -223,25 +219,13 @@ void main() {
   test('read-only background never repairs missing rows', () async {
     final readonly = ElectrumDefaultsProvisioner(database, readOnly: true);
     expect(
-      await readonly.requireReady(ElectrumServerNetwork.liquidRegtest),
-      isA<Err>(),
-    );
-    expect(
       await readonly.prepareForegroundStorage(NetworkEnv.regtest),
       isA<Err>(),
     );
     expect(await database.select(database.electrumSettings).get(), isEmpty);
     expect(await database.select(database.electrumServers).get(), isEmpty);
     await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
-    expect(
-      await readonly.requireReady(ElectrumServerNetwork.liquidRegtest),
-      isA<Ok>(),
-    );
     await database.delete(database.electrumServers).go();
-    expect(
-      await readonly.requireReady(ElectrumServerNetwork.bitcoinRegtest),
-      isA<Err>(),
-    );
     expect(await database.select(database.electrumServers).get(), isEmpty);
   });
 
@@ -257,17 +241,9 @@ void main() {
       );
       expect(await database.select(database.electrumSettings).get(), isEmpty);
       expect(await database.select(database.electrumServers).get(), isEmpty);
-      expect(
-        await provisioner.requireReady(ElectrumServerNetwork.liquidRegtest),
-        isA<Err>(),
-      );
       await database.customStatement('DROP TRIGGER interrupt_liquid');
       expect(
         await provisioner.prepareForegroundStorage(NetworkEnv.regtest),
-        isA<Ok>(),
-      );
-      expect(
-        await provisioner.requireReady(ElectrumServerNetwork.liquidRegtest),
         isA<Ok>(),
       );
     },
@@ -326,9 +302,7 @@ void main() {
             isCustom: true,
           ),
         );
-    final facade = ElectrumSettingsFacade(
-      prepareForegroundStorage: provisioner.prepareForegroundStorage,
-    );
+    final facade = ElectrumSettingsFacade(provisioner);
     expect(
       await facade.prepareForegroundStorage(
         NetworkEnv.regtest,
@@ -353,18 +327,6 @@ void main() {
     active.fold(
       (values) => expect(values.single.url, 'tcp://custom.example:60001'),
       (failure) => fail('Unexpected ${failure.runtimeType}'),
-    );
-    expect(
-      await provisioner.requireReady(ElectrumServerNetwork.liquidRegtest),
-      isA<Ok>(),
-    );
-    // A headless process with the default build host cannot reuse stale defaults.
-    expect(
-      await ElectrumDefaultsProvisioner(
-        database,
-        readOnly: true,
-      ).requireReady(ElectrumServerNetwork.liquidRegtest),
-      isA<Err>(),
     );
   });
 
@@ -402,15 +364,6 @@ void main() {
               );
         }
         expect(await provisioner.prepareForegroundStorage(boot), isA<Ok>());
-        for (final network in productionNetworks) {
-          expect(await provisioner.requireReady(network), isA<Ok>());
-        }
-        for (final network in [
-          ElectrumServerNetwork.bitcoinRegtest,
-          ElectrumServerNetwork.liquidRegtest,
-        ]) {
-          expect(await provisioner.requireReady(network), isA<Err>());
-        }
         expect(
           await database.select(database.electrumSettings).get(),
           hasLength(4),

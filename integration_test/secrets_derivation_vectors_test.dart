@@ -24,7 +24,9 @@ import '../packages/secrets/test/fixtures/liquid_signing_fixture.dart';
 /// Offline signatures cover successful Liquid finalization here and successful Bitcoin finalization in the package unit suite. Refusal cases keep storage failures separate and drop library messages.
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    expect(await Bull.init(), isA<Ok>());
+  }
 
   // The published BIP39 vector for entropy ffff…ff. Public, so no funds and
   // nothing to leak.

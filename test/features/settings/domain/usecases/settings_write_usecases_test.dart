@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -31,6 +33,8 @@ F _failureOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
 };
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
+
+class _Electrum extends Mock implements ElectrumSettingsFacade {}
 
 void main() {
   setUpAll(() {
@@ -136,9 +140,10 @@ void main() {
     () =>
         when(() => repository.setEnvironment(any()))
             .thenAnswer((_) async => const Err(_sanitized)),
-    () =>
-        SetEnvironmentUsecase(settingsRepository: repository)
-            .execute(Environment.testnet),
+    () => SetEnvironmentUsecase(
+      settingsRepository: repository,
+      electrumSettings: _Electrum(),
+    ).execute(Environment.testnet),
   );
 
   expectsLift(

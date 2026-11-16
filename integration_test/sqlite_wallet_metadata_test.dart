@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show Ok;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -9,7 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    expect(await Bull.init(), isA<Ok>());
+  }
 
   final sqlite = locator<SqliteDatabase>();
 

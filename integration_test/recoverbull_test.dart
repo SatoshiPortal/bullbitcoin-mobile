@@ -13,7 +13,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    expect(await Bull.init(), isA<Ok>());
+  }
 
   final recoverbull = locator<RecoverBullFacade>();
 

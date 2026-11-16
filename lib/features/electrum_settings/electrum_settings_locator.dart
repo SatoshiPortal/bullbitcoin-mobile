@@ -26,10 +26,7 @@ class ElectrumSettingsLocator {
       ),
     );
     locator.registerLazySingleton<ElectrumSettingsFacade>(
-      () => ElectrumSettingsFacade(
-        prepareForegroundStorage:
-            locator<ElectrumDefaultsProvisioner>().prepareForegroundStorage,
-      ),
+      () => ElectrumSettingsFacade(locator<ElectrumDefaultsProvisioner>()),
     );
     // Register the bloc
     locator.registerFactory<ElectrumSettingsBloc>(

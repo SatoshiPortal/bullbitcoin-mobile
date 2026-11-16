@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_storage_readiness_port.dart';
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/features/electrum_settings/data/electrum_servers_adapter.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
@@ -88,7 +86,6 @@ void main() {
       ),
     ).thenAnswer((_) async => null);
     adapter = ElectrumServersAdapter(
-      storageReadiness: _ReadyStorage(),
       serverRepository: serverRepo,
       settingsRepository: settingsRepo,
       appSettingsRepository: appSettingsRepository,
@@ -593,11 +590,4 @@ void main() {
       expect(reached, ['ssl://a.example:50002']);
     });
   });
-}
-
-class _ReadyStorage implements ElectrumStorageReadinessPort {
-  @override
-  Future<Result<void, ElectrumFailure>> requireReady(
-    ElectrumServerNetwork network,
-  ) async => const Ok(null);
 }

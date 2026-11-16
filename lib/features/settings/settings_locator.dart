@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
+
 import 'dart:io';
 
 import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
@@ -83,6 +85,7 @@ class SettingsLocator {
     locator.registerFactory<SetEnvironmentUsecase>(
       () => SetEnvironmentUsecase(
         settingsRepository: locator<SettingsRepository>(),
+        electrumSettings: locator<ElectrumSettingsFacade>(),
       ),
     );
     locator.registerFactory<SetBitcoinUnitUsecase>(

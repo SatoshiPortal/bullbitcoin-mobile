@@ -44,7 +44,9 @@ import 'developer_network.dart';
 // Run via `make integration-test` (auto-aggregated by tools/gen_all_test.dart).
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    expect(await Bull.init(), isA<Ok>());
+  }
 
   final frozenDatasource = locator<SyncFreezesDatasource>();
   final utxoRepository = locator<WalletUtxoRepository>();

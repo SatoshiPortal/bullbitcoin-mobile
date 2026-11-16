@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/electrum_settings/domain/electrum_storage_readiness_port.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
@@ -572,7 +571,6 @@ void main() {
         final torSessionPort = _MockTorSessionPort();
         final appSettingsRepository = _MockAppSettingsRepository();
         final usecase = LoadElectrumServerDataUsecase(
-          storageReadiness: _ReadyStorage(),
           electrumServerRepository: serverRepo,
           electrumSettingsRepository: settingsRepo,
           environmentPort: envPort,
@@ -610,7 +608,6 @@ void main() {
         priority: 0,
       );
       final usecase = LoadElectrumServerDataUsecase(
-        storageReadiness: _ReadyStorage(),
         electrumServerRepository: serverRepo,
         electrumSettingsRepository: settingsRepo,
         environmentPort: envPort,
@@ -741,7 +738,6 @@ void main() {
           ),
         ).thenAnswer((_) async => ElectrumServerStatus.online);
         final usecase = LoadElectrumServerDataUsecase(
-          storageReadiness: _ReadyStorage(),
           electrumServerRepository: serverRepo,
           electrumSettingsRepository: settingsRepo,
           environmentPort: envPort,
@@ -800,7 +796,6 @@ void main() {
         ),
       ).thenThrow(OnionServerWithoutTorException(server.url));
       final usecase = LoadElectrumServerDataUsecase(
-        storageReadiness: _ReadyStorage(),
         electrumServerRepository: serverRepo,
         electrumSettingsRepository: settingsRepo,
         environmentPort: envPort,
@@ -869,11 +864,4 @@ void main() {
       expect((result as Err).failure, isA<ElectrumSaveFailure>());
     });
   });
-}
-
-class _ReadyStorage implements ElectrumStorageReadinessPort {
-  @override
-  Future<Result<void, ElectrumFailure>> requireReady(
-    ElectrumServerNetwork network,
-  ) async => const Ok(null);
 }

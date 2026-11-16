@@ -87,7 +87,6 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<ElectrumServersPort>(
       () => ElectrumServersAdapter(
-        storageReadiness: locator<ElectrumDefaultsProvisioner>(),
         serverRepository: locator<ElectrumServerRepository>(),
         settingsRepository: locator<ElectrumSettingsRepository>(),
         appSettingsRepository: locator<SettingsRepository>(),
@@ -125,7 +124,6 @@ class ElectrumLocator {
     );
     locator.registerFactory<LoadElectrumServerDataUsecase>(
       () => LoadElectrumServerDataUsecase(
-        storageReadiness: locator<ElectrumDefaultsProvisioner>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         environmentPort: locator<EnvironmentPort>(),

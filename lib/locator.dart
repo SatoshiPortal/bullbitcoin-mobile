@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
+    show ElectrumFailure;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/status_check/status_core_locator.dart';
@@ -89,7 +91,7 @@ class AppLocator {
   }
 
   /// Call this in the `main` function **before** `runApp()`
-  static Future<void> setup(
+  static Future<Result<void, ElectrumFailure>> setup(
     GetIt locator,
     SqliteDatabase database, {
     required String payjoinDatabasePath,
@@ -118,7 +120,8 @@ class AppLocator {
     // This is a hack though as normally repositories should not depend on ports
     // The proper solution is to refactor the code to remove this dependency
     CoreLocator.registerPorts(locator);
-    await CoreLocator.registerRepositories(locator);
+    final repositories = await CoreLocator.registerRepositories(locator);
+    if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
     CoreLocator.registerFrameworks(locator);
@@ -200,5 +203,6 @@ class AppLocator {
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
+    return const Ok(null);
   }
 }

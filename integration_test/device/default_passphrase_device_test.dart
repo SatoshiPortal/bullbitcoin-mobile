@@ -134,7 +134,9 @@ Future<void> _waitFor(WidgetTester tester, bool Function() done) async {
 }
 
 Future<void> initializeDeviceTests({bool isInitialized = false}) async {
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    expect(await Bull.init(), isA<Ok>());
+  }
   final view = WidgetsBinding.instance.platformDispatcher.views.first;
   Device.screen = view.physicalSize / view.devicePixelRatio;
 }
