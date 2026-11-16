@@ -23,8 +23,12 @@ abstract interface class TorRepository {
 
   /// Replaces the running client, including one still bootstrapping — the
   /// only way out of a bootstrap that is stuck rather than slow.
+  ///
+  /// [snowflake] asks automatic mode to go straight to Snowflake until the
+  /// mode changes, without changing the user's chosen mode. An explicit direct
+  /// or Snowflake mode is honoured as is.
   @useResult
-  Future<TorConnectionState> retry();
+  Future<TorConnectionState> retry({bool snowflake = false});
 
   @useResult
   Future<TorConnectionState> setMode(TorTransportMode mode);

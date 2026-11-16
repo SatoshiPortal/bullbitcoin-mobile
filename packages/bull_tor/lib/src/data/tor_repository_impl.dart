@@ -48,6 +48,9 @@ final class TorRepositoryImpl implements TorRepository {
   Future<TorConnectionState>? _inFlight;
   bool _retryInFlight = false;
 
+  /// The user asked for Snowflake from a failure screen; cleared by a mode change.
+  bool _snowflakeRequested = false;
+
   /// Bumped by every start. A connection whose generation is stale must stay
   /// silent: a newer one owns the published state.
   int _generation = 0;
@@ -123,8 +126,13 @@ final class TorRepositoryImpl implements TorRepository {
   }
 
   @override
-  Future<TorConnectionState> retry() {
+  Future<TorConnectionState> retry({bool snowflake = false}) {
     final inFlight = _inFlight;
+    if (snowflake && !_snowflakeRequested) {
+      _snowflakeRequested = true;
+      // A retry already running on the direct path must not absorb this one.
+      return _begin(retry: true);
+    }
     if (inFlight != null && _retryInFlight) return inFlight;
 
     return _begin(retry: true);
@@ -134,6 +142,7 @@ final class TorRepositoryImpl implements TorRepository {
   Future<TorConnectionState> setMode(TorTransportMode mode) {
     if (_mode == mode) return ensureReady();
     _mode = mode;
+    _snowflakeRequested = false;
     return retry();
   }
 
@@ -362,7 +371,8 @@ final class TorRepositoryImpl implements TorRepository {
     TorTransportMode.direct => const [TorTransport.direct],
     TorTransportMode.snowflake => const [TorTransport.snowflake],
     TorTransportMode.automatic
-        when _lastSuccessfulTransport == TorTransport.snowflake =>
+        when _snowflakeRequested ||
+            _lastSuccessfulTransport == TorTransport.snowflake =>
       const [TorTransport.snowflake],
     TorTransportMode.automatic => const [
       TorTransport.direct,
