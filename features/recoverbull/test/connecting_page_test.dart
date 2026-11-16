@@ -96,7 +96,10 @@ void main() {
     );
   }
 
-  Future<void> pumpPage(WidgetTester tester) async {
+  Future<void> pumpPage(
+    WidgetTester tester, {
+    RecoverBullFlow flow = RecoverBullFlow.secureVault,
+  }) async {
     build();
     tester.view.physicalSize = const Size(1080, 2340);
     tester.view.devicePixelRatio = 2.75;
@@ -107,7 +110,7 @@ void main() {
         localizationsDelegates: RecoverBullFeature.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
         home: RecoverBullFlowHost(
-          flow: RecoverBullFlow.secureVault,
+          flow: flow,
           presentation: presentation,
           page: const ConnectingPage(),
           copiedMessage: 'Copied',
@@ -353,6 +356,27 @@ void main() {
     await tester.ensureVisible(find.widgetWithText(BullButton, 'Tor Settings'));
     await tester.tap(find.widgetWithText(BullButton, 'Tor Settings'));
     expect(torSettingsOpened, 1);
+    await leave(tester);
+  });
+
+  testWidgets('a recovery can skip the server with its vault key', (
+    tester,
+  ) async {
+    await pumpPage(tester, flow: RecoverBullFlow.recoverVault);
+    // The probe is still running: it must neither block nor hide the way out.
+    expect(presentation.cubit.state.keyServer, KeyServerStatus.connecting);
+    expect(presentation.cubit.state.busy, isFalse);
+
+    await tester.ensureVisible(find.text('Enter a vault key instead'));
+    await tester.tap(find.text('Enter a vault key instead'));
+    await tester.pumpAndSettle();
+    expect(find.text('Select Vault Provider'), findsOneWidget);
+    await leave(tester);
+  });
+
+  testWidgets('a new backup cannot skip the server', (tester) async {
+    await pumpPage(tester);
+    expect(find.text('Enter a vault key instead'), findsNothing);
     await leave(tester);
   });
 
