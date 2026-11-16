@@ -398,6 +398,25 @@ m.Widget bullDialPadUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'QWERTY', type: BullMnemonicKeyboard)
+m.Widget bullMnemonicKeyboardUseCase(m.BuildContext context) {
+  // Resize the viewport to watch the keys follow the available space.
+  return m.Align(
+    alignment: m.Alignment.bottomCenter,
+    child: BullMnemonicKeyboard(
+      enabledLetters: BullMnemonicKeyboard.qwerty.toSet(),
+      canBackspace: true,
+      canAdvance: context.knobs.boolean(label: 'can advance'),
+      onLetter: (_) {},
+      onBackspace: () {},
+      onEnter: () {},
+      shuffleActive: context.knobs.boolean(label: 'shuffle active'),
+      onToggleShuffle: () {},
+      shuffleHint: 'Scramble the keys and suggestions on every tap',
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Closed', type: BullDropdown)
 m.Widget bullDropdownClosedUseCase(m.BuildContext context) {
   return _frame(

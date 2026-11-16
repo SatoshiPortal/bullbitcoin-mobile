@@ -1,0 +1,154 @@
+import 'dart:math' as math;
+
+import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:material_ui/material_ui.dart';
+
+/// How the keys of an on-screen keypad grow with the space they are given.
+///
+/// Tokens never scale with the screen, so key size is a layout decision: each
+/// keypad resolves it from its own constraints, on a phone as in a desktop
+/// window.
+@immutable
+class BullKeypadGrid {
+  /// Keys across the widest row.
+  final int columns;
+
+  /// Rows of keys.
+  final int rows;
+
+  /// Key height over key width while both budgets allow it.
+  final double aspectRatio;
+
+  /// Floor for a cramped space, such as a phone in landscape: a key stays a
+  /// usable tap target.
+  final double minKeyHeight;
+
+  /// Ceiling for a roomy space, such as a desktop window.
+  final double maxKeyHeight;
+
+  /// Keeps a wide window from stretching keys into bars; the keypad then
+  /// centres at its natural width.
+  final double maxKeyWidth;
+
+  /// Space between two keys, across and down.
+  final double gap;
+
+  /// Share of the screen or window height the rows may take. A [Column]
+  /// leaves its children's height unbounded, so this is the height budget.
+  final double screenShare;
+
+  const BullKeypadGrid({
+    required this.columns,
+    required this.rows,
+    required this.aspectRatio,
+    required this.minKeyHeight,
+    required this.maxKeyHeight,
+    required this.maxKeyWidth,
+    required this.gap,
+    required this.screenShare,
+  });
+
+  /// Sizes the keys for [constraints] on a [screen] of the given size.
+  ///
+  /// The width is shared by [columns] keys, capped at [maxKeyWidth]. The
+  /// height follows [aspectRatio] unless the budget for [rows] is smaller,
+  /// then is clamped to [minKeyHeight]..[maxKeyHeight].
+  BullKeypadMetrics resolve(BoxConstraints constraints, Size screen) {
+    final width = constraints.hasBoundedWidth
+        ? constraints.maxWidth
+        : screen.width;
+    final heightBudget = math.min(
+      constraints.maxHeight,
+      screen.height * screenShare,
+    );
+    final keyWidth = math.max(
+      0.0,
+      math.min((width - gap * (columns - 1)) / columns, maxKeyWidth),
+    );
+    final keyHeight = math
+        .min(keyWidth * aspectRatio, (heightBudget - gap * (rows - 1)) / rows)
+        .clamp(minKeyHeight, maxKeyHeight);
+    return BullKeypadMetrics(
+      keyWidth: keyWidth,
+      keyHeight: keyHeight,
+      gap: gap,
+      width: keyWidth * columns + gap * (columns - 1),
+    );
+  }
+}
+
+/// Key sizes resolved by [BullKeypadGrid.resolve].
+@immutable
+class BullKeypadMetrics {
+  final double keyWidth;
+  final double keyHeight;
+  final double gap;
+
+  /// Width of the widest row, gaps included.
+  final double width;
+
+  const BullKeypadMetrics({
+    required this.keyWidth,
+    required this.keyHeight,
+    required this.gap,
+    required this.width,
+  });
+
+  /// Glyph and icon size for a key of this height.
+  double get glyphSize => (keyHeight * 0.4).clamp(16.0, 28.0);
+}
+
+/// The shared key shell: colour, corner, tap surface and height. A disabled
+/// key has no tap handler at all, so it cannot fire even through automation.
+class BullKeyCap extends StatelessWidget {
+  final bool enabled;
+  final VoidCallback onTap;
+  final double height;
+  final Widget child;
+
+  /// When true, the key changes appearance as an instant cut with no ink
+  /// splash. Used while the layout is reshuffling on every tap: an animated
+  /// colour fade or a splash that outlives the reshuffle would mark, for a
+  /// frame, which slot was just pressed — letting an observer follow a key
+  /// across the shuffle and defeating it.
+  final bool suppressAnimation;
+
+  const BullKeyCap({
+    super.key,
+    required this.enabled,
+    required this.onTap,
+    required this.height,
+    required this.child,
+    this.suppressAnimation = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    final radius = BorderRadius.circular(context.bullShapes.key);
+    return Material(
+      // Zero duration: even in basic mode an enable/disable colour tween is an
+      // extra frame of state history for a camera; there is no reason to
+      // animate a key cap.
+      animationDuration: Duration.zero,
+      color: enabled ? colors.surface : colors.surfaceContainerHighest,
+      borderRadius: radius,
+      child: InkWell(
+        // A key must never take focus from the field being typed into.
+        canRequestFocus: false,
+        borderRadius: radius,
+        splashFactory: suppressAnimation ? NoSplash.splashFactory : null,
+        highlightColor: suppressAnimation ? colors.transparent : null,
+        onTap: enabled ? onTap : null,
+        child: SizedBox(
+          height: height,
+          child: Center(
+            // Scales a glyph down rather than overflowing a cramped key.
+            child: FittedBox(fit: BoxFit.scaleDown, child: child),
+          ),
+        ),
+      ),
+    );
+  }
+}
