@@ -152,3 +152,33 @@ class BullKeyCap extends StatelessWidget {
     );
   }
 }
+
+/// The reshuffle policy shared by every scrambling keypad.
+abstract final class BullKeyScramble {
+  /// A random arrangement of [keys] that leaves at most [maxUnmoved] of them
+  /// where [previous] had them. A shuffle that leaves most keys in place looks
+  /// like nothing changed and invites a mistap from muscle memory.
+  ///
+  /// Pass a `Random.secure()`: a predictable layout defeats the scramble.
+  static List<T> next<T>(
+    List<T> keys, {
+    required List<T> previous,
+    required int maxUnmoved,
+    required math.Random random,
+  }) {
+    assert(keys.length == previous.length, 'Both layouts hold the same keys');
+    List<T> next;
+    do {
+      next = List.of(keys)..shuffle(random);
+    } while (_unmoved(next, previous) > maxUnmoved);
+    return next;
+  }
+
+  static int _unmoved<T>(List<T> a, List<T> b) {
+    var same = 0;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] == b[i]) same++;
+    }
+    return same;
+  }
+}

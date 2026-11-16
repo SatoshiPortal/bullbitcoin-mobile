@@ -417,6 +417,27 @@ m.Widget bullMnemonicKeyboardUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullPinPad)
+m.Widget bullPinPadUseCase(m.BuildContext context) {
+  // Keys are surface-coloured, so the pad sits on the screen background, as on
+  // the PIN screens. Resize the viewport to watch the keys follow the space.
+  return m.ColoredBox(
+    color: context.bull.background,
+    child: m.Align(
+      alignment: m.Alignment.bottomCenter,
+      child: m.Padding(
+        padding: const m.EdgeInsets.all(16),
+        child: BullPinPad(
+          onDigit: (_) {},
+          onBackspace: () {},
+          scrambleHint: 'Scramble the digits on every tap',
+          enabled: context.knobs.boolean(label: 'enabled', initialValue: true),
+        ),
+      ),
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Closed', type: BullDropdown)
 m.Widget bullDropdownClosedUseCase(m.BuildContext context) {
   return _frame(
