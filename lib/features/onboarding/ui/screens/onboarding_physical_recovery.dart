@@ -175,7 +175,6 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                                 ? 0.5
                                 : 1.0,
                             child: MnemonicWidget(
-                              englishOnly: true,
                               initialLength: bip39.MnemonicLength.words12,
                               allowMultipleMnemonicLength: true,
                               allowLabel: false,
