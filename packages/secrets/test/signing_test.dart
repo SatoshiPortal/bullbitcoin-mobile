@@ -35,7 +35,8 @@ void main() {
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
     secret = ok(
-      await Secrets(scratchDirectory: () async => '/tmp').import(words: words),
+      await Secrets(scratchDirectory: () async => '/tmp')
+          .import(words: words, language: Language.english),
     );
   });
 

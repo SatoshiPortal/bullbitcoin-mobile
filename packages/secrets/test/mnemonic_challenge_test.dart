@@ -53,7 +53,9 @@ void main() {
   Future<Secret> store(WidgetTester tester, List<String> words) async {
     late Secret secret;
     await tester.runAsync(() async {
-      secret = ok(await secrets.import(words: words));
+      secret = ok(
+        await secrets.import(words: words, language: Language.english),
+      );
     });
     return secret;
   }

@@ -62,7 +62,7 @@ void main() {
     // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
     FakeSecureStoragePlatform().install();
     final fallback = await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words);
+        .import(words: words, language: bip39.Language.english);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(Network.bitcoinMainnet);
@@ -247,7 +247,7 @@ void main() {
         // The mocked preflight says the words are new, as it can after a stale
         // read or a concurrent storage operation. Import still rejects them.
         expect(
-          await secrets.import(words: words),
+          await secrets.import(words: words, language: bip39.Language.english),
           isA<Ok<Secret, SecretFailure>>(),
         );
 

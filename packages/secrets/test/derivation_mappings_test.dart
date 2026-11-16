@@ -31,7 +31,7 @@ void main() {
     FakeSecureStoragePlatform().install();
     secret = ok(
       await Secrets(scratchDirectory: () async => '/tmp')
-          .import(words: words.split(' ')),
+          .import(words: words.split(' '), language: Language.english),
     );
     final mnemonic = bdk.Mnemonic.fromString(mnemonic: words);
     try {

@@ -61,6 +61,7 @@ void main() {
       await parent.derive.bip85.mnemonic(
         wordCount: MnemonicLength.words12,
         index: 11811,
+        language: Language.english,
       ),
     );
     expect(defaultChild, ark);

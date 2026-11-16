@@ -64,14 +64,17 @@ Future<void> main({bool isInitialized = false}) async {
   Future<Secret> importFixture(
     List<String> words, {
     String? passphrase,
-  }) async =>
-      switch (await secrets.import(words: words, passphrase: passphrase)) {
-        Ok(:final value) => value,
-        Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
-          await secrets.fetch(id),
-        ),
-        Err(:final failure) => fail('import: ${failure.runtimeType}'),
-      };
+  }) async => switch (await secrets.import(
+    words: words,
+    passphrase: passphrase,
+    language: Language.english,
+  )) {
+    Ok(:final value) => value,
+    Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+      await secrets.fetch(id),
+    ),
+    Err(:final failure) => fail('import: ${failure.runtimeType}'),
+  };
 
   Future<Secret> importWords({String? passphrase}) async {
     final key = passphrase ?? '';
@@ -351,6 +354,7 @@ Future<void> main({bool isInitialized = false}) async {
           await secret.derive.bip85.mnemonic(
             wordCount: MnemonicLength.words12,
             index: 11811,
+            language: Language.english,
           ),
         );
         expect(ark, referenceChild(11811));
@@ -405,6 +409,7 @@ Future<void> main({bool isInitialized = false}) async {
             await secret.derive.bip85.mnemonic(
               wordCount: MnemonicLength.words12,
               index: 26589,
+              language: Language.english,
             ),
           );
 
@@ -493,6 +498,7 @@ Future<void> main({bool isInitialized = false}) async {
             await secret.derive.bip85.mnemonic(
               wordCount: MnemonicLength.words12,
               index: 26589,
+              language: Language.english,
             ),
           );
           expect(key.mnemonic, child.join(' '));

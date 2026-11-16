@@ -61,7 +61,12 @@ void main() {
     FakeSecureStoragePlatform().install();
     final secrets = custody.Secrets(scratchDirectory: () async => '.');
     // Published BIP39 test vector.
-    ok(await secrets.import(words: '${'abandon ' * 11}about'.split(' ')));
+    ok(
+      await secrets.import(
+        words: '${'abandon ' * 11}about'.split(' '),
+        language: custody.Language.english,
+      ),
+    );
     vaults = SecretsVaultRepository(secrets);
     wallets = _Wallets(context);
     files = _Files();

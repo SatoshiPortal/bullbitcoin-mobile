@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/crypto/crypto.dart';
@@ -73,7 +74,13 @@ void main() {
       final repo = SecretRepository();
       final words = v.label.startsWith('zoo') ? zoo : abandon;
 
-      final info = ok(await repo.store(words: words, passphrase: v.passphrase));
+      final info = ok(
+        await repo.store(
+          words: words,
+          passphrase: v.passphrase,
+          language: bip39.Language.english,
+        ),
+      );
       expect(info.id.hex, v.id);
 
       final material = ok(await repo.use(info, (m) => m));

@@ -24,7 +24,10 @@ void main() {
         scratchDirectory: () async => directory.path,
       );
       expect(
-        await secrets.import(words: '${'abandon ' * 11}about'.split(' ')),
+        await secrets.import(
+          words: '${'abandon ' * 11}about'.split(' '),
+          language: custody.Language.english,
+        ),
         isA<Ok>(),
       );
       final context = VaultContext(

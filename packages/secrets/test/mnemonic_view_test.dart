@@ -56,6 +56,7 @@ void main() {
     await tester.runAsync(() async {
       secret = (await secrets.import(
         words: words,
+        language: Language.english,
       ) as Ok<Secret, SecretFailure>).value;
     });
     return secret;
@@ -100,6 +101,7 @@ void main() {
       secret = (await secrets.import(
         words: wordsA,
         passphrase: 'synthetic',
+        language: Language.english,
       ) as Ok<Secret, SecretFailure>).value;
     });
     await tester.pumpWidget(
@@ -221,6 +223,7 @@ void main() {
       secret = (await secrets.import(
         words: wordsA,
         passphrase: 'hunter2',
+        language: Language.english,
       ) as Ok<Secret, SecretFailure>).value;
     });
     for (final view in [

@@ -128,7 +128,7 @@ final class Secret extends SecretEntry {
   Future<Result<List<String>, SecretFailure>> bip85Mnemonic({
     required MnemonicLength wordCount,
     required int index,
-    Language language = Language.english,
+    required Language language,
   }) {
     _requireIndex(index, 'index');
     return _repository.use(

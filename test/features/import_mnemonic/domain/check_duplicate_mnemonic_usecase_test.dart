@@ -108,7 +108,7 @@ void main() {
 
     test('allows an orphan secret to be retried', () async {
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
 
@@ -118,7 +118,10 @@ void main() {
     });
 
     test('rejects a referenced secret only on the target network', () async {
-      expect(await secrets.import(words: words), isA<Ok>());
+      expect(
+        await secrets.import(words: words, language: bip39.Language.english),
+        isA<Ok>(),
+      );
       final row = _Row();
       when(() => row.masterFingerprint).thenReturn('73c5da0a');
       when(() => row.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
@@ -143,7 +146,10 @@ void main() {
     test(
       'unresolved catalog networks do not block orphan import preflight',
       () async {
-        expect(await secrets.import(words: words), isA<Ok>());
+        expect(
+          await secrets.import(words: words, language: bip39.Language.english),
+          isA<Ok>(),
+        );
         final invalid = _Row();
         when(() => invalid.masterFingerprint).thenReturn('73c5da0a');
         when(() => invalid.id).thenReturn('invalid origin');
@@ -172,7 +178,7 @@ void main() {
 
     test('a passphrase makes a different secret, not a duplicate', () async {
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
 
@@ -189,7 +195,7 @@ void main() {
       () async {
         const sentinel = 'SYNTHETIC_KEYSTORE_SENTINEL';
         expect(
-          await secrets.import(words: words),
+          await secrets.import(words: words, language: bip39.Language.english),
           isA<Ok<Secret, SecretFailure>>(),
         );
         // contains now reads and compares the stored seed, so every retry must fail.

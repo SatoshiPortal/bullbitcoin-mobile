@@ -130,7 +130,10 @@ void main() {
     'both reserved plaintext keys belong to the vault, never caller metadata',
     () async {
       final secret = ok(
-        await secrets.import(words: [...List.filled(11, 'abandon'), 'about']),
+        await secrets.import(
+          words: [...List.filled(11, 'abandon'), 'about'],
+          language: Language.english,
+        ),
       );
       for (final key in ['mnemonic', 'mnemonicLanguage']) {
         await expectLater(
@@ -148,7 +151,10 @@ void main() {
   for (final reservedKey in ['mnemonic', 'mnemonicLanguage']) {
     test('caller mutation cannot inject $reservedKey while sealing', () async {
       final secret = ok(
-        await secrets.import(words: [...List.filled(11, 'abandon'), 'about']),
+        await secrets.import(
+          words: [...List.filled(11, 'abandon'), 'about'],
+          language: Language.english,
+        ),
       );
       final metadata = <String, dynamic>{'label': 'published vector'};
       final sealing = secret.backup.recoverbull(metadata: metadata);
@@ -197,7 +203,10 @@ void main() {
     'caller language metadata stays free and round-trips untouched',
     () async {
       final secret = ok(
-        await secrets.import(words: [...List.filled(11, 'abandon'), 'about']),
+        await secrets.import(
+          words: [...List.filled(11, 'abandon'), 'about'],
+          language: Language.english,
+        ),
       );
       final backup = ok(
         await secret.backup.recoverbull(metadata: {'language': 'fr'}),
@@ -216,7 +225,9 @@ void main() {
     final english = [...List.filled(11, 'abandon'), 'about'];
     for (final callerValue in ['fr', 'japanese', null, 42]) {
       storage.entries.clear();
-      final secret = ok(await secrets.import(words: english));
+      final secret = ok(
+        await secrets.import(words: english, language: Language.english),
+      );
       final backup = ok(await secret.backup.recoverbull());
       final path =
           (jsonDecode(backup.vault.json) as Map<String, dynamic>)['path'];

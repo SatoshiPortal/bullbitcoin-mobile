@@ -71,6 +71,8 @@ final class Secrets {
     MnemonicLength wordCount = MnemonicLength.words12,
   }) async => (await _repository.store(
     words: Generator.mnemonic(wordCount: wordCount),
+    // bdk generates English words.
+    language: Language.english,
     rejectExisting: true,
   )).map(_handle);
 
@@ -80,7 +82,7 @@ final class Secrets {
   @useResult
   Future<Result<Secret, SecretFailure>> import({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     Set<Fingerprint>? acceptOnly,
   }) async => (await _repository.store(
@@ -136,7 +138,7 @@ final class Secrets {
   @useResult
   Future<Result<bool, SecretFailure>> contains({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) async => (await find(
     words: words,
@@ -149,7 +151,7 @@ final class Secrets {
   @useResult
   Future<Result<Secret?, SecretFailure>> find({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) async => (await _repository.find(
     words: words,
@@ -170,7 +172,7 @@ final class Secrets {
   Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
   previewBitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required Set<ScriptType> scriptTypes,
@@ -188,7 +190,7 @@ final class Secrets {
   @useResult
   Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required ScriptType scriptType,
@@ -311,7 +313,7 @@ extension type const SecretPreview._(Secrets _secrets) {
   Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
   bitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required Set<ScriptType> scriptTypes,
@@ -327,7 +329,7 @@ extension type const SecretPreview._(Secrets _secrets) {
   @useResult
   Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required ScriptType scriptType,

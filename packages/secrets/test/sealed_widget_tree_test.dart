@@ -33,6 +33,7 @@ void main() {
           final result = await secrets.import(
             words: words,
             passphrase: passphrase,
+            language: Language.english,
           );
           secret = (result as Ok<Secret, SecretFailure>).value;
         });

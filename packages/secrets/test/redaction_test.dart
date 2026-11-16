@@ -55,7 +55,7 @@ void main() {
       // It used to return a bare Future, so the exception escaped
       // uncaught — with the word in it.
       final result = await secretsWith(FakeSecureStoragePlatform())
-          .contains(words: wrongChecksum);
+          .contains(words: wrongChecksum, language: Language.english);
 
       expect(result, isA<Err<bool, SecretFailure>>());
       final failure = (result as Err<bool, SecretFailure>).failure;
@@ -64,7 +64,7 @@ void main() {
 
     test('import fails without naming the word', () async {
       final result = await secretsWith(FakeSecureStoragePlatform())
-          .import(words: wrongChecksum);
+          .import(words: wrongChecksum, language: Language.english);
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
       expect(failure.logMessage, isNot(contains('zebra')));
