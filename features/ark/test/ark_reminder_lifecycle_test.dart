@@ -80,6 +80,7 @@ Future<void> holdAlarm((String, SendPort) args) async {
   await store.reconcile(
     account: account(),
     warning: warning(
+      revision: 6,
       tip: 499,
       at: DateTime.utc(2026, 11, 16),
       live: {'old': 500},
@@ -98,7 +99,12 @@ void main() {
   late SqliteArkReminderRepository store;
   final initial = DateTime.utc(2026, 11, 16);
   final later = warning(tip: 100, at: initial, live: {'old': 500});
-  final earlier = warning(tip: 499, at: initial, live: {'old': 500});
+  final earlier = warning(
+    revision: 6,
+    tip: 499,
+    at: initial,
+    live: {'old': 500},
+  );
 
   SqliteArkReminderRepository open(Gateway port, {bool initialize = false}) =>
       value(

@@ -71,7 +71,7 @@ void main() {
     },
   );
   test(
-    'unknown board expiry cannot postpone its previously admitted bound',
+    'removed board expiry cannot postpone the admitted VTXO bound',
     () async {
       final dir = Directory.systemTemp.createTempSync('ark-partial-board-');
       final gateway = Notifications();
@@ -107,6 +107,12 @@ void main() {
         );
         expect(await update.execute(observation(1, 200)), isA<Ok>());
         final original = gateway.scheduled.single;
+        expect(
+          original.at,
+          now
+              .add(const Duration(minutes: 9000))
+              .subtract(const Duration(hours: 24)),
+        );
         expect(await update.execute(observation(2, null)), isA<Ok>());
         expect(gateway.scheduled.last.id, original.id);
         expect(gateway.scheduled.last.at, original.at);

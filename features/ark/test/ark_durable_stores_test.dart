@@ -119,12 +119,13 @@ void main() {
       initializeNew: foreground,
     ),
   );
-  ArkExpiryWarning warning(int tip) => switch (ArkExpiryWarning.fromSnapshot(
-    observed(tip: tip, vtxos: [vtxo('old', 500)]),
-  )) {
-    final warning? => warning,
-    null => throw StateError('Missing fixture warning'),
-  };
+  ArkExpiryWarning warning(int tip, {int revision = 5}) =>
+      switch (ArkExpiryWarning.fromSnapshot(
+        observed(tip: tip, revision: revision, vtxos: [vtxo('old', 500)]),
+      )) {
+        final warning? => warning,
+        null => throw StateError('Missing fixture warning'),
+      };
   test('startup reapply retains stable ID and deadline for same inputs after restart', () async {
     final path = '${directory.path}/reminders';
     final gateway = Notifications();
@@ -144,7 +145,7 @@ void main() {
     expect(
       await reopened.reconcile(
         account: account(),
-        warning: warning(110),
+        warning: warning(110, revision: 6),
         authoritativeEmpty: false,
         revision: 6,
         tipHeight: 110,

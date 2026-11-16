@@ -16,6 +16,7 @@ final class Reminders implements ArkReminderRepository {
           ArkExpiryWarning? warning,
           bool empty,
           int revision,
+          ArkReminderPolicyEvidence? evidence,
         })
       >[];
   @override
@@ -25,12 +26,14 @@ final class Reminders implements ArkReminderRepository {
     required bool authoritativeEmpty,
     required int revision,
     required int tipHeight,
+    ArkReminderPolicyEvidence? policyEvidence,
   }) async {
     calls.add((
       account: account,
       warning: warning,
       empty: authoritativeEmpty,
       revision: revision,
+      evidence: policyEvidence,
     ));
     return const Ok(null);
   }
@@ -46,6 +49,9 @@ ArkVtxo vtxo(String id, int expiry, {bool delegated = false}) => ArkVtxo(
 ArkSnapshot observed({
   bool stale = false,
   int? tip = 100,
+  int revision = 5,
+  ArkAccountId? owner,
+  List<ArkMovement> movements = const [],
   List<ArkVtxo> vtxos = const [],
   List<ArkPendingBoard> boards = const [],
   List<ArkOperation> operations = const [],
@@ -53,13 +59,14 @@ ArkSnapshot observed({
   ArkObligationStatus obligations = ArkObligationStatus.present,
   ArkRecoveryStatus recovery = ArkRecoveryStatus.complete,
 }) => ArkSnapshot(
-  account: account(),
-  revision: 5,
+  account: owner ?? account(),
+  revision: revision,
   observedAt: DateTime.utc(2026, 11, 16),
   tipHeight: tip,
   stale: stale,
   vtxoCompleteness: ArkSectionCompleteness.complete,
   vtxos: vtxos,
+  movements: movements,
   pendingBoards: boards,
   operations: operations,
   renewal: renewal,
@@ -173,10 +180,11 @@ void main() {
     ]) {
       await usecase.execute(state);
     }
-    expect(repository.calls, isEmpty);
+    expect(repository.calls, hasLength(3));
+    expect(repository.calls.every((c) => !c.empty && c.warning == null), true);
   });
   test(
-    'unknown pending board evidence cannot authorize empty cancellation',
+    'positive raw empty VTXOs permits VTXO cancel despite pending board',
     () async {
       final repository = Reminders();
       await UpdateArkExpiryWarningUsecase(repository).execute(
@@ -191,11 +199,12 @@ void main() {
           ],
         ),
       );
-      expect(repository.calls, isEmpty);
+      expect(repository.calls.single.empty, true);
+      expect(repository.calls.single.warning, isNull);
     },
   );
   test(
-    'unresolved funding operation cannot authorize empty cancellation',
+    'positive raw empty VTXOs permits VTXO cancel despite funding obligation',
     () async {
       final repository = Reminders();
       await UpdateArkExpiryWarningUsecase(repository).execute(
@@ -212,7 +221,8 @@ void main() {
           ],
         ),
       );
-      expect(repository.calls, isEmpty);
+      expect(repository.calls.single.empty, true);
+      expect(repository.calls.single.warning, isNull);
     },
   );
   test(
@@ -237,7 +247,7 @@ void main() {
     }
     expect(first.sameInputs(next), true);
   });
-  test('unconfirmed board expiry is urgent even with no spendable VTXO', () {
+  test('unconfirmed board expiry does not create a warning', () {
     final warning = ArkExpiryWarning.fromSnapshot(
       observed(
         boards: [
@@ -250,31 +260,27 @@ void main() {
         ],
       ),
     );
-    expect(warning?.expiries, {'board:board-1': 110});
-    expect(warning?.notifyAt.isBefore(DateTime.utc(2026, 11, 16)), true);
+    expect(warning, isNull);
   });
-  test(
-    'prepared funding operation retains known expiry before board registration',
-    () {
-      final warning = ArkExpiryWarning.fromSnapshot(
-        observed(
-          operations: [
-            ArkOperation(
-              id: 'funding-1',
-              kind: ArkOperationKind.board,
-              status: ArkOperationStatus.prepared,
-              boardFunding: ArkBoardFundingDetails(
-                address: 'public-funding-address',
-                keypairIndex: 1,
-                expiryHeight: 110,
-              ),
-              chainSource: Uri.parse('https://example.com'),
-              configGeneration: 1,
+  test('prepared funding expiry does not create a warning', () {
+    final warning = ArkExpiryWarning.fromSnapshot(
+      observed(
+        operations: [
+          ArkOperation(
+            id: 'funding-1',
+            kind: ArkOperationKind.board,
+            status: ArkOperationStatus.prepared,
+            boardFunding: ArkBoardFundingDetails(
+              address: 'public-funding-address',
+              keypairIndex: 1,
+              expiryHeight: 110,
             ),
-          ],
-        ),
-      );
-      expect(warning?.expiries, {'funding:funding-1': 110});
-    },
-  );
+            chainSource: Uri.parse('https://example.com'),
+            configGeneration: 1,
+          ),
+        ],
+      ),
+    );
+    expect(warning, isNull);
+  });
 }

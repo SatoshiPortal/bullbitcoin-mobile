@@ -13,13 +13,14 @@ import 'ark_durable_stores_test.dart' show value, Notifications;
 
 ArkExpiryWarning warning({
   required int tip,
+  int revision = 5,
   required DateTime at,
   required Map<String, int> live,
   List<ArkMovement> movements = const [],
 }) {
   final snapshot = ArkSnapshot(
     account: account(),
-    revision: 5,
+    revision: revision,
     observedAt: at,
     tipHeight: tip,
     stale: false,
@@ -75,6 +76,7 @@ void main() {
       final first = warning(tip: 100, at: initial, live: {'old': 500});
       await apply(first, 5);
       final advanced = warning(
+        revision: 6,
         tip: 499,
         at: initial.add(const Duration(hours: 1)),
         live: {'old': 500},
@@ -98,6 +100,7 @@ void main() {
       await apply(first, 5);
       await apply(
         warning(
+          revision: 6,
           tip: 100,
           at: initial.add(const Duration(hours: 6)),
           live: {'urgent': 500, 'new-other': 2000},
@@ -114,6 +117,7 @@ void main() {
       await apply(first, 5);
       await apply(
         warning(
+          revision: 6,
           tip: 100,
           at: initial.add(const Duration(hours: 6)),
           live: {'replacement': 1500},
@@ -128,6 +132,7 @@ void main() {
     () async {
       await apply(warning(tip: 100, at: initial, live: {'old': 500}), 5);
       final replacement = warning(
+        revision: 6,
         tip: 100,
         at: initial.add(const Duration(hours: 6)),
         live: {'replacement': 1500},
@@ -150,6 +155,7 @@ void main() {
     await apply(original, 5);
     await apply(
       warning(
+        revision: 6,
         tip: 100,
         at: initial.add(const Duration(hours: 6)),
         live: {'original': 1000, 'urgent-new': 500},
@@ -158,6 +164,7 @@ void main() {
     );
     await apply(
       warning(
+        revision: 7,
         tip: 100,
         at: initial.add(const Duration(hours: 12)),
         live: {'original': 1000, 'renewed-new': 2000},
@@ -218,7 +225,12 @@ void main() {
       expect(
         await store.reconcile(
           account: account(),
-          warning: first,
+          warning: warning(
+            tip: 100,
+            revision: 6,
+            at: initial,
+            live: {'old': 500},
+          ),
           authoritativeEmpty: false,
           revision: 6,
           tipHeight: 100,

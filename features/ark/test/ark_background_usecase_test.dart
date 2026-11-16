@@ -75,7 +75,10 @@ void main() {
         SynchronizeArkUsecase(ArkRepositoryImpl(client)),
         UpdateArkExpiryWarningUsecase(reminders),
       ).execute(account());
-      expect(reminders.calls, isEmpty);
+      expect(reminders.calls.single.empty, false);
+      expect(reminders.calls.single.warning, isNull);
+      expect(reminders.calls.single.evidence?.account, account());
+      expect(reminders.calls.single.evidence?.revision, 5);
       expect(client.calls, ['renew']);
     },
   );
