@@ -21,7 +21,7 @@ void main() {
     NetworkCapability.publicFeeEstimates,
   };
   const expected = <Network, Set<NetworkCapability>>{
-    BitcoinNetwork.mainnet: {...historicalBitcoin, NetworkCapability.ark},
+    BitcoinNetwork.mainnet: historicalBitcoin,
     BitcoinNetwork.testnet: historicalBitcoin,
     LiquidNetwork.mainnet: historicalLiquid,
     LiquidNetwork.testnet: historicalLiquid,
