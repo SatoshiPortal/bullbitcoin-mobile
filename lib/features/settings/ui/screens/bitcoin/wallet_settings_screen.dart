@@ -22,10 +22,11 @@ class _WalletSettingsScreenState extends State<WalletSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = settingsItemsOf(context);
+    final items = settingsItemsOf(context)
+        .inSection(SettingsItemSection.wallet);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsWalletSettingsTitle)),
+      appBar: AppBar(title: Text(context.loc.settingsWalletAndBitcoinTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
