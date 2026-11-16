@@ -4778,5 +4778,6 @@
   "settingsDarkModeTitle": "Modalità scura",
   "settingsSourceCodeTitle": "Codice sorgente",
   "torSettingsStatusNoInternetOrBlocked": "Nessuna connessione internet o rete censurata",
-  "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor."
+  "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor.",
+  "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco"
 }

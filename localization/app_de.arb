@@ -4846,5 +4846,6 @@
   "settingsDarkModeTitle": "Dunkelmodus",
   "settingsSourceCodeTitle": "Quellcode",
   "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
-  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor."
+  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor.",
+  "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen"
 }

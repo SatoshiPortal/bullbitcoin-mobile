@@ -15447,5 +15447,9 @@
   "torSettingsDescNoInternetOrBlocked": "This network has no internet access, or it blocks Tor.",
   "@torSettingsDescNoInternetOrBlocked": {
     "description": "Status description when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"
+  },
+  "pinCodeScrambleKeypadHint": "Scramble the digits on every tap",
+  "@pinCodeScrambleKeypadHint": {
+    "description": "Tooltip on the PIN keypad key that turns on the privacy mode: the digit keys are randomised after each key press so their positions cannot be read by an onlooker"
   }
 }

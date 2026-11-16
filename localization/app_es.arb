@@ -4621,5 +4621,6 @@
   "settingsSourceCodeTitle": "Código fuente",
   "torSettingsStatusNoInternetOrBlocked": "Sin internet o red censurada",
   "torSettingsDescNoInternetOrBlocked": "Esta red no tiene acceso a internet o bloquea Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado."
+  "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado.",
+  "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque"
 }
