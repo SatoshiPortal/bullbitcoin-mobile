@@ -15,7 +15,8 @@ final class ArkUnlimitedStageBudget implements ArkStageBudget {
   bool get mayAdmitNextStage => true;
 }
 
-/// Evaluated before each native stage. Existing funds may need maintenance
+/// Evaluated before native stages and keyless saved-claim delivery admission.
+/// Existing funds may need maintenance
 /// while new payment routing is disabled; the host owns that distinction.
 abstract interface class ArkExecutionPolicyPort {
   bool mayRun(ArkAccountId account, ArkExecutionMode mode);

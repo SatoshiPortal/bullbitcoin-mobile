@@ -10,6 +10,7 @@ import '../../ark.dart';
 import '../domain/ark_execution_policy.dart';
 import '../domain/ark_renewal_batches.dart';
 import 'ark_chain_preflight.dart';
+import 'ark_claim_delivery.dart';
 import 'ark_codec.dart';
 import 'ark_native_session.dart';
 import 'ark_store.dart';
@@ -28,6 +29,7 @@ final class BarkArkClient implements ArkClient {
   final ArkNativeOpener opener;
   final ArkChainPreflight preflight;
   final DateTime Function() now;
+  final HttpArkClaimDelivery claimDelivery;
   final Set<Future<Object?>> _inflight = {};
   final Map<String, StreamController<Result<ArkSnapshot, ArkWalletFailure>>>
   _changes = {};
@@ -43,6 +45,7 @@ final class BarkArkClient implements ArkClient {
     required this.opener,
     required this.preflight,
     DateTime Function()? clock,
+    this.claimDelivery = const HttpArkClaimDelivery(),
   }) : now = clock ?? DateTime.now;
 
   bool _mayRun(ArkAccountId id) =>
@@ -773,6 +776,9 @@ final class BarkArkClient implements ArkClient {
     ArkAccountId account,
     ArkSubmission submission,
   ) => _exclusive(account, (store, path) async {
+    if (submission case ArkRebroadcastClaim()) {
+      return _deliverSavedClaim(store, account, submission);
+    }
     if (executionMode != ArkExecutionMode.foreground) {
       return const Err(ArkUnavailableFailure());
     }
@@ -960,6 +966,81 @@ final class BarkArkClient implements ArkClient {
       return Ok(await _executeQuote(store, session, quote, operationId));
     }, requiredSource: quote.chainSource);
   });
+
+  Future<Result<ArkOperation, ArkWalletFailure>> _deliverSavedClaim(
+    ArkStore store,
+    ArkAccountId account,
+    ArkRebroadcastClaim command,
+  ) async {
+    final record = store.operation(command.operationId);
+    final raw = record?.evidence?['raw'];
+    if (record == null ||
+        raw is! String ||
+        record.operation.kind != ArkOperationKind.claim ||
+        record.operation.nativeReference != command.expectedTxid) {
+      return const Err(ArkValidationFailure());
+    }
+    final verified = await _verifiedOperation(store, account, record.operation);
+    if (verified.claimRecovery == null) {
+      return const Err(ArkValidationFailure());
+    }
+    bool settled(ArkOperation value) =>
+        value.status == ArkOperationStatus.succeeded ||
+        value.status == ArkOperationStatus.conflicted;
+    if (settled(verified)) {
+      return Ok(verified);
+    }
+    if (!_mayRun(account)) {
+      return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
+    }
+    final configured = store.get('config');
+    if (configured == null) {
+      return const Err(ArkValidationFailure());
+    }
+    final source = await preflight.select(
+      configFromJson(configured),
+      requiredSource: verified.chainSource,
+    );
+    if (source case Err(:final failure)) {
+      return Err(failure);
+    }
+    if ((source as Ok<Uri, ArkWalletFailure>).value != verified.chainSource) {
+      return const Err(ArkValidationFailure(ArkFailureReason.identityMismatch));
+    }
+    final current = store.operation(command.operationId);
+    if (current == null ||
+        current.binding != record.binding ||
+        current.operation.nativeReference != command.expectedTxid) {
+      return const Err(ArkValidationFailure());
+    }
+    if (settled(current.operation)) {
+      return Ok(current.operation);
+    }
+    if (!_mayRun(account)) {
+      return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
+    }
+    final unknown = operationFromJson({
+      ...operationToJson(verified),
+      'status': ArkOperationStatus.outcomeUnknown.name,
+    });
+    store.beginClaimDelivery(unknown, record.binding, now().toUtc());
+    if (!_mayRun(account)) {
+      return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
+    }
+    try {
+      await claimDelivery.post(verified.chainSource, raw, command.expectedTxid);
+      final pending = operationFromJson({
+        ...operationToJson(verified),
+        'status': ArkOperationStatus.pending.name,
+      });
+      store.saveOperation(pending, record.binding);
+      return Ok(pending);
+    } catch (error) {
+      if (error is Error) rethrow;
+      // The committed attempt remains unknown, including failed result writes.
+      return Err(ArkOutcomeUnknownFailure(command.operationId));
+    }
+  }
 
   Future<ArkSnapshot> _revalidate(
     ArkStore store,

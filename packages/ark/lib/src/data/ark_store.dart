@@ -221,6 +221,30 @@ final class ArkStore {
     }
   }
 
+  /// Mutable delivery metadata stays separate from immutable signed evidence.
+  void beginClaimDelivery(ArkOperation operation, String binding, DateTime at) {
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      final key = 'claim-delivery:${operation.id}';
+      final count = get(key)?['count'] ?? 0;
+      if (count is! int || count < 0) {
+        throw const FormatException('Invalid delivery count');
+      }
+      saveOperation(operation, binding);
+      put(key, {
+        'operationId': operation.id,
+        'txid': operation.nativeReference,
+        'source': operation.chainSource.toString(),
+        'count': count + 1,
+        'at': at.toIso8601String(),
+      });
+      _db.execute('COMMIT');
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
   /// Native execution is allowed only after both records commit together.
   bool admitExit(ArkQuote authorization, ArkOperation admitted) {
     final destination = authorization.destination;
