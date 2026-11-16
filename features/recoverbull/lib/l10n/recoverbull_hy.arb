@@ -173,5 +173,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։",
   "recoverbullTorReady": "Պատրաստ է",
   "recoverbullRecoveryIncompleteTitle": "Դրամապանակները դեռ ստեղծված չեն",
-  "recoverbullRecoveryIncompleteDescription": "Ձեր պահուստը ներմուծվեց, բայց դրա դրամապանակները չստեղծվեցին։ Կրկին փորձեք՝ վերականգնումն ավարտելու համար։"
+  "recoverbullRecoveryIncompleteDescription": "Ձեր պահուստը ներմուծվեց, բայց դրա դրամապանակները չստեղծվեցին։ Կրկին փորձեք՝ վերականգնումն ավարտելու համար։",
+  "recoverbullDiscardPendingBackup": "Չեղարկել և սկսել նորից"
 }

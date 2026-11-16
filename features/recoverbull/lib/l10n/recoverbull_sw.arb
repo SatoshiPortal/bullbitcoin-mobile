@@ -173,5 +173,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa.",
   "recoverbullTorReady": "Tayari",
   "recoverbullRecoveryIncompleteTitle": "Pochi bado hazijaundwa",
-  "recoverbullRecoveryIncompleteDescription": "Nakala yako imeingizwa, lakini pochi zake hazikuweza kuundwa. Jaribu tena kukamilisha urejeshaji."
+  "recoverbullRecoveryIncompleteDescription": "Nakala yako imeingizwa, lakini pochi zake hazikuweza kuundwa. Jaribu tena kukamilisha urejeshaji.",
+  "recoverbullDiscardPendingBackup": "Acha na uanze upya"
 }

@@ -596,5 +596,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси.",
   "recoverbullTorReady": "Готово",
   "recoverbullRecoveryIncompleteTitle": "Портфейлите още не са създадени",
-  "recoverbullRecoveryIncompleteDescription": "Резервното копие е импортирано, но портфейлите не можаха да бъдат създадени. Опитайте отново, за да завършите възстановяването."
+  "recoverbullRecoveryIncompleteDescription": "Резервното копие е импортирано, но портфейлите не можаха да бъдат създадени. Опитайте отново, за да завършите възстановяването.",
+  "recoverbullDiscardPendingBackup": "Откажи и започни отначало"
 }

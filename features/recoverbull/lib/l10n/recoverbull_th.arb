@@ -608,5 +608,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้",
   "recoverbullTorReady": "พร้อม",
   "recoverbullRecoveryIncompleteTitle": "ยังไม่ได้สร้างกระเป๋าเงิน",
-  "recoverbullRecoveryIncompleteDescription": "นำเข้าข้อมูลสำรองแล้ว แต่สร้างกระเป๋าเงินไม่สำเร็จ ลองอีกครั้งเพื่อกู้คืนให้เสร็จ"
+  "recoverbullRecoveryIncompleteDescription": "นำเข้าข้อมูลสำรองแล้ว แต่สร้างกระเป๋าเงินไม่สำเร็จ ลองอีกครั้งเพื่อกู้คืนให้เสร็จ",
+  "recoverbullDiscardPendingBackup": "ยกเลิกและเริ่มใหม่"
 }

@@ -278,5 +278,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado.",
   "recoverbullTorReady": "Listo",
   "recoverbullRecoveryIncompleteTitle": "Billeteras aún no creadas",
-  "recoverbullRecoveryIncompleteDescription": "Tu copia de seguridad se importó, pero no se pudieron crear sus billeteras. Reintenta para terminar la recuperación."
+  "recoverbullRecoveryIncompleteDescription": "Tu copia de seguridad se importó, pero no se pudieron crear sus billeteras. Reintenta para terminar la recuperación.",
+  "recoverbullDiscardPendingBackup": "Descartar y empezar de nuevo"
 }

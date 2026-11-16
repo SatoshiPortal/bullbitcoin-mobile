@@ -608,5 +608,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
   "recoverbullTorReady": "Připraveno",
   "recoverbullRecoveryIncompleteTitle": "Peněženky zatím nebyly vytvořeny",
-  "recoverbullRecoveryIncompleteDescription": "Záloha byla importována, ale její peněženky se nepodařilo vytvořit. Zkuste to znovu a dokončete obnovu."
+  "recoverbullRecoveryIncompleteDescription": "Záloha byla importována, ale její peněženky se nepodařilo vytvořit. Zkuste to znovu a dokončete obnovu.",
+  "recoverbullDiscardPendingBackup": "Zahodit a začít znovu"
 }

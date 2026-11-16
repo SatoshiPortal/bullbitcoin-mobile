@@ -173,5 +173,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის.",
   "recoverbullTorReady": "მზადაა",
   "recoverbullRecoveryIncompleteTitle": "საფულეები ჯერ არ შექმნილა",
-  "recoverbullRecoveryIncompleteDescription": "სარეზერვო ასლი იმპორტირდა, მაგრამ მისი საფულეები ვერ შეიქმნა. სცადეთ ხელახლა აღდგენის დასასრულებლად."
+  "recoverbullRecoveryIncompleteDescription": "სარეზერვო ასლი იმპორტირდა, მაგრამ მისი საფულეები ვერ შეიქმნა. სცადეთ ხელახლა აღდგენის დასასრულებლად.",
+  "recoverbullDiscardPendingBackup": "გაუქმება და თავიდან დაწყება"
 }

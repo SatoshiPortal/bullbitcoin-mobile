@@ -608,5 +608,6 @@
   "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
   "recoverbullTorReady": "جاهز",
   "recoverbullRecoveryIncompleteTitle": "لم يتم إنشاء المحافظ بعد",
-  "recoverbullRecoveryIncompleteDescription": "تم استيراد نسختك الاحتياطية، لكن تعذّر إنشاء محافظها. أعد المحاولة لإكمال الاسترداد."
+  "recoverbullRecoveryIncompleteDescription": "تم استيراد نسختك الاحتياطية، لكن تعذّر إنشاء محافظها. أعد المحاولة لإكمال الاسترداد.",
+  "recoverbullDiscardPendingBackup": "تجاهل والبدء من جديد"
 }

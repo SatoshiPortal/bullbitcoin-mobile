@@ -939,5 +939,7 @@
   "recoverbullRecoveryIncompleteTitle": "Wallets not created yet",
   "@recoverbullRecoveryIncompleteTitle": {"description": "Title when a backup was imported but its wallets could not be created"},
   "recoverbullRecoveryIncompleteDescription": "Your backup was imported, but its wallets could not be created. Retry to finish the recovery.",
-  "@recoverbullRecoveryIncompleteDescription": {"description": "Explains that the backup was imported but its wallets could not be created, with a retry"}
+  "@recoverbullRecoveryIncompleteDescription": {"description": "Explains that the backup was imported but its wallets could not be created, with a retry"},
+  "recoverbullDiscardPendingBackup": "Discard and start over",
+  "@recoverbullDiscardPendingBackup": {"description": "Button discarding a sealed backup whose save did not complete, so the user can choose a new password"}
 }

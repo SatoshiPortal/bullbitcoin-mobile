@@ -608,5 +608,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
   "recoverbullTorReady": "Hazır",
   "recoverbullRecoveryIncompleteTitle": "Cüzdanlar henüz oluşturulmadı",
-  "recoverbullRecoveryIncompleteDescription": "Yedeğiniz içe aktarıldı ancak cüzdanları oluşturulamadı. Kurtarmayı tamamlamak için yeniden deneyin."
+  "recoverbullRecoveryIncompleteDescription": "Yedeğiniz içe aktarıldı ancak cüzdanları oluşturulamadı. Kurtarmayı tamamlamak için yeniden deneyin.",
+  "recoverbullDiscardPendingBackup": "Vazgeç ve baştan başla"
 }

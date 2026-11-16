@@ -608,5 +608,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود.",
   "recoverbullTorReady": "آماده",
   "recoverbullRecoveryIncompleteTitle": "کیف‌پول‌ها هنوز ساخته نشده‌اند",
-  "recoverbullRecoveryIncompleteDescription": "پشتیبان شما وارد شد، اما کیف‌پول‌های آن ساخته نشد. برای تکمیل بازیابی دوباره تلاش کنید."
+  "recoverbullRecoveryIncompleteDescription": "پشتیبان شما وارد شد، اما کیف‌پول‌های آن ساخته نشد. برای تکمیل بازیابی دوباره تلاش کنید.",
+  "recoverbullDiscardPendingBackup": "کنار گذاشتن و شروع دوباره"
 }

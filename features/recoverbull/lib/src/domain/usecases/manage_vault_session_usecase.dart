@@ -72,9 +72,10 @@ final class ManageVaultSessionUsecase {
     );
   }
 
-  Future<Result<VaultCompletion, RecoverBullFailure>> retryProviderSave(
-    VaultProvider provider,
-  ) async {
+  /// Without [provider], the vault goes where the user first chose.
+  Future<Result<VaultCompletion, RecoverBullFailure>> retryProviderSave([
+    VaultProvider? provider,
+  ]) async {
     if (_closed) return const Err(VaultCancelledFailure());
     if (_active != null) return const Err(VaultContextChangedFailure());
     final active = Completer<void>();
@@ -87,6 +88,10 @@ final class ManageVaultSessionUsecase {
       active.complete();
     }
   }
+
+  /// Drops the sealed vault waiting for its provider write, so a new password can be chosen.
+  bool abandonPendingProviderSave() =>
+      _active == null && _create.abandonPendingProviderSave();
 
   Future<Result<VaultCompletion, RecoverBullFailure>> verify({
     required EncryptedVault vault,

@@ -608,5 +608,6 @@
   "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado.",
   "recoverbullTorReady": "Pronto",
   "recoverbullRecoveryIncompleteTitle": "Carteiras ainda não criadas",
-  "recoverbullRecoveryIncompleteDescription": "Seu backup foi importado, mas não foi possível criar as carteiras. Tente novamente para concluir a recuperação."
+  "recoverbullRecoveryIncompleteDescription": "Seu backup foi importado, mas não foi possível criar as carteiras. Tente novamente para concluir a recuperação.",
+  "recoverbullDiscardPendingBackup": "Descartar e recomeçar"
 }

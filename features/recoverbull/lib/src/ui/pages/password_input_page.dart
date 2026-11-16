@@ -195,232 +195,256 @@ class _PasswordInputPageState extends State<PasswordInputPage>
     return Scaffold(
       appBar: RecoverBullAppBar(title: title),
       body: BlocBuilder<VaultFlowCubit, VaultFlowState>(
-        builder: (context, state) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: .stretch,
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: .stretch,
-                      children: [
-                        SizedBox(
-                          height: 50,
-                          child: Center(
-                            child: BullText(
-                              description,
-                              textAlign: .center,
-                              style: context.bullText.labelMedium?.copyWith(
-                                color: context.bull.textMuted,
-                              ),
-                              maxLines: 3,
-                            ),
-                          ),
-                        ),
-                        const Gap(12),
-                        BullText(
-                          confirming
-                              ? context.loc.recoverbullConfirmInput(
-                                  inputTypeString,
-                                )
-                              : inputTypeString,
-                          textAlign: .start,
-                          style: context.bullText.labelSmall?.copyWith(
-                            color: context.bull.textMuted,
-                          ),
-                        ),
-                        const Gap(2),
-                        _gated(
-                          context,
-                          (_) => ExcludeSemantics(
-                            child: TextFormField(
-                              controller: _inputController,
-                              obscureText: _isObscured,
-                              readOnly: _inputType == InputType.pin,
-                              enableSuggestions: false,
-                              autocorrect: false,
-                              smartQuotesType: SmartQuotesType.disabled,
-                              smartDashesType: SmartDashesType.disabled,
-                              textAlignVertical: TextAlignVertical.center,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              style: context.bullText.headlineSmall?.copyWith(
-                                color: context.bull.onSurface,
-                              ),
-                              validator: (value) {
-                                if (_inputType == InputType.vaultKey) {
-                                  return value == null || value.isEmpty
-                                      ? context.loc.recoverbullPasswordRequired
-                                      : null;
-                                }
-                                if (flow != RecoverBullFlow.secureVault) {
-                                  return value == null || value.isEmpty
-                                      ? context.loc.recoverbullPasswordRequired
-                                      : null;
-                                }
-                                if (confirming) {
-                                  if (value == null || value.isEmpty) {
-                                    return context.loc
-                                        .recoverbullReenterRequired(
-                                          inputTypeString,
-                                        );
-                                  }
-                                  final error = _validatePassword(
-                                    context,
-                                    value,
-                                  );
-                                  if (error != null) return error;
-                                  return value == _validatedPassword
-                                      ? null
-                                      : context.loc.recoverbullPasswordMismatch;
-                                }
-                                return _validatePassword(context, value);
-                              },
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  padding: const EdgeInsets.all(5),
-                                  icon: _isObscured
-                                      ? const Icon(Icons.visibility_outlined)
-                                      : const Icon(
-                                          Icons.visibility_off_outlined,
+        // A sealed backup waiting for its save keeps the password it was sealed
+        // with: resume it or discard it before choosing another one.
+        builder: (context, state) =>
+            flow == RecoverBullFlow.secureVault && state.hasPendingProviderSave
+            ? _PendingBackup(busy: state.busy)
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: .stretch,
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: .stretch,
+                            children: [
+                              SizedBox(
+                                height: 50,
+                                child: Center(
+                                  child: BullText(
+                                    description,
+                                    textAlign: .center,
+                                    style: context.bullText.labelMedium
+                                        ?.copyWith(
+                                          color: context.bull.textMuted,
                                         ),
-                                  onPressed: () => setState(
-                                    () => _isObscured = !_isObscured,
+                                    maxLines: 3,
                                   ),
                                 ),
-                                border: borderDecoration,
-                                enabledBorder: borderDecoration,
-                                focusedBorder: borderDecoration,
-                                disabledBorder: borderDecoration,
-                                contentPadding: const EdgeInsets.all(16),
-                                errorMaxLines: 4,
                               ),
-                            ),
-                          ),
-                          unavailable: true,
-                        ),
-                        const Gap(16),
-                        if (confirming)
-                          BullButton.small(
-                            label: context.loc.recoverbullGoBackEdit,
-                            bgColor: context.bull.transparent,
-                            textColor: context.bull.info,
-                            textStyle: context.bullText.labelSmall,
-                            onPressed: () => setState(() {
-                              _validatedPassword = '';
-                              _inputController.clear();
-                            }),
-                          )
-                        else
-                          Row(
-                            children: [
-                              Expanded(
-                                child: BullButton.big(
-                                  label: _inputType == InputType.pin
-                                      ? context.loc.recoverbullSwitchToPassword
-                                      : context.loc.recoverbullSwitchToPIN,
+                              const Gap(12),
+                              BullText(
+                                confirming
+                                    ? context.loc.recoverbullConfirmInput(
+                                        inputTypeString,
+                                      )
+                                    : inputTypeString,
+                                textAlign: .start,
+                                style: context.bullText.labelSmall?.copyWith(
+                                  color: context.bull.textMuted,
+                                ),
+                              ),
+                              const Gap(2),
+                              _gated(
+                                context,
+                                (_) => ExcludeSemantics(
+                                  child: TextFormField(
+                                    controller: _inputController,
+                                    obscureText: _isObscured,
+                                    readOnly: _inputType == InputType.pin,
+                                    enableSuggestions: false,
+                                    autocorrect: false,
+                                    smartQuotesType: SmartQuotesType.disabled,
+                                    smartDashesType: SmartDashesType.disabled,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
+                                    style: context.bullText.headlineSmall
+                                        ?.copyWith(
+                                          color: context.bull.onSurface,
+                                        ),
+                                    validator: (value) {
+                                      if (_inputType == InputType.vaultKey) {
+                                        return value == null || value.isEmpty
+                                            ? context
+                                                  .loc
+                                                  .recoverbullPasswordRequired
+                                            : null;
+                                      }
+                                      if (flow != RecoverBullFlow.secureVault) {
+                                        return value == null || value.isEmpty
+                                            ? context
+                                                  .loc
+                                                  .recoverbullPasswordRequired
+                                            : null;
+                                      }
+                                      if (confirming) {
+                                        if (value == null || value.isEmpty) {
+                                          return context.loc
+                                              .recoverbullReenterRequired(
+                                                inputTypeString,
+                                              );
+                                        }
+                                        final error = _validatePassword(
+                                          context,
+                                          value,
+                                        );
+                                        if (error != null) return error;
+                                        return value == _validatedPassword
+                                            ? null
+                                            : context
+                                                  .loc
+                                                  .recoverbullPasswordMismatch;
+                                      }
+                                      return _validatePassword(context, value);
+                                    },
+                                    decoration: InputDecoration(
+                                      suffixIcon: IconButton(
+                                        padding: const EdgeInsets.all(5),
+                                        icon: _isObscured
+                                            ? const Icon(
+                                                Icons.visibility_outlined,
+                                              )
+                                            : const Icon(
+                                                Icons.visibility_off_outlined,
+                                              ),
+                                        onPressed: () => setState(
+                                          () => _isObscured = !_isObscured,
+                                        ),
+                                      ),
+                                      border: borderDecoration,
+                                      enabledBorder: borderDecoration,
+                                      focusedBorder: borderDecoration,
+                                      disabledBorder: borderDecoration,
+                                      contentPadding: const EdgeInsets.all(16),
+                                      errorMaxLines: 4,
+                                    ),
+                                  ),
+                                ),
+                                unavailable: true,
+                              ),
+                              const Gap(16),
+                              if (confirming)
+                                BullButton.small(
+                                  label: context.loc.recoverbullGoBackEdit,
                                   bgColor: context.bull.transparent,
                                   textColor: context.bull.info,
                                   textStyle: context.bullText.labelSmall,
-                                  onPressed: () => _switchTo(
-                                    _inputType == InputType.pin
-                                        ? InputType.password
-                                        : InputType.pin,
-                                  ),
+                                  onPressed: () => setState(() {
+                                    _validatedPassword = '';
+                                    _inputController.clear();
+                                  }),
+                                )
+                              else
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: BullButton.big(
+                                        label: _inputType == InputType.pin
+                                            ? context
+                                                  .loc
+                                                  .recoverbullSwitchToPassword
+                                            : context
+                                                  .loc
+                                                  .recoverbullSwitchToPIN,
+                                        bgColor: context.bull.transparent,
+                                        textColor: context.bull.info,
+                                        textStyle: context.bullText.labelSmall,
+                                        onPressed: () => _switchTo(
+                                          _inputType == InputType.pin
+                                              ? InputType.password
+                                              : InputType.pin,
+                                        ),
+                                      ),
+                                    ),
+                                    if (_inputType != InputType.vaultKey &&
+                                        hasVaultKeyInput)
+                                      Expanded(
+                                        child: BullButton.small(
+                                          label: context
+                                              .loc
+                                              .recoverbullEnterVaultKeyInstead,
+                                          bgColor: context.bull.transparent,
+                                          textColor: context.bull.info,
+                                          textStyle:
+                                              context.bullText.labelSmall,
+                                          onPressed: () =>
+                                              _switchTo(InputType.vaultKey),
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                              ),
-                              if (_inputType != InputType.vaultKey &&
-                                  hasVaultKeyInput)
-                                Expanded(
-                                  child: BullButton.small(
-                                    label: context
-                                        .loc
-                                        .recoverbullEnterVaultKeyInstead,
-                                    bgColor: context.bull.transparent,
-                                    textColor: context.bull.info,
-                                    textStyle: context.bullText.labelSmall,
-                                    onPressed: () =>
-                                        _switchTo(InputType.vaultKey),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        if (needsPassphraseAck) ...[
-                          const Gap(8),
-                          BullText(
-                            context.loc.recoverbullVaultPassphraseNotIncluded,
-                            style: context.bullText.bodySmall,
-                            maxLines: 4,
-                          ),
-                          Row(
-                            children: [
-                              BullCheckbox(
-                                checked: _passphraseAccepted,
-                                onChanged: (value) =>
-                                    setState(() => _passphraseAccepted = value),
-                              ),
-                              Expanded(
-                                child: BullText(
+                              if (needsPassphraseAck) ...[
+                                const Gap(8),
+                                BullText(
                                   context
                                       .loc
-                                      .recoverbullPassphraseAcknowledgement,
+                                      .recoverbullVaultPassphraseNotIncluded,
                                   style: context.bullText.bodySmall,
                                   maxLines: 4,
                                 ),
-                              ),
+                                Row(
+                                  children: [
+                                    BullCheckbox(
+                                      checked: _passphraseAccepted,
+                                      onChanged: (value) => setState(
+                                        () => _passphraseAccepted = value,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: BullText(
+                                        context
+                                            .loc
+                                            .recoverbullPassphraseAcknowledgement,
+                                        style: context.bullText.bodySmall,
+                                        maxLines: 4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ],
                           ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-                if (_inputType == InputType.pin)
-                  _gated(
-                    context,
-                    (_) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: BullDialPad(
-                        disableFeedback: true,
-                        onlyDigits: true,
-                        onNumberPressed: (e) => _inputController.text += e,
-                        onBackspacePressed: () {
-                          final text = _inputController.text;
-                          if (text.isNotEmpty) {
-                            _inputController.text = text.substring(
-                              0,
-                              text.length - 1,
-                            );
-                          }
-                        },
+                        ),
                       ),
-                    ),
-                  ),
-                if (_inputType == InputType.pin) const Gap(12),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 60),
-                  child: BullButton.big(
-                    label: confirming
-                        ? context.loc.recoverbullConfirm
-                        : context.loc.recoverbullContinue,
-                    textStyle: context.bullText.headlineLarge,
-                    bgColor: context.bull.onSurface,
-                    textColor: context.bull.surface,
-                    disabled:
-                        state.busy ||
-                        (confirming &&
-                            needsPassphraseAck &&
-                            !_passphraseAccepted),
-                    onPressed: () => _continue(flow, needsPassphraseAck),
+                      if (_inputType == InputType.pin)
+                        _gated(
+                          context,
+                          (_) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: BullDialPad(
+                              disableFeedback: true,
+                              onlyDigits: true,
+                              onNumberPressed: (e) =>
+                                  _inputController.text += e,
+                              onBackspacePressed: () {
+                                final text = _inputController.text;
+                                if (text.isNotEmpty) {
+                                  _inputController.text = text.substring(
+                                    0,
+                                    text.length - 1,
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      if (_inputType == InputType.pin) const Gap(12),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 60),
+                        child: BullButton.big(
+                          label: confirming
+                              ? context.loc.recoverbullConfirm
+                              : context.loc.recoverbullContinue,
+                          textStyle: context.bullText.headlineLarge,
+                          bgColor: context.bull.onSurface,
+                          textColor: context.bull.surface,
+                          disabled:
+                              state.busy ||
+                              (confirming &&
+                                  needsPassphraseAck &&
+                                  !_passphraseAccepted),
+                          onPressed: () => _continue(flow, needsPassphraseAck),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -458,4 +482,50 @@ class _PasswordInputPageState extends State<PasswordInputPage>
           )
         : const SizedBox.shrink(),
   );
+}
+
+class _PendingBackup extends StatelessWidget {
+  final bool busy;
+
+  const _PendingBackup({required this.busy});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: .stretch,
+        children: [
+          BullText(
+            context.loc.recoverbullPendingProviderSave,
+            style: context.bullText.bodyMedium,
+            maxLines: 6,
+          ),
+          const Gap(24),
+          BullButton.big(
+            label: context.loc.recoverbullRetryProviderSave,
+            bgColor: context.bull.onSurface,
+            textColor: context.bull.surface,
+            disabled: busy,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const VaultProviderSelectionPage(),
+              ),
+            ),
+          ),
+          const Gap(12),
+          BullButton.big(
+            label: context.loc.recoverbullDiscardPendingBackup,
+            bgColor: context.bull.surface,
+            textColor: context.bull.onSurface,
+            outlined: true,
+            borderColor: context.bull.onSurface,
+            disabled: busy,
+            onPressed: () =>
+                context.read<VaultFlowCubit>().abandonPendingProviderSave(),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -177,10 +177,9 @@ class _VaultProviderSelectionPageState
                           bgColor: context.bull.onSurface,
                           textColor: context.bull.surface,
                           disabled: state.busy,
-                          onPressed: () =>
-                              context.read<VaultFlowCubit>().retryProviderSave(
-                                _provider ?? VaultProvider.customLocation,
-                              ),
+                          onPressed: () => context
+                              .read<VaultFlowCubit>()
+                              .retryProviderSave(_provider),
                         ),
                       ],
                     ),

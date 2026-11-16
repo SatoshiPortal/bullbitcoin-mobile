@@ -98,12 +98,14 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     KeyServerStatus? keyServer,
     int? keyServerFailures,
     TorConnectionState? tor,
+    bool? hasPendingProviderSave,
   }) => VaultFlowState(
     busy: state.busy,
     keyServer: keyServer ?? state.keyServer,
     keyServerFailures: keyServerFailures ?? state.keyServerFailures,
     tor: tor ?? state.tor,
-    hasPendingProviderSave: state.hasPendingProviderSave,
+    hasPendingProviderSave:
+        hasPendingProviderSave ?? state.hasPendingProviderSave,
     settings: state.settings,
     vault: state.vault,
     files: state.files,
@@ -246,7 +248,8 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     if (value != null) _publish(vault: value.vault, completion: value);
   }
 
-  Future<void> retryProviderSave(VaultProvider provider) async {
+  /// Without [provider], the vault goes where the user first chose.
+  Future<void> retryProviderSave([VaultProvider? provider]) async {
     final value = await _run(
       () =>
           _session?.retryProviderSave(provider) ??
@@ -263,6 +266,14 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
       ),
     );
     if (value != null) _publish(vault: value.vault, completion: value);
+  }
+
+  /// Forgets a backup whose save did not complete, so the user can start over.
+  void abandonPendingProviderSave() {
+    if (state.busy || _closing || isClosed) return;
+    if (_session?.abandonPendingProviderSave() ?? false) {
+      emit(_copy(hasPendingProviderSave: false));
+    }
   }
 
   Future<void> verify(String password, BitcoinNetwork? network) async {

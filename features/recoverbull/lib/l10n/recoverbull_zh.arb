@@ -278,5 +278,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。",
   "recoverbullTorReady": "就绪",
   "recoverbullRecoveryIncompleteTitle": "钱包尚未创建",
-  "recoverbullRecoveryIncompleteDescription": "备份已导入，但无法创建其钱包。请重试以完成恢复。"
+  "recoverbullRecoveryIncompleteDescription": "备份已导入，但无法创建其钱包。请重试以完成恢复。",
+  "recoverbullDiscardPendingBackup": "放弃并重新开始"
 }

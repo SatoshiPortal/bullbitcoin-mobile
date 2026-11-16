@@ -278,5 +278,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull не удалось подключиться к настроенному прокси SOCKS5.",
   "recoverbullTorReady": "Готово",
   "recoverbullRecoveryIncompleteTitle": "Кошельки ещё не созданы",
-  "recoverbullRecoveryIncompleteDescription": "Резервная копия импортирована, но кошельки создать не удалось. Повторите, чтобы завершить восстановление."
+  "recoverbullRecoveryIncompleteDescription": "Резервная копия импортирована, но кошельки создать не удалось. Повторите, чтобы завершить восстановление.",
+  "recoverbullDiscardPendingBackup": "Отменить и начать заново"
 }

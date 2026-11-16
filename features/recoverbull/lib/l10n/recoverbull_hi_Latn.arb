@@ -607,5 +607,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka.",
   "recoverbullTorReady": "Taiyaar",
   "recoverbullRecoveryIncompleteTitle": "Wallet abhi tak nahin bane",
-  "recoverbullRecoveryIncompleteDescription": "Aapka backup import ho gaya, lekin uske wallet nahin ban sake. Recovery poori karne ke liye phir se koshish karein."
+  "recoverbullRecoveryIncompleteDescription": "Aapka backup import ho gaya, lekin uske wallet nahin ban sake. Recovery poori karne ke liye phir se koshish karein.",
+  "recoverbullDiscardPendingBackup": "Chhodein aur phir se shuru karein"
 }

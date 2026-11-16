@@ -608,5 +608,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
   "recoverbullTorReady": "준비됨",
   "recoverbullRecoveryIncompleteTitle": "지갑이 아직 생성되지 않았습니다",
-  "recoverbullRecoveryIncompleteDescription": "백업을 가져왔지만 지갑을 생성하지 못했습니다. 복구를 마치려면 다시 시도하세요."
+  "recoverbullRecoveryIncompleteDescription": "백업을 가져왔지만 지갑을 생성하지 못했습니다. 복구를 마치려면 다시 시도하세요.",
+  "recoverbullDiscardPendingBackup": "취소하고 다시 시작"
 }

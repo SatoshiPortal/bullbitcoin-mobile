@@ -278,5 +278,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull не вдалося підключитися до налаштованого проксі SOCKS5.",
   "recoverbullTorReady": "Готово",
   "recoverbullRecoveryIncompleteTitle": "Гаманці ще не створено",
-  "recoverbullRecoveryIncompleteDescription": "Резервну копію імпортовано, але гаманці створити не вдалося. Повторіть, щоб завершити відновлення."
+  "recoverbullRecoveryIncompleteDescription": "Резервну копію імпортовано, але гаманці створити не вдалося. Повторіть, щоб завершити відновлення.",
+  "recoverbullDiscardPendingBackup": "Скасувати й почати знову"
 }
