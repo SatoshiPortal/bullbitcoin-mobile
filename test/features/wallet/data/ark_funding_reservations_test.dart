@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/features/wallet/data/sqlite_ark_funding_reservations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,7 +32,10 @@ String withWitness(String encoded, {int witness = 0x42}) {
   ]);
 }
 
-String twoInputPsbt() {
+String twoInputPsbt({
+  List<int> inputBytes = const [0x11, 0x22],
+  int outputSat = 100000,
+}) {
   final script = [0, 20, ...List.filled(20, 0x22)];
   List<int> sats(int value) => [
     for (var i = 0; i < 8; i++) (value >> (8 * i)) & 255,
@@ -41,8 +45,8 @@ String twoInputPsbt() {
     0,
     0,
     0,
-    2,
-    for (final byte in [0x11, 0x22]) ...[
+    inputBytes.length,
+    for (final byte in inputBytes) ...[
       ...List.filled(32, byte),
       0,
       0,
@@ -55,7 +59,7 @@ String twoInputPsbt() {
       0xff,
     ],
     1,
-    ...sats(100000),
+    ...sats(outputSat),
     script.length,
     ...script,
     0,
@@ -74,7 +78,7 @@ String twoInputPsbt() {
     unsigned.length,
     ...unsigned,
     0,
-    for (var input = 0; input < 2; input++) ...[
+    for (var input = 0; input < inputBytes.length; input++) ...[
       1,
       1,
       8 + 1 + script.length,
@@ -304,6 +308,14 @@ void main() {
       spend: spend('op'),
       context: 'public-context',
     );
+    expect(
+      await store.observe(
+        key,
+        WalletTransactions.ready(ChainTransactionList([]), stamp(revision: 3)),
+      ),
+      isA<Ok>(),
+    );
+    expect(ok(await store.reservations()).length, 1);
     final decoded = decodeBitcoinPsbt(psbt);
     BitcoinTransaction tx(int? confirmed) => BitcoinTransaction(
       txid: decoded.txid,
@@ -437,5 +449,88 @@ void main() {
     );
     if (reset case Ok(:final value)) value.close();
     expect(reset, isA<Err>());
+  });
+  test('confirmed conflict settles active holds so unused B can fund a new operation', () async {
+    final original = twoInputPsbt();
+    final originalSpend = spend('original', encoded: original);
+    await begin('original');
+    expect(
+      await store.reserve(
+        key: key,
+        spend: originalSpend,
+        context: 'public-context',
+      ),
+      isA<Ok>(),
+    );
+    BitcoinTransaction conflict(int? confirmed) => BitcoinTransaction(
+      txid: List.filled(32, '55').join(),
+      feeSat: 100,
+      vsize: 100,
+      confirmationTime: confirmed,
+      inputs: [
+        BitcoinInput(
+          previousOutput: originalSpend.inputs.first,
+          scriptSig: Uint8List(0),
+        ),
+      ],
+      outputs: [],
+      sentSat: 60000,
+      receivedSat: 0,
+      isExplicitlyRbf: false,
+    );
+    expect(
+      await store.observe(
+        key,
+        WalletTransactions.ready(
+          ChainTransactionList([conflict(null)]),
+          stamp(revision: 3),
+        ),
+      ),
+      isA<Ok>(),
+    );
+    expect(ok(await store.reservations()).length, 2);
+    expect(
+      await store.observe(
+        key,
+        WalletTransactions.stale(
+          ChainTransactionList([conflict(1700000000)]),
+          stamp(revision: 3),
+        ),
+      ),
+      isA<Err>(),
+    );
+    expect(ok(await store.reservations()).length, 2);
+    expect(
+      await store.observe(
+        key,
+        WalletTransactions.ready(
+          ChainTransactionList([conflict(1700000000)]),
+          stamp(revision: 3),
+        ),
+      ),
+      isA<Ok>(),
+    );
+    expect(ok(await store.reservations()), isEmpty);
+    final db = sqlite3.open('${dir.path}/store');
+    final evidence = db
+        .select(
+          "SELECT * FROM ark_funding_operations WHERE operation='original'",
+        )
+        .single;
+    expect(evidence['state'], 'conflicted');
+    expect(evidence['psbt'], original);
+    expect(evidence['txid'], decodeBitcoinPsbt(original).txid);
+    db.close();
+    await begin('next');
+    final onlyB = twoInputPsbt(inputBytes: [0x22], outputSat: 50000);
+    expect(
+      await store.reserve(
+        key: key,
+        spend: spend('next', encoded: onlyB),
+        context: 'public-context',
+      ),
+      isA<Ok>(),
+    );
+    expect(ok(await store.reservations()).single.session, 'next');
   });
 }
