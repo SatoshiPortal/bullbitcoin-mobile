@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:bull_recoverbull/src/data/key_server_repository_impl.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/repositories/key_server_repository.dart';
+import 'package:bull_tor/tor.dart' show TorConnectFailure;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
@@ -59,6 +61,7 @@ void main() {
       server: Uri.parse('http://127.0.0.1:${server.port}'),
       transport: HttpClient(),
       releaseRoute: () async => closed++,
+      operationTimeout: keyServerOperationTimeout(null),
     );
   });
 
@@ -88,6 +91,58 @@ void main() {
       default:
         fail('Expected an unavailable server');
     }
+  });
+
+  test('a server error keeps its HTTP status as the cause', () async {
+    status = 503;
+    switch (await repository.probe()) {
+      case Err(failure: KeyServerFailure(:final cause, :final httpStatus)):
+        expect(cause, KeyServerUnreachableCause.httpError);
+        expect(httpStatus, 503);
+      default:
+        fail('Expected an HTTP error');
+    }
+  });
+
+  test('a malformed answer is named a bad response', () async {
+    switch (await repository.probe()) {
+      case Err(failure: KeyServerFailure(:final cause)):
+        expect(cause, KeyServerUnreachableCause.badResponse);
+      default:
+        fail('Expected a bad response');
+    }
+  });
+
+  test('a dead local Tor session is named, not a server outage', () async {
+    final dead = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    final port = dead.port;
+    await dead.close();
+    TorConnectFailure? reported;
+    final transport = HttpClient();
+    final orphan = KeyServerRepositoryImpl(
+      server: Uri.parse('http://127.0.0.1:$port'),
+      transport: transport,
+      releaseRoute: () async {},
+      operationTimeout: keyServerOperationTimeout(null),
+      takeConnectFailure: () {
+        final failure = reported;
+        reported = null;
+        return failure;
+      },
+    );
+    // The SOCKS layer reports the dead proxy just before the request fails.
+    transport.connectionFactory = (uri, proxyHost, proxyPort) {
+      reported = TorConnectFailure.proxyUnreachable;
+      return Socket.startConnect(uri.host, uri.port);
+    };
+    switch (await orphan.probe()) {
+      case Err(failure: KeyServerFailure(:final kind, :final cause)):
+        expect(kind, KeyServerFailureKind.unavailable);
+        expect(cause, KeyServerUnreachableCause.proxyGone);
+      default:
+        fail('Expected a gone proxy');
+    }
+    await orphan.close();
   });
 
   test('close releases the owned route exactly once', () async {

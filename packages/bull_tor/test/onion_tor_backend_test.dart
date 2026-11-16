@@ -4,6 +4,7 @@ import 'package:bull_sdk/onion.dart' as onion;
 import 'package:bull_tor/src/data/onion_tor_backend.dart';
 import 'package:bull_tor/src/data/tor_logger.dart';
 import 'package:bull_tor/src/domain/entities/tor_proxy_endpoint.dart';
+import 'package:bull_tor/src/domain/entities/tor_transport.dart';
 import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
 import 'package:bull_tor/src/domain/tor_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,6 +80,34 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('waits without a deadline when none is given', () async {
+      final backend = OnionTorBackend(const TorLogger());
+      var ready = false;
+      final waiting = backend.waitForTraffic(null).then((_) => ready = true);
+
+      backend.handleStatus(status(0.15), endpoint);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(ready, isFalse);
+
+      backend.handleStatus(status(1, ready: true), endpoint);
+      await waiting;
+      expect(ready, isTrue);
+    });
+
+    test('Snowflake gets no traffic deadline, direct keeps one', () {
+      expect(trafficReadyTimeoutFor(TorTransport.snowflake), isNull);
+      expect(trafficReadyTimeoutFor(TorTransport.direct), isNotNull);
+    });
+
+    test('Snowflake never shares the direct client directories', () {
+      final direct = torDirectoryNames(TorTransport.direct);
+      final snowflake = torDirectoryNames(TorTransport.snowflake);
+      // Direct keeps the directories existing installs already hold.
+      expect(direct, (state: 'tor_state', cache: 'tor'));
+      expect(snowflake.state, isNot(direct.state));
+      expect(snowflake.cache, isNot(direct.cache));
     });
 
     test('stop releases the wait instead of holding it to the timeout', () {

@@ -2,7 +2,6 @@ import '../entities/tor_connection_state.dart';
 import '../entities/tor_proxy_endpoint.dart';
 import '../entities/tor_session.dart';
 import '../entities/tor_transport.dart';
-import '../tor_connect_budget.dart';
 import '../tor_failure.dart';
 
 sealed class EmbeddedTorEvent {
@@ -43,7 +42,7 @@ abstract interface class EmbeddedTorPort {
 
   Future<TorProxyEndpoint> start(TorTransport transport);
 
-  /// Opens an isolated SOCKS session; each connect through it gets [torConnectBudget].
+  /// Opens an isolated SOCKS session; each connect through it gets its transport's connect budget.
   Future<TorSession> openSession();
 
   Future<bool> isAlive();

@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:bull_tor/tor.dart'
+    show TorConnecting, TorConnectionState, TorReady, TorUninitialized;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show VaultKey;
@@ -17,8 +21,18 @@ import '../domain/usecases/delete_drive_vault_usecase.dart';
 import '../domain/usecases/export_drive_vault_usecase.dart';
 import '../domain/usecases/manage_vault_session_usecase.dart';
 
+enum KeyServerStatus { unknown, connecting, online, offline }
+
 final class VaultFlowState {
   final bool busy;
+  final KeyServerStatus keyServer;
+
+  /// Failed key-server attempts on the current route; a new route starts again from zero.
+  final int keyServerFailures;
+
+  /// When the running key-server probe gives up; null while none runs.
+  final DateTime? keyServerDeadline;
+  final TorConnectionState tor;
   final bool hasPendingProviderSave;
   final BackupSettings? settings;
   final EncryptedVault? vault;
@@ -28,6 +42,10 @@ final class VaultFlowState {
 
   const VaultFlowState({
     this.busy = false,
+    this.keyServer = KeyServerStatus.unknown,
+    this.keyServerFailures = 0,
+    this.keyServerDeadline,
+    this.tor = const TorUninitialized(),
     this.hasPendingProviderSave = false,
     this.settings,
     this.vault,
@@ -52,7 +70,14 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
   final ManageVaultSessionUsecase? _session;
   final CompleteVaultUsecase _complete;
   final RecoverBullFailure unavailable;
+  StreamSubscription<TorConnectionState>? _torSubscription;
+  final bool Function() _snowflakeAvailable;
   bool _closing = false;
+
+  /// A key-server probe runs beside the flow's operations rather than as one:
+  /// a Tor bootstrap can take minutes, and recovering with the vault key needs
+  /// no server, so it must not wait for it.
+  bool _connecting = false;
 
   VaultFlowCubit(
     this._settings,
@@ -61,7 +86,46 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     this._complete, {
     required this.unavailable,
     EncryptedVault? vault,
-  }) : super(VaultFlowState(vault: vault));
+    Stream<TorConnectionState>? tor,
+    bool Function()? snowflakeAvailable,
+  }) : _snowflakeAvailable = snowflakeAvailable ?? (() => false),
+       super(VaultFlowState(vault: vault)) {
+    _torSubscription = tor?.listen((value) {
+      if (_closing || isClosed) return;
+      // A ready route stays ready through Tor's own directory refreshes, which
+      // briefly report Connecting without any blockage.
+      if (state.tor is TorReady &&
+          value is TorConnecting &&
+          value.diagnostic == null) {
+        return;
+      }
+      emit(_copy(tor: value));
+    });
+  }
+
+  VaultFlowState _copy({
+    KeyServerStatus? keyServer,
+    int? keyServerFailures,
+    TorConnectionState? tor,
+    bool? hasPendingProviderSave,
+    RecoverBullFailure? Function()? failure,
+    DateTime? Function()? keyServerDeadline,
+  }) => VaultFlowState(
+    busy: state.busy,
+    keyServer: keyServer ?? state.keyServer,
+    keyServerFailures: keyServerFailures ?? state.keyServerFailures,
+    keyServerDeadline: keyServerDeadline == null
+        ? state.keyServerDeadline
+        : keyServerDeadline(),
+    tor: tor ?? state.tor,
+    hasPendingProviderSave:
+        hasPendingProviderSave ?? state.hasPendingProviderSave,
+    settings: state.settings,
+    vault: state.vault,
+    files: state.files,
+    completion: state.completion,
+    failure: failure == null ? state.failure : failure(),
+  );
 
   void _publish({
     bool busy = false,
@@ -75,6 +139,10 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     emit(
       VaultFlowState(
         busy: busy,
+        keyServer: state.keyServer,
+        keyServerFailures: state.keyServerFailures,
+        keyServerDeadline: state.keyServerDeadline,
+        tor: state.tor,
         hasPendingProviderSave: _session?.hasPendingProviderSave ?? false,
         settings: settings ?? state.settings,
         vault: vault ?? state.vault,
@@ -132,12 +200,61 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     await _run(() => _files.delete.execute(file));
   }
 
-  Future<void> connect({bool newRoute = false}) async {
-    await _run(
-      () =>
-          _session?.connect(newRoute: newRoute) ??
-          Future.value(Err(unavailable)),
+  /// Whether the user's Tor settings let this flow restart through Snowflake.
+  bool get snowflakeAvailable => _snowflakeAvailable();
+
+  /// Probes the key server through this flow's route; the connection screen
+  /// calls it once consent is granted, and again on Retry or New route.
+  Future<void> connect({
+    bool newRoute = false,
+    bool restartTor = false,
+    bool viaSnowflake = false,
+  }) async {
+    if (_connecting || _closing || isClosed) return;
+    _connecting = true;
+    emit(
+      _copy(
+        keyServer: KeyServerStatus.connecting,
+        keyServerFailures: newRoute || restartTor || viaSnowflake ? 0 : null,
+        failure: () => null,
+        keyServerDeadline: () => null,
+      ),
     );
+    final Result<void, RecoverBullFailure> result;
+    try {
+      result =
+          await (_session?.connect(
+                newRoute: newRoute,
+                restartTor: restartTor,
+                viaSnowflake: viaSnowflake,
+                onProbe: (deadline) {
+                  if (_closing || isClosed) return;
+                  emit(_copy(keyServerDeadline: () => deadline));
+                },
+              ) ??
+              Future.value(Err<void, RecoverBullFailure>(unavailable)));
+    } finally {
+      _connecting = false;
+    }
+    if (_closing || isClosed) return;
+    emit(switch (result) {
+      Ok() => _copy(
+        keyServer: KeyServerStatus.online,
+        keyServerDeadline: () => null,
+      ),
+      Err(:final failure) => _copy(
+        keyServer: KeyServerStatus.offline,
+        keyServerDeadline: () => null,
+        keyServerFailures: state.keyServerFailures + 1,
+        failure: () => failure,
+      ),
+    });
+  }
+
+  /// Clears a failure once the screen has shown it.
+  void clearFailure() {
+    if (_closing || isClosed || state.failure == null) return;
+    _publish(files: state.files);
   }
 
   Future<void> create(
@@ -157,13 +274,32 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     if (value != null) _publish(vault: value.vault, completion: value);
   }
 
-  Future<void> retryProviderSave(VaultProvider provider) async {
+  /// Without [provider], the vault goes where the user first chose.
+  Future<void> retryProviderSave([VaultProvider? provider]) async {
     final value = await _run(
       () =>
           _session?.retryProviderSave(provider) ??
           Future.value(Err<VaultCompletion, RecoverBullFailure>(unavailable)),
     );
     if (value != null) _publish(vault: value.vault, completion: value);
+  }
+
+  /// Retries creating the wallets of a recovery whose import committed without them.
+  Future<void> retryWallets(VaultCompletion completion) async {
+    final value = await _run(
+      () async => Ok<VaultCompletion, RecoverBullFailure>(
+        await _complete.retryWallets(completion),
+      ),
+    );
+    if (value != null) _publish(vault: value.vault, completion: value);
+  }
+
+  /// Forgets a backup whose save did not complete, so the user can start over.
+  void abandonPendingProviderSave() {
+    if (state.busy || _closing || isClosed) return;
+    if (_session?.abandonPendingProviderSave() ?? false) {
+      emit(_copy(hasPendingProviderSave: false));
+    }
   }
 
   Future<void> verify(String password, BitcoinNetwork? network) async {
@@ -235,6 +371,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     // Fence callbacks immediately, while the session finishes accounting for
     // any network or storage operation already committed.
     _closing = true;
+    await _torSubscription?.cancel();
     final closing = _session?.close();
     await super.close();
     await closing;

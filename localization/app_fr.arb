@@ -3217,7 +3217,7 @@
   "torSettingsPortValidationRange": "Le port doit être entre 1 et 65535",
   "torSettingsSaveButton": "Enregistrer",
   "torSettingsConnectionStatus": "État de connexion",
-  "torSettingsStatusConnected": "Connecté",
+  "torSettingsStatusConnected": "Prêt",
   "torSettingsStatusConnecting": "Connexion en cours...",
   "torSettingsStatusDisconnected": "Déconnecté",
   "torSettingsStatusUnknown": "État inconnu",
@@ -4783,5 +4783,7 @@
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
   "settingsDarkModeTitle": "Mode sombre",
-  "settingsSourceCodeTitle": "Code source"
+  "settingsSourceCodeTitle": "Code source",
+  "torSettingsStatusNoInternetOrBlocked": "Pas d’internet ou réseau censuré",
+  "torSettingsDescNoInternetOrBlocked": "Ce réseau n’a pas accès à internet, ou il bloque Tor."
 }

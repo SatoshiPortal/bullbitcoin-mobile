@@ -109,12 +109,14 @@ void main() {
     }
     final before = Map.of(storage.entries);
     final result = await repository.restore(backup.vault, VaultKey('00' * 32));
+    // A key that does not open the vault is a decryption failure, as in 6.15,
+    // not an invalid file.
     expect(
       result,
       isA<Err<Fingerprint, RecoverBullFailure>>().having(
         (r) => r.failure,
         'failure',
-        isA<VaultInvalidFailure>(),
+        isA<VaultDecryptionFailure>(),
       ),
     );
     expect(storage.entries, before);

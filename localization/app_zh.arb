@@ -442,7 +442,7 @@
   "autoswapWarningOkButton": "OK",
   "swapTitle": "内部 Swap",
   "sendOutputTooSmall": "低于灰尘限制的产出",
-  "torSettingsStatusConnected": "连接",
+  "torSettingsStatusConnected": "就绪",
   "receiveNote": "说明",
   "payLightningNetwork": "照明网络",
   "ledgerSuccessVerifyTitle": "更正Ledger.",
@@ -4623,5 +4623,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
   "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。",
   "settingsDarkModeTitle": "深色模式",
-  "settingsSourceCodeTitle": "源代码"
+  "settingsSourceCodeTitle": "源代码",
+  "torSettingsStatusNoInternetOrBlocked": "无法连接互联网或网络受审查",
+  "torSettingsDescNoInternetOrBlocked": "此网络无法访问互联网，或屏蔽了 Tor。",
+  "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。"
 }

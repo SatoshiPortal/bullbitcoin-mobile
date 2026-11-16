@@ -1368,7 +1368,7 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "เชื่อมต่อ",
+  "torSettingsStatusConnected": "พร้อม",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -11280,5 +11280,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "ไม่สามารถยืนยันได้ว่าธุรกรรมของคุณถูกเผยแพร่แล้ว โปรดตรวจสอบใน Block Explorer ก่อนลองอีกครั้ง",
   "broadcastSignedTxErrorNetworkNotEnabled": "การเผยแพร่บนเครือข่ายนี้ไม่ได้เปิดใช้งานในการตั้งค่าปัจจุบัน",
   "settingsDarkModeTitle": "โหมดมืด",
-  "settingsSourceCodeTitle": "ซอร์สโค้ด"
+  "settingsSourceCodeTitle": "ซอร์สโค้ด",
+  "torSettingsStatusNoInternetOrBlocked": "ไม่มีอินเทอร์เน็ตหรือเครือข่ายถูกเซ็นเซอร์",
+  "torSettingsDescNoInternetOrBlocked": "เครือข่ายนี้ไม่มีการเข้าถึงอินเทอร์เน็ต หรือบล็อก Tor",
+  "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้"
 }

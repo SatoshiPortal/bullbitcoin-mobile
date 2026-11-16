@@ -75,7 +75,7 @@ final class SecretsVaultRepository implements VaultRepository {
             log.fine('recoverbull vault inspected');
             return fingerprint;
           })
-          .mapErr(_failure);
+          .mapErr(_decryptFailure);
 
   @override
   Future<Result<Fingerprint, RecoverBullFailure>> restore(
@@ -94,7 +94,13 @@ final class SecretsVaultRepository implements VaultRepository {
             log.fine('recoverbull vault imported');
             return restored.secret.id;
           })
-          .mapErr(_failure);
+          .mapErr(_decryptFailure);
+
+  /// With a key supplied, an unreadable vault means the key does not open it.
+  static RecoverBullFailure _decryptFailure(custody.SecretFailure failure) =>
+      failure is custody.InvalidVaultFailure
+      ? const VaultDecryptionFailure()
+      : _failure(failure);
 
   static RecoverBullFailure _failure(custody.SecretFailure failure) =>
       switch (failure) {

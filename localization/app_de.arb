@@ -432,7 +432,7 @@
   "verifyButton": "Überprüfen",
   "swapTitle": "Interner Swap",
   "sendOutputTooSmall": "Output unterhalb der Staubgrenze",
-  "torSettingsStatusConnected": "Verbunden",
+  "torSettingsStatusConnected": "Bereit",
   "receiveNote": "Notiz",
   "payLightningNetwork": "Lightning-Netzwerk",
   "ledgerSuccessVerifyTitle": "Adresse auf Ledger bestätigen…",
@@ -4844,5 +4844,7 @@
   "passphraseShow": "Passphrase anzeigen",
   "passphraseHide": "Passphrase verbergen",
   "settingsDarkModeTitle": "Dunkelmodus",
-  "settingsSourceCodeTitle": "Quellcode"
+  "settingsSourceCodeTitle": "Quellcode",
+  "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
+  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor."
 }

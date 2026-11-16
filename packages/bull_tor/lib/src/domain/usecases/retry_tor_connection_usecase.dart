@@ -6,5 +6,6 @@ class RetryTorConnectionUsecase {
 
   const RetryTorConnectionUsecase(this._repository);
 
-  Future<TorConnectionState> execute() => _repository.retry();
+  Future<TorConnectionState> execute({bool snowflake = false}) =>
+      _repository.retry(snowflake: snowflake);
 }

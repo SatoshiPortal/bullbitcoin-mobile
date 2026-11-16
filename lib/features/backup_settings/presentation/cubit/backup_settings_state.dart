@@ -8,6 +8,7 @@ sealed class BackupSettingsState with _$BackupSettingsState {
     @Default(false) bool isDefaultPhysicalBackupTested,
     DateTime? lastPhysicalBackup,
     @Default(false) bool isDefaultEncryptedBackupTested,
+    @Default(false) bool isDefaultEncryptedBackupHistorical,
     DateTime? lastEncryptedBackup,
     @Default(BackupSettingsStatus.initial) BackupSettingsStatus status,
     BackupSettingsFailure? failure,

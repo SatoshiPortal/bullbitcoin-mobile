@@ -7,8 +7,7 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/elect
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
-import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -20,19 +19,8 @@ import 'package:bull_ui/bull_ui.dart'
         Gap;
 import 'package:go_router/go_router.dart';
 
-class AdvancedOptions extends StatefulWidget {
+class AdvancedOptions extends StatelessWidget {
   const AdvancedOptions({super.key});
-
-  @override
-  State<AdvancedOptions> createState() => _AdvancedOptionsState();
-}
-
-class _AdvancedOptionsState extends State<AdvancedOptions> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<TorSettingsCubit>().init();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +56,13 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                         ),
                       ),
                       const Gap(8),
-                      const TorProxyWidget(),
+                      BullSettingsEntryItem(
+                        icon: Icons.vpn_lock,
+                        title: context.loc.torSettingsTitle,
+                        onTap: () => context.pushNamed(
+                          const TorSettingsFacade().settingsRouteName,
+                        ),
+                      ),
                       BullSettingsEntryItem(
                         icon: Icons.hub,
                         title:

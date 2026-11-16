@@ -63,8 +63,15 @@ final class RecoverBullSettingsAdapter
   }
 
   @override
+  Stream<TorConnectionState> watch() => _embedded.states;
+
+  @override
+  bool get snowflakeAvailable => _embedded.mode == TorTransportMode.automatic;
+
+  @override
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async {
     try {
       final settings = await _settings.fetch();
@@ -76,15 +83,18 @@ final class RecoverBullSettingsAdapter
             port: settings.torProxyPort,
           );
         } on ArgumentError {
-          return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
+          return const Err(ExternalTorProxyUnavailableFailure());
         }
         return switch (await _tor.external.verify(endpoint)) {
           TorReady(:final route) => Ok(RecoverBullRoute(route, () async {})),
-          _ => const Err(KeyServerFailure(KeyServerFailureKind.unavailable)),
+          _ => const Err(ExternalTorProxyUnavailableFailure()),
         };
       }
-      // New route never restarts the shared engine or another flow's circuit.
-      final ready = await _embedded.ensureReady();
+      // New route never restarts the shared engine or another flow's circuit;
+      // only Retry after a failed or stalled bootstrap asks for a restart.
+      final ready = restartEmbedded || viaSnowflake
+          ? await _embedded.retry(snowflake: viaSnowflake)
+          : await _embedded.ensureReady();
       if (ready is! TorReady || ready.route.source != TorSource.embedded) {
         return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
       }

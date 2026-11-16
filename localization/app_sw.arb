@@ -3013,7 +3013,7 @@
   "torSettingsPortValidationRange": "Mlango lazima uwe kati ya 1 na 65535",
   "torSettingsSaveButton": "Hifadhi",
   "torSettingsConnectionStatus": "Hali ya Muunganisho",
-  "torSettingsStatusConnected": "Imeunganishwa",
+  "torSettingsStatusConnected": "Tayari",
   "torSettingsStatusConnecting": "Inaunganisha...",
   "torSettingsStatusDisconnected": "Imetenganishwa",
   "torSettingsStatusUnknown": "Hali Haijulikani",
@@ -3526,5 +3526,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Hatukuweza kuthibitisha kwamba muamala wako ulitangazwa. Angalia kwenye kichunguzi cha bloku kabla ya kujaribu tena.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Kutangaza kwenye mtandao huu hakujawezeshwa katika mipangilio ya sasa.",
   "settingsDarkModeTitle": "Hali ya giza",
-  "settingsSourceCodeTitle": "Msimbo chanzo"
+  "settingsSourceCodeTitle": "Msimbo chanzo",
+  "torSettingsStatusNoInternetOrBlocked": "Hakuna intaneti au mtandao umedhibitiwa",
+  "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa."
 }

@@ -11,6 +11,8 @@ resolution: workspace
 
 flutter:
   generate: true
+  assets:
+    - assets/
 
 dependencies:
   material_ui: ^1.11.0
@@ -22,10 +24,12 @@ dependencies:
   bull_logger:
   bull_tor:
   bull_ui:
+  screen_awake:
   screen_privacy:
   flutter_bloc: ^9.1.1
   go_router: ^18.1.4
   file_picker: ^13.3.3
+  gif: ^2.3.0
   googleapis: ^19.0.0
   google_sign_in: ^6.3.0
   google_sign_in_platform_interface: ^2.5.0
@@ -34,6 +38,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  url_launcher: ^6.3.2
   drift: ^2.35.4
   convert: ^3.1.2
   crypto: ^3.0.7

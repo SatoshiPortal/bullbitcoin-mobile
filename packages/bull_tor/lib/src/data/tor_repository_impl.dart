@@ -6,12 +6,44 @@ import '../domain/entities/tor_route.dart';
 import '../domain/entities/tor_session.dart';
 import '../domain/entities/tor_transport.dart';
 import '../domain/ports/embedded_tor_port.dart';
+import '../domain/ports/network_presence_port.dart';
 import '../domain/tor_failure.dart';
 import '../domain/tor_repository.dart';
+
+/// A direct bootstrap that has not finished in this time will not.
+const defaultDirectBudget = Duration(minutes: 2);
+
+/// Snowflake reaches Tor through volunteer proxies and can take minutes on a
+/// filtered network. The slowest success measured on a relay-blocking Wi-Fi
+/// took 499 s, rounded up here.
+const defaultSnowflakeBudget = Duration(minutes: 10);
+
+/// On an open network a direct bootstrap gains progress within a second or
+/// two. On a Wi-Fi blocking relays it sat at 0% for 61 s before Arti said
+/// "offline", or at 85% without ever carrying traffic: no progress for this
+/// long hands a direct attempt that has a fallback over to Snowflake.
+const defaultStallFallbackAfter = Duration(seconds: 20);
+
+/// Marks a direct attempt ended by a persistent censorship verdict.
+final _censoredOutcome = Object();
+
+/// Marks an attempt that outlived its budget.
+final _expiredOutcome = Object();
 
 final class TorRepositoryImpl implements TorRepository {
   final EmbeddedTorPort _embeddedTor;
   final Future<void> Function(TorTransport)? _onSuccessfulTransport;
+  final NetworkPresencePort? _network;
+
+  /// How long a censorship verdict must hold before automatic mode stops the
+  /// direct attempt and switches to Snowflake.
+  final Duration _censorshipFallbackAfter;
+
+  /// How long a direct attempt with a fallback may go without new progress.
+  final Duration _stallFallbackAfter;
+  final Duration _directBudget;
+  final Duration _snowflakeBudget;
+  final DateTime Function() _now;
   final StreamController<TorConnectionState> _changes =
       StreamController<TorConnectionState>.broadcast(sync: true);
 
@@ -25,6 +57,9 @@ final class TorRepositoryImpl implements TorRepository {
   Future<TorConnectionState>? _inFlight;
   bool _retryInFlight = false;
 
+  /// The user asked for Snowflake from a failure screen; cleared by a mode change.
+  bool _snowflakeRequested = false;
+
   /// Bumped by every start. A connection whose generation is stale must stay
   /// silent: a newer one owns the published state.
   int _generation = 0;
@@ -35,11 +70,23 @@ final class TorRepositoryImpl implements TorRepository {
     TorTransportMode initialMode = TorTransportMode.automatic,
     TorTransport? lastSuccessfulTransport,
     Future<void> Function(TorTransport)? onSuccessfulTransport,
+    NetworkPresencePort? network,
+    Duration censorshipFallbackAfter = const Duration(seconds: 15),
+    Duration stallFallbackAfter = defaultStallFallbackAfter,
+    Duration directBudget = defaultDirectBudget,
+    Duration snowflakeBudget = defaultSnowflakeBudget,
+    DateTime Function()? now,
   }) => TorRepositoryImpl._(
     embeddedTor,
     initialMode,
     lastSuccessfulTransport,
     onSuccessfulTransport,
+    network,
+    censorshipFallbackAfter,
+    stallFallbackAfter,
+    directBudget,
+    snowflakeBudget,
+    now ?? DateTime.now,
   );
 
   TorRepositoryImpl._(
@@ -47,6 +94,12 @@ final class TorRepositoryImpl implements TorRepository {
     this._mode,
     this._lastSuccessfulTransport,
     this._onSuccessfulTransport,
+    this._network,
+    this._censorshipFallbackAfter,
+    this._stallFallbackAfter,
+    this._directBudget,
+    this._snowflakeBudget,
+    this._now,
   );
 
   @override
@@ -85,8 +138,13 @@ final class TorRepositoryImpl implements TorRepository {
   }
 
   @override
-  Future<TorConnectionState> retry() {
+  Future<TorConnectionState> retry({bool snowflake = false}) {
     final inFlight = _inFlight;
+    if (snowflake && !_snowflakeRequested) {
+      _snowflakeRequested = true;
+      // A retry already running on the direct path must not absorb this one.
+      return _begin(retry: true);
+    }
     if (inFlight != null && _retryInFlight) return inFlight;
 
     return _begin(retry: true);
@@ -96,6 +154,7 @@ final class TorRepositoryImpl implements TorRepository {
   Future<TorConnectionState> setMode(TorTransportMode mode) {
     if (_mode == mode) return ensureReady();
     _mode = mode;
+    _snowflakeRequested = false;
     return retry();
   }
 
@@ -178,6 +237,39 @@ final class TorRepositoryImpl implements TorRepository {
       if (!_isCurrent(generation)) return _current;
     }
 
+    // Censorship watch for the attempt in flight: a verdict that holds for
+    // [_censorshipFallbackAfter] ends a direct attempt that has a fallback.
+    var circumvention = false;
+    DateTime? deadline;
+    Completer<void>? censored;
+    Timer? censorshipTimer;
+    // Stall watch: Arti's progress is not monotonic, so only a new best counts.
+    var best = -1.0;
+    Timer? stallTimer;
+    void watchProgress(double progress) {
+      final pending = censored;
+      if (pending == null || pending.isCompleted) return;
+      if (progress <= best && stallTimer != null) return;
+      best = progress > best ? progress : best;
+      stallTimer?.cancel();
+      stallTimer = Timer(_stallFallbackAfter, () {
+        if (!pending.isCompleted) pending.complete();
+      });
+    }
+
+    void watchCensorship(TorDiagnostic? diagnostic) {
+      final pending = censored;
+      if (pending == null || pending.isCompleted) return;
+      if (diagnostic?.worthSnowflake ?? false) {
+        censorshipTimer ??= Timer(_censorshipFallbackAfter, () {
+          if (!pending.isCompleted) pending.complete();
+        });
+      } else {
+        censorshipTimer?.cancel();
+        censorshipTimer = null;
+      }
+    }
+
     _embeddedSubscription = _embeddedTor.watch().listen((event) {
       if (!_isCurrent(generation)) return;
       switch (event) {
@@ -186,12 +278,17 @@ final class TorRepositoryImpl implements TorRepository {
           :final diagnostic,
           :final transport,
         ):
+          final classified = _classify(diagnostic);
+          watchCensorship(classified);
+          watchProgress(progress);
           _emit(
             TorConnecting(
               source: TorSource.embedded,
               progress: progress,
-              diagnostic: diagnostic,
+              diagnostic: classified,
               transport: transport,
+              circumvention: circumvention,
+              deadline: deadline,
             ),
           );
         case EmbeddedTorReady(:final endpoint, :final transport):
@@ -206,10 +303,59 @@ final class TorRepositoryImpl implements TorRepository {
     final attempts = _attempts();
     for (var index = 0; index < attempts.length; index++) {
       final transport = attempts[index];
-      _emit(TorConnecting(source: TorSource.embedded, transport: transport));
+      final hasFallback = index + 1 < attempts.length;
+      censorshipTimer?.cancel();
+      censorshipTimer = null;
+      final pendingCensorship = hasFallback ? Completer<void>() : null;
+      censored = pendingCensorship;
+      // Armed before the first event: a bootstrap that never reports is a stall too.
+      stallTimer?.cancel();
+      stallTimer = null;
+      best = -1;
+      watchProgress(0);
+      final budget = transport == TorTransport.snowflake
+          ? _snowflakeBudget
+          : _directBudget;
+      deadline = _now().add(budget);
+      final expired = Completer<void>();
+      final budgetTimer = Timer(budget, () {
+        if (!expired.isCompleted) expired.complete();
+      });
+      _emit(
+        TorConnecting(
+          source: TorSource.embedded,
+          transport: transport,
+          circumvention: circumvention,
+          deadline: deadline,
+        ),
+      );
       try {
-        final endpoint = await _embeddedTor.start(transport);
+        final start = _embeddedTor.start(transport);
+        final Object? outcome = await Future.any<Object?>([
+          start,
+          expired.future.then((_) => _expiredOutcome),
+          if (pendingCensorship != null)
+            pendingCensorship.future.then((_) => _censoredOutcome),
+        ]);
         if (!_isCurrent(generation)) return _current;
+        if (identical(outcome, _censoredOutcome) ||
+            identical(outcome, _expiredOutcome)) {
+          // The interrupted start fails with a cancellation nobody awaits.
+          unawaited(start.then((_) {}, onError: (_) {}));
+          await _embeddedTor.stop();
+          if (!_isCurrent(generation)) return _current;
+          if (identical(outcome, _expiredOutcome) && !hasFallback) {
+            return _fail(
+              generation,
+              TorBootstrapTimeoutFailure(
+                '${transport.name} not ready within ${budget.inSeconds}s',
+              ),
+            );
+          }
+          circumvention = true;
+          continue;
+        }
+        final endpoint = outcome! as TorProxyEndpoint;
 
         _lastSuccessfulTransport = transport;
         unawaited(_onSuccessfulTransport?.call(transport));
@@ -217,11 +363,19 @@ final class TorRepositoryImpl implements TorRepository {
         _emit(ready);
         return ready;
       } on TorBackendException catch (error) {
-        final hasFallback = index + 1 < attempts.length;
-        if (hasFallback && _shouldUseSnowflake(error.failure)) continue;
+        if (hasFallback && _shouldUseSnowflake(error.failure)) {
+          circumvention = true;
+          continue;
+        }
         return _fail(generation, error.failure);
       } catch (error) {
         return _fail(generation, TorUnexpectedFailure(error.toString()));
+      } finally {
+        budgetTimer.cancel();
+        censorshipTimer?.cancel();
+        censorshipTimer = null;
+        stallTimer?.cancel();
+        stallTimer = null;
       }
     }
     return _fail(
@@ -229,6 +383,13 @@ final class TorRepositoryImpl implements TorRepository {
       const TorUnexpectedFailure('No embedded Tor transport was attempted'),
     );
   }
+
+  /// Arti says "offline" when no relay answers. With a device network that
+  /// means relays are unreachable, which is how a network blocks Tor.
+  TorDiagnostic? _classify(TorDiagnostic? diagnostic) =>
+      diagnostic == TorDiagnostic.offline && (_network?.hasNetwork ?? false)
+      ? TorDiagnostic.noInternetOrBlocked
+      : diagnostic;
 
   TorReady _readyOn(TorProxyEndpoint endpoint, TorTransport transport) =>
       TorReady(
@@ -244,7 +405,8 @@ final class TorRepositoryImpl implements TorRepository {
     TorTransportMode.direct => const [TorTransport.direct],
     TorTransportMode.snowflake => const [TorTransport.snowflake],
     TorTransportMode.automatic
-        when _lastSuccessfulTransport == TorTransport.snowflake =>
+        when _snowflakeRequested ||
+            _lastSuccessfulTransport == TorTransport.snowflake =>
       const [TorTransport.snowflake],
     TorTransportMode.automatic => const [
       TorTransport.direct,
@@ -258,10 +420,10 @@ final class TorRepositoryImpl implements TorRepository {
     TorTransportMode.snowflake => transport == TorTransport.snowflake,
   };
 
-  static bool _shouldUseSnowflake(TorFailure failure) => switch (failure) {
+  bool _shouldUseSnowflake(TorFailure failure) => switch (failure) {
     TorBootstrapTimeoutFailure() => true,
     TorBootstrapFailure(:final diagnostic) =>
-      diagnostic?.suggestsCensorship ?? false,
+      _classify(diagnostic)?.worthSnowflake ?? false,
     _ => false,
   };
 
