@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_onboarding_wallet_usecase.dart';
@@ -11,6 +12,8 @@ class _MockCreateDefaultWalletsUsecase extends Mock
 
 class _MockWallet extends Mock implements Wallet {}
 
+class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
+
 void main() {
   late _MockCreateDefaultWalletsUsecase createDefaultWalletsUsecase;
   late CreateOnboardingWalletUsecase usecase;
@@ -18,7 +21,10 @@ void main() {
   setUp(() {
     createDefaultWalletsUsecase = _MockCreateDefaultWalletsUsecase();
     usecase = CreateOnboardingWalletUsecase(
-      defaultWallets: DefaultWalletsFacade(createDefaultWalletsUsecase),
+      defaultWallets: DefaultWalletsFacade(
+        createDefaultWalletsUsecase,
+        getWallets: _MockGetWalletsUsecase(),
+      ),
     );
   });
 

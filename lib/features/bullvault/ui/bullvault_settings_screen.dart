@@ -127,6 +127,12 @@ class _BullVaultSettingsScreenState extends State<BullVaultSettingsScreen>
           ),
           BullSettingsEntryItem(
             titleMaxLines: null,
+            icon: Icons.backup_outlined,
+            title: context.loc.bullVaultBackupRecovery,
+            onTap: () => _open(BullVaultFacade.backupRouteName),
+          ),
+          BullSettingsEntryItem(
+            titleMaxLines: null,
             icon: Icons.update,
             title: context.loc.bullVaultRenew,
             onTap: () => _open(

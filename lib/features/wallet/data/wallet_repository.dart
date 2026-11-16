@@ -723,7 +723,7 @@ class WalletRepository
     final updatedSigners = [...metadata.signers];
     updatedSigners[signerIndex] = updatedSigner;
     final updatedMetadata = metadata.copyWith(signers: updatedSigners);
-    final balance = await _getBalance(updatedMetadata);
+    final balance = await _readBalance(updatedMetadata, sync: false);
     final didUpdate = await _walletMetadataDatasource.updateSignerDevice(
       walletId: walletId,
       signerId: signerId,
@@ -768,7 +768,7 @@ class WalletRepository
     if (!didUpdate) throw const WalletSignerDeviceUpdateException();
     return _walletFromMetadata(
       updatedMetadata,
-      await _getBalance(updatedMetadata),
+      await _readBalance(updatedMetadata, sync: false),
     );
   }
 

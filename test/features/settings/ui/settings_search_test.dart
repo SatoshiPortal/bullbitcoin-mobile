@@ -107,6 +107,7 @@ void main() {
       }
       expect(walletSettingsItemOrder, [
         SettingsItemId.wallets,
+        SettingsItemId.dataBackup,
         SettingsItemId.importWallet,
         SettingsItemId.electrum,
         SettingsItemId.mempool,
@@ -172,6 +173,25 @@ void main() {
         ready.byId(SettingsItemId.exchangeAccountSettings).title,
         'Account Settings',
       );
+    });
+    test('signer export is searchable under BullVault and absent from Wallet entries', () {
+      final items = _englishItems(isSuperuser: true);
+      final signer = items.byId(SettingsItemId.signingKeyExport);
+      expect(
+        items.inSection(SettingsItemSection.wallet),
+        isNot(contains(signer)),
+      );
+      expect(
+        items.inSection(SettingsItemSection.tools),
+        isNot(contains(signer)),
+      );
+      expect(signer.path, [
+        'Settings',
+        'Wallet and Bitcoin',
+        'BullVault (multisig)',
+        signer.title,
+      ]);
+      expect(searchSettings(items, signer.title).first, signer);
     });
 
     test('groups developer controls at the bottom of App Settings', () {
@@ -262,7 +282,8 @@ void main() {
     test('omits inaccessible superuser settings', () {
       final items = _englishItems();
 
-      // Breadcrumb matches must not expose restricted settings.
+      // The existing substring matcher can also match an accessible mode under
+      // the new App and device breadcrumb; the guarded control stays absent.
       expect(
         searchSettings(items, 'dev mode').map((item) => item.id),
         isNot(contains(SettingsItemId.devMode)),

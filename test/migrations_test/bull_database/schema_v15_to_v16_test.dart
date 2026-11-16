@@ -335,6 +335,7 @@ void main() {
           );
         }
 
+        await _expectEmptyBackupTables(migratedDb);
         await migratedDb.close();
       },
     );
@@ -346,6 +347,7 @@ void main() {
     await verifier.migrateAndValidate(db, 16);
     expect(await db.select(db.walletMetadatas).get(), isEmpty);
     expect(await db.select(db.bullVaultRecords).get(), isEmpty);
+    await _expectEmptyBackupTables(db);
   });
 
   test('failed v15 migration rolls back and can be retried', () async {
@@ -599,4 +601,14 @@ void _networkMigrationTests() {
     expect(settings.single.currency, 'CAD');
     await migratedDb.close();
   });
+}
+
+Future<void> _expectEmptyBackupTables(GeneratedDatabase db) async {
+  for (final table in [
+    'wallet_backup_states',
+    'wallet_backup_controls',
+    'keychain_nostr_keys',
+  ]) {
+    expect(await db.customSelect('SELECT * FROM $table').get(), isEmpty);
+  }
 }

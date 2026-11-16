@@ -105,8 +105,12 @@ void main() {
       ),
     ).thenAnswer((_) async => Ok(<Wallet>[testnetWallet]));
 
-    when(() => bip85Repository.fetchNextIndexForApplication(any()))
-        .thenAnswer((_) async => const Ok(0));
+    when(
+      () => bip85Repository.fetchNextIndexForApplication(
+        any(),
+        mnemonicLength: any(named: 'mnemonicLength'),
+      ),
+    ).thenAnswer((_) async => const Ok(0));
     when(
       () => bip85Repository.recordMnemonic(
         xprvFingerprint: any(named: 'xprvFingerprint'),

@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/frameworks/drift/models/mempool_settings_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -7,6 +8,11 @@ class MempoolSettingsStorageDatasource {
   final SqliteDatabase _sqlite;
 
   const MempoolSettingsStorageDatasource({required this._sqlite});
+
+  /// Invalidates cached facts; consumers reread after the transaction ends.
+  Stream<void> get changes => _sqlite
+      .tableUpdates(TableUpdateQuery.onTable(_sqlite.mempoolSettings))
+      .map((_) {});
 
   Future<void> store(MempoolSettingsModel settings) async {
     try {

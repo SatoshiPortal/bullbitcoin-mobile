@@ -51,3 +51,30 @@ final class EphemeralMnemonicSource extends MnemonicSource {
   Future<Result<bool, SecretFailure>> verify(List<String> words) =>
       _mnemonic.verifyWords(words);
 }
+
+final class DataRecoveryMnemonicSource extends MnemonicSource {
+  final Secret _secret;
+  @internal
+  const DataRecoveryMnemonicSource(this._secret);
+  @internal
+  factory DataRecoveryMnemonicSource.fromSource(MnemonicSource source) =>
+      switch (source) {
+        StoredMnemonicSource(:final _secret) => DataRecoveryMnemonicSource(
+          _secret,
+        ),
+        _ => throw StateError('Data Recovery Words require a stored secret'),
+      };
+
+  @override
+  Fingerprint get id => _secret.id;
+  @override
+  int get wordCount => 12;
+  @override
+  Future<Result<RevealedMnemonic, SecretFailure>> reveal(RevealReason reason) =>
+      _secret.dataRecoveryMnemonic();
+  @override
+  Future<Result<bool, SecretFailure>> verify(List<String> words) async =>
+      (await _secret.dataRecoveryMnemonic()).map(
+        (value) => value.words.join(' ') == words.join(' '),
+      );
+}

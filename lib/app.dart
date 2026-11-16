@@ -45,6 +45,17 @@ void resumePayjoinsOnAppResume(
   }
 }
 
+@visibleForTesting
+Widget buildBackupSettingsScope(BuildContext context, Widget child) {
+  final started = context.watch<AppStartupBloc>().state is AppStartupSuccess;
+  final hasDefaultWallet = context.select<WalletBloc, bool>(
+    (bloc) => bloc.state.wallets.any((wallet) => wallet.isDefault),
+  );
+  return BackupReminderScope(
+    child: DataBackupScope(ready: started && hasDefaultWallet, child: child),
+  );
+}
+
 class BullBitcoinWalletApp extends StatefulWidget {
   const BullBitcoinWalletApp({super.key});
 
@@ -203,8 +214,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                             navigatorKey: AppRouter.rootNavigatorKey,
                             child: BullSupportScope(
                               onContactSupport: SupportFacade.contactSupport,
-                              child: BackupReminderScope(
-                                child: AppStartupWidget(
+                              child: buildBackupSettingsScope(
+                                context,
+                                AppStartupWidget(
                                   app: locator<RecoverBullFeature>().withAlerts(
                                     child,
                                     onOpen: () => AppRouter.router.pushNamed(

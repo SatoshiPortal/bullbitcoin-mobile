@@ -109,6 +109,9 @@ graph TB
     IMPORT_WALLET[Import Wallet]
     IMPORT_WATCH_ONLY[Import Watch-Only Wallet]
     BULLVAULT[BullVault]
+    KEYCHAIN[Keychain Inventory / Nostr Keys]
+    BACKUP_IDENTITY[Data Recovery Credential]
+    WALLET_BACKUP[Wallet Data Backup]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
     %% Instead, we note this in the documentation below
@@ -123,6 +126,8 @@ graph TB
     LOGS --> PRIMITIVES
     LOGS --> BULL_UI
     SETTINGS --> LOGS
+    SETTINGS --> STATUS
+    SETTINGS --> LABELS
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
     CORE --> BULL_PRICER
@@ -149,6 +154,37 @@ graph TB
     ONBOARDING --> IMPORT_MNEMONIC
     ONBOARDING --> WALLETS
     APP_STARTUP --> IMPORT_MNEMONIC
+    IMPORT_MNEMONIC --> SETTINGS
+    KEYCHAIN --> SECRETS
+    BACKUP_IDENTITY --> SECRETS
+    BACKUP_SETTINGS --> SECRETS
+    BACKUP_SETTINGS --> IMPORT_MNEMONIC
+    KEYCHAIN --> BACKUP_IDENTITY
+    KEYCHAIN --> WALLETS
+    BACKUP_IDENTITY --> WALLETS
+    WALLET_BACKUP --> SYNC
+    WALLET_BACKUP --> BULL_LOGGER
+    BACKUP_SETTINGS --> BULL_LOGGER
+    WALLET_BACKUP --> LABELS
+    WALLET_BACKUP --> BULL_PAYJOIN
+    WALLET_BACKUP --> AUTOSWAP
+    WALLET_BACKUP --> ELECTRUM_SETTINGS
+    WALLET_BACKUP --> SETTINGS
+    WALLET_BACKUP --> WALLETS
+    WALLET_BACKUP --> KEYCHAIN
+    WALLET_BACKUP --> BULLVAULT
+    WALLET_BACKUP --> BACKUP_IDENTITY
+    BACKUP_SETTINGS --> BACKUP_IDENTITY
+    BACKUP_SETTINGS --> ELECTRUM_SETTINGS
+    BACKUP_SETTINGS --> WALLET_BACKUP
+    BACKUP_SETTINGS --> WIZARD
+    WIZARD --> WALLET_BACKUP
+    BACKUP_SETTINGS --> BULLVAULT
+    BACKUP_SETTINGS --> KEYCHAIN
+    BACKUP_SETTINGS --> LABELS
+    BACKUP_SETTINGS --> RECOVERBULL
+    BACKUP_SETTINGS --> BACKUPS
+    BACKUP_SETTINGS --> SETTINGS
 
     %% Feature-to-feature dependencies (extracted from draw.io diagram)
     ADDRESS_MGMT --> LABELS
@@ -366,7 +402,7 @@ graph TB
 
     class CORE coreStyle
     class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
-    class IMPORT_MNEMONIC,ONBOARDING,PSBT_SIGNING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_PSBT_SIGNING,SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,PSBT_FLOW,BROADCAST_SIGNED_TX,IMPORT_WALLET,BULLVAULT featureStyle
+    class IMPORT_MNEMONIC,ONBOARDING,PSBT_SIGNING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_PSBT_SIGNING,SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,PSBT_FLOW,BROADCAST_SIGNED_TX,IMPORT_WALLET,BULLVAULT,KEYCHAIN,BACKUP_IDENTITY,WALLET_BACKUP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -554,3 +590,30 @@ not permission for new internal feature dependencies. New contribution widgets
 and routes resolve their own presentation from GetIt without importing the shell.
 
 The wallet-to-watch-only-import and PSBT-flow-to-wallet source edges are retired: descriptor import now receives published wallet types, and the QR flow carries its own result.
+
+## Data Backup source-edge review
+
+The source baseline records 20 Data Backup dependencies. Thirteen use existing
+published facades: Backup Settings consumes BullVault, mnemonic import, keychain
+inventory, labels, data recovery credentials, Wallet Data Backup and Wizard;
+keychain inventory consumes data recovery credentials; Wallet Data Backup
+consumes BullVault, keychain inventory, labels and data recovery credentials;
+Wizard consumes Wallet Data Backup. Their use cases retain orchestration, and
+presentation imports these facades for published types or navigation.
+
+The other seven edges retain dependencies that Data Backup already had on core
+code before its relocation to feature owners:
+
+| Consumers → owner | Retained capability |
+|---|---|
+| Backup Settings → Electrum Settings | Network names in backup inspection |
+| Keychain inventory, data recovery credentials → Wallets | Public catalog capture and active default-seed lookup |
+| Wallet Data Backup → Wallets | Catalog observation, descriptor restoration and annotations |
+| Wallet Data Backup → Settings, Autoswap, Electrum Settings | Portable preference capture, restoration and invalidation |
+
+Network and app preference types use the existing Wallets and Settings public
+exports where available. Catalog and preference storage imports still cross
+internal boundaries; the baseline records this relocation debt, not permission
+for new consumers. A scoped follow-up should expose portable catalog and
+preference operations from their owning features and move the backup adapters
+to those public contracts. No datasource is published to conceal the debt.
