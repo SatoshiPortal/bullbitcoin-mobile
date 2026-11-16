@@ -27,9 +27,8 @@ void main() {
   });
 
   test('reports an accepted broadcast', () async {
-    when(
-      () => sender.broadcastOriginal('session-1'),
-    ).thenAnswer((_) async => Ok(_session()));
+    when(() => sender.broadcastOriginal('session-1'))
+        .thenAnswer((_) async => Ok(_session()));
 
     expect(await usecase.execute('session-1'), isTrue);
   });

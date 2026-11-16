@@ -66,9 +66,8 @@ void main() {
     PayjoinStatus.aborted,
   ]) {
     test('does not return a ${status.name} session', () async {
-      when(
-        () => sessions.byId(_uri),
-      ).thenAnswer((_) async => Ok(_session(status: status)));
+      when(() => sessions.byId(_uri))
+          .thenAnswer((_) async => Ok(_session(status: status)));
 
       expect(await run(), isNull);
     });
@@ -78,17 +77,15 @@ void main() {
   // earlier payment on the same link from another wallet or for another
   // amount. Adopting it would report this amount as sent.
   test('does not return a live session of another wallet', () async {
-    when(
-      () => sessions.byId(_uri),
-    ).thenAnswer((_) async => Ok(_session(walletId: 'w2')));
+    when(() => sessions.byId(_uri))
+        .thenAnswer((_) async => Ok(_session(walletId: 'w2')));
 
     expect(await run(), isNull);
   });
 
   test('does not return a live session for another amount', () async {
-    when(
-      () => sessions.byId(_uri),
-    ).thenAnswer((_) async => Ok(_session(amountSat: 40000)));
+    when(() => sessions.byId(_uri))
+        .thenAnswer((_) async => Ok(_session(amountSat: 40000)));
 
     expect(await run(), isNull);
   });
