@@ -43,6 +43,7 @@ void main() {
   late _Sessions sessions;
   late VaultFlowPresentation presentation;
   late int torSettingsOpened;
+  var snowflakeAvailable = true;
 
   // Built inside each test: a cubit created in setUp would deliver its
   // states outside the widget test's fake async zone.
@@ -88,6 +89,7 @@ void main() {
         complete,
         unavailable: const RecoverBullStorageFullFailure(),
         tor: tor.stream,
+        snowflakeAvailable: () => snowflakeAvailable,
       ),
       const Ok(BitcoinNetwork.testnet),
       null,
@@ -194,13 +196,21 @@ void main() {
     'a failure after filtering explains it, offers Tor settings and restarts Tor',
     (tester) async {
       await pumpPage(tester);
-      tor.add(
-        const TorConnecting(
-          source: TorSource.embedded,
-          transport: TorTransport.snowflake,
-          circumvention: true,
-        ),
-      );
+      tor
+        ..add(
+          const TorConnecting(
+            source: TorSource.embedded,
+            transport: TorTransport.direct,
+            diagnostic: TorDiagnostic.cantReachTor,
+          ),
+        )
+        ..add(
+          const TorConnecting(
+            source: TorSource.embedded,
+            transport: TorTransport.snowflake,
+            circumvention: true,
+          ),
+        );
       await tester.pump();
       tor.add(
         const TorUnavailable(
@@ -215,6 +225,9 @@ void main() {
       await tester.pump();
 
       expect(find.text(_censored), findsOneWidget);
+      await tester.ensureVisible(
+        find.widgetWithText(BullButton, 'Tor Settings'),
+      );
       await tester.tap(find.widgetWithText(BullButton, 'Tor Settings'));
       expect(torSettingsOpened, 1);
 
@@ -225,6 +238,72 @@ void main() {
       await leave(tester);
     },
   );
+
+  testWidgets('a network Tor cannot get through is not called censored', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    tor.add(
+      const TorConnecting(
+        source: TorSource.embedded,
+        transport: TorTransport.direct,
+        diagnostic: TorDiagnostic.noInternetOrBlocked,
+      ),
+    );
+    await tester.pump(const Duration(seconds: 6));
+
+    expect(find.text('No internet or censored network'), findsOneWidget);
+    expect(find.text(_filtered), findsNothing);
+    await leave(tester);
+  });
+
+  testWidgets('a Tor failure offers Snowflake next to Retry', (tester) async {
+    await pumpPage(tester);
+    tor.add(
+      const TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorBootstrapFailure('stalled', TorDiagnostic.cantBootstrap),
+      ),
+    );
+    sessions.pending.complete(
+      const Err(KeyServerFailure(KeyServerFailureKind.unavailable)),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.widgetWithText(BullButton, 'Retry'), findsOneWidget);
+    sessions.pending = Completer();
+    await tester.ensureVisible(
+      find.widgetWithText(BullButton, 'Use Snowflake'),
+    );
+    await tester.tap(find.widgetWithText(BullButton, 'Use Snowflake'));
+    await tester.pump();
+    expect(sessions.snowflake, [false, true]);
+    await leave(tester);
+  });
+
+  testWidgets('an explicit transport mode is not overridden with Snowflake', (
+    tester,
+  ) async {
+    snowflakeAvailable = false;
+    addTearDown(() => snowflakeAvailable = true);
+    await pumpPage(tester);
+    tor.add(
+      const TorUnavailable(
+        source: TorSource.embedded,
+        failure: TorBootstrapFailure('stalled', TorDiagnostic.cantBootstrap),
+      ),
+    );
+    sessions.pending.complete(
+      const Err(KeyServerFailure(KeyServerFailureKind.unavailable)),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.widgetWithText(BullButton, 'Retry'), findsOneWidget);
+    expect(find.widgetWithText(BullButton, 'Use Snowflake'), findsNothing);
+    await leave(tester);
+  });
 
   testWidgets('a server failure names its cause under the message', (
     tester,
@@ -270,6 +349,8 @@ void main() {
       findsOneWidget,
     );
     expect(find.widgetWithText(BullButton, 'New route'), findsNothing);
+    expect(find.widgetWithText(BullButton, 'Use Snowflake'), findsNothing);
+    await tester.ensureVisible(find.widgetWithText(BullButton, 'Tor Settings'));
     await tester.tap(find.widgetWithText(BullButton, 'Tor Settings'));
     expect(torSettingsOpened, 1);
     await leave(tester);
@@ -339,6 +420,7 @@ final class _Sessions implements KeyServerSessionRepository {
   Completer<Result<KeyServerRepository, RecoverBullFailure>> pending =
       Completer();
   final List<bool> restarts = [];
+  final List<bool> snowflake = [];
 
   @override
   Future<Result<KeyServerRepository, RecoverBullFailure>> open(
@@ -347,6 +429,7 @@ final class _Sessions implements KeyServerSessionRepository {
     bool viaSnowflake = false,
   }) {
     restarts.add(restartEmbedded);
+    snowflake.add(viaSnowflake);
     return pending.future;
   }
 }
