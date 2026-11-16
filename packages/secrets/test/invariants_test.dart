@@ -327,6 +327,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'InvalidMnemonicFailure',
       'InvalidVaultFailure',
       'VaultIdentityMismatchFailure',
+      'InvalidVaultPathFailure',
       'UnsupportedNetworkFailure', 'FingerprintMismatchFailure',
       'UseSecretFailure',
     };
@@ -413,6 +414,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'silentPaymentsAccount': 'capability',
       // ciphertext plus the key that opens it
       'backupRecoverbull': 'ciphertext',
+      'recoverbullKey': 'material',
     };
 
     // Every public member of `Secret`, whatever it returns. M2 (Codex,
@@ -498,8 +500,9 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
         'bip85Mnemonic',
         'swapKey',
         'revealMnemonic',
+        'recoverbullKey',
       ]),
-      reason: 'the four that hand back key material; README must match',
+      reason: 'the operations that hand back key material; README must match',
     );
   });
 }

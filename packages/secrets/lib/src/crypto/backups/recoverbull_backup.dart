@@ -64,14 +64,39 @@ final class RecoverBullBackup {
     } on FormatException {
       throw const InvalidVault('file is not a RecoverBull vault');
     }
-    final path = decoded is Map<String, dynamic> ? decoded[_kPath] : null;
-    if (path is! String ||
-        !RegExp(r"^(?:m/)?1608'/0'/[0-9]+'?$").hasMatch(path)) {
+    try {
+      return _validatedPath(
+        decoded is Map<String, dynamic> ? decoded[_kPath] : null,
+      );
+    } on InvalidVaultPath {
       throw const InvalidVault('vault derivation path is invalid');
     }
+  }
+
+  /// Derives at the file's recorded BIP85 path and authenticates its mnemonic payload before releasing the key.
+  String verifiedKey({required String masterXprv, required String file}) {
+    final BullBackup backup;
+    try {
+      backup = BullBackup.fromJson(file);
+    } on Exception {
+      throw const InvalidVault('file is not a RecoverBull vault');
+    }
+    final path = _validatedPath(backup.path);
+    // Preserve hardened versus unhardened indices: they produce different keys.
+    final key = backupKey(masterXprv: masterXprv, path: path);
+    open(file: file, backupKey: key);
+    return key;
+  }
+
+  static String _validatedPath(Object? path) {
+    if (path is! String) throw const InvalidVaultPath();
+    final match = RegExp(r"^(?:m/)?1608'/0'/[0-9]+'?$").firstMatch(path);
     final index = int.tryParse(path.split('/').last.replaceAll("'", ''));
-    if (index == null || index > 0x7fffffff) {
-      throw const InvalidVault('vault derivation path is invalid');
+    if (match == null ||
+        match.end != path.length ||
+        index == null ||
+        index > 0x7fffffff) {
+      throw const InvalidVaultPath();
     }
     return path;
   }
