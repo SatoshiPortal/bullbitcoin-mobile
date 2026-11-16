@@ -6,6 +6,8 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../../domain/ports/freeze_store_port.dart';
 import '../../domain/ports/input_reservation_port.dart';
+import '../../domain/ports/funding_reservation_port.dart';
+import '../input_reservations.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/ports/wallet_connection_port.dart';
@@ -135,6 +137,7 @@ ForegroundStores openForeground({
   required ReservedAddressPort reservedAddresses,
   required FreezeStorePort freezes,
   required InputReservationPort inputReservations,
+  FundingReservationPort? fundingReservations,
   required WalletConnectionPort connections,
   @visibleForTesting NativeSpendSessions? spendSessions,
   @visibleForTesting SpendTransport? spendTransport,
@@ -163,6 +166,10 @@ ForegroundStores openForeground({
       catalog: catalog,
     );
     final authority = FreezeAuthority(freezes);
+    final reservations = CombinedInputReservations(
+      inputReservations,
+      fundingReservations,
+    );
     late final ForegroundStores stores;
     stores = ForegroundStores._(
       documentsDirectory,
@@ -177,7 +184,7 @@ ForegroundStores openForeground({
       ),
       gate,
       authority,
-      inputReservations,
+      reservations,
       SpendWriter(
         session: WriterSession.app(
           documentsDirectory: documentsDirectory,
@@ -188,7 +195,8 @@ ForegroundStores openForeground({
         ),
         gate: gate,
         freezes: authority,
-        reservations: inputReservations,
+        reservations: reservations,
+        fundingReservations: fundingReservations,
         natives: spendSessions ?? SdkSpendSessions(documentsDirectory),
         send: spendTransport ?? SpendWriter.transport(connections),
         closed: () => stores._closed,
