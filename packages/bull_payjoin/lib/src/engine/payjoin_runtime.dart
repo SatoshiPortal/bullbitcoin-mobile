@@ -12,6 +12,7 @@ import 'package:bull_payjoin/src/domain/payjoin_session.dart';
 import 'package:bull_payjoin/src/engine/payjoin_ownership.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as engine;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
+import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
 import 'package:bull_payjoin/src/engine/payjoin_fee_cap.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart' as logger;
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
@@ -308,6 +309,8 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         expireAfterSec: lifetime.inSeconds,
       );
       return Ok(_toSession(session) as PayjoinSenderSession);
+    } on PayjoinSenderKeptException catch (error) {
+      return Err(PayjoinSenderKeptFailure(error.originalTxId));
     } catch (error, trace) {
       // The failure handed back is deliberately generic; without this the
       // cause of a payment falling back to a plain transaction is lost.

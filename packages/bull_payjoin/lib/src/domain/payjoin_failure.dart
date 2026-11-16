@@ -61,3 +61,11 @@ final class PayjoinSpendBlockedFailure extends PayjoinFailure {
   final bool busy;
   const PayjoinSpendBlockedFailure({this.busy = false});
 }
+
+/// The signed original remains reserved after this attempt's POST failed.
+final class PayjoinSenderKeptFailure extends PayjoinFailure {
+  final String originalTxId;
+
+  const PayjoinSenderKeptFailure(this.originalTxId)
+    : super('Sender retained after directory publication failed');
+}

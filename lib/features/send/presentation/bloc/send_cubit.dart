@@ -3201,7 +3201,7 @@ class SendCubit extends Cubit<SendState>
                 : 1,
           );
           final PayjoinSenderSession payjoinSender;
-          var adoptedAfterFailedStart = false;
+          var broadcastKeptOriginal = false;
           switch (payjoinResult) {
             case Ok(:final value):
               payjoinSender = value;
@@ -3221,7 +3221,12 @@ class SendCubit extends Cubit<SendState>
                 walletId: wallet.id,
                 amountSat: state.confirmedAmountSat,
               );
-              if (persisted == null) {
+              final keptOriginal = failure is SendTransactionConfirmationFailure
+                  ? failure.keptPayjoinOriginalTxId
+                  : null;
+              if (persisted == null ||
+                  (keptOriginal != null &&
+                      persisted.originalTxId != keptOriginal)) {
                 emit(
                   state.copyWith(failure: failure, signingTransaction: false),
                 );
@@ -3233,7 +3238,7 @@ class SendCubit extends Cubit<SendState>
                 'instead of re-arming Confirm',
               );
               payjoinSender = persisted;
-              adoptedAfterFailedStart = true;
+              broadcastKeptOriginal = keptOriginal != null;
           }
           // Show originalTxId provisionally; the payjoin runs asynchronously
           //  in the repository (poll → sign → broadcast, or fallback to the
@@ -3251,10 +3256,10 @@ class SendCubit extends Cubit<SendState>
             ),
           );
           _watchPayjoin(payjoinSender.id);
-          // The directory most likely never received the original and the
-          // stored row cannot pick up a proposal: settle now rather than at
-          // the session deadline. A refusal leaves the armed session as is.
-          if (adoptedAfterFailedStart) {
+          // Only this attempt's retained POST failure enables immediate
+          // fallback. An adopted live duplicate keeps negotiating; the engine
+          // guards the fallback against any competing transaction.
+          if (broadcastKeptOriginal) {
             unawaited(
               _broadcastPayjoinOriginalUsecase.execute(payjoinSender.id),
             );

@@ -110,9 +110,11 @@ final class SendExchangeOrderMismatchFailure extends SendFailure {
 
 final class SendTransactionConfirmationFailure extends SendFailure {
   final bool isBroadcastFailure;
+  final String? keptPayjoinOriginalTxId;
 
   const SendTransactionConfirmationFailure({
     this.isBroadcastFailure = false,
+    this.keptPayjoinOriginalTxId,
     String? logMessage,
   }) : super(logMessage);
 }

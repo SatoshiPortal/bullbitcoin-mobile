@@ -367,6 +367,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
 
     final PayjoinSenderModel model;
+    PayjoinSenderModel? persistedAttempt;
     try {
       model = await _pdkPayjoinDatasource.createSender(
         walletId: walletId,
@@ -388,11 +389,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // deliberately keeps the row (the receiver may still have received
         // the original) and lets the expiry fallback settle the payment.
         persistBeforePost: (model) async {
+          // Once publication can start, a lost response cannot establish
+          // non-delivery. Persist that uncertainty with the signed original.
+          final durable = model.copyWith(hasNetworkEvidence: true);
           if (existing == null) {
-            await _localPayjoinDatasource.storeSender(model);
+            await _localPayjoinDatasource.storeSender(durable);
           } else {
             final replaced = await _localPayjoinDatasource.replaceExpiredSender(
-              model,
+              durable,
             );
             if (!replaced) {
               throw StateError(
@@ -400,6 +404,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
               );
             }
           }
+          persistedAttempt = durable;
         },
       );
     } catch (_) {
@@ -416,7 +421,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } catch (_) {
         stored = null;
       }
-      if (stored != null &&
+      final attempt = persistedAttempt;
+      if (attempt != null &&
+          stored != null &&
+          stored.originalTxId == attempt.originalTxId &&
+          stored.walletId == attempt.walletId &&
           !stored.isExpired &&
           !stored.isCompleted &&
           !stored.isAborted &&
@@ -433,29 +442,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           role: api.PayjoinLogRole.sender,
           sessionRef: stored.toEntity().logRef,
         );
+        throw PayjoinSenderKeptException(stored.originalTxId);
       }
       rethrow;
-    }
-
-    // The POST handed the receiver a fully signed, broadcastable original.
-    // BIP 77 lets the receiver broadcast it at any point and gives the sender
-    // no way to revoke it, so from here this payment can exist without this
-    // device ever reaching the bitcoin network: record it as network
-    // evidence. Expiry then keeps the row reserved and replays this same
-    // original (_processExpiredPayjoinInner, _holdUnresolvedOriginal) instead
-    // of releasing its inputs to a rebuild that would not conflict with the
-    // receiver's copy. Best effort: a failed write is logged and leaves the
-    // row as it was; the POST is not undone by it.
-    try {
-      await _recordSenderNetworkEvidence(model.id);
-    } catch (e, st) {
-      _log.warning(
-        code: api.PayjoinLogCode.storageFailure,
-        role: api.PayjoinLogRole.sender,
-        sessionRef: model.toEntity().logRef,
-        error: e,
-        trace: st,
-      );
     }
 
     // The datasource returned the session in its post-POST state
