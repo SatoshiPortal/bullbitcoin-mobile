@@ -368,6 +368,61 @@ void main() {
     );
   });
 
+  for (final boot in [NetworkEnv.mainnet, NetworkEnv.testnet]) {
+    test(
+      '$boot preparation preserves both production networks for hot switching',
+      () async {
+        const productionNetworks = [
+          ElectrumServerNetwork.bitcoinMainnet,
+          ElectrumServerNetwork.liquidMainnet,
+          ElectrumServerNetwork.bitcoinTestnet,
+          ElectrumServerNetwork.liquidTestnet,
+        ];
+        for (final network in productionNetworks) {
+          await database
+              .into(database.electrumSettings)
+              .insert(
+                ElectrumSettingsRow(
+                  network: network,
+                  validateDomain: true,
+                  stopGap: 20,
+                  timeout: 5,
+                  retry: 5,
+                ),
+              );
+          await database
+              .into(database.electrumServers)
+              .insert(
+                ElectrumServerRow(
+                  url: 'ssl://${network.storageName}.example:50002',
+                  network: network.storageName,
+                  priority: 0,
+                  isCustom: false,
+                ),
+              );
+        }
+        expect(await provisioner.prepareForegroundStorage(boot), isA<Ok>());
+        for (final network in productionNetworks) {
+          expect(await provisioner.requireReady(network), isA<Ok>());
+        }
+        for (final network in [
+          ElectrumServerNetwork.bitcoinRegtest,
+          ElectrumServerNetwork.liquidRegtest,
+        ]) {
+          expect(await provisioner.requireReady(network), isA<Err>());
+        }
+        expect(
+          await database.select(database.electrumSettings).get(),
+          hasLength(4),
+        );
+        expect(
+          await database.select(database.electrumServers).get(),
+          hasLength(4),
+        );
+      },
+    );
+  }
+
   for (final production in [NetworkEnv.mainnet, NetworkEnv.testnet]) {
     test('$production preparation does not create fixture data', () async {
       expect(await provisioner.prepareForegroundStorage(production), isA<Ok>());
