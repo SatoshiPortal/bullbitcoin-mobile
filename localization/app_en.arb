@@ -15073,10 +15073,6 @@
   "@mnemonicLanguageAmbiguous": {
     "description": "Requires explicit language confirmation when wordlists overlap."
   },
-  "mnemonicDefaultEnglishOnly": "Default wallets currently require an English recovery phrase. After setup, you can import other languages as a separate Bitcoin wallet.",
-  "@mnemonicDefaultEnglishOnly": {
-    "description": "Explains the temporary Liquid SDK restriction before default-wallet recovery."
-  },
   "mnemonicLanguageName": "{language, select, english{English} french{French} spanish{Spanish} italian{Italian} portuguese{Portuguese} czech{Czech} korean{Korean} simplifiedChinese{Chinese (Simplified)} traditionalChinese{Chinese (Traditional)} japanese{Japanese} other{Unknown language}}",
   "@mnemonicLanguageName": {
     "description": "Localized BIP39 wordlist names keyed by Language.name, not UI locales.",
@@ -15463,5 +15459,9 @@
   "passphraseOptionOnSubtitle": "Entered below, never shown",
   "@passphraseOptionOnSubtitle": {
     "description": "Subtitle of the passphrase switch while it is on: the passphrase field below stays obscured"
+  },
+  "networkWalletReuseNoRecoveryPhrase": "This wallet has no recovery phrase, so it can't be reused here. Import a recovery phrase or create a new wallet.",
+  "@networkWalletReuseNoRecoveryPhrase": {
+    "description": "Shown when a test-network wallet setup tries to reuse a wallet stored as a raw seed, which has no recovery phrase."
   }
 }
