@@ -50,14 +50,17 @@ final class SqliteExitArchive implements ArkExitArchive {
       }
       final exists = File(path).existsSync();
       if (!create && !exists) return const Err(ArkStorageFailure());
-      final db = opened = sqlite3.open(
-        path,
-        mode: create ? OpenMode.readWriteCreate : OpenMode.readWrite,
-      );
+      // Reserve an absent path exclusively; do not infer empty ownership from
+      // SQLite's create-if-missing open or recreate an existing partial file.
+      if (!exists) File(path).createSync(exclusive: true);
+      final db = opened = sqlite3.open(path, mode: OpenMode.readWrite);
       db.execute('PRAGMA busy_timeout=0');
-      db.execute('PRAGMA synchronous=FULL');
       final version = db.select('PRAGMA user_version').single.values.single;
       if (!exists && create && version == 0) {
+        if (db.select('SELECT name FROM sqlite_schema').isNotEmpty) {
+          throw const FormatException('New archive is not empty');
+        }
+        _configureArchiveSync(db);
         _transaction(db, () {
           for (final table in _tables) {
             db.execute(
@@ -100,7 +103,9 @@ final class SqliteExitArchive implements ArkExitArchive {
         path,
         sqlSchema,
       );
-      archive._view(); // Refuse malformed initialized records without reset.
+      // Verify ALL existing owned state before changing persistent journal mode.
+      archive._view(checkSettings: false);
+      _configureArchiveSync(db);
       return Ok(archive);
     } on FormatException {
       opened?.close();
@@ -261,11 +266,12 @@ final class SqliteExitArchive implements ArkExitArchive {
   @override
   Future<Result<ArkExitArchiveView, ArkWalletFailure>> read() async =>
       _run(_view);
-  ArkExitArchiveView _view() => _transaction(_db, _readState);
+  ArkExitArchiveView _view({bool checkSettings = true}) =>
+      _transaction(_db, () => _readState(checkSettings: checkSettings));
 
   // Caller already owns BEGIN IMMEDIATE. Read and write admission share this
   // validation; no malformed row can be repaired by a later merge/admission.
-  ArkExitArchiveView _readState() {
+  ArkExitArchiveView _readState({bool checkSettings = true}) {
     _checkSchema(_db);
     _opaqueState();
     final metadata = _all(_db, 'archive_meta');
@@ -280,6 +286,7 @@ final class SqliteExitArchive implements ArkExitArchive {
         meta['profile'] != identity.derivationProfile) {
       throw const FormatException();
     }
+    if (checkSettings) _verifyArchiveSync(_db);
     final proofs = _all(_db, 'proof_versions').map((m) {
       _validateProof(m);
       return _proof(m);
@@ -430,6 +437,25 @@ final class SqliteExitArchive implements ArkExitArchive {
     );
     _validateIntentFields(intent.sourceRevision, intent.knownInputs);
     return intent;
+  }
+}
+
+// These pragmas belong ONLY to a new empty or validated owned archive.
+// SQLite manages atomic commit/sync; no application-level rename or claim of
+// hardware/Android power-loss proof follows from requesting these settings.
+void _configureArchiveSync(Database db) {
+  if (db.select('PRAGMA journal_mode=DELETE').single.values.single !=
+      'delete') {
+    throw const FormatException('Archive journal policy unavailable');
+  }
+  db.execute('PRAGMA synchronous=EXTRA');
+  _verifyArchiveSync(db);
+}
+
+void _verifyArchiveSync(Database db) {
+  if (db.select('PRAGMA journal_mode').single.values.single != 'delete' ||
+      db.select('PRAGMA synchronous').single.values.single != 3) {
+    throw const FormatException('Archive sync policy unavailable');
   }
 }
 
