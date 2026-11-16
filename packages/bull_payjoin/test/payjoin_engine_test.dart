@@ -1,3 +1,6 @@
+import 'package:drift/drift.dart' show Value;
+import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -1002,8 +1005,11 @@ void main() {
     expect((await local.fetchSender(posted.id))?.hasNetworkEvidence, isTrue);
   });
 
-  test('a post that failed after the write-ahead leaves no evidence', () async {
-    final prePost = sender().copyWith(sender: '["pre-post"]');
+  test('an uncertain directory POST keeps durable network evidence', () async {
+    final prePost = sender().copyWith(
+      sender: '["pre-post"]',
+      originalPsbt: oneInputPsbt,
+    );
     when(
       () => pdk.createSender(
         walletId: any(named: 'walletId'),
@@ -1032,13 +1038,33 @@ void main() {
         amountSat: prePost.amountSat,
         networkFeesSatPerVb: 1,
       ),
-      throwsA(isA<SendCreationException>()),
+      throwsA(isA<PayjoinSenderKeptException>()),
     );
 
-    // Nobody but this device holds the original: expiry may still release it.
+    // A failed response cannot prove the directory never received the original.
     final row = await local.fetchSender(prePost.id);
     expect(row, isNotNull);
-    expect(row?.hasNetworkEvidence, isFalse);
+    expect(row?.hasNetworkEvidence, isTrue);
+    await (database.update(
+      database.payjoinSenders,
+    )..where((r) => r.uri.equals(prePost.id))).write(
+      PayjoinSendersCompanion(
+        createdAt: Value(DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200),
+      ),
+    );
+    when(
+      () => blockchain.broadcastPsbt(
+        walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
+        network: any(named: 'network'),
+        psbt: any(named: 'psbt'),
+      ),
+    ).thenThrow(const PayjoinBroadcastNotAttemptedException());
+    await engine.resumePayjoinsOnStartup();
+    final resumed = await local.fetchSender(prePost.id);
+    expect(resumed?.hasNetworkEvidence, isTrue);
+    expect(resumed?.isExpired, isFalse);
+    expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
   });
 
   test('a new sender replaces any poll a resume armed meanwhile', () async {
@@ -1118,7 +1144,7 @@ void main() {
         amountSat: prePost.amountSat,
         networkFeesSatPerVb: 1,
       ),
-      throwsA(isA<SendCreationException>()),
+      throwsA(isA<PayjoinSenderKeptException>()),
     );
 
     // The row is kept (the receiver may hold the original) and must not
@@ -1126,7 +1152,11 @@ void main() {
     // that broadcasts the original, and the fallback watcher catches a
     // receiver broadcasting it first.
     expect(await local.fetchSender(prePost.id), isNotNull);
-    verify(() => pdk.startListeningForProposal(prePost)).called(1);
+    verify(
+      () => pdk.startListeningForProposal(
+        prePost.copyWith(hasNetworkEvidence: true),
+      ),
+    ).called(1);
     verify(() => transactions.watchWallet(prePost.walletId)).called(1);
   });
 

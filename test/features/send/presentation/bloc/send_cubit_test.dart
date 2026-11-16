@@ -4708,55 +4708,78 @@ void main() {
     // directory POST and keeps it when the POST fails; at expiry it broadcasts
     // that original. Re-arming Confirm would let a rebuilt send pay the same
     // payee again on other coins.
-    test('a failed payjoin start that left a saved session adopts it instead '
-        'of re-arming Confirm', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      when(
-        () => sendWithPayjoinUsecase.execute(
-          walletId: any(named: 'walletId'),
-          network: any(named: 'network'),
-          bip21: any(named: 'bip21'),
-          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
-          amountSat: any(named: 'amountSat'),
-          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
-        ),
-      ).thenAnswer(
-        (_) async => const Err<PayjoinSenderSession, SendFailure>(
-          SendTransactionConfirmationFailure(
-            logMessage: 'payjoin directory unreachable',
-          ),
-        ),
-      );
-      when(
-        () => getAdoptablePayjoinSenderUsecase.execute(
-          sessionId: _payjoinBip21().uri,
-          walletId: 'w1',
-          amountSat: 50000,
-        ),
-      ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
-      cubit.setStateForTest(
-        payjoinReadyState().copyWith(signedBitcoinPsbt: 'signed-regular-psbt'),
-      );
+    for (final sameOriginal in [true, false]) {
+      test(
+        'a retained start adopts only its own original: $sameOriginal',
+        () async {
+          final cubit = buildCubit();
+          addTearDown(cubit.close);
+          when(
+            () => sendWithPayjoinUsecase.execute(
+              walletId: any(named: 'walletId'),
+              network: any(named: 'network'),
+              bip21: any(named: 'bip21'),
+              unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+              amountSat: any(named: 'amountSat'),
+              networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+            ),
+          ).thenAnswer(
+            (_) async => Err<PayjoinSenderSession, SendFailure>(
+              SendTransactionConfirmationFailure(
+                logMessage: 'payjoin directory unreachable',
+                keptPayjoinOriginalTxId: sameOriginal
+                    ? 'sender-orig-txid'
+                    : 'other-original',
+              ),
+            ),
+          );
+          when(
+            () => getAdoptablePayjoinSenderUsecase.execute(
+              sessionId: _payjoinBip21().uri,
+              walletId: 'w1',
+              amountSat: 50000,
+            ),
+          ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
+          cubit.setStateForTest(
+            payjoinReadyState().copyWith(
+              signedBitcoinPsbt: 'signed-regular-psbt',
+            ),
+          );
 
-      await cubit.onConfirmTransactionClicked();
+          await cubit.onConfirmTransactionClicked();
 
-      expect(cubit.state.step, SendStep.sending);
-      expect(cubit.state.failure, isNull);
-      expect(cubit.state.payjoinSender?.status, PayjoinStatus.requested);
-      expect(cubit.state.txId, 'sender-orig-txid');
-      verifyNever(
-        () => broadcastBitcoinTxUsecase.execute(
-          any(),
-          isPsbt: any(named: 'isPsbt'),
-          network: any(named: 'network'),
-        ),
+          if (!sameOriginal) {
+            expect(cubit.state.payjoinSender, isNull);
+            expect(
+              cubit.state.failure,
+              isA<SendTransactionConfirmationFailure>(),
+            );
+            verifyNever(
+              () =>
+                  broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri),
+            );
+            return;
+          }
+
+          expect(cubit.state.step, SendStep.sending);
+          expect(cubit.state.failure, isNull);
+          expect(cubit.state.payjoinSender?.status, PayjoinStatus.requested);
+          expect(cubit.state.txId, 'sender-orig-txid');
+          verifyNever(
+            () => broadcastBitcoinTxUsecase.execute(
+              any(),
+              isPsbt: any(named: 'isPsbt'),
+              network: any(named: 'network'),
+            ),
+          );
+          // The stored row cannot pick up a proposal: the engine is asked to
+          // settle it with the original now instead of at the session deadline.
+          verify(
+            () => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri),
+          ).called(1);
+        },
       );
-      // The stored row cannot pick up a proposal: the engine is asked to
-      // settle it with the original now instead of at the session deadline.
-      verify(() => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri))
-          .called(1);
-    });
+    }
 
     test('a failed payjoin start adopts a saved session that already holds '
         'a proposal', () async {
@@ -4793,8 +4816,9 @@ void main() {
 
       expect(cubit.state.step, SendStep.sending);
       expect(cubit.state.payjoinSender?.status, PayjoinStatus.proposed);
-      verify(() => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri))
-          .called(1);
+      verifyNever(
+        () => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri),
+      );
     });
 
     test('a completed PayjoinSender (real payjoin, txId set) resolves the flow '
