@@ -13,3 +13,4 @@ export 'src/domain/repositories/ark_account_registry_repository.dart';
 export 'src/domain/ark_child_collision_port.dart';
 export 'src/domain/ark_parent_presence_port.dart';
 export 'src/data/secrets_ark_parent_presence.dart';
+export 'src/data/create_ark_native_client.dart';
