@@ -8,7 +8,7 @@ import 'package:bull_ark/src/domain/usecases/request_ark_receive_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_receive_cubit.dart';
 import 'package:bull_ark/src/ui/ark_receive_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDetailsTable, BullDetailsTableItem;
+    show BullDetailsTable, BullDetailsTableItem, BullQrCode;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -58,6 +58,28 @@ Widget app(Widget child) => MaterialApp(
 );
 
 void main() {
+  testWidgets(
+    'already-ready Lightning request labels and encodes its actual kind',
+    (tester) async {
+      final client = FakeArkClient()..destination = Ok(destination());
+      final cubit = controller(client);
+      addTearDown(cubit.close);
+      await cubit.request(lightning: true, amount: '1000');
+      await tester.pumpWidget(app(ArkReceiveScreen(cubit: cubit)));
+      await tester.pumpAndSettle();
+      final rows = tester
+          .widget<BullDetailsTable>(find.byType(BullDetailsTable))
+          .items
+          .whereType<BullDetailsTableItem>();
+      expect(rows.first.label, 'Lightning invoice');
+      expect(rows.first.displayValue, destination().value);
+      expect(rows.first.copyValue, destination().value);
+      final qr = tester.widget<BullQrCode>(find.byType(BullQrCode));
+      expect(qr.data, destination().value);
+      expect(qr.semanticsLabel, 'Lightning invoice');
+      expect(client.calls, ['receive']);
+    },
+  );
   testWidgets(
     'replacement account drops form state and ignores the old pending invoice',
     (tester) async {
@@ -119,6 +141,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Ark is unavailable. Try again.'), findsOneWidget);
       expect(find.byType(BullDetailsTable), findsNothing);
+      expect(find.byType(BullQrCode), findsNothing);
       expect(client.calls, ['receive']);
     },
   );
