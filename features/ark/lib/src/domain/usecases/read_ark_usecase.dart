@@ -7,10 +7,20 @@ import '../repositories/ark_repository.dart';
 final class ReadArkUsecase {
   final ArkRepository _repository;
   const ReadArkUsecase(this._repository);
-  Future<Result<ArkSnapshot, ArkFailure>> execute(ArkAccountId account) =>
-      _repository.read(account);
+  Future<Result<ArkSnapshot, ArkFailure>> execute(ArkAccountId account) async =>
+      _bind(account, await _repository.read(account));
   Stream<Result<ArkSnapshot, ArkFailure>> watch(ArkAccountId account) =>
-      _repository.watch(account);
+      _repository.watch(account).map((result) => _bind(account, result));
+
+  static Result<ArkSnapshot, ArkFailure> _bind(
+    ArkAccountId account,
+    Result<ArkSnapshot, ArkFailure> result,
+  ) {
+    if (result case Ok(:final value) when value.account != account) {
+      return const Err(ArkUnexpectedFailure());
+    }
+    return result;
+  }
 }
 
 /// Protective renewal remains available while new Ark routes are switched off.
@@ -21,5 +31,11 @@ final class SynchronizeArkUsecase {
   Future<Result<ArkPassOutcome, ArkFailure>> execute(
     ArkAccountId account, {
     required bool renew,
-  }) => _repository.synchronize(account, renew: renew);
+  }) async {
+    final result = await _repository.synchronize(account, renew: renew);
+    if (result case Ok(:final value) when value.snapshot.account != account) {
+      return const Err(ArkUnexpectedFailure());
+    }
+    return result;
+  }
 }
