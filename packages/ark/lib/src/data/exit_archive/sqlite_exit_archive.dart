@@ -8,14 +8,24 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../../../ark.dart';
 import 'ark_exit_archive.dart';
+import 'bark_sql_observation.dart';
+import 'bark_sql_schema.dart';
 
-/// Dedicated evidence DB. Call only under the account writer; never opens Bark.
+/// Dedicated evidence DB; never opens Bark. Native-capture lifecycle callers
+/// own their account admission. Opaque append owns only this DB transaction.
 /// Methods contain no asynchronous suspension: close cannot overtake admitted SQL.
 final class SqliteExitArchive implements ArkExitArchive {
   final Database _db;
   final ArkExitArchiveIdentity identity;
+  final String archivePath;
+  final BarkSqlSchema? sqlSchema;
   bool _closed = false;
-  SqliteExitArchive._(this._db, this.identity);
+  SqliteExitArchive._(
+    this._db,
+    this.identity,
+    this.archivePath,
+    this.sqlSchema,
+  );
   static const _tables = [
     'archive_meta',
     'proof_versions',
@@ -30,9 +40,14 @@ final class SqliteExitArchive implements ArkExitArchive {
     required bool create,
     String nativeVersion = '0.27.0+bark-0.8.1',
     String derivationProfile = 'bip85-11811/bark-350h-0h',
+    BarkSqlSchema? sqlSchema,
   }) {
     Database? opened;
     try {
+      if (sqlSchema != null &&
+          (sqlSchema.account != account || !sqlSchema.permitted)) {
+        throw const FormatException('Archive source identity mismatch');
+      }
       final exists = File(path).existsSync();
       if (!create && !exists) return const Err(ArkStorageFailure());
       final db = opened = sqlite3.open(
@@ -49,6 +64,7 @@ final class SqliteExitArchive implements ArkExitArchive {
               'CREATE TABLE $table (id TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL)',
             );
           }
+          db.execute(_opaqueDdl);
           final id = List.generate(16, (_) => Random.secure().nextInt(256));
           _put(db, 'archive_meta', 'state', {
             'archive': _hex(id),
@@ -81,6 +97,8 @@ final class SqliteExitArchive implements ArkExitArchive {
           derivationProfile,
           archiveId: _string(meta, 'archive'),
         ),
+        path,
+        sqlSchema,
       );
       archive._view(); // Refuse malformed initialized records without reset.
       return Ok(archive);
@@ -249,6 +267,7 @@ final class SqliteExitArchive implements ArkExitArchive {
   // validation; no malformed row can be repaired by a later merge/admission.
   ArkExitArchiveView _readState() {
     _checkSchema(_db);
+    _opaqueState();
     final metadata = _all(_db, 'archive_meta');
     if (metadata.length != 1) throw const FormatException();
     final meta = metadata.single;
@@ -305,6 +324,88 @@ final class SqliteExitArchive implements ArkExitArchive {
       pending: pending,
     );
   }
+
+  void _opaqueState() {
+    for (final row in _db.select('SELECT * FROM opaque_sql_rows')) {
+      final expected = sqlSchema;
+      if (expected == null ||
+          row['archive_id'] != identity.archiveId ||
+          row['schema_version'] != 42 ||
+          row['layout_digest'] != BarkSqlSchema.layoutDigest ||
+          row['source_table'] is! String ||
+          row['row_key'] is! String ||
+          row['payload'] is! String ||
+          row['digest'] is! String ||
+          row['observed_at_utc'] is! String ||
+          DateTime.tryParse(row['observed_at_utc'] as String)?.isUtc != true) {
+        throw const FormatException();
+      }
+      expected.checkRow(
+        BarkSqlOpaqueRow(
+          row['source_table'] as String,
+          row['row_key'] as String,
+          row['payload'] as String,
+          row['digest'] as String,
+        ),
+      );
+    }
+  }
+
+  /// Opaque retention only: never populates Full proof fields or acknowledges
+  /// dirty capture intents, financial operations or native coverage.
+  Future<Result<bool, ArkWalletFailure>> appendSqlObservation(
+    BarkSqlObservation observation,
+  ) async => _run(
+    () => _transaction(_db, () {
+      _readState();
+      final expected = sqlSchema;
+      if (expected == null ||
+          observation.account != identity.account ||
+          !observation.observedAtUTC.isUtc ||
+          observation.sourceToken.epochConn < 1 ||
+          observation.sourceToken.dataVersion < 1 ||
+          observation.rows
+                  .where((r) => r.sourceTable == 'bark_properties')
+                  .length !=
+              1) {
+        throw const FormatException();
+      }
+      var changed = false;
+      final keys = <String>{};
+      for (final row in observation.rows) {
+        expected.checkRow(row);
+        if (!keys.add(jsonEncode([row.sourceTable, row.rowKey]))) {
+          throw const FormatException();
+        }
+        final key = [
+          identity.archiveId,
+          row.sourceTable,
+          row.rowKey,
+          row.digest,
+        ];
+        final old = _db.select(
+          'SELECT payload FROM opaque_sql_rows WHERE archive_id=? AND source_table=? AND row_key=? AND digest=?',
+          key,
+        );
+        if (old.isNotEmpty) {
+          if (old.single['payload'] != row.payload) {
+            throw const FormatException();
+          }
+        } else {
+          _db.execute('INSERT INTO opaque_sql_rows VALUES(?,?,?,?,?,?,?,?)', [
+            ...key,
+            42,
+            BarkSqlSchema.layoutDigest,
+            row.payload,
+            observation.observedAtUTC.toIso8601String(),
+          ]);
+          changed = true;
+        }
+      }
+      if (changed) _put(_db, 'archive_meta', 'state', _meta);
+      return changed;
+    }),
+  );
 
   @override
   Future<void> close() async {
@@ -378,6 +479,9 @@ Map<String, Object?> _row(String table, Map<String, Object?> row) {
   return value;
 }
 
+const _opaqueDdl =
+    'CREATE TABLE opaque_sql_rows(archive_id TEXT NOT NULL,source_table TEXT NOT NULL,row_key TEXT NOT NULL,digest TEXT NOT NULL,schema_version INTEGER NOT NULL,layout_digest TEXT NOT NULL,payload TEXT NOT NULL,observed_at_utc TEXT NOT NULL,PRIMARY KEY(archive_id,source_table,row_key,digest))';
+
 void _checkSchema(Database db) {
   if (db.select('PRAGMA user_version').single.values.single != 1) {
     throw const FormatException('Incompatible archive');
@@ -390,6 +494,26 @@ void _checkSchema(Database db) {
         columns[0]['pk'] != 1 ||
         columns.any((c) => c['type'] != 'TEXT' || c['notnull'] != 1)) {
       throw const FormatException('Incompatible archive');
+    }
+  }
+  final opaque = db.select('PRAGMA table_info(opaque_sql_rows)');
+  const names = [
+    'archive_id',
+    'source_table',
+    'row_key',
+    'digest',
+    'schema_version',
+    'layout_digest',
+    'payload',
+    'observed_at_utc',
+  ];
+  if (opaque.length != names.length) throw const FormatException();
+  for (var i = 0; i < names.length; i++) {
+    if (opaque[i]['name'] != names[i] ||
+        opaque[i]['type'] != (i == 4 ? 'INTEGER' : 'TEXT') ||
+        opaque[i]['notnull'] != 1 ||
+        opaque[i]['pk'] != (i < 4 ? i + 1 : 0)) {
+      throw const FormatException();
     }
   }
 }

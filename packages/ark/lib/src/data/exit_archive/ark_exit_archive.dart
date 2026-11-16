@@ -185,7 +185,8 @@ final class ArkExitArchiveView {
        pending = List.unmodifiable(pending);
 }
 
-/// Five-table, account-private evidence archive, called only under Ark writer.
+/// Account-private native-capture evidence contract; caller owns Ark admission.
+/// Opaque readonly SQL capture uses its separate archive-only SQLite transaction.
 /// begin commits dirty BEFORE native admission. commit is one archive transaction;
 /// failure retains the original dirty intent/old proofs. No financial authority.
 ///
