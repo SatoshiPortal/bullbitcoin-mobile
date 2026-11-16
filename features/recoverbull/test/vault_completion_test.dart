@@ -126,6 +126,44 @@ void main() {
     expect(server.trashed, 0);
   });
 
+  test('a retry saves where the user first chose', () async {
+    final first = save();
+    await files.started.future;
+    files.pending.complete(const Err(VaultCancelledFailure()));
+    await first;
+    files.pending = Completer<Result<void, RecoverBullFailure>>()
+      ..complete(const Ok(null));
+
+    ok(await create.retryProviderSave());
+    expect(files.calls, 2);
+    expect(create.hasPendingProviderSave, isFalse);
+  });
+
+  test(
+    'a discarded pending save lets a new password seal a new vault',
+    () async {
+      final first = save();
+      await files.started.future;
+      files.pending.complete(const Err(VaultCancelledFailure()));
+      await first;
+
+      expect(create.abandonPendingProviderSave(), isTrue);
+      expect(create.hasPendingProviderSave, isFalse);
+      files.pending = Completer<Result<void, RecoverBullFailure>>()
+        ..complete(const Ok(null));
+      ok(
+        await create.execute(
+          settings: settings,
+          server: server,
+          provider: VaultProvider.customLocation,
+          password: 'replacement password',
+        ),
+      );
+      expect(server.storedPassword, 'replacement password');
+      expect(server.stores, 2);
+    },
+  );
+
   for (final failure in [
     const VaultCancelledFailure(),
     const VaultStorageFailure(),
