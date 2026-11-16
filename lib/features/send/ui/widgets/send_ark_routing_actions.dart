@@ -30,7 +30,8 @@ class _SendArkRoutingActionsState extends State<SendArkRoutingActions> {
           ? state.copiedRawPaymentRequest
           : state.recipientDrafts.first.address,
       network: state.selectedWallet?.network.shared,
-      coinControl: state.selectedUtxos.isNotEmpty,
+      coinControl:
+          state.usesSelectedInputsOnly || state.selectedUtxos.isNotEmpty,
       sweep: state.isSweep,
       silentPayments: context.read<SendCubit>().isSpMode,
       multipleRecipients: state.hasMultipleRecipients,
@@ -47,6 +48,7 @@ class _SendArkRoutingActionsState extends State<SendArkRoutingActions> {
           previous.copiedRawPaymentRequest != current.copiedRawPaymentRequest ||
           previous.selectedWallet != current.selectedWallet ||
           previous.selectedUtxos != current.selectedUtxos ||
+          previous.selectedInputOutpoints != current.selectedInputOutpoints ||
           previous.sweepOutpoints != current.sweepOutpoints,
       listener: (_, state) => _resolve(state),
       child: BlocBuilder<SendArkCubit, SendArkState>(
