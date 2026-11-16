@@ -254,4 +254,31 @@ class ArkLocalizationsFr extends ArkLocalizations {
   String sendFromArkAccount(String account) {
     return 'Envoyer depuis Ark ($account)';
   }
+
+  @override
+  String get signedClaimRecovery => 'Reprendre le retrait signé';
+
+  @override
+  String get reannounceSignedClaim => 'Renvoyer ce retrait signé';
+
+  @override
+  String get sameSignedClaim =>
+      'Renvoyez la même transaction signée, avec sa destination et ses frais enregistrés. Son état réseau est vérifié avant l’envoi.';
+
+  @override
+  String get claimDestination => 'Adresse de retour sur la chaîne';
+
+  @override
+  String get claimConfirmed =>
+      'La transaction de retrait enregistrée est confirmée.';
+
+  @override
+  String get claimConflict =>
+      'Une transaction conflictuelle a été observée. Ce retrait enregistré ne peut pas être renvoyé.';
+
+  @override
+  String get actualVtxos => 'VTXO inclus';
+
+  @override
+  String get skippedVtxos => 'VTXO ignorés';
 }

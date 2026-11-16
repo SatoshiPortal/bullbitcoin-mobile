@@ -553,6 +553,54 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Send from Ark ({account})'**
   String sendFromArkAccount(String account);
+
+  /// No description provided for @signedClaimRecovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover signed claim'**
+  String get signedClaimRecovery;
+
+  /// No description provided for @reannounceSignedClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Resubmit this signed claim'**
+  String get reannounceSignedClaim;
+
+  /// No description provided for @sameSignedClaim.
+  ///
+  /// In en, this message translates to:
+  /// **'Resubmit the same signed transaction with its saved destination and fee. Its network status is checked before sending.'**
+  String get sameSignedClaim;
+
+  /// No description provided for @claimDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'On-chain return address'**
+  String get claimDestination;
+
+  /// No description provided for @claimConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved claim transaction is confirmed.'**
+  String get claimConfirmed;
+
+  /// No description provided for @claimConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'A conflicting transaction was observed. This saved claim cannot be resubmitted.'**
+  String get claimConflict;
+
+  /// No description provided for @actualVtxos.
+  ///
+  /// In en, this message translates to:
+  /// **'Included VTXOs'**
+  String get actualVtxos;
+
+  /// No description provided for @skippedVtxos.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped VTXOs'**
+  String get skippedVtxos;
 }
 
 class _ArkLocalizationsDelegate

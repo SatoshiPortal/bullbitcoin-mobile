@@ -252,4 +252,30 @@ class ArkLocalizationsEn extends ArkLocalizations {
   String sendFromArkAccount(String account) {
     return 'Send from Ark ($account)';
   }
+
+  @override
+  String get signedClaimRecovery => 'Recover signed claim';
+
+  @override
+  String get reannounceSignedClaim => 'Resubmit this signed claim';
+
+  @override
+  String get sameSignedClaim =>
+      'Resubmit the same signed transaction with its saved destination and fee. Its network status is checked before sending.';
+
+  @override
+  String get claimDestination => 'On-chain return address';
+
+  @override
+  String get claimConfirmed => 'The saved claim transaction is confirmed.';
+
+  @override
+  String get claimConflict =>
+      'A conflicting transaction was observed. This saved claim cannot be resubmitted.';
+
+  @override
+  String get actualVtxos => 'Included VTXOs';
+
+  @override
+  String get skippedVtxos => 'Skipped VTXOs';
 }
