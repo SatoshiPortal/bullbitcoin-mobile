@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:secrets/src/crypto/crypto.dart';
 import 'package:unorm_dart/unorm_dart.dart';
 
-/// The package derives seeds with its own PBKDF2; bip39's is the reference.
+/// The package derives seeds through bip39 only; these tests pin the published vector, the NFKD wordlists `painted_text.dart` relies on, and the equality with bip39 for every language and Unicode passphrases.
 void main() {
   final abandon = List.filled(11, 'abandon') + ['about'];
   final zoo = List.filled(11, 'zoo') + ['wrong'];
@@ -30,8 +30,8 @@ void main() {
     }
   }
 
-  // The sentence is hashed without normalizing it again: bip39 rebuilds the
-  // words from its wordlists, so every list must already be NFKD.
+  // `painted_text.dart` paints the wordlists as they are, so every list must
+  // already be NFKD.
   for (final language in bip39.Language.values) {
     test('${language.name}: wordlist is NFKD and the seed matches bip39', () {
       expect(language.list.where((word) => nfkd(word) != word), isEmpty);

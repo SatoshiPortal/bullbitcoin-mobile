@@ -21,7 +21,7 @@ void main() {
         passphrase: 'メートルガバヴァぱばぐゞちぢ十人十色',
       ),
     );
-    // Published bip32JP BIP39 seed, independent of the package's PBKDF2.
+    // Published bip32JP BIP39 seed, independent of the bip39 package.
     final reference = Bip32Keys.fromSeed(
       Uint8List.fromList(
         convert.hex.decode(
