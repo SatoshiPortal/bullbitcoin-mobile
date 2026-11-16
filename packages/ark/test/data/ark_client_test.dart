@@ -866,4 +866,63 @@ void main() {
       },
     );
   }
+  test('exit admission failure rolls back authority and retries original quote safely', () async {
+    await client.create(config);
+    final result = await client.quote(
+      account,
+      ArkQuoteRequest.emergencyExit(
+        ids: [FakeOpener.firstId],
+        destination: 'destination',
+        feeRate: FeeRate(1),
+        maxClaimFee: Sats.fromInt(100),
+      ),
+    );
+    final quote = (result as Ok<ArkQuote, ArkWalletFailure>).value;
+    final path = '${ArkStore.accountPath(temp.path, account)}/state.sqlite';
+    final db = sqlite3.open(path);
+    db.execute(
+      "CREATE TRIGGER deny_admission BEFORE INSERT ON operations BEGIN SELECT RAISE(ABORT,'test admission interruption'); END",
+    );
+    try {
+      expect(
+        await client.submit(
+          account,
+          ArkSubmission.confirmQuote(quoteId: quote.id, operationId: 'exit'),
+        ),
+        isA<Err>(),
+      );
+      expect(native.executes, 0);
+    } finally {
+      db.execute('DROP TRIGGER deny_admission');
+      db.close();
+    }
+    await client.close();
+    client = build();
+    final store = ArkStore.open(path, create: false);
+    expect(
+      store.claimAuthority(quote.selectedIds, 'destination', Sats.fromInt(100)),
+      isNull,
+    );
+    expect(store.operation('exit'), isNull);
+    store.close();
+    expect(
+      await client.submit(
+        account,
+        ArkSubmission.confirmQuote(quoteId: quote.id, operationId: 'exit'),
+      ),
+      isA<Ok>(),
+    );
+    expect(native.executes, 1);
+    final reopened = ArkStore.open(path, create: false);
+    expect(
+      reopened.claimAuthority(
+        quote.selectedIds,
+        'destination',
+        Sats.fromInt(100),
+      ),
+      'exit',
+    );
+    expect(reopened.operation('exit')?.binding, quote.id);
+    reopened.close();
+  });
 }
