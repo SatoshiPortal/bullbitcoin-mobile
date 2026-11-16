@@ -190,8 +190,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
-      resolved-ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
+      ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
+      resolved-ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -256,8 +256,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
-      resolved-ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
+      ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
+      resolved-ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -345,8 +345,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
-      resolved-ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
+      ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
+      resolved-ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1574,8 +1574,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/onion"
-      ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
-      resolved-ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
+      ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
+      resolved-ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
@@ -1888,8 +1888,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/satoshifier"
-      ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
-      resolved-ref: "8f0c9ca84745b08f673324259f49c9aa346f17c8"
+      ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
+      resolved-ref: "418d7fbe81baaefe52bf353ed3ee4dd65d054456"
       url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"

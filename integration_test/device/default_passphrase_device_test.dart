@@ -49,7 +49,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
-import 'secrets_derivation_vectors_test.dart' as vectors;
+import '../secrets_derivation_vectors_test.dart' as vectors;
 
 T custodyValue<T>(Result<T, SecretFailure> result) => switch (result) {
   Ok(:final value) => value,
