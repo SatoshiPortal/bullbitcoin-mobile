@@ -75,5 +75,13 @@
   "renewalThreshold": "Seuil de renouvellement (blocs)",
   "publicServerKey": "Clé publique du serveur",
   "sendFromArk": "Envoyer depuis Ark",
-  "sendFromArkAccount": "Envoyer depuis Ark ({account})"
+  "sendFromArkAccount": "Envoyer depuis Ark ({account})",
+  "signedClaimRecovery": "Reprendre le retrait signé",
+  "reannounceSignedClaim": "Renvoyer ce retrait signé",
+  "sameSignedClaim": "Renvoyez la même transaction signée, avec sa destination et ses frais enregistrés. Son état réseau est vérifié avant l’envoi.",
+  "claimDestination": "Adresse de retour sur la chaîne",
+  "claimConfirmed": "La transaction de retrait enregistrée est confirmée.",
+  "claimConflict": "Une transaction conflictuelle a été observée. Ce retrait enregistré ne peut pas être renvoyé.",
+  "actualVtxos": "VTXO inclus",
+  "skippedVtxos": "VTXO ignorés"
 }

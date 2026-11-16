@@ -157,5 +157,21 @@
         "type": "String"
       }
     }
-  }
+  },
+  "signedClaimRecovery": "Recover signed claim",
+  "@signedClaimRecovery": {},
+  "reannounceSignedClaim": "Resubmit this signed claim",
+  "@reannounceSignedClaim": {},
+  "sameSignedClaim": "Resubmit the same signed transaction with its saved destination and fee. Its network status is checked before sending.",
+  "@sameSignedClaim": {},
+  "claimDestination": "On-chain return address",
+  "@claimDestination": {},
+  "claimConfirmed": "The saved claim transaction is confirmed.",
+  "@claimConfirmed": {},
+  "claimConflict": "A conflicting transaction was observed. This saved claim cannot be resubmitted.",
+  "@claimConflict": {},
+  "actualVtxos": "Included VTXOs",
+  "@actualVtxos": {},
+  "skippedVtxos": "Skipped VTXOs",
+  "@skippedVtxos": {}
 }
