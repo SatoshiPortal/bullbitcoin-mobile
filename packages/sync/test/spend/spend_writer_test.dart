@@ -99,6 +99,10 @@ final class _Bitcoin implements NativeBitcoinSpend {
 }
 
 final class _Liquid implements NativeLiquidSpend {
+  @override
+  Future<BigInt> amountToAddress(String pset, String address) async =>
+      BigInt.zero;
+
   final _Natives natives;
   _Liquid(this.natives);
 
