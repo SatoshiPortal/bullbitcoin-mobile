@@ -58,6 +58,14 @@ export 'package:ark/ark.dart'
 
 export '../domain/ark_failure.dart';
 
+/// Issued only by ArkFacade.quote. Display metadata conveys no construction
+/// authority: confirmation always uses the original immutable package quote.
+final class ArkReview {
+  final ArkQuote _quote;
+  const ArkReview._(this._quote);
+  ArkQuote get details => _quote;
+}
+
 /// Published journeys only. Native construction and child derivation belong to
 /// the separate setup surface; consumers cannot obtain either from this facade.
 final class ArkFacade {
@@ -109,16 +117,16 @@ final class ArkFacade {
     required bool renew,
   }) => _synchronize.execute(account, renew: renew);
   @useResult
-  Future<Result<ArkQuote, ArkFailure>> quote(
+  Future<Result<ArkReview, ArkFailure>> quote(
     ArkAccountId account,
     ArkQuoteRequest request,
-  ) => _quote.execute(account, request);
+  ) async => (await _quote.execute(account, request)).map(ArkReview._);
   @useResult
   Future<Result<ArkOperation, ArkFailure>> confirm(
     ArkAccountId account,
-    ArkQuote quote, {
+    ArkReview review, {
     required String operationId,
-  }) => _confirm.execute(account, quote, operationId);
+  }) => _confirm.execute(account, review._quote, operationId);
   @useResult
   Future<Result<ArkReceiveDestination, ArkFailure>> receive(
     ArkAccountId account,
