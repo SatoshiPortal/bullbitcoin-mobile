@@ -442,7 +442,7 @@
   "autoswapWarningOkButton": "OK",
   "swapTitle": "Swap interno",
   "sendOutputTooSmall": "Importo troppo basso (sotto la soglia di dust)",
-  "torSettingsStatusConnected": "Collegato",
+  "torSettingsStatusConnected": "Pronto",
   "receiveNote": "Nota",
   "payLightningNetwork": "Rete Lightning",
   "ledgerSuccessVerifyTitle": "Indirizzo di verifica su Ledger...",

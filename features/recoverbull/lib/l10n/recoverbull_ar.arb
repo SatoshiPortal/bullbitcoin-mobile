@@ -603,5 +603,6 @@
   "torSettingsTitle": "تنظيمات التعذيب",
   "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
   "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
-  "recoverbullUseSnowflake": "استخدام Snowflake"
+  "recoverbullUseSnowflake": "استخدام Snowflake",
+  "recoverbullTorReady": "جاهز"
 }

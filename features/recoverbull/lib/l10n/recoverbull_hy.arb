@@ -168,5 +168,6 @@
   "torSettingsTitle": "Tor կարգավորումներ",
   "torSettingsStatusNoInternetOrBlocked": "Ինտերնետ չկա կամ ցանցը գրաքննված է",
   "torSettingsDescNoInternetOrBlocked": "Այս ցանցը ինտերնետ հասանելիություն չունի, կամ արգելափակում է Tor-ը։",
-  "recoverbullUseSnowflake": "Օգտագործել Snowflake"
+  "recoverbullUseSnowflake": "Օգտագործել Snowflake",
+  "recoverbullTorReady": "Պատրաստ է"
 }

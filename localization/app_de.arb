@@ -432,7 +432,7 @@
   "verifyButton": "Überprüfen",
   "swapTitle": "Interner Swap",
   "sendOutputTooSmall": "Output unterhalb der Staubgrenze",
-  "torSettingsStatusConnected": "Verbunden",
+  "torSettingsStatusConnected": "Bereit",
   "receiveNote": "Notiz",
   "payLightningNetwork": "Lightning-Netzwerk",
   "ledgerSuccessVerifyTitle": "Adresse auf Ledger bestätigen…",

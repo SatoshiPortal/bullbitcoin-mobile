@@ -3124,7 +3124,7 @@
   "torSettingsPortValidationInvalid": "გთხოვთ, შეიყვანოთ სწორი რიცხვი",
   "torSettingsPortValidationRange": "პორტი უნდა იყოს 1-დან 65535-მდე",
   "torSettingsConnectionStatus": "კავშირის სტატუსი",
-  "torSettingsStatusConnected": "დაკავშირებულია",
+  "torSettingsStatusConnected": "მზადაა",
   "torSettingsStatusConnecting": "მიმდინარეობს დაკავშირება...",
   "torSettingsStatusDisconnected": "კავშირი გაწყვეტილია",
   "torSettingsStatusUnknown": "სტატუსი უცნობია",

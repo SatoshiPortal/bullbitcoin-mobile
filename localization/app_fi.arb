@@ -3165,7 +3165,7 @@
   "torSettingsPortValidationRange": "Portin on oltava välillä 1 ja 65535",
   "torSettingsSaveButton": "Tallenna",
   "torSettingsConnectionStatus": "Yhteyden tila",
-  "torSettingsStatusConnected": "Yhdistetty",
+  "torSettingsStatusConnected": "Valmis",
   "torSettingsStatusConnecting": "Yhdistetään...",
   "torSettingsStatusDisconnected": "Ei yhteyttä",
   "torSettingsStatusUnknown": "Tila tuntematon",

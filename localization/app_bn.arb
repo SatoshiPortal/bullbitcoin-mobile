@@ -1351,7 +1351,7 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "সংযোগ হয়েছে",
+  "torSettingsStatusConnected": "প্রস্তুত",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },

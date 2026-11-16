@@ -3230,7 +3230,7 @@
   "torSettingsPortValidationRange": "El puerto debe estar entre 1 y 65535",
   "torSettingsSaveButton": "Guardar",
   "torSettingsConnectionStatus": "Estado de conexión",
-  "torSettingsStatusConnected": "Conectado",
+  "torSettingsStatusConnected": "Listo",
   "torSettingsStatusConnecting": "Conectando...",
   "torSettingsStatusDisconnected": "Desconectado",
   "torSettingsStatusUnknown": "Estado desconocido",

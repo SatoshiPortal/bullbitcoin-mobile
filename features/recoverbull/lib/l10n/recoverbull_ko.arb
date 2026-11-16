@@ -603,5 +603,6 @@
   "torSettingsTitle": "Tor 설정",
   "torSettingsStatusNoInternetOrBlocked": "인터넷이 없거나 검열된 네트워크",
   "torSettingsDescNoInternetOrBlocked": "이 네트워크는 인터넷에 연결되어 있지 않거나 Tor를 차단합니다.",
-  "recoverbullUseSnowflake": "Snowflake 사용"
+  "recoverbullUseSnowflake": "Snowflake 사용",
+  "recoverbullTorReady": "준비됨"
 }

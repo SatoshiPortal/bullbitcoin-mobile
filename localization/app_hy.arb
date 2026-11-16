@@ -2967,7 +2967,7 @@
   "statusCheckUnknown": "Անհայտ",
   "torSettingsTitle": "Tor կարգավորումներ",
   "torSettingsSaveButton": "Պահպանել",
-  "torSettingsStatusConnected": "Միացված է",
+  "torSettingsStatusConnected": "Պատրաստ է",
   "buyUnauthenticatedError": "Դուք նույնականացված չեք։ Խնդրում ենք մուտք գործել՝ շարունակելու համար։",
   "withdrawUnauthenticatedError": "Դուք նույնականացված չեք։ Խնդրում ենք մուտք գործել՝ շարունակելու համար։",
   "coreScreensPageNotFound": "Էջը չի գտնվել",

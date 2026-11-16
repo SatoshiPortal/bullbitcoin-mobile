@@ -273,5 +273,6 @@
   "torSettingsTitle": "Configuración de Tor",
   "torSettingsStatusNoInternetOrBlocked": "Sin internet o red censurada",
   "torSettingsDescNoInternetOrBlocked": "Esta red no tiene acceso a internet o bloquea Tor.",
-  "recoverbullUseSnowflake": "Usar Snowflake"
+  "recoverbullUseSnowflake": "Usar Snowflake",
+  "recoverbullTorReady": "Listo"
 }

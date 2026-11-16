@@ -597,5 +597,6 @@
   "torSettingsTitle": "Tor ছেটিংছ",
   "torSettingsStatusNoInternetOrBlocked": "ইণ্টাৰনেট নাই বা নেটৱৰ্ক সেন্সৰ কৰা",
   "torSettingsDescNoInternetOrBlocked": "এই নেটৱৰ্কত ইণ্টাৰনেট নাই, বা ই Tor অৱৰোধ কৰে।",
-  "recoverbullUseSnowflake": "Snowflake ব্যৱহাৰ কৰক"
+  "recoverbullUseSnowflake": "Snowflake ব্যৱহাৰ কৰক",
+  "recoverbullTorReady": "সাজু"
 }

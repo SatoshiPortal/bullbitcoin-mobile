@@ -1288,7 +1288,7 @@
   "autoswapWarningOkButton": "ЗАРЕЄСТРУВАТИСЯ",
   "swapTitle": "Внутрішній обмін",
   "sendOutputTooSmall": "Вихід нижче обмеження пилу",
-  "torSettingsStatusConnected": "Зв'язатися",
+  "torSettingsStatusConnected": "Готово",
   "ledgerSuccessVerifyTitle": "Перевірити адресу на Ledger ...",
   "backupSettingsFailedToDeriveKey": "Переміщений для відновлення ключа резервного копіювання",
   "googleDriveProvider": "Українська",

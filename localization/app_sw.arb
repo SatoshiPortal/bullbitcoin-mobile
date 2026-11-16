@@ -3013,7 +3013,7 @@
   "torSettingsPortValidationRange": "Mlango lazima uwe kati ya 1 na 65535",
   "torSettingsSaveButton": "Hifadhi",
   "torSettingsConnectionStatus": "Hali ya Muunganisho",
-  "torSettingsStatusConnected": "Imeunganishwa",
+  "torSettingsStatusConnected": "Tayari",
   "torSettingsStatusConnecting": "Inaunganisha...",
   "torSettingsStatusDisconnected": "Imetenganishwa",
   "torSettingsStatusUnknown": "Hali Haijulikani",

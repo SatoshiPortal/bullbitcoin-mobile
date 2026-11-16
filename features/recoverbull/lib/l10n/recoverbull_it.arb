@@ -275,5 +275,6 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull non è riuscito a connettersi al proxy SOCKS5 configurato.",
   "torSettingsStatusNoInternetOrBlocked": "Nessuna connessione internet o rete censurata",
   "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor.",
-  "recoverbullUseSnowflake": "Usa Snowflake"
+  "recoverbullUseSnowflake": "Usa Snowflake",
+  "recoverbullTorReady": "Pronto"
 }

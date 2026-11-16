@@ -442,7 +442,7 @@
   "autoswapWarningOkButton": "OK",
   "swapTitle": "内部 Swap",
   "sendOutputTooSmall": "低于灰尘限制的产出",
-  "torSettingsStatusConnected": "连接",
+  "torSettingsStatusConnected": "就绪",
   "receiveNote": "说明",
   "payLightningNetwork": "照明网络",
   "ledgerSuccessVerifyTitle": "更正Ledger.",

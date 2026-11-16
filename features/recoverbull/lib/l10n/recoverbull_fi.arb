@@ -273,5 +273,6 @@
   "torSettingsTitle": "Tor-asetukset",
   "torSettingsStatusNoInternetOrBlocked": "Ei internetiä tai sensuroitu verkko",
   "torSettingsDescNoInternetOrBlocked": "Tällä verkolla ei ole internetyhteyttä, tai se estää Torin.",
-  "recoverbullUseSnowflake": "Käytä Snowflakea"
+  "recoverbullUseSnowflake": "Käytä Snowflakea",
+  "recoverbullTorReady": "Valmis"
 }

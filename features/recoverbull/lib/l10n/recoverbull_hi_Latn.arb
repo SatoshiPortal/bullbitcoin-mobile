@@ -602,5 +602,6 @@
   "torSettingsTitle": "Tor Settings",
   "torSettingsStatusNoInternetOrBlocked": "Internet nahin hai ya network censored hai",
   "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai.",
-  "recoverbullUseSnowflake": "Snowflake use karein"
+  "recoverbullUseSnowflake": "Snowflake use karein",
+  "recoverbullTorReady": "Taiyaar"
 }

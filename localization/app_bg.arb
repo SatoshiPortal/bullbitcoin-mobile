@@ -8991,7 +8991,7 @@
   "torSettingsPortValidationRange": "Портът трябва да бъде между 1 и 65535",
   "torSettingsSaveButton": "Запази",
   "torSettingsConnectionStatus": "Статус на връзката",
-  "torSettingsStatusConnected": "Свързан",
+  "torSettingsStatusConnected": "Готово",
   "torSettingsStatusConnecting": "Свързване...",
   "torSettingsStatusDisconnected": "Изключен",
   "torSettingsStatusUnknown": "Неизвестен статус",

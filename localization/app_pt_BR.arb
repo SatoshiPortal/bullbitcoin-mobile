@@ -1312,7 +1312,7 @@
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
-  "torSettingsStatusConnected": "Conectado",
+  "torSettingsStatusConnected": "Pronto",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },

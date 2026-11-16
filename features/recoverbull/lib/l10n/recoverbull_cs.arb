@@ -603,5 +603,6 @@
   "torSettingsTitle": "Nastavení Toru",
   "torSettingsStatusNoInternetOrBlocked": "Bez internetu nebo cenzurovaná síť",
   "torSettingsDescNoInternetOrBlocked": "Tato síť nemá přístup k internetu, nebo blokuje Tor.",
-  "recoverbullUseSnowflake": "Použít Snowflake"
+  "recoverbullUseSnowflake": "Použít Snowflake",
+  "recoverbullTorReady": "Připraveno"
 }

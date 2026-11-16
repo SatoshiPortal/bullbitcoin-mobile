@@ -3217,7 +3217,7 @@
   "torSettingsPortValidationRange": "Le port doit être entre 1 et 65535",
   "torSettingsSaveButton": "Enregistrer",
   "torSettingsConnectionStatus": "État de connexion",
-  "torSettingsStatusConnected": "Connecté",
+  "torSettingsStatusConnected": "Prêt",
   "torSettingsStatusConnecting": "Connexion en cours...",
   "torSettingsStatusDisconnected": "Déconnecté",
   "torSettingsStatusUnknown": "État inconnu",

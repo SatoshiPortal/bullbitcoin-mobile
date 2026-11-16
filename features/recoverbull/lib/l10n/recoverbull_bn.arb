@@ -642,5 +642,6 @@
   "torSettingsTitle": "টর সেটিংস",
   "torSettingsStatusNoInternetOrBlocked": "ইন্টারনেট নেই বা নেটওয়ার্ক সেন্সর করা",
   "torSettingsDescNoInternetOrBlocked": "এই নেটওয়ার্কে ইন্টারনেট নেই, অথবা এটি Tor ব্লক করে।",
-  "recoverbullUseSnowflake": "Snowflake ব্যবহার করুন"
+  "recoverbullUseSnowflake": "Snowflake ব্যবহার করুন",
+  "recoverbullTorReady": "প্রস্তুত"
 }

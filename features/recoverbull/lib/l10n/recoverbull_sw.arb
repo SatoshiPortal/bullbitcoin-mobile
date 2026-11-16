@@ -168,5 +168,6 @@
   "torSettingsTitle": "Mipangilio ya Tor",
   "torSettingsStatusNoInternetOrBlocked": "Hakuna intaneti au mtandao umedhibitiwa",
   "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor.",
-  "recoverbullUseSnowflake": "Tumia Snowflake"
+  "recoverbullUseSnowflake": "Tumia Snowflake",
+  "recoverbullTorReady": "Tayari"
 }

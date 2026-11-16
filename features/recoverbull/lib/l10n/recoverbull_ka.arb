@@ -168,5 +168,6 @@
   "torSettingsTitle": "Tor-ის პარამეტრები",
   "torSettingsStatusNoInternetOrBlocked": "ინტერნეტი არ არის ან ქსელი ცენზურირებულია",
   "torSettingsDescNoInternetOrBlocked": "ამ ქსელს არ აქვს ინტერნეტთან წვდომა, ან ის ბლოკავს Tor-ს.",
-  "recoverbullUseSnowflake": "Snowflake-ის გამოყენება"
+  "recoverbullUseSnowflake": "Snowflake-ის გამოყენება",
+  "recoverbullTorReady": "მზადაა"
 }

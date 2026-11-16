@@ -7456,7 +7456,7 @@
   "@torSettingsConnectionStatus": {
     "description": "Title for connection status card"
   },
-  "torSettingsStatusConnected": "সংযুক্ত",
+  "torSettingsStatusConnected": "সাজু",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },

@@ -603,5 +603,6 @@
   "torSettingsTitle": "تنظیمات Tor",
   "torSettingsStatusNoInternetOrBlocked": "اینترنت وجود ندارد یا شبکه سانسور شده است",
   "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند.",
-  "recoverbullUseSnowflake": "استفاده از Snowflake"
+  "recoverbullUseSnowflake": "استفاده از Snowflake",
+  "recoverbullTorReady": "آماده"
 }

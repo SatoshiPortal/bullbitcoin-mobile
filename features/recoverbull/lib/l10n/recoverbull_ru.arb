@@ -273,5 +273,6 @@
   "torSettingsTitle": "Параметры Tor",
   "torSettingsStatusNoInternetOrBlocked": "Нет интернета или сеть под цензурой",
   "torSettingsDescNoInternetOrBlocked": "У этой сети нет доступа к интернету, или она блокирует Tor.",
-  "recoverbullUseSnowflake": "Использовать Snowflake"
+  "recoverbullUseSnowflake": "Использовать Snowflake",
+  "recoverbullTorReady": "Готово"
 }

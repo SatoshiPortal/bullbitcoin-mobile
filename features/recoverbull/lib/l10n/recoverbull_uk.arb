@@ -273,5 +273,6 @@
   "torSettingsTitle": "Налаштування Tor",
   "torSettingsStatusNoInternetOrBlocked": "Немає інтернету або мережа під цензурою",
   "torSettingsDescNoInternetOrBlocked": "Ця мережа не має доступу до інтернету або блокує Tor.",
-  "recoverbullUseSnowflake": "Використати Snowflake"
+  "recoverbullUseSnowflake": "Використати Snowflake",
+  "recoverbullTorReady": "Готово"
 }

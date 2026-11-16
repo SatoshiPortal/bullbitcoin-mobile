@@ -591,5 +591,6 @@
   "torSettingsTitle": "Настройки на Tor",
   "torSettingsStatusNoInternetOrBlocked": "Няма интернет или мрежата е цензурирана",
   "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor.",
-  "recoverbullUseSnowflake": "Използвай Snowflake"
+  "recoverbullUseSnowflake": "Използвай Snowflake",
+  "recoverbullTorReady": "Готово"
 }

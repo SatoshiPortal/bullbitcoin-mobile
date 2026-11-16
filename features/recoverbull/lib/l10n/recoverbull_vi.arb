@@ -168,5 +168,6 @@
   "torSettingsTitle": "Cài đặt Tor",
   "torSettingsStatusNoInternetOrBlocked": "Không có internet hoặc mạng bị kiểm duyệt",
   "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor.",
-  "recoverbullUseSnowflake": "Dùng Snowflake"
+  "recoverbullUseSnowflake": "Dùng Snowflake",
+  "recoverbullTorReady": "Sẵn sàng"
 }

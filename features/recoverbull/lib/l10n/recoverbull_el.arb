@@ -603,5 +603,6 @@
   "torSettingsTitle": "Οι ρυθμίσεις Tor",
   "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
   "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
-  "recoverbullUseSnowflake": "Χρήση Snowflake"
+  "recoverbullUseSnowflake": "Χρήση Snowflake",
+  "recoverbullTorReady": "Έτοιμο"
 }

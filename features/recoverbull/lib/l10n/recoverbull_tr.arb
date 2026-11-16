@@ -603,5 +603,6 @@
   "torSettingsTitle": "Tor Ayarları",
   "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
   "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
-  "recoverbullUseSnowflake": "Snowflake kullan"
+  "recoverbullUseSnowflake": "Snowflake kullan",
+  "recoverbullTorReady": "Hazır"
 }

@@ -3001,7 +3001,7 @@
   "torSettingsPortValidationRange": "Cổng phải nằm trong khoảng từ 1 đến 65535",
   "torSettingsSaveButton": "Lưu",
   "torSettingsConnectionStatus": "Trạng thái kết nối",
-  "torSettingsStatusConnected": "Đã kết nối",
+  "torSettingsStatusConnected": "Sẵn sàng",
   "torSettingsStatusConnecting": "Đang kết nối...",
   "torSettingsStatusDisconnected": "Đã ngắt kết nối",
   "torSettingsStatusUnknown": "Trạng thái không xác định",

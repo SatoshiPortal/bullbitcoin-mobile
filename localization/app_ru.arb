@@ -441,7 +441,7 @@
   "autoswapWarningOkButton": "ХОРОШО",
   "swapTitle": "Внутренний своп",
   "sendOutputTooSmall": "Выход за пределы пыли",
-  "torSettingsStatusConnected": "Соединение",
+  "torSettingsStatusConnected": "Готово",
   "payLightningNetwork": "Сеть освещения",
   "ledgerSuccessVerifyTitle": "Проверяющий адрес на Ledger...",
   "payCorporateNameHint": "Введите фирменное имя",
