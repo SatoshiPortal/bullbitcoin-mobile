@@ -2727,9 +2727,11 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   /// Re-verifies recorded settlements against the wallet that should have
   /// been paid and reopens the ones that never were: false chain completions
-  /// as refundable (our lockup is recoverable), false reverse completions as
-  /// claimable (MRH direct payments excepted), false refunds as refundable
-  /// (broadcast accepted but the tx vanished — withheld or evicted).
+  /// as claimable (Boltz reported claiming our lockup, so it holds the
+  /// preimage and Boltz's own lockup is ours to claim before its timeout),
+  /// false reverse completions as claimable (MRH direct payments excepted),
+  /// false refunds as refundable (broadcast accepted but the tx vanished —
+  /// withheld or evicted).
   /// Cache-first: the wallet is only force-synced when the recorded txid is
   /// MISSING from the cached view, so the common all-good launch does no
   /// network work per swap.
@@ -2755,7 +2757,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
             SwapStatus.completed,
           )
               when refundTxid == null && sendTxid != null =>
-            (receiveTxid, receiveWalletId, SwapStatus.refundable, true),
+            (receiveTxid, receiveWalletId, SwapStatus.claimable, true),
           (
             LnReceiveSwap(
               :final wasDirectPayment,

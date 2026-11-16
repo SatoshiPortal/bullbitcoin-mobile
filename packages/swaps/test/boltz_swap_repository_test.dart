@@ -814,7 +814,8 @@ void main() {
         final stored =
             verify(() => storage.store(captureAny())).captured.last
                 as SwapModel;
-        expect(stored.status, SwapStatus.refundable.name);
+        expect(stored.status, SwapStatus.claimable.name);
+        expect(stored.toEntity().nextAction, SwapAction.claim);
       },
     );
 
@@ -832,7 +833,8 @@ void main() {
 
       final stored =
           verify(() => storage.store(captureAny())).captured.last as SwapModel;
-      expect(stored.status, SwapStatus.refundable.name);
+      expect(stored.status, SwapStatus.claimable.name);
+      expect(stored.toEntity().nextAction, SwapAction.claim);
     });
 
     test('retracts a reverse completion whose claim vanished — reopens '
