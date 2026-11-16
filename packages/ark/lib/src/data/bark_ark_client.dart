@@ -286,11 +286,12 @@ final class BarkArkClient implements ArkClient {
             'interrupted': true,
           });
         }
-        final lifecycle = store.get('lifecycle');
-        if (lifecycle != null && lifecycle['state'] == 'creating') {
-          lifecycle['phase'] = 'opening-native';
-          store.put('lifecycle', lifecycle);
-        }
+        final priorLifecycle = store.get('lifecycle');
+        final priorPhase = priorLifecycle?['phase'];
+        final expectedNative =
+            store.get('native-identity') != null ||
+            priorLifecycle?['state'] == 'ready' ||
+            priorPhase != 'not-opened';
         session = await opener.open(
           config: config,
           datadir: datadir,
@@ -299,6 +300,14 @@ final class BarkArkClient implements ArkClient {
           create: allowCreate,
           expectedFingerprint:
               store.get('native-identity')?['fingerprint'] as String?,
+          nativePreviouslyAdmitted: expectedNative,
+          onNativeAdmission: () {
+            final lifecycle = store.get('lifecycle');
+            if (lifecycle != null && lifecycle['state'] == 'creating') {
+              lifecycle['phase'] = 'native-admitted';
+              store.put('lifecycle', lifecycle);
+            }
+          },
           onOnchainOpened: () {
             final state = store.get('lifecycle') ?? <String, Object?>{};
             if (state['state'] == 'creating') {

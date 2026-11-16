@@ -9,6 +9,8 @@ abstract interface class ArkNativeOpener {
     required Uri chainSource,
     required bool create,
     required String? expectedFingerprint,
+    required bool nativePreviouslyAdmitted,
+    required void Function() onNativeAdmission,
     required ArkStageRunner stages,
     required void Function() onOnchainOpened,
     required void Function(ArkRecoveryStatus recovery, String fingerprint)

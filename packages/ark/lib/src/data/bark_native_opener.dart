@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:bip32_keys/bip32_keys.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 
 import 'package:bark_bitcoin/bark_bitcoin.dart' as bark;
 import 'package:primitives/primitives.dart';
@@ -9,7 +13,8 @@ import 'ark_native_session.dart';
 /// Sole bark import/opener. Never attach the native logger: foreign diagnostics
 /// can carry Lightning preimages. Child words exist only during this open.
 final class BarkNativeOpener implements ArkNativeOpener {
-  const BarkNativeOpener();
+  final BarkOpenBoundary boundary;
+  const BarkNativeOpener({this.boundary = const FfiBarkOpenBoundary()});
   @override
   bool datadirExists(String datadir) =>
       Directory(datadir).existsSync() &&
@@ -22,6 +27,8 @@ final class BarkNativeOpener implements ArkNativeOpener {
     required Uri chainSource,
     required bool create,
     required String? expectedFingerprint,
+    required bool nativePreviouslyAdmitted,
+    required void Function() onNativeAdmission,
     required ArkStageRunner stages,
     required void Function() onOnchainOpened,
     required void Function(ArkRecoveryStatus recovery, String fingerprint)
@@ -35,37 +42,41 @@ final class BarkNativeOpener implements ArkNativeOpener {
     };
     final existing = await stages.run(
       'datadir-info',
-      () async => bark.readDatadirInfo(datadir: datadir),
+      () async => boundary.inspect(datadir),
     );
-    if (!create && existing == null) {
-      throw const ArkBoundaryException(ArkRecoveryRequiredFailure());
-    }
-    if (existing != null &&
-        (existing.network != network ||
-            (expectedFingerprint != null &&
-                existing.fingerprint != expectedFingerprint))) {
+    final derived = deriveBarkChildFingerprint(mnemonic);
+    if ((expectedFingerprint != null && expectedFingerprint != derived) ||
+        (existing != null &&
+            (existing.network != network || existing.fingerprint != derived))) {
       throw const ArkBoundaryException(
         ArkValidationFailure(ArkFailureReason.identityMismatch),
       );
+    }
+    if (existing == null &&
+        (!create ||
+            nativePreviouslyAdmitted ||
+            expectedFingerprint != null ||
+            boundary.hasData(datadir))) {
+      throw const ArkBoundaryException(ArkRecoveryRequiredFailure());
     }
     final nativeConfig = bark.Config(
       serverAddress: config.arkUrl.toString(),
       esploraAddress: chainSource.toString(),
       vtxoRefreshExpiryThreshold: config.renewalThresholdBlocks,
     );
-    final onchain = await stages.run(
-      'open-onchain',
-      () => bark.OnchainWallet.default_(
+    final onchain = await stages.run('open-onchain', () {
+      onNativeAdmission();
+      return boundary.openOnchain(
         network: network,
         mnemonic: mnemonic,
         config: nativeConfig,
         datadir: datadir,
-      ),
-    );
+      );
+    });
     try {
       onOnchainOpened();
       final wallet = await stages.run('open-ark', () async {
-        final wallet = await bark.Wallet.open(
+        final wallet = await boundary.openWallet(
           network: network,
           mnemonicOrSeed: mnemonic,
           config: nativeConfig,
@@ -961,3 +972,78 @@ ArkRecoveryStatus mapBarkRecovery(bark.RecoveryStatus value) => switch (value) {
   bark.NotRunRecoveryStatus() => ArkRecoveryStatus.notRun,
   _ => ArkRecoveryStatus.unknown,
 };
+
+/// Only mutable native entry points are replaceable by an internal test seam.
+abstract interface class BarkOpenBoundary {
+  bark.DatadirInfo? inspect(String datadir);
+  bool hasData(String datadir);
+  Future<bark.OnchainWallet> openOnchain({
+    required bark.Network network,
+    required String mnemonic,
+    required bark.Config config,
+    required String datadir,
+  });
+  Future<bark.Wallet> openWallet({
+    required bark.Network network,
+    required String mnemonicOrSeed,
+    required bark.Config config,
+    required bark.WalletOpenArgs args,
+  });
+}
+
+final class FfiBarkOpenBoundary implements BarkOpenBoundary {
+  const FfiBarkOpenBoundary();
+  @override
+  bark.DatadirInfo? inspect(String datadir) =>
+      bark.readDatadirInfo(datadir: datadir);
+  @override
+  bool hasData(String datadir) =>
+      Directory(datadir).existsSync() &&
+      Directory(datadir).listSync().isNotEmpty;
+  @override
+  Future<bark.OnchainWallet> openOnchain({
+    required bark.Network network,
+    required String mnemonic,
+    required bark.Config config,
+    required String datadir,
+  }) => bark.OnchainWallet.default_(
+    network: network,
+    mnemonic: mnemonic,
+    config: config,
+    datadir: datadir,
+  );
+  @override
+  Future<bark.Wallet> openWallet({
+    required bark.Network network,
+    required String mnemonicOrSeed,
+    required bark.Config config,
+    required bark.WalletOpenArgs args,
+  }) => bark.Wallet.open(
+    network: network,
+    mnemonicOrSeed: mnemonicOrSeed,
+    config: config,
+    args: args,
+  );
+}
+
+/// Public consistency identity only, from the scoped dedicated child at m/350h.
+/// The four-byte fingerprint is not collision-resistant authentication.
+/// Dart strings/key objects cannot be guaranteed to be zeroized.
+String deriveBarkChildFingerprint(String words) {
+  try {
+    final mnemonic = Mnemonic.fromSentence(
+      words,
+      Language.english,
+      passphrase: '',
+    );
+    final purpose = Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
+        .deriveHardened(350);
+    return purpose.fingerprint
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
+  } on MnemonicException {
+    throw const ArkBoundaryException(
+      ArkValidationFailure(ArkFailureReason.identityMismatch),
+    );
+  }
+}
