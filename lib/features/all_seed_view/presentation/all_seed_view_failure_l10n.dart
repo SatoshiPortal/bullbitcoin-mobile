@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 
 extension AllSeedViewFailureL10n on AllSeedViewFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    AllSeedViewCustodyMetadataFailure() =>
+      context.loc.parentCustodyMetadataUnavailable,
     AllSeedViewFetchFailure() => context.loc.allSeedViewErrorFetch,
     AllSeedViewDeleteFailure() => context.loc.allSeedViewErrorDelete,
   };

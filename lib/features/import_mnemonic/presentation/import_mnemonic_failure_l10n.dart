@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 
 extension ImportMnemonicFailureL10n on ImportMnemonicFailure {
   String toTranslated(BuildContext context) => switch (this) {
+    ImportMnemonicCustodyMetadataFailure() =>
+      context.loc.parentCustodyMetadataUnavailable,
     ImportMnemonicDuplicateFailure() =>
       context.loc.importMnemonicDuplicateError,
     ImportMnemonicEmptyLabelFailure() =>

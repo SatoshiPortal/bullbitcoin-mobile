@@ -4785,5 +4785,6 @@
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
   "settingsDarkModeTitle": "Mode sombre",
-  "settingsSourceCodeTitle": "Code source"
+  "settingsSourceCodeTitle": "Code source",
+  "parentCustodyMetadataUnavailable": "Les données de sécurité du portefeuille sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer."
 }

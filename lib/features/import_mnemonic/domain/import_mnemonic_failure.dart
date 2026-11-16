@@ -4,6 +4,11 @@ sealed class ImportMnemonicFailure extends Failure {
   const ImportMnemonicFailure([super.logMessage]);
 }
 
+/// Custody state needs explicit repair; importing must not reset its evidence.
+final class ImportMnemonicCustodyMetadataFailure extends ImportMnemonicFailure {
+  const ImportMnemonicCustodyMetadataFailure();
+}
+
 final class ImportMnemonicDuplicateFailure extends ImportMnemonicFailure {
   const ImportMnemonicDuplicateFailure();
 }

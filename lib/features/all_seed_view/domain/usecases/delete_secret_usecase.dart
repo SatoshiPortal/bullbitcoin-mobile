@@ -34,6 +34,9 @@ class DeleteSecretUsecase {
         return const Err(
           AllSeedViewDeleteFailure('a wallet still uses this secret'),
         );
+      case Err(failure: ParentCustodyMetadataFailure()):
+        log.warning('Seed delete refused reason=custody_metadata');
+        return const Err(AllSeedViewCustodyMetadataFailure());
       case Err(failure: ParentCustodyDeletionFailure()):
         log.warning('Seed delete incomplete reason=custody_state');
         return const Err(AllSeedViewDeleteFailure('could not finish deletion'));

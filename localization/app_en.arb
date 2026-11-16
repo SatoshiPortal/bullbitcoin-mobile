@@ -15447,5 +15447,9 @@
   "settingsSourceCodeTitle": "Source code",
   "@settingsSourceCodeTitle": {
     "description": "Settings entry opening the app's public source code repository."
+  },
+  "parentCustodyMetadataUnavailable": "Wallet security records are missing or damaged. This action was stopped to protect your seed. Contact support before trying again.",
+  "@parentCustodyMetadataUnavailable": {
+    "description": "Refusal to import or delete a seed when durable parent custody state is missing or corrupt; never recreate it automatically."
   }
 }
