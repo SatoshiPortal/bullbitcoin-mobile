@@ -38,6 +38,10 @@ class BullKeypadGrid {
   /// leaves its children's height unbounded, so this is the height budget.
   final double screenShare;
 
+  /// Glyph and icon size as a share of the key height, up to [maxGlyphSize].
+  final double glyphScale;
+  final double maxGlyphSize;
+
   const BullKeypadGrid({
     required this.columns,
     required this.rows,
@@ -47,6 +51,8 @@ class BullKeypadGrid {
     required this.maxKeyWidth,
     required this.gap,
     required this.screenShare,
+    this.glyphScale = 0.4,
+    this.maxGlyphSize = 28,
   });
 
   /// Sizes the keys for [constraints] on a [screen] of the given size.
@@ -74,6 +80,8 @@ class BullKeypadGrid {
       keyHeight: keyHeight,
       gap: gap,
       width: keyWidth * columns + gap * (columns - 1),
+      glyphScale: glyphScale,
+      maxGlyphSize: maxGlyphSize,
     );
   }
 }
@@ -88,15 +96,20 @@ class BullKeypadMetrics {
   /// Width of the widest row, gaps included.
   final double width;
 
+  final double glyphScale;
+  final double maxGlyphSize;
+
   const BullKeypadMetrics({
     required this.keyWidth,
     required this.keyHeight,
     required this.gap,
     required this.width,
+    this.glyphScale = 0.4,
+    this.maxGlyphSize = 28,
   });
 
   /// Glyph and icon size for a key of this height.
-  double get glyphSize => (keyHeight * 0.4).clamp(16.0, 28.0);
+  double get glyphSize => (keyHeight * glyphScale).clamp(16.0, maxGlyphSize);
 }
 
 /// The shared key shell: colour, corner, tap surface and height. A disabled
