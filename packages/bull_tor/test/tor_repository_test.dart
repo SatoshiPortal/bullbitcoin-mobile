@@ -347,11 +347,13 @@ void main() {
             ),
           );
 
-          await Future<void>.delayed(Duration.zero);
-          final connecting = states.whereType<TorConnecting>().last;
-          expect(connecting.diagnostic?.suggestsCensorship, isTrue);
-        },
-      );
+        await Future<void>.delayed(Duration.zero);
+        final connecting = states.whereType<TorConnecting>().last;
+        expect(connecting.diagnostic, TorDiagnostic.noInternetOrBlocked);
+        // Not Tor's own filtering evidence, but Snowflake is still worth a try.
+        expect(connecting.diagnostic?.suggestsCensorship, isFalse);
+        expect(connecting.diagnostic?.worthSnowflake, isTrue);
+      });
 
       test(
         'an offline verdict without a device network stays offline',
