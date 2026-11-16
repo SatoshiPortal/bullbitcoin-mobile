@@ -72,22 +72,65 @@ Object tagged(Object? cell) => switch (cell) {
   _ => throw StateError('Unexpected SQLite runtime type'),
 };
 
-Map<String, Object?> fileFacts(String path) {
+// Admission checks prevent new source operations near/after the deadline.
+// Synchronous I/O already admitted is drained, never abandoned by a timeout.
+final class _SourceWindowClosed implements Exception {}
+
+final class _SourceReadWindow {
+  final DateTime start;
+  final DateTime end;
+  final DateTime Function() now;
+  static const margin = Duration(seconds: 10);
+
+  _SourceReadWindow(this.start, this.end, {DateTime Function()? clock})
+    : now = clock ?? DateTime.now;
+
+  T read<T>(T Function() operation) {
+    final current = now();
+    if (current.isBefore(start) || !current.add(margin).isBefore(end)) {
+      throw _SourceWindowClosed();
+    }
+    return operation();
+  }
+
+  void finished() {
+    if (!now().isBefore(end)) throw _SourceWindowClosed();
+  }
+}
+
+Map<String, Object?> _fileFacts(String path, _SourceReadWindow window) {
   final file = File(path);
-  if (!file.existsSync()) return {'exists': false};
-  final stat = file.statSync();
+  if (!window.read(file.existsSync)) return {'exists': false};
+  final stat = window.read(file.statSync);
+  const maxBytes = 16 * 1024 * 1024;
+  check(stat.size <= maxBytes, 'Source metadata hash exceeds fixture bound');
+  final handle = window.read(() => file.openSync());
+  final bytes = BytesBuilder(copy: false);
+  try {
+    while (true) {
+      final chunk = window.read(() => handle.readSync(64 * 1024));
+      if (chunk.isEmpty) break;
+      check(
+        bytes.length + chunk.length <= maxBytes,
+        'Source grew beyond fixture bound',
+      );
+      bytes.add(chunk);
+    }
+  } finally {
+    handle.closeSync(); // Cleanup is allowed even when new reads are refused.
+  }
   return {
     'exists': true,
     'size': stat.size,
     'modifiedUTC': stat.modified.toUtc().toIso8601String(),
     'mode': stat.mode,
-    'sha256': sha256.convert(file.readAsBytesSync()).toString(),
+    'sha256': sha256.convert(bytes.takeBytes()).toString(),
   };
 }
 
-Map<String, Object?> sourceFacts(String path) => {
+Map<String, Object?> _sourceFacts(String path, _SourceReadWindow window) => {
   for (final suffix in ['', '-wal', '-shm', '-journal'])
-    suffix: fileFacts('$path$suffix'),
+    suffix: _fileFacts('$path$suffix', window),
 };
 
 final class _LiveSnapshotsDiffer implements Exception {}
@@ -97,6 +140,31 @@ void compareSnapshots(bool condition, String _) {
 }
 
 void main() {
+  test('source window refuses each operation at deadline or within margin', () {
+    final start = DateTime.utc(2026, 11, 16, 19);
+    final end = start.add(const Duration(minutes: 20));
+    var clock = start;
+    var sourceCalls = 0;
+    final window = _SourceReadWindow(start, end, clock: () => clock);
+    window.read(() => sourceCalls++);
+    for (final denied in [
+      start.subtract(const Duration(microseconds: 1)),
+      end.subtract(_SourceReadWindow.margin),
+      end,
+      end.add(const Duration(seconds: 1)),
+    ]) {
+      clock = denied;
+      expect(
+        () => window.read(() => sourceCalls++),
+        throwsA(isA<_SourceWindowClosed>()),
+      );
+      expect(sourceCalls, 1);
+    }
+    clock = end.subtract(const Duration(seconds: 1));
+    window.finished(); // No new source read; admitted cleanup has completed.
+    clock = end;
+    expect(window.finished, throwsA(isA<_SourceWindowClosed>()));
+  });
   final publicManifest = Platform.environment['ARK_REAL_DB_MANIFEST'];
   final output = Platform.environment['ARK_REAL_DB_REPORT_DIR'];
   test(
@@ -110,16 +178,14 @@ void main() {
       final manifest = jsonDecode(
         File(publicManifest).readAsStringSync(),
       ) as Map<String, dynamic>;
-      final window = manifest['read_window'] as Map<String, dynamic>;
-      final end = DateTime.parse(window['end'] as String);
-      final start = DateTime.parse(window['start'] as String);
-      check(
-        DateTime.now().isAfter(start) && DateTime.now().isBefore(end),
-        'Authorized read window is not open',
+      final descriptor = manifest['read_window'] as Map<String, dynamic>;
+      final window = _SourceReadWindow(
+        DateTime.parse(descriptor['start'] as String),
+        DateTime.parse(descriptor['end'] as String),
       );
       final reports = <Object>[];
       for (final item in manifest['wallets'] as List) {
-        check(DateTime.now().isBefore(end), 'Authorized read window ended');
+        window.read(() {}); // Admit this database with conservative headroom.
         final fixture = item as Map<String, dynamic>;
         final source = fixture['path'] as String;
         check(
@@ -137,7 +203,7 @@ void main() {
           fixture['fingerprint'] as String,
           fixture['server_pubkey'] as String,
         );
-        final before = sourceFacts(source);
+        final before = _sourceFacts(source, window);
         final own = Directory.systemTemp.createTempSync('ark-real-sql-check-');
         final archivePath = '${own.path}/archive.sqlite';
         final observer = SqliteBarkObserver(sourcePath: source, schema: schema);
@@ -145,7 +211,7 @@ void main() {
         Database? reference;
         var phase = 'read actual observer';
         try {
-          final observation = value(await observer.read());
+          final observation = value(await window.read(observer.read));
           check(
             observation.account == account,
             'Observation identity mismatch',
@@ -160,17 +226,21 @@ void main() {
             'Observation timestamp is not UTC',
           );
           phase = 'independent readonly snapshot';
-          final db = sqlite3.open(source, mode: OpenMode.readOnly);
+          final db = window.read(
+            () => sqlite3.open(source, mode: OpenMode.readOnly),
+          );
           reference = db;
-          db.execute('PRAGMA query_only=ON');
-          db.execute('PRAGMA busy_timeout=0');
-          db.execute('BEGIN');
+          window.read(() => db.execute('PRAGMA query_only=ON'));
+          window.read(() => db.execute('PRAGMA busy_timeout=0'));
+          window.read(() => db.execute('BEGIN'));
           final counts = <String, int>{};
           final seen = <String>{};
           try {
             check(
-              db
-                      .select('SELECT MAX(value) FROM migrations')
+              window
+                      .read(
+                        () => db.select('SELECT MAX(value) FROM migrations'),
+                      )
                       .single
                       .values
                       .single ==
@@ -178,8 +248,10 @@ void main() {
               'Native migration mismatch',
             );
             for (final entry in queries.entries) {
-              final expected = db.select(
-                'SELECT ${entry.value.join(',')} FROM ${entry.key} ORDER BY ${entry.value.first}',
+              final expected = window.read(
+                () => db.select(
+                  'SELECT ${entry.value.join(',')} FROM ${entry.key} ORDER BY ${entry.value.first}',
+                ),
               );
               final actual = observation.rows
                   .where((r) => r.sourceTable == entry.key)
@@ -270,6 +342,11 @@ void main() {
                 (counts['bark_vtxo_key'] ?? 0) > 0,
             'Real populated VTXO/key evidence required',
           );
+          phase = 'source metadata sample and close';
+          await observer.close();
+          final after = _sourceFacts(source, window);
+          window.finished();
+          // ALL source handles are now closed. Only memory/own archive work follows.
           phase = 'own archive persistence and dirty preservation';
           final opened = value(
             SqliteExitArchive.open(
@@ -354,10 +431,6 @@ void main() {
             value(await reopened.read()).pending.single.matches(intent),
             'Pending intent changed after reopen',
           );
-          phase = 'source metadata sample';
-          await observer.close();
-          final after = sourceFacts(source);
-          // Metadata samples are observations only; live writers may change them.
           reports.add({
             'wallet': fixture['wallet'],
             'counts': counts,
@@ -393,7 +466,7 @@ void main() {
         }),
         flush: true,
       );
-      check(DateTime.now().isBefore(end), 'Read window exceeded');
+      // Source access already completed and was checked before archive work.
     },
     skip: publicManifest == null || output == null
         ? 'Requires an explicitly authorized real DB read window; not runtime evidence'
