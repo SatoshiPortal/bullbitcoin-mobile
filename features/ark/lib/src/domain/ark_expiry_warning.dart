@@ -16,7 +16,7 @@ final class ArkExpiryWarning {
 
   static ArkExpiryWarning? fromSnapshot(ArkSnapshot snapshot) {
     final tip = snapshot.tipHeight;
-    if (snapshot.stale || !snapshot.vtxoInventoryComplete || tip == null) {
+    if (tip == null) {
       return null;
     }
     final live = snapshot.vtxos
@@ -28,7 +28,7 @@ final class ArkExpiryWarning {
     final expiries = {for (final v in live) 'vtxo:${v.id}': v.expiryHeight};
     for (final board in snapshot.pendingBoards) {
       final expiry = board.expiryHeight;
-      if (expiry == null) return null;
+      if (expiry == null) continue;
       expiries['board:${board.vtxoId}'] = expiry;
     }
     for (final operation in snapshot.operations) {
@@ -38,7 +38,7 @@ final class ArkExpiryWarning {
         continue;
       }
       final funding = operation.boardFunding;
-      if (funding == null) return null;
+      if (funding == null) continue;
       expiries['funding:${operation.id}'] = funding.expiryHeight;
     }
     if (expiries.isEmpty) return null;
