@@ -81,10 +81,6 @@ class MnemonicWidget extends StatefulWidget {
   final bip39.MnemonicLength initialLength;
   final Function(Mnemonic) onSubmit;
   final String? submitLabel;
-
-  /// Default-wallet recovery remains English until its native engines support
-  /// other languages. This also hides the import-only language picker.
-  final bool englishOnly;
   final bool allowPassphrase;
   final bool allowLabel;
   final bool allowMultipleMnemonicLength;
@@ -98,7 +94,6 @@ class MnemonicWidget extends StatefulWidget {
     required this.initialLength,
     required this.onSubmit,
     this.submitLabel,
-    this.englishOnly = false,
     this.allowPassphrase = true,
     this.allowLabel = true,
     this.allowMultipleMnemonicLength = true,
@@ -127,7 +122,6 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
   /// change asks again (see [_onWordEdited]).
   bool _languageConfirmed = false;
   bool _needsLanguageChoice = false;
-  bool _defaultRefused = false;
   final _languageNoticeKey = GlobalKey();
   late List<TextEditingController> _controllers;
 
@@ -153,7 +147,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     length = widget.initialLength;
-    _language = widget.englishOnly ? bip39.Language.english : widget.language;
+    _language = widget.language;
     _controllers = _newControllers(length.words);
     _watchEdits(_controllers);
   }
@@ -188,7 +182,6 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
     setState(() {
       _failure = null;
       _needsLanguageChoice = false;
-      _defaultRefused = false;
     });
     final words = _words;
 
@@ -204,14 +197,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
       words,
       requireChecksum: true,
     );
-    if (widget.englishOnly) {
-      if (readings.isNotEmpty && !readings.contains(bip39.Language.english)) {
-        log.warning('Mnemonic submit refused reason=unsupported_language');
-        setState(() => _defaultRefused = true);
-        _showLanguageNotice();
-        return;
-      }
-    } else if (readings.isNotEmpty &&
+    if (readings.isNotEmpty &&
         (!readings.contains(_language) ||
             (readings.length > 1 && !_languageConfirmed))) {
       log.warning('Mnemonic submit refused reason=language_required');
@@ -512,20 +498,10 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: Column(
                 children: [
-                  if (widget.englishOnly)
-                    BullText(
-                      context.loc.mnemonicDefaultEnglishOnly,
-                      key: _languageNoticeKey,
-                      style: context.font.bodyMedium,
-                      color: _defaultRefused
-                          ? context.appColors.error
-                          : context.appColors.textMuted,
-                    )
-                  else
-                    KeyedSubtree(
-                      key: _languageNoticeKey,
-                      child: _buildLanguageSelection(context),
-                    ),
+                  KeyedSubtree(
+                    key: _languageNoticeKey,
+                    child: _buildLanguageSelection(context),
+                  ),
                   if (widget.allowMultipleMnemonicLength) ...[
                     const Gap(12),
                     _lengthPicker(context),
@@ -537,9 +513,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                     language: _language,
                     allowAutoFillWords: widget.allowAutoFillWords,
                     keyboardBarSlot: _keyboardBarSlot,
-                    onLanguageSelected: widget.englishOnly
-                        ? null
-                        : _chooseKeyboardLanguage,
+                    onLanguageSelected: _chooseKeyboardLanguage,
                     focusFirstWordRequest: _focusFirstWordRequest,
                   ),
 

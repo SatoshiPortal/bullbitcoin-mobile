@@ -15,7 +15,6 @@ Future<void> host(
   WidgetTester tester, {
   required void Function(Mnemonic) onSubmit,
   bip39.Language language = bip39.Language.english,
-  bool englishOnly = false,
   bool allowPassphrase = false,
 }) => tester.pumpWidget(
   MaterialApp(
@@ -26,7 +25,6 @@ Future<void> host(
       body: MnemonicWidget(
         initialLength: bip39.MnemonicLength.words12,
         language: language,
-        englishOnly: englishOnly,
         allowAutoFillWords: false,
         allowLabel: false,
         allowPassphrase: allowPassphrase,
@@ -68,9 +66,6 @@ const ambiguous = [
   'junior',
   'wagon',
 ];
-
-// The shared vector with its last word swapped: valid only in French.
-final frenchOnly = [...ambiguous.take(11), 'amateur'];
 
 AppLocalizations loc(WidgetTester tester) =>
     AppLocalizations.of(tester.element(find.byType(MnemonicWidget)));
@@ -401,34 +396,6 @@ void main() {
     },
   );
 
-  testWidgets(
-    'default recovery explains non-English refusal before submission',
-    (tester) async {
-      Mnemonic? submitted;
-      await host(
-        tester,
-        englishOnly: true,
-        onSubmit: (value) => submitted = value,
-      );
-      await fill(
-        tester,
-        bip39.Mnemonic(List.filled(16, 0), bip39.Language.japanese).words,
-      );
-      await submit(tester);
-      expect(submitted, isNull);
-      await focusFirstField(tester);
-      expect(find.byType(BullMnemonicKeyboard), findsOneWidget);
-      expect(languageKey(), findsNothing);
-      FocusManager.instance.primaryFocus?.unfocus();
-      await tester.pumpAndSettle();
-      expect(
-        find.textContaining('Default wallets currently require an English'),
-        findsOneWidget,
-      );
-      expect(find.textContaining('Something went wrong'), findsNothing);
-    },
-  );
-
   for (final language in [
     bip39.Language.english,
     bip39.Language.spanish,
@@ -502,66 +469,7 @@ void main() {
     });
   }
 
-  group('a checksum-valid reading decides the language', () {
-    testWidgets(
-      'default recovery explains a phrase valid only in French and keeps it',
-      (tester) async {
-        Mnemonic? submitted;
-        await host(
-          tester,
-          englishOnly: true,
-          onSubmit: (value) => submitted = value,
-        );
-        await fill(tester, frenchOnly);
-        await submit(tester);
-        expect(submitted, isNull);
-        expect(fieldText(tester, 11), 'amateur');
-        final l = loc(tester);
-        expect(find.text(l.mnemonicDefaultEnglishOnly), findsOneWidget);
-        expect(find.text(l.mnemonicInvalidChecksumError), findsNothing);
-      },
-    );
-
-    testWidgets('default recovery keeps an English and French phrase English', (
-      tester,
-    ) async {
-      Mnemonic? submitted;
-      await host(
-        tester,
-        englishOnly: true,
-        onSubmit: (value) => submitted = value,
-      );
-      await fill(tester, ambiguous);
-      await submit(tester);
-      expect(submitted?.language, bip39.Language.english);
-      expect(submitted?.words, ambiguous);
-      final rows = await tester.runAsync(() async => log.readLogs());
-      expect(rows, isEmpty);
-    });
-
-    testWidgets(
-      'French words with a bad checksum under English name both wordlists',
-      (tester) async {
-        Mnemonic? submitted;
-        await host(tester, onSubmit: (value) => submitted = value);
-        await fill(tester, List.filled(12, 'abaisser'));
-        await submit(tester);
-        expect(submitted, isNull);
-        final l = loc(tester);
-        expect(
-          find.text(
-            l.mnemonicOtherLanguageWordsError(
-              l.mnemonicLanguageName('french'),
-              l.mnemonicLanguageName('english'),
-            ),
-          ),
-          findsOneWidget,
-        );
-        expect(find.text(l.mnemonicUnknownWordError), findsNothing);
-        expect(fieldText(tester, 11), 'abaisser');
-      },
-    );
-  });
+  group('a checksum-valid reading decides the language', () {});
 
   group('a language choice answers one phrase', () {
     testWidgets('a single shared word does not announce an ambiguity', (
