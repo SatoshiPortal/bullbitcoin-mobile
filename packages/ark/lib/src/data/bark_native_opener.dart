@@ -961,6 +961,7 @@ final class BarkNativeSession implements ArkNativeSession {
       actualIds: operation.actualIds,
       skippedIds: operation.skippedIds,
       boardFunding: operation.boardFunding,
+      claimRecovery: operation.claimRecovery,
     );
   }
 

@@ -13,6 +13,7 @@ import 'ark_chain_preflight.dart';
 import 'ark_codec.dart';
 import 'ark_native_session.dart';
 import 'ark_store.dart';
+import 'ark_saved_claim.dart';
 import 'ark_writer_lock.dart';
 
 /// The writer and immutable projection reader. No command owns source-wallet
@@ -179,13 +180,15 @@ final class BarkArkClient implements ArkClient {
       return Ok(
         copySnapshot(
           snapshot,
-          operations: store.operations,
+          operations: await _verifiedOperations(store, account),
           stale:
               snapshot.stale ||
               now().difference(snapshot.observedAt) >
                   const Duration(minutes: 5),
         ),
       );
+    } on ArkBoundaryException catch (error) {
+      return Err(error.failure);
     } on FileSystemException {
       return const Err(ArkUnavailableFailure(ArkFailureReason.accountMissing));
     } catch (error) {
@@ -215,6 +218,54 @@ final class BarkArkClient implements ArkClient {
       events.onCancel = subscription.cancel;
       read(account).then(emit, onError: events.addError);
     });
+  }
+
+  Future<List<ArkOperation>> _verifiedOperations(
+    ArkStore store,
+    ArkAccountId account,
+  ) async => [
+    for (final operation in store.operations)
+      await _verifiedOperation(store, account, operation),
+  ];
+
+  Future<ArkOperation> _verifiedOperation(
+    ArkStore store,
+    ArkAccountId account,
+    ArkOperation operation,
+  ) async {
+    final record = store.operation(operation.id);
+    final evidence = record?.evidence;
+    if (evidence?['raw'] == null) {
+      if (operation.claimRecovery != null) {
+        throw const ArkBoundaryException(ArkValidationFailure());
+      }
+      return operation;
+    }
+    final quote = record == null ? null : store.quote(record.binding);
+    final config = store.get('config');
+    if (quote == null || config == null || evidence == null) {
+      throw const ArkBoundaryException(ArkValidationFailure());
+    }
+    final saved = await ArkSavedClaim.inspect(
+      account: account,
+      config: configFromJson(config),
+      quote: quote,
+      operation: operation,
+      evidence: evidence,
+      verifier: transactionVerifier,
+    );
+    return ArkOperation(
+      id: operation.id,
+      kind: operation.kind,
+      status: operation.status,
+      chainSource: operation.chainSource,
+      configGeneration: operation.configGeneration,
+      nativeReference: operation.nativeReference,
+      actualIds: operation.actualIds,
+      skippedIds: operation.skippedIds,
+      boardFunding: operation.boardFunding,
+      claimRecovery: saved.summary,
+    );
   }
 
   Future<Result<T, ArkWalletFailure>> _session<T>(
@@ -366,7 +417,7 @@ final class BarkArkClient implements ArkClient {
       revision: (previous?.revision ?? 0) + 1,
       now: now().toUtc(),
       chainSource: source,
-      operations: store.operations,
+      operations: await _verifiedOperations(store, account),
       previousRecovery: _storedRecovery(store, previous),
     );
     var reserveAddress = store.get('reserve-address')?['address'] as String?;
@@ -743,7 +794,7 @@ final class BarkArkClient implements ArkClient {
       return const Err(ArkValidationFailure());
     }
     if (submission is! ArkRegisterBoard && existing != null) {
-      return Ok(existing.operation);
+      return Ok(await _verifiedOperation(store, account, existing.operation));
     }
     if (submission case ArkRegisterBoard()) {
       final registration = existing?.evidence?['registration'];
@@ -1103,20 +1154,35 @@ final class BarkArkClient implements ArkClient {
           !RegExp(r'^[0-9a-f]{64}$').hasMatch(facts.txid)) {
         throw const ArkBoundaryException(ArkValidationFailure());
       }
+      final summary = ArkClaimRecovery(
+        txid: facts.txid,
+        destination: destination,
+        net: outputs.single.amount,
+        fee: facts.fee,
+      );
       // Debit the cumulative authority and persist exact signed bytes BEFORE broadcast.
       final pending = _operation(
         quote,
         id,
         ArkOperationStatus.admitted,
         reference: facts.txid,
+        claimRecovery: summary,
         actualIds: claim.actualIds,
         skippedIds: claim.skippedIds,
       );
-      store.commitClaim(authority, pending, quote.id, actual, facts.fee, {
-        'raw': claim.rawTransaction,
-        'txid': facts.txid,
-        'signedPsbt': claim.signedPsbt,
-      });
+      store.commitClaim(
+        authority,
+        pending,
+        quote.id,
+        actual,
+        facts.fee,
+        ArkSavedClaim.evidence(
+          quote: quote,
+          operationId: id,
+          claim: claim,
+          summary: summary,
+        ),
+      );
       final txid = await session.broadcast(claim.rawTransaction);
       if (txid != facts.txid) {
         throw const ArkBoundaryException(ArkValidationFailure());
@@ -1126,6 +1192,7 @@ final class BarkArkClient implements ArkClient {
         id,
         ArkOperationStatus.pending,
         reference: txid,
+        claimRecovery: summary,
         actualIds: claim.actualIds,
         skippedIds: claim.skippedIds,
       );
@@ -1141,6 +1208,7 @@ final class BarkArkClient implements ArkClient {
           id,
           ArkOperationStatus.outcomeUnknown,
           reference: previous?.nativeReference,
+          claimRecovery: previous?.claimRecovery,
           actualIds: previous?.actualIds ?? const [],
           skippedIds: previous?.skippedIds ?? const [],
         ),
@@ -1170,6 +1238,7 @@ final class BarkArkClient implements ArkClient {
     String id,
     ArkOperationStatus status, {
     String? reference,
+    ArkClaimRecovery? claimRecovery,
     ArkBoardFundingDetails? boardFunding,
     List<String> actualIds = const [],
     List<String> skippedIds = const [],
@@ -1180,6 +1249,7 @@ final class BarkArkClient implements ArkClient {
     chainSource: quote.chainSource,
     configGeneration: quote.configGeneration,
     nativeReference: reference,
+    claimRecovery: claimRecovery,
     boardFunding: boardFunding,
     actualIds: actualIds,
     skippedIds: skippedIds,

@@ -197,6 +197,13 @@ final class ArkStore {
     if (existing != null && existing.binding != binding) {
       throw const FormatException('Operation binding mismatch');
     }
+    if (existing?.evidence?['raw'] != null &&
+        evidence != null &&
+        jsonEncode(existing?.evidence) != jsonEncode(evidence)) {
+      throw const FormatException(
+        'Committed signed claim evidence is immutable',
+      );
+    }
     _db.execute(
       'INSERT INTO operations VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value,evidence=COALESCE(excluded.evidence,operations.evidence)',
       [

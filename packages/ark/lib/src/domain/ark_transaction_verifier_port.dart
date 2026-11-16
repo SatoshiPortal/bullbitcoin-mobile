@@ -5,8 +5,10 @@ import 'ark_wallet_failure.dart';
 
 /// Host decodes both the signed PSBT and extracted transaction using public
 /// codecs. Input values/fee come from PSBT UTXOs, never raw transaction bytes.
-/// It verifies matching inputs/outputs and supplies both independently computed
-/// txids; Ark retains destination, input, fee and authorization comparisons.
+/// It requires equality of the full final serialized PSBT transaction and raw
+/// consensus bytes, including witnesses, and supplies both computed txids.
+/// This is not a script/signature-validity proof. Ark separately compares
+/// destination, input values, fee and committed authorization.
 abstract interface class ArkTransactionVerifierPort {
   @useResult
   Future<Result<ArkTransactionFacts, ArkWalletFailure>> inspectTransaction({

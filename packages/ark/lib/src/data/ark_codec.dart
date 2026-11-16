@@ -259,6 +259,15 @@ Map<String, Object?> operationToJson(ArkOperation o) => {
   'reference': o.nativeReference,
   'actual': o.actualIds,
   'skipped': o.skippedIds,
+  'claimRecovery': switch (o.claimRecovery) {
+    final r? => {
+      'txid': r.txid,
+      'destination': r.destination,
+      'net': r.net.toString(),
+      'fee': r.fee.toString(),
+    },
+    null => null,
+  },
   'funding': switch (o.boardFunding) {
     final f? => {
       'address': f.address,
@@ -278,11 +287,21 @@ ArkOperation operationFromJson(Map<String, Object?> m) => _decode(
     nativeReference: m['reference'] as String?,
     actualIds: strings(m['actual']),
     skippedIds: strings(m['skipped']),
+    claimRecovery: switch (m['claimRecovery']) {
+      final r? => _claimRecovery(mapValue(r)),
+      null => null,
+    },
     boardFunding: switch (m['funding']) {
       final f? => _funding(mapValue(f)),
       null => null,
     },
   ),
+);
+ArkClaimRecovery _claimRecovery(Map<String, Object?> m) => ArkClaimRecovery(
+  txid: m['txid'] as String,
+  destination: m['destination'] as String,
+  net: sats(m['net']),
+  fee: sats(m['fee']),
 );
 ArkBoardFundingDetails _funding(Map<String, Object?> m) =>
     ArkBoardFundingDetails(
