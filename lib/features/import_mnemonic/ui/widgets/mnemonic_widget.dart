@@ -21,6 +21,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         BullSwitch,
         BullText,
+        BullTypographyX,
         Gap;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
@@ -691,7 +692,8 @@ class MnemonicWord extends StatelessWidget {
         border: Border.all(color: context.appColors.border),
         color: context.appColors.surface,
       ),
-      height: 32,
+      // A floor, not a height: the field grows with the system text size.
+      constraints: const BoxConstraints(minHeight: 40),
       child: Row(
         children: [
           ListenableBuilder(
@@ -707,8 +709,8 @@ class MnemonicWord extends StatelessWidget {
                   ? pool.any((entry) => Bip39WordList.normalize(entry) == word)
                   : language.isValid(word);
               return Container(
-                height: 24,
-                width: 26,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: word.isEmpty
@@ -720,10 +722,8 @@ class MnemonicWord extends StatelessWidget {
                 ),
                 child: BullText(
                   displayIndex,
-                  style: context.font.labelMedium?.copyWith(
-                    fontSize: 12,
-                    fontWeight: .w600,
-                  ),
+                  role: .body,
+                  fontWeight: .w700,
                   color: context.appColors.surface,
                 ),
               );
@@ -743,8 +743,7 @@ class MnemonicWord extends StatelessWidget {
               enableSuggestions: false,
               autocorrect: false,
               controller: controller,
-              style: context.font.bodyMedium?.copyWith(
-                fontSize: 14,
+              style: context.bullType.body.copyWith(
                 color: context.appColors.text,
               ),
               focusNode: focusNode,
