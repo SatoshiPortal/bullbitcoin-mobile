@@ -38,7 +38,10 @@ final class ArkSavedClaim {
     'destination': summary.destination,
     'fee': summary.fee.toString(),
     'net': summary.net.toString(),
-    'inputAmounts': claim.inputAmounts,
+    'inputAmounts': {
+      for (final entry in claim.inputAmounts.entries)
+        if (claim.actualIds.contains(entry.key)) entry.key: entry.value,
+    },
   };
 
   static Future<ArkSavedClaim> inspect({
