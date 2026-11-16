@@ -11,6 +11,8 @@ import 'package:test/test.dart';
 ArkNativeSession session(
   List<bark.ExitVtxo> exits, {
   List<bark.Movement> movements = const [],
+  bark.LightningSendStatus? lightning,
+  List<String>? paymentReads,
 }) {
   final account = ArkAccountId(
     parent: Fingerprint('12345678'),
@@ -18,7 +20,7 @@ ArkNativeSession session(
     serverIdentity: 'server',
   );
   return adapter.BarkNativeSession(
-    _Wallet(exits, movements),
+    _Wallet(exits, movements, lightning, paymentReads),
     _Onchain(),
     _Stages(),
     ArkAccountConfig(
@@ -32,7 +34,19 @@ ArkNativeSession session(
 final class _Wallet implements bark.Wallet {
   final List<bark.ExitVtxo> exits;
   final List<bark.Movement> movements;
-  _Wallet(this.exits, this.movements);
+  final bark.LightningSendStatus? lightning;
+  final List<String>? paymentReads;
+  _Wallet(this.exits, this.movements, this.lightning, this.paymentReads);
+  @override
+  Future<bark.LightningSendStatus> lightningSendState({
+    required String paymentHash,
+  }) async {
+    paymentReads?.add(paymentHash);
+    final state = lightning;
+    if (state == null) throw StateError('Unexpected lightning status read');
+    return state;
+  }
+
   @override
   Future<List<bark.Movement>> history() async => movements;
   @override
@@ -79,6 +93,53 @@ void main() {
       block: bark.BlockRef(height: 100, hash: 'block'),
     ),
   );
+  for (final failed in [false, true]) {
+    test(
+      'Lightning failed revocation $failed preserves uncertainty on reconciliation',
+      () async {
+        final hash = 'a' * 64;
+        final reads = <String>[];
+        final native = session(
+          [],
+          paymentReads: reads,
+          lightning: bark.InProgressLightningSendStatus(
+            bark.LightningSend(
+              invoice: 'synthetic-unparsed-invoice',
+              paymentHash: hash,
+              amountSats: 1000,
+              feeSats: 10,
+              htlcVtxoCount: 1,
+              hasFailedRevocation: failed,
+            ),
+          ),
+        );
+        final original = ArkOperation(
+          id: 'payment',
+          kind: ArkOperationKind.payment,
+          status: ArkOperationStatus.outcomeUnknown,
+          chainSource: Uri.parse('http://localhost:3000'),
+          configGeneration: 1,
+          nativeReference: hash,
+          actualIds: ['input'],
+        );
+        try {
+          final observed = await native.reconcile(original);
+          expect(reads, [hash]);
+          expect(observed?.nativeReference, hash);
+          expect(observed?.chainSource, original.chainSource);
+          expect(observed?.actualIds, ['input']);
+          expect(
+            observed?.status,
+            failed
+                ? ArkOperationStatus.outcomeUnknown
+                : ArkOperationStatus.pending,
+          );
+        } finally {
+          native.close();
+        }
+      },
+    );
+  }
   for (final status in ['failed', 'successful']) {
     test(
       'native payment $status preserves effect uncertainty and original binding',
