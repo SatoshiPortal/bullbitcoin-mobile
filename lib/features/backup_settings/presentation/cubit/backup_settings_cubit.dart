@@ -26,6 +26,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
             failure: null,
             isDefaultPhysicalBackupTested: value.physicalVerified,
             isDefaultEncryptedBackupTested: value.encryptedVerified,
+            isDefaultEncryptedBackupHistorical: value.encryptedHistorical,
             lastPhysicalBackup: value.physicalAt,
             lastEncryptedBackup: value.encryptedAt,
           ),
