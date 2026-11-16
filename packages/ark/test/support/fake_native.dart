@@ -1,0 +1,347 @@
+import 'dart:async';
+
+import 'package:ark/ark.dart';
+import 'package:ark/src/domain/ark_execution_policy.dart'
+    show
+        ArkChildProviderPort,
+        ArkExecutionPolicyPort,
+        ArkExecutionMode,
+        ArkStageBudget;
+import 'package:ark/src/data/ark_chain_preflight.dart';
+import 'package:ark/src/data/ark_native_session.dart';
+import 'package:primitives/primitives.dart';
+
+final class FakeChild implements ArkChildProviderPort {
+  int calls = 0;
+  @override
+  Future<Result<T, ArkWalletFailure>> withChild<T>(
+    ArkAccountId account,
+    Future<Result<T, ArkWalletFailure>> Function(String) action,
+  ) {
+    calls++;
+    return action('test-provider-placeholder');
+  }
+}
+
+final class FakePolicy implements ArkExecutionPolicyPort {
+  bool allowed = true;
+  @override
+  bool mayRun(ArkAccountId account, ArkExecutionMode mode) => allowed;
+}
+
+final class FakeBudget implements ArkStageBudget {
+  bool allowed = true;
+  @override
+  bool get mayAdmitNextStage => allowed;
+}
+
+final class FakePreflight implements ArkChainPreflight {
+  int calls = 0;
+  @override
+  Future<Result<Uri, ArkWalletFailure>> select(
+    ArkAccountConfig config, {
+    Uri? requiredSource,
+    int? minimumTip,
+  }) async {
+    calls++;
+    return Ok(requiredSource ?? config.primaryEsploraUrl);
+  }
+}
+
+final class FakeOpener implements ArkNativeOpener {
+  bool exists = false;
+  int opens = 0;
+  int closes = 0;
+  int executes = 0;
+  int broadcasts = 0;
+  int registrations = 0;
+  int tip = 100;
+  bool failExecute = false;
+  bool reconcileSuccess = false;
+  bool missingVtxos = false;
+  Completer<void>? stageEntered;
+  Completer<void>? releaseStage;
+  void Function(String)? afterStage;
+  static final firstId = '${'a' * 64}:0';
+  static final secondId = '${'b' * 64}:1';
+  List<String> claimActual = [firstId];
+  List<String> claimSkipped = [];
+  @override
+  bool datadirExists(String path) => exists;
+  @override
+  Future<ArkNativeSession> open({
+    required ArkAccountConfig config,
+    required String datadir,
+    required String mnemonic,
+    required Uri chainSource,
+    required bool create,
+    required ArkStageRunner stages,
+  }) async {
+    return stages.run('open', () async {
+      opens++;
+      exists = true;
+      return FakeSession(this, config, stages);
+    });
+  }
+}
+
+final class FakeSession implements ArkNativeSession {
+  final FakeOpener owner;
+  final ArkAccountConfig config;
+  final ArkStageRunner stages;
+  FakeSession(this.owner, this.config, this.stages);
+  @override
+  void close() {
+    owner.closes++;
+  }
+
+  @override
+  Future<void> synchronizeStage(String name) => stages.run(name, () async {
+    if (name == 'ark' && owner.stageEntered != null) {
+      owner.stageEntered?.complete();
+      await owner.releaseStage?.future;
+    }
+    owner.afterStage?.call(name);
+  });
+  @override
+  Future<ArkSnapshot> observe({
+    required ArkAccountId account,
+    required int revision,
+    required DateTime now,
+    required Uri chainSource,
+    required List<ArkOperation> operations,
+    required ArkRecoveryStatus previousRecovery,
+  }) => stages.run(
+    'observe',
+    () async => ArkSnapshot(
+      account: account,
+      revision: revision,
+      observedAt: now,
+      tipHeight: owner.tip,
+      stale: false,
+      spendable: Sats.fromInt(20000),
+      pending: Sats.zero,
+      confirmedReserve: Sats.fromInt(5000),
+      vtxos: owner.missingVtxos
+          ? []
+          : [
+              for (final id in [FakeOpener.firstId, FakeOpener.secondId])
+                ArkVtxo(
+                  id: id,
+                  amount: Sats.fromInt(10000),
+                  expiryHeight: 1100,
+                  state: ArkVtxoState.spendable,
+                ),
+            ],
+      recovery: ArkRecoveryStatus.complete,
+      renewal: ArkRenewalStatus.due,
+      exits: ArkExitStatus.none,
+      obligations: ArkObligationStatus.present,
+      pendingBoardCount: 0,
+      pendingLightningCount: 0,
+      pendingRoundCount: 0,
+      operations: operations,
+      vtxoCompleteness: ArkSectionCompleteness.complete,
+    ),
+  );
+  @override
+  Future<ArkQuote> estimate({
+    required ArkSnapshot snapshot,
+    required ArkQuoteRequest request,
+    required String id,
+    required Uri chainSource,
+    required int configGeneration,
+    required DateTime now,
+  }) => stages.run('estimate', () async {
+    final kind = switch (request) {
+      ArkPaymentQuoteRequest() => ArkOperationKind.payment,
+      ArkRenewalQuoteRequest() => ArkOperationKind.renewal,
+      ArkEmergencyExitQuoteRequest() => ArkOperationKind.emergencyExit,
+      ArkExitProgressQuoteRequest() => ArkOperationKind.exitProgress,
+      ArkClaimQuoteRequest() => ArkOperationKind.claim,
+      ArkBoardQuoteRequest() => ArkOperationKind.board,
+    };
+    final amount = switch (request) {
+      ArkPaymentQuoteRequest(:final amount) => amount,
+      ArkBoardQuoteRequest(:final amount) => amount,
+      _ => Sats.fromInt(10000),
+    };
+    final destination = switch (request) {
+      ArkPaymentQuoteRequest(:final destination) => destination.value,
+      ArkEmergencyExitQuoteRequest(:final destination) => destination,
+      ArkClaimQuoteRequest(:final destination) => destination,
+      _ => null,
+    };
+    final selected = switch (request) {
+      ArkRenewalQuoteRequest(:final ids) => ids,
+      ArkEmergencyExitQuoteRequest(:final ids) => ids,
+      ArkClaimQuoteRequest(:final ids) => ids,
+      ArkBoardQuoteRequest() => const <String>[],
+      _ => [FakeOpener.firstId],
+    };
+    final max = switch (request) {
+      ArkEmergencyExitQuoteRequest(:final maxClaimFee) => maxClaimFee,
+      ArkClaimQuoteRequest(:final maxFee) => maxFee,
+      _ => null,
+    };
+    return ArkQuote(
+      id: id,
+      account: snapshot.account,
+      generation: snapshot.revision,
+      chainSource: chainSource,
+      configGeneration: configGeneration,
+      kind: kind,
+      amount: Sats(
+        amount.value + BigInt.from(kind == ArkOperationKind.payment ? 10 : 0),
+      ),
+      fee: Sats.fromInt(10),
+      net: kind == ArkOperationKind.payment
+          ? amount
+          : Sats(amount.value - BigInt.from(10)),
+      selectedIds: selected,
+      destination: destination,
+      destinationKind: switch (request) {
+        ArkPaymentQuoteRequest(:final destination) => destination.kind,
+        _ => null,
+      },
+      observedTip: owner.tip,
+      validUntil: now.add(const Duration(minutes: 2)),
+      maxClaimFee: max,
+      feeRate: switch (request) {
+        ArkEmergencyExitQuoteRequest(:final feeRate) => feeRate,
+        ArkExitProgressQuoteRequest(:final feeRate) => feeRate,
+        _ => null,
+      },
+    );
+  });
+  @override
+  Future<ArkOperation> execute(ArkQuote quote, String operationId) =>
+      stages.run('execute', () async {
+        owner.executes++;
+        if (owner.failExecute) throw Exception('opaque native failure');
+        return ArkOperation(
+          id: operationId,
+          kind: quote.kind,
+          status: ArkOperationStatus.pending,
+          chainSource: quote.chainSource,
+          configGeneration: quote.configGeneration,
+          nativeReference: '123',
+          actualIds: quote.selectedIds,
+        );
+      });
+  @override
+  Future<List<String>> renewalCandidates() => stages.run(
+    'renewal-candidates',
+    () async => [FakeOpener.firstId, FakeOpener.secondId],
+  );
+  @override
+  Future<String> reserveAddress() =>
+      stages.run('reserve-address', () async => 'reserve-address');
+  @override
+  Future<ArkBoardFundingDetails> boardFunding() => stages.run(
+    'funding',
+    () async => ArkBoardFundingDetails(
+      address: 'funding-address',
+      keypairIndex: 4,
+      expiryHeight: 2000,
+    ),
+  );
+  @override
+  Future<String> registerBoard(ArkRegisterBoard submission) =>
+      stages.run('register', () async {
+        owner.registrations++;
+        return 'c' * 64;
+      });
+  @override
+  Future<ArkClaimTransaction> prepareClaim(ArkQuote quote) => stages.run(
+    'prepare-claim',
+    () async => ArkClaimTransaction(
+      rawTransaction: 'raw-public',
+      signedPsbt: 'signed-public',
+      actualIds: owner.claimActual,
+      skippedIds: owner.claimSkipped,
+      inputAmounts: {for (final id in owner.claimActual) id: '10000'},
+      fee: '10',
+    ),
+  );
+  @override
+  Future<String> broadcast(String rawTransaction) =>
+      stages.run('broadcast', () async {
+        owner.broadcasts++;
+        return 'd' * 64;
+      });
+  @override
+  Future<ArkReceiveDestination> receive(ArkReceiveRequest request) =>
+      stages.run(
+        'receive',
+        () async => ArkReceiveDestination(
+          kind: ArkDestinationKind.ark,
+          value: 'address',
+        ),
+      );
+  @override
+  Future<ArkOperation?> reconcile(ArkOperation operation) =>
+      stages.run('reconcile', () async {
+        if (!owner.reconcileSuccess) return null;
+        return ArkOperation(
+          id: operation.id,
+          kind: operation.kind,
+          status: ArkOperationStatus.succeeded,
+          chainSource: operation.chainSource,
+          configGeneration: operation.configGeneration,
+          nativeReference: operation.nativeReference,
+          actualIds: operation.actualIds,
+          skippedIds: operation.skippedIds,
+          boardFunding: operation.boardFunding,
+        );
+      });
+}
+
+final class FakeVerifier implements ArkTransactionVerifierPort {
+  bool finalised = false;
+  bool wrongInputs = false;
+  @override
+  Future<Result<ArkBoardPsbtFacts, ArkWalletFailure>> inspectBoardPsbt({
+    required String unfinalisedPsbt,
+    required BitcoinNetwork network,
+  }) async => Ok(
+    ArkBoardPsbtFacts(
+      unsignedTxid: 'c' * 64,
+      finalised: finalised,
+      nativeSegwitInputs: true,
+      outputs: [
+        ArkTransactionOutput(
+          scriptPubkey: 'script',
+          address: 'funding-address',
+          amount: Sats.fromInt(1000),
+        ),
+      ],
+    ),
+  );
+  @override
+  Future<Result<ArkTransactionFacts, ArkWalletFailure>> inspectTransaction({
+    required String transactionHex,
+    required String signedPsbt,
+    required BitcoinNetwork network,
+  }) async => Ok(
+    ArkTransactionFacts(
+      txid: 'd' * 64,
+      psbtTxid: 'd' * 64,
+      inputs: [
+        ArkTransactionInput(
+          outpoint: wrongInputs ? FakeOpener.secondId : FakeOpener.firstId,
+          amount: Sats.fromInt(10000),
+          finalWitness: true,
+        ),
+      ],
+      outputs: [
+        ArkTransactionOutput(
+          scriptPubkey: 'script',
+          address: 'destination',
+          amount: Sats.fromInt(9990),
+        ),
+      ],
+      fee: Sats.fromInt(10),
+    ),
+  );
+}
