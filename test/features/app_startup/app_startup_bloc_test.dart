@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_d
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -28,6 +29,7 @@ class _MockRestoreMissingDefaultSecretUsecase extends Mock
     implements RestoreMissingDefaultSecretUsecase {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(Language.english));
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
     appName: 'Bull Bitcoin',
@@ -266,6 +268,7 @@ void main() {
             expectedFingerprint: '73c5da0a',
             expectedWalletId: 'wallet-id',
             words: words,
+            language: Language.french,
           ),
         ).thenAnswer((_) async => const Ok(null));
         when(() => checkDefaultWallets.execute())
@@ -273,7 +276,10 @@ void main() {
         when(() => checkPinCodeExists.execute())
             .thenAnswer((_) async => const Ok(true));
 
-        final result = await bloc.restoreDefaultSecret(words);
+        final result = await bloc.restoreDefaultSecret(
+          words,
+          language: Language.french,
+        );
         await bloc.stream.firstWhere((s) => s is AppStartupSuccess);
 
         expect(result, isA<Ok<void, AppStartupFailure>>());
@@ -287,10 +293,14 @@ void main() {
           expectedFingerprint: any(named: 'expectedFingerprint'),
           expectedWalletId: any(named: 'expectedWalletId'),
           words: any(named: 'words'),
+          language: any(named: 'language'),
         ),
       ).thenAnswer((_) async => const Err(AppStartupRestoreMismatchFailure()));
 
-      final result = await bloc.restoreDefaultSecret(words);
+      final result = await bloc.restoreDefaultSecret(
+        words,
+        language: Language.english,
+      );
 
       expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
       expect(bloc.state, isA<AppStartupFailureState>());
@@ -300,7 +310,10 @@ void main() {
       final bloc = buildBloc();
       addTearDown(bloc.close);
 
-      final result = await bloc.restoreDefaultSecret(words);
+      final result = await bloc.restoreDefaultSecret(
+        words,
+        language: Language.english,
+      );
 
       expect((result as Err).failure, isA<AppStartupRestoreFailure>());
       verifyNever(
@@ -308,6 +321,7 @@ void main() {
           expectedFingerprint: any(named: 'expectedFingerprint'),
           expectedWalletId: any(named: 'expectedWalletId'),
           words: any(named: 'words'),
+          language: any(named: 'language'),
         ),
       );
     });

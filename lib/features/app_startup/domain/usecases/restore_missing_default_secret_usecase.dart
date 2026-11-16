@@ -25,6 +25,7 @@ class RestoreMissingDefaultSecretUsecase {
     required String expectedFingerprint,
     String? expectedWalletId,
     required List<String> words,
+    required Language language,
     String passphrase = '',
   }) async {
     final expected = Fingerprint.tryParse(expectedFingerprint);
@@ -37,6 +38,7 @@ class RestoreMissingDefaultSecretUsecase {
     final Set<Fingerprint> accepted;
     switch (await _matchingFingerprints(
       words,
+      language,
       passphrase,
       expected,
       expectedWalletId,
@@ -52,6 +54,7 @@ class RestoreMissingDefaultSecretUsecase {
     final Secret secret;
     switch (await _secrets.import(
       words: words,
+      language: language,
       passphrase: passphrase,
       acceptOnly: accepted,
     )) {
@@ -78,6 +81,7 @@ class RestoreMissingDefaultSecretUsecase {
 
   Future<Result<Set<Fingerprint>, AppStartupFailure>> _matchingFingerprints(
     List<String> words,
+    Language language,
     String passphrase,
     Fingerprint expected,
     String? expectedWalletId,
@@ -121,6 +125,7 @@ class RestoreMissingDefaultSecretUsecase {
       if (fingerprint == null) continue;
       final result = await _secrets.preview.matchesBitcoinDescriptors(
         words: words,
+        language: language,
         passphrase: passphrase,
         network: wallet.network.bitcoin,
         scriptType: wallet.scriptType.shared,

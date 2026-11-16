@@ -146,6 +146,7 @@ void main() {
       );
       expect(
         await usecase.execute(
+          language: Language.english,
           expectedFingerprint: _zooFingerprint,
           words: _zoo,
         ),
@@ -166,6 +167,7 @@ void main() {
       );
       expect(
         await usecase.execute(
+          language: Language.english,
           expectedFingerprint: _zooFingerprint,
           words: _zoo,
         ),
@@ -190,12 +192,17 @@ void main() {
       (_) async => Ok<List<Wallet>, WalletFailure>([mainnet, testnet]),
     );
     expect(
-      await usecase.execute(expectedFingerprint: _zooFingerprint, words: _zoo),
+      await usecase.execute(
+        language: Language.english,
+        expectedFingerprint: _zooFingerprint,
+        words: _zoo,
+      ),
       isA<Err<void, AppStartupFailure>>(),
     );
     expect(storage.entries, isEmpty);
     expect(
       await usecase.execute(
+        language: Language.english,
         expectedFingerprint: _zooFingerprint,
         expectedWalletId: testnet.id,
         words: _zoo,
@@ -217,6 +224,7 @@ void main() {
       );
       expect(
         await usecase.execute(
+          language: Language.english,
           expectedFingerprint: _zooFingerprint,
           expectedWalletId: secondary.id,
           words: _zoo,
@@ -248,6 +256,7 @@ void main() {
         ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([invalid]));
         expect(
           await usecase.execute(
+            language: Language.english,
             expectedFingerprint: _zooFingerprint,
             expectedWalletId: invalid.id,
             words: _zoo,
@@ -275,6 +284,7 @@ void main() {
     );
 
     final wrong = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: fingerprint,
       words: _missing,
       passphrase: passphrase.trim(),
@@ -283,6 +293,7 @@ void main() {
     expect(storage.entries, isEmpty);
 
     final restored = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: fingerprint,
       words: _missing,
       passphrase: passphrase,
@@ -299,6 +310,7 @@ void main() {
             Ok<List<Wallet>, WalletFailure>([localWallet(_missingFingerprint)]),
       );
       final result = await usecase.execute(
+        language: Language.english,
         expectedFingerprint: _missingFingerprint,
         words: _missing,
       );
@@ -316,6 +328,7 @@ void main() {
       ]),
     );
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _missing,
     );
@@ -327,6 +340,7 @@ void main() {
     when(() => wallets.getWallets())
         .thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _missing,
     );
@@ -336,6 +350,7 @@ void main() {
 
   test('stores the words of the missing wallet', () async {
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _missing,
     );
@@ -346,6 +361,7 @@ void main() {
 
   test("refuses another wallet's words and leaves nothing behind", () async {
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _other,
     );
@@ -364,6 +380,7 @@ void main() {
       )..install();
 
       final result = await usecase.execute(
+        language: Language.english,
         expectedFingerprint: _missingFingerprint,
         words: _other,
       );
@@ -392,6 +409,7 @@ void main() {
     );
 
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       expectedWalletId: expectedWallet.id,
       words: _other,
@@ -403,6 +421,7 @@ void main() {
 
   test('refuses words that are not a recovery phrase', () async {
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: [..._missing.take(11), 'abandon'],
     );

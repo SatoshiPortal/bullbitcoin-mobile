@@ -34,13 +34,18 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   /// Forwards transient recovery input without putting it in bloc state.
   Future<Result<bool, OnboardingFailure>> scanWallet({
     required List<String> words,
+    required bip39.Language language,
     required String passphrase,
   }) {
     final scanner = _scanOnboardingWalletUsecase;
     if (scanner == null) {
       return Future.value(const Err(OnboardingWalletScanFailure()));
     }
-    return scanner.execute(words: words, passphrase: passphrase);
+    return scanner.execute(
+      words: words,
+      language: language,
+      passphrase: passphrase,
+    );
   }
 
   Future<void> _onCreateNewWallet(
@@ -89,6 +94,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     );
     switch (await _recoverOnboardingWalletUsecase.execute(
       mnemonicWords: event.mnemonic.words,
+      language: event.mnemonic.language,
       passphrase: event.mnemonic.passphrase,
     )) {
       case Ok():

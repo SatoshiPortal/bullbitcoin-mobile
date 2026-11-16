@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/default_wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -20,6 +21,11 @@ final class DefaultWalletsFacade {
   @useResult
   Future<Result<List<Wallet>, DefaultWalletFailure>> restore({
     required List<String> words,
+    required Language language,
     String passphrase = '',
-  }) => _create.execute(mnemonicWords: words, passphrase: passphrase);
+  }) => _create.execute(
+    mnemonicWords: words,
+    language: language,
+    passphrase: passphrase,
+  );
 }
