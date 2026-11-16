@@ -4,6 +4,10 @@ User secret material — BIP39 mnemonics and raw seeds — behind a custody boun
 
 Custody owners implement the public `SeedReferencePort`; the application registers every owner before exposing deletion and refuses deletion if any inventory fails or is incomplete.
 
+`ParentCustodyAdmissionPort` is the host's cross-process admission contract for publishing a parent-seed obligation and checking/deleting an unreferenced parent. Secrets supplies the contract only; the wallet owner supplies persistence and policy. Its scoped `ParentCustodyLease` reads `ready`, `deleting` or `deleted`, and commits deletion state independently of the exclusion lease. A callback must publish its durable obligation before returning; fetching a handle alone does not protect a seed. Lease methods refuse use after the callback ends, and an admission budget never truncates admitted work.
+
+The wallet's manual deletion and orphan cleanup both hold this admission through complete reference inventory and `Secrets.trash`. A deletion interrupted after the durable `deleting` marker remains blocked for automatic cleanup. A new explicit foreground deletion request reconciles the parent with `Secrets.fetch` and complete owner inventory under the same admission; it can complete a deletion already performed or delete a reimported, unreferenced parent. An unreadable parent is never treated as absent. These host guarantees do not change `Secrets.trash`, which remains unconditional and knows nothing of wallets.
+
 ## Public API
 
 <!-- secrets-api:start -->

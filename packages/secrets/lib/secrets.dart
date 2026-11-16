@@ -24,5 +24,6 @@ export 'src/public/secrets.dart'
     show DatabaseKeys, Recoverbull, RestoredVault, SecretPreview, Secrets;
 export 'src/public/seed_reference_port.dart'
     show SeedReferencePort, SeedReferencesUnavailable;
+export 'src/public/parent_custody_admission.dart';
 export 'src/public/types.dart';
 export 'src/public/widgets.dart';
