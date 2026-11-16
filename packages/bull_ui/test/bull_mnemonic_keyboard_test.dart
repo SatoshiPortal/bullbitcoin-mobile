@@ -125,7 +125,7 @@ void main() {
     });
 
     testWidgets(
-      'a disabled key keeps its fill, mutes its glyph, ignores taps',
+      'a disabled key loses its fill, fades its glyph, ignores taps',
       (tester) async {
         var fired = false;
         await pumpKeyboard(
@@ -138,11 +138,11 @@ void main() {
 
         final on = tester.widget<BullKeyCap>(keyCap('a'));
         final off = tester.widget<BullKeyCap>(keyCap('b'));
-        expect(off.fill, on.fill);
         expect(on.fill, testBullTheme.background);
+        expect(off.fill, testBullTheme.transparent);
         expect(
           tester.widget<Text>(find.text('b')).style?.color,
-          testBullTheme.textMuted,
+          testBullTheme.outline,
         );
         expect(
           tester.widget<Text>(find.text('a')).style?.color,
