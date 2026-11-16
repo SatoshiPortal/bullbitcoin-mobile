@@ -595,6 +595,17 @@ final class BarkNativeSession implements ArkNativeSession {
         ArkValidationFailure(ArkFailureReason.validation),
       );
     }
+    // bark0.8.1 VTXO_DUST = P2TR_DUST = 330 sats. Bitcoin destinations have
+    // script-specific thresholds, validated by the native payment estimator.
+    if ((kind == ArkOperationKind.board ||
+            kind == ArkOperationKind.renewal ||
+            (kind == ArkOperationKind.payment &&
+                destinationKind == ArkDestinationKind.ark)) &&
+        net < 330) {
+      throw const ArkBoundaryException(
+        ArkValidationFailure(ArkFailureReason.dust),
+      );
+    }
     return ArkQuote(
       id: id,
       account: snapshot.account,
@@ -834,9 +845,9 @@ final class BarkNativeSession implements ArkNativeSession {
             amountSats: amount.value.toInt(),
           ),
         );
-        if (fee.netAmountSats <= 0) {
+        if (fee.netAmountSats < 330) {
           throw const ArkBoundaryException(
-            ArkValidationFailure(ArkFailureReason.validation),
+            ArkValidationFailure(ArkFailureReason.dust),
           );
         }
         final invoice = await _run(
