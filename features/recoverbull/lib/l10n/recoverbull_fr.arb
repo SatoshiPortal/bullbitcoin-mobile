@@ -348,5 +348,6 @@
   "backupWalletHowToDecideBackupModalTitle": "Comment décider",
   "backupSettingsSecurityWarning": "Avertissement de sécurité",
   "torSettingsTitle": "Paramètres Tor",
-  "recoverbullSnowflakeSlow": "Snowflake peut prendre plusieurs minutes sur un réseau filtré. Gardez l'application ouverte."
+  "recoverbullSnowflakeSlow": "Snowflake peut prendre plusieurs minutes sur un réseau filtré. Gardez l'application ouverte.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull n’a pas pu se connecter au proxy SOCKS5 configuré."
 }

@@ -323,6 +323,10 @@ class _Body extends StatelessWidget {
 
   /// One message, chosen by what actually failed.
   String _failureMessage(BuildContext context) {
+    // The user's own proxy failed: neither Tor's network nor the server is to blame.
+    if (state.failure case final ExternalTorProxyUnavailableFailure failure) {
+      return failure.toTranslated(context);
+    }
     // Tor never got through a network seen blocking it: say so, not "offline".
     if (filtered && _tor is! tor.TorReady) {
       return context.loc.torSettingsDescCensored;
@@ -347,6 +351,9 @@ class _Body extends StatelessWidget {
         return context.loc.recoverbullTorCantStart;
       }
       return switch (state.failure) {
+        KeyServerFailure(cause: _?) && final failure => failure.toTranslated(
+          context,
+        ),
         KeyServerFailure(kind: KeyServerFailureKind.timeout) =>
           context.loc.recoverbullServerCircuitTimeout,
         KeyServerFailure(kind: KeyServerFailureKind.unavailable) =>
@@ -464,7 +471,17 @@ class _Body extends StatelessWidget {
               onRetry();
               unawaited(cubit.connect(restartTor: _tor is! tor.TorReady));
             },
-            onOpenTorSettings: filtered || _tor is tor.TorUnavailable
+            // Shown whenever the message comes from this failure, including while a Retry runs.
+            detail: switch (state.failure) {
+              final KeyServerFailure failure
+                  when _tor is tor.TorReady || _tor is tor.TorUninitialized =>
+                failure.technicalLabel,
+              _ => null,
+            },
+            onOpenTorSettings:
+                filtered ||
+                    _tor is tor.TorUnavailable ||
+                    state.failure is ExternalTorProxyUnavailableFailure
                 ? RecoverBullFlowScope.of(context).onOpenTorSettings
                 : null,
             onNewCircuit: _offersNewCircuit
@@ -636,12 +653,16 @@ class _FailurePanel extends StatelessWidget {
   final VoidCallback? onNewCircuit;
   final VoidCallback? onOpenTorSettings;
 
+  /// A fixed technical label naming the exact reason, unlocalised like the timer.
+  final String? detail;
+
   const _FailurePanel({
     required this.message,
     required this.onRetry,
     this.busy = false,
     this.onNewCircuit,
     this.onOpenTorSettings,
+    this.detail,
   });
 
   @override
@@ -656,6 +677,16 @@ class _FailurePanel extends StatelessWidget {
           ),
           maxLines: 4,
         ),
+        if (detail case final detail?) ...[
+          const Gap(6),
+          BullText(
+            detail,
+            textAlign: .center,
+            style: context.bullText.bodySmall?.copyWith(
+              color: context.bull.textMuted,
+            ),
+          ),
+        ],
         const Gap(24),
         BullButton.big(
           label: context.loc.recoverbullRetry,

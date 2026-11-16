@@ -49,6 +49,10 @@ Future<void> _showCompletion(BuildContext context, VaultCompletion completion) {
 void _showFailure(BuildContext context, RecoverBullFailure failure) {
   BullSnackBar.show(context, message: failure.toTranslated(context));
   context.read<VaultFlowCubit>().clearFailure();
+  // Only the user can fix their own proxy, in Tor settings.
+  if (failure is ExternalTorProxyUnavailableFailure) {
+    RecoverBullFlowScope.of(context).onOpenTorSettings?.call();
+  }
 }
 
 /// What a vault-key fetch ended with; the progress page navigates from it.

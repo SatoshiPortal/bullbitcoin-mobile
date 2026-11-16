@@ -17,6 +17,8 @@ export 'src/domain/recoverbull_failure.dart'
         RecoverBullUnexpectedFailure,
         KeyServerFailure,
         KeyServerFailureKind,
+        KeyServerUnreachableCause,
+        ExternalTorProxyUnavailableFailure,
         VaultInvalidFailure,
         VaultPassphraseRequiredFailure,
         VaultPassphraseAcknowledgementFailure,

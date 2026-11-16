@@ -927,5 +927,7 @@
   "recoverbullSnowflakeSlow": "Snowflake can take several minutes on a filtered network. Keep the app open.",
   "@recoverbullSnowflakeSlow": {
     "description": "Shown on the RecoverBull connection screen while Snowflake bootstraps, which can take minutes."
-  }
+  },
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyUnavailableDescription": {"description": "Status description when the external SOCKS5 proxy is unavailable"}
 }

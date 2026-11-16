@@ -29,14 +29,10 @@ final class KeyServerSessionRepositoryImpl
         return Err(failure);
       case Ok(:final value):
         try {
-          KeyServerFailureKind? connectFailure;
+          TorConnectFailure? connectFailure;
           final client = _clients.create(
             value.route.endpoint,
-            onConnectFailure: (failure) {
-              connectFailure = failure == TorConnectFailure.timeout
-                  ? KeyServerFailureKind.timeout
-                  : KeyServerFailureKind.unavailable;
-            },
+            onConnectFailure: (failure) => connectFailure = failure,
           );
           return Ok(
             KeyServerRepositoryImpl(

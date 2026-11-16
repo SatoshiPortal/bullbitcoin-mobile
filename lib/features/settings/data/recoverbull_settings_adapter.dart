@@ -79,11 +79,11 @@ final class RecoverBullSettingsAdapter
             port: settings.torProxyPort,
           );
         } on ArgumentError {
-          return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
+          return const Err(ExternalTorProxyUnavailableFailure());
         }
         return switch (await _tor.external.verify(endpoint)) {
           TorReady(:final route) => Ok(RecoverBullRoute(route, () async {})),
-          _ => const Err(KeyServerFailure(KeyServerFailureKind.unavailable)),
+          _ => const Err(ExternalTorProxyUnavailableFailure()),
         };
       }
       // New route never restarts the shared engine or another flow's circuit;

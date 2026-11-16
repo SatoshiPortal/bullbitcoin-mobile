@@ -272,5 +272,6 @@
   "backupWalletHowToDecide": "Wie entscheiden?",
   "backupWalletHowToDecideBackupModalTitle": "Wie entscheiden",
   "backupSettingsSecurityWarning": "Sicherheitswarnung",
-  "torSettingsTitle": "Tor-Einstellungen"
+  "torSettingsTitle": "Tor-Einstellungen",
+  "torSettingsExternalProxyUnavailableDescription": "Bull konnte keine Verbindung zum konfigurierten SOCKS5-Proxy herstellen."
 }
