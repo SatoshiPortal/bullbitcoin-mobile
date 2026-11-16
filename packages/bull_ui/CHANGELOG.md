@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Remove `BullDialPad`: the PIN screens, its only users, now use `BullPinPad`.
 - Add `BullPinPad`, a digit keypad for PIN entry with the mnemonic keyboard's keys and sizing. Its bottom-left key toggles a scrambled layout, off by default and never persisted, reshuffled after every tap with `BullKeyScramble` (`Random.secure()`, at most two digits left in place). Keys never splash nor fade.
 - Size the keys of `BullMnemonicKeyboard` from the space it is given (`BullKeypadGrid`): they grow with the width up to a desktop cap, follow a height budget in a short landscape window, and never shrink below a usable tap target.
 - Move the recovery-phrase keyboard from the mnemonic import feature into the kit as `BullMnemonicKeyboard`, unchanged: the letters stay off the platform IME and the semantics tree, and while shuffled a key neither splashes nor fades.
