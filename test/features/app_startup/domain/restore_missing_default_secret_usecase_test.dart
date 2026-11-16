@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
@@ -428,5 +429,86 @@ void main() {
 
     expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
     expect(storage.entries, isEmpty);
+  });
+
+  group('a default wallet restored from a French phrase', () {
+    // A generated French phrase, never a real wallet's.
+    final french = bip39.Mnemonic(
+      List<int>.generate(16, (i) => i * 7 + 1),
+      Language.french,
+    ).words;
+    late String fingerprint;
+
+    setUp(() async {
+      final imported = await secrets.import(
+        words: french,
+        language: Language.french,
+      );
+      fingerprint = (imported as Ok<Secret, SecretFailure>).value.id.hex;
+      storage.entries.clear();
+      final preview = await secrets.preview.bitcoinDescriptors(
+        words: french,
+        language: Language.french,
+        network: primitives.BitcoinNetwork.mainnet,
+        scriptTypes: {primitives.ScriptType.bip84},
+      );
+      final descriptors =
+          (preview
+                  as Ok<Map<primitives.ScriptType, Descriptors>, SecretFailure>)
+              .value[primitives.ScriptType.bip84];
+      if (descriptors == null) throw StateError('missing descriptors');
+      final wallet = localWallet(
+        fingerprint,
+        external: descriptors.external,
+        internal: descriptors.internal,
+        isDefault: true,
+      );
+      when(() => wallets.getWallets())
+          .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
+    });
+
+    test('is stored back in French', () async {
+      final result = await usecase.execute(
+        language: Language.french,
+        expectedFingerprint: fingerprint,
+        words: french,
+      );
+
+      expect(result, isA<Ok<void, AppStartupFailure>>());
+      final stored = await secrets.fetch(Fingerprint(fingerprint));
+      expect(
+        (stored as Ok<Secret, SecretFailure>).value.info.language,
+        Language.french,
+      );
+    });
+
+    test('is refused when its words are read as English', () async {
+      final result = await usecase.execute(
+        language: Language.english,
+        expectedFingerprint: fingerprint,
+        words: french,
+      );
+
+      expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
+      expect(storage.entries, isEmpty);
+    });
+
+    test('is refused with a broken checksum', () async {
+      final words = [...french];
+      words[11] = words[11] == 'abaisser' ? 'abandon' : 'abaisser';
+      expect(
+        () => bip39.Mnemonic.fromWords(words: words, language: Language.french),
+        throwsA(isA<bip39.MnemonicException>()),
+      );
+
+      final result = await usecase.execute(
+        language: Language.french,
+        expectedFingerprint: fingerprint,
+        words: words,
+      );
+
+      expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
+      expect(storage.entries, isEmpty);
+    });
   });
 }
