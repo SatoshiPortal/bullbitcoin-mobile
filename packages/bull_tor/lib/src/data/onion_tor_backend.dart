@@ -37,6 +37,19 @@ final _connectTimeoutMs = BigInt.from(torConnectBudget.inMilliseconds);
 /// carry traffic.
 const _trafficReadyTimeout = Duration(seconds: 60);
 
+/// Each transport keeps its own Arti directories: a client being torn down
+/// still holds Arti's state lock for a while, and a Snowflake client started
+/// right after a stalled direct one then failed to set up its guard manager.
+@visibleForTesting
+({String state, String cache}) torDirectoryNames(TorTransport transport) =>
+    switch (transport) {
+      TorTransport.direct => (state: 'tor_state', cache: 'tor'),
+      TorTransport.snowflake => (
+        state: 'tor_state_snowflake',
+        cache: 'tor_snowflake',
+      ),
+    };
+
 /// Snowflake reaches Tor through volunteer WebRTC proxies and can take minutes
 /// on a filtered network: it gets no deadline, a user leaving stops it.
 @visibleForTesting
@@ -127,9 +140,10 @@ final class OnionTorBackend implements EmbeddedTorPort {
 
     try {
       final support = await getApplicationSupportDirectory();
-      final cache = await getApplicationCacheDirectory();
-      final stateDir = await Directory('${support.path}/tor_state').create();
-      final cacheDir = await Directory('${cache.path}/tor').create();
+      final cacheRoot = await getApplicationCacheDirectory();
+      final (:state, :cache) = torDirectoryNames(transport);
+      final stateDir = await Directory('${support.path}/$state').create();
+      final cacheDir = await Directory('${cacheRoot.path}/$cache').create();
 
       _log.config('Starting embedded Tor with ${transport.name} transport...');
       final startedAt = DateTime.now();
