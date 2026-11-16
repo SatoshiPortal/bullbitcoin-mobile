@@ -229,6 +229,52 @@ void main() {
     },
   );
 
+  group('a vault nobody has asked the server for yet', () {
+    setUp(() async {
+      await database.delete(database.recoverbullMonitoredVaults).go();
+      ok(await repository.register(settings, vault));
+      final check = ok(await repository.prepare());
+      if (check == null) fail('Expected an eligible check');
+      ok(
+        await repository.observe(
+          check,
+          AttemptSnapshot(collectionStartedAt: collection, entries: const {}),
+        ),
+      );
+    });
+
+    test('is monitored from zero', () async {
+      expect(ok(await repository.status()).unknown, isFalse);
+    });
+
+    test('raises an alert for its first foreign requests', () async {
+      await sample(3);
+      expect(
+        ok(await repository.status()).alerts.single.kind,
+        BackupAlertKind.unexplainedActivity,
+      );
+    });
+
+    test('credits its own first test', () async {
+      final own = ok(await repository.begin(settings, vault));
+      ok(await repository.complete(own, observation: observation(1, window)));
+      await sample(1);
+      expect(ok(await repository.status()).alerts, isEmpty);
+      expect(ok(await repository.status()).unknown, isFalse);
+    });
+  });
+
+  test('an outage never anchors an unseen vault at zero', () async {
+    await database.delete(database.recoverbullMonitoredVaults).go();
+    ok(await repository.register(settings, vault));
+    final check = ok(await repository.prepare());
+    if (check == null) fail('Expected an eligible check');
+    ok(await repository.observe(check, null));
+    await sample(3);
+    expect(ok(await repository.status()).alerts, isEmpty);
+    expect(ok(await repository.status()).unknown, isTrue);
+  });
+
   test('temporary storage never admits a counted operation', () async {
     final temporary = AttemptMonitoringRepositoryImpl(database, durable: false);
     expect(
