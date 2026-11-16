@@ -43,6 +43,8 @@ final class FakeBudget implements ArkStageBudget {
 final class FakePreflight implements ArkChainPreflight {
   int calls = 0;
   int failuresRemaining = 0;
+  bool primaryUnreachable = false;
+  final List<Uri?> requiredSources = [];
   @override
   Future<Result<Uri, ArkWalletFailure>> select(
     ArkAccountConfig config, {
@@ -50,9 +52,20 @@ final class FakePreflight implements ArkChainPreflight {
     int? minimumTip,
   }) async {
     calls++;
+    requiredSources.add(requiredSource);
     if (failuresRemaining > 0) {
       failuresRemaining--;
       return const Err(ArkUnavailableFailure());
+    }
+    if (primaryUnreachable) {
+      if (requiredSource == config.primaryEsploraUrl) {
+        return const Err(
+          ArkUnavailableFailure(ArkFailureReason.chainUnreachable),
+        );
+      }
+      return Ok(
+        requiredSource ?? config.fallbackEsploraUrl ?? config.primaryEsploraUrl,
+      );
     }
     return Ok(requiredSource ?? config.primaryEsploraUrl);
   }

@@ -829,4 +829,41 @@ void main() {
     expect(reopened.snapshot?.vtxos.single.id, 'a');
     reopened.close();
   });
+  for (final status in [
+    ArkOperationStatus.prepared,
+    ArkOperationStatus.pending,
+  ]) {
+    test(
+      '$status operation pins original provider before native reopening',
+      () async {
+        final withFallback = ArkAccountConfig(
+          id: account,
+          arkUrl: config.arkUrl,
+          primaryEsploraUrl: config.primaryEsploraUrl,
+          fallbackEsploraUrl: Uri.parse('http://localhost:3001'),
+        );
+        await client.create(withFallback);
+        final store = ArkStore.open(
+          '${ArkStore.accountPath(temp.path, account)}/state.sqlite',
+          create: false,
+        );
+        store.saveOperation(
+          ArkOperation(
+            id: 'pending-board',
+            kind: ArkOperationKind.board,
+            status: status,
+            chainSource: config.primaryEsploraUrl,
+            configGeneration: 1,
+          ),
+          'board-quote',
+        );
+        store.close();
+        final opens = native.opens;
+        preflight.primaryUnreachable = true;
+        expect(await client.synchronize(account, renew: false), isA<Err>());
+        expect(preflight.requiredSources.last, config.primaryEsploraUrl);
+        expect(native.opens, opens);
+      },
+    );
+  }
 }
