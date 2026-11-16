@@ -54,6 +54,7 @@ const testBullExtensions = <ThemeExtension<dynamic>>[
   testBullTheme,
   BullShapes.standard,
   BullTypography.standard,
+  BullKeypadColors.light,
 ];
 
 /// Wraps [child] in a `MaterialApp` carrying [testBullExtensions].
