@@ -173,5 +173,9 @@
   "actualVtxos": "Included VTXOs",
   "@actualVtxos": {},
   "skippedVtxos": "Skipped VTXOs",
-  "@skippedVtxos": {}
+  "@skippedVtxos": {},
+  "netInSats": "Net amount (sats)",
+  "@netInSats": {},
+  "feeInSats": "Fee (sats)",
+  "@feeInSats": {}
 }

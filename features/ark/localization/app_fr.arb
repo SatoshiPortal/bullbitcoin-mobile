@@ -83,5 +83,7 @@
   "claimConfirmed": "La transaction de retrait enregistrée est confirmée.",
   "claimConflict": "Une transaction conflictuelle a été observée. Ce retrait enregistré ne peut pas être renvoyé.",
   "actualVtxos": "VTXO inclus",
-  "skippedVtxos": "VTXO ignorés"
+  "skippedVtxos": "VTXO ignorés",
+  "netInSats": "Montant net (sats)",
+  "feeInSats": "Frais (sats)"
 }
