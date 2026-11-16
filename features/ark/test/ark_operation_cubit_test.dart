@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/data/ark_repository_impl.dart';
+import 'package:bull_ark/src/domain/ark_failure.dart';
+import 'package:bull_ark/src/domain/repositories/ark_preferences_repository.dart';
 import 'package:bull_ark/src/domain/usecases/confirm_ark_operation_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/quote_ark_operation_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_operation_cubit.dart';
@@ -38,31 +40,151 @@ class DelayedQuoteClient extends FakeArkClient {
   }
 }
 
-ArkOperationCubit controller(FakeArkClient client) {
+class EffectThenFailureClient extends FakeArkClient {
+  final ArkWalletFailure failure;
+  final Map<String, ArkOperation> journal = {};
+
+  EffectThenFailureClient(this.failure);
+
+  @override
+  Future<Result<ArkOperation, ArkWalletFailure>> submit(
+    ArkAccountId account,
+    ArkSubmission submission,
+  ) async {
+    calls.add('submit');
+    arguments.add((account, submission));
+    if (submission case ArkConfirmQuote(:final operationId)) {
+      journal[operationId] = ArkOperation(
+        id: operationId,
+        kind: ArkOperationKind.payment,
+        status: ArkOperationStatus.pending,
+        chainSource: Uri.parse('https://example.com'),
+        configGeneration: 1,
+      );
+    }
+    return Err(failure);
+  }
+}
+
+class FailingPreferences implements ArkPreferencesRepository {
+  bool fail = false;
+
+  @override
+  Future<Result<bool, ArkFailure>> isEnabled(ArkAccountId account) async =>
+      fail ? const Err(ArkFeatureStorageFailure()) : const Ok(true);
+
+  @override
+  Future<Result<void, ArkFailure>> setEnabled(
+    ArkAccountId account,
+    bool enabled,
+  ) async => const Ok(null);
+}
+
+ArkOperationCubit controller(
+  FakeArkClient client, {
+  ArkPreferencesRepository? preferences,
+  String Function()? operationId,
+}) {
   final repository = ArkRepositoryImpl(client);
-  final preferences = Preferences();
+  final settings = preferences ?? Preferences();
   return ArkOperationCubit(
-    QuoteArkOperationUsecase(repository, preferences),
+    QuoteArkOperationUsecase(repository, settings),
     ConfirmArkOperationUsecase(
       repository,
-      preferences,
+      settings,
       now: () => DateTime.utc(2026),
     ),
-    () => 'operation-1',
+    operationId ?? () => 'operation-1',
     account: account(),
-    request: ArkQuoteRequest.renewal(ids: ['vtxo-1']),
+    request: ArkQuoteRequest.payment(
+      destination: ArkPaymentDestination(
+        kind: ArkDestinationKind.bolt11,
+        value: 'lnbc1publicfixture',
+      ),
+      amount: Sats.fromInt(1000),
+    ),
   );
 }
 
 ArkOperation submitted() => ArkOperation(
   id: 'operation-1',
-  kind: ArkOperationKind.renewal,
+  kind: ArkOperationKind.payment,
   status: ArkOperationStatus.pending,
   chainSource: Uri.parse('https://example.com'),
   configGeneration: 1,
 );
 
 void main() {
+  for (final failure in <ArkWalletFailure>[
+    const ArkStorageFailure(),
+    const ArkNativeFailure(),
+    const ArkUnavailableFailure(),
+    const ArkWriterBusyFailure(),
+    const ArkValidationFailure(),
+    const ArkStaleQuoteFailure(),
+    const ArkRecoveryRequiredFailure(),
+    const ArkInsufficientFundsFailure(),
+    const ArkOutcomeUnknownFailure('untrusted-other-id'),
+  ]) {
+    test(
+      'post-submit ${failure.runtimeType} retains the original attempt',
+      () async {
+        final client = EffectThenFailureClient(failure)
+          ..quoted = Ok(quote(account()));
+        var nextId = 0;
+        final cubit = controller(
+          client,
+          operationId: () => 'operation-${++nextId}',
+        );
+        addTearDown(cubit.close);
+        await cubit.load();
+        await cubit.confirm();
+        await cubit.load();
+        await cubit.confirm();
+        expect(client.journal.keys, ['operation-1']);
+        expect(client.calls, ['quote', 'submit']);
+        expect(nextId, 1);
+        expect(
+          cubit.state,
+          isA<ArkOperationUncertain>().having(
+            (state) => state.operationId,
+            'original operation',
+            'operation-1',
+          ),
+        );
+      },
+    );
+  }
+
+  test(
+    'a preferences storage failure before submit permits a fresh review',
+    () async {
+      final client = FakeArkClient()
+        ..quoted = Ok(quote(account()))
+        ..submitted = Ok(submitted());
+      final preferences = FailingPreferences();
+      final cubit = controller(client, preferences: preferences);
+      addTearDown(cubit.close);
+      await cubit.load();
+      preferences.fail = true;
+      await cubit.confirm();
+      expect(
+        cubit.state,
+        isA<ArkOperationFailed>().having(
+          (state) => state.failure,
+          'pre-submit storage failure',
+          isA<ArkFeatureStorageFailure>(),
+        ),
+      );
+      expect(client.calls, ['quote']);
+      preferences.fail = false;
+      await cubit.load();
+      await cubit.confirm();
+      expect(cubit.state, isA<ArkOperationSubmitted>());
+      expect(client.calls, ['quote', 'quote', 'submit']);
+    },
+  );
+
   test('overlapping reloads share the pending review request', () async {
     final client = DelayedQuoteClient();
     final cubit = controller(client);
