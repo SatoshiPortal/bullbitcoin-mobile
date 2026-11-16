@@ -488,4 +488,87 @@ void main() {
       isA<Err>(),
     );
   });
+  for (final spent in [false, true]) {
+    test(
+      'incomplete ${spent ? 'spent' : 'missing'} evidence survives repeated pass and restart',
+      () async {
+        await client.create(config);
+        native.missingVtxos = !spent;
+        native.spentWithoutEvidence = spent;
+        for (var pass = 0; pass < 3; pass++) {
+          if (pass == 1) {
+            await client.close();
+            client = build();
+          }
+          final result = await client.synchronize(account, renew: false);
+          final value =
+              (result as Ok<ArkPassOutcome, ArkWalletFailure>).value.snapshot;
+          expect(
+            value.vtxoInventoryComplete,
+            isFalse,
+            reason: 'unresolved evidence on pass $pass',
+          );
+          expect(value.stale, isTrue);
+        }
+      },
+    );
+  }
+  test('failed pass never publishes an intermediate fresh snapshot', () async {
+    await client.create(config);
+    final initial = await client.read(account);
+    final revision =
+        (initial as Ok<ArkSnapshot, ArkWalletFailure>).value.revision;
+    final seen = <ArkSnapshot>[];
+    final subscribed = Completer<void>();
+    final subscription = client.watch(account).listen((value) {
+      if (value case Ok(:final value)) {
+        seen.add(value);
+        if (!subscribed.isCompleted) subscribed.complete();
+      }
+    });
+    await subscribed.future;
+    native.failingStage = 'server';
+    await client.synchronize(account, renew: false);
+    await Future<void>.delayed(Duration.zero);
+    await subscription.cancel();
+    expect(seen.where((s) => s.revision > revision), isNotEmpty);
+    expect(
+      seen.where((s) => s.revision > revision).every((s) => s.stale),
+      isTrue,
+    );
+  });
+  test('positive recorded spend settles preserved missing inventory across restart', () async {
+    await client.create(config);
+    native.missingVtxos = true;
+    await client.synchronize(account, renew: false);
+    await client.close();
+    client = build();
+    native.movementEvidence = [
+      ArkMovement(
+        id: 'observed-spend',
+        kind: ArkMovementKind.payment,
+        status: ArkMovementStatus.successful,
+        inputVtxoIds: [FakeOpener.firstId, FakeOpener.secondId],
+      ),
+    ];
+    final result = await client.synchronize(account, renew: false);
+    expect(
+      (result as Ok<ArkPassOutcome, ArkWalletFailure>)
+          .value
+          .snapshot
+          .vtxoInventoryComplete,
+      isTrue,
+    );
+    native.movementEvidence = [];
+    await client.close();
+    client = build();
+    final repeated = await client.synchronize(account, renew: false);
+    expect(
+      (repeated as Ok<ArkPassOutcome, ArkWalletFailure>)
+          .value
+          .snapshot
+          .vtxoInventoryComplete,
+      isTrue,
+    );
+  });
 }

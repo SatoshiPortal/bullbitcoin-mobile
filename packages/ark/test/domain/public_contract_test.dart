@@ -34,6 +34,7 @@ void main() {
       revision: 1,
       observedAt: DateTime.utc(2026, 11, 16),
       stale: false,
+      vtxoCompleteness: ArkSectionCompleteness.complete,
       spendable: Sats.zero,
       pending: Sats.zero,
       confirmedReserve: Sats.zero,
@@ -140,4 +141,47 @@ void main() {
       );
     },
   );
+  test(
+    'unknown or incomplete inventory remains a protective obligation at zero',
+    () {
+      for (final completeness in [
+        ArkSectionCompleteness.unknown,
+        ArkSectionCompleteness.incomplete,
+      ]) {
+        final snapshot = ArkSnapshot(
+          account: account,
+          revision: 1,
+          observedAt: DateTime.utc(2026),
+          stale: false,
+          spendable: Sats.zero,
+          pending: Sats.zero,
+          confirmedReserve: Sats.zero,
+          recovery: ArkRecoveryStatus.complete,
+          exits: ArkExitStatus.none,
+          obligations: ArkObligationStatus.none,
+          pendingBoardCount: 0,
+          pendingLightningCount: 0,
+          pendingRoundCount: 0,
+          vtxoCompleteness: completeness,
+        );
+        expect(snapshot.hasFundsOrObligations, isTrue);
+      }
+    },
+  );
+  test('movement evidence copies and freezes caller-owned id lists', () {
+    final inputs = ['original'];
+    final outputs = ['replacement'];
+    final movement = ArkMovement(
+      id: 'm',
+      kind: ArkMovementKind.renewal,
+      status: ArkMovementStatus.successful,
+      inputVtxoIds: inputs,
+      outputVtxoIds: outputs,
+    );
+    inputs.clear();
+    outputs.clear();
+    expect(movement.inputVtxoIds, ['original']);
+    expect(movement.outputVtxoIds, ['replacement']);
+    expect(() => movement.inputVtxoIds.add('tamper'), throwsUnsupportedError);
+  });
 }

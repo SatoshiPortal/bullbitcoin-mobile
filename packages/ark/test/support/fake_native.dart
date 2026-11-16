@@ -73,6 +73,9 @@ final class FakeOpener implements ArkNativeOpener {
   bool failExecute = false;
   bool reconcileSuccess = false;
   bool missingVtxos = false;
+  bool spentWithoutEvidence = false;
+  List<ArkMovement> movementEvidence = [];
+  String? failingStage;
   Completer<void>? stageEntered;
   Completer<void>? releaseStage;
   void Function(String)? afterStage;
@@ -126,6 +129,7 @@ final class FakeSession implements ArkNativeSession {
       owner.stageEntered?.complete();
       await owner.releaseStage?.future;
     }
+    if (owner.failingStage == name) throw Exception('stage refused');
     if (name == 'initial-scan' && owner.failInitialScan) {
       owner.failInitialScan = false;
       throw Exception('scan failure');
@@ -159,7 +163,9 @@ final class FakeSession implements ArkNativeSession {
                   id: id,
                   amount: Sats.fromInt(10000),
                   expiryHeight: 1100,
-                  state: ArkVtxoState.spendable,
+                  state: owner.spentWithoutEvidence
+                      ? ArkVtxoState.spent
+                      : ArkVtxoState.spendable,
                 ),
             ],
       recovery: previousRecovery,
@@ -170,6 +176,7 @@ final class FakeSession implements ArkNativeSession {
       pendingLightningCount: 0,
       pendingRoundCount: 0,
       operations: operations,
+      movements: owner.movementEvidence,
       vtxoCompleteness: ArkSectionCompleteness.complete,
     ),
   );

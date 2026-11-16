@@ -5,6 +5,8 @@ import 'package:ark/src/data/ark_store.dart';
 import 'package:ark/src/data/ark_writer_lock.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+import 'package:sqlite3/sqlite3.dart';
+import 'package:ark/src/data/ark_codec.dart';
 
 void main() {
   late Directory temp;
@@ -176,4 +178,35 @@ void main() {
       store.close();
     },
   );
+  test('read-only projection connection cannot mutate existing metadata', () {
+    final path = '${temp.path}/readonly';
+    final writer = ArkStore.open(path, create: true);
+    writer.put('marker', {'value': 'original'});
+    writer.close();
+    final reader = ArkStore.open(path, create: false, readOnly: true);
+    expect(reader.get('marker')?['value'], 'original');
+    expect(
+      () => reader.put('marker', {'value': 'changed'}),
+      throwsA(isA<SqliteException>()),
+    );
+    reader.close();
+    expect(
+      () => ArkStore.open('${temp.path}/new', create: true, readOnly: true),
+      throwsFormatException,
+    );
+  });
+  test('decoded movement evidence is immutable', () {
+    final value = movementFromJson({
+      'id': 'm',
+      'kind': 'renewal',
+      'status': 'successful',
+      'amount': null,
+      'fee': null,
+      'createdAt': null,
+      'txid': null,
+      'inputs': ['old'],
+      'outputs': ['new'],
+    });
+    expect(() => value.outputVtxoIds.clear(), throwsUnsupportedError);
+  });
 }
