@@ -359,6 +359,35 @@ void main() {
     await leave(tester);
   });
 
+  testWidgets('the server phase counts down to the probe deadline', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    tor.add(
+      TorReady(
+        TorRoute(
+          source: TorSource.embedded,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9150),
+          evidence: TorReadinessEvidence.embeddedBootstrap,
+          transport: TorTransport.direct,
+        ),
+      ),
+    );
+    final server = _HangingServer();
+    sessions.pending.complete(Ok(server));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    final countdown = find.byWidgetPredicate(
+      (widget) =>
+          widget is Text && RegExp(r'^1:1[0-5]$').hasMatch(widget.data ?? ''),
+    );
+    expect(countdown, findsOneWidget);
+    server.answer.complete(const Ok(null));
+    await tester.pump();
+    await leave(tester);
+  });
+
   testWidgets('a recovery can skip the server with its vault key', (
     tester,
   ) async {
@@ -456,6 +485,16 @@ final class _Sessions implements KeyServerSessionRepository {
     snowflake.add(viaSnowflake);
     return pending.future;
   }
+}
+
+final class _HangingServer extends Fake implements KeyServerRepository {
+  final answer = Completer<Result<void, RecoverBullFailure>>();
+
+  @override
+  Future<Result<void, RecoverBullFailure>> probe() => answer.future;
+
+  @override
+  Future<void> close() async {}
 }
 
 final class _Metadata extends Fake implements BackupMetadataRepository {
