@@ -117,6 +117,26 @@ void main() {
     },
   );
   testWidgets(
+    'selected input intent blocks Ark even before UTXO projection arrives',
+    (tester) async {
+      await tester.pumpWidget(app());
+      await tester.pumpAndSettle();
+      expect(find.byType(ArkSendEntryButton), findsOneWidget);
+      state = state.copyWith(
+        selectedInputOutpoints: {(txId: 'public-selected-input', vout: 0)},
+      );
+      changes.add(state);
+      await tester.pumpAndSettle();
+      expect(find.byType(ArkSendEntryButton), findsNothing);
+      expect(
+        find.text('This Ark action is unavailable in this build.'),
+        findsOneWidget,
+      );
+      verify(() => fixture.registry.list()).called(1);
+      verifyZeroInteractions(fixture.client);
+    },
+  );
+  testWidgets(
     'explicit choice navigates with the captured Ark account and destination',
     (tester) async {
       ArkPaymentEntry? captured;
