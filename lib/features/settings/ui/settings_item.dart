@@ -67,7 +67,7 @@ enum SettingsItemId {
   extension,
 }
 
-enum SettingsItemSection { root, backup, wallet, app }
+enum SettingsItemSection { root, backup, wallet, bullvault, app }
 
 const backupSettingsDataItemOrder = [
   SettingsItemId.labels,
@@ -212,6 +212,12 @@ List<SettingsItem> buildSettingsItems({
         SettingsItemSection.root => [rootSection, title],
         SettingsItemSection.backup => [rootSection, backupSection, title],
         SettingsItemSection.wallet => [rootSection, walletSection, title],
+        SettingsItemSection.bullvault => [
+          rootSection,
+          walletSection,
+          localization.bullVaultMenuTitle,
+          title,
+        ],
         SettingsItemSection.app => [rootSection, appSection, title],
       };
 
@@ -454,23 +460,25 @@ List<SettingsItem> buildSettingsItems({
             [english.walletSettingsImportWalletTitle],
           ),
         ),
-        SettingsItem(
-          id: SettingsItemId.signingKeyExport,
-          section: SettingsItemSection.wallet,
-          title: localization.signingKeyExportTitle,
-          path: path(
-            SettingsItemSection.wallet,
-            localization.signingKeyExportTitle,
+        if (isSuperuser)
+          SettingsItem(
+            isSuperuser: true,
+            id: SettingsItemId.signingKeyExport,
+            section: SettingsItemSection.bullvault,
+            title: localization.signingKeyExportTitle,
+            path: path(
+              SettingsItemSection.bullvault,
+              localization.signingKeyExportTitle,
+            ),
+            icon: Icons.key,
+            open: (context) =>
+                context.pushNamed(SettingsRoute.signingKeyExport.name),
+            keywords: _keywords(
+              localization.settingsSearchSigningKeyExportKeywords,
+              english.settingsSearchSigningKeyExportKeywords,
+              [english.signingKeyExportTitle],
+            ),
           ),
-          icon: Icons.key,
-          open: (context) =>
-              context.pushNamed(SettingsRoute.signingKeyExport.name),
-          keywords: _keywords(
-            localization.settingsSearchSigningKeyExportKeywords,
-            english.settingsSearchSigningKeyExportKeywords,
-            [english.signingKeyExportTitle],
-          ),
-        ),
         SettingsItem(
           id: SettingsItemId.broadcastTransaction,
           section: SettingsItemSection.wallet,
@@ -832,6 +840,7 @@ List<SettingsItem> buildSettingsItems({
       }).toList();
 
   for (final contribution in contributions) {
+    if (contribution.isSuperuser && !isSuperuser) continue;
     final section = switch (contribution.section) {
       SettingsEntrySection.wallet => SettingsItemSection.wallet,
     };
@@ -843,6 +852,7 @@ List<SettingsItem> buildSettingsItems({
         title: title,
         path: path(section, title),
         icon: contribution.icon,
+        isSuperuser: contribution.isSuperuser,
         open: contribution.open,
         keywords: [contribution.title(english)],
       ),

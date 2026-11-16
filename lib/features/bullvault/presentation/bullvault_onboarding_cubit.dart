@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:primitives/primitives.dart' show Ok, Err;
@@ -23,6 +24,7 @@ import 'package:bb_mobile/features/bullvault/presentation/bullvault_onboarding_s
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
+  final PickBullVaultRecoveryFileUsecase _pickRecoveryFile;
   final CreateBullVaultOnboardingUsecase _createBullVaultOnboardingUsecase;
   final PrepareBullVaultTimeReferenceUsecase
   _prepareBullVaultTimeReferenceUsecase;
@@ -45,8 +47,9 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     this._updateBullVaultSetupUsecase,
     this._activateInitialBullVaultUsecase,
     this._encodeBullVaultRecoveryPackageUsecase,
-    this._updateBullVaultRegistrationNameUsecase,
-  ) : super(const BullVaultOnboardingState());
+    this._updateBullVaultRegistrationNameUsecase, {
+    required this._pickRecoveryFile,
+  }) : super(const BullVaultOnboardingState());
 
   Future<bool> updateHardwareRegistrationName({
     required String signerId,
@@ -70,7 +73,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     }
   }
 
-  Future<void> load({String? walletId}) async {
+  Future<void> load({String? walletId, bool practice = false}) async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await _loadBullVaultOnboardingUsecase.execute(
       walletId: walletId,
@@ -81,6 +84,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         final snapshot = value.snapshot;
         if (snapshot == null) {
           emit(state.copyWith(network: value.network, isLoading: false));
+          if (practice) setPracticeMode(true);
         } else {
           _restoreCompletionState(value.network, snapshot);
         }
@@ -113,7 +117,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     final hardwareSetupComplete = hardwareSignerIds.every(
       completedHardwareSignerIds.contains,
     );
-    final step = !result.record.recoveryPackageConfirmed
+    final step = !result.record.recoveryPackageVerified
         ? BullVaultOnboardingStep.recoveryPackage
         : !hardwareSetupComplete
         ? BullVaultOnboardingStep.hardwareSetup
@@ -137,8 +141,7 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
         completedHardwareSignerIds: completedHardwareSignerIds,
         hardwareSetupDeferred:
             result.record.hardwareSetupDeferred && !hardwareSetupComplete,
-        recoveryPackageExported: result.record.recoveryPackageConfirmed,
-        recoveryPackageConfirmed: result.record.recoveryPackageConfirmed,
+        recoveryPackageConfirmed: result.record.recoveryPackageVerified,
         seedBackupVerified: backupStatus.physical,
         recoverBullBackupVerified: backupStatus.recoverBull,
         mobileBackupDeferred:
@@ -549,21 +552,35 @@ final class BullVaultOnboardingCubit extends Cubit<BullVaultOnboardingState> {
     }
   }
 
-  void markRecoveryPackageExported() =>
-      emit(state.copyWith(recoveryPackageExported: true));
+  Future<void> importRecoveryPackage() async {
+    final picked = await _pickRecoveryFile.execute();
+    if (isClosed) return;
+    switch (picked) {
+      case Ok(value: final source?):
+        await confirmRecoveryPackage(source);
+      case Ok():
+        break;
+      case Err(:final failure):
+        emit(state.copyWith(failure: failure));
+    }
+  }
 
-  Future<void> confirmRecoveryPackage() async {
+  Future<void> confirmRecoveryPackage(String source) async {
     final walletId = state.result?.wallet.id;
-    if (walletId == null || !state.recoveryPackageExported) return;
+    if (walletId == null) return;
     final updated = await _updateBullVaultSetupUsecase.execute(
       walletId: walletId,
       recoveryPackageConfirmed: true,
+      descriptorReadBack: source,
     );
     if (isClosed) return;
     switch (updated) {
-      case Ok():
+      case Ok(:final value):
         emit(
-          state.copyWith(recoveryPackageConfirmed: true, clearFailure: true),
+          state.copyWith(
+            recoveryPackageConfirmed: value.recoveryPackageVerified,
+            clearFailure: true,
+          ),
         );
       case Err(:final failure):
         emit(state.copyWith(failure: failure));

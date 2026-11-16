@@ -9,11 +9,60 @@ final class BullVaultMetadataDatasource {
   Future<T> transaction<T>(Future<T> Function() action) =>
       _database.transaction(action);
 
-  Future<void> save(BullVaultRecordModel model) async {
+  Stream<void> get changes => _database
+      .tableUpdates(TableUpdateQuery.onTable(_database.bullVaultRecords))
+      .map((_) {});
+
+  Future<List<BullVaultRecordModel>> loadAll() =>
+      (_database.select(_database.bullVaultRecords)..orderBy([
+            (row) => OrderingTerm.asc(row.lineageId),
+            (row) => OrderingTerm.asc(row.vaultGeneration),
+          ]))
+          .get();
+
+  Future<void> save(BullVaultRecordModel model) => transaction(() async {
+    final previous = await load(model.walletId);
+    final samePackage = previous?.recoveryPackage == model.recoveryPackage;
+    // Receipts are local evidence. Preserve the latest stored dates when a
+    // caller holds an older record; a different package must be checked again.
+    final stored = model
+        .toCompanion(true)
+        .copyWith(
+          descriptorTestedAt: Value(
+            samePackage ? previous?.descriptorTestedAt : null,
+          ),
+          serverTestedAt: Value(samePackage ? previous?.serverTestedAt : null),
+        );
     await _database
         .into(_database.bullVaultRecords)
-        .insertOnConflictUpdate(model);
-  }
+        .insertOnConflictUpdate(stored);
+  });
+
+  Future<DateTime?> recordBackupTest({
+    required String walletId,
+    required String expectedRecoveryPackage,
+    required bool server,
+    required DateTime testedAt,
+  }) => transaction(() async {
+    final current = await load(walletId);
+    if (current == null || current.recoveryPackage != expectedRecoveryPackage) {
+      return null;
+    }
+    final previous = server
+        ? current.serverTestedAt
+        : current.descriptorTestedAt;
+    final date = previous != null && previous.isAfter(testedAt)
+        ? previous.toUtc()
+        : testedAt.toUtc();
+    await (_database.update(
+      _database.bullVaultRecords,
+    )..where((row) => row.walletId.equals(walletId))).write(
+      server
+          ? BullVaultRecordsCompanion(serverTestedAt: Value(date))
+          : BullVaultRecordsCompanion(descriptorTestedAt: Value(date)),
+    );
+    return date;
+  });
 
   Future<void> delete(String walletId) async {
     await (_database.delete(

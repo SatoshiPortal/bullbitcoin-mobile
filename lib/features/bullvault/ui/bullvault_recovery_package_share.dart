@@ -11,7 +11,6 @@ Future<bool> shareBullVaultRecoveryPackage(
   BuildContext context, {
   required String content,
   required String policyId,
-  VoidCallback? onExported,
 }) async {
   try {
     final shortId = policyId.substring(0, 8);
@@ -35,7 +34,6 @@ Future<bool> shareBullVaultRecoveryPackage(
     if (!context.mounted || result.status != ShareResultStatus.success) {
       return false;
     }
-    onExported?.call();
     BullSnackBar.show(
       context,
       message: context.loc.bullVaultRecoveryPackageExported,

@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
+import 'package:bb_mobile/features/bullvault/domain/usecases/pick_bullvault_recovery_file_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -63,6 +65,9 @@ class _MockWatchMigration extends Mock
 class _MockEncodeRecoveryPackage extends Mock
     implements EncodeBullVaultRecoveryPackageUsecase {}
 
+class _NoRecoveryFile extends Fake
+    implements PickBullVaultRecoveryFileUsecase {}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(BitcoinNetwork.mainnet);
@@ -114,6 +119,7 @@ void main() {
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: _MockPrepareTime(),
       watchDetailsUsecase: _NoDetailsUpdates(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
 
     await cubit.load();
@@ -163,6 +169,7 @@ void main() {
         walletId: details.record.walletId,
         prepareTimeReferenceUsecase: _MockPrepareTime(),
         watchDetailsUsecase: watchDetails,
+        pickRecoveryFile: _NoRecoveryFile(),
       );
       await cubit.load();
       const schedule = BullVaultSchedule(coldDelay: 3, recoveryDelay: 5);
@@ -236,6 +243,7 @@ void main() {
       walletId: details.record.walletId,
       prepareTimeReferenceUsecase: _MockPrepareTime(),
       watchDetailsUsecase: _NoDetailsUpdates(),
+      pickRecoveryFile: _NoRecoveryFile(),
     );
 
     await cubit.load();
@@ -310,12 +318,14 @@ void main() {
         () => update.execute(
           walletId: renewal.replacement.wallet.id,
           recoveryPackageConfirmed: true,
+          descriptorReadBack: 'saved-copy',
         ),
       ).thenAnswer(
         (_) async => Ok(
           renewal.replacement.record.copyWith(
             completedHardwareSignerIds: const {'cold'},
             recoveryPackageConfirmed: true,
+            descriptorTestedAt: DateTime.utc(2026, 9, 18),
           ),
         ),
       );
@@ -343,6 +353,7 @@ void main() {
         walletId: details.record.walletId,
         prepareTimeReferenceUsecase: prepareTime,
         watchDetailsUsecase: _NoDetailsUpdates(),
+        pickRecoveryFile: _NoRecoveryFile(),
       );
 
       await cubit.load();
@@ -366,8 +377,7 @@ void main() {
               as BullVaultRenewRequest;
       expect(request.timeReference, same(reference));
 
-      cubit.markRecoveryPackageExported();
-      await cubit.confirmRecoveryPackage();
+      await cubit.confirmRecoveryPackage('saved-copy');
       cubit.continueSetup();
       expect(cubit.state.step, BullVaultRenewalStep.hardwareSetup);
 

@@ -58,7 +58,6 @@ final class BullVaultOnboardingState {
   final bool seedBackupVerified;
   final bool recoverBullBackupVerified;
   final bool mobileBackupDeferred;
-  final bool recoveryPackageExported;
   final bool recoveryPackageConfirmed;
   final String? recoveryPackageContent;
   final BullVaultFailure? failure;
@@ -99,7 +98,6 @@ final class BullVaultOnboardingState {
     this.seedBackupVerified = false,
     this.recoverBullBackupVerified = false,
     this.mobileBackupDeferred = false,
-    this.recoveryPackageExported = false,
     this.recoveryPackageConfirmed = false,
     this.recoveryPackageContent,
     this.failure,
@@ -137,7 +135,6 @@ final class BullVaultOnboardingState {
       !requiresSeedBackup || hasMobileBackup || mobileBackupDeferred;
 
   bool get mandatorySetupComplete =>
-      recoveryPackageExported &&
       recoveryPackageConfirmed &&
       (hardwareSignerCount == 0 ||
           hardwareSetupComplete ||
@@ -228,7 +225,6 @@ final class BullVaultOnboardingState {
     bool? seedBackupVerified,
     bool? recoverBullBackupVerified,
     bool? mobileBackupDeferred,
-    bool? recoveryPackageExported,
     bool? recoveryPackageConfirmed,
     String? recoveryPackageContent,
     BullVaultFailure? failure,
@@ -284,8 +280,6 @@ final class BullVaultOnboardingState {
     recoverBullBackupVerified:
         recoverBullBackupVerified ?? this.recoverBullBackupVerified,
     mobileBackupDeferred: mobileBackupDeferred ?? this.mobileBackupDeferred,
-    recoveryPackageExported:
-        recoveryPackageExported ?? this.recoveryPackageExported,
     recoveryPackageConfirmed:
         recoveryPackageConfirmed ?? this.recoveryPackageConfirmed,
     recoveryPackageContent:

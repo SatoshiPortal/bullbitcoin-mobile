@@ -15,10 +15,13 @@ extension BullVaultFailureL10n on BullVaultFailure {
       context.loc.bullVaultFailureReviewExpired,
     BullVaultCreationFailure() => context.loc.oopsSomethingWentWrong,
     BullVaultBackupStatusFailure() => context.loc.oopsSomethingWentWrong,
+    BullVaultBackupMismatchFailure() => context.loc.bullVaultDescriptorMismatch,
     BullVaultRenewalFailure() => context.loc.oopsSomethingWentWrong,
     BullVaultRenewalHasFundsFailure() =>
       context.loc.bullVaultCancelRenewalHasFunds,
     BullVaultInvalidRecoveryFailure() =>
       context.loc.bullVaultFailureInvalidRecovery,
+    BullVaultCosignerMismatchFailure() => context.loc.bullVaultCosignerMismatch,
+    BullVaultCosignerImportFailure() => context.loc.oopsSomethingWentWrong,
   };
 }
