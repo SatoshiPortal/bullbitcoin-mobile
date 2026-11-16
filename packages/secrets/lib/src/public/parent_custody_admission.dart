@@ -30,7 +30,9 @@ abstract interface class ParentCustodyLease {
 
   /// Explicit foreground reconciliation only: the trusted host must first fetch
   /// the parent through Secrets and reconcile every owner's obligations under
-  /// this same admission. Fetching a handle alone must never clear a tombstone.
+  /// this same admission, or explicitly import it and publish its durable
+  /// wallet-catalog reference. Import may clear deleting as well as deleted;
+  /// fetching a handle alone must never clear either tombstone.
   @useResult
   Result<void, ParentCustodyFailure> reconcilePresent();
 }
@@ -49,6 +51,17 @@ final class ParentCustodyStorageFailure extends ParentCustodyFailure {
 
 final class ParentCustodyStateFailure extends ParentCustodyFailure {
   const ParentCustodyStateFailure();
+}
+
+/// Permanent state evidence is missing, malformed or incompatible. Foreground
+/// callers must refuse explicitly; never recreate ready from a seed handle.
+final class ParentCustodyMetadataFailure extends ParentCustodyFailure {
+  const ParentCustodyMetadataFailure();
+}
+
+/// The seed could not be re-read after admission; no catalog may be published.
+final class ParentCustodySeedUnavailableFailure extends ParentCustodyFailure {
+  const ParentCustodySeedUnavailableFailure();
 }
 
 final class ParentCustodyReferencedFailure extends ParentCustodyFailure {

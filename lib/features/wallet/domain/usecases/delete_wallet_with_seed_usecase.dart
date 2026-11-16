@@ -93,6 +93,10 @@ class DeleteWalletUsecase {
         log.fine('Seed deleted source=wallet_cleanup');
       case Err(failure: ParentCustodyReferencedFailure()):
         log.fine('Seed cleanup skipped reason=referenced');
+      case Err(failure: ParentCustodyStateFailure()):
+        log.warning('Seed cleanup refused reason=custody_state');
+      case Err(failure: ParentCustodyMetadataFailure()):
+        log.warning('Seed cleanup refused reason=custody_metadata');
       case Err():
         log.warning('Seed cleanup failed reason=references_unavailable');
     }

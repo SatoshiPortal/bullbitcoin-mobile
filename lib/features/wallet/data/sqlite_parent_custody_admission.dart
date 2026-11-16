@@ -75,11 +75,11 @@ final class SqliteParentCustodyAdmission implements ParentCustodyAdmissionPort {
       final statePath = p.join(root.path, '${parent.hex}.state.sqlite');
       final fresh = !File(lockPath).existsSync();
       if (fresh && !mayCreate) {
-        return const Err(ParentCustodyStateFailure());
+        return const Err(ParentCustodyMetadataFailure());
       }
       final exists = File(statePath).existsSync();
       if (!exists && !(fresh && mayCreate)) {
-        return const Err(ParentCustodyStateFailure());
+        return const Err(ParentCustodyMetadataFailure());
       }
       if (!exists) _initializeState(statePath);
       // No permanent parent lock exists before committed initial state. A
@@ -92,7 +92,7 @@ final class SqliteParentCustodyAdmission implements ParentCustodyAdmissionPort {
       state.execute('PRAGMA busy_timeout = 0');
       state.execute('PRAGMA synchronous = FULL');
       if (state.userVersion != 1) {
-        return const Err(ParentCustodyStateFailure());
+        return const Err(ParentCustodyMetadataFailure());
       }
       final lease = _Lease(exclusion, state);
       if (lease.readState() case Err(:final failure)) return Err(failure);
@@ -103,6 +103,10 @@ final class SqliteParentCustodyAdmission implements ParentCustodyAdmissionPort {
       return Err(
         error.resultCode == 5
             ? const ParentCustodyBusyFailure()
+            : (error.resultCode == 1 ||
+                  error.resultCode == 11 ||
+                  error.resultCode == 26)
+            ? const ParentCustodyMetadataFailure()
             : const ParentCustodyStorageFailure(),
       );
     } on FileSystemException {
@@ -151,16 +155,22 @@ final class _Lease implements ParentCustodyLease {
     try {
       final rows = _state.select('SELECT id, state FROM custody');
       if (rows.length != 1 || rows.single['id'] != 1) {
-        return const Err(ParentCustodyStateFailure());
+        return const Err(ParentCustodyMetadataFailure());
       }
       return switch (rows.single['state']) {
         'ready' => const Ok(ParentCustodyState.ready),
         'deleting' => const Ok(ParentCustodyState.deleting),
         'deleted' => const Ok(ParentCustodyState.deleted),
-        _ => const Err(ParentCustodyStateFailure()),
+        _ => const Err(ParentCustodyMetadataFailure()),
       };
-    } on SqliteException {
-      return const Err(ParentCustodyStorageFailure());
+    } on SqliteException catch (error) {
+      return Err(
+        (error.resultCode == 1 ||
+                error.resultCode == 11 ||
+                error.resultCode == 26)
+            ? const ParentCustodyMetadataFailure()
+            : const ParentCustodyStorageFailure(),
+      );
     }
   }
 
