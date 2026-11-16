@@ -900,7 +900,10 @@ final class BarkNativeSession implements ArkNativeSession {
         );
         status = switch (result) {
           bark.PaidLightningSendStatus() => ArkOperationStatus.succeeded,
-          bark.InProgressLightningSendStatus() => ArkOperationStatus.pending,
+          bark.InProgressLightningSendStatus(:final send) =>
+            send.hasFailedRevocation
+                ? ArkOperationStatus.outcomeUnknown
+                : ArkOperationStatus.pending,
           _ => ArkOperationStatus.outcomeUnknown,
         };
       }
