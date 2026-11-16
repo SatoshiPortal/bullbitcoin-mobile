@@ -14,8 +14,9 @@ import '../domain/tor_repository.dart';
 const defaultDirectBudget = Duration(minutes: 2);
 
 /// Snowflake reaches Tor through volunteer proxies and can take minutes on a
-/// filtered network. Provisional until field measurements set it.
-const defaultSnowflakeBudget = Duration(minutes: 15);
+/// filtered network. The slowest success measured on a relay-blocking Wi-Fi
+/// took 499 s, rounded up here.
+const defaultSnowflakeBudget = Duration(minutes: 10);
 
 /// Marks a direct attempt ended by a persistent censorship verdict.
 final _censoredOutcome = Object();
