@@ -775,9 +775,15 @@ class MnemonicWord extends StatelessWidget {
                   color: context.appColors.text,
                 ),
                 padding: EdgeInsets.zero,
+                // Within the field's floor, border included: Material's 48 dp
+                // tap target would push a field with a word taller than its
+                // neighbours.
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 constraints: const BoxConstraints.tightFor(
-                  width: 30,
-                  height: 30,
+                  width: 40,
+                  height: 36,
                 ),
               );
             },
