@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/recipients/application/dtos/recipient_details_dto.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
@@ -59,6 +62,22 @@ void main() {
       call.thenThrow(answer as Object);
     }
   }
+
+  test(
+    'recipient and SINPE refusal logs omit sensitive response data',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('recipient-log-');
+      await initializeLogging(directory: directory, background: true);
+      stub(_response(_errorBody));
+      await gateway.saveRecipient(_details(), isTestnet: true);
+      await gateway.checkSinpe(phoneNumber: '8888-8888', isTestnet: true);
+      await log.flush();
+      final contents = await log.logsFile.readAsString();
+      expect(contents, contains('JSON-RPC error code -32602'));
+      expect(contents, isNot(contains(_iban)));
+      expect(contents, isNot(contains('RecipientService.create')));
+    },
+  );
 
   group('a JSON-RPC error is never carried into the failure', () {
     test('listRecipients', () async {
