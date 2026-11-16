@@ -276,5 +276,7 @@
   "recoverbullUseSnowflake": "Использовать Snowflake",
   "recoverbullSnowflakeSlow": "В фильтруемой сети Snowflake может подключаться несколько минут. Не закрывайте приложение.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не удалось подключиться к настроенному прокси SOCKS5.",
-  "recoverbullTorReady": "Готово"
+  "recoverbullTorReady": "Готово",
+  "recoverbullRecoveryIncompleteTitle": "Кошельки ещё не созданы",
+  "recoverbullRecoveryIncompleteDescription": "Резервная копия импортирована, но кошельки создать не удалось. Повторите, чтобы завершить восстановление."
 }

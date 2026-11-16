@@ -255,6 +255,16 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     if (value != null) _publish(vault: value.vault, completion: value);
   }
 
+  /// Retries creating the wallets of a recovery whose import committed without them.
+  Future<void> retryWallets(VaultCompletion completion) async {
+    final value = await _run(
+      () async => Ok<VaultCompletion, RecoverBullFailure>(
+        await _complete.retryWallets(completion),
+      ),
+    );
+    if (value != null) _publish(vault: value.vault, completion: value);
+  }
+
   Future<void> verify(String password, BitcoinNetwork? network) async {
     final vault = state.vault;
     if (vault == null) return;

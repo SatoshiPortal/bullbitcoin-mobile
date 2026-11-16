@@ -600,5 +600,7 @@
   "recoverbullUseSnowflake": "Snowflake ব্যৱহাৰ কৰক",
   "recoverbullSnowflakeSlow": "ফিল্টাৰ কৰা নেটৱৰ্কত Snowflake-এ কেইবা মিনিট ল'ব পাৰে। এপটো খোলা ৰাখক।",
   "torSettingsExternalProxyUnavailableDescription": "Bull-এ কনফিগাৰ কৰা SOCKS5 প্ৰক্সিত সংযোগ কৰিব নোৱাৰিলে।",
-  "recoverbullTorReady": "সাজু"
+  "recoverbullTorReady": "সাজু",
+  "recoverbullRecoveryIncompleteTitle": "ৱালেট এতিয়াও সৃষ্টি হোৱা নাই",
+  "recoverbullRecoveryIncompleteDescription": "আপোনাৰ বেকআপ ইমপৰ্ট হ'ল, কিন্তু ইয়াৰ ৱালেট সৃষ্টি কৰিব পৰা নগ'ল। পুনৰুদ্ধাৰ সম্পূৰ্ণ কৰিবলৈ পুনৰ চেষ্টা কৰক।"
 }

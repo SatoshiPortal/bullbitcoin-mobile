@@ -1,9 +1,11 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/vault_completion.dart';
 import '../../domain/entities/vault_recovery.dart';
 import '../../l10n/context_localizations.dart';
 import '../../presentation/recoverbull_failure_l10n.dart';
+import '../../presentation/vault_flow_cubit.dart';
 import '../recoverbull_flow_navigator.dart';
 import '../widgets/recoverbull_widgets.dart';
 
@@ -56,7 +58,34 @@ class VaultVerifiedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // A retry replaces the completion; the latest one decides the screen.
+    return BlocBuilder<VaultFlowCubit, VaultFlowState>(
+      buildWhen: (previous, current) =>
+          current.completion != null || previous.busy != current.busy,
+      builder: (context, state) =>
+          _screen(context, state.completion ?? completion, busy: state.busy),
+    );
+  }
+
+  Widget _screen(
+    BuildContext context,
+    VaultCompletion completion, {
+    required bool busy,
+  }) {
     final scope = RecoverBullFlowScope.of(context);
+    // The seed is imported but its wallets are missing: finishing here would
+    // land on a home screen without them, so the only way on is to retry.
+    if (completion.recovery is VaultRecoveryNeedsWallets) {
+      return RecoverBullStatusScreen(
+        title: context.loc.recoverbullRecoveryIncompleteTitle,
+        description: context.loc.recoverbullRecoveryIncompleteDescription,
+        buttonText: context.loc.recoverbullRetry,
+        onTap: busy
+            ? () {}
+            : () => context.read<VaultFlowCubit>().retryWallets(completion),
+        extras: _notices(context, completion),
+      );
+    }
     final recovered = completion.recovery != null;
     return RecoverBullSuccessScreen(
       title: recovered

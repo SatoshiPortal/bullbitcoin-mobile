@@ -352,5 +352,7 @@
   "torSettingsExternalProxyUnavailableDescription": "Bull n’a pas pu se connecter au proxy SOCKS5 configuré.",
   "torSettingsStatusNoInternetOrBlocked": "Pas d’internet ou réseau censuré",
   "torSettingsDescNoInternetOrBlocked": "Ce réseau n’a pas accès à internet, ou il bloque Tor.",
-  "recoverbullUseSnowflake": "Utiliser Snowflake"
+  "recoverbullUseSnowflake": "Utiliser Snowflake",
+  "recoverbullRecoveryIncompleteTitle": "Portefeuilles pas encore créés",
+  "recoverbullRecoveryIncompleteDescription": "Votre sauvegarde a été importée, mais ses portefeuilles n’ont pas pu être créés. Réessayez pour terminer la récupération."
 }

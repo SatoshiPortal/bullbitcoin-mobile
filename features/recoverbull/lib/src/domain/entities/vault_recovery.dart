@@ -19,5 +19,12 @@ final class VaultRecovered extends VaultRecovery {
 final class VaultRecoveryNeedsWallets extends VaultRecovery {
   final RecoverBullFailure failure;
 
-  const VaultRecoveryNeedsWallets(super.importedSecret, this.failure);
+  /// The network the wallets were to be created on, for a retry.
+  final BitcoinNetwork network;
+
+  const VaultRecoveryNeedsWallets(
+    super.importedSecret,
+    this.failure, {
+    required this.network,
+  });
 }

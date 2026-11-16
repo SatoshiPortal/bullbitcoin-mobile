@@ -171,5 +171,7 @@
   "recoverbullUseSnowflake": "Snowflake-ის გამოყენება",
   "recoverbullSnowflakeSlow": "გაფილტრულ ქსელში Snowflake-ს შეიძლება რამდენიმე წუთი დასჭირდეს. აპი ღია დატოვეთ.",
   "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის.",
-  "recoverbullTorReady": "მზადაა"
+  "recoverbullTorReady": "მზადაა",
+  "recoverbullRecoveryIncompleteTitle": "საფულეები ჯერ არ შექმნილა",
+  "recoverbullRecoveryIncompleteDescription": "სარეზერვო ასლი იმპორტირდა, მაგრამ მისი საფულეები ვერ შეიქმნა. სცადეთ ხელახლა აღდგენის დასასრულებლად."
 }

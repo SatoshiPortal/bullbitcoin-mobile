@@ -278,5 +278,7 @@
   "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor.",
   "recoverbullUseSnowflake": "Snowflake verwenden",
   "recoverbullSnowflakeSlow": "Snowflake kann in einem gefilterten Netzwerk mehrere Minuten dauern. Lass die App geöffnet.",
-  "recoverbullTorReady": "Bereit"
+  "recoverbullTorReady": "Bereit",
+  "recoverbullRecoveryIncompleteTitle": "Wallets noch nicht erstellt",
+  "recoverbullRecoveryIncompleteDescription": "Dein Backup wurde importiert, aber seine Wallets konnten nicht erstellt werden. Versuche es erneut, um die Wiederherstellung abzuschließen."
 }

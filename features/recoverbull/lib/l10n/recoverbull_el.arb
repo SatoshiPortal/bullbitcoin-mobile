@@ -606,5 +606,7 @@
   "recoverbullUseSnowflake": "Χρήση Snowflake",
   "recoverbullSnowflakeSlow": "Σε φιλτραρισμένο δίκτυο το Snowflake μπορεί να χρειαστεί μερικά λεπτά. Κρατήστε την εφαρμογή ανοιχτή.",
   "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
-  "recoverbullTorReady": "Έτοιμο"
+  "recoverbullTorReady": "Έτοιμο",
+  "recoverbullRecoveryIncompleteTitle": "Τα πορτοφόλια δεν έχουν δημιουργηθεί ακόμη",
+  "recoverbullRecoveryIncompleteDescription": "Το αντίγραφο ασφαλείας εισήχθη, αλλά τα πορτοφόλια του δεν δημιουργήθηκαν. Δοκιμάστε ξανά για να ολοκληρωθεί η ανάκτηση."
 }

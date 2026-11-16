@@ -171,5 +171,7 @@
   "recoverbullUseSnowflake": "Օգտագործել Snowflake",
   "recoverbullSnowflakeSlow": "Զտված ցանցում Snowflake-ը կարող է տևել մի քանի րոպե։ Հավելվածը բաց պահեք։",
   "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։",
-  "recoverbullTorReady": "Պատրաստ է"
+  "recoverbullTorReady": "Պատրաստ է",
+  "recoverbullRecoveryIncompleteTitle": "Դրամապանակները դեռ ստեղծված չեն",
+  "recoverbullRecoveryIncompleteDescription": "Ձեր պահուստը ներմուծվեց, բայց դրա դրամապանակները չստեղծվեցին։ Կրկին փորձեք՝ վերականգնումն ավարտելու համար։"
 }

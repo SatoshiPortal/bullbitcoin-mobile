@@ -276,5 +276,7 @@
   "recoverbullUseSnowflake": "Використати Snowflake",
   "recoverbullSnowflakeSlow": "У фільтрованій мережі Snowflake може підключатися кілька хвилин. Не закривайте застосунок.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не вдалося підключитися до налаштованого проксі SOCKS5.",
-  "recoverbullTorReady": "Готово"
+  "recoverbullTorReady": "Готово",
+  "recoverbullRecoveryIncompleteTitle": "Гаманці ще не створено",
+  "recoverbullRecoveryIncompleteDescription": "Резервну копію імпортовано, але гаманці створити не вдалося. Повторіть, щоб завершити відновлення."
 }

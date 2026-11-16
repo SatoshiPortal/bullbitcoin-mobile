@@ -276,5 +276,7 @@
   "recoverbullUseSnowflake": "使用 Snowflake",
   "recoverbullSnowflakeSlow": "在受过滤的网络上，Snowflake 可能需要几分钟。请保持应用打开。",
   "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。",
-  "recoverbullTorReady": "就绪"
+  "recoverbullTorReady": "就绪",
+  "recoverbullRecoveryIncompleteTitle": "钱包尚未创建",
+  "recoverbullRecoveryIncompleteDescription": "备份已导入，但无法创建其钱包。请重试以完成恢复。"
 }
