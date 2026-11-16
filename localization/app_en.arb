@@ -13662,7 +13662,7 @@
   "@withdrawUnexpectedError": {
     "description": "Generic error message shown when a withdrawal could not be completed for any unrecognized reason, including connectivity failures, so it must not blame the amount or the recipient"
   },
-  "importWatchOnlyErrorNetworkMismatch": "This wallet is using a different Bitcoin network. Switch between Mainnet and Testnet, then try again.",
+  "importWatchOnlyErrorNetworkMismatch": "The key does not match the selected Bitcoin network.",
   "@importWatchOnlyErrorNetworkMismatch": {
     "description": "Shown when a watch-only wallet belongs to a different Bitcoin environment than the app"
   },
