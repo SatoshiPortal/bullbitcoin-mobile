@@ -59,9 +59,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text(loc.importMnemonicUnsupportedScript), findsOneWidget);
-    expect(find.text(loc.retry), findsNothing);
-    await tester.tap(find.text(loc.importMnemonicLegacy));
+    await tester.ensureVisible(find.text(loc.importMnemonicLegacy));
+    await tester.tap(find.text(loc.importMnemonicLegacy), warnIfMissed: false);
     verifyNever(() => cubit.updateBip39Purpose(ScriptType.bip44));
+    expect(find.text(loc.retry), findsNothing);
   });
 
   testWidgets('an unsupported selected script cannot continue to import', (
