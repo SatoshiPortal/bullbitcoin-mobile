@@ -11,6 +11,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
+        BullKeyScramble,
         BullLabeledTextInput,
         BullMnemonicKeyboard,
         BullSecretTextInput,
@@ -1057,23 +1058,13 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   }
 
   void _shuffle() {
-    // Reject an arrangement too close to the current one: a shuffle that leaves
-    // most letters in place looks like nothing changed and invites a mistap
-    // from muscle memory. Require at least 20 of 26 positions to move.
-    final previous = _shuffledLayout;
-    List<String> next;
-    do {
-      next = List.of(BullMnemonicKeyboard.qwerty)..shuffle(_random);
-    } while (_samePositions(next, previous) > 6);
-    _shuffledLayout = next;
-  }
-
-  int _samePositions(List<String> a, List<String> b) {
-    var same = 0;
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] == b[i]) same++;
-    }
-    return same;
+    // At most 6 of 26 letters stay in place: see BullKeyScramble.
+    _shuffledLayout = BullKeyScramble.next(
+      BullMnemonicKeyboard.qwerty,
+      previous: _shuffledLayout,
+      maxUnmoved: 6,
+      random: _random,
+    );
   }
 
   /// The docked bottom bar: the suggestion chips sit directly above the keys,
