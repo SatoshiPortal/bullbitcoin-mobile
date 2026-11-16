@@ -520,6 +520,12 @@ final class SqliteArkFundingReservations
               'UPDATE ark_funding_operations SET state=? WHERE operation=?',
               [matches ? 'confirmed' : 'conflicted', row['operation']],
             );
+            // These rows are active ownership, not historical evidence. A
+            // positively confirmed settlement ends that ownership atomically;
+            // the original operation, PSBT, txid and signatures stay journalled.
+            _db.execute('DELETE FROM ark_funding_inputs WHERE operation=?', [
+              row['operation'],
+            ]);
             break;
           }
         }
