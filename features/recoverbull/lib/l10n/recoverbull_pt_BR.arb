@@ -607,7 +607,7 @@
   "recoverbullSnowflakeSlow": "O Snowflake pode levar vários minutos em uma rede filtrada. Mantenha o app aberto.",
   "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado.",
   "recoverbullTorReady": "Pronto",
+  "recoverbullDiscardPendingBackup": "Descartar e recomeçar",
   "recoverbullRecoveryIncompleteTitle": "Carteiras ainda não criadas",
-  "recoverbullRecoveryIncompleteDescription": "Seu backup foi importado, mas não foi possível criar as carteiras. Tente novamente para concluir a recuperação.",
-  "recoverbullDiscardPendingBackup": "Descartar e recomeçar"
+  "recoverbullRecoveryIncompleteDescription": "Seu backup foi importado, mas não foi possível criar as carteiras. Tente novamente para concluir a recuperação."
 }

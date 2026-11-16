@@ -278,7 +278,7 @@
   "recoverbullUseSnowflake": "Usa Snowflake",
   "recoverbullSnowflakeSlow": "Snowflake può richiedere alcuni minuti su una rete filtrata. Tieni l’app aperta.",
   "recoverbullTorReady": "Pronto",
+  "recoverbullDiscardPendingBackup": "Annulla e ricomincia",
   "recoverbullRecoveryIncompleteTitle": "Wallet non ancora creati",
-  "recoverbullRecoveryIncompleteDescription": "Il backup è stato importato, ma non è stato possibile creare i suoi wallet. Riprova per completare il ripristino.",
-  "recoverbullDiscardPendingBackup": "Annulla e ricomincia"
+  "recoverbullRecoveryIncompleteDescription": "Il backup è stato importato, ma non è stato possibile creare i suoi wallet. Riprova per completare il ripristino."
 }

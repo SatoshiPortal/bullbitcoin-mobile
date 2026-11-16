@@ -649,7 +649,7 @@
   "recoverbullSnowflakeSlow": "फ़िल्टर किए गए नेटवर्क पर Snowflake में कई मिनट लग सकते हैं। ऐप खुला रखें।",
   "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।",
   "recoverbullTorReady": "तैयार",
+  "recoverbullDiscardPendingBackup": "छोड़ें और फिर से शुरू करें",
   "recoverbullRecoveryIncompleteTitle": "वॉलेट अभी तक नहीं बने",
-  "recoverbullRecoveryIncompleteDescription": "आपका बैकअप इंपोर्ट हो गया, लेकिन उसके वॉलेट नहीं बन सके। रिकवरी पूरी करने के लिए फिर से कोशिश करें।",
-  "recoverbullDiscardPendingBackup": "छोड़ें और फिर से शुरू करें"
+  "recoverbullRecoveryIncompleteDescription": "आपका बैकअप इंपोर्ट हो गया, लेकिन उसके वॉलेट नहीं बन सके। रिकवरी पूरी करने के लिए फिर से कोशिश करें।"
 }

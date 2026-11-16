@@ -607,7 +607,7 @@
   "recoverbullSnowflakeSlow": "Na filtrované síti může Snowflake trvat několik minut. Nechte aplikaci otevřenou.",
   "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
   "recoverbullTorReady": "Připraveno",
+  "recoverbullDiscardPendingBackup": "Zahodit a začít znovu",
   "recoverbullRecoveryIncompleteTitle": "Peněženky zatím nebyly vytvořeny",
-  "recoverbullRecoveryIncompleteDescription": "Záloha byla importována, ale její peněženky se nepodařilo vytvořit. Zkuste to znovu a dokončete obnovu.",
-  "recoverbullDiscardPendingBackup": "Zahodit a začít znovu"
+  "recoverbullRecoveryIncompleteDescription": "Záloha byla importována, ale její peněženky se nepodařilo vytvořit. Zkuste to znovu a dokončete obnovu."
 }

@@ -607,7 +607,7 @@
   "recoverbullSnowflakeSlow": "Filtrelenen bir ağda Snowflake birkaç dakika sürebilir. Uygulamayı açık tutun.",
   "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
   "recoverbullTorReady": "Hazır",
+  "recoverbullDiscardPendingBackup": "Vazgeç ve baştan başla",
   "recoverbullRecoveryIncompleteTitle": "Cüzdanlar henüz oluşturulmadı",
-  "recoverbullRecoveryIncompleteDescription": "Yedeğiniz içe aktarıldı ancak cüzdanları oluşturulamadı. Kurtarmayı tamamlamak için yeniden deneyin.",
-  "recoverbullDiscardPendingBackup": "Vazgeç ve baştan başla"
+  "recoverbullRecoveryIncompleteDescription": "Yedeğiniz içe aktarıldı ancak cüzdanları oluşturulamadı. Kurtarmayı tamamlamak için yeniden deneyin."
 }

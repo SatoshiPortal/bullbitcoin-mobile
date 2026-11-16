@@ -172,7 +172,7 @@
   "recoverbullSnowflakeSlow": "Kwenye mtandao uliochujwa, Snowflake inaweza kuchukua dakika kadhaa. Acha programu ikiwa wazi.",
   "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa.",
   "recoverbullTorReady": "Tayari",
+  "recoverbullDiscardPendingBackup": "Acha na uanze upya",
   "recoverbullRecoveryIncompleteTitle": "Pochi bado hazijaundwa",
-  "recoverbullRecoveryIncompleteDescription": "Nakala yako imeingizwa, lakini pochi zake hazikuweza kuundwa. Jaribu tena kukamilisha urejeshaji.",
-  "recoverbullDiscardPendingBackup": "Acha na uanze upya"
+  "recoverbullRecoveryIncompleteDescription": "Nakala yako imeingizwa, lakini pochi zake hazikuweza kuundwa. Jaribu tena kukamilisha urejeshaji."
 }

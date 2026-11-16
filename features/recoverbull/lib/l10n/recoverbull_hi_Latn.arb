@@ -606,7 +606,7 @@
   "recoverbullSnowflakeSlow": "Filtered network par Snowflake mein kai minute lag sakte hain. App khula rakhein.",
   "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka.",
   "recoverbullTorReady": "Taiyaar",
+  "recoverbullDiscardPendingBackup": "Chhodein aur phir se shuru karein",
   "recoverbullRecoveryIncompleteTitle": "Wallet abhi tak nahin bane",
-  "recoverbullRecoveryIncompleteDescription": "Aapka backup import ho gaya, lekin uske wallet nahin ban sake. Recovery poori karne ke liye phir se koshish karein.",
-  "recoverbullDiscardPendingBackup": "Chhodein aur phir se shuru karein"
+  "recoverbullRecoveryIncompleteDescription": "Aapka backup import ho gaya, lekin uske wallet nahin ban sake. Recovery poori karne ke liye phir se koshish karein."
 }

@@ -172,7 +172,7 @@
   "recoverbullSnowflakeSlow": "Trên mạng bị lọc, Snowflake có thể mất vài phút. Hãy giữ ứng dụng mở.",
   "torSettingsExternalProxyUnavailableDescription": "Bull không thể kết nối tới proxy SOCKS5 đã cấu hình.",
   "recoverbullTorReady": "Sẵn sàng",
+  "recoverbullDiscardPendingBackup": "Hủy và bắt đầu lại",
   "recoverbullRecoveryIncompleteTitle": "Chưa tạo ví",
-  "recoverbullRecoveryIncompleteDescription": "Bản sao lưu đã được nhập, nhưng không thể tạo ví. Hãy thử lại để hoàn tất khôi phục.",
-  "recoverbullDiscardPendingBackup": "Hủy và bắt đầu lại"
+  "recoverbullRecoveryIncompleteDescription": "Bản sao lưu đã được nhập, nhưng không thể tạo ví. Hãy thử lại để hoàn tất khôi phục."
 }

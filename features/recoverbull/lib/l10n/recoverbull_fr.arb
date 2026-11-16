@@ -353,7 +353,7 @@
   "torSettingsStatusNoInternetOrBlocked": "Pas d’internet ou réseau censuré",
   "torSettingsDescNoInternetOrBlocked": "Ce réseau n’a pas accès à internet, ou il bloque Tor.",
   "recoverbullUseSnowflake": "Utiliser Snowflake",
+  "recoverbullDiscardPendingBackup": "Abandonner et recommencer",
   "recoverbullRecoveryIncompleteTitle": "Portefeuilles pas encore créés",
-  "recoverbullRecoveryIncompleteDescription": "Votre sauvegarde a été importée, mais ses portefeuilles n’ont pas pu être créés. Réessayez pour terminer la récupération.",
-  "recoverbullDiscardPendingBackup": "Abandonner et recommencer"
+  "recoverbullRecoveryIncompleteDescription": "Votre sauvegarde a été importée, mais ses portefeuilles n’ont pas pu être créés. Réessayez pour terminer la récupération."
 }

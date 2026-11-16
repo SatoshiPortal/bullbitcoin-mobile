@@ -239,11 +239,27 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
   int _attempt = 0;
   String? _error;
   bool _confirmWithout = false;
+  late final AppLifecycleListener _lifecycle;
 
   @override
   void initState() {
     super.initState();
     _protection = enableScreenPrivacy();
+    // Leaving the app drops the fetched key and the typed passphrase: the user
+    // starts again from the password rather than finding them on return.
+    _lifecycle = AppLifecycleListener(
+      onStateChange: (state) {
+        if (state != AppLifecycleState.paused &&
+            state != AppLifecycleState.hidden) {
+          return;
+        }
+        if (!mounted || context.read<VaultFlowCubit>().state.busy) return;
+        setState(() => _passphrase = '');
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          Navigator.of(context).pop();
+        }
+      },
+    );
   }
 
   void _retryPrivacy() {
@@ -255,6 +271,7 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
 
   @override
   void dispose() {
+    _lifecycle.dispose();
     _passphrase = '';
     unawaited(disableScreenPrivacy());
     super.dispose();

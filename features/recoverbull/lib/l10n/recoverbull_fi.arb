@@ -277,7 +277,7 @@
   "recoverbullSnowflakeSlow": "Suodatetussa verkossa Snowflake voi kestää useita minuutteja. Pidä sovellus auki.",
   "torSettingsExternalProxyUnavailableDescription": "Bull ei saanut yhteyttä määritettyyn SOCKS5-välityspalvelimeen.",
   "recoverbullTorReady": "Valmis",
+  "recoverbullDiscardPendingBackup": "Hylkää ja aloita alusta",
   "recoverbullRecoveryIncompleteTitle": "Lompakoita ei ole vielä luotu",
-  "recoverbullRecoveryIncompleteDescription": "Varmuuskopio tuotiin, mutta sen lompakoita ei voitu luoda. Yritä uudelleen palautuksen viimeistelemiseksi.",
-  "recoverbullDiscardPendingBackup": "Hylkää ja aloita alusta"
+  "recoverbullRecoveryIncompleteDescription": "Varmuuskopio tuotiin, mutta sen lompakoita ei voitu luoda. Yritä uudelleen palautuksen viimeistelemiseksi."
 }

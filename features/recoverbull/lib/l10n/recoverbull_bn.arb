@@ -646,7 +646,7 @@
   "recoverbullSnowflakeSlow": "ফিল্টার করা নেটওয়ার্কে Snowflake কয়েক মিনিট সময় নিতে পারে। অ্যাপটি খোলা রাখুন।",
   "torSettingsExternalProxyUnavailableDescription": "Bull কনফিগার করা SOCKS5 প্রক্সিতে সংযোগ করতে পারেনি।",
   "recoverbullTorReady": "প্রস্তুত",
+  "recoverbullDiscardPendingBackup": "বাতিল করে আবার শুরু করুন",
   "recoverbullRecoveryIncompleteTitle": "ওয়ালেট এখনো তৈরি হয়নি",
-  "recoverbullRecoveryIncompleteDescription": "আপনার ব্যাকআপ ইমপোর্ট হয়েছে, কিন্তু এর ওয়ালেট তৈরি করা যায়নি। পুনরুদ্ধার শেষ করতে আবার চেষ্টা করুন।",
-  "recoverbullDiscardPendingBackup": "বাতিল করে আবার শুরু করুন"
+  "recoverbullRecoveryIncompleteDescription": "আপনার ব্যাকআপ ইমপোর্ট হয়েছে, কিন্তু এর ওয়ালেট তৈরি করা যায়নি। পুনরুদ্ধার শেষ করতে আবার চেষ্টা করুন।"
 }

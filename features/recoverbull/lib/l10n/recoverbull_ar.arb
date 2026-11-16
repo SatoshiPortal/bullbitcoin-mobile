@@ -607,7 +607,7 @@
   "recoverbullSnowflakeSlow": "قد يستغرق Snowflake عدة دقائق على شبكة مُرشَّحة. أبقِ التطبيق مفتوحًا.",
   "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
   "recoverbullTorReady": "جاهز",
+  "recoverbullDiscardPendingBackup": "تجاهل والبدء من جديد",
   "recoverbullRecoveryIncompleteTitle": "لم يتم إنشاء المحافظ بعد",
-  "recoverbullRecoveryIncompleteDescription": "تم استيراد نسختك الاحتياطية، لكن تعذّر إنشاء محافظها. أعد المحاولة لإكمال الاسترداد.",
-  "recoverbullDiscardPendingBackup": "تجاهل والبدء من جديد"
+  "recoverbullRecoveryIncompleteDescription": "تم استيراد نسختك الاحتياطية، لكن تعذّر إنشاء محافظها. أعد المحاولة لإكمال الاسترداد."
 }

@@ -134,7 +134,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => VaultProviderSelectionPage(
-            password: password,
+            password: SealingPassword(password),
             passphraseWarningAccepted: _passphraseAccepted,
           ),
         ),

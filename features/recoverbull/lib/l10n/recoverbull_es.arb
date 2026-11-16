@@ -277,7 +277,7 @@
   "recoverbullSnowflakeSlow": "Snowflake puede tardar varios minutos en una red filtrada. Mantén la app abierta.",
   "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado.",
   "recoverbullTorReady": "Listo",
+  "recoverbullDiscardPendingBackup": "Descartar y empezar de nuevo",
   "recoverbullRecoveryIncompleteTitle": "Billeteras aún no creadas",
-  "recoverbullRecoveryIncompleteDescription": "Tu copia de seguridad se importó, pero no se pudieron crear sus billeteras. Reintenta para terminar la recuperación.",
-  "recoverbullDiscardPendingBackup": "Descartar y empezar de nuevo"
+  "recoverbullRecoveryIncompleteDescription": "Tu copia de seguridad se importó, pero no se pudieron crear sus billeteras. Reintenta para terminar la recuperación."
 }

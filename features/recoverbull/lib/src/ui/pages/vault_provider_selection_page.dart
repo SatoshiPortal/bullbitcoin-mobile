@@ -17,10 +17,24 @@ import '../widgets/recoverbull_widgets.dart';
 import 'vault_completed_pages.dart';
 import 'vault_selected_page.dart';
 
+/// The password a new vault is sealed with, held only until it is sealed.
+///
+/// A holder rather than a string: the route that built the screen keeps its
+/// arguments, so only a holder lets the screen actually forget the secret.
+final class SealingPassword {
+  String? _value;
+
+  SealingPassword(String value) : _value = value;
+
+  String? get value => _value;
+
+  void forget() => _value = null;
+}
+
 /// Where to save a new vault, or where to read an existing one from.
 class VaultProviderSelectionPage extends StatefulWidget {
-  /// Set only when creating a vault; the screen keeps it until the vault is sealed.
-  final String? password;
+  /// Set only when creating a vault.
+  final SealingPassword? password;
   final bool passphraseWarningAccepted;
 
   const VaultProviderSelectionPage({
@@ -42,13 +56,42 @@ class _VaultProviderSelectionPageState
   /// Set while this page creates the vault, so a key-server probe started
   /// elsewhere is not shown as vault creation.
   bool _creating = false;
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    // Leaving the app before the vault is sealed forgets its password: the
+    // user types it again rather than having it outlive the screen.
+    _lifecycle = AppLifecycleListener(
+      onStateChange: (state) {
+        if (state != AppLifecycleState.paused &&
+            state != AppLifecycleState.hidden) {
+          return;
+        }
+        final password = widget.password;
+        if (_creating || password == null || password.value == null) return;
+        password.forget();
+        if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+          Navigator.of(context).pop();
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    widget.password?.forget();
+    super.dispose();
+  }
 
   Future<void> _select(VaultProvider provider) async {
     final cubit = context.read<VaultFlowCubit>();
     setState(() => _provider = provider);
     final flow = RecoverBullFlowScope.of(context).flow;
     if (flow == RecoverBullFlow.secureVault) {
-      final password = widget.password;
+      final password = widget.password?.value;
       if (password == null) return;
       setState(() => _creating = true);
       await cubit.create(
@@ -56,6 +99,11 @@ class _VaultProviderSelectionPageState
         password,
         passphraseWarningAccepted: widget.passphraseWarningAccepted,
       );
+      // Once sealed, a retry saves the same vault and needs no password.
+      if (cubit.state.hasPendingProviderSave ||
+          cubit.state.completion != null) {
+        widget.password?.forget();
+      }
       if (mounted) setState(() => _creating = false);
       return;
     }

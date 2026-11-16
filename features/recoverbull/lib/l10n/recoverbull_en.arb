@@ -936,10 +936,10 @@
   "@torSettingsDescNoInternetOrBlocked": {"description": "Status description when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"},
   "recoverbullUseSnowflake": "Use Snowflake",
   "@recoverbullUseSnowflake": {"description": "Button restarting Tor through Snowflake from the connection failure panel"},
+  "recoverbullDiscardPendingBackup": "Discard and start over",
+  "@recoverbullDiscardPendingBackup": {"description": "Button discarding a sealed backup whose save did not complete, so the user can choose a new password"},
   "recoverbullRecoveryIncompleteTitle": "Wallets not created yet",
   "@recoverbullRecoveryIncompleteTitle": {"description": "Title when a backup was imported but its wallets could not be created"},
   "recoverbullRecoveryIncompleteDescription": "Your backup was imported, but its wallets could not be created. Retry to finish the recovery.",
-  "@recoverbullRecoveryIncompleteDescription": {"description": "Explains that the backup was imported but its wallets could not be created, with a retry"},
-  "recoverbullDiscardPendingBackup": "Discard and start over",
-  "@recoverbullDiscardPendingBackup": {"description": "Button discarding a sealed backup whose save did not complete, so the user can choose a new password"}
+  "@recoverbullRecoveryIncompleteDescription": {"description": "Explains that the backup was imported but its wallets could not be created, with a retry"}
 }
