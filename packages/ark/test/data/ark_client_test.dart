@@ -395,6 +395,35 @@ void main() {
       expect(temp.listSync(), isEmpty);
     },
   );
+  for (final mode in ArkExecutionMode.values) {
+    test(
+      'disabled policy blocks renewal synchronization before capabilities in $mode',
+      () async {
+        expect(await client.create(config), isA<Ok>());
+        await client.close();
+        client = build(mode: mode);
+        final derivations = child.calls;
+        final opens = native.opens;
+        final probes = preflight.calls;
+        final executes = native.executes;
+        expect(derivations, 1);
+        expect(opens, 1);
+        expect(probes, 1);
+        policy.allowed = false;
+        expect(budget.allowed, isTrue);
+        expect(
+          await client.synchronize(account, renew: true),
+          isA<Err<ArkPassOutcome, ArkWalletFailure>>(),
+        );
+        expect(child.calls, derivations);
+        expect(native.opens, opens);
+        expect(preflight.calls, probes);
+        expect(native.executes, executes);
+        expect(native.broadcasts, 0);
+        expect(native.registrations, 0);
+      },
+    );
+  }
   test(
     'malformed persisted projection fails closed as storage failure',
     () async {
