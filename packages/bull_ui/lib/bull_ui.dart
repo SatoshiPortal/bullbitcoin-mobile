@@ -124,6 +124,7 @@ export 'src/theme/bull_shapes.dart';
 export 'src/theme/bull_theme.dart';
 export 'src/theme/bull_tokens.dart';
 export 'src/theme/bull_typography.dart';
+export 'src/theme/bull_ui_extensions.dart';
 
 // Chrome.
 export 'src/chrome/bull_scaffold.dart';

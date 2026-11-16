@@ -71,12 +71,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      extensions: [
-        bullTheme,
-        shapes,
-        BullTypography.standard,
-        BullKeypadColors.of(brightness),
-      ],
+      extensions: bullUiExtensions(colors: bullTheme, brightness: brightness),
       // Material widgets read Bull's colours, so nothing is derived from the red seed. Roles without a Bull colour use the nearest one.
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.primary,
