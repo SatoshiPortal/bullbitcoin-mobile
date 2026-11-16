@@ -68,6 +68,8 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
           final words = switch (await secret.derive.bip85.mnemonic(
             wordCount: MnemonicLength.values.byName(length.name),
             index: value,
+            // BIP85 children are English by design.
+            language: bip39.Language.english,
           )) {
             Ok(:final value) => value,
             Err(:final failure) => throw StateError(

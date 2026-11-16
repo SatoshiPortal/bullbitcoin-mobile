@@ -90,6 +90,7 @@ void main() {
       passphrase: passphrase,
       network: primitives.BitcoinNetwork.mainnet,
       scriptTypes: {primitives.ScriptType.bip84},
+      language: Language.english,
     );
     final descriptors =
         (result as Ok<Map<primitives.ScriptType, Descriptors>, SecretFailure>)
@@ -274,6 +275,7 @@ void main() {
     final created = await secrets.import(
       words: _missing,
       passphrase: passphrase,
+      language: Language.english,
     );
     final fingerprint = (created as Ok<Secret, SecretFailure>).value.id.hex;
     final wallet = await realWallet(fingerprint, _missing, passphrase);
@@ -389,15 +391,17 @@ void main() {
       expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
       expect(storage.entries, isEmpty);
       expect(
-        await secrets.import(words: _other),
+        await secrets.import(words: _other, language: Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
     },
   );
 
   test("keeps another wallet's words when a wallet uses them", () async {
-    final other =
-        (await secrets.import(words: _other)) as Ok<Secret, SecretFailure>;
+    final other = (await secrets.import(
+      words: _other,
+      language: Language.english,
+    )) as Ok<Secret, SecretFailure>;
     final otherFingerprint = other.value.id.hex;
     expect(
       await secrets.trash(Fingerprint(otherFingerprint)),

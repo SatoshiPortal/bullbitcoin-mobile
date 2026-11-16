@@ -12,6 +12,7 @@ void main() {
       final secrets = Secrets(scratchDirectory: () async => '.');
       final secret = (await secrets.import(
         words: '${'abandon ' * 11}about'.split(' '),
+        language: Language.english,
       ) as Ok<Secret, SecretFailure>).value;
       final messages = <String>[];
       final previous = debugPrint;

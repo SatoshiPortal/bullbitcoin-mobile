@@ -33,6 +33,7 @@ void main() {
     secrets = s.Secrets(scratchDirectory: () async => '/tmp');
     stored = (await secrets.import(
       words: words,
+      language: bip39.Language.english,
     ) as Ok<s.Secret, s.SecretFailure>).value;
     registerFallbackValue(stored);
     registerFallbackValue(Network.bitcoinMainnet);
@@ -162,6 +163,7 @@ void main() {
         final protected = (await secrets.import(
           words: words,
           passphrase: 'synthetic-passphrase',
+          language: bip39.Language.english,
         ) as Ok<s.Secret, s.SecretFailure>).value;
         final bitcoin = _Wallet();
         final liquid = _Wallet();
@@ -251,6 +253,7 @@ void main() {
     final protected = (await secrets.import(
       words: words,
       passphrase: 'synthetic-passphrase',
+      language: bip39.Language.english,
     ) as Ok<s.Secret, s.SecretFailure>).value;
     final received = <s.Secret>[];
     stubCreation(received);
@@ -418,7 +421,7 @@ void main() {
         );
         expect(storage.entries, persisted);
         expect(
-          await secrets.import(words: words),
+          await secrets.import(words: words, language: bip39.Language.english),
           isA<Err<s.Secret, s.SecretFailure>>().having(
             (result) => result.failure,
             'failure',
@@ -433,6 +436,7 @@ void main() {
     final protected = (await secrets.import(
       words: words,
       passphrase: 'synthetic-passphrase',
+      language: bip39.Language.english,
     ) as Ok<s.Secret, s.SecretFailure>).value;
     final bitcoin = _Wallet();
     final liquid = _Wallet();

@@ -133,7 +133,13 @@ void main() {
 
     test('passphrase verification applies BIP39 NFKD', () async {
       final secrets = secretsWith(FakeSecureStoragePlatform());
-      final secret = ok(await secrets.import(words: words, passphrase: 'é'));
+      final secret = ok(
+        await secrets.import(
+          words: words,
+          passphrase: 'é',
+          language: Language.english,
+        ),
+      );
       expect(ok(await secret.verify.passphrase('e\u0301')), isTrue);
       expect(ok(await secret.verify.passphrase(' e\u0301')), isFalse);
     });
@@ -511,7 +517,9 @@ void main() {
     test('an old non-hardened path derives its recorded key', () async {
       final secrets = secretsWith(FakeSecureStoragePlatform());
       final repository = SecretRepository();
-      final info = ok(await repository.store(words: words));
+      final info = ok(
+        await repository.store(words: words, language: Language.english),
+      );
       final material = ok(await repository.use(info, (m) => m));
       const path = "m/1608'/0'/7";
       final key = VaultKey(
@@ -563,7 +571,9 @@ void main() {
       test('$label — the backup key is re-derived exactly', () async {
         FakeSecureStoragePlatform().install();
         final repository = SecretRepository();
-        final info = ok(await repository.store(words: vaultWords));
+        final info = ok(
+          await repository.store(words: vaultWords, language: Language.english),
+        );
         final material = ok(await repository.use(info, (m) => m));
 
         expect(

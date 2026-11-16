@@ -21,7 +21,7 @@ final class FingerprintDeriver {
   Uint8List seed(
     List<String> words, {
     String passphrase = '',
-    bip39.Language language = bip39.Language.english,
+    required bip39.Language language,
   }) {
     words = normalizeWords(words);
     _elements(words, language);
@@ -43,10 +43,7 @@ final class FingerprintDeriver {
       Fingerprint(convert.hex.encode(Bip32Keys.fromSeed(seed).fingerprint));
 
   /// Validates words without deriving a seed: wordlist and checksum only, no PBKDF2. Throws bip39's own exception.
-  void check(
-    List<String> words, {
-    bip39.Language language = bip39.Language.english,
-  }) {
+  void check(List<String> words, {required bip39.Language language}) {
     words = normalizeWords(words);
     _elements(words, language);
     bip39.Mnemonic.fromWords(words: words, language: language);

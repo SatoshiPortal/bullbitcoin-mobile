@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_recoverbull/bull_recoverbull.dart' as rb;
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -192,8 +193,10 @@ void main() {
     test('returns the handle on success, never the words', () async {
       FakeSecureStoragePlatform().install();
       final secrets = Secrets(scratchDirectory: () async => '/tmp');
-      final stored =
-          (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
+      final stored = (await secrets.import(
+        words: words,
+        language: bip39.Language.english,
+      )) as Ok<Secret, SecretFailure>;
       final fingerprint = stored.value.id.hex;
 
       final result = await GetSecretFromFingerprintUsecase(secrets: secrets)

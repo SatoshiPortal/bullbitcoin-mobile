@@ -46,7 +46,9 @@ void main() {
   setUp(() async {
     FakeSecureStoragePlatform().install();
     final repo = SecretRepository();
-    final info = ok(await repo.store(words: words));
+    final info = ok(
+      await repo.store(words: words, language: bip39.Language.english),
+    );
     expect(info.id, Fingerprint('73c5da0a'));
     secret = ok(await repo.use(info, (m) => m));
   });

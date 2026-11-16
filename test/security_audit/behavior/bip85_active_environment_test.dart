@@ -55,8 +55,10 @@ void main() {
   setUp(() async {
     FakeSecureStoragePlatform().install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
-    final stored =
-        (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
+    final stored = (await secrets.import(
+      words: words,
+      language: bip39.Language.english,
+    )) as Ok<Secret, SecretFailure>;
     final testnetWallet = Wallet(
       origin: 'testnet-default',
       label: 'Secure Bitcoin',

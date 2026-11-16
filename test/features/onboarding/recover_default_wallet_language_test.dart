@@ -48,6 +48,7 @@ void main() {
     // mocktail needs a real handle as the fallback of `any()`; then forget it.
     final fallback = await secrets.import(
       words: [...List.filled(11, 'abandon'), 'about'],
+      language: bip39.Language.english,
     );
     registerFallbackValue((fallback as Ok<s.Secret, s.SecretFailure>).value);
     storage.entries.clear();
