@@ -5,6 +5,7 @@ import 'package:primitives/primitives.dart';
 import '../domain/ark_failure.dart';
 import '../domain/usecases/enable_ark_usecase.dart';
 import '../domain/usecases/is_ark_enabled_usecase.dart';
+import '../domain/usecases/list_enabled_ark_accounts_usecase.dart';
 import '../domain/usecases/set_ark_enabled_usecase.dart';
 import '../domain/usecases/read_ark_usecase.dart';
 import '../domain/usecases/quote_ark_operation_usecase.dart';
@@ -70,6 +71,7 @@ final class ArkReview {
 /// the separate setup surface; consumers cannot obtain either from this facade.
 final class ArkFacade {
   final EnableArkUsecase _enable;
+  final ListEnabledArkAccountsUsecase? _accounts;
   final IsArkEnabledUsecase _isEnabled;
   final SetArkEnabledUsecase _setEnabled;
   final ReadArkUsecase _read;
@@ -86,8 +88,16 @@ final class ArkFacade {
     this._synchronize,
     this._quote,
     this._confirm,
-    this._receive,
-  );
+    this._receive, [
+    this._accounts,
+  ]);
+
+  @useResult
+  Future<Result<List<ArkAccountId>, ArkFailure>> listEnabledAccounts(
+    BitcoinNetwork network,
+  ) =>
+      _accounts?.execute(network) ??
+      Future.value(const Err(ArkServiceUnavailableFailure()));
 
   @useResult
   Future<Result<bool, ArkFailure>> isEnabled(ArkAccountId account) =>
