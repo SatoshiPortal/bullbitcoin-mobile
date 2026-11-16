@@ -130,7 +130,13 @@ final class ElectrumDefaultsProvisioner
       final result = await pending;
       if (result case Err(:final failure)) return Err(failure);
     }
-    if (!_readOnly && _prepared != network.environment.networkEnv) {
+    final requested = network.environment.networkEnv;
+    // Storage readiness covers both production catalogs. Runtime admission
+    // remains responsible for the selected context during a hot switch.
+    final productionReady =
+        (_prepared == NetworkEnv.mainnet || _prepared == NetworkEnv.testnet) &&
+        (requested == NetworkEnv.mainnet || requested == NetworkEnv.testnet);
+    if (!_readOnly && _prepared != requested && !productionReady) {
       return const Err(ElectrumStorageNotReadyFailure());
     }
     try {
