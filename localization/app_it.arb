@@ -4779,5 +4779,8 @@
   "settingsSourceCodeTitle": "Codice sorgente",
   "torSettingsStatusNoInternetOrBlocked": "Nessuna connessione internet o rete censurata",
   "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor.",
-  "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco"
+  "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco",
+  "mnemonicWordCountLabel": "Parole",
+  "passphraseOptionOffSubtitle": "Parola aggiuntiva facoltativa (BIP39)",
+  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata"
 }

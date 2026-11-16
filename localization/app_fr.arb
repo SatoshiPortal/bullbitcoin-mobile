@@ -4786,5 +4786,8 @@
   "settingsSourceCodeTitle": "Code source",
   "torSettingsStatusNoInternetOrBlocked": "Pas d’internet ou réseau censuré",
   "torSettingsDescNoInternetOrBlocked": "Ce réseau n’a pas accès à internet, ou il bloque Tor.",
-  "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui"
+  "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
+  "mnemonicWordCountLabel": "Mots",
+  "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
+  "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée"
 }
