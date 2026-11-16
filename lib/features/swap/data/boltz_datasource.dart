@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.d
 import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_tx_outspend_model.dart';
-import 'package:bb_mobile/core/swaps/data/services/swap_status_mapper.dart';
+import 'package:bb_mobile/features/swap/data/swap_status_mapper.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
@@ -1299,15 +1299,6 @@ class BoltzDatasource {
       }
 
       switch (mapping) {
-        case SwapStale():
-          log.info(
-            '[Boltz] deleting stale pending swap $swapId '
-            '(no funds at risk, expired upstream)',
-          );
-          unsubscribeToSwaps([swapId]);
-          await _boltzStore.trash(swapId);
-          await _boltzStore.deleteFromSecureStorage(swapId);
-
         case SwapUnchanged():
           if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
             _swapUpdatesController.add(swapModel);
