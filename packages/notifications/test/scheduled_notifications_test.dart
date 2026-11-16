@@ -7,6 +7,8 @@ import 'package:timezone/timezone.dart' as tz;
 
 class Android extends AndroidFlutterLocalNotificationsPlugin {
   bool allowed = true;
+  bool refuseCancel = false;
+  final effects = <String>[];
   final scheduled =
       <
         ({
@@ -35,6 +37,7 @@ class Android extends AndroidFlutterLocalNotificationsPlugin {
     AndroidNotificationDetails? notificationDetails,
     AndroidScheduleMode scheduleMode = AndroidScheduleMode.exact,
   }) async {
+    effects.add('schedule:$id');
     scheduled.add((
       id: id,
       date: scheduledDate,
@@ -52,11 +55,14 @@ class Android extends AndroidFlutterLocalNotificationsPlugin {
     AndroidNotificationDetails? notificationDetails,
     String? payload,
   }) async {
+    effects.add('show:$id');
     shown.add(id);
   }
 
   @override
   Future<void> cancel({required int id, String? tag}) async {
+    effects.add('cancel:$id');
+    if (refuseCancel) throw Exception('injected cancel failure');
     cancelled.add(id);
   }
 }
@@ -128,4 +134,38 @@ void main() {
     expect(await gateway.cancelScheduled(-7), isA<Ok>());
     expect(android.cancelled, [-7]);
   });
+  test('future alarm is removed before displaying immediate urgency for the same id', () async {
+    expect(
+      await gateway.schedule(
+        notification,
+        platformId: -9,
+        at: DateTime.now().add(const Duration(days: 2)),
+      ),
+      isA<Ok>(),
+    );
+    expect(
+      await gateway.schedule(
+        notification,
+        platformId: -9,
+        at: DateTime.utc(2020),
+      ),
+      isA<Ok>(),
+    );
+    expect(android.effects, ['schedule:-9', 'cancel:-9', 'show:-9']);
+  });
+  test(
+    'uncertain pending alarm cancellation refuses immediate replacement',
+    () async {
+      android.refuseCancel = true;
+      expect(
+        await gateway.schedule(
+          notification,
+          platformId: -9,
+          at: DateTime.utc(2020),
+        ),
+        isA<Err>(),
+      );
+      expect(android.shown, isEmpty);
+    },
+  );
 }
