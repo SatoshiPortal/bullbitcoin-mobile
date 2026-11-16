@@ -101,6 +101,15 @@ void main() {
       expect(trafficReadyTimeoutFor(TorTransport.direct), isNotNull);
     });
 
+    test('Snowflake never shares the direct client directories', () {
+      final direct = torDirectoryNames(TorTransport.direct);
+      final snowflake = torDirectoryNames(TorTransport.snowflake);
+      // Direct keeps the directories existing installs already hold.
+      expect(direct, (state: 'tor_state', cache: 'tor'));
+      expect(snowflake.state, isNot(direct.state));
+      expect(snowflake.cache, isNot(direct.cache));
+    });
+
     test('stop releases the wait instead of holding it to the timeout', () {
       final backend = OnionTorBackend(const TorLogger());
       final waiting = backend.waitForTraffic(const Duration(minutes: 1));
