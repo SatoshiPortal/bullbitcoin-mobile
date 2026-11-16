@@ -1,3 +1,5 @@
+import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
@@ -11,6 +13,16 @@ import 'package:mocktail/mocktail.dart';
 class _Urls extends Mock implements MempoolUrlBuilder {}
 
 void main() {
+  late String unconfidential;
+  setUpAll(() async {
+    await BullSdk.init();
+    unconfidential = (await lwk.Address.addressFromScript(
+      network: lwk.LiquidNetwork.regtest,
+      script: '00141111111111111111111111111111111111111111',
+    )).standard;
+    expect(unconfidential, startsWith('ert1'));
+  });
+  tearDownAll(BullSdk.dispose);
   testWidgets(
     'dialog retains the injected explorer builder across navigation',
     (tester) async {
@@ -55,25 +67,34 @@ void main() {
     },
   );
 
-  testWidgets('regtest has no explorer actions or builder requests', (
-    tester,
-  ) async {
-    final urls = _Urls();
-    await tester.pumpWidget(
-      RepositoryProvider<MempoolUrlBuilder>.value(
-        value: urls,
-        child: MaterialApp(
-          theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: appLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: AddressViewer('bcrt1qexample')),
+  for (final (label, address) in [
+    (
+      'confidential Liquid',
+      () => 'el1qqfumuen7l8wthtz45p3ftn58pvrs9xlumvkuu2xet8egzkcklqtesg3zyg3zyg3zyg3zyg3zyg3zyg3zyg3zyqsscuw9qrf4q',
+    ),
+    ('unconfidential Liquid', () => unconfidential),
+    ('invalid Bitcoin', () => 'bcrt1qexample'),
+  ]) {
+    testWidgets('regtest $label has no explorer actions or builder requests', (
+      tester,
+    ) async {
+      final urls = _Urls();
+      await tester.pumpWidget(
+        RepositoryProvider<MempoolUrlBuilder>.value(
+          value: urls,
+          child: MaterialApp(
+            theme: AppTheme.themeData(AppThemeType.light),
+            localizationsDelegates: appLocalizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: AddressViewer(address())),
+          ),
         ),
-      ),
-    );
-    await tester.tap(find.byType(AddressViewer));
-    await tester.pumpAndSettle();
-    expect(find.byIcon(Icons.link), findsNothing);
-    expect(find.byIcon(Icons.open_in_new), findsNothing);
-    verifyZeroInteractions(urls);
-  });
+      );
+      await tester.tap(find.byType(AddressViewer));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.link), findsNothing);
+      expect(find.byIcon(Icons.open_in_new), findsNothing);
+      verifyZeroInteractions(urls);
+    });
+  }
 }
