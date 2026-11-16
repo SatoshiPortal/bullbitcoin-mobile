@@ -45,7 +45,7 @@ class CheckDuplicateMnemonicUsecase {
   @useResult
   Future<Result<void, ImportMnemonicFailure>> execute({
     required List<String> mnemonicWords,
-    Language language = Language.english,
+    required Language language,
     String passphrase = '',
   }) async {
     try {
