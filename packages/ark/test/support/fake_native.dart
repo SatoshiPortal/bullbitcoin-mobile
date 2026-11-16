@@ -84,6 +84,7 @@ final class FakeOpener implements ArkNativeOpener {
   int registrations = 0;
   int tip = 100;
   bool failExecute = false;
+  Future<ArkClaimTransaction> Function(ArkQuote)? claimPreparer;
   bool reconcileSuccess = false;
   bool missingVtxos = false;
   List<ArkVtxo>? inventoryOverride;
@@ -315,17 +316,21 @@ final class FakeSession implements ArkNativeSession {
         return 'c' * 64;
       });
   @override
-  Future<ArkClaimTransaction> prepareClaim(ArkQuote quote) => stages.run(
-    'prepare-claim',
-    () async => ArkClaimTransaction(
-      rawTransaction: 'raw-public',
-      signedPsbt: 'signed-public',
-      actualIds: owner.claimActual,
-      skippedIds: owner.claimSkipped,
-      inputAmounts: {for (final id in owner.claimActual) id: '10000'},
-      fee: '10',
-    ),
-  );
+  Future<ArkClaimTransaction> prepareClaim(ArkQuote quote) =>
+      stages.run('prepare-claim', () async {
+        final prepare = owner.claimPreparer;
+        if (prepare != null) {
+          return prepare(quote);
+        }
+        return ArkClaimTransaction(
+          rawTransaction: 'raw-public',
+          signedPsbt: 'signed-public',
+          actualIds: owner.claimActual,
+          skippedIds: owner.claimSkipped,
+          inputAmounts: {for (final id in owner.claimActual) id: '10000'},
+          fee: '10',
+        );
+      });
   @override
   Future<String> broadcast(String rawTransaction) =>
       stages.run('broadcast', () async {
