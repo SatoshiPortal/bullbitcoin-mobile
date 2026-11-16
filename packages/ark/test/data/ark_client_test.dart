@@ -7,6 +7,7 @@ import 'package:ark/src/data/ark_store.dart';
 import 'package:ark/src/domain/ark_execution_policy.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
+import 'package:sqlite3/sqlite3.dart';
 
 import '../support/fake_native.dart';
 
@@ -584,4 +585,248 @@ void main() {
       expect(native.creates, 1);
     },
   );
+  ArkVtxo item(
+    String id, {
+    ArkVtxoState state = ArkVtxoState.spendable,
+    bool pending = false,
+  }) => ArkVtxo(
+    id: id,
+    amount: Sats.fromInt(10000),
+    expiryHeight: 1100,
+    state: state,
+    pendingRound: pending,
+  );
+  test(
+    'positively observed ids during partial passes remain durable obligations',
+    () async {
+      native.inventoryOverride = [item('a')];
+      await client.create(config);
+      native.inventoryOverride = [item('a'), item('b')];
+      native.failingStage = 'server';
+      await client.synchronize(account, renew: false);
+      native.inventoryOverride = [item('a')];
+      native.failingStage = null;
+      for (var i = 0; i < 2; i++) {
+        await client.close();
+        client = build();
+        final result = await client.synchronize(account, renew: false);
+        final snapshot =
+            (result as Ok<ArkPassOutcome, ArkWalletFailure>).value.snapshot;
+        expect(snapshot.vtxoInventoryComplete, isFalse);
+        expect(snapshot.vtxos.any((v) => v.id == 'b'), isTrue);
+        expect(
+          await client.quote(
+            account,
+            ArkQuoteRequest.payment(
+              destination: ArkPaymentDestination(
+                kind: ArkDestinationKind.ark,
+                value: 'address',
+              ),
+              amount: Sats.fromInt(1000),
+            ),
+          ),
+          isA<Err>(),
+        );
+      }
+    },
+  );
+  for (final state in [
+    ArkVtxoState.unknown,
+    ArkVtxoState.locked,
+    ArkVtxoState.spent,
+    ArkVtxoState.spendable,
+  ]) {
+    test(
+      'renewal cannot retire old expiry from unusable or pending output $state',
+      () async {
+        native.inventoryOverride = [item('a')];
+        await client.create(config);
+        native.inventoryOverride = [
+          item('a', state: ArkVtxoState.spent),
+          item('r', state: state, pending: state == ArkVtxoState.spendable),
+        ];
+        native.movementEvidence = [
+          ArkMovement(
+            id: 'renew',
+            kind: ArkMovementKind.renewal,
+            status: ArkMovementStatus.successful,
+            inputVtxoIds: ['a'],
+            outputVtxoIds: ['r'],
+          ),
+        ];
+        for (var i = 0; i < 2; i++) {
+          final result = await client.synchronize(account, renew: false);
+          expect(
+            (result as Ok<ArkPassOutcome, ArkWalletFailure>)
+                .value
+                .snapshot
+                .vtxoInventoryComplete,
+            isFalse,
+          );
+          await client.close();
+          client = build();
+        }
+      },
+    );
+  }
+  for (final weakness in [
+    'stale',
+    'incomplete',
+    'delegated',
+    'stage-failure',
+    'recovery',
+  ]) {
+    test(
+      'renewal retirement refuses $weakness evidence across restart',
+      () async {
+        native.inventoryOverride = [item('a')];
+        await client.create(config);
+        native.inventoryOverride = [
+          item('a', state: ArkVtxoState.spent),
+          item('r'),
+        ];
+        native.movementEvidence = [
+          ArkMovement(
+            id: 'renew',
+            kind: ArkMovementKind.renewal,
+            status: ArkMovementStatus.successful,
+            inputVtxoIds: ['a'],
+            outputVtxoIds: ['r'],
+          ),
+        ];
+        native.observationStale = weakness == 'stale';
+        native.inventoryCompleteness = weakness == 'incomplete'
+            ? ArkSectionCompleteness.incomplete
+            : ArkSectionCompleteness.complete;
+        native.renewalStatus = weakness == 'delegated'
+            ? ArkRenewalStatus.delegated
+            : ArkRenewalStatus.due;
+        native.failingStage = weakness == 'stage-failure' ? 'server' : null;
+        if (weakness == 'recovery') {
+          final store = ArkStore.open(
+            '${ArkStore.accountPath(temp.path, account)}/state.sqlite',
+            create: false,
+          );
+          store.put('recovery', {'status': ArkRecoveryStatus.incomplete.name});
+          store.close();
+        }
+        for (var i = 0; i < 2; i++) {
+          final result = await client.synchronize(account, renew: false);
+          final snapshot =
+              (result as Ok<ArkPassOutcome, ArkWalletFailure>).value.snapshot;
+          expect(snapshot.vtxoInventoryComplete, isFalse);
+          expect(
+            snapshot.vtxos.singleWhere((v) => v.id == 'a').state,
+            ArkVtxoState.unknown,
+          );
+          await client.close();
+          client = build();
+        }
+      },
+    );
+  }
+  test(
+    'authoritative usable renewal replacement retires old inventory durably',
+    () async {
+      native.inventoryOverride = [item('a')];
+      await client.create(config);
+      native.inventoryOverride = [
+        item('a', state: ArkVtxoState.spent),
+        item('r'),
+      ];
+      native.movementEvidence = [
+        ArkMovement(
+          id: 'renew',
+          kind: ArkMovementKind.renewal,
+          status: ArkMovementStatus.successful,
+          inputVtxoIds: ['a'],
+          outputVtxoIds: ['r'],
+        ),
+      ];
+      final result = await client.synchronize(account, renew: false);
+      final snapshot =
+          (result as Ok<ArkPassOutcome, ArkWalletFailure>).value.snapshot;
+      expect(snapshot.vtxoInventoryComplete, isTrue);
+      final store = ArkStore.open(
+        '${ArkStore.accountPath(temp.path, account)}/state.sqlite',
+        create: false,
+      );
+      expect(
+        store.get('inventory-retirements')?['a'],
+        containsPair('movement', 'renew'),
+      );
+      store.close();
+      native.inventoryOverride = [item('r')];
+      native.movementEvidence = [];
+      await client.close();
+      client = build();
+      final repeated = await client.synchronize(account, renew: false);
+      expect(
+        (repeated as Ok<ArkPassOutcome, ArkWalletFailure>)
+            .value
+            .snapshot
+            .vtxoInventoryComplete,
+        isTrue,
+      );
+    },
+  );
+  test('inventory and snapshot logical writes roll back together on persistence failure', () async {
+    native.inventoryOverride = [item('a')];
+    await client.create(config);
+    final path = '${ArkStore.accountPath(temp.path, account)}/state.sqlite';
+    final before = ArkStore.open(path, create: false);
+    final baseline = before.get('complete-inventory');
+    final retained = before.get('inventory-obligations');
+    final retirements = before.get('inventory-retirements');
+    final revision = before.snapshot?.revision;
+    final seen = <ArkSnapshot>[];
+    final subscribed = Completer<void>();
+    final subscription = client.watch(account).listen((event) {
+      if (event case Ok(:final value)) {
+        seen.add(value);
+        if (!subscribed.isCompleted) subscribed.complete();
+      }
+    });
+    await subscribed.future;
+    before.close();
+    native.inventoryOverride = [
+      item('a', state: ArkVtxoState.spent),
+      item('r'),
+    ];
+    native.movementEvidence = [
+      ArkMovement(
+        id: 'renew',
+        kind: ArkMovementKind.renewal,
+        status: ArkMovementStatus.successful,
+        inputVtxoIds: ['a'],
+        outputVtxoIds: ['r'],
+      ),
+    ];
+    final db = sqlite3.open(path);
+    db.execute(
+      "CREATE TRIGGER deny_snapshot BEFORE INSERT ON state WHEN NEW.key='snapshot' BEGIN SELECT RAISE(ABORT,'test interruption'); END",
+    );
+    try {
+      expect(await client.synchronize(account, renew: false), isA<Err>());
+    } finally {
+      db.execute('DROP TRIGGER deny_snapshot');
+      db.close();
+    }
+    await Future<void>.delayed(Duration.zero);
+    await subscription.cancel();
+    expect(seen.every((s) => s.revision == revision), isTrue);
+    await client.close();
+    client = build();
+    final persisted = await client.read(account);
+    expect(
+      (persisted as Ok<ArkSnapshot, ArkWalletFailure>).value.revision,
+      revision,
+    );
+    final reopened = ArkStore.open(path, create: false);
+    expect(reopened.get('inventory-obligations'), retained);
+    expect(reopened.get('inventory-retirements'), retirements);
+    expect(reopened.get('complete-inventory'), baseline);
+    expect(reopened.snapshot?.vtxos.single.id, 'a');
+    reopened.close();
+  });
 }

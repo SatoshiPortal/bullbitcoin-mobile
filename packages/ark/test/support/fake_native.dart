@@ -73,6 +73,11 @@ final class FakeOpener implements ArkNativeOpener {
   bool failExecute = false;
   bool reconcileSuccess = false;
   bool missingVtxos = false;
+  List<ArkVtxo>? inventoryOverride;
+  bool observationStale = false;
+  ArkSectionCompleteness inventoryCompleteness =
+      ArkSectionCompleteness.complete;
+  ArkRenewalStatus renewalStatus = ArkRenewalStatus.due;
   bool spentWithoutEvidence = false;
   List<ArkMovement> movementEvidence = [];
   String? failingStage;
@@ -157,25 +162,27 @@ final class FakeSession implements ArkNativeSession {
       revision: revision,
       observedAt: now,
       tipHeight: owner.tip,
-      stale: false,
+      stale: owner.observationStale,
       spendable: Sats.fromInt(20000),
       pending: Sats.zero,
       confirmedReserve: Sats.fromInt(5000),
-      vtxos: owner.missingVtxos
-          ? []
-          : [
-              for (final id in [FakeOpener.firstId, FakeOpener.secondId])
-                ArkVtxo(
-                  id: id,
-                  amount: Sats.fromInt(10000),
-                  expiryHeight: 1100,
-                  state: owner.spentWithoutEvidence
-                      ? ArkVtxoState.spent
-                      : ArkVtxoState.spendable,
-                ),
-            ],
+      vtxos:
+          owner.inventoryOverride ??
+          (owner.missingVtxos
+              ? []
+              : [
+                  for (final id in [FakeOpener.firstId, FakeOpener.secondId])
+                    ArkVtxo(
+                      id: id,
+                      amount: Sats.fromInt(10000),
+                      expiryHeight: 1100,
+                      state: owner.spentWithoutEvidence
+                          ? ArkVtxoState.spent
+                          : ArkVtxoState.spendable,
+                    ),
+                ]),
       recovery: previousRecovery,
-      renewal: ArkRenewalStatus.due,
+      renewal: owner.renewalStatus,
       exits: ArkExitStatus.none,
       obligations: ArkObligationStatus.present,
       pendingBoardCount: 0,
@@ -183,7 +190,7 @@ final class FakeSession implements ArkNativeSession {
       pendingRoundCount: 0,
       operations: operations,
       movements: owner.movementEvidence,
-      vtxoCompleteness: ArkSectionCompleteness.complete,
+      vtxoCompleteness: owner.inventoryCompleteness,
     ),
   );
   @override
