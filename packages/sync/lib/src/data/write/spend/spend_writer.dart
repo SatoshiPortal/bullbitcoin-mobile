@@ -422,6 +422,8 @@ final class SpendWriter implements WalletSpender {
     ) {
       if (result case Err(:final failure)) {
         _session.reportSpendFailure(key, failure);
+      } else {
+        _session.reportSpendSuccess(key);
       }
       return result;
     });
