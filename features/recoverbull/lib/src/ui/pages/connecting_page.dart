@@ -15,6 +15,7 @@ import '../recoverbull_flow_navigator.dart';
 import '../widgets/backup_monitoring_panel.dart';
 import '../widgets/recoverbull_widgets.dart';
 import 'password_input_page.dart';
+import 'vault_key_instead.dart';
 import 'vault_provider_selection_page.dart';
 
 /// How long a blockage must persist before it is shown as a failure.
@@ -152,7 +153,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
               // Locking the screen backgrounds the app and puts Tor dormant,
               // which would stall the bootstrap the user is waiting on.
               builder: (context, state) => ScreenAwakeScope(
-                enabled: state.busy,
+                enabled: state.keyServer == KeyServerStatus.connecting,
                 child: LayoutBuilder(
                   builder: (context, constraints) => SingleChildScrollView(
                     child: ConstrainedBox(
@@ -168,6 +169,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
                             .read<VaultFlowCubit>()
                             .snowflakeAvailable,
                         onRetry: _resetWait,
+                        onVaultKey: () => _hasNavigated = true,
                       ),
                     ),
                   ),
@@ -188,6 +190,7 @@ class _Body extends StatelessWidget {
   final Duration elapsed;
   final bool showBlockage;
   final _Blockage? blockage;
+  final VoidCallback onVaultKey;
   final bool snowflakeAvailable;
   final VoidCallback onRetry;
 
@@ -196,6 +199,7 @@ class _Body extends StatelessWidget {
     required this.elapsed,
     required this.showBlockage,
     required this.blockage,
+    required this.onVaultKey,
     required this.snowflakeAvailable,
     required this.onRetry,
   });
@@ -494,7 +498,7 @@ class _Body extends StatelessWidget {
         const Gap(24),
         if (_showFailurePanel)
           _FailurePanel(
-            busy: state.busy || !_hasFailure,
+            busy: state.keyServer == KeyServerStatus.connecting || !_hasFailure,
             message: _failureMessage(context),
             // Tor not ready means its bootstrap failed: restart it, as 6.15 did.
             onRetry: () {
@@ -540,6 +544,8 @@ class _Body extends StatelessWidget {
             ),
             maxLines: 3,
           ),
+        const Gap(16),
+        VaultKeyInsteadButton(onLeave: onVaultKey),
       ],
     );
   }

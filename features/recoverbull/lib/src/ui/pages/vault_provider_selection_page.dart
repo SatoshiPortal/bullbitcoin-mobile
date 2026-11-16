@@ -37,10 +37,14 @@ class VaultProviderSelectionPage extends StatefulWidget {
   final SealingPassword? password;
   final bool passphraseWarningAccepted;
 
+  /// The user skipped the key server and will open the vault with its key.
+  final bool vaultKeyOnly;
+
   const VaultProviderSelectionPage({
     super.key,
     this.password,
     this.passphraseWarningAccepted = false,
+    this.vaultKeyOnly = false,
   });
 
   @override
@@ -167,7 +171,10 @@ class _VaultProviderSelectionPageState
       unawaited(
         Navigator.of(context).push(
           MaterialPageRoute<void>(
-            builder: (_) => VaultSelectedPage(provider: provider),
+            builder: (_) => VaultSelectedPage(
+              provider: provider,
+              vaultKeyOnly: widget.vaultKeyOnly,
+            ),
           ),
         ),
       );

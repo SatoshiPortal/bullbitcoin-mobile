@@ -17,8 +17,13 @@ import 'password_input_page.dart';
 /// The vault about to be decrypted, with access to the other Drive vaults.
 class VaultSelectedPage extends StatelessWidget {
   final VaultProvider provider;
+  final bool vaultKeyOnly;
 
-  const VaultSelectedPage({super.key, required this.provider});
+  const VaultSelectedPage({
+    super.key,
+    required this.provider,
+    this.vaultKeyOnly = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +95,8 @@ class VaultSelectedPage extends StatelessWidget {
                     disabled: vault == null || state.busy,
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (_) => const PasswordInputPage(),
+                        builder: (_) =>
+                            PasswordInputPage(vaultKeyOnly: vaultKeyOnly),
                       ),
                     ),
                     bgColor: context.bull.onSurface,

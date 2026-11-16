@@ -10,6 +10,7 @@ import '../../presentation/recoverbull_failure_l10n.dart';
 import '../../presentation/vault_flow_cubit.dart';
 import '../recoverbull_flow_navigator.dart';
 import 'connecting_page.dart';
+import 'vault_key_instead.dart';
 
 final recoverBullWebsite = Uri.parse('https://recoverbull.com/');
 
@@ -138,7 +139,9 @@ class ServerConfirmationPage extends StatelessWidget {
                   bgColor: context.bull.onSurface,
                   textColor: context.bull.surface,
                 ),
-                const Gap(16),
+                const Gap(8),
+                const VaultKeyInsteadButton(),
+                const Gap(8),
                 GestureDetector(
                   onTap: openRecoverBullWebsite,
                   child: Row(

@@ -70,6 +70,11 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
   final bool Function() _snowflakeAvailable;
   bool _closing = false;
 
+  /// A key-server probe runs beside the flow's operations rather than as one:
+  /// a Tor bootstrap can take minutes, and recovering with the vault key needs
+  /// no server, so it must not wait for it.
+  bool _connecting = false;
+
   VaultFlowCubit(
     this._settings,
     this._files,
@@ -99,6 +104,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     int? keyServerFailures,
     TorConnectionState? tor,
     bool? hasPendingProviderSave,
+    RecoverBullFailure? Function()? failure,
   }) => VaultFlowState(
     busy: state.busy,
     keyServer: keyServer ?? state.keyServer,
@@ -110,7 +116,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     vault: state.vault,
     files: state.files,
     completion: state.completion,
-    failure: state.failure,
+    failure: failure == null ? state.failure : failure(),
   );
 
   void _publish({
@@ -195,34 +201,36 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     bool restartTor = false,
     bool viaSnowflake = false,
   }) async {
-    if (state.busy || _closing || isClosed) return;
+    if (_connecting || _closing || isClosed) return;
+    _connecting = true;
     emit(
       _copy(
         keyServer: KeyServerStatus.connecting,
         keyServerFailures: newRoute || restartTor || viaSnowflake ? 0 : null,
+        failure: () => null,
       ),
     );
-    var connected = false;
-    await _run(() async {
-      final result =
+    final Result<void, RecoverBullFailure> result;
+    try {
+      result =
           await (_session?.connect(
                 newRoute: newRoute,
                 restartTor: restartTor,
                 viaSnowflake: viaSnowflake,
               ) ??
               Future.value(Err<void, RecoverBullFailure>(unavailable)));
-      connected = result is Ok;
-      return result;
-    });
+    } finally {
+      _connecting = false;
+    }
     if (_closing || isClosed) return;
-    emit(
-      connected
-          ? _copy(keyServer: KeyServerStatus.online)
-          : _copy(
-              keyServer: KeyServerStatus.offline,
-              keyServerFailures: state.keyServerFailures + 1,
-            ),
-    );
+    emit(switch (result) {
+      Ok() => _copy(keyServer: KeyServerStatus.online),
+      Err(:final failure) => _copy(
+        keyServer: KeyServerStatus.offline,
+        keyServerFailures: state.keyServerFailures + 1,
+        failure: () => failure,
+      ),
+    });
   }
 
   /// Clears a failure once the screen has shown it.

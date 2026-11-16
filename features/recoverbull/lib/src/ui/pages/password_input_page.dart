@@ -33,7 +33,10 @@ String? _validatePassword(BuildContext context, String? value) {
 
 /// PIN, password or vault-key entry; a new backup asks for it twice.
 class PasswordInputPage extends StatefulWidget {
-  const PasswordInputPage({super.key});
+  /// The user skipped the key server: only the vault key can open the vault.
+  final bool vaultKeyOnly;
+
+  const PasswordInputPage({super.key, this.vaultKeyOnly = false});
 
   @override
   State<PasswordInputPage> createState() => _PasswordInputPageState();
@@ -42,7 +45,9 @@ class PasswordInputPage extends StatefulWidget {
 class _PasswordInputPageState extends State<PasswordInputPage>
     with PrivacyScreen {
   bool _isObscured = false;
-  InputType _inputType = InputType.pin;
+  late InputType _inputType = widget.vaultKeyOnly
+      ? InputType.vaultKey
+      : InputType.pin;
   String _validatedPassword = '';
   bool _passphraseAccepted = false;
   final _inputController = TextEditingController();
@@ -329,7 +334,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                     _inputController.clear();
                                   }),
                                 )
-                              else
+                              else if (!widget.vaultKeyOnly)
                                 Row(
                                   children: [
                                     Expanded(
