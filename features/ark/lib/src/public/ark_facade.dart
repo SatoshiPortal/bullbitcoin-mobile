@@ -3,6 +3,9 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/ark_failure.dart';
+import '../domain/ark_claim_recovery_selection.dart';
+import '../domain/usecases/review_ark_claim_recovery_usecase.dart';
+import '../domain/usecases/rebroadcast_ark_claim_usecase.dart';
 import '../domain/usecases/enable_ark_usecase.dart';
 import '../domain/usecases/is_ark_enabled_usecase.dart';
 import '../domain/usecases/list_enabled_ark_accounts_usecase.dart';
@@ -16,6 +19,8 @@ export 'package:ark/ark.dart'
     show
         isArkAddress,
         ArkOperationStatus,
+        ArkRebroadcastClaim,
+        ArkClaimRecovery,
         ArkSubmission,
         ArkConfirmQuote,
         ArkBoardFunding,
@@ -67,10 +72,25 @@ final class ArkReview {
   ArkQuote get details => _quote;
 }
 
+/// Bound to the exact saved account/operation/transaction by a trusted read.
+/// Display getters cannot construct or change the recovery command.
+final class ArkClaimRecoveryReview {
+  final ArkClaimRecoverySelection _selection;
+  const ArkClaimRecoveryReview._(this._selection);
+  ArkAccountId get account => _selection.account;
+  String get operationId => _selection.operation.id;
+  ArkClaimRecovery get details => _selection.summary;
+  ArkOperationStatus get status => _selection.operation.status;
+  List<String> get actualIds => _selection.operation.actualIds;
+  List<String> get skippedIds => _selection.operation.skippedIds;
+}
+
 /// Published journeys only. Native construction and child derivation belong to
 /// the separate setup surface; consumers cannot obtain either from this facade.
 final class ArkFacade {
   final EnableArkUsecase _enable;
+  final ReviewArkClaimRecoveryUsecase? _reviewClaimRecovery;
+  final RebroadcastArkClaimUsecase? _rebroadcastClaim;
   final ListEnabledArkAccountsUsecase? _accounts;
   final IsArkEnabledUsecase _isEnabled;
   final SetArkEnabledUsecase _setEnabled;
@@ -90,6 +110,8 @@ final class ArkFacade {
     this._confirm,
     this._receive, [
     this._accounts,
+    this._reviewClaimRecovery,
+    this._rebroadcastClaim,
   ]);
 
   @useResult
@@ -97,6 +119,27 @@ final class ArkFacade {
     BitcoinNetwork network,
   ) =>
       _accounts?.execute(network) ??
+      Future.value(const Err(ArkServiceUnavailableFailure()));
+
+  @useResult
+  Future<Result<ArkClaimRecoveryReview, ArkFailure>> reviewClaimRecovery(
+    ArkAccountId account,
+    String operationId,
+  ) async {
+    final review = _reviewClaimRecovery;
+    if (review == null) return const Err(ArkServiceUnavailableFailure());
+    return (await review.execute(
+      account,
+      operationId,
+    )).map(ArkClaimRecoveryReview._);
+  }
+
+  @useResult
+  Future<Result<ArkOperation, ArkFailure>> rebroadcastClaim(
+    ArkAccountId account,
+    ArkClaimRecoveryReview review,
+  ) =>
+      _rebroadcastClaim?.execute(account, review._selection) ??
       Future.value(const Err(ArkServiceUnavailableFailure()));
 
   @useResult

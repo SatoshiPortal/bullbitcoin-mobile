@@ -56,6 +56,7 @@ final class ArkRepositoryImpl implements ArkRepository {
       return (await _client.submit(account, submission)).mapErr(_map);
     } on Exception catch (_) {
       final operationId = switch (submission) {
+        ArkRebroadcastClaim(:final operationId) ||
         ArkConfirmQuote(:final operationId) ||
         ArkBoardFunding(:final operationId) ||
         ArkRegisterBoard(:final operationId) => operationId,

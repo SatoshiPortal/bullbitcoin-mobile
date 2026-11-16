@@ -16,6 +16,8 @@ import '../domain/usecases/quote_ark_operation_usecase.dart';
 import '../domain/usecases/confirm_ark_operation_usecase.dart';
 import '../domain/usecases/create_ark_receive_usecase.dart';
 import '../public/ark_facade.dart';
+import '../domain/usecases/review_ark_claim_recovery_usecase.dart';
+import '../domain/usecases/rebroadcast_ark_claim_usecase.dart';
 export '../domain/repositories/ark_preferences_repository.dart';
 
 ArkFacade createArkFacade({
@@ -37,5 +39,7 @@ ArkFacade createArkFacade({
     registry == null
         ? null
         : ListEnabledArkAccountsUsecase(registry, preferences),
+    ReviewArkClaimRecoveryUsecase(repository),
+    RebroadcastArkClaimUsecase(repository),
   );
 }
