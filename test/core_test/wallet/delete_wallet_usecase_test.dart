@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
+
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
@@ -78,7 +80,13 @@ void main() {
 
     walletRepository = _MockWalletRepository();
     swapRepository = _MockBoltzSwapRepository();
-    references = SeedReferences(walletRepository);
+    references = SeedReferences(
+      walletRepository,
+      admission: SqliteParentCustodyAdmission(
+        directory: () async => logDirectory.path,
+        mayCreate: true,
+      ),
+    );
     usecase = DeleteWalletUsecase(
       walletRepository: walletRepository,
       seedReferences: references,
