@@ -545,6 +545,9 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
     if (variants.isEmpty) return key;
     return Builder(
       builder: (keyContext) => GestureDetector(
+        // Which keys have variants depends on the prefix typed: a long press
+        // action that comes and goes would describe the word.
+        excludeFromSemantics: true,
         onLongPressStart: (_) => _openVariants(keyContext, variants),
         onLongPressMoveUpdate: _slideOverVariants,
         onLongPressEnd: (_) => _releaseVariants(),
