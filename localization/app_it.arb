@@ -4776,5 +4776,6 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "La trasmissione su questa rete non è abilitata nelle impostazioni attuali.",
   "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà.",
   "settingsDarkModeTitle": "Modalità scura",
-  "settingsSourceCodeTitle": "Codice sorgente"
+  "settingsSourceCodeTitle": "Codice sorgente",
+  "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco"
 }

@@ -4783,5 +4783,6 @@
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
   "settingsDarkModeTitle": "Mode sombre",
-  "settingsSourceCodeTitle": "Code source"
+  "settingsSourceCodeTitle": "Code source",
+  "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui"
 }

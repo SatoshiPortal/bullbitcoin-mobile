@@ -4618,5 +4618,6 @@
   "broadcastSignedTxErrorOutcomeUnknown": "No pudimos confirmar que tu transacción se haya transmitido. Revisa un explorador de bloques antes de volver a intentarlo.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
   "settingsDarkModeTitle": "Modo oscuro",
-  "settingsSourceCodeTitle": "Código fuente"
+  "settingsSourceCodeTitle": "Código fuente",
+  "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque"
 }

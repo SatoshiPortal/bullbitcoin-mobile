@@ -15439,5 +15439,9 @@
   "settingsSourceCodeTitle": "Source code",
   "@settingsSourceCodeTitle": {
     "description": "Settings entry opening the app's public source code repository."
+  },
+  "pinCodeScrambleKeypadHint": "Scramble the digits on every tap",
+  "@pinCodeScrambleKeypadHint": {
+    "description": "Tooltip on the PIN keypad key that turns on the privacy mode: the digit keys are randomised after each key press so their positions cannot be read by an onlooker"
   }
 }

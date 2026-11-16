@@ -4844,5 +4844,6 @@
   "passphraseShow": "Passphrase anzeigen",
   "passphraseHide": "Passphrase verbergen",
   "settingsDarkModeTitle": "Dunkelmodus",
-  "settingsSourceCodeTitle": "Quellcode"
+  "settingsSourceCodeTitle": "Quellcode",
+  "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen"
 }
