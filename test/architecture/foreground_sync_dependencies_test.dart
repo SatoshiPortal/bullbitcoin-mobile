@@ -26,7 +26,7 @@ const _allowedTargets = <String, String>{
   'bitbox': 'import_watch_only_wallet wallet',
   'bitcoin_price': 'settings',
   'broadcast_signed_tx': 'send wallet',
-  'bullvault': 'bitbox import_mnemonic import_qr_device ledger recoverbull send settings test_wallet_backup wallet',
+  'bullvault': 'bitbox import_mnemonic import_qr_device ledger psbt_signing recoverbull send settings test_wallet_backup wallet',
   'buy': 'exchange fees fund_exchange labels settings transactions wallet',
   'coins': 'bitcoin_price labels settings wallet',
   'consolidation': 'send wallet',

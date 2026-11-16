@@ -9,6 +9,7 @@ final class SettingsEntryContribution {
   final String Function(AppLocalizations localization) title;
   final IconData icon;
   final String Function(AppLocalizations localization)? keywords;
+  final bool isSuperuser;
   final void Function(BuildContext context) open;
 
   const SettingsEntryContribution({
@@ -18,6 +19,7 @@ final class SettingsEntryContribution {
     required this.icon,
     required this.open,
     this.keywords,
+    this.isSuperuser = false,
   });
 }
 

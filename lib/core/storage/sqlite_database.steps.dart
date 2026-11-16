@@ -8258,6 +8258,8 @@ final class Schema16 extends i0.VersionedSchema {
         _column_328,
         _column_329,
         _column_231,
+        _column_330,
+        _column_331,
       ],
       attachedDatabase: database,
     ),
@@ -8269,7 +8271,7 @@ final class Schema16 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(lineage_id, generation)'],
-      columns: [_column_316, _column_330],
+      columns: [_column_316, _column_332],
       attachedDatabase: database,
     ),
     alias: null,
@@ -8740,6 +8742,10 @@ class Shape51 extends i0.VersionedTable {
       columnsByName['mobile_backup_deferred']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<String> get createdAt =>
       columnsByName['created_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get descriptorTestedAt =>
+      columnsByName['descriptor_tested_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get serverTestedAt =>
+      columnsByName['server_tested_at']! as i1.GeneratedColumn<String>;
 }
 
 i1.GeneratedColumn<String> _column_316(String aliasedName) =>
@@ -8857,6 +8863,22 @@ i1.GeneratedColumn<int> _column_329(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NOT NULL CHECK (mobile_backup_deferred IN (0, 1))',
     );
+i1.GeneratedColumn<String> _column_330(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'descriptor_tested_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
+i1.GeneratedColumn<String> _column_331(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'server_tested_at',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NULL',
+    );
 
 class Shape52 extends i0.VersionedTable {
   Shape52({required super.source, required super.alias}) : super.aliased();
@@ -8866,7 +8888,7 @@ class Shape52 extends i0.VersionedTable {
       columnsByName['generation']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<int> _column_330(String aliasedName) =>
+i1.GeneratedColumn<int> _column_332(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'generation',
       aliasedName,

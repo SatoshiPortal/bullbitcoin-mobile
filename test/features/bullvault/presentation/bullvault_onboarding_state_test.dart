@@ -102,10 +102,7 @@ void main() {
       step: BullVaultOnboardingStep.complete,
       result: result,
     );
-    final exported = initial.copyWith(
-      recoveryPackageExported: true,
-      recoveryPackageConfirmed: true,
-    );
+    final exported = initial.copyWith(recoveryPackageConfirmed: true);
 
     expect(initial.canOpenWallet, isFalse);
     expect(exported.canOpenWallet, isFalse);
@@ -168,7 +165,6 @@ void main() {
     final readyExceptHardware = BullVaultOnboardingState(
       step: BullVaultOnboardingStep.complete,
       result: result,
-      recoveryPackageExported: true,
       recoveryPackageConfirmed: true,
       seedBackupVerified: true,
     );
