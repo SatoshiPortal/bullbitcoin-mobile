@@ -24,6 +24,9 @@ final class PayjoinProtocolRejectedFailure extends PayjoinFailure {
   const PayjoinProtocolRejectedFailure([super.logMessage]);
 }
 
+/// The sender start failed after its session was persisted and armed: the
+/// post to the directory did not go through, and the stored session keeps the
+/// signed original. The caller may adopt that session and settle it.
 final class PayjoinSessionNotFoundFailure extends PayjoinFailure {
   const PayjoinSessionNotFoundFailure([super.logMessage]);
 }
@@ -60,4 +63,12 @@ final class PayjoinSpendBlockedFailure extends PayjoinFailure {
   /// The wallet is only busy with another operation: retrying shortly works.
   final bool busy;
   const PayjoinSpendBlockedFailure({this.busy = false});
+}
+
+/// The signed original remains reserved after this attempt's POST failed.
+final class PayjoinSenderKeptFailure extends PayjoinFailure {
+  final String originalTxId;
+
+  const PayjoinSenderKeptFailure(this.originalTxId, [String? logMessage])
+    : super(logMessage ?? 'Sender retained after directory publication failed');
 }

@@ -8,8 +8,10 @@ import 'package:primitives/primitives.dart';
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-PayjoinSenderSession _session() => PayjoinSenderSession(
-  status: PayjoinStatus.requested,
+PayjoinSenderSession _session({
+  PayjoinStatus status = PayjoinStatus.requested,
+}) => PayjoinSenderSession(
+  status: status,
   uri: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
   network: BitcoinNetwork.mainnet,
   walletId: 'wallet-1',
@@ -20,9 +22,55 @@ PayjoinSenderSession _session() => PayjoinSenderSession(
 );
 
 void main() {
+  test(
+    'seeds the stream with the stored session before live updates',
+    () async {
+      final sessions = _MockPayjoinSessions();
+      final stored = _session();
+      final updated = _session(status: PayjoinStatus.proposed);
+      when(() => sessions.byId(stored.id))
+          .thenAnswer((_) async => Ok<PayjoinSession?, PayjoinFailure>(stored));
+      when(() => sessions.watch(sessionIds: {stored.id})).thenAnswer(
+        (_) => Stream.value(Ok<PayjoinSession, PayjoinFailure>(updated)),
+      );
+
+      final updates = await WatchPayjoinUsecase(sessions)
+          .execute(ids: [stored.id])
+          .toList();
+
+      expect(
+        updates.map((u) => (u as core.Ok<PayjoinSession, SendFailure>).value),
+        [stored, updated],
+      );
+    },
+  );
+
+  test('a stored terminal session is published and ends the watch', () async {
+    final sessions = _MockPayjoinSessions();
+    final settled = _session(status: PayjoinStatus.aborted);
+    when(() => sessions.byId(settled.id))
+        .thenAnswer((_) async => Ok<PayjoinSession?, PayjoinFailure>(settled));
+
+    final updates = await WatchPayjoinUsecase(sessions)
+        .execute(ids: [settled.id])
+        .toList();
+
+    // Nothing further can come for a terminal row and the stream never
+    // replays it: the seed is the settlement.
+    expect(updates, hasLength(1));
+    expect(
+      (updates.single as core.Ok<PayjoinSession, SendFailure>).value,
+      settled,
+    );
+    verifyNever(() => sessions.watch(sessionIds: any(named: 'sessionIds')));
+  });
+
   test('forwards a session update as Ok', () async {
     final sessions = _MockPayjoinSessions();
     final payjoin = _session();
+    when(
+      () => sessions.byId(any()),
+    ).thenAnswer((_) async => const Ok<PayjoinSession?, PayjoinFailure>(null));
     when(() => sessions.watch(sessionIds: {payjoin.id})).thenAnswer(
       (_) => Stream.value(Ok<PayjoinSession, PayjoinFailure>(payjoin)),
     );
@@ -36,6 +84,9 @@ void main() {
 
   test('yields a sanitized failure instead of throwing on the stream', () async {
     final sessions = _MockPayjoinSessions();
+    when(
+      () => sessions.byId(any()),
+    ).thenAnswer((_) async => const Ok<PayjoinSession?, PayjoinFailure>(null));
     when(() => sessions.watch(sessionIds: {'session-1'})).thenAnswer(
       (_) => Stream.value(
         const Err<PayjoinSession, PayjoinFailure>(PayjoinStorageFailure()),
@@ -58,6 +109,9 @@ void main() {
   test('a failed update does not end the stream', () async {
     final sessions = _MockPayjoinSessions();
     final payjoin = _session();
+    when(
+      () => sessions.byId(any()),
+    ).thenAnswer((_) async => const Ok<PayjoinSession?, PayjoinFailure>(null));
     when(() => sessions.watch(sessionIds: {payjoin.id})).thenAnswer(
       (_) => Stream.fromIterable([
         const Err<PayjoinSession, PayjoinFailure>(PayjoinStorageFailure()),

@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.d
 import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_tx_outspend_model.dart';
-import 'package:bb_mobile/core/swaps/data/services/swap_status_mapper.dart';
+import 'package:bb_mobile/features/swap/data/swap_status_mapper.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
@@ -45,6 +45,7 @@ class BoltzDatasource {
   /// Public (non-secret) id only; the key material itself lives in secure
   /// storage and is read on demand.
   String? _swapMasterKeyWalletFingerprint;
+  int _swapMasterKeyGeneration = 0;
   final SwapStatusMapper _mapper = const SwapStatusMapper();
   final Set<String> _subscribedSwapIds = {};
 
@@ -180,11 +181,14 @@ class BoltzDatasource {
     required String walletFingerprint,
     required bool isTestnet,
   }) async {
+    final generation = ++_swapMasterKeyGeneration;
+    _swapMasterKeyWalletFingerprint = null;
     final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
     final exists = await _boltzStore.swapMasterKeyExists(
       network,
       walletFingerprint: walletFingerprint,
     );
+    if (generation != _swapMasterKeyGeneration) return false;
     if (exists) _swapMasterKeyWalletFingerprint = walletFingerprint;
     return exists;
   }
@@ -1295,15 +1299,6 @@ class BoltzDatasource {
       }
 
       switch (mapping) {
-        case SwapStale():
-          log.info(
-            '[Boltz] deleting stale pending swap $swapId '
-            '(no funds at risk, expired upstream)',
-          );
-          unsubscribeToSwaps([swapId]);
-          await _boltzStore.trash(swapId);
-          await _boltzStore.deleteFromSecureStorage(swapId);
-
         case SwapUnchanged():
           if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
             _swapUpdatesController.add(swapModel);

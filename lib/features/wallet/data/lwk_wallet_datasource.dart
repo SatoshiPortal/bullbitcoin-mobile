@@ -83,14 +83,15 @@ class LwkWalletDatasource {
         Err(:final failure) => throw WalletSnapshotException(failure),
       };
 
-  /// What [pset] sends out of this wallet, fee excluded: the net L-BTC
-  /// change less the fee.
+  /// Policy-asset outputs paid to [address], excluding change and fees.
   Future<int> getAmountSentToAddress(
     String pset,
     String address, {
     required WalletModel wallet,
-  }) async => switch (await (await _wallet(wallet.id)).tx.liquidEffect(pset)) {
-    Ok(:final value) => value.policyBalanceSat.abs() - value.feeSat,
-    Err(:final failure) => throw WalletSnapshotException(failure),
-  };
+  }) async =>
+      switch (await (await _wallet(wallet.id)).tx
+          .liquidAmountToAddress(pset, address)) {
+        Ok(:final value) => value.toInt(),
+        Err(:final failure) => throw WalletSnapshotException(failure),
+      };
 }
