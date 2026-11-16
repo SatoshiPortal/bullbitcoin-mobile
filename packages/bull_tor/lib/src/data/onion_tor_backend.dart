@@ -214,18 +214,35 @@ final class OnionTorBackend implements EmbeddedTorPort {
         '${endpoint.port}',
       );
       return endpoint;
-    } on TorBackendException {
+    } on TorBackendException catch (error) {
+      _logStartFailure(generation, transport, error.failure);
       await _cleanup();
       rethrow;
     } on onion.TorFailure catch (error) {
       final failure = _mapFailure(error, _lastDiagnostic);
+      _logStartFailure(generation, transport, failure);
       await _cleanup();
       throw TorBackendException(failure);
     } catch (error) {
+      final failure = TorUnexpectedFailure(error.toString());
+      _logStartFailure(generation, transport, failure);
       await _cleanup();
-      throw TorBackendException(TorUnexpectedFailure(error.toString()));
+      throw TorBackendException(failure);
     }
   }
+
+  /// Without this line a support log cannot tell why Tor never became ready.
+  /// A start ended by [stop], such as the switch to Snowflake, is no failure.
+  void _logStartFailure(
+    int generation,
+    TorTransport transport,
+    TorFailure failure,
+  ) => generation != _generation
+      ? _log.fine('Embedded Tor ${transport.name} start stopped')
+      : _log.warning(
+          'Embedded Tor ${transport.name} start failed: '
+          '${failure.runtimeType} ${failure.logMessage ?? ''}',
+        );
 
   /// Completes once a status reports `readyForTraffic`, fails on [stop] or
   /// after [timeout].
