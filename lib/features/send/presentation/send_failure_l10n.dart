@@ -64,6 +64,7 @@ extension SendFailureL10n on SendFailure {
           : context.loc.sendErrorConfirmationFailed,
     SendPriceUnavailableFailure() =>
       context.loc.bitcoinPriceExchangeRateUnavailable,
+    SendArkRouteUnavailableFailure() ||
     SendUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }
