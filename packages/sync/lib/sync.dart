@@ -48,9 +48,11 @@ export 'src/data/read/address_script.dart' show bitcoinAddressScript;
 export 'src/data/read/validate_address.dart' show validateAddress;
 export 'src/data/read/wallet_snapshot_reader.dart' show WalletSnapshotException;
 export 'src/domain/decoded_transactions.dart';
+export 'src/data/codec/bitcoin_psbt_facts.dart';
 export 'src/data/codec/bitcoin_codec.dart'
     show
         bitcoinPsbtFee,
+        inspectBitcoinPsbt,
         bitcoinPublicDescriptor,
         bitcoinScriptAddress,
         canonicalBitcoinPsbt,
