@@ -3,12 +3,13 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/app_language_picker.dart';
+import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullLanguagePicker,
         BullPickerChip,
         BullPickerItem,
         BullSettingsEntryItem,
@@ -94,9 +95,18 @@ class CustomizeStep extends StatelessWidget {
             icon: Icons.language,
             title: loc.settingsLanguageTitle,
             contentPadding: EdgeInsets.zero,
-            trailing: AppLanguagePicker(
+            trailing: BullLanguagePicker<Language>(
               value: language,
-              onChanged: onLanguagePicked,
+              languages: [
+                for (final language in Language.values)
+                  BullPickerItem(value: language, label: language.label),
+              ],
+              onChanged: (picked) {
+                onLanguagePicked(picked);
+                if (picked.isMachineTranslated) {
+                  TranslationWarningBottomSheet.show(context);
+                }
+              },
             ),
           ),
           divider,

@@ -78,6 +78,9 @@ enum Language {
     this.scriptCode,
   });
 
+  /// Every language but the source English is machine translated.
+  bool get isMachineTranslated => this != Language.unitedStatesEnglish;
+
   static Language fromName(String name) {
     try {
       return Language.values.firstWhere((language) => language.name == name);
