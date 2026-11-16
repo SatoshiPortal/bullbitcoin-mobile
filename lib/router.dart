@@ -217,6 +217,8 @@ class AppRouter {
       SettingsRouter.route(
         buildPriceHistory: (context) => locator<BitcoinPriceFacade>()
             .buildHistory(onBack: () => context.pop()),
+        onRegisterDescriptor: (context) =>
+            context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
         walletDetailsActionsBuilder: (context, wallet) => [
           BullVaultWalletSettingsContribution(wallet: wallet),
         ],

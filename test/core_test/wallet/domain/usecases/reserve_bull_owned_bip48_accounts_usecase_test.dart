@@ -11,7 +11,13 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final class _AccountRepository implements Bip48AccountRepository {
-  final List<int> reservedAccounts = [];
+  final List<int> reserved = [];
+
+  @override
+  Future<Result<Set<int>, Bip48AccountAllocationFailure>> reservedAccounts({
+    required String seedFingerprint,
+    required int coinType,
+  }) async => Ok(reserved.toSet());
 
   @override
   Future<Result<Bip48AccountClaim, Bip48AccountAllocationFailure>> claim({
@@ -52,7 +58,7 @@ final class _AccountRepository implements Bip48AccountRepository {
     required int coinType,
     required int account,
   }) async {
-    reservedAccounts.add(account);
+    reserved.add(account);
     return const Ok(null);
   }
 
@@ -90,7 +96,7 @@ void main() {
     );
 
     expect(result, isA<Ok<void, Bip48AccountAllocationFailure>>());
-    expect(repository.reservedAccounts, [100]);
+    expect(repository.reserved, [100]);
   });
 
   test('does not reserve an account whose xpub is not seed-owned', () async {
@@ -106,7 +112,7 @@ void main() {
     );
 
     expect(result, isA<Err<void, Bip48AccountAllocationFailure>>());
-    expect(repository.reservedAccounts, isEmpty);
+    expect(repository.reserved, isEmpty);
   });
 
   test(
@@ -124,7 +130,7 @@ void main() {
       );
 
       expect(result, isA<Ok<void, Bip48AccountAllocationFailure>>());
-      expect(repository.reservedAccounts, [3]);
+      expect(repository.reserved, [3]);
     },
   );
 
@@ -141,7 +147,7 @@ void main() {
     );
 
     expect(result, isA<Ok<void, Bip48AccountAllocationFailure>>());
-    expect(repository.reservedAccounts, isEmpty);
+    expect(repository.reserved, isEmpty);
   });
 }
 

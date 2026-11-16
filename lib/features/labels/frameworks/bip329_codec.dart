@@ -56,7 +56,11 @@ class Bip329LabelsCodec {
                 : label.origin,
           );
         case LabelType.extendedPublicKey:
-          return bip329.XpubLabel(ref: label.reference, label: label.label);
+          return bip329.XpubLabel(
+            ref: label.reference,
+            label: label.label,
+            origin: label.origin,
+          );
       }
     }).toList();
 

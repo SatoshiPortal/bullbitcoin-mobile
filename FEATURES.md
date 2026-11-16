@@ -107,6 +107,7 @@ graph TB
     PSBT_FLOW[PSBT Flow]
     BROADCAST_SIGNED_TX[Broadcast Signed Transaction]
     IMPORT_WALLET[Import Wallet]
+    IMPORT_WATCH_ONLY[Import Watch-Only Wallet]
     BULLVAULT[BullVault]
 
     %% Dependencies to Core (all features depend on Core, but showing it explicitly would clutter the diagram)
@@ -354,6 +355,8 @@ graph TB
 
     BACKUP_SETTINGS --> RECOVERBULL
     BACKUP_SETTINGS --> BACKUPS
+    SETTINGS --> LABELS
+    SETTINGS -->|descriptor registration route| IMPORT_WATCH_ONLY
     %% Styling
     classDef coreStyle fill:#2d3748,stroke:#4a5568,stroke-width:3px,color:#fff
     classDef packageStyle fill:#234e52,stroke:#319795,stroke-width:2px,color:#e6fffa

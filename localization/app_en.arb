@@ -17562,5 +17562,27 @@
   "backupReminderDismissForever": "Dismiss backup reminders forever",
   "backupReminderLater366Days": "REMIND ME IN 366 DAYS",
   "backupReminderTestPhysicalTitle": "TEST YOUR PHYSICAL BACKUP",
-  "backupReminderLater365Days": "REMIND ME IN 365 DAYS"
+  "backupReminderLater365Days": "REMIND ME IN 365 DAYS",
+  "signingKeyUsageDescriptionFailed": "The key is marked as used, but its description could not be saved.",
+  "@signingKeyUsedNoDescription": {},
+  "@signingKeyUsageDescriptionFailed": {
+    "description": "A label write failed after the key account was successfully reserved"
+  },
+  "signingKeyUsageDescriptionTitle": "Where did you use this key?",
+  "signingKeyUsedTitle": "Keys already used",
+  "@signingKeyUsedSign": {},
+  "signingKeyUsedSign": "Sign",
+  "@signingKeyUsageDescriptionHint": {
+    "description": "Example of a private signing-key usage description"
+  },
+  "signingKeyRegisterDescriptor": "Register wallet descriptor",
+  "@signingKeyRegisterDescriptor": {
+    "description": "Open the existing wallet descriptor import and signer-device flow"
+  },
+  "signingKeyUsageDescriptionHint": "For example, Family vault in Sparrow",
+  "@signingKeyUsageDescriptionTitle": {
+    "description": "Private description requested when marking an exported key as used"
+  },
+  "signingKeyUsedNoDescription": "No description",
+  "@signingKeyUsedTitle": {}
 }
