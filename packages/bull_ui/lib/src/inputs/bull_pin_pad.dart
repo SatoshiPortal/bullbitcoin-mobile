@@ -1,7 +1,8 @@
 import 'dart:math';
 
-import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/inputs/bull_keypad.dart';
+import 'package:bull_ui/src/theme/bull_keypad_colors.dart';
+import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -25,7 +26,7 @@ class BullPinPad extends StatefulWidget {
   /// localization.
   final String scrambleHint;
 
-  /// When false, every key ignores taps and is dimmed. Callers lock the pad
+  /// When false, every key ignores taps and sinks into the panel. Callers lock the pad
   /// this way during a failed-attempt timeout or while a PIN is verified.
   final bool enabled;
 
@@ -100,8 +101,11 @@ class _BullPinPadState extends State<BullPinPad> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // The panel shows a gap of itself around the keys; each row already starts with one.
+        final gap = BullPinPad.grid.gap;
+        final panelPadding = EdgeInsets.fromLTRB(gap, 0, gap, gap);
         final metrics = BullPinPad.grid.resolve(
-          constraints,
+          constraints.deflate(panelPadding),
           MediaQuery.sizeOf(context),
         );
         Widget digitKey(int slot) => _DigitKey(
@@ -111,37 +115,47 @@ class _BullPinPadState extends State<BullPinPad> {
           onTap: _onDigit,
         );
         return Center(
-          child: SizedBox(
-            width: metrics.width,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var row = 0; row < 3; row++)
-                  _PadRow(
-                    metrics: metrics,
-                    keys: [
-                      for (var col = 0; col < 3; col++) digitKey(row * 3 + col),
-                    ],
-                  ),
-                _PadRow(
-                  metrics: metrics,
-                  keys: [
-                    _ScrambleKey(
-                      active: _scrambled,
-                      enabled: widget.enabled,
-                      hint: widget.scrambleHint,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: context.bullKeypad.panel,
+              borderRadius: BorderRadius.circular(context.bullShapes.key),
+            ),
+            child: Padding(
+              padding: panelPadding,
+              child: SizedBox(
+                width: metrics.width,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (var row = 0; row < 3; row++)
+                      _PadRow(
+                        metrics: metrics,
+                        keys: [
+                          for (var col = 0; col < 3; col++)
+                            digitKey(row * 3 + col),
+                        ],
+                      ),
+                    _PadRow(
                       metrics: metrics,
-                      onTap: _toggleScramble,
-                    ),
-                    digitKey(9),
-                    _BackspaceKey(
-                      enabled: widget.enabled,
-                      metrics: metrics,
-                      onTap: _onBackspace,
+                      keys: [
+                        _ScrambleKey(
+                          active: _scrambled,
+                          enabled: widget.enabled,
+                          hint: widget.scrambleHint,
+                          metrics: metrics,
+                          onTap: _toggleScramble,
+                        ),
+                        digitKey(9),
+                        _BackspaceKey(
+                          enabled: widget.enabled,
+                          metrics: metrics,
+                          onTap: _onBackspace,
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -192,11 +206,12 @@ class _DigitKey extends StatelessWidget {
       onTap: () => onTap(digit),
       height: metrics.keyHeight,
       suppressAnimation: true,
-      child: BullText(
+      child: BullKeyGlyph(
         '$digit',
-        style: Theme.of(context).textTheme.headlineLarge
-            ?.copyWith(fontSize: metrics.glyphSize),
-        color: enabled ? context.bull.onSurface : context.bull.textMuted,
+        size: metrics.glyphSize,
+        color: enabled
+            ? context.bullKeypad.onKey
+            : context.bullKeypad.disabledGlyph,
       ),
     );
   }
@@ -223,7 +238,9 @@ class _BackspaceKey extends StatelessWidget {
       child: Icon(
         Icons.backspace_outlined,
         size: metrics.glyphSize,
-        color: enabled ? context.bull.onSurface : context.bull.textMuted,
+        color: enabled
+            ? context.bullKeypad.onKey
+            : context.bullKeypad.disabledGlyph,
       ),
     );
   }
@@ -247,7 +264,7 @@ class _ScrambleKey extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.bull;
+    final keypad = context.bullKeypad;
     return Tooltip(
       message: hint,
       child: BullKeyCap(
@@ -260,10 +277,10 @@ class _ScrambleKey extends StatelessWidget {
           Icons.shuffle,
           size: metrics.glyphSize,
           color: !enabled
-              ? colors.textMuted
+              ? keypad.disabledGlyph
               : active
-              ? colors.primary
-              : colors.onSurface,
+              ? context.bull.primary
+              : keypad.onKey,
         ),
       ),
     );

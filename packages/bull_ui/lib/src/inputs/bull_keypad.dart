@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:bull_ui/src/theme/bull_keypad_colors.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
@@ -120,9 +121,7 @@ class BullKeyCap extends StatelessWidget {
   final double height;
   final Widget child;
 
-  /// The key colour whatever its state. Null keeps the PIN pad look: surface
-  /// when enabled, a darker container when not. A keyboard that marks a
-  /// disabled key by its glyph alone passes its fill here.
+  /// The key colour whatever its state. Null keeps the PIN pad look: the key colour when enabled, no fill when not, so a disabled key sinks into the panel.
   final Color? fill;
 
   /// When true, the key changes appearance as an instant cut with no ink
@@ -151,8 +150,7 @@ class BullKeyCap extends StatelessWidget {
       // extra frame of state history for a camera; there is no reason to
       // animate a key cap.
       animationDuration: Duration.zero,
-      color:
-          fill ?? (enabled ? colors.surface : colors.surfaceContainerHighest),
+      color: fill ?? (enabled ? context.bullKeypad.key : colors.transparent),
       borderRadius: radius,
       child: InkWell(
         // A key must never take focus from the field being typed into.
