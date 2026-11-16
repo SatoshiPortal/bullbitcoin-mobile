@@ -3,9 +3,10 @@ import 'package:material_ui/material_ui.dart';
 
 /// Themed on/off switch.
 ///
-/// Matches the app-wide switch theme: a surface-coloured thumb on a [text]
-/// track when on and a [textMuted] track when off, so the off track stays
-/// visible on both plain and tinted rows.
+/// Off reads as off at a glance: a hollow track ringed in [BullTheme.outline]
+/// around a grey thumb carrying a cross. On fills the track with
+/// [BullTheme.primary] around a white thumb carrying a check. The app's
+/// `SwitchThemeData` is [themeData], so every Material [Switch] looks alike.
 class BullSwitch extends StatelessWidget {
   const BullSwitch({super.key, required this.value, required this.onChanged});
 
@@ -15,19 +16,44 @@ class BullSwitch extends StatelessWidget {
   /// Fired on toggle. Null renders the switch disabled.
   final ValueChanged<bool>? onChanged;
 
+  /// The switch look for [colors], for a `ThemeData.switchTheme` as well as
+  /// for [BullSwitch] itself. A disabled switch keeps the look, faded.
+  static SwitchThemeData themeData(BullTheme colors) {
+    Color faded(Set<WidgetState> states, Color color) =>
+        states.contains(WidgetState.disabled)
+        ? color.withValues(alpha: 0.38)
+        : color;
+    bool on(Set<WidgetState> states) => states.contains(WidgetState.selected);
+    return SwitchThemeData(
+      trackColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            faded(states, on(states) ? colors.primary : colors.transparent),
+      ),
+      trackOutlineColor: WidgetStateProperty.resolveWith(
+        (states) => faded(states, on(states) ? colors.primary : colors.outline),
+      ),
+      trackOutlineWidth: const WidgetStatePropertyAll(2),
+      thumbColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            faded(states, on(states) ? colors.onPrimary : colors.textMuted),
+      ),
+      thumbIcon: WidgetStateProperty.resolveWith(
+        (states) => on(states)
+            ? Icon(Icons.check, color: faded(states, colors.primary))
+            : Icon(Icons.close, color: faded(states, colors.background)),
+      ),
+      padding: EdgeInsets.zero,
+      overlayColor: WidgetStatePropertyAll(colors.transparent),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      splashRadius: 0,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colors = context.bull;
-    return Switch(
-      value: value,
-      activeThumbColor: colors.surface,
-      activeTrackColor: colors.text,
-      inactiveThumbColor: colors.surface,
-      inactiveTrackColor: colors.textMuted,
-      trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-        (states) => colors.transparent,
-      ),
-      onChanged: onChanged,
+    return SwitchTheme(
+      data: themeData(context.bull),
+      child: Switch(value: value, onChanged: onChanged),
     );
   }
 }
