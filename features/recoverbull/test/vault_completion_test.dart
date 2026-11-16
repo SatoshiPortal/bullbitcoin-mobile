@@ -184,6 +184,7 @@ void main() {
           null,
         ),
       );
+      final sealing = SealingPassword('public test password');
       final sessions = _Sessions(server);
       final session = ManageVaultSessionUsecase(
         metadata,
@@ -218,9 +219,7 @@ void main() {
           home: RecoverBullFlowHost(
             flow: RecoverBullFlow.secureVault,
             presentation: presentation,
-            page: const VaultProviderSelectionPage(
-              password: 'public test password',
-            ),
+            page: VaultProviderSelectionPage(password: sealing),
             copiedMessage: 'Copied',
             onTestVault: () {},
             onFinished: () {},
@@ -247,6 +246,8 @@ void main() {
         findsOneWidget,
       );
       expect(cubit.state.hasPendingProviderSave, isTrue);
+      // Sealed: the retry saves the same vault, so the screen forgets the password.
+      expect(sealing.value, isNull);
       // A changed consent generation must not cause the save-only retry to
       // acquire another server session. The pending file keeps its old key.
       await tester.runAsync(
