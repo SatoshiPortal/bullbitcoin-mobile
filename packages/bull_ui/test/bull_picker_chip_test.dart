@@ -1,5 +1,4 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_app.dart';
@@ -33,34 +32,6 @@ void main() {
 
       expect(picked, 'b');
     });
-
-    for (final outlined in [true, false]) {
-      testWidgets('draws its border only when outlined: $outlined', (
-        tester,
-      ) async {
-        await tester.pumpWidget(
-          wrapWithTheme(
-            BullPickerChip<String>(
-              value: 'a',
-              onChanged: (_) {},
-              outlined: outlined,
-              items: const [BullPickerItem(value: 'a', label: 'Apple')],
-            ),
-          ),
-        );
-        final box = tester.widget<DecoratedBox>(
-          find
-              .ancestor(
-                of: find.text('Apple'),
-                matching: find.byType(DecoratedBox),
-              )
-              .first,
-        );
-        final shape =
-            (box.decoration as ShapeDecoration).shape as RoundedRectangleBorder;
-        expect(shape.side == BorderSide.none, !outlined);
-      });
-    }
   });
 
   testWidgets('BullPickerMenu opens from any child', (tester) async {

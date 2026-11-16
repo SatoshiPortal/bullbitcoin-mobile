@@ -11,21 +11,15 @@ class AppLanguagePicker extends StatelessWidget {
     super.key,
     required this.value,
     required this.onChanged,
-    this.compact = false,
   });
 
   final Language value;
   final ValueChanged<Language> onChanged;
 
-  /// Drops the border and the globe, for a settings row that already shows
-  /// both a title and the globe.
-  final bool compact;
-
   @override
   Widget build(BuildContext context) {
     return BullPickerChip<Language>(
-      icon: compact ? null : Icons.language,
-      outlined: !compact,
+      icon: Icons.language,
       value: value,
       items: [
         for (final language in Language.values)

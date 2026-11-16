@@ -97,7 +97,6 @@ class CustomizeStep extends StatelessWidget {
             trailing: AppLanguagePicker(
               value: language,
               onChanged: onLanguagePicked,
-              compact: true,
             ),
           ),
           divider,
@@ -116,7 +115,6 @@ class CustomizeStep extends StatelessWidget {
                   ),
               ],
               onChanged: onCurrencyPicked,
-              outlined: false,
             ),
           ),
         ],
