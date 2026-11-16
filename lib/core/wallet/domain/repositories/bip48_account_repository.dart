@@ -4,6 +4,13 @@ import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:meta/meta.dart';
 
 abstract interface class Bip48AccountRepository {
+  /// Persisted marks only; uncommitted export claims are not used accounts.
+  @useResult
+  Future<Result<Set<int>, Bip48AccountAllocationFailure>> reservedAccounts({
+    required String seedFingerprint,
+    required int coinType,
+  });
+
   @useResult
   Future<Result<int, Bip48AccountAllocationFailure>> nextAvailable({
     required String seedFingerprint,
