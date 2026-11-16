@@ -1,12 +1,25 @@
 import 'dart:math';
 
 import 'package:bull_ui/bull_ui.dart';
+import 'package:bull_ui/src/inputs/bull_keypad.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'test_app.dart';
 
 final scrambleKey = find.byKey(const Key('pinPadScrambleToggle'));
+
+const keypad = BullKeypadColors.light;
+
+/// The colour a key is drawn with.
+Color? keyFill(WidgetTester tester, Finder glyph) {
+  final cap = find.ancestor(of: glyph, matching: find.byType(BullKeyCap));
+  return tester
+      .widget<Material>(
+        find.descendant(of: cap, matching: find.byType(Material)).first,
+      )
+      .color;
+}
 
 Future<void> pumpPad(
   WidgetTester tester, {
@@ -115,7 +128,7 @@ void main() {
 
       expect(layoutOf(tester), BullPinPad.digits);
       final icon = tester.widget<Icon>(find.byIcon(Icons.shuffle));
-      expect(icon.color, testBullTheme.onSurface);
+      expect(icon.color, keypad.onKey);
     });
 
     // The unlock screen locks the pad during a failed-attempt timeout; a tap
@@ -138,10 +151,65 @@ void main() {
       expect(digits, isEmpty);
       expect(backspaces, 0);
       expect(layoutOf(tester), BullPinPad.digits);
-      final digit = tester.widget<BullText>(
-        find.ancestor(of: find.text('7'), matching: find.byType(BullText)),
+      expect(
+        tester.widget<Text>(find.text('7')).style?.color,
+        keypad.disabledGlyph,
       );
-      expect(digit.color, testBullTheme.textMuted);
+      expect(
+        tester.widget<Icon>(find.byIcon(Icons.backspace_outlined)).color,
+        keypad.disabledGlyph,
+      );
+      // A disabled key has no fill and sinks into the panel.
+      expect(keyFill(tester, find.text('7')), testBullTheme.transparent);
+      expect(
+        keyFill(tester, find.byIcon(Icons.shuffle)),
+        testBullTheme.transparent,
+      );
+    });
+
+    testWidgets('keys sit on the keypad panel, filled with the key colour', (
+      tester,
+    ) async {
+      await pumpPad(tester);
+      final panel = find.ancestor(
+        of: find.text('7'),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is DecoratedBox &&
+              widget.decoration is BoxDecoration &&
+              (widget.decoration as BoxDecoration).color == keypad.panel,
+        ),
+      );
+      expect(panel, findsOneWidget);
+      expect(
+        tester.getRect(panel).contains(tester.getCenter(scrambleKey)),
+        isTrue,
+      );
+      expect(keyFill(tester, find.text('7')), keypad.key);
+      expect(
+        keyFill(tester, find.byIcon(Icons.backspace_outlined)),
+        keypad.key,
+      );
+      expect(tester.widget<Text>(find.text('7')).style?.color, keypad.onKey);
+      expect(
+        tester.widget<Icon>(find.byIcon(Icons.backspace_outlined)).color,
+        keypad.onKey,
+      );
+    });
+
+    testWidgets('digits ignore the system text size, the key already scales', (
+      tester,
+    ) async {
+      await pumpPad(tester);
+      final plain = tester.getSize(find.text('7'));
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpPad(tester);
+      expect(tester.getSize(find.text('7')), plain);
+      expect(
+        tester.widget<Text>(find.text('7')).textScaler,
+        TextScaler.noScaling,
+      );
     });
 
     for (final (name, size) in [
