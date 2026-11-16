@@ -241,15 +241,14 @@ final class BarkArkClient implements ArkClient {
         ArkUnavailableFailure(ArkFailureReason.storeIncompatible),
       );
     }
-    final unknown = store.operations
+    final unfinished = store.operations
         .where(
           (o) =>
-              o.status == ArkOperationStatus.admitted ||
-              o.status == ArkOperationStatus.outcomeUnknown ||
-              o.status == ArkOperationStatus.conflicted,
+              o.status != ArkOperationStatus.succeeded &&
+              o.status != ArkOperationStatus.failed,
         )
         .toList();
-    final pinnedSources = unknown.map((o) => o.chainSource).toSet();
+    final pinnedSources = unfinished.map((o) => o.chainSource).toSet();
     if (pinnedSources.length > 1 ||
         (requiredSource != null &&
             pinnedSources.any((s) => s != requiredSource))) {
