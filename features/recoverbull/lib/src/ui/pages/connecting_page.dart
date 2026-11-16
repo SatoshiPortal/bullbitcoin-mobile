@@ -447,7 +447,7 @@ class _Body extends StatelessWidget {
                   TorBullState.failed => context.bull.errorContainer,
                   _ => context.bull.surface,
                 },
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(context.bullShapes.card),
               ),
               child: Column(
                 children: [
@@ -598,7 +598,7 @@ class _PhaseCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: context.bull.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: Column(
         crossAxisAlignment: .start,

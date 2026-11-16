@@ -503,11 +503,11 @@ class _ProviderCardState extends State<_ProviderCard>
             HapticFeedback.lightImpact();
             widget.onTap();
           },
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: Ink(
             decoration: BoxDecoration(
               color: context.bull.surface,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: Container(
               padding: const EdgeInsets.all(16),

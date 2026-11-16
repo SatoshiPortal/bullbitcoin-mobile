@@ -193,7 +193,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
         context.loc.recoverbullEnterToView(inputTypeString),
     };
     final borderDecoration = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(context.bullShapes.input),
       borderSide: BorderSide(color: context.bull.border),
     );
 

@@ -299,7 +299,9 @@ class HowToDecideVaultLocation extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: context.bull.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(context.bullShapes.sheet),
+          ),
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Column(
