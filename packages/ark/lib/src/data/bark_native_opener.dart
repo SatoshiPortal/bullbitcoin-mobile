@@ -888,7 +888,8 @@ final class BarkNativeSession implements ArkNativeSession {
         )) {
           status = switch (movement.status) {
             'successful' => ArkOperationStatus.succeeded,
-            'failed' => ArkOperationStatus.failed,
+            // Native delivery failure can follow consumed inputs.
+            'failed' => ArkOperationStatus.outcomeUnknown,
             _ => ArkOperationStatus.pending,
           };
         }
