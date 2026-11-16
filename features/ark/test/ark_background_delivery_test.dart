@@ -124,7 +124,7 @@ void main() {
       registry: registry,
     );
     expect(
-      await facade.listEnabledAccounts(BitcoinNetwork.mainnet),
+      await facade.listEnabledAccounts(BitcoinNetwork.regtest),
       isA<Ok>().having((r) => r.value, 'new routing disabled', isEmpty),
     );
     client.keyedSyncFails = true;
@@ -153,7 +153,7 @@ void main() {
     () async {
       final other = ArkAccountId(
         parent: Fingerprint('22334455'),
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         serverIdentity: account().serverIdentity,
       );
       await registry.publish(
@@ -189,7 +189,7 @@ void main() {
   test('mismatching read account never substitutes another claim', () async {
     final other = ArkAccountId(
       parent: Fingerprint('22334455'),
-      network: BitcoinNetwork.mainnet,
+      network: BitcoinNetwork.regtest,
       serverIdentity: account().serverIdentity,
     );
     client.snapshot = Ok(journal(id: other));

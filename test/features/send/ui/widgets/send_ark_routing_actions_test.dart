@@ -35,7 +35,7 @@ void main() {
     fixture = Fixture();
     account = ArkAccountId(
       parent: Fingerprint('00112233'),
-      network: BitcoinNetwork.mainnet,
+      network: BitcoinNetwork.regtest,
       serverIdentity: 'public-server',
     );
     when(() => fixture.registry.list()).thenAnswer(
@@ -50,7 +50,7 @@ void main() {
     when(() => fixture.preferences.isEnabled(account))
         .thenAnswer((_) async => const Ok(true));
     final source = Wallet();
-    when(() => source.network).thenReturn(wallet.Network.bitcoinMainnet);
+    when(() => source.network).thenReturn(wallet.Network.bitcoinRegtest);
     state = SendState(
       copiedRawPaymentRequest: address,
       selectedWallet: SendWalletBitcoin(source),

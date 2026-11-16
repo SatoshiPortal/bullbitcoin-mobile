@@ -209,7 +209,7 @@ void main() {
       final first = DelayedReadClient()..snapshot = Ok(journal());
       final other = ArkAccountId(
         parent: account().parent,
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         serverIdentity: 'other-public-server',
       );
       ArkOperation replacement(String destination, String byte) => ArkOperation(

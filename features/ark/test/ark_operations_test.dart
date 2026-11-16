@@ -46,7 +46,7 @@ final class ThrowingClient extends FakeArkClient {
 
 ArkAccountId account() => ArkAccountId(
   parent: Fingerprint('00112233'),
-  network: BitcoinNetwork.mainnet,
+  network: BitcoinNetwork.regtest,
   serverIdentity: 'https://ark.second.tech',
 );
 ArkSnapshot snapshot(ArkAccountId account) => ArkSnapshot(

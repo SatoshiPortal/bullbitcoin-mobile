@@ -37,8 +37,8 @@ void main() {
         config(
           ArkAccountId(
             parent: account().parent,
-            network: BitcoinNetwork.regtest,
-            serverIdentity: 'regtest-server',
+            network: BitcoinNetwork.mainnet,
+            serverIdentity: 'gated-mainnet-server',
           ),
         ),
       ]);
@@ -48,7 +48,7 @@ void main() {
       provisioning: Provisioner(),
       registry: registry,
     );
-    final enabled = await facade.listEnabledAccounts(BitcoinNetwork.mainnet);
+    final enabled = await facade.listEnabledAccounts(BitcoinNetwork.regtest);
     expect(
       enabled,
       isA<Ok<List<ArkAccountId>, ArkFailure>>().having(
@@ -59,7 +59,7 @@ void main() {
     );
     preferences.enabled = false;
     expect(
-      await facade.listEnabledAccounts(BitcoinNetwork.mainnet),
+      await facade.listEnabledAccounts(BitcoinNetwork.regtest),
       isA<Ok<List<ArkAccountId>, ArkFailure>>().having(
         (r) => r.value,
         'off',
@@ -81,7 +81,7 @@ void main() {
         registry: registry,
       );
       expect(
-        await facade.listEnabledAccounts(BitcoinNetwork.mainnet),
+        await facade.listEnabledAccounts(BitcoinNetwork.regtest),
         isA<Err<List<ArkAccountId>, ArkFailure>>().having(
           (r) => r.failure,
           'storage failure',
@@ -92,7 +92,7 @@ void main() {
     },
   );
   test(
-    'unsupported network refuses before reading inventory or native wallet',
+    'mainnet and unsupported networks refuse before inventory or native wallet',
     () async {
       final registry = Registry();
       final client = FakeArkClient();
@@ -102,10 +102,13 @@ void main() {
         provisioning: Provisioner(),
         registry: registry,
       );
-      expect(
-        await facade.listEnabledAccounts(BitcoinNetwork.signet),
-        isA<Err>(),
-      );
+      for (final network in [
+        BitcoinNetwork.mainnet,
+        BitcoinNetwork.signet,
+        BitcoinNetwork.testnet,
+      ]) {
+        expect(await facade.listEnabledAccounts(network), isA<Err>());
+      }
       expect(registry.reads, 0);
       expect(client.calls, isEmpty);
     },
@@ -118,7 +121,7 @@ void main() {
       provisioning: Provisioner(),
     );
     expect(
-      await facade.listEnabledAccounts(BitcoinNetwork.mainnet),
+      await facade.listEnabledAccounts(BitcoinNetwork.regtest),
       isA<Err>(),
     );
     expect(client.calls, isEmpty);

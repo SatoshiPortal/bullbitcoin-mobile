@@ -140,7 +140,7 @@ void main() {
       );
       final other = ArkAccountId(
         parent: account().parent,
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         serverIdentity: 'another-server',
       );
       expect(
@@ -225,7 +225,7 @@ void main() {
   test('review cannot be issued from another account snapshot', () async {
     final other = ArkAccountId(
       parent: account().parent,
-      network: BitcoinNetwork.mainnet,
+      network: BitcoinNetwork.regtest,
       serverIdentity: 'another-server',
     );
     final client = FakeArkClient()..snapshot = Ok(journal(id: other));

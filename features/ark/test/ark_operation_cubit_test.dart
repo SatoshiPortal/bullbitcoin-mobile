@@ -99,7 +99,7 @@ ArkOperationCubit controller(
     request: ArkQuoteRequest.payment(
       destination: ArkPaymentDestination(
         kind: ArkDestinationKind.bolt11,
-        value: 'lnbc1publicfixture',
+        value: 'lnbcrt1publicfixture',
       ),
       amount: Sats.fromInt(1000),
     ),

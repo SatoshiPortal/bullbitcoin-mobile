@@ -15,10 +15,7 @@ void main() {
         environment: network,
       );
       final ark = items.where((item) => item.id == SettingsItemId.ark);
-      expect(
-        ark.isNotEmpty,
-        network == NetworkEnv.mainnet || network == NetworkEnv.regtest,
-      );
+      expect(ark.isNotEmpty, network == NetworkEnv.regtest);
       if (ark.isNotEmpty) {
         expect(ark.single.section, SettingsItemSection.wallet);
         expect(ark.single.path, ['Settings', 'Wallet', 'Ark']);
@@ -29,8 +26,10 @@ void main() {
   testWidgets('Ark search result opens the same explicit module entry', (
     tester,
   ) async {
-    final item = buildSettingsItems(localization: AppLocalizationsEn())
-        .byId(SettingsItemId.ark);
+    final item = buildSettingsItems(
+      localization: AppLocalizationsEn(),
+      environment: NetworkEnv.regtest,
+    ).byId(SettingsItemId.ark);
     final router = GoRouter(
       routes: [
         GoRoute(

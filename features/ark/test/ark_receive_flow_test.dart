@@ -32,7 +32,7 @@ class DelayedReceive extends FakeArkClient {
 
 ArkReceiveDestination destination() => ArkReceiveDestination(
   kind: ArkDestinationKind.bolt11,
-  value: 'lnbc1public-test-invoice',
+  value: 'lnbcrt1public-test-invoice',
   fee: Sats.fromInt(100),
   net: Sats.fromInt(900),
   expiresAt: DateTime.utc(2027),
@@ -118,7 +118,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(amountFieldsAfterReplacement, 0);
       expect(find.text('new-public-ark-address'), findsOneWidget);
-      expect(find.text('lnbc1public-test-invoice'), findsNothing);
+      expect(find.text('lnbcrt1public-test-invoice'), findsNothing);
       final command = newClient.arguments
           .whereType<(ArkAccountId, ArkReceiveRequest)>()
           .single;
@@ -244,7 +244,7 @@ void main() {
       await tester.enterText(find.byType(TextField), '1000');
       await tester.tap(find.text('Create request'));
       await tester.pumpAndSettle();
-      expect(find.text('lnbc1public-test-invoice'), findsOneWidget);
+      expect(find.text('lnbcrt1public-test-invoice'), findsOneWidget);
       expect(find.text('Fee (sats)'), findsOneWidget);
       expect(find.text('Net amount (sats)'), findsOneWidget);
       final rows = tester

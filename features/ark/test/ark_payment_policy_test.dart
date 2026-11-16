@@ -21,7 +21,7 @@ void main() {
       final request = ArkQuoteRequest.payment(
         destination: ArkPaymentDestination(
           kind: ArkDestinationKind.bolt11,
-          value: 'lnbc1publicfixture',
+          value: 'lnbcrt1publicfixture',
         ),
         amount: Sats.fromInt(1000),
       );
@@ -44,7 +44,7 @@ void main() {
       final request = ArkQuoteRequest.payment(
         destination: ArkPaymentDestination(
           kind: ArkDestinationKind.bolt11,
-          value: 'lnbc1publicfixture',
+          value: 'lnbcrt1publicfixture',
         ),
         amount: Sats.fromInt(1000),
       );
@@ -77,7 +77,7 @@ void main() {
         ..destination = Ok(
           ArkReceiveDestination(
             kind: ArkDestinationKind.bolt11,
-            value: 'lnbc1publicfixture',
+            value: 'lnbcrt1publicfixture',
             fee: Sats.fromInt(2),
             net: Sats.fromInt(998),
             expiresAt: DateTime.utc(2027),
@@ -134,7 +134,7 @@ void main() {
       expect(
         await review.execute(
           account(),
-          destination: 'lnbc1publicfixture',
+          destination: 'lnbcrt1publicfixture',
           amount: amount,
         ),
         isA<Err>(),
@@ -150,7 +150,7 @@ void main() {
           quote(
             ArkAccountId(
               parent: account().parent,
-              network: BitcoinNetwork.regtest,
+              network: BitcoinNetwork.mainnet,
               serverIdentity: account().serverIdentity,
             ),
           ),

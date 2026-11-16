@@ -325,7 +325,7 @@ void main() {
     );
     final other = ArkAccountId(
       parent: Fingerprint('44556677'),
-      network: BitcoinNetwork.mainnet,
+      network: BitcoinNetwork.regtest,
       serverIdentity: account().serverIdentity,
     );
     expect(
@@ -358,7 +358,7 @@ void main() {
     () async {
       final other = ArkAccountId(
         parent: Fingerprint('44556677'),
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         serverIdentity: account().serverIdentity,
       );
       for (final bad in [

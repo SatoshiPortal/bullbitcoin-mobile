@@ -31,12 +31,16 @@ class Fixture {
   );
 }
 
-const address =
+const mainnetAddress =
     'ark1pwh9vsmezqqpharv69q4z8m6x364d5m5prnmcalcalq9pdmzw0y7mpveck4pcfhezqypczkrrj3lkx5ue4qrf4jc7ztpt9htdttmh2judhqnu7aue8p0y9mqkr4cf5';
+
+// Classifier-only regtest HRP/checksum fixture; not native payment validity.
+const address =
+    'tark1pwh9vsmezqqpharv69q4z8m6x364d5m5prnmcalcalq9pdmzw0y7mpveck4pcfhezqypczkrrj3lkx5ue4qrf4jc7ztpt9htdttmh2judhqnu7aue8p0y9mq47jn9z';
 void main() {
   final account = ArkAccountId(
     parent: Fingerprint('00112233'),
-    network: BitcoinNetwork.mainnet,
+    network: BitcoinNetwork.regtest,
     serverIdentity: 'server',
   );
   final config = ArkAccountConfig(
@@ -51,7 +55,7 @@ void main() {
       final facade = fixture.facade;
       final result = await RecognizeArkAddressUsecase(facade).execute(
         input: 'bitcoin:bc1qexample?amount=0.01',
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         restricted: false,
       );
       expect(
@@ -74,7 +78,7 @@ void main() {
         .thenAnswer((_) async => const Ok(true));
     final result = await RecognizeArkAddressUsecase(facade).execute(
       input: ' $address ',
-      network: BitcoinNetwork.mainnet,
+      network: BitcoinNetwork.regtest,
       restricted: false,
     );
     expect(
@@ -92,7 +96,7 @@ void main() {
     expect(
       await RecognizeArkAddressUsecase(facade).execute(
         input: address,
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         restricted: true,
       ),
       isA<Err>(),
@@ -108,7 +112,7 @@ void main() {
       expect(
         await RecognizeArkAddressUsecase(configured).execute(
           input: address,
-          network: BitcoinNetwork.mainnet,
+          network: BitcoinNetwork.regtest,
           restricted: false,
         ),
         isA<Err<SendArkRequest?, SendFailure>>().having(
@@ -127,7 +131,7 @@ void main() {
     expect(
       await RecognizeArkAddressUsecase(facade).execute(
         input: address,
-        network: LiquidNetwork.mainnet,
+        network: LiquidNetwork.regtest,
         restricted: false,
       ),
       isA<Err>(),
@@ -147,7 +151,7 @@ void main() {
           .thenAnswer((_) async => const Ok(true));
       final first = cubit.resolve(
         input: address,
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         coinControl: false,
         sweep: false,
         silentPayments: false,
@@ -156,7 +160,7 @@ void main() {
       expect(cubit.state, isA<SendArkLoading>());
       await cubit.resolve(
         input: 'bitcoin:bc1qexample',
-        network: BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.regtest,
         coinControl: false,
         sweep: false,
         silentPayments: false,
@@ -169,4 +173,24 @@ void main() {
       await cubit.close();
     },
   );
+  test('mainnet Ark paste is recognized but gated before inventory or native access', () async {
+    final fixture = Fixture();
+    final usecase = RecognizeArkAddressUsecase(fixture.facade);
+    expect(usecase.recognizes(mainnetAddress, BitcoinNetwork.mainnet), true);
+    expect(
+      await usecase.execute(
+        input: mainnetAddress,
+        network: BitcoinNetwork.mainnet,
+        restricted: false,
+      ),
+      isA<Err<SendArkRequest?, SendFailure>>().having(
+        (r) => r.failure,
+        'gated',
+        isA<SendArkRouteUnavailableFailure>(),
+      ),
+    );
+    verifyZeroInteractions(fixture.registry);
+    verifyZeroInteractions(fixture.preferences);
+    verifyZeroInteractions(fixture.client);
+  });
 }
