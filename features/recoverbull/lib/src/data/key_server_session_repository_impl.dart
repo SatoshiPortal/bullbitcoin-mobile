@@ -43,6 +43,9 @@ final class KeyServerSessionRepositoryImpl
               server: server,
               transport: client,
               releaseRoute: value.close,
+              operationTimeout: keyServerOperationTimeout(
+                value.route.transport,
+              ),
               takeConnectFailure: () {
                 final failure = connectFailure;
                 connectFailure = null;

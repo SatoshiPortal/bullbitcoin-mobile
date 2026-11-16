@@ -30,8 +30,9 @@ import 'tor_logger.dart';
 /// today, or an `AF_UNIX` socket.
 const _socksPolicy = onion.SocksPolicy.onionOnly;
 
-/// [torConnectBudget] as the SDK takes it, applied to the client and every session alike.
-final _connectTimeoutMs = BigInt.from(torConnectBudget.inMilliseconds);
+/// The transport's connect budget as the SDK takes it, for the client and every session alike.
+BigInt _connectTimeoutMs(TorTransport transport) =>
+    BigInt.from(transport.connectBudget.inMilliseconds);
 
 /// How long to wait, once `bootstrap()` returns, for Arti to report it can
 /// carry traffic.
@@ -153,7 +154,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
           cacheDir: cacheDir.path,
           socksPort: 0,
           policy: _socksPolicy,
-          connectTimeoutMs: _connectTimeoutMs,
+          connectTimeoutMs: _connectTimeoutMs(transport),
         ),
         TorTransport.snowflake => await _startWithSnowflake(
           stateDir.path,
@@ -350,7 +351,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       final session = await service.openSessionWithConnectTimeout(
         socksPort: 0,
         policy: _socksPolicy,
-        connectTimeoutMs: _connectTimeoutMs,
+        connectTimeoutMs: _connectTimeoutMs(transport),
       );
       return TorSession(
         TorProxyEndpoint(
@@ -455,7 +456,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       socksPort: 0,
       snowflakePort: snowflakePort,
       policy: _socksPolicy,
-      connectTimeoutMs: _connectTimeoutMs,
+      connectTimeoutMs: _connectTimeoutMs(TorTransport.snowflake),
     );
   }
 

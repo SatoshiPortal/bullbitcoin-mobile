@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bull_recoverbull/src/data/key_server_repository_impl.dart';
 import 'package:bull_recoverbull/src/domain/recoverbull_failure.dart';
 import 'package:bull_recoverbull/src/domain/entities/encrypted_vault.dart';
+import 'package:bull_recoverbull/src/domain/repositories/key_server_repository.dart';
 import 'package:bull_tor/tor.dart' show TorConnectFailure;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -60,6 +61,7 @@ void main() {
       server: Uri.parse('http://127.0.0.1:${server.port}'),
       transport: HttpClient(),
       releaseRoute: () async => closed++,
+      operationTimeout: keyServerOperationTimeout(null),
     );
   });
 
@@ -121,6 +123,7 @@ void main() {
       server: Uri.parse('http://127.0.0.1:$port'),
       transport: transport,
       releaseRoute: () async {},
+      operationTimeout: keyServerOperationTimeout(null),
       takeConnectFailure: () {
         final failure = reported;
         reported = null;

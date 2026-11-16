@@ -22,7 +22,8 @@ final class KeyServerRepositoryImpl implements KeyServerRepository {
   final HttpClient _transport;
   final Future<void> Function() _releaseRoute;
   final TorConnectFailure? Function()? _takeConnectFailure;
-  final Duration timeout;
+  @override
+  final Duration operationTimeout;
   Future<void>? _closing;
 
   KeyServerRepositoryImpl({
@@ -30,7 +31,7 @@ final class KeyServerRepositoryImpl implements KeyServerRepository {
     required HttpClient transport,
     required this._releaseRoute,
     this._takeConnectFailure,
-    this.timeout = keyServerOperationTimeout,
+    required this.operationTimeout,
   }) : _server = client.KeyServer(address: server, client: transport),
        _transport = transport;
 
@@ -132,7 +133,7 @@ final class KeyServerRepositoryImpl implements KeyServerRepository {
     if (_closing != null) return const Err(VaultCancelledFailure());
     _takeConnectFailure?.call();
     try {
-      final value = await operation().timeout(timeout);
+      final value = await operation().timeout(operationTimeout);
       log.fine('recoverbull.server.operation.completed');
       return Ok(value);
     } on client.KeyServerException catch (error) {

@@ -50,7 +50,7 @@ final class ManageVaultSessionUsecase {
     void Function(DateTime deadline)? onProbe,
   }) => _run(
     (server, _) {
-      onProbe?.call(DateTime.now().add(keyServerOperationTimeout));
+      onProbe?.call(DateTime.now().add(server.operationTimeout));
       return server.probe();
     },
     newRoute: newRoute || restartTor || viaSnowflake,

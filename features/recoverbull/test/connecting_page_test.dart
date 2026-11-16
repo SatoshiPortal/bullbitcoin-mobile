@@ -499,6 +499,10 @@ final class _HangingServer extends Fake implements KeyServerRepository {
   final answer = Completer<Result<void, RecoverBullFailure>>();
 
   @override
+  Duration get operationTimeout =>
+      keyServerOperationTimeout(TorTransport.direct);
+
+  @override
   Future<Result<void, RecoverBullFailure>> probe() => answer.future;
 
   @override
