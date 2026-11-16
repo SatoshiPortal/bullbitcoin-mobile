@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Move the recovery-phrase keyboard from the mnemonic import feature into the kit as `BullMnemonicKeyboard`, unchanged: the letters stay off the platform IME and the semantics tree, and while shuffled a key neither splashes nor fades.
 - Add `BullSecretTextInput`, a labelled field for a secret typed on the system keyboard (a BIP39 passphrase): requests no IME suggestions, personalised learning or smart punctuation and disables Flutter platform autofill. The value is obscured behind a show/hide toggle, with no selection or copy, and excluded from the Flutter semantics tree. The system keyboard still receives typed text; native iOS autofill and VoiceOver behaviour require device verification.
 - **Foundation tokens now follow the design system / official theme.** `BullTheme`
   is the full 1:1 `AppColors` mirror (all ~40 fields, official names); `BullRadius`

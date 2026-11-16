@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bull_ui/bull_ui.dart' show BullMnemonicKeyboard;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
@@ -96,7 +96,7 @@ List<String> semanticsStrings(WidgetTester tester) {
 /// A key on the in-app keyboard, scoped so the letter is matched on the
 /// keyboard and not in a field or a suggestion chip.
 Finder keyboardKey(String letter) => find.descendant(
-  of: find.byType(MnemonicKeyboard),
+  of: find.byType(BullMnemonicKeyboard),
   matching: find.text(letter),
 );
 
@@ -127,7 +127,7 @@ Future<void> tapKey(WidgetTester tester, String letter) async {
 }
 
 Finder _backspaceKey() => find.descendant(
-  of: find.byType(MnemonicKeyboard),
+  of: find.byType(BullMnemonicKeyboard),
   matching: find.byIcon(Icons.backspace_outlined),
 );
 
@@ -244,14 +244,14 @@ void main() {
       tester,
     ) async {
       await pumpWidget(tester, onSubmit: (_) {});
-      expect(find.byType(MnemonicKeyboard), findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsNothing);
 
       await focusField(tester, 0);
-      expect(find.byType(MnemonicKeyboard), findsOneWidget);
+      expect(find.byType(BullMnemonicKeyboard), findsOneWidget);
 
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
-      expect(find.byType(MnemonicKeyboard), findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsNothing);
     });
 
     testWidgets('tapping empty page space dismisses the keyboard', (
@@ -259,7 +259,7 @@ void main() {
     ) async {
       await pumpWidget(tester, onSubmit: (_) {});
       await focusField(tester, 0);
-      expect(find.byType(MnemonicKeyboard), findsOneWidget);
+      expect(find.byType(BullMnemonicKeyboard), findsOneWidget);
 
       // Tap the gap between the two columns, level with the first field — a
       // point that lands on no field.
@@ -267,7 +267,7 @@ void main() {
       await tester.tapAt(Offset(400, row.center.dy));
       await tester.pumpAndSettle();
 
-      expect(find.byType(MnemonicKeyboard), findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsNothing);
       expect(fieldHasFocus(tester, 0), isFalse);
     });
 

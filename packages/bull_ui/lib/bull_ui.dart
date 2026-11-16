@@ -152,6 +152,7 @@ export 'src/inputs/bull_language_picker.dart';
 export 'src/inputs/bull_picker_chip.dart';
 export 'src/inputs/bull_labeled_text_input.dart';
 export 'src/inputs/bull_lowercase_input_formatter.dart';
+export 'src/inputs/bull_mnemonic_keyboard.dart';
 export 'src/inputs/bull_paste_input.dart';
 export 'src/inputs/bull_secret_text_input.dart';
 export 'src/inputs/bull_selectable_list.dart';
