@@ -2,8 +2,10 @@ import 'dart:math' as math;
 
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/inputs/bull_keypad.dart';
+import 'package:bull_ui/src/theme/bull_keypad_colors.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -300,7 +302,6 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.bull;
     final screen = MediaQuery.sizeOf(context);
     final safeBottom = MediaQuery.paddingOf(context).bottom;
     final height = BullMnemonicKeyboard.panelHeightFor(screen, safeBottom);
@@ -309,7 +310,7 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
       controller: _popupController,
       overlayChildBuilder: _buildPopup,
       child: Material(
-        color: colors.surfaceContainerHighest,
+        color: context.bullKeypad.panel,
         child: SizedBox(
           height: height,
           child: SafeArea(
@@ -517,7 +518,7 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
   }
 
   Widget _letterKey(String value, BullKeypadMetrics metrics) {
-    final colors = context.bull;
+    final keypad = context.bullKeypad;
     final enabled = widget.enabledLetters.contains(value);
     final variants = _accentPage
         ? const <String>[]
@@ -535,12 +536,11 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
         suppressAnimation: widget.shuffleActive,
         // A letter that cannot continue the word loses its key: no fill, so
         // it sinks into the panel, and a faint glyph.
-        fill: enabled ? colors.background : colors.transparent,
-        child: BullText(
+        fill: enabled ? keypad.key : context.bull.transparent,
+        child: BullKeyGlyph(
           BullMnemonicKeyboard.keyLabel(value),
-          style: Theme.of(context).textTheme.headlineLarge
-              ?.copyWith(fontSize: metrics.glyphSize),
-          color: enabled ? colors.onSurface : colors.outline,
+          size: metrics.glyphSize,
+          color: enabled ? keypad.onKey : keypad.disabledGlyph,
         ),
       ),
     );
@@ -607,14 +607,19 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
       enabled: true,
       onTap: () => setState(() => _accentPage = !_accentPage),
       metrics: metrics,
-      child: (color) => BullText(
+      child: (color) => BullKeyGlyph(
         label,
-        style: Theme.of(context).textTheme.titleMedium
-            ?.copyWith(fontSize: metrics.glyphSize * 0.75),
+        size: _secondarySize(metrics, 0.75),
         color: color,
       ),
     );
   }
+
+  /// A label smaller than the glyph, [share] of its size, but never below the caption role.
+  double _secondarySize(BullKeypadMetrics metrics, double share) => math.max(
+    metrics.glyphSize * share,
+    context.bullType.caption.fontSize ?? 0,
+  );
 
   Widget _languageKey(BullKeypadMetrics metrics) {
     final languages = widget.languages;
@@ -640,10 +645,9 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
                 color: color,
               ),
               const SizedBox(width: 4),
-              BullText(
+              BullKeyGlyph(
                 code,
-                style: Theme.of(context).textTheme.titleSmall
-                    ?.copyWith(fontSize: metrics.glyphSize * 0.65),
+                size: _secondarySize(metrics, 0.65),
                 color: color,
               ),
             ],
@@ -819,10 +823,9 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
                         context.bullShapes.key,
                       ),
                     ),
-                    child: BullText(
+                    child: BullKeyGlyph(
                       BullMnemonicKeyboard.keyLabel(variant),
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(fontSize: glyph),
+                      size: glyph,
                       color: index == _selectedVariant
                           ? colors.onPrimary
                           : colors.onSurface,
@@ -882,7 +885,6 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
     required bool selected,
   }) {
     final colors = context.bull;
-    final textTheme = Theme.of(context).textTheme;
     final radius = BorderRadius.circular(context.bullShapes.key);
     return InkWell(
       key: ValueKey('mnemonicLanguageOption$index'),
@@ -902,16 +904,15 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
               width: 32,
               child: BullText(
                 language.code,
-                style: textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                role: BullTextRole.caption,
+                fontWeight: FontWeight.w700,
                 color: selected ? colors.onPrimary : colors.textMuted,
               ),
             ),
             Expanded(
               child: BullText(
                 language.name,
-                style: textTheme.bodyMedium,
+                role: BullTextRole.body,
                 color: selected ? colors.onPrimary : colors.onSurface,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -925,7 +926,7 @@ class _BullMnemonicKeyboardState extends State<BullMnemonicKeyboard> {
 }
 
 /// Backspace, enter, scramble, page and language share one look, distinct
-/// from the letters: an outline fill, or the accent while [active].
+/// from the letters: the function key fill, or the accent while [active].
 class _FunctionKey extends StatelessWidget {
   final bool enabled;
   final bool active;
@@ -945,17 +946,18 @@ class _FunctionKey extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final keypad = context.bullKeypad;
     return BullKeyCap(
       enabled: enabled,
       onTap: onTap,
       height: metrics.keyHeight,
-      fill: active ? colors.primary : colors.outline,
+      fill: active ? colors.primary : keypad.functionKey,
       child: child(
         !enabled
-            ? colors.textMuted
+            ? keypad.onFunctionKeyDisabled
             : active
             ? colors.onPrimary
-            : colors.onSurface,
+            : keypad.onFunctionKey,
       ),
     );
   }
@@ -977,14 +979,13 @@ class _SuggestionStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final textTheme = Theme.of(context).textTheme;
     final notice = this.notice;
     if (suggestions.isEmpty) {
       if (notice == null) return const SizedBox.expand();
       return Center(
         child: BullText(
           notice,
-          style: textTheme.labelMedium,
+          role: BullTextRole.label,
           color: colors.textMuted,
         ),
       );
@@ -1017,11 +1018,10 @@ class _SuggestionStrip extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: BullText(
                           word,
-                          style: textTheme.bodyLarge?.copyWith(
-                            fontWeight: index == 1
-                                ? FontWeight.w700
-                                : FontWeight.w400,
-                          ),
+                          role: BullTextRole.body,
+                          fontWeight: index == 1
+                              ? FontWeight.w700
+                              : FontWeight.w400,
                           color: colors.onSurface,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

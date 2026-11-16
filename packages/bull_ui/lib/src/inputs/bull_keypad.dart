@@ -173,6 +173,32 @@ class BullKeyCap extends StatelessWidget {
   }
 }
 
+/// The character a key carries, sized by the caller from the key height.
+///
+/// It ignores the system text size: the key already grows with the screen, and scaling the glyph again would only push it out of the key.
+class BullKeyGlyph extends StatelessWidget {
+  final String text;
+  final double size;
+  final Color color;
+
+  const BullKeyGlyph(
+    this.text, {
+    super.key,
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.headlineLarge
+          ?.copyWith(fontSize: size, color: color),
+      textScaler: TextScaler.noScaling,
+    );
+  }
+}
+
 /// The reshuffle policy shared by every scrambling keypad.
 abstract final class BullKeyScramble {
   /// A random arrangement of [keys] that leaves at most [maxUnmoved] of them
