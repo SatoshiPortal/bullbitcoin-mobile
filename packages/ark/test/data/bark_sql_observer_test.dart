@@ -51,6 +51,46 @@ void main() {
       db.close();
     }
   });
+  test('migration runtime kind must be integer even when REAL equals 42', () {
+    final db = sqlite3.openInMemory();
+    try {
+      // Corruption fixture ONLY: preserve a REAL cell while restoring the
+      // pinned INTEGER declaration; normal INTEGER affinity would coerce 42.0.
+      db.execute(
+        sourceFixture().replaceFirst(
+          'value INTEGER NOT NULL',
+          'value BLOB NOT NULL',
+        ),
+      );
+      db.execute('INSERT INTO migrations(value) VALUES(?)', [42.0]);
+      db.execute(
+        'INSERT INTO bark_properties(id,network,fingerprint,server_pubkey) VALUES(?,?,?,?)',
+        [
+          '1',
+          'regtest',
+          schema.expectedNativeFingerprint,
+          schema.expectedServerPubkey,
+        ],
+      );
+      db.execute('PRAGMA writable_schema=ON');
+      db.execute(
+        "UPDATE sqlite_schema SET sql=replace(sql,'value BLOB NOT NULL','value INTEGER NOT NULL') WHERE name='migrations'",
+      );
+      db.execute('PRAGMA writable_schema=OFF');
+      final version = db.select('PRAGMA schema_version').single.values.single;
+      if (version is! int) fail('Invalid synthetic schema counter');
+      db.execute('PRAGMA schema_version=${version + 1}');
+      expect(
+        db
+            .select('SELECT typeof(value) AS kind FROM migrations')
+            .single['kind'],
+        'real',
+      );
+      expect(schema.validate(db), isA<Err<void, ArkWalletFailure>>());
+    } finally {
+      db.close();
+    }
+  });
   group('source observation and opaque retention', () {
     late Directory temp;
     late Database writer;
