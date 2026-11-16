@@ -148,12 +148,14 @@ export 'src/inputs/bull_dial_pad.dart';
 export 'src/inputs/bull_dropdown.dart';
 export 'src/inputs/bull_filter_chip.dart';
 export 'src/inputs/bull_input_text.dart';
+export 'src/inputs/bull_keypad.dart' show BullKeyScramble;
 export 'src/inputs/bull_language_picker.dart';
 export 'src/inputs/bull_picker_chip.dart';
 export 'src/inputs/bull_labeled_text_input.dart';
 export 'src/inputs/bull_lowercase_input_formatter.dart';
 export 'src/inputs/bull_mnemonic_keyboard.dart';
 export 'src/inputs/bull_paste_input.dart';
+export 'src/inputs/bull_pin_pad.dart';
 export 'src/inputs/bull_secret_text_input.dart';
 export 'src/inputs/bull_selectable_list.dart';
 
