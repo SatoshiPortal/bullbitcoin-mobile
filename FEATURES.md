@@ -49,6 +49,18 @@ graph TB
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
 
     %% Feature modules
+    ARK[Ark Journeys<br/>Workspace Feature]
+    ARK_NATIVE[Ark Package<br/>Native lifecycle and protocol operations]
+    ARK --> ARK_NATIVE
+    ARK --> SECRETS
+    ARK --> PRIMITIVES
+    ARK --> BULL_UI
+    ARK --> BG_TASKS
+    ARK --> NOTIFICATIONS
+    ARK_NATIVE --> PRIMITIVES
+    SEND --> ARK
+    SETTINGS --> ARK
+    APP_STARTUP --> ARK
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
     WIZARD[Wizard]
     IMPORT_MNEMONIC[Mnemonic Import]

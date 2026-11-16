@@ -1,3 +1,4 @@
+import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -136,6 +137,7 @@ class AppRouter {
       );
     },
     routes: [
+      ...createArkUnavailableRoutes(),
       ShellRoute(
         notifyRootObserver: true,
         builder: (context, state, child) {
