@@ -465,6 +465,26 @@ void main() {
       expect(find.byKey(const Key('mnemonicLengthPicker')), findsNothing);
     });
 
+    testWidgets('the word count title reads in the caption role', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final title = tester.widget<Text>(
+        find
+            .descendant(
+              of: find.ancestor(
+                of: find.byKey(const Key('mnemonicLengthPicker')),
+                matching: find.byType(Column),
+              ),
+              matching: find.byType(Text),
+            )
+            .first,
+      );
+      final caption = BullTypography.standard.caption;
+      expect(title.style?.fontSize, caption.fontSize);
+      expect(title.style?.height, caption.height);
+    });
+
     testWidgets('word fields are compact and read at body size', (
       tester,
     ) async {
