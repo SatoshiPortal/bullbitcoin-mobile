@@ -31,7 +31,8 @@ const _knownExceptions = <String, Set<String>>{
     'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart',
     'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart',
     'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart',
-    'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart',
+    'package:bull_recoverbull/src/ui/pages/password_input_page.dart',
+    'package:bull_recoverbull/src/ui/recoverbull_flow_navigator.dart',
   },
 };
 

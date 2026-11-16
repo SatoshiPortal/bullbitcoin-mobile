@@ -9,6 +9,7 @@ import 'package:bull_recoverbull/src/domain/repositories/attempt_monitoring_repo
 import 'package:bull_recoverbull/src/domain/usecases/acknowledge_backup_alerts_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/watch_backup_monitoring_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/backup_monitoring_cubit.dart';
+import 'package:bull_recoverbull/src/ui/widgets/backup_alarm_overlay.dart';
 import 'package:bull_recoverbull/src/ui/widgets/backup_monitoring_panel.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 void main() {
+  _alarmOverlayTest();
   testWidgets(
     'persisted categories render generically and dismiss through the usecase',
     (tester) async {
@@ -69,6 +71,50 @@ void main() {
     },
   );
 }
+
+// The app mounts the overlay in MaterialApp.builder, above the Navigator.
+void _alarmOverlayTest() => testWidgets(
+  'the alarm overlay shows a tappable notice above the navigator',
+  (tester) async {
+    final repository = _Monitoring();
+    final cubit = BackupMonitoringCubit(
+      WatchBackupMonitoringUsecase(repository),
+      AcknowledgeBackupAlertsUsecase(repository),
+    );
+    // The overlay closes the cubit it was given when it is disposed.
+    addTearDown(repository.changes.close);
+    var opened = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(extensions: testBullExtensions),
+        localizationsDelegates: RecoverBullFeature.localizationsDelegates,
+        supportedLocales: RecoverBullLocalizations.supportedLocales,
+        builder: (context, child) => BackupAlarmOverlay(
+          create: () => cubit,
+          onOpen: (_) => opened++,
+          child: child ?? const SizedBox.shrink(),
+        ),
+        home: const Scaffold(body: Text('home')),
+      ),
+    );
+    repository.changes.add(
+      Ok(
+        BackupMonitoring(
+          unknown: false,
+          alerts: const [BackupAlert(1, BackupAlertKind.unexplainedActivity)],
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.takeException(), isNull);
+    final notice = find.text('Backup monitoring');
+    expect(notice, findsOneWidget);
+    expect(find.text('home').hitTestable(), findsOneWidget);
+    await tester.tap(notice);
+    expect(opened, 1);
+  },
+);
 
 final class _Monitoring extends Fake implements AttemptMonitoringRepository {
   final changes =

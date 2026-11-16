@@ -43,6 +43,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -242,6 +243,12 @@ class AppRouter {
           WalletRecoverBullBindings.recovered(context);
           router.goNamed(WalletRoute.walletHome.name);
         },
+        onTested: (context) {
+          WalletRecoverBullBindings.tested(context);
+          router.goNamed(WalletRoute.walletHome.name);
+        },
+        onOpenTorSettings: (context) =>
+            context.pushNamed(const TorSettingsFacade().settingsRouteName),
       ),
       LabelsRouter.route,
       StatusCheckRouter.route,

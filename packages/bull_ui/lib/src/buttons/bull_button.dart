@@ -118,45 +118,50 @@ class BullButton extends StatelessWidget {
       opacity: disabled ? 0.5 : 1,
       child: IgnorePointer(
         ignoring: disabled,
-        child: InkWell(
-          onTap: disabled ? null : onPressed,
-          borderRadius: radius,
-          child: Container(
-            height: height ?? (compact ? 36 : 52),
-            width:
-                width ?? (size == BullButtonSize.large || compact ? null : 160),
-            padding: compact
-                ? const EdgeInsets.symmetric(horizontal: 16)
-                : height != null
-                ? null
-                : const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: bgColor,
-              border: outlined
-                  ? Border.all(color: borderColor ?? textColor)
-                  : null,
-              borderRadius: radius,
-            ),
-            child: Row(
-              mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (iconData == null) ...[
-                  labelText,
-                ] else if (label.isEmpty) ...[
-                  image,
-                ] else ...[
-                  if (iconFirst) ...[
-                    image,
-                    const Gap(10),
+        // Its own ink surface, so the button also works above the navigator.
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: disabled ? null : onPressed,
+            borderRadius: radius,
+            child: Container(
+              height: height ?? (compact ? 36 : 52),
+              width:
+                  width ??
+                  (size == BullButtonSize.large || compact ? null : 160),
+              padding: compact
+                  ? const EdgeInsets.symmetric(horizontal: 16)
+                  : height != null
+                  ? null
+                  : const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: bgColor,
+                border: outlined
+                    ? Border.all(color: borderColor ?? textColor)
+                    : null,
+                borderRadius: radius,
+              ),
+              child: Row(
+                mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (iconData == null) ...[
                     labelText,
+                  ] else if (label.isEmpty) ...[
+                    image,
                   ] else ...[
-                    labelText,
-                    const Gap(10),
-                    image,
+                    if (iconFirst) ...[
+                      image,
+                      const Gap(10),
+                      labelText,
+                    ] else ...[
+                      labelText,
+                      const Gap(10),
+                      image,
+                    ],
                   ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

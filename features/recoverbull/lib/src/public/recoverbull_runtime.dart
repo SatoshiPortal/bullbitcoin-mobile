@@ -57,6 +57,7 @@ final class RecoverBullRuntime {
   final GoogleDriveRepositoryImpl _drive;
   final VaultFileRepositoryImpl _files;
   final KeyServerSessionRepositoryImpl _sessions;
+  final RecoverBullRoutePort _routes;
   final BackupMetadataRepositoryImpl? _metadata;
   final AttemptMonitoringRepositoryImpl? _monitoring;
   final RecoverBullFailure unavailable;
@@ -70,6 +71,7 @@ final class RecoverBullRuntime {
     this._drive,
     this._files,
     this._sessions,
+    this._routes,
     this._metadata,
     this._monitoring,
     this.unavailable,
@@ -125,6 +127,7 @@ final class RecoverBullRuntime {
       drive,
       files,
       sessions,
+      routes,
       metadata,
       monitoring,
       unavailable,
@@ -217,6 +220,8 @@ final class RecoverBullRuntime {
         operations.complete,
         unavailable: unavailable,
         vault: vault,
+        tor: _routes.watch(),
+        snowflakeAvailable: () => _routes.snowflakeAvailable,
       ),
       captured.network,
       monitoring == null

@@ -93,6 +93,7 @@ final class _Sessions implements KeyServerSessionRepository {
   Future<Result<KeyServerRepository, RecoverBullFailure>> open(
     Uri server, {
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async {
     opens++;
     if (!started.isCompleted) started.complete();

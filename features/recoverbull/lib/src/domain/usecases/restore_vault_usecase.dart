@@ -34,21 +34,31 @@ final class RestoreVaultUsecase {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
-        final requested = VaultContext(fingerprint: value, network: network);
-        switch (await _wallets.restoreDefaults(requested)) {
-          case Err(:final failure):
-            return Ok(VaultRecoveryNeedsWallets(value, failure));
-          case Ok(value: final restored):
-            if (!restored.matches(requested)) {
-              return Ok(
-                VaultRecoveryNeedsWallets(
-                  value,
-                  const VaultContextChangedFailure(),
-                ),
-              );
-            }
-            return Ok(VaultRecovered(restored));
+        return Ok(await _createWallets(value, network));
+    }
+  }
+
+  /// Creates the wallets of a secret already imported, after a failed first try.
+  Future<VaultRecovery> retryWallets(VaultRecoveryNeedsWallets recovery) =>
+      _createWallets(recovery.importedSecret, recovery.network);
+
+  Future<VaultRecovery> _createWallets(
+    Fingerprint secret,
+    BitcoinNetwork network,
+  ) async {
+    final requested = VaultContext(fingerprint: secret, network: network);
+    switch (await _wallets.restoreDefaults(requested)) {
+      case Err(:final failure):
+        return VaultRecoveryNeedsWallets(secret, failure, network: network);
+      case Ok(value: final restored):
+        if (!restored.matches(requested)) {
+          return VaultRecoveryNeedsWallets(
+            secret,
+            const VaultContextChangedFailure(),
+            network: network,
+          );
         }
+        return VaultRecovered(restored);
     }
   }
 }

@@ -1573,7 +1573,7 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "Připojeno",
+  "torSettingsStatusConnected": "Připraveno",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -11276,5 +11276,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Nepodařilo se ověřit, že byla vaše transakce odvysílána. Než to zkusíte znovu, zkontrolujte ji v blokovém průzkumníku.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Vysílání v této síti není v aktuálním nastavení povoleno.",
   "settingsDarkModeTitle": "Tmavý režim",
-  "settingsSourceCodeTitle": "Zdrojový kód"
+  "settingsSourceCodeTitle": "Zdrojový kód",
+  "torSettingsStatusNoInternetOrBlocked": "Bez internetu nebo cenzurovaná síť",
+  "torSettingsDescNoInternetOrBlocked": "Tato síť nemá přístup k internetu, nebo blokuje Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5."
 }

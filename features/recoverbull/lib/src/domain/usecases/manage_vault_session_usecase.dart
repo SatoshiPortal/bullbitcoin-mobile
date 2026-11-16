@@ -39,8 +39,24 @@ final class ManageVaultSessionUsecase {
 
   bool get hasPendingProviderSave => _create.hasPendingProviderSave;
 
-  Future<Result<void, RecoverBullFailure>> connect({bool newRoute = false}) =>
-      _run((server, _) => server.probe(), newRoute: newRoute);
+  /// [restartTor] restarts a Tor bootstrap that failed or stalled, as Retry
+  /// does when Tor is not ready; [viaSnowflake] restarts it through Snowflake.
+  /// New route only replaces this flow's circuit. [onProbe] receives when the
+  /// key-server probe will give up, once Tor has delivered a route.
+  Future<Result<void, RecoverBullFailure>> connect({
+    bool newRoute = false,
+    bool restartTor = false,
+    bool viaSnowflake = false,
+    void Function(DateTime deadline)? onProbe,
+  }) => _run(
+    (server, _) {
+      onProbe?.call(DateTime.now().add(server.operationTimeout));
+      return server.probe();
+    },
+    newRoute: newRoute || restartTor || viaSnowflake,
+    restartTor: restartTor || viaSnowflake,
+    viaSnowflake: viaSnowflake,
+  );
 
   Future<Result<VaultCompletion, RecoverBullFailure>> create({
     required VaultProvider provider,
@@ -61,9 +77,10 @@ final class ManageVaultSessionUsecase {
     );
   }
 
-  Future<Result<VaultCompletion, RecoverBullFailure>> retryProviderSave(
-    VaultProvider provider,
-  ) async {
+  /// Without [provider], the vault goes where the user first chose.
+  Future<Result<VaultCompletion, RecoverBullFailure>> retryProviderSave([
+    VaultProvider? provider,
+  ]) async {
     if (_closed) return const Err(VaultCancelledFailure());
     if (_active != null) return const Err(VaultContextChangedFailure());
     final active = Completer<void>();
@@ -76,6 +93,10 @@ final class ManageVaultSessionUsecase {
       active.complete();
     }
   }
+
+  /// Drops the sealed vault waiting for its provider write, so a new password can be chosen.
+  bool abandonPendingProviderSave() =>
+      _active == null && _create.abandonPendingProviderSave();
 
   Future<Result<VaultCompletion, RecoverBullFailure>> verify({
     required EncryptedVault vault,
@@ -162,6 +183,8 @@ final class ManageVaultSessionUsecase {
     )
     action, {
     bool newRoute = false,
+    bool restartTor = false,
+    bool viaSnowflake = false,
   }) async {
     if (_closed) return const Err(VaultCancelledFailure());
     if (_active != null) return const Err(VaultContextChangedFailure());
@@ -190,7 +213,11 @@ final class ManageVaultSessionUsecase {
       }
       if (_closed) return const Err(VaultCancelledFailure());
       if (server == null) {
-        switch (await _open.execute(expected: settings)) {
+        switch (await _open.execute(
+          expected: settings,
+          restartEmbedded: restartTor,
+          viaSnowflake: viaSnowflake,
+        )) {
           case Err(:final failure):
             return Err(failure);
           case Ok(:final value):
@@ -200,7 +227,19 @@ final class ManageVaultSessionUsecase {
         }
       }
       if (_closed) return const Err(VaultCancelledFailure());
-      return await action(server, settings);
+      final result = await action(server, settings);
+      // A dead local Tor session never recovers: the next action opens a new one.
+      if (result
+          case Err(
+            failure: KeyServerFailure(
+              cause: KeyServerUnreachableCause.proxyGone,
+            ),
+          )
+          when identical(_server, server)) {
+        _server = null;
+        await server.close();
+      }
+      return result;
     } finally {
       _active = null;
       active.complete();

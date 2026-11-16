@@ -11,7 +11,15 @@ import '../../presentation/recoverbull_failure_l10n.dart';
 /// Generic advisory copy only, including the accessibility tree.
 class BackupMonitoringPanel extends StatelessWidget {
   final BackupMonitoringCubit cubit;
-  const BackupMonitoringPanel({super.key, required this.cubit});
+
+  /// Shows only actionable alerts, without the advisory coverage notice.
+  final bool alertsOnly;
+
+  const BackupMonitoringPanel({
+    super.key,
+    required this.cubit,
+    this.alertsOnly = false,
+  });
 
   @override
   Widget build(BuildContext context) =>
@@ -21,6 +29,9 @@ class BackupMonitoringPanel extends StatelessWidget {
       >(
         bloc: cubit,
         builder: (context, state) => switch (state) {
+          Ok(:final value) when alertsOnly && value.alerts.isEmpty =>
+            const SizedBox.shrink(),
+          null || Err() when alertsOnly => const SizedBox.shrink(),
           null => BullText(
             context.loc.recoverbullPleaseWait,
             style: context.bullText.bodyLarge,
@@ -32,7 +43,7 @@ class BackupMonitoringPanel extends StatelessWidget {
           Ok(:final value) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (value.unknown)
+              if (value.unknown && !alertsOnly)
                 BullText(
                   context.loc.recoverbullMonitoringUnknown,
                   style: context.bullText.bodyLarge,

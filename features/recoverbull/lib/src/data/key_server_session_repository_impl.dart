@@ -19,30 +19,33 @@ final class KeyServerSessionRepositoryImpl
   Future<Result<KeyServerRepository, RecoverBullFailure>> open(
     Uri server, {
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async {
     if (!isValidRecoverBullServerUrl(server)) {
       return const Err(VaultInvalidFailure());
     }
-    final result = await _routes.open(restartEmbedded: restartEmbedded);
+    final result = await _routes.open(
+      restartEmbedded: restartEmbedded,
+      viaSnowflake: viaSnowflake,
+    );
     switch (result) {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
         try {
-          KeyServerFailureKind? connectFailure;
+          TorConnectFailure? connectFailure;
           final client = _clients.create(
             value.route.endpoint,
-            onConnectFailure: (failure) {
-              connectFailure = failure == TorConnectFailure.timeout
-                  ? KeyServerFailureKind.timeout
-                  : KeyServerFailureKind.unavailable;
-            },
+            onConnectFailure: (failure) => connectFailure = failure,
           );
           return Ok(
             KeyServerRepositoryImpl(
               server: server,
               transport: client,
               releaseRoute: value.close,
+              operationTimeout: keyServerOperationTimeout(
+                value.route.transport,
+              ),
               takeConnectFailure: () {
                 final failure = connectFailure;
                 connectFailure = null;
