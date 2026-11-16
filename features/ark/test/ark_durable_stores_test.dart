@@ -285,4 +285,48 @@ void main() {
       expect(reopened, isA<Err>());
     },
   );
+  test('initialized marker never permits version-zero account reset even with initializeNew', () async {
+    final path = '${directory.path}/accounts';
+    final first = value(
+      SqliteArkAccountRegistry.open(
+        path,
+        foreground: true,
+        initializeNew: true,
+      ),
+    );
+    await first.publish(config());
+    first.close();
+    File(path).writeAsBytesSync([], flush: true);
+    final reset = SqliteArkAccountRegistry.open(
+      path,
+      foreground: true,
+      initializeNew: true,
+    );
+    if (reset case Ok(:final value)) value.close();
+    expect(reset, isA<Err>());
+  });
+  test('initialized marker never permits version-zero reminder reset even with initializeNew', () async {
+    final path = '${directory.path}/reminders';
+    final gateway = Notifications();
+    final first = reminders(path, gateway);
+    await first.reconcile(
+      account: account(),
+      warning: warning(100),
+      authoritativeEmpty: false,
+      revision: 5,
+      tipHeight: 100,
+    );
+    await first.close();
+    File(path).writeAsBytesSync([], flush: true);
+    final reset = SqliteArkReminderRepository.open(
+      path: path,
+      notifications: gateway,
+      title: 'Urgent',
+      body: 'Open Ark',
+      foreground: true,
+      initializeNew: true,
+    );
+    if (reset case Ok(:final value)) await value.close();
+    expect(reset, isA<Err>());
+  });
 }
