@@ -61,7 +61,11 @@ void main() {
     () async {
       final path = '${directory.path}/accounts';
       final first = value(
-        SqliteArkAccountRegistry.open(path, foreground: true),
+        SqliteArkAccountRegistry.open(
+          path,
+          foreground: true,
+          initializeNew: true,
+        ),
       );
       expect(await first.publish(config()), isA<Ok>());
       first.close();
@@ -87,6 +91,7 @@ void main() {
       SqliteArkAccountRegistry.open(
         '${directory.path}/accounts',
         foreground: true,
+        initializeNew: true,
       ),
     );
     expect(await store.publish(config()), isA<Ok>());
@@ -111,6 +116,7 @@ void main() {
       title: 'Urgent',
       body: 'Open Ark',
       foreground: foreground,
+      initializeNew: foreground,
     ),
   );
   ArkExpiryWarning warning(int tip) => switch (ArkExpiryWarning.fromSnapshot(
@@ -232,6 +238,51 @@ void main() {
       expect(gateway.scheduled.length, 2);
       expect(gateway.scheduled.first, gateway.scheduled.last);
       await reopened.close();
+    },
+  );
+  test(
+    'missing initialized account metadata cannot be silently recreated',
+    () async {
+      final path = '${directory.path}/accounts';
+      final first = value(
+        SqliteArkAccountRegistry.open(
+          path,
+          foreground: true,
+          initializeNew: true,
+        ),
+      );
+      await first.publish(config());
+      first.close();
+      File(path).deleteSync();
+      final reopened = SqliteArkAccountRegistry.open(path, foreground: true);
+      if (reopened case Ok(:final value)) value.close();
+      expect(reopened, isA<Err>());
+    },
+  );
+  test(
+    'missing initialized reminder metadata cannot be silently recreated',
+    () async {
+      final path = '${directory.path}/reminders';
+      final gateway = Notifications();
+      final first = reminders(path, gateway);
+      await first.reconcile(
+        account: account(),
+        warning: warning(100),
+        authoritativeEmpty: false,
+        revision: 5,
+        tipHeight: 100,
+      );
+      await first.close();
+      File(path).deleteSync();
+      final reopened = SqliteArkReminderRepository.open(
+        path: path,
+        notifications: gateway,
+        title: 'Urgent',
+        body: 'Open Ark',
+        foreground: true,
+      );
+      if (reopened case Ok(:final value)) await value.close();
+      expect(reopened, isA<Err>());
     },
   );
 }
