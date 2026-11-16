@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bull_sdk/lwk.dart' as lwk;
 import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
@@ -66,6 +68,38 @@ void main() {
       verify(() => urls.bitcoinAddress(address, isTestnet: false)).called(1);
     },
   );
+
+  testWidgets('URI view observes a failing local explorer lookup', (
+    tester,
+  ) async {
+    const address = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
+    final urls = _Urls();
+    final lookup = Completer<String>();
+    when(() => urls.bitcoinAddress(address, isTestnet: false))
+        .thenAnswer((_) => lookup.future);
+    await tester.pumpWidget(
+      RepositoryProvider<MempoolUrlBuilder>.value(
+        value: urls,
+        child: MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(
+            body: AddressViewer(
+              address,
+              clipboardText: 'bitcoin:$address?amount=1',
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.byType(AddressViewer));
+    await tester.pumpAndSettle();
+    lookup.completeError(Exception('Local explorer settings unavailable'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.link), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final (label, address) in [
     (
