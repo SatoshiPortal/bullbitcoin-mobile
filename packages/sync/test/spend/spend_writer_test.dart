@@ -555,6 +555,55 @@ void main() {
       },
     );
 
+    for (final expected in [
+      BitcoinSpendStatus.ready,
+      BitcoinSpendStatus.pending,
+    ]) {
+      test(
+        'rechecks readiness after slow funding releases its lease: $expected',
+        () async {
+          final key = bitcoin.key;
+          final readiness = stores.spend.readiness(key);
+          Future<void> published(BitcoinSpendStatus status) => readiness
+              .watch()
+              .firstWhere((value) => value.data == status)
+              .timeout(const Duration(seconds: 3))
+              .then((_) {});
+          await published(BitcoinSpendStatus.ready);
+          natives.persistWrites = true;
+          final entered = Completer<void>();
+          final release = Completer<void>();
+          funding.beforeReserve = () async {
+            entered.complete();
+            await release.future;
+          };
+          final pending = prepare();
+          await entered.future;
+          try {
+            // Revision publication asks the guard while funding still owns the lease. Let that real acquisition budget expire before releasing it.
+            await published(BitcoinSpendStatus.busy);
+            if (expected == BitcoinSpendStatus.pending) {
+              final gate = SpendGateStoreDatasource.openExisting(
+                spendGateStorePath(dir.path),
+              );
+              try {
+                gate.accepted(bitcoin, generation(key), 'd' * 64);
+              } finally {
+                gate.close();
+              }
+            }
+            release.complete();
+            ok(await pending);
+            // No explicit check(), native revision or other event should be needed. The fresh guard verdict may still refuse a spend.
+            await published(expected);
+          } finally {
+            if (!release.isCompleted) release.complete();
+            await pending;
+          }
+        },
+      );
+    }
+
     test('holds admission beyond wait budget and serializes freezes', () async {
       final entered = Completer<void>();
       final release = Completer<void>();
