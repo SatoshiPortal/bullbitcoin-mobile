@@ -21,11 +21,14 @@ void main() {
     NetworkCapability.publicFeeEstimates,
   };
   const expected = <Network, Set<NetworkCapability>>{
-    BitcoinNetwork.mainnet: historicalBitcoin,
+    BitcoinNetwork.mainnet: {...historicalBitcoin, NetworkCapability.ark},
     BitcoinNetwork.testnet: historicalBitcoin,
     LiquidNetwork.mainnet: historicalLiquid,
     LiquidNetwork.testnet: historicalLiquid,
-    BitcoinNetwork.regtest: {NetworkCapability.softwareWallet},
+    BitcoinNetwork.regtest: {
+      NetworkCapability.softwareWallet,
+      NetworkCapability.ark,
+    },
     BitcoinNetwork.signet: {},
     LiquidNetwork.regtest: {NetworkCapability.softwareWallet},
   };
