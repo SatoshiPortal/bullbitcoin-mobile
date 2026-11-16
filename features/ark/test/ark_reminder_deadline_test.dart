@@ -132,7 +132,7 @@ void main() {
         at: initial.add(const Duration(hours: 6)),
         live: {'replacement': 1500},
         movements: [
-          const ArkMovement(
+          ArkMovement(
             id: 'renewal',
             kind: ArkMovementKind.renewal,
             status: ArkMovementStatus.successful,
@@ -162,7 +162,7 @@ void main() {
         at: initial.add(const Duration(hours: 12)),
         live: {'original': 1000, 'renewed-new': 2000},
         movements: [
-          const ArkMovement(
+          ArkMovement(
             id: 'renew-new',
             kind: ArkMovementKind.renewal,
             status: ArkMovementStatus.successful,
@@ -191,7 +191,7 @@ void main() {
           recovery: ArkRecoveryStatus.complete,
           vtxos: [vtxo('replacement', 1500)],
           movements: [
-            const ArkMovement(
+            ArkMovement(
               id: 'renewal',
               kind: ArkMovementKind.renewal,
               status: ArkMovementStatus.successful,
@@ -249,7 +249,7 @@ void main() {
           ),
         ],
         movements: [
-          const ArkMovement(
+          ArkMovement(
             id: 'renewal',
             kind: ArkMovementKind.renewal,
             status: ArkMovementStatus.successful,
