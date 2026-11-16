@@ -3,6 +3,9 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_access_
 import 'package:bb_mobile/features/settings/presentation/exchange_access_settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/quick_actions_settings_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/settings/ui/settings_item.dart';
+import 'package:bb_mobile/features/settings/ui/screens/settings_group_screen.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
@@ -25,6 +28,7 @@ import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/signing_key_export_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_registration_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/signing_key_export_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/wallet_details_cubit.dart';
@@ -65,7 +69,7 @@ class SettingsRouter {
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
     builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+      create: (_) => locator<ServiceStatusCubit>(),
       child: const AllSettingsScreen(),
     ),
     routes: [
@@ -73,6 +77,30 @@ class SettingsRouter {
         name: SettingsRoute.priceHistory.name,
         path: SettingsRoute.priceHistory.path,
         builder: (context, state) => buildPriceHistory(context),
+      ),
+      GoRoute(
+        name: SettingsRoute.dataExport.name,
+        path: SettingsRoute.dataExport.path,
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsDataExportTitle,
+          section: SettingsItemSection.dataExport,
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.tools.name,
+        path: SettingsRoute.tools.path,
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsToolsTitle,
+          section: SettingsItemSection.tools,
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.helpAndInfo.name,
+        path: SettingsRoute.helpAndInfo.path,
+        builder: (context, _) => SettingsGroupScreen(
+          title: context.loc.settingsHelpAndInfoTitle,
+          section: SettingsItemSection.help,
+        ),
       ),
       GoRoute(
         name: SettingsRoute.search.name,
@@ -196,8 +224,22 @@ class SettingsRouter {
           TestWalletBackupRouter.route,
         ],
       ),
-      // A wallet is always reached from its own screen (wallet home → gear),
-      // never from a list, so these carry the shared prefix themselves.
+      GoRoute(
+        path: SettingsRoute.walletDetailsWalletList.path,
+        name: SettingsRoute.walletDetailsWalletList.name,
+        builder: (context, state) => BlocBuilder<WalletBloc, WalletState>(
+          builder: (context, state) => WalletsListScreen(
+            wallets: state.wallets,
+            isLoading:
+                state.status == WalletStatus.initial ||
+                state.status == WalletStatus.loading,
+            failureMessage:
+                state.status == WalletStatus.failure && !state.noWalletsFound
+                ? context.loc.oopsSomethingWentWrong
+                : null,
+          ),
+        ),
+      ),
       GoRoute(
         path: SettingsRoute.walletDetailsSelectedWallet.path,
         name: SettingsRoute.walletDetailsSelectedWallet.name,

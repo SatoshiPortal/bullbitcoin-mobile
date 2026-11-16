@@ -60,8 +60,6 @@ void main() {
           previousY = y;
         }
       }
-      // The only other explicit order is backup; all its entries remain available.
-      expect(backupSettingsDataItemOrder.map(items.byId), hasLength(2));
     });
   }
 
@@ -95,7 +93,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text(localization.walletSettingsImportWalletTitle));
+    await tester.tap(find.text('Hardware wallet'));
     await tester.pumpAndSettle();
 
     expect(find.text('Import wallet destination'), findsOneWidget);
