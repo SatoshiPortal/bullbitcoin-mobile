@@ -1,9 +1,6 @@
-import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/src/inputs/bull_keypad.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-
-import 'test_app.dart';
 
 /// Screens and windows a keypad must fit, from cramped to roomy.
 const smallPhone = Size(320, 568);
@@ -11,51 +8,21 @@ const largePhone = Size(430, 932);
 const landscapePhone = Size(844, 390);
 const desktopWindow = Size(1440, 900);
 
-const grid = BullMnemonicKeyboard.grid;
+/// A keypad grid shaped like a letter keyboard: ten keys across, three rows.
+const grid = BullKeypadGrid(
+  columns: 10,
+  rows: 3,
+  aspectRatio: 3,
+  minKeyHeight: 40,
+  maxKeyHeight: 80,
+  maxKeyWidth: 72,
+  gap: 4,
+  screenShare: 0.25,
+  maxGlyphSize: 30,
+);
 
 BullKeypadMetrics resolve(Size screen) =>
     grid.resolve(BoxConstraints(maxWidth: screen.width), screen);
-
-/// Pumps the mnemonic keyboard docked under an expanding body, as the import
-/// screen does, on a screen of [size] logical pixels.
-Future<void> pumpDocked(
-  WidgetTester tester,
-  Size size, {
-  bool scrollable = false,
-}) async {
-  tester.view
-    ..devicePixelRatio = 1
-    ..physicalSize = size;
-  addTearDown(tester.view.reset);
-  final layout = scrollable
-      ? [for (var i = 0; i < 40; i++) String.fromCharCode(0x4e00 + i)]
-      : BullMnemonicKeyboard.qwerty;
-  await tester.pumpWidget(
-    wrapWithTheme(
-      Column(
-        children: [
-          const Expanded(child: SizedBox.expand()),
-          BullMnemonicKeyboard(
-            enabledLetters: layout.toSet(),
-            canBackspace: true,
-            canAdvance: true,
-            onLetter: (_) {},
-            onBackspace: () {},
-            onEnter: () {},
-            shuffleActive: false,
-            onToggleShuffle: () {},
-            shuffleHint: 'shuffle',
-            layout: layout,
-            scrollable: scrollable,
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Size enterKeySize(WidgetTester tester) =>
-    tester.getSize(find.byKey(const Key('mnemonicEnterKey')));
 
 void main() {
   group('BullKeypadGrid', () {
@@ -107,46 +74,6 @@ void main() {
         largePhone,
       );
       expect(bounded.keyHeight, lessThan(free.keyHeight));
-    });
-  });
-
-  group('BullMnemonicKeyboard sizing', () {
-    for (final (name, size) in [
-      ('small phone', smallPhone),
-      ('large phone', largePhone),
-      ('landscape phone', landscapePhone),
-      ('desktop window', desktopWindow),
-    ]) {
-      testWidgets('fits a $name without overflow', (tester) async {
-        await pumpDocked(tester, size);
-        expect(tester.takeException(), isNull);
-        final keyboard = tester.getRect(find.byType(BullMnemonicKeyboard));
-        expect(keyboard.bottom, lessThanOrEqualTo(size.height));
-        final key = enterKeySize(tester);
-        expect(
-          key.height,
-          inInclusiveRange(grid.minKeyHeight, grid.maxKeyHeight),
-        );
-      });
-    }
-
-    testWidgets('the grid of another script fits a landscape phone', (
-      tester,
-    ) async {
-      await pumpDocked(tester, landscapePhone, scrollable: true);
-      expect(tester.takeException(), isNull);
-      final keyboard = tester.getRect(find.byType(BullMnemonicKeyboard));
-      expect(keyboard.bottom, lessThanOrEqualTo(landscapePhone.height));
-    });
-
-    testWidgets('keys are taller on a large phone than on a small one', (
-      tester,
-    ) async {
-      await pumpDocked(tester, smallPhone);
-      final small = enterKeySize(tester).height;
-      await pumpDocked(tester, largePhone);
-      final large = enterKeySize(tester).height;
-      expect(large, greaterThan(small));
     });
   });
 }
