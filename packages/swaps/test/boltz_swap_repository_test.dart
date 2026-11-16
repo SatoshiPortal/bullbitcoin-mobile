@@ -1142,18 +1142,24 @@ void main() {
       SwapWalletInfo(id: 'w-liquid', isLiquid: true, isDefault: true),
     ];
 
-    SwapModel storedChain({required int keyIndex}) => SwapModel.chain(
-      id: 'stored-$keyIndex',
-      type: SwapType.bitcoinToLiquid.name,
-      status: 'refundable',
-      keyIndex: keyIndex,
-      creationTime: DateTime(2026, 7).millisecondsSinceEpoch,
-      sendWalletId: 'w-btc',
-      paymentAddress: 'bc1lockup',
-      paymentAmount: 100000,
-    );
+    SwapModel storedChain({required int keyIndex, required bool recovered}) =>
+        SwapModel.chain(
+          id: 'stored-$keyIndex',
+          type: SwapType.bitcoinToLiquid.name,
+          status: 'refundable',
+          keyIndex: keyIndex,
+          creationTime: DateTime(2026, 7).millisecondsSinceEpoch,
+          sendWalletId: 'w-btc',
+          paymentAddress: 'bc1lockup',
+          paymentAmount: 100000,
+          recovered: recovered,
+        );
 
-    void stubCreation({required int? storedCounter, required int localTop}) {
+    void stubCreation({
+      required int? storedCounter,
+      required int localTop,
+      bool rescued = true,
+    }) {
       when(() => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')))
           .thenAnswer((_) async => masterKey);
       when(() => storage.getSwapKeyIndex(any()))
@@ -1165,7 +1171,9 @@ void main() {
           walletId: any(named: 'walletId'),
           isTestnet: any(named: 'isTestnet'),
         ),
-      ).thenAnswer((_) async => [storedChain(keyIndex: localTop)]);
+      ).thenAnswer(
+        (_) async => [storedChain(keyIndex: localTop, recovered: rescued)],
+      );
       when(
         () =>
             boltz.restoreSwapIndex(swapMasterKey: any(named: 'swapMasterKey')),
@@ -1236,6 +1244,15 @@ void main() {
 
       expect(index, 10);
       verify(() => storage.setSwapKeyIndex('f00dbabe', 12)).called(1);
+    });
+
+    test('a swap from before 6.12 does not raise the next index', () async {
+      stubCreation(storedCounter: 3, localTop: 150, rescued: false);
+
+      final index = await createAndCaptureIndex();
+
+      expect(index, 3);
+      verify(() => storage.setSwapKeyIndex('f00dbabe', 5)).called(1);
     });
 
     test('an unset counter seeds past both boltz and local swaps', () async {

@@ -846,11 +846,14 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     );
     // Local collision floor, re-checked on EVERY reservation: a rescue
     // imports swaps at their original indices without advancing this
-    // counter, so the counter alone can lag behind a stored swap and hand
-    // out an in-use index (the keyIndex-reuse bug). Scanning stored swaps
-    // is local and cheap; chain swaps occupy two indices (refund, claim).
+    // counter, so the counter alone can lag behind a rescued swap and hand
+    // out an in-use index (the keyIndex-reuse bug). Only rescued swaps
+    // count: swaps from before 6.12 were derived from the wallet seed, not
+    // this key, and their indices would push new swaps past the range
+    // Boltz's gap-limited restore scans. Chain swaps occupy two indices.
     var localHighest = -1;
     for (final swap in await getAllSwaps()) {
+      if (!swap.recovered) continue;
       final top = swap is ChainSwap ? swap.keyIndex + 1 : swap.keyIndex;
       if (top > localHighest) localHighest = top;
     }
