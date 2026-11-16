@@ -264,6 +264,25 @@ void main() {
     });
   });
 
+  group('once its server window expired', () {
+    final later = window.add(const Duration(days: 2));
+
+    test('a later window raises an alert for foreign requests', () async {
+      await sample(3, at: later);
+      expect(
+        ok(await repository.status()).alerts.single.kind,
+        BackupAlertKind.unexplainedActivity,
+      );
+    });
+
+    test('a later window credits our own test', () async {
+      final own = ok(await repository.begin(settings, vault));
+      ok(await repository.complete(own, observation: observation(1, later)));
+      await sample(1, at: later);
+      expect(ok(await repository.status()).alerts, isEmpty);
+    });
+  });
+
   test('an outage never anchors an unseen vault at zero', () async {
     await database.delete(database.recoverbullMonitoredVaults).go();
     ok(await repository.register(settings, vault));
