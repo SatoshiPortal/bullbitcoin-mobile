@@ -212,7 +212,19 @@ final class ManageVaultSessionUsecase {
         }
       }
       if (_closed) return const Err(VaultCancelledFailure());
-      return await action(server, settings);
+      final result = await action(server, settings);
+      // A dead local Tor session never recovers: the next action opens a new one.
+      if (result
+          case Err(
+            failure: KeyServerFailure(
+              cause: KeyServerUnreachableCause.proxyGone,
+            ),
+          )
+          when identical(_server, server)) {
+        _server = null;
+        await server.close();
+      }
+      return result;
     } finally {
       _active = null;
       active.complete();
