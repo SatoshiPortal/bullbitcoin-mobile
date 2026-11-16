@@ -452,6 +452,74 @@ void main() {
         expect(state.route.transport, TorTransport.snowflake);
       });
 
+      group('without a blockage verdict', () {
+        setUp(() async {
+          await repository.close();
+          embedded = _FakeEmbeddedTor();
+          repository = TorRepositoryImpl(
+            embedded,
+            network: network,
+            stallFallbackAfter: const Duration(milliseconds: 30),
+          );
+        });
+
+        test(
+          'a direct bootstrap that stops progressing hands over to Snowflake',
+          () async {
+            final pending = repository.ensureReady();
+            await Future<void>.delayed(Duration.zero);
+
+            // Arti dips and returns to 85% without ever carrying traffic.
+            for (final progress in [0.3, 0.85, 0.3, 0.85]) {
+              embedded.events.add(
+                EmbeddedTorConnecting(
+                  progress: progress,
+                  transport: TorTransport.direct,
+                ),
+              );
+            }
+            await Future<void>.delayed(const Duration(milliseconds: 80));
+
+            expect(embedded.startedTransports, [
+              TorTransport.direct,
+              TorTransport.snowflake,
+            ]);
+            embedded.starts.last.complete(
+              TorProxyEndpoint(host: '127.0.0.1', port: 41004),
+            );
+            final state = await pending as TorReady;
+            expect(state.route.transport, TorTransport.snowflake);
+          },
+        );
+
+        test('a direct bootstrap that never reports hands over too', () async {
+          unawaited(repository.ensureReady());
+          await Future<void>.delayed(const Duration(milliseconds: 80));
+
+          expect(embedded.startedTransports, [
+            TorTransport.direct,
+            TorTransport.snowflake,
+          ]);
+        });
+
+        test('steady progress keeps the direct attempt', () async {
+          unawaited(repository.ensureReady());
+          await Future<void>.delayed(Duration.zero);
+
+          for (var step = 1; step <= 6; step++) {
+            embedded.events.add(
+              EmbeddedTorConnecting(
+                progress: step / 10,
+                transport: TorTransport.direct,
+              ),
+            );
+            await Future<void>.delayed(const Duration(milliseconds: 15));
+          }
+
+          expect(embedded.startedTransports, [TorTransport.direct]);
+        });
+      });
+
       test('a passing diagnostic does not switch transport', () async {
         unawaited(repository.ensureReady());
         await Future<void>.delayed(Duration.zero);
