@@ -15,16 +15,16 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 ```text
 Secrets
 |-- generate([wordCount: MnemonicLength.words12]) -> Secret
-|-- import(words:, [language: Language.english], [passphrase:], [acceptOnly:]) -> Secret
+|-- import(words:, language:, [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
 |-- list() -> List<SecretEntry>
 |-- trash(id) -> void
 |-- exists(id) -> bool
-|-- contains(words:, [language: Language.english], [passphrase:]) -> bool
-|-- find(words:, [language: Language.english], [passphrase:]) -> Secret?
+|-- contains(words:, language:, [passphrase:]) -> bool
+|-- find(words:, language:, [passphrase:]) -> Secret?
 |-- preview
-|   |-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
-|   `-- matchesBitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptType:, expected:) -> bool
+|   |-- bitcoinDescriptors(words:, language:, [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
+|   `-- matchesBitcoinDescriptors(words:, language:, [passphrase:], network:, scriptType:, expected:) -> bool
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:], [allowUnverified: false]) -> RestoredVault
 |   `-- fingerprint(vault:, key:, [passphrase:]) -> Fingerprint
@@ -44,7 +44,7 @@ Secret
 |   |   `-- liquid(network:) -> String
 |   |-- bip85
 |   |   |-- hex(numBytes:, index:) -> String
-|   |   `-- mnemonic(wordCount:, index:, [language: Language.english]) -> List<String>
+|   |   `-- mnemonic(wordCount:, index:, language:) -> List<String>
 |   |-- xpub(network:, scriptType:, [accountIndex: 0]) -> String
 |   `-- swapKey(network:) -> SwapMasterKey
 |-- sign
