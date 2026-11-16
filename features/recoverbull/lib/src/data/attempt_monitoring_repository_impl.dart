@@ -1,3 +1,5 @@
+import 'dart:math' show max;
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart' show hex;
 import 'package:crypto/crypto.dart' show sha256;
@@ -284,6 +286,14 @@ final class AttemptMonitoringRepositoryImpl
             previousCollection != null &&
             collection != previousCollection);
     if (discontinuity) {
+      // A later window or collection began after we last saw this vault, so
+      // all its requests are new: only our own not yet seen can explain them.
+      if (enabled && anchor != null) {
+        final seen = (row.observedRequests ?? anchor) - anchor;
+        if (sample.requests > max(0, row.ownRequests - seen)) {
+          await _alert(row, window, BackupAlertKind.unexplainedActivity);
+        }
+      }
       await _write(
         row,
         RecoverbullMonitoredVaultsCompanion(
