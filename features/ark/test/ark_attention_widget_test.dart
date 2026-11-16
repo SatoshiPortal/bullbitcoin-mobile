@@ -65,5 +65,13 @@ void main() {
     final english = await delegate.load(const Locale('de'));
     expect(french.renewalWarning, contains('renouvel'));
     expect(english.renewalWarning, startsWith('Your VTXOs'));
+    expect(
+      arkLocalizationsForLanguage('fr_CA').renewalWarning,
+      french.renewalWarning,
+    );
+    expect(
+      arkLocalizationsForLanguage('ja').renewalWarning,
+      english.renewalWarning,
+    );
   });
 }
