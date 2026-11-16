@@ -132,12 +132,14 @@ class BullMnemonicKeyboard extends StatelessWidget {
   static const grid = BullKeypadGrid(
     columns: 10,
     rows: 3,
-    aspectRatio: 1.4,
-    minKeyHeight: 36,
-    maxKeyHeight: 60,
-    maxKeyWidth: 64,
+    aspectRatio: 1.75,
+    minKeyHeight: 40,
+    maxKeyHeight: 76,
+    maxKeyWidth: 72,
     gap: 4,
-    screenShare: 0.3,
+    screenShare: 0.36,
+    glyphScale: 0.48,
+    maxGlyphSize: 34,
   );
 
   @override
