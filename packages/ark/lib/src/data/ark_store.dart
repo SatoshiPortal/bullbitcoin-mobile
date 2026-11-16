@@ -90,6 +90,76 @@ final class ArkStore {
   };
   void saveSnapshot(ArkSnapshot value) =>
       put('snapshot', snapshotToJson(value));
+
+  /// One durable observation: positive-but-partial ids cannot erase themselves,
+  /// and a failed snapshot commit cannot advance retirement evidence.
+  void commitObservation(ArkSnapshot snapshot) {
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      final prior = get('inventory-obligations') ?? get('complete-inventory');
+      final known = prior == null
+          ? const <ArkVtxo>[]
+          : maps(prior['vtxos']).map(vtxoFromJson).toList();
+      final retained = snapshot.vtxos
+          .where((v) => v.state != ArkVtxoState.spent)
+          .toList();
+      final retainedIds = retained.map((v) => v.id).toSet();
+      final retirement = get('inventory-retirements') ?? <String, Object?>{};
+      for (final old in known.where(
+        (v) => v.state != ArkVtxoState.spent && !retainedIds.contains(v.id),
+      )) {
+        final movement = snapshot.movements
+            .where(
+              (m) =>
+                  m.status == ArkMovementStatus.successful &&
+                  m.inputVtxoIds.contains(old.id) &&
+                  (m.kind == ArkMovementKind.payment ||
+                      (m.kind == ArkMovementKind.renewal &&
+                          m.outputVtxoIds.isNotEmpty)) &&
+                  m.outputVtxoIds.every(
+                    (id) => snapshot.vtxos.any(
+                      (v) =>
+                          v.id == id && v.eligibleAt(snapshot.tipHeight ?? 0),
+                    ),
+                  ),
+            )
+            .firstOrNull;
+        final exit = snapshot.exitDetails
+            .where(
+              (e) =>
+                  e.id == old.id &&
+                  e.status == ArkExitStatus.claimed &&
+                  e.claimTxid != null,
+            )
+            .firstOrNull;
+        if (movement == null && exit == null) {
+          throw const FormatException('Missing inventory retirement evidence');
+        }
+        retirement[old.id] = {
+          'movement': movement?.id,
+          'outputs': movement?.outputVtxoIds,
+          'claimTxid': exit?.claimTxid,
+          'tip': snapshot.tipHeight,
+          'revision': snapshot.revision,
+        };
+      }
+      put('inventory-obligations', {
+        'vtxos': retained.map(vtxoToJson).toList(),
+      });
+      put('inventory-retirements', retirement);
+      if (snapshot.vtxoInventoryComplete && !snapshot.stale) {
+        put('complete-inventory', {
+          'vtxos': snapshot.vtxos.map(vtxoToJson).toList(),
+        });
+      }
+      saveSnapshot(snapshot);
+      _db.execute('COMMIT');
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
   void saveQuote(ArkQuote value) => _db.execute(
     'INSERT INTO quotes VALUES(?,?)',
     [value.id, jsonEncode(quoteToJson(value))],

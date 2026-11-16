@@ -359,6 +359,7 @@ final class BarkArkClient implements ArkClient {
     ArkAccountId account,
     Uri source, {
     bool commit = true,
+    bool authoritativePass = true,
   }) async {
     final previous = store.snapshot;
     var observed = await session.observe(
@@ -383,23 +384,67 @@ final class BarkArkClient implements ArkClient {
         ArkUnavailableFailure(ArkFailureReason.chainUnreachable),
       );
     }
-    final inventory = store.get('complete-inventory');
+    final inventory =
+        store.get('inventory-obligations') ?? store.get('complete-inventory');
     final baseline = inventory == null
         ? previous?.vtxos ?? const <ArkVtxo>[]
         : maps(inventory['vtxos']).map(vtxoFromJson).toList();
-    bool provenSpent(String id) => observed.movements.any(
-      (movement) =>
-          movement.status == ArkMovementStatus.successful &&
-          movement.inputVtxoIds.contains(id) &&
-          (movement.kind != ArkMovementKind.renewal ||
-              movement.outputVtxoIds.isNotEmpty) &&
-          movement.outputVtxoIds.every(
-            (id) => observed.vtxos.any((v) => v.id == id),
-          ),
-    );
+    final authoritative =
+        authoritativePass &&
+        !observed.stale &&
+        observed.vtxoInventoryComplete &&
+        observed.recovery == ArkRecoveryStatus.complete &&
+        observed.tipHeight != null &&
+        observed.vtxos.every((v) => v.state != ArkVtxoState.unknown);
+    bool provenSpent(String id) {
+      if (!authoritative) {
+        return false;
+      }
+      if (observed.exitDetails.any(
+        (exit) =>
+            exit.id == id &&
+            exit.status == ArkExitStatus.claimed &&
+            exit.claimTxid != null &&
+            RegExp(r'^[0-9a-f]{64}$').hasMatch(exit.claimTxid ?? ''),
+      )) {
+        return true;
+      }
+      return observed.movements.any(
+        (movement) =>
+            movement.status == ArkMovementStatus.successful &&
+            movement.inputVtxoIds.contains(id) &&
+            (movement.kind == ArkMovementKind.renewal
+                ? observed.renewal != ArkRenewalStatus.delegated &&
+                      observed.renewal != ArkRenewalStatus.failed &&
+                      observed.renewal != ArkRenewalStatus.unknown &&
+                      movement.outputVtxoIds.isNotEmpty &&
+                      movement.outputVtxoIds.every(
+                        (output) => observed.vtxos.any(
+                          (v) =>
+                              v.id == output &&
+                              v.eligibleAt(observed.tipHeight ?? 0),
+                        ),
+                      )
+                : movement.kind == ArkMovementKind.payment &&
+                      movement.outputVtxoIds.every(
+                        (output) => observed.vtxos.any(
+                          (v) =>
+                              v.id == output &&
+                              v.eligibleAt(observed.tipHeight ?? 0),
+                        ),
+                      )),
+      );
+    }
+
+    final known = {for (final v in baseline) v.id: v};
+    for (final v in observed.vtxos.where(
+      (v) => v.state != ArkVtxoState.spent,
+    )) {
+      known.putIfAbsent(v.id, () => v);
+    }
     final unresolved = <ArkVtxo>[];
-    for (final old in baseline.where(
-      (v) => v.state != ArkVtxoState.spent && v.state != ArkVtxoState.exited,
+    for (final old in known.values.where(
+      (v) => v.state != ArkVtxoState.spent,
     )) {
       final current = observed.vtxos.where((v) => v.id == old.id).firstOrNull;
       if ((current == null || current.state == ArkVtxoState.spent) &&
@@ -415,6 +460,13 @@ final class BarkArkClient implements ArkClient {
           ),
         );
       }
+    }
+    if (observed.vtxos.any((v) => v.state == ArkVtxoState.unknown)) {
+      observed = copySnapshot(
+        observed,
+        stale: true,
+        vtxoCompleteness: ArkSectionCompleteness.incomplete,
+      );
     }
     if (unresolved.isNotEmpty) {
       final unresolvedIds = unresolved.map((v) => v.id).toSet();
@@ -441,12 +493,7 @@ final class BarkArkClient implements ArkClient {
   }
 
   void _commitObservation(ArkStore store, ArkSnapshot snapshot) {
-    if (snapshot.vtxoInventoryComplete && !snapshot.stale) {
-      store.put('complete-inventory', {
-        'vtxos': snapshot.vtxos.map(vtxoToJson).toList(),
-      });
-    }
-    store.saveSnapshot(snapshot);
+    store.commitObservation(snapshot);
     _changes[snapshot.account.canonical]?.add(Ok(snapshot));
   }
 
@@ -515,6 +562,7 @@ final class BarkArkClient implements ArkClient {
           account,
           source,
           commit: false,
+          authoritativePass: failed.isEmpty,
         );
         completed.add(ArkStage.vtxos);
       } on ArkStageDeferred {
