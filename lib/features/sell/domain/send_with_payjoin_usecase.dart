@@ -41,6 +41,12 @@ class SendWithPayjoinUsecase {
         return Ok(value);
       case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
         return Err(SellSpendBlockedFailure(busy: busy));
+      case Err(failure: PayjoinSenderKeptFailure(:final logMessage)):
+        log.warning(
+          'Sell Payjoin post failed; the session is kept',
+          error: logMessage ?? '-',
+        );
+        return Err(SellPayjoinSessionKeptFailure(logMessage));
       case Err(:final failure):
         // Both parts: Failure has no toString() override, so the value alone
         // would log "Instance of 'PayjoinX'" and the message alone drops the

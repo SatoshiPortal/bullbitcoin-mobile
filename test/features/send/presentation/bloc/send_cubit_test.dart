@@ -59,6 +59,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
@@ -129,6 +130,9 @@ class _MockGetAdoptablePayjoinSenderUsecase extends Mock
 
 class _MockBroadcastPayjoinOriginalUsecase extends Mock
     implements BroadcastPayjoinOriginalUsecase {}
+
+class _MockGetVisiblePayjoinTransactionUsecase extends Mock
+    implements GetVisiblePayjoinTransactionUsecase {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -266,6 +270,7 @@ class _TestableSendCubit extends SendCubit {
     required super.watchPayjoinUsecase,
     required super.getAdoptablePayjoinSenderUsecase,
     required super.broadcastPayjoinOriginalUsecase,
+    required super.getVisiblePayjoinTransactionUsecase,
     required super.retryPayjoinProposalUsecase,
     required super.getWalletsUsecase,
     required super.getWalletUsecase,
@@ -442,6 +447,8 @@ void main() {
   late _MockWatchPayjoinUsecase watchPayjoinUsecase;
   late _MockGetAdoptablePayjoinSenderUsecase getAdoptablePayjoinSenderUsecase;
   late _MockBroadcastPayjoinOriginalUsecase broadcastPayjoinOriginalUsecase;
+  late _MockGetVisiblePayjoinTransactionUsecase
+  getVisiblePayjoinTransactionUsecase;
   late _MockPayjoinSessions payjoinSessions;
   late _MockGetWalletsUsecase getWalletsUsecase;
   late _MockGetWalletUsecase getWalletUsecase;
@@ -511,6 +518,7 @@ void main() {
     watchPayjoinUsecase: watchPayjoinUsecase,
     getAdoptablePayjoinSenderUsecase: getAdoptablePayjoinSenderUsecase,
     broadcastPayjoinOriginalUsecase: broadcastPayjoinOriginalUsecase,
+    getVisiblePayjoinTransactionUsecase: getVisiblePayjoinTransactionUsecase,
     retryPayjoinProposalUsecase: retryPayjoinProposalUsecase,
     getWalletsUsecase: getWalletsUsecase,
     getWalletUsecase: getWalletUsecase,
@@ -630,7 +638,11 @@ void main() {
     ).thenAnswer((_) async => null);
     broadcastPayjoinOriginalUsecase = _MockBroadcastPayjoinOriginalUsecase();
     when(() => broadcastPayjoinOriginalUsecase.execute(any()))
-        .thenAnswer((_) async => true);
+        .thenAnswer((_) async => null);
+    getVisiblePayjoinTransactionUsecase =
+        _MockGetVisiblePayjoinTransactionUsecase();
+    when(() => getVisiblePayjoinTransactionUsecase.execute(any()))
+        .thenAnswer((_) async => null);
     payjoinSessions = _MockPayjoinSessions();
     getWalletsUsecase = _MockGetWalletsUsecase();
     getWalletUsecase = _MockGetWalletUsecase();
@@ -4725,6 +4737,7 @@ void main() {
         (_) async => const Err<PayjoinSenderSession, SendFailure>(
           SendTransactionConfirmationFailure(
             logMessage: 'payjoin directory unreachable',
+            payjoinSessionKept: true,
           ),
         ),
       );
@@ -4756,6 +4769,59 @@ void main() {
       // settle it with the original now instead of at the session deadline.
       verify(() => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri))
           .called(1);
+    });
+
+    test('a kept session settled by the immediate fallback resolves the send '
+        'without waiting for the session stream', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => sendWithPayjoinUsecase.execute(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err<PayjoinSenderSession, SendFailure>(
+          SendTransactionConfirmationFailure(
+            logMessage: 'payjoin directory unreachable',
+            payjoinSessionKept: true,
+          ),
+        ),
+      );
+      when(
+        () => getAdoptablePayjoinSenderUsecase.execute(
+          sessionId: _payjoinBip21().uri,
+          walletId: 'w1',
+          amountSat: 50000,
+        ),
+      ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
+      // The stream published the settlement before the watch attached: the
+      // broadcast's own return value is the only copy the cubit sees.
+      when(() => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri))
+          .thenAnswer((_) async => _sender(status: PayjoinStatus.aborted));
+      cubit.setStateForTest(
+        payjoinReadyState().copyWith(
+          signedBitcoinPsbt: 'signed-regular-psbt',
+          label: 'coffee',
+        ),
+      );
+
+      await cubit.onConfirmTransactionClicked();
+      await pumpEventQueue();
+
+      expect(cubit.state.step, SendStep.success);
+      expect(cubit.state.txId, 'sender-orig-txid');
+      expect(cubit.state.payjoinSender?.status, PayjoinStatus.aborted);
+      verify(() => getWalletUsecase.execute('w1', sync: true)).called(1);
+      final stored =
+          verify(() => labelsFacade.store(captureAny())).captured.single
+              as NewLabel;
+      expect(stored.reference, 'sender-orig-txid');
+      expect(stored.label, 'coffee');
     });
 
     test('a failed payjoin start adopts a saved session that already holds '
@@ -4793,9 +4859,59 @@ void main() {
 
       expect(cubit.state.step, SendStep.sending);
       expect(cubit.state.payjoinSender?.status, PayjoinStatus.proposed);
-      verify(() => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri))
-          .called(1);
+      // The rejection came from the duplicate guard, not from a failed post:
+      // the live negotiation is watched, never downgraded to the original.
+      verifyNever(
+        () => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri),
+      );
     });
+
+    test(
+      'an adopted session that is paused shows the paused failure',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(
+          () => sendWithPayjoinUsecase.execute(
+            walletId: any(named: 'walletId'),
+            network: any(named: 'network'),
+            bip21: any(named: 'bip21'),
+            unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+            amountSat: any(named: 'amountSat'),
+            networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          ),
+        ).thenAnswer(
+          (_) async => const Err<PayjoinSenderSession, SendFailure>(
+            SendTransactionConfirmationFailure(
+              logMessage: 'A Payjoin session already exists for this payment',
+            ),
+          ),
+        );
+        when(
+          () => getAdoptablePayjoinSenderUsecase.execute(
+            sessionId: _payjoinBip21().uri,
+            walletId: 'w1',
+            amountSat: 50000,
+          ),
+        ).thenAnswer(
+          (_) async => _sender(
+            status: PayjoinStatus.proposed,
+            spendFailure: const PayjoinSpendBlockedFailure(),
+          ),
+        );
+        cubit.setStateForTest(
+          payjoinReadyState().copyWith(
+            signedBitcoinPsbt: 'signed-regular-psbt',
+          ),
+        );
+
+        await cubit.onConfirmTransactionClicked();
+
+        expect(cubit.state.step, SendStep.sending);
+        expect(cubit.state.failure, isA<SendPayjoinPausedFailure>());
+        expect(cubit.state.payjoinSender?.canRetryProposal, isTrue);
+      },
+    );
 
     test('a completed PayjoinSender (real payjoin, txId set) resolves the flow '
         'to success with the payjoin txid, syncs the wallet and stores the '
@@ -4834,6 +4950,29 @@ void main() {
 
       expect(cubit.state.step, SendStep.success);
       expect(cubit.state.txId, 'sender-orig-txid');
+    });
+
+    test('an expired PayjoinSender whose transaction is already visible '
+        'settles on it instead of returning to confirm', () async {
+      final cubit = await armWatcher(buildCubit(), label: 'coffee');
+      addTearDown(cubit.close);
+      when(
+        () => getVisiblePayjoinTransactionUsecase.execute(_payjoinBip21().uri),
+      ).thenAnswer((_) async => 'sender-orig-txid');
+
+      payjoinEvents.add(_sender(status: PayjoinStatus.expired));
+      await pumpEventQueue();
+
+      // The receiver, or a fallback the sync had not caught up with, paid
+      // the payee: offering Confirm again would pay a second time.
+      expect(cubit.state.step, SendStep.success);
+      expect(cubit.state.txId, 'sender-orig-txid');
+      expect(cubit.state.failure, isNull);
+      verify(() => getWalletUsecase.execute('w1', sync: true)).called(1);
+      final stored =
+          verify(() => labelsFacade.store(captureAny())).captured.single
+              as NewLabel;
+      expect(stored.reference, 'sender-orig-txid');
     });
 
     test('an expired PayjoinSender returns to confirm with a broadcast-failure '

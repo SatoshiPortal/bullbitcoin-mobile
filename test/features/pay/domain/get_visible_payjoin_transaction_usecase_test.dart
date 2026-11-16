@@ -16,17 +16,15 @@ void main() {
   });
 
   test('returns the visible transaction id', () async {
-    when(
-      () => sessions.visibleTransaction('session-1'),
-    ).thenAnswer((_) async => const Ok('txid-1'));
+    when(() => sessions.visibleTransaction('session-1'))
+        .thenAnswer((_) async => const Ok('txid-1'));
 
     expect(await usecase.execute('session-1'), 'txid-1');
   });
 
   test('returns null when nothing is visible', () async {
-    when(
-      () => sessions.visibleTransaction('session-1'),
-    ).thenAnswer((_) async => const Ok(null));
+    when(() => sessions.visibleTransaction('session-1'))
+        .thenAnswer((_) async => const Ok(null));
 
     expect(await usecase.execute('session-1'), isNull);
   });

@@ -15,7 +15,8 @@ import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.da
 import 'package:bb_mobile/features/pay/domain/get_pay_exchange_rate_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_adoptable_payjoin_sender_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_user_summary_usecase.dart';
@@ -55,8 +56,11 @@ class PayLocator {
     locator.registerFactory<RetryPayjoinProposalUsecase>(
       () => RetryPayjoinProposalUsecase(locator<PayjoinSender>()),
     );
-    locator.registerFactory<GetPayjoinUsecase>(
-      () => GetPayjoinUsecase(locator<PayjoinSessions>()),
+    locator.registerFactory<GetAdoptablePayjoinSenderUsecase>(
+      () => GetAdoptablePayjoinSenderUsecase(locator<PayjoinSessions>()),
+    );
+    locator.registerFactory<BroadcastPayjoinOriginalUsecase>(
+      () => BroadcastPayjoinOriginalUsecase(locator<PayjoinSender>()),
     );
     locator.registerFactory<GetVisiblePayjoinTransactionUsecase>(
       () => GetVisiblePayjoinTransactionUsecase(locator<PayjoinSessions>()),
@@ -177,7 +181,10 @@ class PayLocator {
         getPayPayinAddressUsecase: locator<GetPayPayinAddressUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
-        getPayjoinUsecase: locator<GetPayjoinUsecase>(),
+        getAdoptablePayjoinSenderUsecase:
+            locator<GetAdoptablePayjoinSenderUsecase>(),
+        broadcastPayjoinOriginalUsecase:
+            locator<BroadcastPayjoinOriginalUsecase>(),
         getVisiblePayjoinTransactionUsecase:
             locator<GetVisiblePayjoinTransactionUsecase>(),
         retryPayjoinProposalUsecase: locator<RetryPayjoinProposalUsecase>(),

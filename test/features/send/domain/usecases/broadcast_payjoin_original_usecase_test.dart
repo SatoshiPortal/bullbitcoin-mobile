@@ -19,26 +19,70 @@ PayjoinSenderSession _session() => PayjoinSenderSession(
 
 void main() {
   late _MockPayjoinSender sender;
+  late List<Duration> waits;
   late BroadcastPayjoinOriginalUsecase usecase;
 
   setUp(() {
     sender = _MockPayjoinSender();
-    usecase = BroadcastPayjoinOriginalUsecase(sender);
+    waits = [];
+    usecase = BroadcastPayjoinOriginalUsecase(
+      sender,
+      (d) async => waits.add(d),
+    );
   });
 
-  test('reports an accepted broadcast', () async {
-    when(
-      () => sender.broadcastOriginal('session-1'),
-    ).thenAnswer((_) async => Ok(_session()));
+  test('returns the settled session of an accepted broadcast', () async {
+    final settled = _session();
+    when(() => sender.broadcastOriginal('session-1'))
+        .thenAnswer((_) async => Ok(settled));
 
-    expect(await usecase.execute('session-1'), isTrue);
+    expect(await usecase.execute('session-1'), settled);
+    expect(waits, isEmpty);
   });
 
-  test('reports a refused broadcast without failing', () async {
+  test('reports a refused broadcast as null without failing', () async {
     when(() => sender.broadcastOriginal('session-1')).thenAnswer(
       (_) async => const Err(PayjoinBroadcastFailure('Broadcast failed')),
     );
 
-    expect(await usecase.execute('session-1'), isFalse);
+    expect(await usecase.execute('session-1'), isNull);
+    verify(() => sender.broadcastOriginal('session-1')).called(1);
+  });
+
+  test('asks again while the wallet is only busy', () async {
+    final settled = _session();
+    var calls = 0;
+    when(() => sender.broadcastOriginal('session-1')).thenAnswer((_) async {
+      calls++;
+      return calls < 3
+          ? const Err(PayjoinSpendBlockedFailure(busy: true))
+          : Ok(settled);
+    });
+
+    expect(await usecase.execute('session-1'), settled);
+    expect(calls, 3);
+    expect(waits, [
+      BroadcastPayjoinOriginalUsecase.busyRetryDelay,
+      BroadcastPayjoinOriginalUsecase.busyRetryDelay,
+    ]);
+  });
+
+  test('gives up after the busy retries', () async {
+    when(() => sender.broadcastOriginal('session-1')).thenAnswer(
+      (_) async => const Err(PayjoinSpendBlockedFailure(busy: true)),
+    );
+
+    expect(await usecase.execute('session-1'), isNull);
+    verify(() => sender.broadcastOriginal('session-1'))
+        .called(BroadcastPayjoinOriginalUsecase.busyRetries + 1);
+  });
+
+  test('a spend blocked for an observation is not retried', () async {
+    when(() => sender.broadcastOriginal('session-1'))
+        .thenAnswer((_) async => const Err(PayjoinSpendBlockedFailure()));
+
+    expect(await usecase.execute('session-1'), isNull);
+    verify(() => sender.broadcastOriginal('session-1')).called(1);
+    expect(waits, isEmpty);
   });
 }

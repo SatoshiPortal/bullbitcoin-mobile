@@ -111,8 +111,14 @@ final class SendExchangeOrderMismatchFailure extends SendFailure {
 final class SendTransactionConfirmationFailure extends SendFailure {
   final bool isBroadcastFailure;
 
+  /// The Payjoin start failed at the directory post, after the engine
+  /// persisted and armed the session: that session is this payment's and can
+  /// be settled with its original right away.
+  final bool payjoinSessionKept;
+
   const SendTransactionConfirmationFailure({
     this.isBroadcastFailure = false,
+    this.payjoinSessionKept = false,
     String? logMessage,
   }) : super(logMessage);
 }

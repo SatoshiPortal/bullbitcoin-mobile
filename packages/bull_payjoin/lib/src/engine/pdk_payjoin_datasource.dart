@@ -462,9 +462,14 @@ class PdkPayjoinDatasource {
     InMemoryJsonSenderSessionPersister persister,
     PayjoinSenderModel senderModel,
   ) async {
+    // Set before any relay is contacted: a failure while it is still false
+    // provably sent nothing; past that point the outcome is unknown and the
+    // original may be in the receiver's hands.
+    var reachedRelay = false;
     try {
       await _throughSessionRelays(senderModel.uri, (relay) async {
         final reqCtx = withReplyKey.createV2PostRequest(ohttpRelay: relay);
+        reachedRelay = true;
         final body = await postBytes(
           _dio,
           reqCtx.request.url,
@@ -480,6 +485,7 @@ class PdkPayjoinDatasource {
         e.isExpired()
             ? 'Payjoin session expired'
             : 'Could not create payjoin request',
+        originalMayBeDelivered: reachedRelay,
       );
     } catch (e) {
       _log.warning(
@@ -489,6 +495,7 @@ class PdkPayjoinDatasource {
       );
       throw SendCreationException(
         'Failed to post original PSBT to any OHTTP relay: $e',
+        originalMayBeDelivered: reachedRelay,
       );
     }
   }
@@ -1261,7 +1268,12 @@ class PayjoinExpiredException extends PayjoinEngineException {
 }
 
 class SendCreationException extends PayjoinEngineException {
-  SendCreationException(super.message);
+  /// False only when the request provably never left the device, so nobody
+  /// but this device can hold the original. True whenever the outcome is
+  /// unknown.
+  final bool originalMayBeDelivered;
+
+  SendCreationException(super.message, {this.originalMayBeDelivered = true});
 }
 
 class _IsScriptOwned implements IsScriptOwned {

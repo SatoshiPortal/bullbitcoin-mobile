@@ -24,6 +24,13 @@ final class PayjoinProtocolRejectedFailure extends PayjoinFailure {
   const PayjoinProtocolRejectedFailure([super.logMessage]);
 }
 
+/// The sender start failed after its session was persisted and armed: the
+/// post to the directory did not go through, and the stored session keeps the
+/// signed original. The caller may adopt that session and settle it.
+final class PayjoinSenderKeptFailure extends PayjoinFailure {
+  const PayjoinSenderKeptFailure([super.logMessage]);
+}
+
 final class PayjoinSessionNotFoundFailure extends PayjoinFailure {
   const PayjoinSessionNotFoundFailure([super.logMessage]);
 }

@@ -387,12 +387,24 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         // before any publication; a POST failure after a successful persist
         // deliberately keeps the row (the receiver may still have received
         // the original) and lets the expiry fallback settle the payment.
+        // The row is written with network evidence already set: once the POST
+        // goes out the receiver holds a fully signed, broadcastable original
+        // that BIP 77 lets it broadcast at any point and that this device
+        // cannot revoke, so the payment can exist without this device ever
+        // reaching the bitcoin network. Setting it before the POST closes the
+        // window in which a kill right after the POST leaves a row without
+        // it. Expiry then keeps the row reserved and replays this same
+        // original (_processExpiredPayjoinInner, _holdUnresolvedOriginal)
+        // instead of releasing its inputs to a rebuild that would not conflict
+        // with the receiver's copy. The evidence is withdrawn below only when
+        // the datasource states the request never left the device.
         persistBeforePost: (model) async {
+          final delivered = model.copyWith(hasNetworkEvidence: true);
           if (existing == null) {
-            await _localPayjoinDatasource.storeSender(model);
+            await _localPayjoinDatasource.storeSender(delivered);
           } else {
             final replaced = await _localPayjoinDatasource.replaceExpiredSender(
-              model,
+              delivered,
             );
             if (!replaced) {
               throw StateError(
@@ -402,14 +414,38 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           }
         },
       );
-    } catch (_) {
+    } catch (error) {
+      // Nothing left the device: nobody but this row holds the original, so
+      // the evidence set in the write-ahead persist is withdrawn and expiry
+      // may release the inputs as before. Any failure whose request may have
+      // reached a relay keeps it. Best effort: evidence that could not be
+      // withdrawn only keeps the session reserved.
+      if (error is SendCreationException && !error.originalMayBeDelivered) {
+        try {
+          await _localPayjoinDatasource.setSenderNetworkEvidence(
+            bip21,
+            present: false,
+          );
+        } catch (e, st) {
+          _log.warning(
+            code: api.PayjoinLogCode.storageFailure,
+            role: api.PayjoinLogRole.sender,
+            sessionRef: Payjoin.logRefForId(bip21),
+            error: e,
+            trace: st,
+          );
+        }
+      }
       // A POST failure after the write-ahead persist leaves a live row that
       // only a resume would otherwise drive. Arm it now, exactly as a resume
       // does for a sender without a proposal: the expiry timer lives in the
       // poll, and the fallback watcher catches a receiver that broadcasts
-      // the original on its own. Both are no-ops when already armed. A row
-      // that is not this attempt's (a retry whose replacement failed leaves
-      // the expired one) is left alone.
+      // the original on its own. Both are no-ops when already armed, and a
+      // deadline the slow post already passed fires at once. A row that is
+      // not this attempt's (a retry whose replacement failed leaves the
+      // expired one) is left alone. A kept row is reported under its own
+      // exception so the caller can settle it at once; every other failure
+      // keeps its type.
       PayjoinSenderModel? stored;
       try {
         stored = await _localPayjoinDatasource.fetchSender(bip21);
@@ -420,7 +456,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           !stored.isExpired &&
           !stored.isCompleted &&
           !stored.isAborted &&
-          !stored.isExpiryTimePassed &&
           stored.proposalPsbt == null) {
         _watchForFallback(
           payjoinId: stored.id,
@@ -433,29 +468,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           role: api.PayjoinLogRole.sender,
           sessionRef: stored.toEntity().logRef,
         );
+        throw PayjoinSenderKeptException(error);
       }
       rethrow;
-    }
-
-    // The POST handed the receiver a fully signed, broadcastable original.
-    // BIP 77 lets the receiver broadcast it at any point and gives the sender
-    // no way to revoke it, so from here this payment can exist without this
-    // device ever reaching the bitcoin network: record it as network
-    // evidence. Expiry then keeps the row reserved and replays this same
-    // original (_processExpiredPayjoinInner, _holdUnresolvedOriginal) instead
-    // of releasing its inputs to a rebuild that would not conflict with the
-    // receiver's copy. Best effort: a failed write is logged and leaves the
-    // row as it was; the POST is not undone by it.
-    try {
-      await _recordSenderNetworkEvidence(model.id);
-    } catch (e, st) {
-      _log.warning(
-        code: api.PayjoinLogCode.storageFailure,
-        role: api.PayjoinLogRole.sender,
-        sessionRef: model.toEntity().logRef,
-        error: e,
-        trace: st,
-      );
     }
 
     // The datasource returned the session in its post-POST state
@@ -1832,9 +1847,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  not sent again in this run.
       //
       //  No evidence: the port proved nothing reached the network, and the
-      //  original never reached the receiver either (a delivered original is
-      //  recorded as evidence at creation, see createPayjoinSender). Persist
-      //  the expiry so the session becomes terminal on our side. Two things
+      //  original is not recorded as delivered (createPayjoinSender records
+      //  it before the POST and withdraws it only when the request never
+      //  left the device). Persist the expiry so the session becomes
+      //  terminal on our side. Two things
       //  follow, and they are inseparable. It releases this session's inputs —
       //  the freeze reads `onlyUnfinished`, so an unfinished row locks those
       //  coins out of every send in the app, not just this order, for a

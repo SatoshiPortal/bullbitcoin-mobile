@@ -53,6 +53,7 @@ import 'package:bb_mobile/features/send/domain/usecases/get_send_exchange_rate_u
 import 'package:bb_mobile/features/send/domain/usecases/get_send_swap_quote_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_payjoin_original_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/get_send_payjoin_enabled_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -114,6 +115,7 @@ class SendCubit extends Cubit<SendState>
     required this._watchPayjoinUsecase,
     required this._getAdoptablePayjoinSenderUsecase,
     required this._broadcastPayjoinOriginalUsecase,
+    required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._getWalletsUsecase,
     required this._getWalletUsecase,
@@ -211,6 +213,8 @@ class SendCubit extends Cubit<SendState>
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final GetAdoptablePayjoinSenderUsecase _getAdoptablePayjoinSenderUsecase;
   final BroadcastPayjoinOriginalUsecase _broadcastPayjoinOriginalUsecase;
+  final GetVisiblePayjoinTransactionUsecase
+  _getVisiblePayjoinTransactionUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
@@ -3201,21 +3205,15 @@ class SendCubit extends Cubit<SendState>
                 : 1,
           );
           final PayjoinSenderSession payjoinSender;
-          var adoptedAfterFailedStart = false;
+          var settleAdoptedNow = false;
           switch (payjoinResult) {
             case Ok(:final value):
               payjoinSender = value;
             case Err(:final failure):
-              // A failed start is not a failed payment: the engine persists
-              // the session — signed original included — BEFORE posting to the
-              // directory, and a post failure keeps the row so the expiry
-              // fallback still settles the payment. Re-arming Confirm here
-              // would let a rebuilt send pay the same payee a second time on
-              // disjoint inputs (the persisted session's inputs are reserved
-              // out of coin selection, so the two transactions cannot
-              // conflict). When this payment's session is persisted, adopt it
-              // and proceed exactly as a successful start; otherwise fall
-              // through to the error path.
+              // A failed start is not a failed payment: when this payment's
+              // session was persisted (GetAdoptablePayjoinSenderUsecase says
+              // which rows count), adopt it exactly as a successful start.
+              // Re-arming Confirm over it would pay the payee a second time.
               final persisted = await _getAdoptablePayjoinSenderUsecase.execute(
                 sessionId: paymentRequest.uri,
                 walletId: wallet.id,
@@ -3233,7 +3231,13 @@ class SendCubit extends Cubit<SendState>
                 'instead of re-arming Confirm',
               );
               payjoinSender = persisted;
-              adoptedAfterFailedStart = true;
+              // Only a session this attempt persisted and whose post failed
+              // is settled at once. Any other rejection (an earlier healthy
+              // session for the same payment, for instance) is adopted and
+              // watched, never downgraded to the plain original.
+              settleAdoptedNow =
+                  failure is SendTransactionConfirmationFailure &&
+                  failure.payjoinSessionKept;
           }
           // Show originalTxId provisionally; the payjoin runs asynchronously
           //  in the repository (poll → sign → broadcast, or fallback to the
@@ -3251,12 +3255,25 @@ class SendCubit extends Cubit<SendState>
             ),
           );
           _watchPayjoin(payjoinSender.id);
-          // The directory most likely never received the original and the
-          // stored row cannot pick up a proposal: settle now rather than at
-          // the session deadline. A refusal leaves the armed session as is.
-          if (adoptedAfterFailedStart) {
+          // The directory did not take the original and the stored row cannot
+          // pick up a proposal: settle now rather than at the session
+          // deadline. A refusal leaves the armed session as is.
+          if (settleAdoptedNow) {
+            final userLabel = state.label;
             unawaited(
-              _broadcastPayjoinOriginalUsecase.execute(payjoinSender.id),
+              _broadcastPayjoinOriginalUsecase.execute(payjoinSender.id).then((
+                settled,
+              ) {
+                // The engine also publishes this on the session stream; this
+                // covers a settlement that ran before the watch was attached.
+                if (settled == null) return;
+                _settlePayjoin(
+                  settled,
+                  settled.txId ?? settled.originalTxId,
+                  walletId: wallet.id,
+                  userLabel: userLabel,
+                );
+              }),
             );
           }
         } else {
@@ -3994,7 +4011,7 @@ class SendCubit extends Cubit<SendState>
         )
         .where((payjoin) => payjoin is PayjoinSenderSession)
         .cast<PayjoinSenderSession>()
-        .listen((payjoin) {
+        .listen((payjoin) async {
           // The payjoin poll lives in the repository and outlives this cubit;
           // an event can arrive after the send flow is torn down. Never emit
           // on a closed cubit (it throws).
@@ -4005,59 +4022,41 @@ class SendCubit extends Cubit<SendState>
             '[SendCubit] Watched payjoin ${payjoin.logRef} updated: '
             '${payjoin.status}',
           );
+          void settle(String finalTxId) => _settlePayjoin(
+            payjoin,
+            finalTxId,
+            walletId: walletId,
+            userLabel: userLabel,
+          );
+
           if (payjoin.isCompleted || payjoin.isAborted) {
-            emit(
-              state.copyWith(
-                payjoinSender: payjoin,
-                failure: null,
-                // Prefer the payjoin txid; fall back to the original tx that
-                //  was broadcast when the negotiation didn't complete.
-                txId: payjoin.txId ?? payjoin.originalTxId,
-                step: SendStep.success,
-              ),
-            );
-            _payjoinSubscription?.cancel();
-            if (walletId != null) {
-              unawaited(
-                _getWalletUsecase
-                    .execute(walletId, sync: true)
-                    .then<void>((_) {})
-                    .catchError((Object _) {
-                      log.warning(
-                        'send_post_payjoin_refresh_failed category=unexpected',
-                      );
-                    }),
-              );
-            }
-            // broadcastTransaction never reaches its own label-store call for
-            //  a payjoin (it early-returns because txId is already set), so
-            //  the user's typed label has to be stored here instead, once the
-            //  final txid is known.
-            // originalTxId is always set for a sender, so this is never null.
-            final finalTxId = payjoin.txId ?? payjoin.originalTxId;
-            if (userLabel.isNotEmpty && walletId != null) {
-              unawaited(
-                _labelsFacade.store(
-                  NewLabel.tx(
-                    transactionId: finalTxId,
-                    label: userLabel,
-                    origin: walletId,
-                  ),
-                ),
-              );
-            }
+            // Prefer the payjoin txid; fall back to the original tx that
+            //  was broadcast when the negotiation didn't complete.
+            //  originalTxId is always set for a sender, so this is never null.
+            settle(payjoin.txId ?? payjoin.originalTxId);
           } else if (payjoin.isExpired) {
-            // Terminal without a broadcast: either the session expired and the
-            // original-transaction fallback failed too, or a received proposal
-            // failed to sign/broadcast and the original fallback also failed
-            // (the repository only emits the raw expired-marked entity on one
-            // of these unrecoverable paths). Nothing hit the chain, so surface
-            // a broadcast failure and return to confirm so the user can retry,
-            // instead of hanging on "coordinating".
+            // Terminal without a recorded broadcast: the session expired and
+            // the engine's own fallback sent nothing, or a received proposal
+            // failed to sign or broadcast and the fallback did too. The engine
+            // released the inputs. The receiver still holds a signed original
+            // it may broadcast on its own, and a lagging sync can hide a
+            // fallback that did reach the network; either pays the payee, so
+            // look once before offering Confirm again on other coins.
+            _payjoinSubscription?.cancel();
+            final visibleTxId = await _getVisiblePayjoinTransactionUsecase
+                .execute(payjoin.id);
+            if (isClosed) return;
+            if (visibleTxId != null) {
+              log.warning(
+                '[SendCubit] Payjoin ${payjoin.logRef} expired but its '
+                'transaction is visible; settling on it',
+              );
+              settle(visibleTxId);
+              return;
+            }
             log.warning(
               '[SendCubit] Payjoin ${payjoin.logRef} expired without broadcast',
             );
-            _payjoinSubscription?.cancel();
             // Clear the provisional txId AND payjoinSender so a retry starts
             //  clean: signTransaction set state.txId = originalTxId up front,
             //  and broadcastTransaction early-returns while txId != null — so
@@ -4086,6 +4085,54 @@ class SendCubit extends Cubit<SendState>
             );
           }
         });
+  }
+
+  /// Resolves the send flow on a settled payjoin session. Idempotent: the
+  /// settlement can arrive from the session stream and from the immediate
+  /// fallback's return value.
+  void _settlePayjoin(
+    PayjoinSenderSession payjoin,
+    String finalTxId, {
+    required String? walletId,
+    required String userLabel,
+  }) {
+    if (isClosed || state.step == SendStep.success) return;
+    emit(
+      state.copyWith(
+        payjoinSender: payjoin,
+        failure: null,
+        txId: finalTxId,
+        step: SendStep.success,
+      ),
+    );
+    _payjoinSubscription?.cancel();
+    if (walletId != null) {
+      unawaited(
+        _getWalletUsecase
+            .execute(walletId, sync: true)
+            .then<void>((_) {})
+            .catchError((Object _) {
+              log.warning(
+                'send_post_payjoin_refresh_failed category=unexpected',
+              );
+            }),
+      );
+    }
+    // broadcastTransaction never reaches its own label-store call for a
+    // payjoin (it early-returns because txId is already set), so the user's
+    // typed label has to be stored here instead, once the final txid is
+    // known.
+    if (userLabel.isNotEmpty && walletId != null) {
+      unawaited(
+        _labelsFacade.store(
+          NewLabel.tx(
+            transactionId: finalTxId,
+            label: userLabel,
+            origin: walletId,
+          ),
+        ),
+      );
+    }
   }
 
   void _watchWalletTransactionByTxId({

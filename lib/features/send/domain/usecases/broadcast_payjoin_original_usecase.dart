@@ -9,24 +9,41 @@ import 'package:primitives/primitives.dart';
 /// proposal, and left alone the engine would only send the original at the
 /// session deadline. The engine keeps its own guards (a visible competing
 /// transaction, the spend gate), so a refusal is not an error here: the
-/// session stays armed and settles at the deadline as before. Returns
-/// whether the broadcast was accepted.
+/// session stays armed and settles at the deadline as before. A wallet that
+/// is only busy with a sync is asked again a few times before giving up.
+/// Returns the settled session, or null when the broadcast was refused: the
+/// engine publishes the same settlement on the session stream, and the
+/// value lets a caller that subscribed after the fact settle on it too.
 class BroadcastPayjoinOriginalUsecase {
+  static const busyRetries = 5;
+  static const busyRetryDelay = Duration(seconds: 3);
+
   final PayjoinSender _sender;
+  final Future<void> Function(Duration) _wait;
 
-  const BroadcastPayjoinOriginalUsecase(this._sender);
+  const BroadcastPayjoinOriginalUsecase(this._sender, [this._wait = _delay]);
 
-  Future<bool> execute(String sessionId) async {
-    switch (await _sender.broadcastOriginal(sessionId)) {
-      case Ok():
-        return true;
-      case Err(:final failure):
-        log.warning(
-          'Send Payjoin original not sent after the failed start; the '
-          'session settles at its deadline',
-          error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
-        );
-        return false;
+  static Future<void> _delay(Duration duration) =>
+      Future<void>.delayed(duration);
+
+  Future<PayjoinSenderSession?> execute(String sessionId) async {
+    for (var attempt = 0; ; attempt++) {
+      switch (await _sender.broadcastOriginal(sessionId)) {
+        case Ok(value: final PayjoinSenderSession settled):
+          return settled;
+        case Ok():
+          return null;
+        case Err(failure: PayjoinSpendBlockedFailure(busy: true))
+            when attempt < busyRetries:
+          await _wait(busyRetryDelay);
+        case Err(:final failure):
+          log.warning(
+            'Send Payjoin original not sent after the failed start; the '
+            'session settles at its deadline',
+            error: '${failure.runtimeType}: ${failure.logMessage ?? "-"}',
+          );
+          return null;
+      }
     }
   }
 }

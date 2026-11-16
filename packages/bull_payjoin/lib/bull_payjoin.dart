@@ -10,6 +10,7 @@ export 'src/domain/payjoin_failure.dart'
         PayjoinWalletUnavailableFailure,
         PayjoinRelayUnavailableFailure,
         PayjoinProtocolRejectedFailure,
+        PayjoinSenderKeptFailure,
         PayjoinSessionNotFoundFailure,
         PayjoinInvalidSessionTransitionFailure,
         PayjoinStorageFailure,

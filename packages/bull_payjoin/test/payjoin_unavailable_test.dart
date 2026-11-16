@@ -39,6 +39,11 @@ void main() {
       failure,
     );
     await _expectFailure(payjoin.sessions.reservedOutpoints(), failure);
+    await _expectFailure(payjoin.sessions.inputReservations(), failure);
+    await _expectFailure(
+      payjoin.sessions.visibleTransaction('session'),
+      failure,
+    );
     await _expectFailure(payjoin.policy.load(), failure);
     await _expectFailure(
       payjoin.policy.setActionEnabled(PayjoinAction.receive, enabled: true),
