@@ -126,20 +126,20 @@ class BullMnemonicKeyboard extends StatelessWidget {
          'any other length throws a RangeError at build time.',
        );
 
-  /// Keys follow the QWERTY grid: ten across, three rows. They grow with the
-  /// width up to a desktop-sized cap, and stay usable in a short landscape
-  /// window, where the rows may take about a third of the height.
+  /// Keys follow the QWERTY grid: ten across, three rows. The rows fill a
+  /// quarter of the screen height, so with the suggestion bar the panel takes
+  /// about a third of it, like the system keyboard; floors and caps keep keys
+  /// usable in landscape and sane in a desktop window.
   static const grid = BullKeypadGrid(
     columns: 10,
     rows: 3,
-    aspectRatio: 1.75,
+    aspectRatio: 3,
     minKeyHeight: 40,
-    maxKeyHeight: 76,
+    maxKeyHeight: 80,
     maxKeyWidth: 72,
     gap: 4,
-    screenShare: 0.36,
-    glyphScale: 0.48,
-    maxGlyphSize: 34,
+    screenShare: 0.25,
+    maxGlyphSize: 30,
   );
 
   @override
