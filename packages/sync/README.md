@@ -65,7 +65,7 @@ Each asynchronous `Future<Result<T, SyncFailure>>` is shown as `T`. Other return
 
 ```text
 Sync
-|-- static foreground(documentsDirectory:, catalog:, reservedAddresses:, freezes:, inputReservations:, connections:) -> Sync
+|-- static foreground(documentsDirectory:, catalog:, reservedAddresses:, freezes:, inputReservations:, [fundingReservations:], connections:) -> Sync
 |-- static background(documentsDirectory:, catalog:, connections:) -> BackgroundSync
 |-- wallet(key) -> Wallet
 |-- changes
@@ -86,6 +86,7 @@ Wallet
 |-- generation -> int
 |-- tx
 |   |-- build(request) -> UnsignedSpend
+|   |-- prepareFunding(request, context:) -> UnsignedSpend
 |   |-- bump(request) -> UnsignedSpend
 |   |-- consolidate(request) -> List<UnsignedSpend>
 |   |-- broadcast(spend) -> SpendReceipt
