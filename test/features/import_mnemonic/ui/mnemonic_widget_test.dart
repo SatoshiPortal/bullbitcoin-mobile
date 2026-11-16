@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show BullMnemonicKeyboard;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullMnemonicKeyboard, BullSegmented;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
@@ -202,8 +203,8 @@ Color badgeColor(WidgetTester tester, int index) {
           matching: find.byWidgetPredicate(
             (widget) =>
                 widget is Container &&
-                widget.constraints?.maxWidth == 34 &&
-                widget.constraints?.maxHeight == 34,
+                widget.constraints?.maxWidth == 26 &&
+                widget.constraints?.maxHeight == 24,
           ),
         )
         .first,
@@ -391,9 +392,7 @@ void main() {
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(DropdownButton<bip39.MnemonicLength>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('24 words').last);
+      await tester.tap(find.text('24'));
       await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsNWidgets(24));
@@ -426,19 +425,92 @@ void main() {
         // rebuilds. The pump after the unfocus is required: without it the
         // unfocus and refocus coalesce into no notification at all.
         final node23 = tester.widget<TextField>(wordField(23)).focusNode!;
-        final dropdown = tester.widget<DropdownButton<bip39.MnemonicLength>>(
-          find.byType(DropdownButton<bip39.MnemonicLength>),
+        final picker = tester.widget<BullSegmented>(
+          find.byKey(const Key('mnemonicLengthPicker')),
         );
         FocusManager.instance.primaryFocus?.unfocus();
         await tester.pump();
         node23.requestFocus();
-        dropdown.onChanged!(bip39.MnemonicLength.words12);
+        picker.onSelected('12');
         await tester.pumpAndSettle();
 
         expect(tester.takeException(), isNull);
         expect(find.byType(TextField), findsNWidgets(12));
       },
     );
+  });
+
+  group('MnemonicWidget page', () {
+    testWidgets('the word count is a segmented control of every length', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final picker = tester.widget<BullSegmented>(
+        find.byKey(const Key('mnemonicLengthPicker')),
+      );
+      expect(picker.items, {'12', '15', '18', '21', '24'});
+      expect(picker.initialValue, '12');
+      expect(find.byType(DropdownButton<bip39.MnemonicLength>), findsNothing);
+    });
+
+    testWidgets('a single allowed length shows no word count control', (
+      tester,
+    ) async {
+      await pumpWidget(
+        tester,
+        allowMultipleMnemonicLength: false,
+        onSubmit: (_) {},
+      );
+      expect(find.byKey(const Key('mnemonicLengthPicker')), findsNothing);
+    });
+
+    testWidgets('word fields are compact', (tester) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final first = tester.getRect(find.byType(MnemonicWord).at(0));
+      final second = tester.getRect(find.byType(MnemonicWord).at(1));
+      final right = tester.getRect(find.byType(MnemonicWord).at(6));
+      expect(first.height, 32);
+      expect(second.top - first.bottom, 8);
+      expect(right.left - first.right, 16);
+    });
+
+    testWidgets('submit is pinned at the bottom, hidden while typing', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final button = find.byType(BullButton);
+      expect(button, findsOneWidget);
+      // Pinned: under the scroll area, not inside it.
+      expect(
+        find.ancestor(of: button, matching: find.byType(SingleChildScrollView)),
+        findsNothing,
+      );
+      expect(
+        tester.getRect(button).bottom,
+        greaterThan(
+          tester.view.physicalSize.height / tester.view.devicePixelRatio - 40,
+        ),
+      );
+
+      await focusField(tester, 0);
+      expect(button, findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsOneWidget);
+
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      expect(button, findsOneWidget);
+    });
+
+    testWidgets('the passphrase row says what the switch does', (tester) async {
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      expect(find.text('Optional extra word (BIP39)'), findsOneWidget);
+      await tester.ensureVisible(find.text('Optional extra word (BIP39)'));
+      // The subtitle is part of the tappable row.
+      await tester.tap(find.text('Optional extra word (BIP39)'));
+      await tester.pumpAndSettle();
+      expect(find.text('Entered below, never shown'), findsOneWidget);
+      expect(passphraseField(), findsOneWidget);
+    });
   });
 
   group('MnemonicWidget keyboard', () {

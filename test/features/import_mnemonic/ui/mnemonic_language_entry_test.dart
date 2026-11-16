@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.da
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
-    show BullMnemonicKeyboard, BullSecretTextInput;
+    show BullMnemonicKeyboard, BullSecretTextInput, BullSegmented;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';
@@ -605,14 +605,10 @@ void main() {
       await host(tester, onSubmit: (value) => submitted = value);
       await fill(tester, ambiguous);
       await pick(tester, bip39.Language.french);
-      final lengths = find.byType(MnemonicLengthDropdown);
-      tester
-          .widget<MnemonicLengthDropdown>(lengths)
-          .onChanged(bip39.MnemonicLength.words15);
+      final lengths = find.byKey(const Key('mnemonicLengthPicker'));
+      tester.widget<BullSegmented>(lengths).onSelected('15');
       await tester.pumpAndSettle();
-      tester
-          .widget<MnemonicLengthDropdown>(lengths)
-          .onChanged(bip39.MnemonicLength.words12);
+      tester.widget<BullSegmented>(lengths).onSelected('12');
       await tester.pumpAndSettle();
       await fill(tester, ambiguous);
       await submit(tester);
