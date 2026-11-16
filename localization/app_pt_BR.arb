@@ -11290,5 +11290,6 @@
   "settingsDarkModeTitle": "Modo escuro",
   "settingsSourceCodeTitle": "Código-fonte",
   "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
-  "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor."
+  "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado."
 }

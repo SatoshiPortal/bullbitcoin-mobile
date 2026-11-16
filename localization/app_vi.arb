@@ -3516,5 +3516,6 @@
   "settingsDarkModeTitle": "Chế độ tối",
   "settingsSourceCodeTitle": "Mã nguồn",
   "torSettingsStatusNoInternetOrBlocked": "Không có internet hoặc mạng bị kiểm duyệt",
-  "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor."
+  "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull không thể kết nối tới proxy SOCKS5 đã cấu hình."
 }

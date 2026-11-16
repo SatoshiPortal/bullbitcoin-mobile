@@ -11278,5 +11278,6 @@
   "settingsDarkModeTitle": "Σκούρα λειτουργία",
   "settingsSourceCodeTitle": "Πηγαίος κώδικας",
   "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
-  "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor."
+  "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5."
 }

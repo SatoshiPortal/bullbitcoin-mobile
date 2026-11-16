@@ -604,5 +604,7 @@
   "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
   "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
   "recoverbullUseSnowflake": "استخدام Snowflake",
+  "recoverbullSnowflakeSlow": "قد يستغرق Snowflake عدة دقائق على شبكة مُرشَّحة. أبقِ التطبيق مفتوحًا.",
+  "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
   "recoverbullTorReady": "جاهز"
 }

@@ -604,5 +604,7 @@
   "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
   "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
   "recoverbullUseSnowflake": "Χρήση Snowflake",
+  "recoverbullSnowflakeSlow": "Σε φιλτραρισμένο δίκτυο το Snowflake μπορεί να χρειαστεί μερικά λεπτά. Κρατήστε την εφαρμογή ανοιχτή.",
+  "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
   "recoverbullTorReady": "Έτοιμο"
 }

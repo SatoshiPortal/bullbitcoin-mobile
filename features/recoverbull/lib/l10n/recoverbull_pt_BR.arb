@@ -604,5 +604,7 @@
   "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
   "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
   "recoverbullUseSnowflake": "Usar Snowflake",
+  "recoverbullSnowflakeSlow": "O Snowflake pode levar vários minutos em uma rede filtrada. Mantenha o app aberto.",
+  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado.",
   "recoverbullTorReady": "Pronto"
 }

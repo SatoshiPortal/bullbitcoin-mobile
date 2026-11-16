@@ -11278,5 +11278,6 @@
   "settingsDarkModeTitle": "Karanlık mod",
   "settingsSourceCodeTitle": "Kaynak kodu",
   "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
-  "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor."
+  "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı."
 }

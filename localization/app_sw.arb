@@ -3528,5 +3528,6 @@
   "settingsDarkModeTitle": "Hali ya giza",
   "settingsSourceCodeTitle": "Msimbo chanzo",
   "torSettingsStatusNoInternetOrBlocked": "Hakuna intaneti au mtandao umedhibitiwa",
-  "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor."
+  "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa."
 }

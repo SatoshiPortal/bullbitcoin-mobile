@@ -169,5 +169,7 @@
   "torSettingsStatusNoInternetOrBlocked": "Không có internet hoặc mạng bị kiểm duyệt",
   "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor.",
   "recoverbullUseSnowflake": "Dùng Snowflake",
+  "recoverbullSnowflakeSlow": "Trên mạng bị lọc, Snowflake có thể mất vài phút. Hãy giữ ứng dụng mở.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull không thể kết nối tới proxy SOCKS5 đã cấu hình.",
   "recoverbullTorReady": "Sẵn sàng"
 }

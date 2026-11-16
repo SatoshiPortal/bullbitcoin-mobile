@@ -9397,5 +9397,6 @@
   "settingsDarkModeTitle": "Тъмен режим",
   "settingsSourceCodeTitle": "Изходен код",
   "torSettingsStatusNoInternetOrBlocked": "Няма интернет или мрежата е цензурирана",
-  "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor."
+  "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси."
 }

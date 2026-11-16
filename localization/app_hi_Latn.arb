@@ -11585,5 +11585,6 @@
   "settingsDarkModeTitle": "Dark mode",
   "settingsSourceCodeTitle": "Source code",
   "torSettingsStatusNoInternetOrBlocked": "Internet nahin hai ya network censored hai",
-  "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai."
+  "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka."
 }

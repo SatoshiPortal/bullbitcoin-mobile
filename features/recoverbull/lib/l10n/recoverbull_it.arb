@@ -276,5 +276,6 @@
   "torSettingsStatusNoInternetOrBlocked": "Nessuna connessione internet o rete censurata",
   "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor.",
   "recoverbullUseSnowflake": "Usa Snowflake",
+  "recoverbullSnowflakeSlow": "Snowflake può richiedere alcuni minuti su una rete filtrata. Tieni l’app aperta.",
   "recoverbullTorReady": "Pronto"
 }

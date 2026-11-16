@@ -11281,5 +11281,6 @@
   "settingsDarkModeTitle": "الوضع الداكن",
   "settingsSourceCodeTitle": "الشيفرة المصدرية",
   "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
-  "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor."
+  "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ."
 }

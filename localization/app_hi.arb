@@ -11465,5 +11465,6 @@
   "settingsDarkModeTitle": "डार्क मोड",
   "settingsSourceCodeTitle": "सोर्स कोड",
   "torSettingsStatusNoInternetOrBlocked": "इंटरनेट नहीं है या नेटवर्क सेंसर है",
-  "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।"
+  "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।",
+  "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।"
 }

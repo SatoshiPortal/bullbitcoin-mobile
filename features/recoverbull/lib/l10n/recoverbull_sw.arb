@@ -169,5 +169,7 @@
   "torSettingsStatusNoInternetOrBlocked": "Hakuna intaneti au mtandao umedhibitiwa",
   "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor.",
   "recoverbullUseSnowflake": "Tumia Snowflake",
+  "recoverbullSnowflakeSlow": "Kwenye mtandao uliochujwa, Snowflake inaweza kuchukua dakika kadhaa. Acha programu ikiwa wazi.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa.",
   "recoverbullTorReady": "Tayari"
 }

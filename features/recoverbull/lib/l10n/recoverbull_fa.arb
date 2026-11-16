@@ -604,5 +604,7 @@
   "torSettingsStatusNoInternetOrBlocked": "اینترنت وجود ندارد یا شبکه سانسور شده است",
   "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند.",
   "recoverbullUseSnowflake": "استفاده از Snowflake",
+  "recoverbullSnowflakeSlow": "Snowflake ممکن است در شبکهٔ فیلترشده چند دقیقه طول بکشد. برنامه را باز نگه دارید.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود.",
   "recoverbullTorReady": "آماده"
 }

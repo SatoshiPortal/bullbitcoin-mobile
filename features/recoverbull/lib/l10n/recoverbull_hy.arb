@@ -169,5 +169,7 @@
   "torSettingsStatusNoInternetOrBlocked": "Ինտերնետ չկա կամ ցանցը գրաքննված է",
   "torSettingsDescNoInternetOrBlocked": "Այս ցանցը ինտերնետ հասանելիություն չունի, կամ արգելափակում է Tor-ը։",
   "recoverbullUseSnowflake": "Օգտագործել Snowflake",
+  "recoverbullSnowflakeSlow": "Զտված ցանցում Snowflake-ը կարող է տևել մի քանի րոպե։ Հավելվածը բաց պահեք։",
+  "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։",
   "recoverbullTorReady": "Պատրաստ է"
 }

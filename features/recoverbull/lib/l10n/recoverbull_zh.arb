@@ -274,5 +274,7 @@
   "torSettingsStatusNoInternetOrBlocked": "无法连接互联网或网络受审查",
   "torSettingsDescNoInternetOrBlocked": "此网络无法访问互联网，或屏蔽了 Tor。",
   "recoverbullUseSnowflake": "使用 Snowflake",
+  "recoverbullSnowflakeSlow": "在受过滤的网络上，Snowflake 可能需要几分钟。请保持应用打开。",
+  "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。",
   "recoverbullTorReady": "就绪"
 }

@@ -604,5 +604,7 @@
   "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
   "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
   "recoverbullUseSnowflake": "Snowflake kullan",
+  "recoverbullSnowflakeSlow": "Filtrelenen bir ağda Snowflake birkaç dakika sürebilir. Uygulamayı açık tutun.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
   "recoverbullTorReady": "Hazır"
 }

@@ -169,5 +169,7 @@
   "torSettingsStatusNoInternetOrBlocked": "ინტერნეტი არ არის ან ქსელი ცენზურირებულია",
   "torSettingsDescNoInternetOrBlocked": "ამ ქსელს არ აქვს ინტერნეტთან წვდომა, ან ის ბლოკავს Tor-ს.",
   "recoverbullUseSnowflake": "Snowflake-ის გამოყენება",
+  "recoverbullSnowflakeSlow": "გაფილტრულ ქსელში Snowflake-ს შეიძლება რამდენიმე წუთი დასჭირდეს. აპი ღია დატოვეთ.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის.",
   "recoverbullTorReady": "მზადაა"
 }

@@ -598,5 +598,7 @@
   "torSettingsStatusNoInternetOrBlocked": "ইণ্টাৰনেট নাই বা নেটৱৰ্ক সেন্সৰ কৰা",
   "torSettingsDescNoInternetOrBlocked": "এই নেটৱৰ্কত ইণ্টাৰনেট নাই, বা ই Tor অৱৰোধ কৰে।",
   "recoverbullUseSnowflake": "Snowflake ব্যৱহাৰ কৰক",
+  "recoverbullSnowflakeSlow": "ফিল্টাৰ কৰা নেটৱৰ্কত Snowflake-এ কেইবা মিনিট ল'ব পাৰে। এপটো খোলা ৰাখক।",
+  "torSettingsExternalProxyUnavailableDescription": "Bull-এ কনফিগাৰ কৰা SOCKS5 প্ৰক্সিত সংযোগ কৰিব নোৱাৰিলে।",
   "recoverbullTorReady": "সাজু"
 }
