@@ -188,6 +188,53 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     }
   }
 
+  /// Startup must restore previously admitted alarms even while offline or
+  /// before a fresh native pass. Reapply uses persisted deadlines/IDs only and
+  /// cannot clear a warning or postpone an expiry from a cached observation.
+  Future<Result<void, ArkFailure>> reapplyStored() async {
+    if (_closed) return const Err(ArkFeatureStorageFailure());
+    if (_active != null) return const Err(ArkOperationBusyFailure());
+    final settled = Completer<void>();
+    _active = settled;
+    var admitted = false;
+    try {
+      _db.execute('BEGIN IMMEDIATE');
+      admitted = true;
+      for (final row in _db.select(
+        'SELECT platform_id,scheduled_at FROM ark_reminders WHERE signature IS NOT NULL',
+      )) {
+        final at = row['scheduled_at'];
+        final id = row['platform_id'];
+        if (at is! int || id is! int) {
+          return const Err(ArkFeatureStorageFailure());
+        }
+        final result = await _notifications.schedule(
+          LocalNotification(
+            eventId: 'ark-expiry',
+            title: title,
+            body: body,
+            createdAt: DateTime.now(),
+          ),
+          platformId: id,
+          at: DateTime.fromMicrosecondsSinceEpoch(at, isUtc: true),
+        );
+        if (result is Err) return const Err(ArkReminderUnavailableFailure());
+      }
+      _db.execute('COMMIT');
+      admitted = false;
+      return const Ok(null);
+    } on Exception catch (_) {
+      return const Err(ArkFeatureStorageFailure());
+    } finally {
+      try {
+        if (admitted) _db.execute('ROLLBACK');
+      } finally {
+        _active = null;
+        settled.complete();
+      }
+    }
+  }
+
   Future<void> close() async {
     if (_closed) return;
     _closed = true;

@@ -21,9 +21,13 @@ final class RunArkBackgroundUsecase {
         if (value.snapshot.account != account) {
           return const Err(ArkUnexpectedFailure());
         }
+        if (!value.completedStages.contains(ArkStage.vtxos) ||
+            value.failedStageKinds.contains(ArkStage.vtxos)) {
+          return const Err(ArkServiceUnavailableFailure());
+        }
         final reminder = await _warnings.execute(value.snapshot);
         if (reminder case Err(:final failure)) return Err(failure);
-        return value.failedStages.isEmpty
+        return value.failedStages.isEmpty && value.failedStageKinds.isEmpty
             ? const Ok(null)
             : const Err(ArkServiceUnavailableFailure());
     }
