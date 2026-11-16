@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
+import 'package:primitives/primitives.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_storage_readiness_port.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_environment.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_network_unauthorized_exception.dart';
@@ -21,12 +24,14 @@ class ElectrumServersAdapter implements ElectrumServersPort {
   final ElectrumSettingsRepository _settingsRepository;
   final SettingsRepository _appSettingsRepository;
   final ElectrumTorSessionPort _torSessionPort;
+  final ElectrumStorageReadinessPort _storageReadiness;
 
   ElectrumServersAdapter({
     required this._serverRepository,
     required this._settingsRepository,
     required this._appSettingsRepository,
     required this._torSessionPort,
+    required this._storageReadiness,
   });
 
   @override
@@ -45,6 +50,10 @@ class ElectrumServersAdapter implements ElectrumServersPort {
         'Electrum refused network=${network.name} category=authorization',
       );
       throw const ElectrumNetworkUnauthorizedException();
+    }
+    final readiness = await _storageReadiness.requireReady(network);
+    if (readiness case Err(:final failure)) {
+      throw ElectrumStorageNotReadyException(failure);
     }
     // Resolve the active set + settings exactly once per call. The active
     // set is the chokepoint: when a custom server is configured this list
@@ -166,4 +175,10 @@ class ElectrumServersAdapter implements ElectrumServersPort {
   }) => isOnion
       ? OnionServerWithoutTorException(url)
       : ClearnetServerWithoutConfiguredTorException(url);
+}
+
+final class ElectrumStorageNotReadyException implements Exception {
+  final ElectrumFailure failure;
+
+  const ElectrumStorageNotReadyException(this.failure);
 }

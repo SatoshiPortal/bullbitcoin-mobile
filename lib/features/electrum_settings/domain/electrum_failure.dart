@@ -75,6 +75,11 @@ final class ElectrumUnsupportedNetworkFailure extends ElectrumFailure {
   const ElectrumUnsupportedNetworkFailure();
 }
 
+/// Foreground initialization has not completed, or headless data is incomplete.
+final class ElectrumStorageNotReadyFailure extends ElectrumFailure {
+  const ElectrumStorageNotReadyFailure();
+}
+
 /// Closed set of failures shown in the server-list section of the Electrum
 /// settings screen. Lifted from the core [ElectrumFailure] by the bloc and
 /// rendered via the presentation `toTranslated` extension — the raw reason

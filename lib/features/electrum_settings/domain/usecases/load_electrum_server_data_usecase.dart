@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_storage_readiness_port.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
@@ -25,6 +26,7 @@ class LoadElectrumServerDataUsecase {
   final ServerStatusPort _serverStatusPort;
   final ElectrumTorSessionPort _torSessionPort;
   final SettingsRepository _settingsRepository;
+  final ElectrumStorageReadinessPort _storageReadiness;
 
   const LoadElectrumServerDataUsecase({
     required this._electrumServerRepository,
@@ -33,6 +35,7 @@ class LoadElectrumServerDataUsecase {
     required this._serverStatusPort,
     required this._torSessionPort,
     required this._settingsRepository,
+    required this._storageReadiness,
   });
 
   @useResult
@@ -47,6 +50,9 @@ class LoadElectrumServerDataUsecase {
         environment: environment,
         isLiquid: isLiquid,
       );
+
+      final readiness = await _storageReadiness.requireReady(network);
+      if (readiness case Err(:final failure)) return Err(failure);
 
       final (serversResult, settingsResult) = await (
         _electrumServerRepository.fetchAll(network: network),

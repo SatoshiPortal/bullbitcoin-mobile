@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/data/electrum_defaults_provisioner.dart';
 import 'package:bb_mobile/features/electrum_settings/data/wallet_connection_policy_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:sync/sync.dart';
@@ -25,7 +26,10 @@ class ElectrumSettingsLocator {
       ),
     );
     locator.registerLazySingleton<ElectrumSettingsFacade>(
-      ElectrumSettingsFacade.new,
+      () => ElectrumSettingsFacade(
+        prepareForegroundStorage:
+            locator<ElectrumDefaultsProvisioner>().prepareForegroundStorage,
+      ),
     );
     // Register the bloc
     locator.registerFactory<ElectrumSettingsBloc>(

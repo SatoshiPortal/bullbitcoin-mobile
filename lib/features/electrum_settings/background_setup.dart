@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/data/electrum_defaults_provisioner.dart';
 import 'package:bb_mobile/features/electrum_settings/data/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/adapters/drift_electrum_settings_repository.dart';
 import 'package:bb_mobile/features/electrum_settings/data/electrum_servers_adapter.dart';
@@ -17,6 +18,7 @@ WalletConnectionPort createBackgroundWalletConnections(
 ) {
   return WalletConnectionPolicyImpl(
     ElectrumServersAdapter(
+      storageReadiness: ElectrumDefaultsProvisioner(sqlite, readOnly: true),
       serverRepository: DriftElectrumServerRepository(
         electrumServerStorageDatasource: ElectrumServerStorageDatasource(
           sqlite: sqlite,

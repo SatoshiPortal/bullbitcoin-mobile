@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/data/electrum_defaults_provisioner.dart';
 import 'package:bb_mobile/features/electrum_settings/data/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/adapters/drift_electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/adapters/drift_electrum_transaction_repository.dart';
@@ -30,6 +31,9 @@ import 'package:bull_tor/tor.dart';
 
 class ElectrumLocator {
   static Future<void> registerDatasources(GetIt locator) async {
+    locator.registerLazySingleton<ElectrumDefaultsProvisioner>(
+      () => ElectrumDefaultsProvisioner(locator<SqliteDatabase>()),
+    );
     locator.registerLazySingleton<ElectrumServerStorageDatasource>(
       () => ElectrumServerStorageDatasource(sqlite: locator<SqliteDatabase>()),
     );
@@ -83,6 +87,7 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<ElectrumServersPort>(
       () => ElectrumServersAdapter(
+        storageReadiness: locator<ElectrumDefaultsProvisioner>(),
         serverRepository: locator<ElectrumServerRepository>(),
         settingsRepository: locator<ElectrumSettingsRepository>(),
         appSettingsRepository: locator<SettingsRepository>(),
@@ -120,6 +125,7 @@ class ElectrumLocator {
     );
     locator.registerFactory<LoadElectrumServerDataUsecase>(
       () => LoadElectrumServerDataUsecase(
+        storageReadiness: locator<ElectrumDefaultsProvisioner>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
         environmentPort: locator<EnvironmentPort>(),
