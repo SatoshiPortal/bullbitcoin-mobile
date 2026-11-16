@@ -16,6 +16,11 @@ final class VaultInvalidFailure extends RecoverBullFailure {
   const VaultInvalidFailure();
 }
 
+/// The key, from the server or typed in, does not open this vault.
+final class VaultDecryptionFailure extends RecoverBullFailure {
+  const VaultDecryptionFailure();
+}
+
 final class VaultSecretMissingFailure extends RecoverBullFailure {
   const VaultSecretMissingFailure();
 }
