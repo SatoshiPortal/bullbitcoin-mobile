@@ -996,29 +996,19 @@ final class BarkArkClient implements ArkClient {
     ArkQuote quote,
     String id,
   ) async {
+    final admitted = _operation(
+      quote,
+      id,
+      ArkOperationStatus.admitted,
+      actualIds: quote.selectedIds,
+    );
     if (quote.kind == ArkOperationKind.emergencyExit) {
-      final destination = quote.destination;
-      final maxFee = quote.maxClaimFee;
-      if (destination == null ||
-          maxFee == null ||
-          !store.createClaimAuthority(
-            id,
-            quote.selectedIds,
-            destination,
-            maxFee,
-          )) {
+      if (!store.admitExit(quote, admitted)) {
         throw const ArkBoundaryException(ArkValidationFailure());
       }
+    } else {
+      store.saveOperation(admitted, quote.id);
     }
-    store.saveOperation(
-      _operation(
-        quote,
-        id,
-        ArkOperationStatus.admitted,
-        actualIds: quote.selectedIds,
-      ),
-      quote.id,
-    );
     try {
       final result = await session.execute(quote, id);
       store.saveOperation(result, quote.id);

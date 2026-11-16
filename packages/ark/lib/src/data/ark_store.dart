@@ -214,6 +214,45 @@ final class ArkStore {
     }
   }
 
+  /// Native execution is allowed only after both records commit together.
+  bool admitExit(ArkQuote authorization, ArkOperation admitted) {
+    final destination = authorization.destination;
+    final maximum = authorization.maxClaimFee;
+    final stored = quote(authorization.id);
+    if (destination == null ||
+        maximum == null ||
+        stored == null ||
+        authorization.kind != ArkOperationKind.emergencyExit ||
+        admitted.kind != authorization.kind ||
+        admitted.status != ArkOperationStatus.admitted ||
+        admitted.chainSource != authorization.chainSource ||
+        admitted.configGeneration != authorization.configGeneration ||
+        jsonEncode(admitted.actualIds) !=
+            jsonEncode(authorization.selectedIds) ||
+        jsonEncode(quoteToJson(stored)) !=
+            jsonEncode(quoteToJson(authorization))) {
+      throw const FormatException('Invalid exit authorization binding');
+    }
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      if (!createClaimAuthority(
+        admitted.id,
+        authorization.selectedIds,
+        destination,
+        maximum,
+      )) {
+        _db.execute('ROLLBACK');
+        return false;
+      }
+      saveOperation(admitted, authorization.id);
+      _db.execute('COMMIT');
+      return true;
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
   bool createClaimAuthority(
     String id,
     List<String> ids,
