@@ -595,12 +595,14 @@ final class BarkArkClient implements ArkClient {
       ArkConfirmQuote(:final operationId) => operationId,
       ArkBoardFunding(:final operationId) => operationId,
       ArkRegisterBoard(:final operationId) => operationId,
+      ArkRebroadcastClaim(:final operationId) => operationId,
     };
     final existing = store.operation(operationId);
     final quoteId = switch (submission) {
       ArkConfirmQuote(:final quoteId) => quoteId,
       ArkBoardFunding(:final quoteId) => quoteId,
       ArkRegisterBoard() => existing?.binding,
+      ArkRebroadcastClaim() => null,
     };
     if (quoteId == null) return const Err(ArkValidationFailure());
     if (existing != null && existing.binding != quoteId) {

@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+
 import 'ark_quote.dart';
 
 enum ArkOperationStatus {
@@ -12,6 +14,10 @@ enum ArkOperationStatus {
 
 sealed class ArkSubmission {
   const ArkSubmission();
+  factory ArkSubmission.rebroadcastClaim({
+    required String operationId,
+    required String expectedTxid,
+  }) = ArkRebroadcastClaim;
   factory ArkSubmission.confirmQuote({
     required String quoteId,
     required String operationId,
@@ -26,6 +32,34 @@ sealed class ArkSubmission {
     required int keypairIndex,
     required int expiryHeight,
   }) = ArkRegisterBoard;
+}
+
+final class ArkRebroadcastClaim extends ArkSubmission {
+  final String operationId;
+  final String expectedTxid;
+  ArkRebroadcastClaim({required this.operationId, required this.expectedTxid}) {
+    if (operationId.isEmpty ||
+        !RegExp(r'^[0-9a-f]{64}$').hasMatch(expectedTxid)) {
+      throw ArgumentError('Invalid claim recovery identity');
+    }
+  }
+}
+
+final class ArkClaimRecovery {
+  final String txid;
+  final String destination;
+  final Sats net;
+  final Sats fee;
+  ArkClaimRecovery({
+    required this.txid,
+    required this.destination,
+    required this.net,
+    required this.fee,
+  }) {
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(txid) || destination.isEmpty) {
+      throw ArgumentError('Invalid signed claim summary');
+    }
+  }
 }
 
 final class ArkConfirmQuote extends ArkSubmission {
@@ -91,6 +125,7 @@ final class ArkOperation {
   final List<String> actualIds;
   final List<String> skippedIds;
   final ArkBoardFundingDetails? boardFunding;
+  final ArkClaimRecovery? claimRecovery;
   ArkOperation({
     required this.id,
     required this.kind,
@@ -101,6 +136,7 @@ final class ArkOperation {
     List<String> actualIds = const [],
     List<String> skippedIds = const [],
     this.boardFunding,
+    this.claimRecovery,
   }) : actualIds = List.unmodifiable(actualIds),
        skippedIds = List.unmodifiable(skippedIds) {
     if (id.isEmpty) throw ArgumentError('Missing operation identity');
