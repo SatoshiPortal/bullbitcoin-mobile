@@ -4,13 +4,13 @@ library;
 export 'src/domain/payjoin_failure.dart'
     show
         PayjoinFailure,
+        PayjoinSenderKeptFailure,
         PayjoinSpendBlockedFailure,
         PayjoinInvalidInputFailure,
         PayjoinUnavailableFailure,
         PayjoinWalletUnavailableFailure,
         PayjoinRelayUnavailableFailure,
         PayjoinProtocolRejectedFailure,
-        PayjoinSenderKeptFailure,
         PayjoinSessionNotFoundFailure,
         PayjoinInvalidSessionTransitionFailure,
         PayjoinStorageFailure,

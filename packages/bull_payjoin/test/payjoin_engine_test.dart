@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:drift/drift.dart' show Value;
+
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
@@ -1086,6 +1088,68 @@ void main() {
       expect(row?.hasNetworkEvidence, mayBeDelivered);
     });
   }
+
+  test('a kept session whose post outcome is unknown stays reserved past its '
+      'window on resume', () async {
+    final prePost = sender().copyWith(
+      sender: '["pre-post"]',
+      originalPsbt: oneInputPsbt,
+    );
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenAnswer((inv) async {
+      final persist =
+          inv.namedArguments[#persistBeforePost]
+              as Future<void> Function(PayjoinSenderModel);
+      await persist(prePost);
+      throw SendCreationException('relay down');
+    });
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: prePost.walletId,
+        isTestnet: true,
+        bip21: prePost.id,
+        originalPsbt: prePost.originalPsbt,
+        amountSat: prePost.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<PayjoinSenderKeptException>()),
+    );
+    expect((await local.fetchSender(prePost.id))?.hasNetworkEvidence, isTrue);
+
+    // Resumed after its window with the original possibly in the receiver's
+    // hands: the row is not expired and its inputs stay reserved.
+    await (database.update(
+      database.payjoinSenders,
+    )..where((r) => r.uri.equals(prePost.id))).write(
+      PayjoinSendersCompanion(
+        createdAt: Value(DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200),
+      ),
+    );
+    when(
+      () => blockchain.broadcastPsbt(
+        walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
+        network: any(named: 'network'),
+        psbt: any(named: 'psbt'),
+      ),
+    ).thenThrow(const PayjoinBroadcastNotAttemptedException());
+    await engine.resumePayjoinsOnStartup();
+    final resumed = await local.fetchSender(prePost.id);
+    expect(resumed?.hasNetworkEvidence, isTrue);
+    expect(resumed?.isExpired, isFalse);
+    expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
+  });
 
   test('a new sender replaces any poll a resume armed meanwhile', () async {
     final prePost = sender().copyWith(sender: '["pre-post"]');

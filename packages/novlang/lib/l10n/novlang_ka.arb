@@ -230,5 +230,7 @@
   "app__exchangePaymentSentPastDeadline_apple": "გადახდა გაიგზავნა. Bull Bitcoin იუწყება, რომ ამ ორდერის გადახდის ვადა ამოიწურა. შეინახეთ ქვემოთ მოცემული ტრანზაქციის ID და დაუკავშირდით მხარდაჭერას, თუ ორდერი არ განახლდება.",
   "app__allSeedViewSwapMnemonicTitle_apple": "გადარიცხვების მნემონიკა",
   "app__allSeedViewDeleteSwapMnemonicTitle_apple": "წაიშალოს გადარიცხვების მნემონიკა?",
-  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება."
+  "app__allSeedViewDeleteSwapMnemonicMessage_apple": "ეს წაშლის გადარიცხვების მთავარ გასაღებს უსაფრთხო საცავიდან. ის ხელახლა მიიღება თქვენი საფულის seed-იდან, როცა აპს მომდევნო ჯერზე დასჭირდება, იმავე ანაბეჭდით. მიმდინარე გადარიცხვები არ შეიცვლება.",
+  "app__exchangeAccessSettingsDescription_apple": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "quick_actions__transfer_apple": "Transfer"
 }

@@ -13,8 +13,9 @@ class PayjoinEngineException implements Exception {
 /// failure so a caller can tell "my post failed, the session is mine" from a
 /// rejection on behalf of another live session for the same payment.
 class PayjoinSenderKeptException extends PayjoinEngineException {
+  final String originalTxId;
   final Object cause;
 
-  PayjoinSenderKeptException(this.cause)
-    : super('Sender session kept after a failed post');
+  PayjoinSenderKeptException(this.originalTxId, this.cause)
+    : super('Sender retained after directory publication failed');
 }

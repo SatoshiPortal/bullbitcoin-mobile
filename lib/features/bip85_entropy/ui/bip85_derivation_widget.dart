@@ -2,9 +2,7 @@ import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
-
-import 'dart:async';
+import 'package:bb_mobile/features/bip85_entropy/presentation/bip85_clipboard.dart';
 
 import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullSnackBar;
 
@@ -32,7 +30,6 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
   bool _isObscured = true;
   bool _isEditingAlias = false;
   late TextEditingController _aliasController;
-  Timer? _clipboardClearTimer;
 
   @override
   void initState() {
@@ -52,27 +49,30 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
 
   @override
   void dispose() {
-    _clipboardClearTimer?.cancel();
     _aliasController.dispose();
     super.dispose();
   }
 
   Future<void> _saveAlias() async {
-    if (widget.onAliasChanged != null) {
-      await widget.onAliasChanged!(widget.derivation, _aliasController.text);
+    final onChanged = widget.onAliasChanged;
+    if (onChanged != null) {
+      await onChanged(widget.derivation, _aliasController.text);
+      if (!mounted) return;
       setState(() => _isEditingAlias = false);
     }
   }
 
   Future<void> _revokeDerivation() async {
-    if (widget.onDerivationRevoked != null) {
-      await widget.onDerivationRevoked!(widget.derivation);
+    final onRevoked = widget.onDerivationRevoked;
+    if (onRevoked != null) {
+      await onRevoked(widget.derivation);
     }
   }
 
   Future<void> _activateDerivation() async {
-    if (widget.onDerivationActivated != null) {
-      await widget.onDerivationActivated!(widget.derivation);
+    final onActivated = widget.onDerivationActivated;
+    if (onActivated != null) {
+      await onActivated(widget.derivation);
     }
   }
 
@@ -183,13 +183,9 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
                 ),
                 IconButton(
                   icon: Icon(Icons.copy, color: context.appColors.onSurface),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: widget.entropy));
-                    _clipboardClearTimer?.cancel();
-                    _clipboardClearTimer = Timer(
-                      const Duration(seconds: 30),
-                      () => Clipboard.setData(const ClipboardData(text: '')),
-                    );
+                  onPressed: () async {
+                    await Bip85Clipboard.copy(widget.entropy);
+                    if (!context.mounted) return;
                     BullSnackBar.show(
                       context,
                       message: context.loc.copiedToClipboard,

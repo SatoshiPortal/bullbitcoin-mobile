@@ -46,7 +46,6 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
-  "settingsGetHelpLabel": "Ստանալ օգնություն",
   "exchangeSupportLoginChatRequired": "Մարդկային աջակցություն ստանալու համար նախ պետք է մուտք գործեք ձեր Bull Bitcoin հաշիվը։ Ամբողջովին անվճար է և KYC չի պահանջվում, միայն էլեկտրոնային փոստի հասցե:",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
@@ -639,7 +638,6 @@
   "settingsAppSettingsTitle": "Հավելվածի կարգավորումներ",
   "settingsTermsOfServiceTitle": "Ծառայության պայմաններ",
   "settingsAppVersionLabel": "Հավելվածի տարբերակ․ ",
-  "settingsGithubLabel": "Github",
   "settingsServiceStatusTitle": "Ծառայությունների կարգավիճակ",
   "settingsLanguageTitle": "Լեզու",
   "settingsThemeTitle": "Ոճ",
@@ -3272,7 +3270,6 @@
   "settingsSearchLabelsKeywords": "դրամապանակի պիտակներ|գործարքի պիտակներ|BIP329|ներմուծել պիտակները|արտահանել պիտակները",
   "settingsSearchTransactionHistoryKeywords": "արտահանել գործարքները|գործարքների պատմության արտահանում|CSV|դրամապանակի պատմություն",
   "settingsSearchAppSettingsKeywords": "հավելվածի նախընտրանքներ|հավելվածի կարգավորումներ|ընդհանուր կարգավորումներ",
-  "settingsSearchBtcMapKeywords": "BTC Map|բիթքոյնի քարտեզ|վաճառողների քարտեզ|բիթքոյն ծախսելու վայրեր",
   "settingsSearchTermsOfServiceKeywords": "պայմաններ և դրույթներ|իրավական տեղեկություն|օգտագործողի համաձայնագիր|TOS",
   "settingsSearchServicesStatusKeywords": "ծառայության վիճակ|համակարգի կարգավիճակ|առցանց|ծառայության խափանում",
   "settingsSearchImportWalletKeywords": "ավելացնել դրամապանակ|վերականգնել դրամապանակը|ներմուծել մնեմոնիկը|միայն դիտման դրամապանակ|սարքային դրամապանակ",
@@ -3515,5 +3512,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Այս գործարքն արդեն բլոկչեյնում է։ Հեռարձակելու այլևս ոչինչ չկա։",
   "broadcastSignedTxErrorRejected": "Ցանցը մերժեց այս գործարքը։ Այն կարող է ամբողջությամբ ստորագրված չլինել, անվավեր լինել կամ հակասել մեկ այլ վճարման։",
   "broadcastSignedTxErrorOutcomeUnknown": "Չհաջողվեց հաստատել, որ ձեր գործարքը հեռարձակվել է։ Նորից փորձելուց առաջ ստուգեք բլոկների դիտարկիչում։",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Այս ցանցում հեռարձակումը միացված չէ ընթացիկ կարգավորումներում։"
+  "broadcastSignedTxErrorNetworkNotEnabled": "Այս ցանցում հեռարձակումը միացված չէ ընթացիկ կարգավորումներում։",
+  "settingsDarkModeTitle": "Մուգ ռեժիմ",
+  "settingsSourceCodeTitle": "Սկզբնական կոդ"
 }

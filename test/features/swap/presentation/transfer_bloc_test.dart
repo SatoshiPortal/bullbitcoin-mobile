@@ -268,6 +268,46 @@ void main() {
 
   tearDown(() => bloc.close());
 
+  test('destination switch clears the old receive address', () async {
+    final source = _wallet(balanceSat: BigInt.zero);
+    final destination = _destinationWallet();
+    final replacement = _destinationWallet(id: 'wallet-3');
+    bloc.emit(
+      TransferState(
+        fromWallet: source,
+        toWallet: destination,
+        receiveAddress: 'old-wallet-2-address',
+        amount: '1000',
+        bitcoinUnit: BitcoinUnit.sats,
+        bitcoinNetworkFees: _feeOptions(),
+      ),
+    );
+    bloc.add(
+      TransferEvent.walletsChanged(fromWallet: source, toWallet: replacement),
+    );
+    await pumpEventQueue();
+    expect(bloc.state.toWallet?.id, 'wallet-3');
+    expect(bloc.state.receiveAddress, isNull);
+  });
+
+  test(
+    'returning to an internal recipient clears the external receive address',
+    () async {
+      bloc.emit(
+        TransferState(
+          fromWallet: _wallet(),
+          toWallet: _destinationWallet(),
+          sendToExternal: true,
+          externalAddress: 'external',
+          receiveAddress: 'external',
+        ),
+      );
+      bloc.add(const TransferEvent.sendToExternalToggled(false));
+      await pumpEventQueue();
+      expect(bloc.state.receiveAddress, isNull);
+    },
+  );
+
   for (final sameChain in [true, false]) {
     test(
       'accepted ${sameChain ? "same-chain" : "order-swap"} transfer broadcasts through the source wallet facade',
@@ -1030,6 +1070,7 @@ void main() {
         fromWallet: _wallet(balanceSat: BigInt.from(130000)),
         toWallet: _liquidWallet(id: 'liquid-wallet'),
         bitcoinNetworkFees: _feeOptions(),
+        receiveAddress: 'cached-destination',
         maxAmountSat: 128800,
         amount: '128800',
       ),
@@ -1038,6 +1079,7 @@ void main() {
     bloc.add(TransferEvent.utxosSelected([selected]));
     await bloc.stream.firstWhere((state) => state.maxAmountSat == 28800);
 
+    expect(bloc.state.receiveAddress, 'cached-destination');
     expect(bloc.state.amount, '28800');
     expect(bloc.state.isMaxSelected, isTrue);
     expect(bloc.state.selectedUtxos, [selected]);

@@ -36,7 +36,10 @@ void main() {
     final sender = _MockPayjoinSender();
     when(() => sender.start(any())).thenAnswer(
       (_) async => const Err<PayjoinSenderSession, PayjoinFailure>(
-        PayjoinSenderKeptFailure('Sender start failed; session kept'),
+        PayjoinSenderKeptFailure(
+          'sender-orig-txid',
+          'Sender start failed; session kept',
+        ),
       ),
     );
 

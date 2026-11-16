@@ -100,8 +100,6 @@
   "settingsAppSettingsTitle": "Configuración de la aplicación",
   "settingsTermsOfServiceTitle": "Términos de servicio",
   "settingsAppVersionLabel": "Versión de aplicación: ",
-  "settingsGithubLabel": "GitHub",
-  "settingsGetHelpLabel": "Obtener ayuda",
   "settingsServiceStatusTitle": "Estado de Servicios",
   "settingsLanguageTitle": "Idioma",
   "settingsThemeTitle": "Tema",
@@ -4370,7 +4368,6 @@
   "settingsSearchLabelsKeywords": "etiquetas de cartera|etiquetas de transacciones|BIP329|importar etiquetas|exportar etiquetas",
   "settingsSearchTransactionHistoryKeywords": "exportar transacciones|exportación de transacciones|CSV|historial de cartera",
   "settingsSearchAppSettingsKeywords": "preferencias de la aplicación|ajustes de la aplicación|ajustes generales",
-  "settingsSearchBtcMapKeywords": "BTC Map|mapa de bitcoin|mapa de comercios|lugares donde gastar bitcoin",
   "settingsSearchTermsOfServiceKeywords": "términos y condiciones|información legal|acuerdo de usuario|TOS",
   "settingsSearchServicesStatusKeywords": "estado de servicios|estado del sistema|en línea|interrupción",
   "settingsSearchImportWalletKeywords": "añadir cartera|recuperar cartera|importar mnemónico|cartera de solo lectura|cartera física",
@@ -4619,5 +4616,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Esta transacción ya está en la blockchain. No queda nada por transmitir.",
   "broadcastSignedTxErrorRejected": "La red rechazó esta transacción. Puede que no esté completamente firmada, que no sea válida o que entre en conflicto con otro pago.",
   "broadcastSignedTxErrorOutcomeUnknown": "No pudimos confirmar que tu transacción se haya transmitido. Revisa un explorador de bloques antes de volver a intentarlo.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual."
+  "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
+  "settingsDarkModeTitle": "Modo oscuro",
+  "settingsSourceCodeTitle": "Código fuente"
 }

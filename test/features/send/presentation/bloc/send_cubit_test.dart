@@ -634,6 +634,7 @@ void main() {
         sessionId: any(named: 'sessionId'),
         walletId: any(named: 'walletId'),
         amountSat: any(named: 'amountSat'),
+        expectedOriginalTxId: any(named: 'expectedOriginalTxId'),
       ),
     ).thenAnswer((_) async => null);
     broadcastPayjoinOriginalUsecase = _MockBroadcastPayjoinOriginalUsecase();
@@ -4737,7 +4738,7 @@ void main() {
         (_) async => const Err<PayjoinSenderSession, SendFailure>(
           SendTransactionConfirmationFailure(
             logMessage: 'payjoin directory unreachable',
-            payjoinSessionKept: true,
+            keptPayjoinOriginalTxId: 'sender-orig-txid',
           ),
         ),
       );
@@ -4746,6 +4747,7 @@ void main() {
           sessionId: _payjoinBip21().uri,
           walletId: 'w1',
           amountSat: 50000,
+          expectedOriginalTxId: 'sender-orig-txid',
         ),
       ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
       cubit.setStateForTest(
@@ -4771,6 +4773,48 @@ void main() {
           .called(1);
     });
 
+    test('a kept session whose stored row carries another original is not '
+        'adopted', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      when(
+        () => sendWithPayjoinUsecase.execute(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err<PayjoinSenderSession, SendFailure>(
+          SendTransactionConfirmationFailure(
+            logMessage: 'payjoin directory unreachable',
+            keptPayjoinOriginalTxId: 'other-original',
+          ),
+        ),
+      );
+      when(
+        () => getAdoptablePayjoinSenderUsecase.execute(
+          sessionId: _payjoinBip21().uri,
+          walletId: 'w1',
+          amountSat: 50000,
+          expectedOriginalTxId: 'other-original',
+        ),
+      ).thenAnswer((_) async => null);
+      cubit.setStateForTest(
+        payjoinReadyState().copyWith(signedBitcoinPsbt: 'signed-regular-psbt'),
+      );
+
+      await cubit.onConfirmTransactionClicked();
+
+      expect(cubit.state.payjoinSender, isNull);
+      expect(cubit.state.failure, isA<SendTransactionConfirmationFailure>());
+      verifyNever(
+        () => broadcastPayjoinOriginalUsecase.execute(_payjoinBip21().uri),
+      );
+    });
+
     test('a kept session settled by the immediate fallback resolves the send '
         'without waiting for the session stream', () async {
       final cubit = buildCubit();
@@ -4788,7 +4832,7 @@ void main() {
         (_) async => const Err<PayjoinSenderSession, SendFailure>(
           SendTransactionConfirmationFailure(
             logMessage: 'payjoin directory unreachable',
-            payjoinSessionKept: true,
+            keptPayjoinOriginalTxId: 'sender-orig-txid',
           ),
         ),
       );
@@ -4797,6 +4841,7 @@ void main() {
           sessionId: _payjoinBip21().uri,
           walletId: 'w1',
           amountSat: 50000,
+          expectedOriginalTxId: 'sender-orig-txid',
         ),
       ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
       // The stream published the settlement before the watch attached: the
@@ -4849,6 +4894,7 @@ void main() {
           sessionId: _payjoinBip21().uri,
           walletId: 'w1',
           amountSat: 50000,
+          expectedOriginalTxId: null,
         ),
       ).thenAnswer((_) async => _sender(status: PayjoinStatus.proposed));
       cubit.setStateForTest(

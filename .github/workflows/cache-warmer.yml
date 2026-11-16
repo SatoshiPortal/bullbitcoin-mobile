@@ -40,7 +40,8 @@ jobs:
       matrix:
         runner: [ubuntu-24.04, ubuntu-24.04-arm]
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 30
+    # A cold warm compiles every Rust crate for the host (~17 min on x64).
+    timeout-minutes: 45
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -86,3 +87,15 @@ jobs:
             **/*.config.dart
             !packages/bull_ui_catalogue/lib/main.directories.g.dart
           key: buildrunner-${{ hashFiles('.github/actions/flutter-setup/action.yml', '.github/workflows/cache-warmer.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+
+      # Same paths and key as the restore step in the flutter-setup action.
+      - name: Save Native Assets hook outputs
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .dart_tool/hooks_runner/*/*/*.json
+            .dart_tool/hooks_runner/*/*/hook.dill
+            .dart_tool/hooks_runner/*/*/hook.dill.d
+            .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
+            .dart_tool/hooks_runner/shared/*/build/download-*/*.so
+          key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}

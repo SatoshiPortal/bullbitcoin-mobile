@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -36,13 +34,7 @@ class WizardStepLayout extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BullText(
-            context.loc.wizardPageIndicator(
-              page.number -
-                  (Platform.isIOS && page.index > WizardPage.exchange.index
-                      ? 1
-                      : 0),
-              WizardPage.total - (Platform.isIOS ? 1 : 0),
-            ),
+            context.loc.wizardPageIndicator(page.number, WizardPage.total),
             style: context.font.labelMedium?.copyWith(
               color: context.appColors.primary,
               fontWeight: FontWeight.w700,

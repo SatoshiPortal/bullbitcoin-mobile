@@ -21,7 +21,7 @@ void main() {
         locale: Locale(locale),
       );
       final l10n = localizations(tester);
-      expect(find.text(l10n.transfer), findsNWidgets(2));
+      expect(find.text(l10n.transfer), findsOneWidget);
     });
   }
 
@@ -44,8 +44,11 @@ void main() {
         of: find.byKey(const ValueKey('transfer')),
         matching: find.byWidgetPredicate(
           (widget) =>
-              widget is Semantics && widget.properties.label == l10n.transfer,
+              widget is Semantics &&
+              widget.container &&
+              widget.properties.label == l10n.transfer,
         ),
+        matchRoot: true,
       );
       expect(handle, findsOneWidget);
       final node = tester.getSemantics(handle);

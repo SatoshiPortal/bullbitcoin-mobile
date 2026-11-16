@@ -196,18 +196,6 @@ jobs:
           large-packages: true
           swap-storage: false
 
-      - name: Install pinned Rust toolchains
-        run: |
-          rustup toolchain install 1.100.0 --profile minimal
-          rustup component add --toolchain 1.100.0 clippy rustfmt
-          # Official hosted Payjoin explicitly selects Rust 1.85.1.
-          rustup toolchain install 1.85.1 --profile minimal
-          rustup component add --toolchain 1.85.1 clippy rustfmt
-          rustup run 1.100.0 rustc --version | grep -F 'rustc 1.100.0'
-          rustup run 1.85.1 rustc --version | grep -F 'rustc 1.85.1'
-          echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
-          echo RUSTUP_TOOLCHAIN=1.100.0 >> "$GITHUB_ENV"
-
       # The gates below reference steps.setup.outcome — if this `id` is ever
       # renamed, the expression silently evaluates to '' and every check
       # SKIPS (job goes green with nothing run). Keep id and gates in sync.
@@ -250,10 +238,52 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make rustc-pins-test
 
+      - name: Unit test shard script regressions
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make unit-test-shard-test
+
+      # Debug builds and tests run on the JIT, so only this catches a Dart AOT compiler crash before a release build does (dart-lang/sdk#64917).
+      - name: Release AOT snapshot compiles
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: make aot-check
+
       # Default success() gate on purpose: if any static check above is red,
       # skip the tests — the PR needs another push anyway.
+      # This job runs shard 0 of the unit tests; unit-shards runs the others in parallel.
+      - name: Unit tests must pass (shard 0 of 3)
+        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=0
+
+  # The unit suites are the long pole of `checks`. Each shard gets a disjoint third of every member's test files (tools/unit_test_shard.sh) and pays only the cached setup.
+  unit-shards:
+    needs: [classification, action-pins, readiness]
+    if: ${{ !cancelled() && needs.classification.result == 'success' && needs.action-pins.result == 'success' && needs.readiness.result == 'success' && needs.classification.outputs.run_app_checks == 'true' }}
+    name: Unit tests (shard ${{ matrix.shard }} of 3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Same reclaim as `checks`: the setup's .dart_tool and SDK do not fit a stock x64 runner otherwise.
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Flutter setup
+        uses: ./.github/actions/flutter-setup
+
       - name: Unit tests must pass
-        run: make unit-test
+        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
 
   integration:
     needs: [classification, action-pins, readiness]
@@ -280,37 +310,10 @@ jobs:
           sudo rm -rf /usr/local/lib/android /opt/hostedtoolcache /usr/share/dotnet /opt/ghc || true
           df -h /
 
-      # Native Assets hooks use the pinned 1.100.0 toolchain. The arm64
-      # runner may lack rustup, so add it to this step's PATH before installing.
-      - name: Install pinned Rust toolchains
-        run: |
-          if ! command -v rustup >/dev/null 2>&1; then
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.100.0
-            export PATH="$HOME/.cargo/bin:$PATH"
-            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          fi
-          rustup toolchain install 1.100.0 --profile minimal
-          rustup component add --toolchain 1.100.0 clippy rustfmt
-          # Official hosted Payjoin explicitly selects Rust 1.85.1.
-          rustup toolchain install 1.85.1 --profile minimal
-          rustup component add --toolchain 1.85.1 clippy rustfmt
-          rustup run 1.100.0 rustc --version | grep -F 'rustc 1.100.0'
-          rustup run 1.85.1 rustc --version | grep -F 'rustc 1.85.1'
-          echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"
-          echo RUSTUP_TOOLCHAIN=1.100.0 >> "$GITHUB_ENV"
-
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
         with:
           cargo-cache: 'true'
-
-      # Compiler cache for the FRB Rust crates (the dominant cost of the app
-      # build), backed by the GitHub Actions cache. Pinned to a commit SHA:
-      # third-party action on a runner that holds PR test secrets.
-      # Native Assets filters RUSTC_WRAPPER and SCCACHE_* from hook environments;
-      # remote cache use by the new Rust hooks still needs validation.
-      - name: Setup sccache
-        uses: Mozilla-Actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
 
       - name: Install Linux desktop for integration tests
         run: |
@@ -344,13 +347,6 @@ jobs:
           # Same gate for the RecoverBull restore test, which depends on the
           # production key server being reachable over Tor.
           RUN_LIVE_KEYSERVER_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
-          SCCACHE_GHA_ENABLED: "true"
-          RUSTC_WRAPPER: sccache
-          # sccache cannot cache incremental compilation artifacts; disabling
-          # incremental makes every rustc invocation cacheable (and is the
-          # standard sccache-in-CI pairing — CI never reuses incremental state
-          # anyway).
-          CARGO_INCREMENTAL: "0"
         run: |
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
@@ -360,7 +356,7 @@ jobs:
   ci:
     name: CI
     if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false) }}
-    needs: [classification, action-pins, readiness, checks, integration]
+    needs: [classification, action-pins, readiness, checks, unit-shards, integration]
     runs-on: ubuntu-24.04
     steps:
       - name: Require the expected checks
@@ -370,6 +366,7 @@ jobs:
           ACTION_PINS_RESULT: ${{ needs.action-pins.result }}
           READINESS_RESULT: ${{ needs.readiness.result }}
           CHECKS_RESULT: ${{ needs.checks.result }}
+          UNIT_SHARDS_RESULT: ${{ needs.unit-shards.result }}
           INTEGRATION_RESULT: ${{ needs.integration.result }}
         run: |
           set -euo pipefail
@@ -394,14 +391,18 @@ jobs:
                 echo "Application checks result was ${CHECKS_RESULT}, expected success" >&2
                 exit 1
               }
+              [[ "$UNIT_SHARDS_RESULT" == success ]] || {
+                echo "Unit test shards result was ${UNIT_SHARDS_RESULT}, expected success" >&2
+                exit 1
+              }
               [[ "$INTEGRATION_RESULT" == success ]] || {
                 echo "Integration result was ${INTEGRATION_RESULT}, expected success" >&2
                 exit 1
               }
               ;;
             false)
-              [[ "$CHECKS_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
-                echo "Docs-only PR expected both application jobs to be skipped; got checks=${CHECKS_RESULT}, integration=${INTEGRATION_RESULT}" >&2
+              [[ "$CHECKS_RESULT" == skipped && "$UNIT_SHARDS_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
+                echo "Docs-only PR expected every application job to be skipped; got checks=${CHECKS_RESULT}, unit-shards=${UNIT_SHARDS_RESULT}, integration=${INTEGRATION_RESULT}" >&2
                 exit 1
               }
               ;;

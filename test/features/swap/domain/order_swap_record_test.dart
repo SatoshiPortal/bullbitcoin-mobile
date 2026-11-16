@@ -238,33 +238,36 @@ void main() {
     },
   );
 
-  test('completed and refunded orders never become pollable again', () {
-    for (final status in [
-      OrderSwapLocalStatus.completed,
-      OrderSwapLocalStatus.refunded,
-      OrderSwapLocalStatus.expired,
-    ]) {
-      final record = OrderSwapRecord(
-        localId: 'local-1',
-        purpose: OrderSwapPurpose.sendLightning,
-        environment: OrderSwapEnvironment.testnet,
-        inNetwork: OrderSwapNetwork.liquid,
-        outNetwork: OrderSwapNetwork.lightning,
-        isInAmountFixed: false,
-        requestedAmountSat: BigInt.from(1000),
-        destination: 'destination',
-        fallback: 'fallback',
-        order: _order(),
-        localPayinTransactionId: 'txid-1',
-        signedPayinTransaction: 'signed',
-        payinIsPsbt: false,
-        createdAt: DateTime.utc(2026),
-        localStatus: status,
-      );
+  test(
+    'funded expirations stay pollable while completed and refunded stay final',
+    () {
+      for (final status in [
+        OrderSwapLocalStatus.completed,
+        OrderSwapLocalStatus.refunded,
+        OrderSwapLocalStatus.expired,
+      ]) {
+        final record = OrderSwapRecord(
+          localId: 'local-1',
+          purpose: OrderSwapPurpose.sendLightning,
+          environment: OrderSwapEnvironment.testnet,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.lightning,
+          isInAmountFixed: false,
+          requestedAmountSat: BigInt.from(1000),
+          destination: 'destination',
+          fallback: 'fallback',
+          order: _order(),
+          localPayinTransactionId: 'txid-1',
+          signedPayinTransaction: 'signed',
+          payinIsPsbt: false,
+          createdAt: DateTime.utc(2026),
+          localStatus: status,
+        );
 
-      expect(record.isPollable, isFalse);
-    }
-  });
+        expect(record.isPollable, status == OrderSwapLocalStatus.expired);
+      }
+    },
+  );
 
   test('uses the destination Liquid leg for a Lightning receive', () {
     final createdAt = DateTime.utc(2026);

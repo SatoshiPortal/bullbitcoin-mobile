@@ -43,7 +43,12 @@ class SendWithPayjoinUsecase {
         return core.Ok(value);
       case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
         return core.Err(SendSpendBlockedFailure(busy: busy));
-      case Err(failure: PayjoinSenderKeptFailure(:final logMessage)):
+      case Err(
+        failure: PayjoinSenderKeptFailure(
+          :final originalTxId,
+          :final logMessage,
+        ),
+      ):
         log.warning(
           'Payjoin send post failed; the session is kept',
           error: logMessage ?? '-',
@@ -51,7 +56,7 @@ class SendWithPayjoinUsecase {
         return core.Err(
           SendTransactionConfirmationFailure(
             logMessage: logMessage ?? 'Failed to post the Payjoin original',
-            payjoinSessionKept: true,
+            keptPayjoinOriginalTxId: originalTxId,
           ),
         );
       case Err(:final failure):

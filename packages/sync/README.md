@@ -90,6 +90,7 @@ Wallet
 |   |-- check([replacing:]) -> BitcoinSpendStatus
 |   |-- originalSignatures(txid) -> SignatureCheck
 |   |-- annotate(psbt) -> String
+|   |-- liquidAmountToAddress(pset, address) -> BigInt
 |   `-- liquidEffect(pset) -> LiquidPsetEffect
 |-- balances -> Observed<WalletValue<Balances>>
 |-- coins

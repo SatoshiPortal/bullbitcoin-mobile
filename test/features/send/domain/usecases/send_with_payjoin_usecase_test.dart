@@ -113,25 +113,28 @@ void main() {
     });
   }
 
-  test('a kept session after a failed post is reported as such', () async {
-    final sender = _MockPayjoinSender();
-    when(() => sender.start(any())).thenAnswer(
-      (_) async => const Err<PayjoinSenderSession, PayjoinFailure>(
-        PayjoinSenderKeptFailure('Sender start failed; session kept'),
-      ),
-    );
-
-    final result = await _start(sender);
-
-    expect(
-      (result as core.Err).failure,
-      isA<SendTransactionConfirmationFailure>().having(
-        (f) => f.payjoinSessionKept,
-        'payjoinSessionKept',
-        isTrue,
-      ),
-    );
-  });
+  test(
+    'preserves the original identity of a retained directory POST',
+    () async {
+      final sender = _MockPayjoinSender();
+      when(() => sender.start(any())).thenAnswer(
+        (_) async => const Err(PayjoinSenderKeptFailure('retained-original')),
+      );
+      final result = await _start(sender);
+      expect(
+        result,
+        isA<core.Err<PayjoinSenderSession, SendFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SendTransactionConfirmationFailure>().having(
+            (failure) => failure.keptPayjoinOriginalTxId,
+            'original identity',
+            'retained-original',
+          ),
+        ),
+      );
+    },
+  );
 
   test('sanitizes a package failure into a confirmation failure', () async {
     final sender = _MockPayjoinSender();

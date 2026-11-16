@@ -24,7 +24,6 @@ enum SettingsRoute {
   payjoinAdvancedSettings('payjoin-advanced-settings'),
   autoswapSettings('autoswap-settings'),
   appSettings('app-settings'),
-  theme('theme'),
   swapRestore('swap-restore'),
   swapRescue('swap-rescue'),
   btcMap('btc-map');

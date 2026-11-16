@@ -427,14 +427,6 @@
   "@settingsAppVersionLabel": {
     "description": "Label displayed before the app version number in settings"
   },
-  "settingsGithubLabel": "Github",
-  "@settingsGithubLabel": {
-    "description": "Label for the Github link in settings"
-  },
-  "settingsGetHelpLabel": "Get Help",
-  "@settingsGetHelpLabel": {
-    "description": "Label for the Get Help support chat link in settings"
-  },
   "settingsServiceStatusTitle": "Service Status",
   "@settingsServiceStatusTitle": {
     "description": "Title for the services status section in the settings menu"
@@ -13029,10 +13021,6 @@
   "@settingsSearchAppSettingsKeywords": {
     "description": "Pipe-separated search aliases for App Settings. Search metadata; not displayed."
   },
-  "settingsSearchBtcMapKeywords": "BTC Map|bitcoin map|merchant map|places to spend bitcoin",
-  "@settingsSearchBtcMapKeywords": {
-    "description": "Pipe-separated search aliases for Map. Search metadata; not displayed."
-  },
   "settingsSearchTermsOfServiceKeywords": "terms and conditions|legal|user agreement|TOS",
   "@settingsSearchTermsOfServiceKeywords": {
     "description": "Pipe-separated search aliases for Terms of Service. Search metadata; not displayed."
@@ -14995,14 +14983,6 @@
   "@allSeedViewDeleteSwapMnemonicTitle": {
     "description": "Confirmation dialog title for deleting the swap mnemonic"
   },
-  "themeDarkDescription": "Use dark theme",
-  "@themeDarkDescription": {
-    "description": "Dark theme option description"
-  },
-  "themeSystemDescription": "Follow system setting",
-  "@themeSystemDescription": {
-    "description": "System theme option description"
-  },
   "allSeedViewSwapFingerprint": "Fingerprint: {fingerprint} ({network})",
   "@allSeedViewSwapFingerprint": {
     "description": "Fingerprint and network of the swap master key",
@@ -15014,10 +14994,6 @@
         "type": "String"
       }
     }
-  },
-  "themeLightDescription": "Use light theme",
-  "@themeLightDescription": {
-    "description": "Light theme option description"
   },
   "comingSoonTitle": "Feature Coming Soon",
   "@comingSoonTitle": {
@@ -15208,7 +15184,7 @@
   "@exchangeAccessSettingsLabel": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "exchangeAccessSettingsDescription": "Show Buy, Sell and Pay on the home screen. Transfer remains available.",
+  "exchangeAccessSettingsDescription": "Show Buy, Sell and Pay on the home screen. Swap remains available.",
   "@exchangeAccessSettingsDescription": {
     "description": "Optional exchange access or wallet quick action setting."
   },
@@ -15272,16 +15248,8 @@
   "@wizardExchangeTitle": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet. Additional identity verification may be needed to trade.",
+  "wizardExchangeDescription": "Buy, sell and pay with Bull Bitcoin directly from your wallet.",
   "@wizardExchangeDescription": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
-  "wizardExchangeSupport": "Create a Bull Bitcoin account with just your email address to contact our support team.",
-  "@wizardExchangeSupport": {
-    "description": "Optional exchange access or wallet quick action setting."
-  },
-  "wizardExchangeToggle": "Enable BULL Exchange features",
-  "@wizardExchangeToggle": {
     "description": "Optional exchange access or wallet quick action setting."
   },
   "quickActionsSettingsTitle": "Quick actions",
@@ -15315,10 +15283,6 @@
   "exchangeAccessRetryLogout": "Finish signing out",
   "@exchangeAccessRetryLogout": {
     "description": "Exchange access recovery and navigation"
-  },
-  "exchangeAccessManage": "Manage access",
-  "@exchangeAccessManage": {
-    "description": "Exchange access settings destination"
   },
   "walletDiscoveryButton": "Scan for missing transactions",
   "@walletDiscoveryButton": {
@@ -15467,5 +15431,13 @@
   "passphraseOptionHelp": "Only if this wallet was created with one. Otherwise leave empty.",
   "@passphraseOptionHelp": {
     "description": "Advanced passphrase field help during recovery."
+  },
+  "settingsDarkModeTitle": "Dark mode",
+  "@settingsDarkModeTitle": {
+    "description": "App settings switch: on uses the dark theme, off the light theme."
+  },
+  "settingsSourceCodeTitle": "Source code",
+  "@settingsSourceCodeTitle": {
+    "description": "Settings entry opening the app's public source code repository."
   }
 }

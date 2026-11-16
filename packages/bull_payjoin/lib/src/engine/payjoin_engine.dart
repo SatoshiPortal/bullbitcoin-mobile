@@ -367,6 +367,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     }
 
     final PayjoinSenderModel model;
+    PayjoinSenderModel? persistedAttempt;
     try {
       model = await _pdkPayjoinDatasource.createSender(
         walletId: walletId,
@@ -412,6 +413,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
               );
             }
           }
+          persistedAttempt = delivered;
         },
       );
     } catch (error) {
@@ -452,7 +454,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       } catch (_) {
         stored = null;
       }
-      if (stored != null &&
+      final attempt = persistedAttempt;
+      if (attempt != null &&
+          stored != null &&
+          stored.originalTxId == attempt.originalTxId &&
+          stored.walletId == attempt.walletId &&
           !stored.isExpired &&
           !stored.isCompleted &&
           !stored.isAborted &&
@@ -468,7 +474,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           role: api.PayjoinLogRole.sender,
           sessionRef: stored.toEntity().logRef,
         );
-        throw PayjoinSenderKeptException(error);
+        throw PayjoinSenderKeptException(stored.originalTxId, error);
       }
       rethrow;
     }

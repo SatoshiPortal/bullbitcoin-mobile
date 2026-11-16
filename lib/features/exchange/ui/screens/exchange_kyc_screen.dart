@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/exchange/ui/exchange_kyc_navigation.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -72,20 +74,17 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
       _basicAuthPassword = settingsState.exchangeTestnetBasicAuthPassword;
     }
 
+    final navigation = ExchangeKycNavigation(_bbKycUrl);
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onUrlChange: (UrlChange change) {
-            final url = Uri.tryParse(change.url ?? '');
+            final url = navigation.resolve(change.url ?? '');
             if (url == null) return;
 
-            final isKyc = url.path.startsWith('/kyc');
-            final isLogin = url.path.contains('/login');
-            final isEmailVerification = url.path.contains('/verification');
-            final isIncodeSmile = url.host.contains('incodesmile.com');
-
-            final allow = isKyc || isLogin || isEmailVerification;
+            final isIncodeSmile = navigation.isIncode(url);
+            final allow = navigation.allows(url);
 
             // Anything that is not a KYC or login URL should not be allowed and
             //  may indicate that the user is trying to leave the KYC flow, either
@@ -106,23 +105,16 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             }
           },
           onNavigationRequest: (NavigationRequest request) {
-            final url = Uri.tryParse(request.url);
+            final url = navigation.resolve(request.url);
             if (url == null) return NavigationDecision.prevent;
 
-            // Downloading the bb logo triggers a request that we should allow
-            //  so that the logo can be displayed while loading the KYC page.
-            final isBBLogo = url.path.contains('/bb-logo');
-            final isLogin = url.path.contains('/login');
-            final isKyc = url.path.contains('/kyc');
-            final isEmailVerification = url.path.contains('/verification');
-            final isIncodeSmile = url.host.contains('incodesmile.com');
-
-            final allow = isKyc || isLogin || isBBLogo || isEmailVerification;
+            final isIncodeSmile = navigation.isIncode(url);
+            final allow = navigation.allows(url);
 
             if (allow) {
               return NavigationDecision.navigate;
             } else {
-              log.warning('Navigation blocked: ${url.path}');
+              log.warning('KYC navigation blocked');
               if (isIncodeSmile) {
                 launchUrl(url, mode: LaunchMode.inAppBrowserView);
               }
@@ -132,7 +124,9 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
           onHttpAuthRequest: (HttpAuthRequest request) {
             final username = _basicAuthUsername;
             final password = _basicAuthPassword;
-            if (username == null || password == null) {
+            if (username == null ||
+                password == null ||
+                !navigation.allowsAuthentication(request.host)) {
               request.onCancel();
               return;
             }

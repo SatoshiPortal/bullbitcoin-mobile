@@ -3214,10 +3214,15 @@ class SendCubit extends Cubit<SendState>
               // session was persisted (GetAdoptablePayjoinSenderUsecase says
               // which rows count), adopt it exactly as a successful start.
               // Re-arming Confirm over it would pay the payee a second time.
+              // A kept post names the original the stored row must carry.
+              final keptOriginal = failure is SendTransactionConfirmationFailure
+                  ? failure.keptPayjoinOriginalTxId
+                  : null;
               final persisted = await _getAdoptablePayjoinSenderUsecase.execute(
                 sessionId: paymentRequest.uri,
                 walletId: wallet.id,
                 amountSat: state.confirmedAmountSat,
+                expectedOriginalTxId: keptOriginal,
               );
               if (persisted == null) {
                 emit(
@@ -3235,9 +3240,7 @@ class SendCubit extends Cubit<SendState>
               // is settled at once. Any other rejection (an earlier healthy
               // session for the same payment, for instance) is adopted and
               // watched, never downgraded to the plain original.
-              settleAdoptedNow =
-                  failure is SendTransactionConfirmationFailure &&
-                  failure.payjoinSessionKept;
+              settleAdoptedNow = keptOriginal != null;
           }
           // Show originalTxId provisionally; the payjoin runs asynchronously
           //  in the repository (poll → sign → broadcast, or fallback to the

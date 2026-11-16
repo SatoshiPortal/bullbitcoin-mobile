@@ -124,10 +124,14 @@ abstract class TransactionsState with _$TransactionsState {
         final isExpiredOrFailedSwap =
             tx.isSwap &&
             ([
-                  SwapStatus.expired,
-                  SwapStatus.failed,
-                ].contains(tx.swap?.status) ||
-                tx.orderSwap?.localStatus == OrderSwapLocalStatus.expired ||
+                      SwapStatus.expired,
+                      SwapStatus.failed,
+                    ].contains(tx.swap?.status) &&
+                    tx.swap?.sendTxId == null &&
+                    tx.swap?.receiveTxId == null &&
+                    tx.swap?.refundTxId == null ||
+                (tx.orderSwap?.localStatus == OrderSwapLocalStatus.expired &&
+                    tx.orderSwap?.hasFundsMoved != true) ||
                 (tx.orderSwap?.localStatus == OrderSwapLocalStatus.failed &&
                     tx.orderSwap?.hasFundsMoved != true));
 

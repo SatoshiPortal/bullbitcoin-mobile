@@ -1,9 +1,41 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final status in [SwapStatus.failed, SwapStatus.expired]) {
+    for (final evidence in ['none', 'send', 'receive', 'refund']) {
+      test('legacy $status history with $evidence evidence', () {
+        final swap = Swap.chain(
+          id: 'legacy',
+          keyIndex: 0,
+          type: SwapType.bitcoinToLiquid,
+          status: status,
+          environment: Environment.mainnet,
+          creationTime: DateTime.utc(2026),
+          sendWalletId: 'wallet-1',
+          paymentAddress: 'test-only-address',
+          paymentAmount: 1000,
+          sendTxid: evidence == 'send' ? 'send-tx' : null,
+          receiveTxid: evidence == 'receive' ? 'receive-tx' : null,
+          refundTxid: evidence == 'refund' ? 'refund-tx' : null,
+        );
+        final transaction = Transaction(swap: swap);
+        final history =
+            TransactionsState(transactions: [transaction])
+                .filteredTransactionsByDay
+                ?.values
+                .expand((items) => items)
+                .toList() ??
+            [];
+        expect(history, evidence == 'none' ? isEmpty : [transaction]);
+      });
+    }
+  }
+
   test('shows an ongoing Exchange payin in the ongoing section', () {
     final transaction = Transaction(orderSwap: _orderSwap());
     final state = TransactionsState(transactions: [transaction]);
@@ -38,6 +70,16 @@ void main() {
     );
 
     expect(state.filteredTransactionsByDay!.values.expand((items) => items), [
+      transaction,
+    ]);
+  });
+
+  test('keeps a funded expired Exchange swap visible', () {
+    final transaction = Transaction(
+      orderSwap: _orderSwap(status: OrderSwapLocalStatus.expired),
+    );
+    final state = TransactionsState(transactions: [transaction]);
+    expect(state.filteredTransactionsByDay?.values.expand((items) => items), [
       transaction,
     ]);
   });

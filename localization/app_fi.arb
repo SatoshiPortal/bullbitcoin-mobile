@@ -62,8 +62,6 @@
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
   "settingsAppVersionLabel": "Sovellusversio: ",
-  "settingsGithubLabel": "Github",
-  "settingsGetHelpLabel": "Pyydä apua",
   "settingsServiceStatusTitle": "Palveluiden tila",
   "settingsLanguageTitle": "Kieli",
   "settingsThemeTitle": "Teema",
@@ -4369,7 +4367,6 @@
   "settingsSearchLabelsKeywords": "lompakon tunnisteet|tapahtumien tunnisteet|BIP329|tuo tunnisteet|vie tunnisteet",
   "settingsSearchTransactionHistoryKeywords": "vie tapahtumat|tapahtumien vienti|CSV|lompakon historia",
   "settingsSearchAppSettingsKeywords": "sovelluksen asetukset|ohjelman asetukset|yleiset asetukset",
-  "settingsSearchBtcMapKeywords": "BTC Map|bitcoin-kartta|kauppiaskartta|bitcoinia hyväksyvät paikat",
   "settingsSearchTermsOfServiceKeywords": "käyttöehdot|oikeudelliset tiedot|käyttäjäsopimus|TOS",
   "settingsSearchServicesStatusKeywords": "palveluiden tila|järjestelmän tila|verkossa|käyttökatko",
   "settingsSearchImportWalletKeywords": "lisää lompakko|palauta lompakko|tuo muistisana|vain katseltava lompakko|laitteistolompakko",
@@ -4612,5 +4609,7 @@
   "broadcastSignedTxErrorAlreadyInChain": "Tämä transaktio on jo lohkoketjussa. Lähetettävää ei ole enää.",
   "broadcastSignedTxErrorRejected": "Verkko hylkäsi tämän transaktion. Se voi olla puutteellisesti allekirjoitettu, virheellinen tai ristiriidassa toisen maksun kanssa.",
   "broadcastSignedTxErrorOutcomeUnknown": "Emme voineet vahvistaa, että transaktiosi lähetettiin. Tarkista lohkoselaimesta ennen kuin yrität uudelleen.",
-  "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa."
+  "broadcastSignedTxErrorNetworkNotEnabled": "Lähettäminen tässä verkossa ei ole käytössä nykyisissä asetuksissa.",
+  "settingsDarkModeTitle": "Tumma tila",
+  "settingsSourceCodeTitle": "Lähdekoodi"
 }

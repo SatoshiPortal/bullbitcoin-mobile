@@ -67,6 +67,25 @@ final class QuickActionsEditorLayout {
       ? _selection
       : move(items.indexOf(action), home.length);
 
+  /// Drops [action] on [target]'s cell: within a zone it takes that cell,
+  /// across zones it lands before [target]. A full Home ejects its last action.
+  QuickActionSelection dropOn(QuickAction action, QuickAction target) {
+    final ordered = items;
+    final from = ordered.indexOf(action);
+    final to = ordered.indexOf(target);
+    if (from < 0 || to < 0 || from == to) return _selection;
+    final sameZone = home.contains(action) == home.contains(target);
+    return move(from, sameZone || from > to ? to : to - 1);
+  }
+
+  /// Drops [action] after the last action of Home or of More.
+  QuickActionSelection dropAtEnd(QuickAction action, {required bool onHome}) {
+    final from = items.indexOf(action);
+    if (from < 0) return _selection;
+    if (!onHome) return move(from, items.length - 1);
+    return move(from, home.contains(action) ? home.length - 1 : home.length);
+  }
+
   List<QuickAction> _replaceAvailable(
     List<QuickAction> original,
     List<QuickAction> replacement,

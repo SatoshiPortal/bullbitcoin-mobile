@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/ui/screens/exchange/security_navigation.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 import 'dart:io';
@@ -125,7 +126,7 @@ class _SecurityWebViewScreenState extends State<_SecurityWebViewScreen> {
         NavigationDelegate(
           onNavigationRequest: (NavigationRequest request) {
             // Allow navigation within the same domain
-            if (request.url.startsWith(widget.url.split('/settings')[0])) {
+            if (allowsSecurityNavigation(widget.url, request.url)) {
               return NavigationDecision.navigate;
             }
             // Block external navigation

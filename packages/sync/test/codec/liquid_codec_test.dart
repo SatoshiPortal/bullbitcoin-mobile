@@ -5,6 +5,8 @@ import 'package:bull_sdk/src/rust/frb_generated.dart' show BullSdk, BullSdkApi;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
+import 'package:sync/src/data/codec/liquid_codec.dart'
+    show liquidPsetAmountToAddress;
 
 // The pinned LWK library is not built for unit tests: this fake stands in for
 // the binding so the mapping and its refusals run without it. The real parser
@@ -14,6 +16,7 @@ final class _Sdk implements BullSdkApi {
   Object? error;
   lwk.LiquidNetwork network = lwk.LiquidNetwork.mainnet;
   var calls = 0;
+  List<lwk.PsetOutput> outputs = [];
 
   lwk.LiquidTransaction _answer() {
     calls++;
@@ -35,7 +38,7 @@ final class _Sdk implements BullSdkApi {
     calls++;
     final error = this.error;
     if (error != null) throw error;
-    return _Pset(_answer);
+    return _Pset(_answer, outputs);
   }
 
   @override
@@ -49,13 +52,25 @@ final class _Sdk implements BullSdkApi {
   }
 
   @override
+  Future<lwk.Address> lwkApiTypesAddressAddressFromScript({
+    required lwk.LiquidNetwork network,
+    required String script,
+    String? blindingKey,
+  }) async =>
+      lwk.Address(standard: script, confidential: '$script-confidential');
+
+  @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName}');
 }
 
 final class _Pset implements lwk.PartiallySignedElementsTransaction {
   final lwk.LiquidTransaction Function() _extract;
-  _Pset(this._extract);
+  final List<lwk.PsetOutput> outputs;
+  _Pset(this._extract, this.outputs);
+
+  @override
+  List<lwk.PsetOutput> getOutputs() => outputs;
 
   @override
   lwk.LiquidTransaction extractTx() => _extract();
@@ -121,6 +136,58 @@ void main() {
       ..error = null
       ..network = lwk.LiquidNetwork.mainnet
       ..calls = 0;
+  });
+
+  test('sums only policy outputs to the supplied destination', () async {
+    sdk.outputs = [
+      lwk.PsetOutput(
+        scriptPubkey: 'destination',
+        asset: 'lbtc',
+        amount: BigInt.from(10),
+      ),
+      lwk.PsetOutput(
+        scriptPubkey: 'destination',
+        asset: 'lbtc',
+        amount: BigInt.from(20),
+      ),
+      lwk.PsetOutput(
+        scriptPubkey: 'other',
+        asset: 'lbtc',
+        amount: BigInt.from(80),
+      ),
+      lwk.PsetOutput(
+        scriptPubkey: 'destination',
+        asset: 'other-asset',
+        amount: BigInt.from(100),
+      ),
+      lwk.PsetOutput(scriptPubkey: '', asset: 'lbtc', amount: BigInt.from(5)),
+    ];
+    Future<Result<BigInt, SyncFailure>> amount(String address) =>
+        liquidPsetAmountToAddress(
+          'test-pset',
+          address,
+          network: LiquidNetwork.mainnet,
+          policyAsset: 'lbtc',
+        );
+    expect(_ok(await amount('destination')), BigInt.from(30));
+    expect(_ok(await amount('destination-confidential')), BigInt.from(30));
+    expect(_ok(await amount('absent')), BigInt.zero);
+    sdk.outputs = [
+      const lwk.PsetOutput(scriptPubkey: 'destination', asset: 'lbtc'),
+    ];
+    expect(
+      _err(await amount('destination')),
+      isA<SyncInvalidTransactionFailure>(),
+    );
+    sdk.outputs = [
+      lwk.PsetOutput(scriptPubkey: 'destination', amount: BigInt.one),
+    ];
+    expect(
+      _err(await amount('destination')),
+      isA<SyncInvalidTransactionFailure>(),
+    );
+    sdk.network = lwk.LiquidNetwork.testnet;
+    expect(_err(await amount('destination')), isA<SyncInvalidAddressFailure>());
   });
 
   void expectDecoded(DecodedLiquidTransaction decoded) {

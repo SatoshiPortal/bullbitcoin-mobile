@@ -147,14 +147,13 @@ class OrderSwapRecord {
 
   /// Whether this record should still be polled for a server-side update.
   ///
-  /// Most terminal statuses (completed, refunded, expired) are final and
-  /// stop polling. A `failed` order is also terminal *unless* funds were
-  /// already moved: in that case the failure may have been provisional and
-  /// the order must keep being refreshed until the server reports a
-  /// truthful outcome (refunded or completed).
+  /// Completed/refunded orders stop polling. Failures and expirations with
+  /// a recorded payin remain provisional until the final outcome is known.
   bool get isPollable =>
       !localStatus.isTerminal ||
-      (localStatus == OrderSwapLocalStatus.failed && hasFundsMoved);
+      ((localStatus == OrderSwapLocalStatus.failed ||
+              localStatus == OrderSwapLocalStatus.expired) &&
+          hasFundsMoved);
 
   String? transactionIdForNetwork(OrderSwapNetwork network) =>
       switch (network) {
