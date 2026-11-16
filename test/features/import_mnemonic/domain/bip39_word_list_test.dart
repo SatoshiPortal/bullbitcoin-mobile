@@ -128,4 +128,90 @@ void main() {
       expect(spanish, [...spanish]..sort());
     });
   });
+
+  group('Bip39WordList.allowedNextKeys', () {
+    test(
+      'an alphabetic wordlist offers a letter with its accent as one key',
+      () {
+        final keys = Bip39WordList.allowedNextKeys(
+          prefix: '',
+          language: bip39.Language.french,
+        );
+        expect(keys, contains(nfkd('\u00e9')));
+        expect(keys.every((key) => key.runes.first < 0x0300), isTrue);
+      },
+    );
+
+    test(
+      'a bare letter is offered only when a word continues without accent',
+      () {
+        // Every offered key extends the prefix to a real word, and a bare
+        // letter is one that word does not follow with an accent.
+        for (final language in [
+          bip39.Language.french,
+          bip39.Language.spanish,
+        ]) {
+          final words = language.list.map(nfkd).toList();
+          for (final prefix in ['', 'a', nfkd('\u00e9'), 'ca']) {
+            for (final key in Bip39WordList.allowedNextKeys(
+              prefix: prefix,
+              language: language,
+            )) {
+              final next = prefix + key;
+              expect(
+                words.any(
+                  (word) =>
+                      word.startsWith(next) &&
+                      (word.length == next.length ||
+                          word.codeUnitAt(next.length) < 0x0300 ||
+                          word.codeUnitAt(next.length) > 0x036F),
+                ),
+                isTrue,
+                reason: '${language.name} "$next"',
+              );
+            }
+          }
+        }
+      },
+    );
+
+    test('other scripts keep one code unit per key', () {
+      expect(
+        Bip39WordList.allowedNextKeys(
+          prefix: nfkd('\u3042\u304a\u305d'),
+          language: bip39.Language.japanese,
+        ),
+        Bip39WordList.allowedNextLetters(
+          prefix: nfkd('\u3042\u304a\u305d'),
+          language: bip39.Language.japanese,
+        ),
+      );
+    });
+  });
+
+  group('Bip39WordList.accentedLetters', () {
+    test('French lists é then è, Spanish its accented vowels and ñ', () {
+      expect(Bip39WordList.accentedLetters(bip39.Language.french), [
+        nfkd('\u00e9'),
+        nfkd('\u00e8'),
+      ]);
+      expect(
+        Bip39WordList.accentedLetters(bip39.Language.spanish),
+        ['\u00e1', '\u00e9', '\u00ed', '\u00f1', '\u00f3', '\u00fa'].map(nfkd),
+      );
+    });
+
+    test('wordlists without accents and other scripts list none', () {
+      for (final language in [
+        bip39.Language.english,
+        bip39.Language.italian,
+        bip39.Language.portuguese,
+        bip39.Language.czech,
+        bip39.Language.japanese,
+        bip39.Language.korean,
+      ]) {
+        expect(Bip39WordList.accentedLetters(language), isEmpty);
+      }
+    });
+  });
 }
