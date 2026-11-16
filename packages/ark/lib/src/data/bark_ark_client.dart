@@ -1037,7 +1037,9 @@ final class BarkArkClient implements ArkClient {
       return Ok(pending);
     } catch (error) {
       if (error is Error) rethrow;
-      // The committed attempt remains unknown, including failed result writes.
+      // Delivery/result persistence is uncertain. A later projection-write
+      // failure may leave the stored operation pending; evidence and attempt
+      // remain protected and retryable in either pending or unknown state.
       return Err(ArkOutcomeUnknownFailure(command.operationId));
     }
   }
