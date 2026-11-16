@@ -489,6 +489,18 @@ void main() {
       expect(badgeStyle?.fontWeight, FontWeight.w700);
     });
 
+    testWidgets('a typed word keeps the field at its resting height', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final resting = tester.getRect(find.byType(MnemonicWord).first).height;
+      await typeWord(tester, 0, 'ab');
+      // The clear button appears: it must not push the field taller than its
+      // neighbour in the other column.
+      expect(find.byIcon(Icons.close), findsOneWidget);
+      expect(tester.getRect(find.byType(MnemonicWord).first).height, resting);
+    });
+
     testWidgets('word fields grow with the system text size', (tester) async {
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
