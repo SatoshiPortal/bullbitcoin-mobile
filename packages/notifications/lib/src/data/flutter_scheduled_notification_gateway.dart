@@ -65,6 +65,9 @@ final class FlutterScheduledNotificationGateway
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         );
       } else {
+        // show does not remove an existing pending alarm for this identifier.
+        // Cancel first so an older future alarm cannot reappear after urgency.
+        await _plugin.cancel(id: platformId);
         await _plugin.show(
           id: platformId,
           title: notification.title,
