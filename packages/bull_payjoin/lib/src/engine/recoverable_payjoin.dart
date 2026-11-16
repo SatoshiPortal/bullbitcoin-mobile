@@ -250,6 +250,14 @@ final class _RecoverablePayjoinSessions implements PayjoinSessions {
   }
 
   @override
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(
+    String sessionId,
+  ) async {
+    await _owner._readyForRoleCall();
+    return _owner._delegate.sessions.visibleTransaction(sessionId);
+  }
+
+  @override
   Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
   inputReservations() async {
     await _owner._readyForRoleCall();

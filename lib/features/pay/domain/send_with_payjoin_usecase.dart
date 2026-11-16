@@ -41,6 +41,12 @@ class SendWithPayjoinUsecase {
         return Ok(value);
       case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
         return Err(PaySpendBlockedFailure(busy: busy));
+      case Err(failure: PayjoinSenderKeptFailure(:final logMessage)):
+        log.warning(
+          'Pay Payjoin post failed; the session is kept',
+          error: logMessage ?? '-',
+        );
+        return Err(PayPayjoinSessionKeptFailure(logMessage));
       case Err(:final failure):
         // Not necessarily a failed payment: the engine persists the session,
         // signed original included, before posting to the directory. The caller

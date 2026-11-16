@@ -44,6 +44,112 @@ void main() {
 
   tearDown(() => database.close());
 
+  test('keeps an expired funded order pollable until completion', () async {
+    when(
+      () => remote.createOrderSwap(
+        requestId: 'request-1',
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+        inNetwork: OrderSwapNetwork.liquid,
+        outNetwork: OrderSwapNetwork.lightning,
+        destinationAddress: 'invoice',
+        fallbackAddress: 'fallback',
+      ),
+    ).thenAnswer((_) async => _orderModel());
+    await _create(repository);
+    await repository.savePreparedPayin(
+      localId: 'local-1',
+      signedTransaction: 'signed-pset',
+      isPsbt: false,
+    );
+    final broadcasting = await repository.markBroadcastUnknown('local-1');
+    expect(broadcasting, isA<Ok<OrderSwapRecord, SwapFailure>>());
+    final broadcast = await repository.markPayinBroadcast(
+      localId: 'local-1',
+      transactionId: 'txid-1',
+    );
+    expect(
+      (broadcast as Ok<OrderSwapRecord, SwapFailure>).value.localStatus,
+      OrderSwapLocalStatus.payinBroadcast,
+    );
+    when(() => remote.getOrderSwapSummary('order-1')).thenAnswer(
+      (_) async => _orderModel(orderStatus: 'Payment deadline expired'),
+    );
+    final expired = (await repository.refreshOrder(
+      'local-1',
+    ) as Ok<OrderSwapRecord, SwapFailure>).value;
+    expect(expired.localStatus, OrderSwapLocalStatus.expired);
+    expect(expired.hasFundsMoved, isTrue);
+    expect(expired.isPollable, isTrue);
+    when(() => remote.getOrderSwapSummary('order-1')).thenAnswer(
+      (_) async =>
+          _orderModel(orderStatus: 'Completed', payoutStatus: 'Completed'),
+    );
+    final refreshed = (await repository.refreshOrder(
+      'local-1',
+    ) as Ok<OrderSwapRecord, SwapFailure>).value;
+    expect(refreshed.localStatus, OrderSwapLocalStatus.completed);
+  });
+
+  for (final (provisional, outcome) in [
+    ('Expired', 'Completed'),
+    ('Failed', 'Refunded'),
+  ]) {
+    test(
+      'keeps uncertain payin reserved through $provisional until $outcome',
+      () async {
+        when(
+          () => remote.createOrderSwap(
+            requestId: 'request-1',
+            amountSat: BigInt.from(1000),
+            isInAmountFixed: false,
+            inNetwork: OrderSwapNetwork.liquid,
+            outNetwork: OrderSwapNetwork.lightning,
+            destinationAddress: 'invoice',
+            fallbackAddress: 'fallback',
+          ),
+        ).thenAnswer((_) async => _orderModel());
+        await _create(repository);
+        await repository.savePreparedPayin(
+          localId: 'local-1',
+          signedTransaction: 'signed',
+          isPsbt: false,
+        );
+        await repository.markBroadcastUnknown('local-1');
+        when(() => remote.getOrderSwapSummary('order-1'))
+            .thenAnswer((_) async => _orderModel(payinStatus: 'Completed'));
+        final progress = (await repository.refreshOrder(
+          'local-1',
+        ) as Ok<OrderSwapRecord, SwapFailure>).value;
+        expect(progress.localStatus, OrderSwapLocalStatus.broadcastUnknown);
+
+        when(() => remote.getOrderSwapSummary('order-1'))
+            .thenAnswer((_) async => _orderModel(orderStatus: provisional));
+        final refreshed = (await repository.refreshOrder(
+          'local-1',
+        ) as Ok<OrderSwapRecord, SwapFailure>).value;
+        expect(refreshed.localStatus, OrderSwapLocalStatus.broadcastUnknown);
+        expect(refreshed.isPollable, isTrue);
+        final pending =
+            (await repository.getPendingOrders()
+                    as Ok<List<OrderSwapRecord>, SwapFailure>)
+                .value;
+        expect(pending.map((record) => record.localId), contains('local-1'));
+        when(() => remote.getOrderSwapSummary('order-1'))
+            .thenAnswer((_) async => _orderModel(orderStatus: outcome));
+        final settled = (await repository.refreshOrder(
+          'local-1',
+        ) as Ok<OrderSwapRecord, SwapFailure>).value;
+        expect(
+          settled.localStatus,
+          outcome == 'Completed'
+              ? OrderSwapLocalStatus.completed
+              : OrderSwapLocalStatus.refunded,
+        );
+      },
+    );
+  }
+
   test('preserves the measured minimum amount rejection', () async {
     when(
       () => remote.getBestSwapOption(

@@ -74,8 +74,9 @@ class BullPickerMenu<T> extends StatelessWidget {
   }
 }
 
-/// A compact bordered chip that shows the selected choice and opens a
-/// [BullPickerMenu]: the inline picker of a settings row.
+/// A borderless chip that shows the selected choice and opens a
+/// [BullPickerMenu]: the inline picker of a settings row, flush with its
+/// trailing edge.
 class BullPickerChip<T> extends StatelessWidget {
   const BullPickerChip({
     super.key,
@@ -111,37 +112,29 @@ class BullPickerChip<T> extends StatelessWidget {
       value: value,
       onChanged: onChanged,
       tooltip: tooltip,
-      child: DecoratedBox(
-        decoration: ShapeDecoration(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(context.bullShapes.button),
-            side: BorderSide(color: colors.outline),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon case final glyph?) ...[
-                Icon(glyph, size: 18, color: colors.onSurface),
-                const SizedBox(width: 8),
-              ],
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.sizeOf(context).width * 0.3,
-                ),
-                child: Text(
-                  selected?.label ?? '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textStyle?.copyWith(color: colors.onSurface),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(Icons.arrow_drop_down, color: colors.onSurface),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon case final glyph?) ...[
+              Icon(glyph, size: 18, color: colors.onSurface),
+              const SizedBox(width: 8),
             ],
-          ),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.sizeOf(context).width * 0.3,
+              ),
+              child: Text(
+                selected?.label ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textStyle?.copyWith(color: colors.onSurface),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.arrow_drop_down, color: colors.onSurface),
+          ],
         ),
       ),
     );

@@ -376,13 +376,14 @@ void main() {
     });
   });
 
-  group('stale pending deletion', () {
-    test('old pending swap with no funds is deleted on expiry event', () {
+  group('expired pending retention', () {
+    test('old pending swap without a recorded payin keeps recovery data', () {
       final result = map(
         lnSend(creationTime: ancient),
         boltz.SwapStatus.swapExpired,
       );
-      expect(result, isA<SwapStale>());
+      expect(result, isA<SwapUpdated>());
+      expect(statusOf(result), 'expired');
     });
 
     test('old pending swap WITH locked funds is never deleted', () {

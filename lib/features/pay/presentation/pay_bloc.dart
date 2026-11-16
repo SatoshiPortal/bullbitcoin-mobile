@@ -14,11 +14,13 @@ import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/pay/domain/broadcast_pay_payin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/calculate_pay_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/estimate_pay_payin_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/get_pay_payin_address_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_adoptable_payjoin_sender_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_network_fees_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_user_summary_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/load_pay_wallet_utxos_usecase.dart';
@@ -65,7 +67,9 @@ class PayBloc extends Bloc<PayEvent, PayState>
     required this._getPayPayinAddressUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
-    required this._getPayjoinUsecase,
+    required this._getAdoptablePayjoinSenderUsecase,
+    required this._broadcastPayjoinOriginalUsecase,
+    required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._previewBitcoinFeeUsecase,
     required this._previewBitcoinFeePresetsUsecase,
@@ -122,7 +126,10 @@ class PayBloc extends Bloc<PayEvent, PayState>
 
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
-  final GetPayjoinUsecase _getPayjoinUsecase;
+  final GetAdoptablePayjoinSenderUsecase _getAdoptablePayjoinSenderUsecase;
+  final BroadcastPayjoinOriginalUsecase _broadcastPayjoinOriginalUsecase;
+  final GetVisiblePayjoinTransactionUsecase
+  _getVisiblePayjoinTransactionUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final PreviewBitcoinFeeUsecase _previewBitcoinFeeUsecase;
   final PreviewBitcoinFeePresetsUsecase _previewBitcoinFeePresetsUsecase;
@@ -726,6 +733,7 @@ class PayBloc extends Bloc<PayEvent, PayState>
             payjoinWindow != null &&
             payjoinBip21 != null) {
           final PayjoinSenderSession payjoinSender;
+          var settleAdoptedNow = false;
           switch (await _sendWithPayjoinUsecase.execute(
             walletId: wallet.id,
             network: wallet.network.bitcoin,
@@ -740,18 +748,16 @@ class PayBloc extends Bloc<PayEvent, PayState>
             case Ok(:final value):
               payjoinSender = value;
             case Err(:final failure):
-              // A failed start is not a failed payment: the engine persists
-              // the session — signed original included — BEFORE posting to the
-              // directory, and a post failure keeps the row so the expiry
-              // fallback still settles the payment. Surfacing an error here
-              // and re-arming Confirm would let a plain retry pay this order a
-              // second time on disjoint inputs (the persisted session's inputs
-              // are reserved out of coin selection, so the two transactions
-              // cannot conflict). When the row exists, adopt the session and
-              // proceed exactly as a successful start; only a start that left
-              // nothing behind may fall through to the error path.
-              final persisted = await _getPayjoinUsecase.execute(payjoinBip21);
-              if (persisted is! PayjoinSenderSession) {
+              // A failed start is not a failed payment: when this payin's
+              // session was persisted (GetAdoptablePayjoinSenderUsecase says
+              // which rows count), adopt it exactly as a successful start.
+              // Re-arming Confirm over it would pay the order a second time.
+              final persisted = await _getAdoptablePayjoinSenderUsecase.execute(
+                sessionId: payjoinBip21,
+                walletId: wallet.id,
+                amountSat: payinAmountSat,
+              );
+              if (persisted == null) {
                 _emitSendPaymentError(emit, failure);
                 return;
               }
@@ -761,6 +767,11 @@ class PayBloc extends Bloc<PayEvent, PayState>
                 'instead of re-arming Confirm',
               );
               payjoinSender = persisted;
+              // Only a session this attempt persisted and whose post failed
+              // is settled at once; the order deadline is too close to leave
+              // the payin to the session's own fallback. Any other rejection
+              // adopts and watches the live session, never downgraded.
+              settleAdoptedNow = failure is PayPayjoinSessionKeptFailure;
           }
           log.fine(
             'Pay Payjoin sender active: ${payjoinSender.logRef}, '
@@ -771,6 +782,19 @@ class PayBloc extends Bloc<PayEvent, PayState>
             orderId: payPaymentState.payOrder.orderId,
           );
           waitingForPayjoin = true;
+          if (settleAdoptedNow) {
+            unawaited(
+              _broadcastPayjoinOriginalUsecase.execute(payjoinSender.id).then((
+                settled,
+              ) {
+                // The engine also publishes this on the session stream; this
+                // covers a settlement that ran before the watch was attached.
+                if (settled != null && !isClosed) {
+                  add(PayEvent.payjoinSessionUpdated(settled));
+                }
+              }),
+            );
+          }
         } else {
           log.fine('Pay Payjoin skipped; broadcasting plain transaction');
           final ({String signedPsbt, int txSize}) signedTx;
@@ -953,8 +977,30 @@ class PayBloc extends Bloc<PayEvent, PayState>
     }
 
     if (session.isExpired) {
+      // `expired` means the engine proved its own fallback sent nothing, but
+      // the receiver may broadcast the original on its own (BIP 77 lets it
+      // at any point) and a fresh lookup can see a transaction a lagging sync
+      // did not.
+      // Latch such a transaction instead of re-arming Confirm on the inputs
+      // the expiry just released, which would pay the order a second time.
+      final visibleTxId = await _getVisiblePayjoinTransactionUsecase.execute(
+        session.id,
+      );
+      final rearmed = _currentPaymentState;
+      if (rearmed == null || rearmed.payOrder.orderId != sessionOrderId) {
+        return;
+      }
+      if (visibleTxId != null) {
+        log.warning(
+          'Pay Payjoin session ${session.logRef} expired but its transaction '
+          'is visible; latching it instead of re-arming Confirm',
+        );
+        _latchBroadcast(emit, visibleTxId);
+        await _completeAfterBroadcast(emit);
+        return;
+      }
       emit(
-        current.copyWith(
+        rearmed.copyWith(
           isConfirmingPayment: false,
           error: null,
           pausedPayjoinSession: null,

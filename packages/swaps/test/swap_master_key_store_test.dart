@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:swaps/src/data/boltz_api.dart';
@@ -11,12 +12,16 @@ class _MockRowStore extends Mock implements SwapRowStore {}
 
 class _MemorySecretStore implements SecretStore {
   final values = <String, String>{};
+  final held = <String, Completer<void>>{};
 
   @override
   Future<void> write(String key, String value) async => values[key] = value;
 
   @override
-  Future<String?> read(String key) async => values[key];
+  Future<String?> read(String key) async {
+    await held[key]?.future;
+    return values[key];
+  }
 
   @override
   Future<void> delete(String key) async => values.remove(key);
@@ -67,6 +72,45 @@ void main() {
     expect(secrets.values, isEmpty);
     await expectLater(
       boltz.getSwapMasterKey(isTestnet: true),
+      throwsA(isA<StateError>()),
+    );
+  });
+
+  test('a wallet without a key clears the previous wallet binding', () async {
+    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+
+    expect(
+      await boltz.swapMasterKeyReady(
+        walletFingerprint: 'deadbeef',
+        isTestnet: false,
+      ),
+      isFalse,
+    );
+
+    await expectLater(
+      boltz.getSwapMasterKey(isTestnet: false),
+      throwsA(isA<StateError>()),
+    );
+  });
+
+  test('a late readiness lookup cannot bind an older wallet', () async {
+    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+    final release = Completer<void>();
+    secrets.held['swap_master_key_mainnet_f00dbabe'] = release;
+
+    final old = boltz.swapMasterKeyReady(
+      walletFingerprint: 'f00dbabe',
+      isTestnet: false,
+    );
+    await boltz.swapMasterKeyReady(
+      walletFingerprint: 'deadbeef',
+      isTestnet: false,
+    );
+    release.complete();
+
+    expect(await old, isFalse);
+    await expectLater(
+      boltz.getSwapMasterKey(isTestnet: false),
       throwsA(isA<StateError>()),
     );
   });

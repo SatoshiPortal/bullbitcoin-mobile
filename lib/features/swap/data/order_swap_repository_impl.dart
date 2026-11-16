@@ -387,8 +387,8 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
           .where((status) => status.isTerminal)
           .map((status) => status.name)
           .toSet();
-      // Non-terminal statuses are always pollable. `failed` is terminal in
-      // general, but a failed order whose payin funds already moved must
+      // Non-terminal statuses are always pollable. Failed/expired orders
+      // whose payin funds already moved must
       // keep being polled until the server confirms a truthful refunded or
       // completed outcome, so it is queried too and filtered by
       // `isPollable` below.
@@ -397,6 +397,7 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
             .map((status) => status.name)
             .where((name) => !terminal.contains(name)),
         OrderSwapLocalStatus.failed.name,
+        OrderSwapLocalStatus.expired.name,
       };
       final records = <OrderSwapRecord>[];
       for (final row in await _local.getByLocalStatuses(pendingNames)) {
@@ -626,25 +627,28 @@ class OrderSwapRepositoryImpl implements OrderSwapRepository {
     OrderSwap order,
   ) {
     final current = record.localStatus;
-    // Terminal statuses stop being re-evaluated, except a `failed` order
-    // whose payin funds already moved: that failure may have been
-    // provisional, so it keeps being refreshed towards a truthful
-    // refunded/completed outcome instead of staying stuck as failed.
-    final canLeaveFailed =
-        current == OrderSwapLocalStatus.failed && record.hasFundsMoved;
-    if (current.isTerminal && !canLeaveFailed) return current;
+    // A funded failure or expiry can be provisional. Keep refreshing it
+    // until the server confirms completion or refund.
+    final canLeaveProvisional =
+        (current == OrderSwapLocalStatus.failed ||
+            current == OrderSwapLocalStatus.expired) &&
+        record.hasFundsMoved;
+    if (current.isTerminal && !canLeaveProvisional) return current;
     final orderStatus = order.orderStatus.trim().toLowerCase();
     final payoutStatus = order.payoutStatus.trim().toLowerCase();
     if (payoutStatus == 'completed') return OrderSwapLocalStatus.completed;
     if (payoutStatus == 'refunded') return OrderSwapLocalStatus.refunded;
+    if (orderStatus == 'completed') return OrderSwapLocalStatus.completed;
+    if (orderStatus == 'refunded') return OrderSwapLocalStatus.refunded;
+    // Neither progress nor expiry proves that an uncertain broadcast did
+    // not land. Keep its durable reservation until a final outcome arrives.
+    if (current == OrderSwapLocalStatus.broadcastUnknown) return current;
     if (payoutStatus == 'failed' ||
         payoutStatus == 'rejected' ||
         payoutStatus == 'cancelled' ||
         payoutStatus == 'canceled') {
       return OrderSwapLocalStatus.failed;
     }
-    if (orderStatus == 'completed') return OrderSwapLocalStatus.completed;
-    if (orderStatus == 'refunded') return OrderSwapLocalStatus.refunded;
     if (orderStatus == 'expired' || orderStatus == 'payment deadline expired') {
       return OrderSwapLocalStatus.expired;
     }

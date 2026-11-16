@@ -63,6 +63,13 @@ abstract interface class WalletSpender {
     int generation,
     String psbt,
   );
+  Future<Result<BigInt, SyncFailure>> liquidAmountToAddress(
+    WalletKey key,
+    int generation,
+    String pset,
+    String address,
+  );
+
   Future<Result<LiquidPsetEffect, SyncFailure>> liquidEffect(
     WalletKey key,
     int generation,
@@ -508,6 +515,26 @@ final class SpendWriter implements WalletSpender {
         }
       },
       persist: (native) => native.persist(),
+      close: (native) => native.close(),
+    );
+  });
+
+  @override
+  Future<Result<BigInt, SyncFailure>> liquidAmountToAddress(
+    WalletKey key,
+    int generation,
+    String pset,
+    String address,
+  ) => _run(key, generation, (record, descriptor) async {
+    if (descriptor is! LiquidWalletDescriptor) {
+      throw const WriterRefusal(SyncUnsupportedNetworkFailure());
+    }
+    return _command(
+      key,
+      record,
+      () => _natives.liquid(descriptor),
+      (native) => native.amountToAddress(pset, address),
+      persist: (_) => false,
       close: (native) => native.close(),
     );
   });

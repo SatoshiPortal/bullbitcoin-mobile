@@ -506,8 +506,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     // descriptor + script type). Skip when the picker landed on the
     // same fromWallet.
     if (wasFromWalletChanged || wasToWalletChanged) {
-      _invalidateTransactionContract(emit);
+      _invalidateTransactionContract(emit, recipientChanged: true);
     }
+
+    final generation = _transactionGeneration;
 
     // Proactively flag consolidation when the source is a Liquid wallet with
     // too many UTXOs, so the card shows before the swap build is attempted.
@@ -520,6 +522,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       try {
         final consolidationRequired = await _checkLiquidConsolidationUsecase
             .execute(walletId: newFromWallet.id);
+        if (generation != _transactionGeneration) return;
         emit(state.copyWith(consolidationRequired: consolidationRequired));
       } catch (_) {
         // Best-effort: leave the flag as-is on a read failure.
@@ -529,6 +532,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     }
 
     final maxAmountSat = await getMaxAmountSat(newFromWallet);
+    if (generation != _transactionGeneration) return;
     emit(state.copyWith(maxAmountSat: maxAmountSat));
 
     if (wasFromWalletChanged && sendToExternal && hadExternalAddress) {
@@ -1280,7 +1284,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         receiveExactAmount: event.enabled,
       ),
     );
-    _invalidateTransactionContract(emit);
+    _invalidateTransactionContract(emit, recipientChanged: true);
   }
 
   Future<void> _onExternalAddressChanged(
@@ -1290,7 +1294,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     if (state.externalAddress == event.address) return;
     // Recipient is part of the cache fingerprint — drop every cached
     // preview when the new value differs from what we had cached against.
-    _invalidateTransactionContract(emit);
+    _invalidateTransactionContract(emit, recipientChanged: true);
+    final generation = _transactionGeneration;
     if (event.address.isEmpty) {
       emit(state.copyWith(externalAddress: '', externalAddressError: null));
       return;
@@ -1318,7 +1323,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         paymentRequest = await _detectBitcoinStringUsecase.execute(
           data: sanitizedText,
         );
+        if (generation != _transactionGeneration) return;
       } catch (e) {
+        if (generation != _transactionGeneration) return;
         final errorMessage = fromWallet.isLiquid == true
             ? 'Please enter a valid Bitcoin address'
             : 'Please enter a valid Liquid address';
@@ -1802,9 +1809,18 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
 
   /// A contract-shape change makes a prepared remote swap belong to an old
   /// transfer, not merely an old fee/PSBT preview.
-  void _invalidateTransactionContract(Emitter<TransferState> emit) {
+  void _invalidateTransactionContract(
+    Emitter<TransferState> emit, {
+    bool recipientChanged = false,
+  }) {
     _clearBitcoinFeePreviews(emit);
-    emit(state.copyWith(swap: null, orderSwap: null, receiveAddress: null));
+    emit(
+      state.copyWith(
+        swap: null,
+        orderSwap: null,
+        receiveAddress: recipientChanged ? null : state.receiveAddress,
+      ),
+    );
   }
 
   /// Belt-and-suspenders relay-floor re-assert, mirroring

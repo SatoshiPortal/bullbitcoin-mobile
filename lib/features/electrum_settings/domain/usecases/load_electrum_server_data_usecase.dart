@@ -108,7 +108,7 @@ class LoadElectrumServerDataUsecase {
             serverStatusMap[server.url] = await _serverStatusPort.checkElectrum(
               url: server.url,
               network: network,
-              validateDomain: settings.validateDomain,
+              validateDomain: !server.isCustom || settings.validateDomain,
               timeout: effectiveTimeout,
               retry: settings.retry,
               proxyEndpoint: route?.endpoint,
