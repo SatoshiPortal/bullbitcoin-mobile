@@ -213,4 +213,25 @@ void main() {
     expect(closed, true);
     await second.close();
   });
+  test(
+    'offline startup reapply uses stored warning without a new native snapshot',
+    () async {
+      final path = '${directory.path}/reminders';
+      final gateway = Notifications();
+      final first = reminders(path, gateway);
+      await first.reconcile(
+        account: account(),
+        warning: warning(100),
+        authoritativeEmpty: false,
+        revision: 5,
+        tipHeight: 100,
+      );
+      await first.close();
+      final reopened = reminders(path, gateway, foreground: false);
+      expect(await reopened.reapplyStored(), isA<Ok>());
+      expect(gateway.scheduled.length, 2);
+      expect(gateway.scheduled.first, gateway.scheduled.last);
+      await reopened.close();
+    },
+  );
 }
