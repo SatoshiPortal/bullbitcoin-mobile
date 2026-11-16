@@ -21,7 +21,7 @@ import 'vault_provider_selection_page.dart';
 /// How long a blockage must persist before it is shown as a failure.
 ///
 /// Tor briefly drops readiness while it refreshes its directory; without this
-/// delay that healthy refresh would put an error and a Retry button on screen.
+/// delay that healthy refresh would put an error and a New route button on screen.
 const _blockageGrace = Duration(seconds: 5);
 
 /// When to start reassuring the user that the wait is normal.
@@ -168,7 +168,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
                         snowflakeAvailable: context
                             .read<VaultFlowCubit>()
                             .snowflakeAvailable,
-                        onRetry: _resetWait,
+                        onAttempt: _resetWait,
                         onVaultKey: () => _hasNavigated = true,
                       ),
                     ),
@@ -192,7 +192,7 @@ class _Body extends StatelessWidget {
   final _Blockage? blockage;
   final VoidCallback onVaultKey;
   final bool snowflakeAvailable;
-  final VoidCallback onRetry;
+  final VoidCallback onAttempt;
 
   const _Body({
     required this.state,
@@ -201,7 +201,7 @@ class _Body extends StatelessWidget {
     required this.blockage,
     required this.onVaultKey,
     required this.snowflakeAvailable,
-    required this.onRetry,
+    required this.onAttempt,
   });
 
   tor.TorConnectionState get _tor => state.tor;
@@ -280,19 +280,11 @@ class _Body extends StatelessWidget {
         null => false,
       };
 
-  /// The failure panel stays up while a retry runs, so its buttons show as disabled instead of vanishing.
+  /// The failure panel stays up while another attempt runs, so its buttons show as disabled instead of vanishing.
   bool get _showFailurePanel =>
       _hasFailure ||
       (state.keyServerFailures > 0 &&
           state.keyServer == KeyServerStatus.connecting);
-
-  /// Only an embedded route can take another path.
-  bool get _offersNewCircuit =>
-      state.keyServerFailures >= 1 &&
-      switch (_tor) {
-        tor.TorReady(:final route) => route.source == tor.TorSource.embedded,
-        _ => false,
-      };
 
   /// Arti currently sees the network blocking Tor. Shown at once: it is an
   /// explanation, not a failure, so it needs no grace period.
@@ -508,12 +500,18 @@ class _Body extends StatelessWidget {
           _FailurePanel(
             busy: state.keyServer == KeyServerStatus.connecting || !_hasFailure,
             message: _failureMessage(context),
-            // Tor not ready means its bootstrap failed: restart it, as 6.15 did.
-            onRetry: () {
-              onRetry();
-              unawaited(cubit.connect(restartTor: _tor is! tor.TorReady));
+            // A plain retry reused the failed circuit: every attempt takes a new
+            // one, and a Tor bootstrap that failed is restarted, as 6.15 did.
+            onNewRoute: () {
+              onAttempt();
+              unawaited(
+                cubit.connect(
+                  newRoute: true,
+                  restartTor: _tor is! tor.TorReady,
+                ),
+              );
             },
-            // Shown whenever the message comes from this failure, including while a Retry runs.
+            // Shown whenever the message comes from this failure, including while another attempt runs.
             detail: switch (state.failure) {
               final KeyServerFailure failure
                   when _tor is tor.TorReady || _tor is tor.TorUninitialized =>
@@ -526,15 +524,9 @@ class _Body extends StatelessWidget {
                     state.failure is ExternalTorProxyUnavailableFailure
                 ? RecoverBullFlowScope.of(context).onOpenTorSettings
                 : null,
-            onNewCircuit: _offersNewCircuit
-                ? () {
-                    onRetry();
-                    unawaited(cubit.connect(newRoute: true));
-                  }
-                : null,
             onSnowflake: _offersSnowflake
                 ? () {
-                    onRetry();
+                    onAttempt();
                     unawaited(cubit.connect(viaSnowflake: true));
                   }
                 : null,
@@ -699,8 +691,7 @@ class _PhaseIcon extends StatelessWidget {
 class _FailurePanel extends StatelessWidget {
   final String message;
   final bool busy;
-  final VoidCallback onRetry;
-  final VoidCallback? onNewCircuit;
+  final VoidCallback onNewRoute;
   final VoidCallback? onOpenTorSettings;
   final VoidCallback? onSnowflake;
 
@@ -709,9 +700,8 @@ class _FailurePanel extends StatelessWidget {
 
   const _FailurePanel({
     required this.message,
-    required this.onRetry,
+    required this.onNewRoute,
     this.busy = false,
-    this.onNewCircuit,
     this.onOpenTorSettings,
     this.onSnowflake,
     this.detail,
@@ -741,26 +731,13 @@ class _FailurePanel extends StatelessWidget {
         ],
         const Gap(24),
         BullButton.big(
-          label: context.loc.recoverbullRetry,
+          label: context.loc.recoverbullNewRoute,
           textStyle: context.bullText.headlineLarge,
           bgColor: context.bull.onSurface,
           textColor: context.bull.surface,
           disabled: busy,
-          onPressed: onRetry,
+          onPressed: onNewRoute,
         ),
-        if (onNewCircuit case final onNewCircuit?) ...[
-          const Gap(12),
-          BullButton.big(
-            label: context.loc.recoverbullNewRoute,
-            textStyle: context.bullText.headlineLarge,
-            bgColor: context.bull.surface,
-            textColor: context.bull.onSurface,
-            outlined: true,
-            borderColor: context.bull.onSurface,
-            disabled: busy,
-            onPressed: onNewCircuit,
-          ),
-        ],
         if (onSnowflake case final onSnowflake?) ...[
           const Gap(12),
           BullButton.big(
