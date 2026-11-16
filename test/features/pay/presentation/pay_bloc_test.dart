@@ -25,7 +25,9 @@ import 'package:bb_mobile/features/pay/domain/place_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_bitcoin_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/sign_pay_payin_usecase.dart';
-import 'package:bb_mobile/features/pay/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/broadcast_payjoin_original_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_adoptable_payjoin_sender_usecase.dart';
+import 'package:bb_mobile/features/pay/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/watch_payjoin_usecase.dart';
@@ -79,7 +81,14 @@ class _MockSendWithPayjoin extends Mock implements SendWithPayjoinUsecase {}
 
 class _MockWatchPayjoin extends Mock implements WatchPayjoinUsecase {}
 
-class _MockGetPayjoin extends Mock implements GetPayjoinUsecase {}
+class _MockGetAdoptablePayjoinSender extends Mock
+    implements GetAdoptablePayjoinSenderUsecase {}
+
+class _MockBroadcastPayjoinOriginal extends Mock
+    implements BroadcastPayjoinOriginalUsecase {}
+
+class _MockGetVisiblePayjoinTransaction extends Mock
+    implements GetVisiblePayjoinTransactionUsecase {}
 
 class _MockPreviewBitcoinFee extends Mock implements PreviewBitcoinFeeUsecase {}
 
@@ -125,7 +134,9 @@ class _SeedablePayBloc extends PayBloc {
     required super.getPayPayinAddressUsecase,
     required super.sendWithPayjoinUsecase,
     required super.watchPayjoinUsecase,
-    required super.getPayjoinUsecase,
+    required super.getAdoptablePayjoinSenderUsecase,
+    required super.broadcastPayjoinOriginalUsecase,
+    required super.getVisiblePayjoinTransactionUsecase,
     required super.retryPayjoinProposalUsecase,
     required super.previewBitcoinFeeUsecase,
     required super.previewBitcoinFeePresetsUsecase,
@@ -182,7 +193,9 @@ void main() {
   late _MockRefreshPayOrder refreshPayOrder;
   late _MockSendWithPayjoin sendWithPayjoin;
   late _MockWatchPayjoin watchPayjoin;
-  late _MockGetPayjoin getPayjoin;
+  late _MockGetAdoptablePayjoinSender getAdoptablePayjoinSender;
+  late _MockBroadcastPayjoinOriginal broadcastPayjoinOriginal;
+  late _MockGetVisiblePayjoinTransaction getVisiblePayjoinTransaction;
   late _MockRetryPayjoin retryPayjoin;
   late _MockPreviewBitcoinFeePresets previewBitcoinFeePresets;
   late _MockPayOrder payOrder;
@@ -319,9 +332,21 @@ void main() {
         .thenAnswer((_) async => Ok<FiatPaymentOrder, PayFailure>(payOrder));
     when(() => watchPayjoin.execute(any()))
         .thenAnswer((_) => const Stream.empty());
-    getPayjoin = _MockGetPayjoin();
+    getAdoptablePayjoinSender = _MockGetAdoptablePayjoinSender();
+    broadcastPayjoinOriginal = _MockBroadcastPayjoinOriginal();
+    when(() => broadcastPayjoinOriginal.execute(any()))
+        .thenAnswer((_) async => null);
+    getVisiblePayjoinTransaction = _MockGetVisiblePayjoinTransaction();
+    when(() => getVisiblePayjoinTransaction.execute(any()))
+        .thenAnswer((_) async => null);
     retryPayjoin = _MockRetryPayjoin();
-    when(() => getPayjoin.execute(any())).thenAnswer((_) async => null);
+    when(
+      () => getAdoptablePayjoinSender.execute(
+        sessionId: any(named: 'sessionId'),
+        walletId: any(named: 'walletId'),
+        amountSat: any(named: 'amountSat'),
+      ),
+    ).thenAnswer((_) async => null);
 
     bloc = _SeedablePayBloc(
       loadPayUserSummaryUsecase: _MockLoadPayUserSummary(),
@@ -339,7 +364,9 @@ void main() {
       getPayPayinAddressUsecase: _MockGetPayPayinAddress(),
       sendWithPayjoinUsecase: sendWithPayjoin,
       watchPayjoinUsecase: watchPayjoin,
-      getPayjoinUsecase: getPayjoin,
+      getAdoptablePayjoinSenderUsecase: getAdoptablePayjoinSender,
+      broadcastPayjoinOriginalUsecase: broadcastPayjoinOriginal,
+      getVisiblePayjoinTransactionUsecase: getVisiblePayjoinTransaction,
       retryPayjoinProposalUsecase: retryPayjoin,
       previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
       previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,
@@ -482,6 +509,60 @@ void main() {
       },
     );
 
+    test('an expired Payjoin whose transaction is already visible is latched, '
+        'not offered again', () async {
+      const bip21 =
+          'bitcoin:bc1q0000000000000000000000000000000000000'
+          '?amount=0.001&pj=https://payjo.in/session';
+      when(() => payOrder.bip21URI).thenReturn(bip21);
+      when(() => payOrder.confirmationDeadline)
+          .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+      PayjoinSenderSession session(PayjoinStatus status) =>
+          PayjoinSenderSession(
+            status: status,
+            uri: bip21,
+            network: BitcoinNetwork.mainnet,
+            walletId: 'wallet-1',
+            originalTransactionId: expectedTxid,
+            amount: Sats.fromInt(100000),
+            createdAt: DateTime(2026),
+            expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+          );
+      when(
+        () => sendWithPayjoin.execute(
+          walletId: any(named: 'walletId'),
+          network: any(named: 'network'),
+          bip21: any(named: 'bip21'),
+          unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+          amountSat: any(named: 'amountSat'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok<PayjoinSenderSession, PayFailure>(
+          session(PayjoinStatus.requested),
+        ),
+      );
+      when(() => watchPayjoin.execute(bip21)).thenAnswer(
+        (_) => Stream.value(
+          Ok<PayjoinSession, PayFailure>(session(PayjoinStatus.expired)),
+        ),
+      );
+      // The expiry fallback reached the network but its bookkeeping did
+      // not: the engine recorded `expired`, the chain holds the original.
+      when(() => getVisiblePayjoinTransaction.execute(bip21))
+          .thenAnswer((_) async => expectedTxid);
+
+      bloc.add(const PayEvent.sendPaymentConfirmed());
+      final latched = await bloc.stream.firstWhere(
+        (state) => state is PayPaymentState && state.isPayinBroadcast,
+      );
+
+      expect((latched as PayPaymentState).payinBroadcastTxid, expectedTxid);
+      expect(latched.isConfirmingPayment, isTrue);
+      expect(latched.error, isNull);
+    });
+
     test('does not report success while a Payjoin is only requested', () async {
       const bip21 =
           'bitcoin:bc1q0000000000000000000000000000000000000'
@@ -572,7 +653,13 @@ void main() {
           PayUnexpectedFailure('Failed to start Payjoin payment'),
         ),
       );
-      when(() => getPayjoin.execute(bip21)).thenAnswer(
+      when(
+        () => getAdoptablePayjoinSender.execute(
+          sessionId: bip21,
+          walletId: 'wallet-1',
+          amountSat: 100000,
+        ),
+      ).thenAnswer(
         (_) async => PayjoinSenderSession(
           status: PayjoinStatus.started,
           uri: bip21,
@@ -610,7 +697,79 @@ void main() {
           network: app.Network.bitcoinMainnet,
         ),
       );
+      // Not a kept session: the live negotiation is watched, never
+      // downgraded to the original.
+      verifyNever(() => broadcastPayjoinOriginal.execute(any()));
     });
+
+    for (final settlesAtOnce in [false, true]) {
+      test(
+        'a kept session after a failed post is adopted and settled with '
+        'the original at once${settlesAtOnce ? ', latching the payin' : ''}',
+        () async {
+          const bip21 =
+              'bitcoin:bc1q0000000000000000000000000000000000000'
+              '?amount=0.001&pj=https://payjo.in/session';
+          when(() => payOrder.bip21URI).thenReturn(bip21);
+          when(() => payOrder.confirmationDeadline)
+              .thenReturn(DateTime.now().add(const Duration(minutes: 5)));
+          when(
+            () => sendWithPayjoin.execute(
+              walletId: any(named: 'walletId'),
+              network: any(named: 'network'),
+              bip21: any(named: 'bip21'),
+              unsignedOriginalPsbt: any(named: 'unsignedOriginalPsbt'),
+              amountSat: any(named: 'amountSat'),
+              networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+              expireAfterSec: any(named: 'expireAfterSec'),
+            ),
+          ).thenAnswer(
+            (_) async => const Err<PayjoinSenderSession, PayFailure>(
+              PayPayjoinSessionKeptFailure('directory unreachable'),
+            ),
+          );
+          PayjoinSenderSession session(PayjoinStatus status) =>
+              PayjoinSenderSession(
+                status: status,
+                uri: bip21,
+                network: BitcoinNetwork.mainnet,
+                walletId: 'wallet-1',
+                originalTransactionId: expectedTxid,
+                amount: Sats.fromInt(100000),
+                createdAt: DateTime(2026),
+                expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
+              );
+          when(
+            () => getAdoptablePayjoinSender.execute(
+              sessionId: bip21,
+              walletId: 'wallet-1',
+              amountSat: 100000,
+            ),
+          ).thenAnswer((_) async => session(PayjoinStatus.requested));
+          when(() => broadcastPayjoinOriginal.execute(bip21)).thenAnswer(
+            (_) async => settlesAtOnce ? session(PayjoinStatus.aborted) : null,
+          );
+
+          bloc.add(const PayEvent.sendPaymentConfirmed());
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+
+          // The stored row cannot pick up a proposal and the order deadline is
+          // near: the engine is asked to settle it with the original now.
+          verify(() => broadcastPayjoinOriginal.execute(bip21)).called(1);
+          verify(() => watchPayjoin.execute(bip21)).called(1);
+          final state = bloc.state as PayPaymentState;
+          expect(state.error, isNull);
+          if (settlesAtOnce) {
+            // The settlement returned by the broadcast resolves the payin even
+            // when the session stream published it before the watch attached.
+            expect(state.payinBroadcastTxid, expectedTxid);
+          } else {
+            expect(state.payinBroadcastTxid, isNull);
+            expect(state.isConfirmingPayment, isTrue);
+          }
+        },
+      );
+    }
 
     test('a failed Payjoin start with nothing persisted still surfaces the '
         'retryable error', () async {
@@ -637,7 +796,13 @@ void main() {
       );
       // No session row: the failure happened before the write-ahead
       // persist, so nothing can broadcast later and retrying is safe.
-      when(() => getPayjoin.execute(bip21)).thenAnswer((_) async => null);
+      when(
+        () => getAdoptablePayjoinSender.execute(
+          sessionId: any(named: 'sessionId'),
+          walletId: any(named: 'walletId'),
+          amountSat: any(named: 'amountSat'),
+        ),
+      ).thenAnswer((_) async => null);
 
       bloc.add(const PayEvent.sendPaymentConfirmed());
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -1241,7 +1406,9 @@ void main() {
           getPayPayinAddressUsecase: _MockGetPayPayinAddress(),
           sendWithPayjoinUsecase: sendWithPayjoin,
           watchPayjoinUsecase: watchPayjoin,
-          getPayjoinUsecase: getPayjoin,
+          getAdoptablePayjoinSenderUsecase: getAdoptablePayjoinSender,
+          broadcastPayjoinOriginalUsecase: broadcastPayjoinOriginal,
+          getVisiblePayjoinTransactionUsecase: getVisiblePayjoinTransaction,
           retryPayjoinProposalUsecase: retryPayjoin,
           previewBitcoinFeeUsecase: _MockPreviewBitcoinFee(),
           previewBitcoinFeePresetsUsecase: previewBitcoinFeePresets,

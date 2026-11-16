@@ -18,16 +18,8 @@ class SwapUpdated extends SwapStatusMapping {
   const SwapUpdated(this.swap);
 }
 
-/// Stale pending swap with provably no funds at risk — safe to delete
-/// together with its secure-storage keys.
-class SwapStale extends SwapStatusMapping {
-  const SwapStale();
-}
-
 class SwapStatusMapper {
   const SwapStatusMapper();
-
-  static const _stalePendingAge = Duration(days: 14);
 
   SwapStatusMapping map({
     required SwapModel swap,
@@ -36,10 +28,6 @@ class SwapStatusMapper {
     required DateTime now,
   }) {
     final localStatus = _localStatus(swap);
-
-    if (_isStalePending(swap, localStatus, boltzStatus, now)) {
-      return const SwapStale();
-    }
 
     final SwapModel? updated = _applyStatus(
       swap,
@@ -60,28 +48,6 @@ class SwapStatusMapper {
     if (updated == swap) return const SwapUnchanged();
 
     return SwapUpdated(updated);
-  }
-
-  /// A pending swap older than [_stalePendingAge] may only be deleted when
-  /// nothing was ever locked up: no sendTxid recorded AND Boltz itself says
-  /// the swap expired without funds movement. Any transaction-related event
-  /// instead flows through the normal mapping (which routes to refundable
-  /// when funds are at risk). Swap data is otherwise kept forever, per the
-  /// Boltz integration guidelines.
-  bool _isStalePending(
-    SwapModel swap,
-    swap_entity.SwapStatus localStatus,
-    boltz.SwapStatus boltzStatus,
-    DateTime now,
-  ) {
-    if (localStatus != swap_entity.SwapStatus.pending) return false;
-    if (boltzStatus != boltz.SwapStatus.swapExpired &&
-        boltzStatus != boltz.SwapStatus.invoiceExpired) {
-      return false;
-    }
-    if (_sendTxid(swap) != null) return false;
-    final creationTime = DateTime.fromMillisecondsSinceEpoch(swap.creationTime);
-    return now.difference(creationTime) > _stalePendingAge;
   }
 
   /// Boltz replays events and can deliver them out of order; this blocks a

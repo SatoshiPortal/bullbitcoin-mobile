@@ -60,6 +60,14 @@ abstract interface class PayjoinSessions {
   @useResult
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints();
 
+  /// The session's transaction the network already knows (its original or
+  /// its payjoin transaction, after a fresh lookup), or null when neither is
+  /// visible. An expired session carries no broadcast outcome; this is how
+  /// a caller tells "nothing went out" from "the fallback went out and its
+  /// bookkeeping did not" before offering the payment again.
+  @useResult
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(String sessionId);
+
   /// Every input an unfinished session holds, with its owning session. A
   /// failed read is an error, never an empty list.
   @useResult

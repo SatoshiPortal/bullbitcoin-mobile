@@ -401,6 +401,18 @@ extension type const WalletTxGroup._(Wallet _wallet) {
   Future<Result<String, SyncFailure>> annotate(String psbt) =>
       _wallet._spender.annotate(_wallet.key, _wallet.generation, psbt);
 
+  /// Policy-asset amount paid to this exact Liquid destination.
+  @useResult
+  Future<Result<BigInt, SyncFailure>> liquidAmountToAddress(
+    String pset,
+    String address,
+  ) => _wallet._spender.liquidAmountToAddress(
+    _wallet.key,
+    _wallet.generation,
+    pset,
+    address,
+  );
+
   /// What a Liquid [pset] does to this wallet's L-BTC, unblinded.
   @useResult
   Future<Result<LiquidPsetEffect, SyncFailure>> liquidEffect(String pset) =>
@@ -631,6 +643,14 @@ final class _NoSpender implements WalletSpender {
     WalletKey key,
     int generation,
     String psbt,
+  ) => _refused();
+
+  @override
+  Future<Result<BigInt, SyncFailure>> liquidAmountToAddress(
+    WalletKey key,
+    int generation,
+    String pset,
+    String address,
   ) => _refused();
 
   @override

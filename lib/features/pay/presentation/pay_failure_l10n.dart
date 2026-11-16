@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 extension PayFailureL10n on PayFailure {
   String toTranslated(BuildContext context) => switch (this) {
     PayPayjoinPausedFailure() => context.loc.sendPayjoinSpendPaused,
+    PayPayjoinSessionKeptFailure() => context.loc.payUnexpectedError,
     PaySpendBlockedFailure(:final busy) =>
       busy
           ? context.loc.walletSpendBusy

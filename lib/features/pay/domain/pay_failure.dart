@@ -107,3 +107,9 @@ final class PaySpendBlockedFailure extends PayFailure {
 final class PayPayjoinPausedFailure extends PayFailure {
   const PayPayjoinPausedFailure();
 }
+
+/// The Payjoin post failed after the engine saved this payin's session: the
+/// row is kept and armed, and the caller settles it with the original now.
+final class PayPayjoinSessionKeptFailure extends PayFailure {
+  const PayPayjoinSessionKeptFailure([super.logMessage]);
+}

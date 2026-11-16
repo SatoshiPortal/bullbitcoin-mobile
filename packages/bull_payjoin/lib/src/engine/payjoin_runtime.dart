@@ -12,6 +12,7 @@ import 'package:bull_payjoin/src/domain/payjoin_session.dart';
 import 'package:bull_payjoin/src/engine/payjoin_ownership.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as engine;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
+import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
 import 'package:bull_payjoin/src/engine/payjoin_fee_cap.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart' as logger;
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
@@ -204,6 +205,7 @@ abstract interface class _PayjoinRuntimeContract {
   );
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(String id);
   Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(String id);
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(String id);
   Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(String id);
   Future<Result<void, PayjoinFailure>> cancel(String id);
   Future<Result<void, PayjoinFailure>> disableAll();
@@ -307,6 +309,19 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         expireAfterSec: lifetime.inSeconds,
       );
       return Ok(_toSession(session) as PayjoinSenderSession);
+    } on PayjoinSenderKeptException catch (error, trace) {
+      _log.warning(
+        code: PayjoinLogCode.sessionStartFailed,
+        role: PayjoinLogRole.sender,
+        error: error.cause,
+        trace: trace,
+      );
+      return Err(
+        PayjoinSenderKeptFailure(
+          error.originalTxId,
+          'Sender start failed; session kept',
+        ),
+      );
     } catch (error, trace) {
       // The failure handed back is deliberately generic; without this the
       // cause of a payment falling back to a plain transaction is lost.
@@ -406,6 +421,19 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     } catch (_) {
       return const Err(
         PayjoinUnavailableFailure('Could not check fallback availability'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(
+    String sessionId,
+  ) async {
+    try {
+      return Ok(await _engine.visibleCompetingTransaction(sessionId));
+    } catch (_) {
+      return const Err(
+        PayjoinUnavailableFailure('Could not check transaction visibility'),
       );
     }
   }
@@ -686,6 +714,11 @@ final class _SessionsRole implements PayjoinSessions {
   @override
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints() =>
       _runtime.reservedOutpoints();
+
+  @override
+  Future<Result<String?, PayjoinFailure>> visibleTransaction(
+    String sessionId,
+  ) => _runtime.visibleTransaction(sessionId);
 
   @override
   Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>

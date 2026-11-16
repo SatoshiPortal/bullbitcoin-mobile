@@ -103,3 +103,58 @@ DecodedLiquidTransaction _decode(lwk.LiquidTransaction transaction) =>
           ),
       ],
     );
+
+/// Sum policy-asset outputs actually addressed to [address], using PSET
+/// metadata even when the extracted transaction's values are confidential.
+Future<Result<BigInt, SyncFailure>> liquidPsetAmountToAddress(
+  String pset,
+  String address, {
+  required LiquidNetwork network,
+  required String policyAsset,
+}) async {
+  if (pset.isEmpty || pset.length > maxEncodedLiquidPsetLength) {
+    return const Err(SyncInvalidTransactionFailure());
+  }
+  final nativeNetwork = switch (network) {
+    LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
+    LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
+    LiquidNetwork.regtest => lwk.LiquidNetwork.regtest,
+  };
+  try {
+    if (await lwk.Address.validate(addressString: address) != nativeNetwork) {
+      return const Err(SyncInvalidAddressFailure());
+    }
+    final parsed = lwk.PartiallySignedElementsTransaction.fromString(
+      psetString: pset,
+    );
+    var amount = BigInt.zero;
+    for (final output in parsed.getOutputs()) {
+      if (output.scriptPubkey.isEmpty) continue; // Explicit fee output.
+      final lwk.Address destination;
+      try {
+        destination = await lwk.Address.addressFromScript(
+          network: nativeNetwork,
+          script: output.scriptPubkey,
+          blindingKey: output.blindingKey,
+        );
+      } on Exception {
+        continue; // Non-address scripts cannot pay the supplied address.
+      }
+      if (destination.standard != address &&
+          destination.confidential != address) {
+        continue;
+      }
+      final asset = output.asset;
+      if (asset == null) return const Err(SyncInvalidTransactionFailure());
+      if (asset != policyAsset) continue;
+      final value = output.amount;
+      if (value == null || value.isNegative) {
+        return const Err(SyncInvalidTransactionFailure());
+      }
+      amount += value;
+    }
+    return Ok(amount);
+  } on Exception {
+    return const Err(SyncInvalidTransactionFailure());
+  }
+}

@@ -17,10 +17,12 @@ import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
+import 'package:bb_mobile/features/sell/domain/broadcast_payjoin_original_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/broadcast_sell_payin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/calculate_sell_liquid_fees_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
-import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_adoptable_payjoin_sender_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_visible_payjoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/label_completed_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_context_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/load_sell_wallet_utxos_usecase.dart';
@@ -60,7 +62,9 @@ class SellBloc extends Bloc<SellEvent, SellState>
     required this._broadcastSellPayinUsecase,
     required this._sendWithPayjoinUsecase,
     required this._watchPayjoinUsecase,
-    required this._getPayjoinUsecase,
+    required this._getAdoptablePayjoinSenderUsecase,
+    required this._broadcastPayjoinOriginalUsecase,
+    required this._getVisiblePayjoinTransactionUsecase,
     required this._retryPayjoinProposalUsecase,
     required this._calculateSellLiquidFeesUsecase,
     required this._loadSellWalletUtxosUsecase,
@@ -112,7 +116,10 @@ class SellBloc extends Bloc<SellEvent, SellState>
   final BroadcastSellPayinUsecase _broadcastSellPayinUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
-  final GetPayjoinUsecase _getPayjoinUsecase;
+  final GetAdoptablePayjoinSenderUsecase _getAdoptablePayjoinSenderUsecase;
+  final BroadcastPayjoinOriginalUsecase _broadcastPayjoinOriginalUsecase;
+  final GetVisiblePayjoinTransactionUsecase
+  _getVisiblePayjoinTransactionUsecase;
   final RetryPayjoinProposalUsecase _retryPayjoinProposalUsecase;
   final CalculateSellLiquidFeesUsecase _calculateSellLiquidFeesUsecase;
   final LoadSellWalletUtxosUsecase _loadSellWalletUtxosUsecase;
@@ -903,29 +910,29 @@ class SellBloc extends Bloc<SellEvent, SellState>
             expireAfterSec: payjoinWindow.inSeconds,
           );
           final PayjoinSenderSession payjoinSender;
+          var settleAdoptedNow = false;
           switch (payjoinResult) {
             case Ok(:final value):
               payjoinSender = value;
             case Err(:final failure):
-              // A failed start is not a failed payment: the engine persists
-              // the session — signed original included — BEFORE posting to the
-              // directory, and a post failure keeps the row so the expiry
-              // fallback still settles the payment. Surfacing an error here
-              // and re-arming Confirm would let a plain retry pay this order a
-              // second time on disjoint inputs (the persisted session's inputs
-              // are reserved out of coin selection, so the two transactions
-              // cannot conflict). When the row exists, adopt the session and
-              // proceed exactly as a successful start; only a start that left
-              // nothing behind may fall through to the error path.
-              final PayjoinSession? persisted;
-              switch (await _getPayjoinUsecase.execute(payjoinBip21)) {
+              // A failed start is not a failed payment: when this payin's
+              // session was persisted (GetAdoptablePayjoinSenderUsecase says
+              // which rows count), adopt it exactly as a successful start.
+              // Re-arming Confirm over it would pay the order a second time.
+              final PayjoinSenderSession? persisted;
+              switch (await _getAdoptablePayjoinSenderUsecase.execute(
+                sessionId: payjoinBip21,
+                walletId: wallet.id,
+                amountSat: payinAmountSat,
+              )) {
                 case Ok(:final value):
                   persisted = value;
                 case Err():
                   persisted = null;
               }
-              if (persisted is! PayjoinSenderSession) {
-                // Nothing was committed, so re-arming Confirm is safe.
+              if (persisted == null) {
+                // Nothing of this payin's was committed, or the store could
+                // not be read: re-arming Confirm is fail-closed either way.
                 _emitSendPaymentError(emit, failure);
                 return;
               }
@@ -935,6 +942,11 @@ class SellBloc extends Bloc<SellEvent, SellState>
                 'instead of re-arming Confirm',
               );
               payjoinSender = persisted;
+              // Only a session this attempt persisted and whose post failed
+              // is settled at once; the order deadline is too close to leave
+              // the payin to the session's own fallback. Any other rejection
+              // adopts and watches the live session, never downgraded.
+              settleAdoptedNow = failure is SellPayjoinSessionKeptFailure;
           }
           log.fine(
             'Sell Payjoin sender active: ${payjoinSender.logRef}, '
@@ -951,6 +963,19 @@ class SellBloc extends Bloc<SellEvent, SellState>
             orderId: sellPaymentState.sellOrder.orderId,
           );
           waitingForPayjoin = true;
+          if (settleAdoptedNow) {
+            unawaited(
+              _broadcastPayjoinOriginalUsecase.execute(payjoinSender.id).then((
+                settled,
+              ) {
+                // The engine also publishes this on the session stream; this
+                // covers a settlement that ran before the watch was attached.
+                if (settled != null && !isClosed) {
+                  add(SellEvent.payjoinSessionUpdated(settled));
+                }
+              }),
+            );
+          }
           // The original transaction is what reaches the chain whenever the
           // negotiation does not complete, and the payjoin repository labels the
           // payjoin transaction itself once it does.
@@ -1194,8 +1219,38 @@ class SellBloc extends Bloc<SellEvent, SellState>
     }
 
     if (session.isExpired) {
+      // `expired` means the engine proved its own fallback sent nothing, but
+      // the receiver may broadcast the original on its own (BIP 77 lets it
+      // at any point) and a fresh lookup can see a transaction a lagging sync
+      // did not.
+      // Latch such a transaction instead of re-arming Confirm on the inputs
+      // the expiry just released, which would pay the order a second time.
+      final String? visibleTxId;
+      switch (await _getVisiblePayjoinTransactionUsecase.execute(session.id)) {
+        case Ok(:final value):
+          visibleTxId = value;
+        case Err():
+          visibleTxId = null;
+      }
+      final rearmed = _currentPaymentState;
+      if (rearmed == null || rearmed.sellOrder.orderId != sessionOrderId) {
+        return;
+      }
+      if (visibleTxId != null) {
+        log.warning(
+          'Sell Payjoin session ${session.logRef} expired but its transaction '
+          'is visible; latching it instead of re-arming Confirm',
+        );
+        _latchBroadcast(emit, visibleTxId);
+        try {
+          await _completeAfterBroadcast(emit);
+        } catch (error) {
+          log.severe(error: error, trace: StackTrace.current);
+        }
+        return;
+      }
       emit(
-        current.copyWith(
+        rearmed.copyWith(
           isConfirmingPayment: false,
           error: null,
           pausedPayjoinSession: null,

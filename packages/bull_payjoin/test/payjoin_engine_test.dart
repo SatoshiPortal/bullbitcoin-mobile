@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:drift/drift.dart' show Value;
+
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
 import 'package:bull_payjoin/src/data/payjoin_database.dart';
@@ -9,6 +11,7 @@ import 'package:bull_payjoin/src/data/payjoin_input_pair_model.dart';
 import 'package:bull_payjoin/src/data/payjoin_policy_store.dart';
 import 'package:bull_payjoin/src/engine/payjoin.dart' as internal;
 import 'package:bull_payjoin/src/engine/payjoin_engine.dart';
+import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
 import 'package:bull_payjoin/src/engine/payjoin_logger.dart';
 import 'package:bull_payjoin/src/engine/pdk_payjoin_datasource.dart';
 import 'package:drift/native.dart';
@@ -1002,8 +1005,96 @@ void main() {
     expect((await local.fetchSender(posted.id))?.hasNetworkEvidence, isTrue);
   });
 
-  test('a post that failed after the write-ahead leaves no evidence', () async {
-    final prePost = sender().copyWith(sender: '["pre-post"]');
+  test('visibleCompetingTransaction reports the session spend the network '
+      'knows and null for an unknown session', () async {
+    final model = sender();
+    await local.storeSender(model);
+    when(
+      () => transactions.isTransactionVisible(
+        walletId: model.walletId,
+        transactionId: model.originalTxId,
+        refresh: true,
+      ),
+    ).thenAnswer((_) async => true);
+
+    expect(
+      await engine.visibleCompetingTransaction(model.id),
+      model.originalTxId,
+    );
+    expect(await engine.visibleCompetingTransaction('unknown-session'), isNull);
+  });
+
+  test(
+    'visibleCompetingTransaction is null while neither spend is visible',
+    () async {
+      final model = sender();
+      await local.storeSender(model);
+      when(
+        () => transactions.isTransactionVisible(
+          walletId: any(named: 'walletId'),
+          transactionId: any(named: 'transactionId'),
+          refresh: any(named: 'refresh'),
+        ),
+      ).thenAnswer((_) async => false);
+
+      expect(await engine.visibleCompetingTransaction(model.id), isNull);
+    },
+  );
+
+  for (final (name, mayBeDelivered) in [
+    ('whose request never left the device leaves no evidence', false),
+    ('with an unknown outcome keeps the evidence', true),
+  ]) {
+    test('a post that failed after the write-ahead $name', () async {
+      final prePost = sender().copyWith(sender: '["pre-post"]');
+      when(
+        () => pdk.createSender(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
+          bip21: any(named: 'bip21'),
+          originalPsbt: any(named: 'originalPsbt'),
+          networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+          amountSat: any(named: 'amountSat'),
+          expireAfterSec: any(named: 'expireAfterSec'),
+          persistBeforePost: any(named: 'persistBeforePost'),
+        ),
+      ).thenAnswer((inv) async {
+        final persist =
+            inv.namedArguments[#persistBeforePost]
+                as Future<void> Function(PayjoinSenderModel);
+        await persist(prePost);
+        throw SendCreationException(
+          'relay down',
+          originalMayBeDelivered: mayBeDelivered,
+        );
+      });
+
+      await expectLater(
+        engine.createPayjoinSender(
+          walletId: prePost.walletId,
+          isTestnet: true,
+          bip21: prePost.id,
+          originalPsbt: prePost.originalPsbt,
+          amountSat: prePost.amountSat,
+          networkFeesSatPerVb: 1,
+        ),
+        throwsA(isA<PayjoinSenderKeptException>()),
+      );
+
+      // Only a request that provably never left the device lets expiry
+      // release the inputs: nobody else can hold that original.
+      final row = await local.fetchSender(prePost.id);
+      expect(row, isNotNull);
+      expect(row?.hasNetworkEvidence, mayBeDelivered);
+    });
+  }
+
+  test('a kept session whose post outcome is unknown stays reserved past its '
+      'window on resume', () async {
+    final prePost = sender().copyWith(
+      sender: '["pre-post"]',
+      originalPsbt: oneInputPsbt,
+    );
     when(
       () => pdk.createSender(
         walletId: any(named: 'walletId'),
@@ -1032,13 +1123,32 @@ void main() {
         amountSat: prePost.amountSat,
         networkFeesSatPerVb: 1,
       ),
-      throwsA(isA<SendCreationException>()),
+      throwsA(isA<PayjoinSenderKeptException>()),
     );
+    expect((await local.fetchSender(prePost.id))?.hasNetworkEvidence, isTrue);
 
-    // Nobody but this device holds the original: expiry may still release it.
-    final row = await local.fetchSender(prePost.id);
-    expect(row, isNotNull);
-    expect(row?.hasNetworkEvidence, isFalse);
+    // Resumed after its window with the original possibly in the receiver's
+    // hands: the row is not expired and its inputs stay reserved.
+    await (database.update(
+      database.payjoinSenders,
+    )..where((r) => r.uri.equals(prePost.id))).write(
+      PayjoinSendersCompanion(
+        createdAt: Value(DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200),
+      ),
+    );
+    when(
+      () => blockchain.broadcastPsbt(
+        walletId: any(named: 'walletId'),
+        sessionId: any(named: 'sessionId'),
+        network: any(named: 'network'),
+        psbt: any(named: 'psbt'),
+      ),
+    ).thenThrow(const PayjoinBroadcastNotAttemptedException());
+    await engine.resumePayjoinsOnStartup();
+    final resumed = await local.fetchSender(prePost.id);
+    expect(resumed?.hasNetworkEvidence, isTrue);
+    expect(resumed?.isExpired, isFalse);
+    expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
   });
 
   test('a new sender replaces any poll a resume armed meanwhile', () async {
@@ -1085,6 +1195,134 @@ void main() {
     // The original is already on the directory: the receiver's proposal must
     // still be read, from the in-memory posted session.
     verify(() => pdk.startListeningForProposal(posted)).called(1);
+  });
+
+  test('a failed POST after the write-ahead persist arms the stored '
+      'session', () async {
+    final prePost = sender().copyWith(sender: '["pre-post"]');
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenAnswer((inv) async {
+      final persist =
+          inv.namedArguments[#persistBeforePost]
+              as Future<void> Function(PayjoinSenderModel);
+      await persist(prePost);
+      throw SendCreationException('directory unreachable');
+    });
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: prePost.walletId,
+        isTestnet: true,
+        bip21: prePost.id,
+        originalPsbt: prePost.originalPsbt,
+        amountSat: prePost.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<PayjoinSenderKeptException>()),
+    );
+
+    // The row is kept (the receiver may hold the original) and must not
+    // wait for the next app resume to be driven: the poll carries the expiry
+    // that broadcasts the original, and the fallback watcher catches a
+    // receiver broadcasting it first.
+    // The armed poll reads the stored row, written with its delivery
+    // evidence by the write-ahead persist.
+    final kept = prePost.copyWith(hasNetworkEvidence: true);
+    expect(await local.fetchSender(prePost.id), kept);
+    verify(() => pdk.startListeningForProposal(kept)).called(1);
+    verify(() => transactions.watchWallet(prePost.walletId)).called(1);
+  });
+
+  test('a failed POST that outlasted the session window still arms the '
+      'stored session', () async {
+    final prePost = sender().copyWith(
+      sender: '["pre-post"]',
+      createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000 - 7200,
+    );
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenAnswer((inv) async {
+      final persist =
+          inv.namedArguments[#persistBeforePost]
+              as Future<void> Function(PayjoinSenderModel);
+      await persist(prePost);
+      throw SendCreationException('directory unreachable');
+    });
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: prePost.walletId,
+        isTestnet: true,
+        bip21: prePost.id,
+        originalPsbt: prePost.originalPsbt,
+        amountSat: prePost.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<PayjoinSenderKeptException>()),
+    );
+
+    // The row is live and holds a delivered original; nothing but the poll's
+    // deadline drives it to the fallback, so it is armed even though that
+    // deadline already passed.
+    final kept = prePost.copyWith(hasNetworkEvidence: true);
+    expect(await local.fetchSender(prePost.id), kept);
+    verify(() => pdk.startListeningForProposal(kept)).called(1);
+    verify(() => transactions.watchWallet(prePost.walletId)).called(1);
+  });
+
+  test('a failed start that persisted nothing leaves the expired row it '
+      'found alone', () async {
+    // A retry of an expired payment that fails before the write-ahead
+    // persist (signing, builder rejection): the only row is the expired one,
+    // which released its inputs and must not be driven again.
+    final expired = sender().copyWith(isExpired: true);
+    await local.storeSender(expired);
+    when(
+      () => pdk.createSender(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+        bip21: any(named: 'bip21'),
+        originalPsbt: any(named: 'originalPsbt'),
+        networkFeesSatPerVb: any(named: 'networkFeesSatPerVb'),
+        amountSat: any(named: 'amountSat'),
+        expireAfterSec: any(named: 'expireAfterSec'),
+        persistBeforePost: any(named: 'persistBeforePost'),
+      ),
+    ).thenThrow(SendCreationException('signing failed'));
+
+    await expectLater(
+      engine.createPayjoinSender(
+        walletId: expired.walletId,
+        isTestnet: true,
+        bip21: expired.id,
+        originalPsbt: expired.originalPsbt,
+        amountSat: expired.amountSat,
+        networkFeesSatPerVb: 1,
+      ),
+      throwsA(isA<SendCreationException>()),
+    );
+
+    verifyNever(() => pdk.startListeningForProposal(expired));
+    verifyNever(() => transactions.watchWallet(expired.walletId));
   });
 
   test('startup resumes sender proposal polling', () async {
@@ -1532,6 +1770,29 @@ void main() {
       expect(row?.hasNetworkEvidence, isTrue);
       expect(row?.isExpired, isFalse);
       expect(row?.isAborted, isFalse);
+      expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
+      expect(
+        engine.proposalSpendFailure(model.id),
+        isA<PayjoinSpendBlockedFailure>(),
+      );
+    });
+
+    test('holding a proposal past its expiry stays reserved once its '
+        'original was delivered', () async {
+      final model = expiredSender(
+        proposalPsbt: oneInputPsbt,
+        transactionId: 'proposal-tx',
+      ).copyWith(hasNetworkEvidence: true);
+      await local.storeSender(model);
+
+      await engine.resumePayjoinsOnStartup();
+
+      // Neither transaction is on the network, and the receiver still holds
+      // the signed original: the inputs stay reserved instead of released.
+      final row = await local.fetchSender(model.id);
+      expect(row?.isExpired, isFalse);
+      expect(row?.isAborted, isFalse);
+      expect(row?.isCompleted, isFalse);
       expect(await engine.getUtxosFrozenByOngoingPayjoins(), hasLength(1));
       expect(
         engine.proposalSpendFailure(model.id),

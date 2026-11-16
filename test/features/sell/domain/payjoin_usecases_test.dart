@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/sell/domain/get_payjoin_usecase.dart';
+import 'package:bb_mobile/features/sell/domain/get_adoptable_payjoin_sender_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/features/sell/domain/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/watch_payjoin_usecase.dart';
@@ -11,12 +11,16 @@ class _MockPayjoinSender extends Mock implements PayjoinSender {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-PayjoinSenderSession _session() => PayjoinSenderSession(
-  status: PayjoinStatus.requested,
+PayjoinSenderSession _session({
+  PayjoinStatus status = PayjoinStatus.requested,
+  String walletId = 'wallet-1',
+  int amountSat = 100000,
+}) => PayjoinSenderSession(
+  status: status,
   uri: 'bitcoin:bc1qaddress?pj=https://payjo.in/session',
   network: BitcoinNetwork.mainnet,
-  walletId: 'wallet-1',
-  amount: Sats.fromInt(100000),
+  walletId: walletId,
+  amount: Sats.fromInt(amountSat),
   originalTransactionId: 'original-txid',
   createdAt: DateTime(2026),
   expiresAt: DateTime(2026).add(const Duration(minutes: 5)),
@@ -58,6 +62,25 @@ void main() {
       final result = await start(sender);
 
       expect((result as Ok<PayjoinSenderSession, SellFailure>).value, session);
+    });
+
+    test('a kept session after a failed post is reported as such', () async {
+      final sender = _MockPayjoinSender();
+      when(() => sender.start(any())).thenAnswer(
+        (_) async => const Err<PayjoinSenderSession, PayjoinFailure>(
+          PayjoinSenderKeptFailure(
+            'sender-orig-txid',
+            'Sender start failed; session kept',
+          ),
+        ),
+      );
+
+      final result = await start(sender);
+
+      expect(
+        (result as Err<PayjoinSenderSession, SellFailure>).failure,
+        isA<SellPayjoinSessionKeptFailure>(),
+      );
     });
 
     test('sanitizes a payjoin package failure', () async {
@@ -121,48 +144,71 @@ void main() {
     });
   });
 
-  group('GetPayjoinUsecase', () {
-    test('returns the persisted session', () async {
+  group('GetAdoptablePayjoinSenderUsecase', () {
+    Future<Result<PayjoinSenderSession?, SellFailure>> adopt(
+      PayjoinSessions sessions,
+    ) => GetAdoptablePayjoinSenderUsecase(sessions).execute(
+      sessionId: _session().id,
+      walletId: 'wallet-1',
+      amountSat: 100000,
+    );
+
+    test('returns this payin\'s ongoing session', () async {
       final sessions = _MockPayjoinSessions();
       final session = _session();
       when(
         () => sessions.byId(session.id),
       ).thenAnswer((_) async => Ok<PayjoinSession?, PayjoinFailure>(session));
 
-      final result = await GetPayjoinUsecase(sessions).execute(session.id);
+      final result = await adopt(sessions);
 
-      switch (result) {
-        case Ok(:final value):
-          expect(value, session);
-        case Err():
-          fail("a readable session must not be reported as a failure");
-      }
+      expect((result as Ok<PayjoinSenderSession?, SellFailure>).value, session);
     });
 
     test('an absent session is Ok(null), not a failure', () async {
       final sessions = _MockPayjoinSessions();
-      when(() => sessions.byId('session-1')).thenAnswer(
+      when(() => sessions.byId(_session().id)).thenAnswer(
         (_) async => const Ok<PayjoinSession?, PayjoinFailure>(null),
       );
 
-      final result = await GetPayjoinUsecase(sessions).execute('session-1');
+      final result = await adopt(sessions);
 
-      switch (result) {
-        case Ok(:final value):
-          expect(value, isNull);
-        case Err():
-          fail("a definitively absent session is not a failure");
-      }
+      expect((result as Ok<PayjoinSenderSession?, SellFailure>).value, isNull);
     });
+
+    // The session stream never replays a terminal row, so adopting one would
+    // leave the payin waiting on a settlement that already happened; a live
+    // row of another wallet or amount is an earlier attempt on the link.
+    for (final (name, session) in [
+      ('completed', _session(status: PayjoinStatus.completed)),
+      ('aborted', _session(status: PayjoinStatus.aborted)),
+      ('expired', _session(status: PayjoinStatus.expired)),
+      ('another wallet\'s', _session(walletId: 'wallet-2')),
+      ('another amount\'s', _session(amountSat: 1)),
+    ]) {
+      test('a $name session is not adoptable', () async {
+        final sessions = _MockPayjoinSessions();
+        when(
+          () => sessions.byId(session.id),
+        ).thenAnswer((_) async => Ok<PayjoinSession?, PayjoinFailure>(session));
+
+        final result = await adopt(sessions);
+
+        expect(
+          (result as Ok<PayjoinSenderSession?, SellFailure>).value,
+          isNull,
+        );
+      });
+    }
 
     test('an unreadable session is a failure, not a bare null', () async {
       final sessions = _MockPayjoinSessions();
-      when(() => sessions.byId('session-1')).thenAnswer(
+      when(() => sessions.byId(_session().id)).thenAnswer(
         (_) async =>
             const Err<PayjoinSession?, PayjoinFailure>(PayjoinStorageFailure()),
       );
 
-      final result = await GetPayjoinUsecase(sessions).execute('session-1');
+      final result = await adopt(sessions);
 
       // "No session" and "could not tell" must stay distinguishable: on the
       // payjoin-start failure path that difference decides whether re-arming

@@ -15,15 +15,23 @@ class PrepareSpPaymentForSendUsecase {
   Future<Result<SpTxDraft, SendFailure>> execute({
     required List<SpRecipient> recipients,
     required NetworkFee? fee,
-  }) async =>
-      (await _spFacade.preparePayment(
-        recipients: recipients,
-        feerateSatVb: _feerateSatVb(fee),
-      )).mapErr(
-        (failure) =>
-            failure.toSendFailure() ??
-            SendTransactionBuildFailure(failure.logMessage),
+  }) async {
+    if (fee is AbsoluteFee) {
+      return const Err(
+        SendTransactionBuildFailure(
+          'Silent Payments requires a fee rate, not an absolute fee',
+        ),
       );
+    }
+    return (await _spFacade.preparePayment(
+      recipients: recipients,
+      feerateSatVb: _feerateSatVb(fee),
+    )).mapErr(
+      (failure) =>
+          failure.toSendFailure() ??
+          SendTransactionBuildFailure(failure.logMessage),
+    );
+  }
 
   // SP spends at a whole sat/vB rate and never below the one sat/vB relay
   // floor, including when no fee has been picked yet.
