@@ -151,7 +151,7 @@ void main() {
       find.text('There seems to be no internet connection.'),
       findsNothing,
     );
-    expect(find.widgetWithText(BullButton, 'Retry'), findsNothing);
+    expect(find.widgetWithText(BullButton, 'New route'), findsNothing);
     await leave(tester);
   });
 
@@ -190,7 +190,7 @@ void main() {
     );
     await tester.pump(const Duration(seconds: 6));
 
-    expect(find.widgetWithText(BullButton, 'Retry'), findsNothing);
+    expect(find.widgetWithText(BullButton, 'New route'), findsNothing);
     expect(find.text('Active transport: Snowflake'), findsOneWidget);
     await leave(tester);
   });
@@ -235,7 +235,7 @@ void main() {
       expect(torSettingsOpened, 1);
 
       sessions.pending = Completer();
-      await tester.tap(find.widgetWithText(BullButton, 'Retry'));
+      await tester.tap(find.widgetWithText(BullButton, 'New route'));
       await tester.pump();
       expect(sessions.restarts, [false, true]);
       await leave(tester);
@@ -260,7 +260,9 @@ void main() {
     await leave(tester);
   });
 
-  testWidgets('a Tor failure offers Snowflake next to Retry', (tester) async {
+  testWidgets('a Tor failure offers Snowflake next to New route', (
+    tester,
+  ) async {
     await pumpPage(tester);
     tor.add(
       const TorUnavailable(
@@ -274,7 +276,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.widgetWithText(BullButton, 'Retry'), findsOneWidget);
+    expect(find.widgetWithText(BullButton, 'New route'), findsOneWidget);
     sessions.pending = Completer();
     await tester.ensureVisible(
       find.widgetWithText(BullButton, 'Use Snowflake'),
@@ -303,7 +305,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.widgetWithText(BullButton, 'Retry'), findsOneWidget);
+    expect(find.widgetWithText(BullButton, 'New route'), findsOneWidget);
     expect(find.widgetWithText(BullButton, 'Use Snowflake'), findsNothing);
     await leave(tester);
   });
@@ -335,7 +337,13 @@ void main() {
 
     expect(find.text('The Tor connection stopped responding.'), findsOneWidget);
     expect(find.text('Tor: session closed'), findsOneWidget);
-    expect(find.widgetWithText(BullButton, 'New route'), findsOneWidget);
+
+    // With Tor ready, a new route opens a new session without restarting Tor.
+    sessions.pending = Completer();
+    await tester.ensureVisible(find.widgetWithText(BullButton, 'New route'));
+    await tester.tap(find.widgetWithText(BullButton, 'New route'));
+    await tester.pump();
+    expect(sessions.restarts, [false, false]);
     await leave(tester);
   });
 
@@ -351,7 +359,7 @@ void main() {
       find.text('Bull could not connect to the configured SOCKS5 proxy.'),
       findsOneWidget,
     );
-    expect(find.widgetWithText(BullButton, 'New route'), findsNothing);
+    expect(find.widgetWithText(BullButton, 'New route'), findsOneWidget);
     expect(find.widgetWithText(BullButton, 'Use Snowflake'), findsNothing);
     await tester.ensureVisible(find.widgetWithText(BullButton, 'Tor Settings'));
     await tester.tap(find.widgetWithText(BullButton, 'Tor Settings'));
