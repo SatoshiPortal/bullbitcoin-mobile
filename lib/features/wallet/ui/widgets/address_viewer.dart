@@ -1,5 +1,6 @@
+import 'package:primitives/primitives.dart' as primitives show Network;
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, NetworkCapabilities, NetworkCapability;
+    show BitcoinNetwork, LiquidNetwork, NetworkCapabilities, NetworkCapability;
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -112,25 +113,34 @@ class AddressViewer extends StatelessWidget {
     return width;
   }
 
-  // Regtest creation and payment validation permit native SegWit only.
-  // The bcrt HRP identifies that concrete network even without wallet context.
-  static bool _canExplore(String address) {
-    final value = address.toLowerCase();
-    if (value.startsWith('bcrt1') || value.startsWith('bitcoin:bcrt1')) {
-      return NetworkCapabilities.supports(
-        BitcoinNetwork.regtest,
-        NetworkCapability.publicExplorer,
-      );
-    }
-    return true;
-  }
-
   static Future<String?> _getExplorerUrlFor(
     String data,
     MempoolUrlBuilder builder,
   ) async {
-    if (!_canExplore(data)) return null;
     final parsed = await Satoshifier.tryParse(data);
+    final network = switch (parsed) {
+      BitcoinAddress(:final network) ||
+      LiquidAddress(:final network) ||
+      Bip21(:final network) => network,
+      _ => null,
+    };
+    final primitives.Network? concrete = switch (network) {
+      Network.bitcoinMainnet => BitcoinNetwork.mainnet,
+      Network.bitcoinTestnet => BitcoinNetwork.testnet,
+      Network.bitcoinSignet => BitcoinNetwork.signet,
+      Network.bitcoinRegtest => BitcoinNetwork.regtest,
+      Network.liquidMainnet => LiquidNetwork.mainnet,
+      Network.liquidTestnet => LiquidNetwork.testnet,
+      Network.liquidRegtest => LiquidNetwork.regtest,
+      null => null,
+    };
+    if (concrete == null ||
+        !NetworkCapabilities.supports(
+          concrete,
+          NetworkCapability.publicExplorer,
+        )) {
+      return null;
+    }
     return switch (parsed) {
       BitcoinAddress(:final address, :final network) => builder.bitcoinAddress(
         address,
@@ -191,12 +201,14 @@ class _AddressDetailSheet extends StatefulWidget {
 class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   static const int _groupSize = 4;
 
+  late final Future<String?> _explorerUrl;
   late bool _showUri;
   late final bool _hasBip21;
 
   @override
   void initState() {
     super.initState();
+    _explorerUrl = widget.getExplorerUrl();
     _hasBip21 = widget.clipboardText != widget.data;
     _showUri = _hasBip21;
   }
@@ -244,12 +256,20 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           _buildBody(context),
           const Gap(24),
           _buildCopyAction(context),
-          if (!_showUri && AddressViewer._canExplore(widget.data)) ...[
-            const Gap(16),
-            _buildCopyLinkAction(context),
-            const Gap(16),
-            _buildOpenLinkAction(context),
-          ],
+          if (!_showUri)
+            FutureBuilder<String?>(
+              future: _explorerUrl,
+              builder: (context, snapshot) => snapshot.data == null
+                  ? const SizedBox.shrink()
+                  : Column(
+                      children: [
+                        const Gap(16),
+                        _buildCopyLinkAction(context),
+                        const Gap(16),
+                        _buildOpenLinkAction(context),
+                      ],
+                    ),
+            ),
         ],
       ),
     );
@@ -331,7 +351,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
       icon: Icons.link,
       label: context.loc.viewerCopyLink,
       onTap: () async {
-        final url = await widget.getExplorerUrl();
+        final url = await _explorerUrl;
         if (url == null) return;
         Clipboard.setData(ClipboardData(text: url));
         if (widget.dialogContext.mounted) {
@@ -350,7 +370,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
       icon: Icons.open_in_new,
       label: context.loc.viewerViewInExplorer,
       onTap: () async {
-        final url = await widget.getExplorerUrl();
+        final url = await _explorerUrl;
         if (url == null) return;
         if (widget.dialogContext.mounted) {
           Navigator.of(widget.dialogContext).pop();
