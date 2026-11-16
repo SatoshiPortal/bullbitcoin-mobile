@@ -17,6 +17,7 @@ void main() {
   late FakeBudget budget;
   late FakePolicy policy;
   late FakeVerifier verifier;
+  late FakePreflight preflight;
   late BarkArkClient client;
   final account = ArkAccountId(
     parent: Fingerprint('12345678'),
@@ -38,7 +39,7 @@ void main() {
         executionMode: mode,
         stageBudget: budget,
         opener: native,
-        preflight: FakePreflight(),
+        preflight: preflight,
         clock: () => clock,
       );
   setUp(() {
@@ -48,6 +49,7 @@ void main() {
     budget = FakeBudget();
     policy = FakePolicy();
     verifier = FakeVerifier();
+    preflight = FakePreflight();
     client = build();
   });
   tearDown(() async {
@@ -409,4 +411,81 @@ void main() {
       expect(native.opens, 1);
     },
   );
+  test('foreground creation resumes after preflight failed before native admission', () async {
+    preflight.failuresRemaining = 1;
+    expect(await client.create(config), isA<Err>());
+    expect(native.opens, 0);
+    final background = build(mode: ArkExecutionMode.backgroundExisting);
+    expect(await background.synchronize(account, renew: true), isA<Err>());
+    expect(native.opens, 0);
+    await background.close();
+    expect(await client.create(config), isA<Ok>());
+    expect(native.creates, 1);
+    expect(await client.create(config), isA<Ok>());
+    expect(native.creates, 1);
+  });
+  test(
+    'child-provider failure leaves an explicit foreground create retry',
+    () async {
+      child.failOnce = true;
+      expect(await client.create(config), isA<Err>());
+      expect(native.opens, 0);
+      expect(await client.create(config), isA<Ok>());
+      expect(native.creates, 1);
+    },
+  );
+  for (final recovery in [
+    ArkRecoveryStatus.complete,
+    ArkRecoveryStatus.failed,
+    ArkRecoveryStatus.incomplete,
+  ]) {
+    test(
+      'open outcome $recovery persists before scan and snapshot failure',
+      () async {
+        native.recovery = recovery;
+        native.failInitialScan = true;
+        expect(await client.create(config), isA<Err>());
+        final store = ArkStore.open(
+          '${ArkStore.accountPath(temp.path, account)}/state.sqlite',
+          create: false,
+        );
+        expect(store.snapshot, isNull);
+        expect(store.get('recovery')?['status'], recovery.name);
+        store.close();
+        await client.close();
+        client = build();
+        final retried = await client.create(config);
+        expect(
+          (retried as Ok<ArkSnapshot, ArkWalletFailure>).value.recovery,
+          recovery,
+        );
+        expect(native.creates, 1);
+      },
+    );
+  }
+  test('native return interrupted before callback stays unknown without recreating', () async {
+    native.failBeforeRecoveryCallback = true;
+    expect(await client.create(config), isA<Err>());
+    await client.close();
+    client = build();
+    final retried = await client.create(config);
+    expect(
+      (retried as Ok<ArkSnapshot, ArkWalletFailure>).value.recovery,
+      ArkRecoveryStatus.unknown,
+    );
+    expect(native.creates, 1);
+    expect(
+      await client.quote(
+        account,
+        ArkQuoteRequest.payment(
+          destination: ArkPaymentDestination(
+            kind: ArkDestinationKind.ark,
+            value: 'address',
+          ),
+          amount: Sats.fromInt(1000),
+        ),
+      ),
+      isA<Err>(),
+    );
+  });
 }

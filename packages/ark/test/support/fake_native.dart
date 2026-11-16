@@ -13,12 +13,17 @@ import 'package:primitives/primitives.dart';
 
 final class FakeChild implements ArkChildProviderPort {
   int calls = 0;
+  bool failOnce = false;
   @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
     Future<Result<T, ArkWalletFailure>> Function(String) action,
   ) {
     calls++;
+    if (failOnce) {
+      failOnce = false;
+      return Future.value(const Err(ArkUnavailableFailure()));
+    }
     return action('test-provider-placeholder');
   }
 }
@@ -37,6 +42,7 @@ final class FakeBudget implements ArkStageBudget {
 
 final class FakePreflight implements ArkChainPreflight {
   int calls = 0;
+  int failuresRemaining = 0;
   @override
   Future<Result<Uri, ArkWalletFailure>> select(
     ArkAccountConfig config, {
@@ -44,13 +50,21 @@ final class FakePreflight implements ArkChainPreflight {
     int? minimumTip,
   }) async {
     calls++;
+    if (failuresRemaining > 0) {
+      failuresRemaining--;
+      return const Err(ArkUnavailableFailure());
+    }
     return Ok(requiredSource ?? config.primaryEsploraUrl);
   }
 }
 
 final class FakeOpener implements ArkNativeOpener {
   bool exists = false;
+  ArkRecoveryStatus recovery = ArkRecoveryStatus.complete;
+  bool failBeforeRecoveryCallback = false;
+  bool failInitialScan = false;
   int opens = 0;
+  int creates = 0;
   int closes = 0;
   int executes = 0;
   int broadcasts = 0;
@@ -75,11 +89,22 @@ final class FakeOpener implements ArkNativeOpener {
     required String mnemonic,
     required Uri chainSource,
     required bool create,
+    required String? expectedFingerprint,
     required ArkStageRunner stages,
+    required void Function() onOnchainOpened,
+    required void Function(ArkRecoveryStatus recovery, String fingerprint)
+    onOpened,
   }) async {
     return stages.run('open', () async {
       opens++;
+      if (create && !exists) creates++;
       exists = true;
+      onOnchainOpened();
+      if (failBeforeRecoveryCallback) {
+        failBeforeRecoveryCallback = false;
+        throw Exception('open interrupted');
+      }
+      onOpened(opens == 1 ? recovery : ArkRecoveryStatus.notRun, 'cafefeed');
       return FakeSession(this, config, stages);
     });
   }
@@ -100,6 +125,10 @@ final class FakeSession implements ArkNativeSession {
     if (name == 'ark' && owner.stageEntered != null) {
       owner.stageEntered?.complete();
       await owner.releaseStage?.future;
+    }
+    if (name == 'initial-scan' && owner.failInitialScan) {
+      owner.failInitialScan = false;
+      throw Exception('scan failure');
     }
     owner.afterStage?.call(name);
   });
@@ -133,7 +162,7 @@ final class FakeSession implements ArkNativeSession {
                   state: ArkVtxoState.spendable,
                 ),
             ],
-      recovery: ArkRecoveryStatus.complete,
+      recovery: previousRecovery,
       renewal: ArkRenewalStatus.due,
       exits: ArkExitStatus.none,
       obligations: ArkObligationStatus.present,
