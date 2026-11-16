@@ -242,6 +242,44 @@ void main() {
       expect(state.route.transport, TorTransport.snowflake);
     });
 
+    group('a Snowflake retry asked by the user', () {
+      test('automatic mode goes straight to Snowflake', () async {
+        final pending = repository.retry(snowflake: true);
+        await Future<void>.delayed(Duration.zero);
+        expect(embedded.startedTransports, [TorTransport.snowflake]);
+
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41004),
+        );
+        final state = await pending as TorReady;
+        expect(state.route.transport, TorTransport.snowflake);
+        expect(repository.mode, TorTransportMode.automatic);
+      });
+
+      test('an explicit direct mode stays direct', () async {
+        await repository.close();
+        embedded = _FakeEmbeddedTor();
+        repository = TorRepositoryImpl(
+          embedded,
+          initialMode: TorTransportMode.direct,
+        );
+        unawaited(repository.retry(snowflake: true));
+        await Future<void>.delayed(Duration.zero);
+        expect(embedded.startedTransports, [TorTransport.direct]);
+      });
+
+      test('a direct retry already running does not absorb it', () async {
+        unawaited(repository.retry());
+        await Future<void>.delayed(Duration.zero);
+        unawaited(repository.retry(snowflake: true));
+        await Future<void>.delayed(Duration.zero);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+        ]);
+      });
+    });
+
     group('attempt budgets', () {
       final t0 = DateTime.utc(2026, 11, 15, 12);
 
@@ -330,22 +368,20 @@ void main() {
         );
       });
 
-      test(
-        'an offline verdict with a device network suggests censorship',
-        () async {
-          final states = <TorConnectionState>[];
-          final subscription = repository.watch().listen(states.add);
-          addTearDown(subscription.cancel);
-          unawaited(repository.ensureReady());
-          await Future<void>.delayed(Duration.zero);
+      test('an offline verdict with a device network means no internet or a blocking network', () async {
+        final states = <TorConnectionState>[];
+        final subscription = repository.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        unawaited(repository.ensureReady());
+        await Future<void>.delayed(Duration.zero);
 
-          embedded.events.add(
-            const EmbeddedTorConnecting(
-              progress: 0,
-              transport: TorTransport.direct,
-              diagnostic: TorDiagnostic.offline,
-            ),
-          );
+        embedded.events.add(
+          const EmbeddedTorConnecting(
+            progress: 0,
+            transport: TorTransport.direct,
+            diagnostic: TorDiagnostic.offline,
+          ),
+        );
 
         await Future<void>.delayed(Duration.zero);
         final connecting = states.whereType<TorConnecting>().last;
