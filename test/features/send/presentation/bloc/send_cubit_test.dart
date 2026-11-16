@@ -626,6 +626,7 @@ void main() {
         sessionId: any(named: 'sessionId'),
         walletId: any(named: 'walletId'),
         amountSat: any(named: 'amountSat'),
+        expectedOriginalTxId: any(named: 'expectedOriginalTxId'),
       ),
     ).thenAnswer((_) async => null);
     broadcastPayjoinOriginalUsecase = _MockBroadcastPayjoinOriginalUsecase();
@@ -4738,8 +4739,14 @@ void main() {
               sessionId: _payjoinBip21().uri,
               walletId: 'w1',
               amountSat: 50000,
+              expectedOriginalTxId: sameOriginal
+                  ? 'sender-orig-txid'
+                  : 'other-original',
             ),
-          ).thenAnswer((_) async => _sender(status: PayjoinStatus.requested));
+          ).thenAnswer(
+            (_) async =>
+                sameOriginal ? _sender(status: PayjoinStatus.requested) : null,
+          );
           cubit.setStateForTest(
             payjoinReadyState().copyWith(
               signedBitcoinPsbt: 'signed-regular-psbt',
@@ -4806,6 +4813,7 @@ void main() {
           sessionId: _payjoinBip21().uri,
           walletId: 'w1',
           amountSat: 50000,
+          expectedOriginalTxId: null,
         ),
       ).thenAnswer((_) async => _sender(status: PayjoinStatus.proposed));
       cubit.setStateForTest(

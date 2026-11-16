@@ -44,6 +44,20 @@ void main() {
     });
   }
 
+  for (final expectedId in ['sender-orig-txid', 'other-original']) {
+    test('retained original identity must match $expectedId', () async {
+      final session = _session();
+      when(() => sessions.byId(_uri)).thenAnswer((_) async => Ok(session));
+      final actual = await usecase.execute(
+        sessionId: _uri,
+        walletId: 'w1',
+        amountSat: 50000,
+        expectedOriginalTxId: expectedId,
+      );
+      expect(actual, expectedId == session.originalTxId ? session : isNull);
+    });
+  }
+
   test('returns null when nothing is persisted', () async {
     when(() => sessions.byId(_uri)).thenAnswer((_) async => const Ok(null));
 
