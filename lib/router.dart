@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/backup_settings/public/backup_settings_facade.dart';
+
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
@@ -178,8 +180,15 @@ class AppRouter {
             onCustomizeQuickActions: (context) =>
                 context.pushNamed(SettingsRoute.quickActions.name),
             createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
-            featureWarningsBuilder: (context, wallets) =>
+            featureWarningsBuilder: (context, wallets) => Column(
+              children: [
+                BackupReminderHomeContribution(
+                  wallets: wallets,
+                  homePath: WalletRoute.walletHome.path,
+                ),
                 BullVaultHomeContribution(wallets: wallets),
+              ],
+            ),
           ),
           ...ExchangeRouter.routes(_exchangeConfig),
         ],
