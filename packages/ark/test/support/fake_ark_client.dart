@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 /// Scripted fake at the real package boundary, for feature usecase/UI tests.
 final class FakeArkClient implements ArkClient {
   final List<String> calls = [];
+  final List<Object> arguments = [];
   late Result<ArkSnapshot, ArkWalletFailure> snapshot;
   late Result<ArkPassOutcome, ArkWalletFailure> pass;
   late Result<ArkQuote, ArkWalletFailure> quoted;
@@ -15,6 +16,7 @@ final class FakeArkClient implements ArkClient {
     ArkAccountConfig config,
   ) async {
     calls.add('create');
+    arguments.add(config);
     return snapshot;
   }
 
@@ -23,18 +25,23 @@ final class FakeArkClient implements ArkClient {
     ArkAccountId account,
   ) async {
     calls.add('read');
+    arguments.add(account);
     return snapshot;
   }
 
   @override
-  Stream<Result<ArkSnapshot, ArkWalletFailure>> watch(ArkAccountId account) =>
-      changes;
+  Stream<Result<ArkSnapshot, ArkWalletFailure>> watch(ArkAccountId account) {
+    arguments.add(account);
+    return changes;
+  }
+
   @override
   Future<Result<ArkPassOutcome, ArkWalletFailure>> synchronize(
     ArkAccountId account, {
     required bool renew,
   }) async {
     calls.add(renew ? 'renew' : 'sync');
+    arguments.add((account, renew));
     return pass;
   }
 
@@ -44,6 +51,7 @@ final class FakeArkClient implements ArkClient {
     ArkQuoteRequest request,
   ) async {
     calls.add('quote');
+    arguments.add((account, request));
     return quoted;
   }
 
@@ -53,6 +61,7 @@ final class FakeArkClient implements ArkClient {
     ArkSubmission submission,
   ) async {
     calls.add('submit');
+    arguments.add((account, submission));
     return submitted;
   }
 
@@ -62,6 +71,7 @@ final class FakeArkClient implements ArkClient {
     ArkReceiveRequest request,
   ) async {
     calls.add('receive');
+    arguments.add((account, request));
     return destination;
   }
 

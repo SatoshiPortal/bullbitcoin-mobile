@@ -105,4 +105,39 @@ void main() {
       isFalse,
     );
   });
+  test(
+    'scripted client captures the exact account and reviewed recovery command',
+    () async {
+      final command = ArkSubmission.rebroadcastClaim(
+        operationId: 'original',
+        expectedTxid: 'a' * 64,
+      );
+      final fake = FakeArkClient()
+        ..submitted = Ok(
+          ArkOperation(
+            id: 'original',
+            kind: ArkOperationKind.claim,
+            status: ArkOperationStatus.pending,
+            chainSource: Uri.parse('http://localhost'),
+            configGeneration: 1,
+            claimRecovery: ArkClaimRecovery(
+              txid: 'a' * 64,
+              destination: 'destination',
+              net: Sats.fromInt(900),
+              fee: Sats.fromInt(100),
+            ),
+          ),
+        );
+      await fake.submit(account, command);
+      expect(fake.arguments.single, (account, command));
+      expect(command, isA<ArkRebroadcastClaim>());
+      expect(
+        () => ArkSubmission.rebroadcastClaim(
+          operationId: 'original',
+          expectedTxid: 'bad',
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
 }
