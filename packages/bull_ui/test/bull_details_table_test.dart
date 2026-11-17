@@ -17,7 +17,9 @@ void main() {
           .setMockMethodCallHandler(SystemChannels.platform, null);
     });
 
-    testWidgets('renders the value in the bodyLarge style', (tester) async {
+    testWidgets('renders the value in the medium-weight body role', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         wrapWithTheme(
           const BullDetailsTableItem(label: 'Fee', displayValue: '210 sats'),
@@ -25,13 +27,16 @@ void main() {
       );
 
       final value = find.text('210 sats');
-      final textTheme = Theme.of(tester.element(value)).textTheme;
-      final style = tester.widget<Text>(value).style!;
-      final bodyLarge = textTheme.bodyLarge!;
-      // bodyLarge and bodyMedium differ in the test theme, so this pins the role.
-      expect(bodyLarge.fontSize, isNot(textTheme.bodyMedium!.fontSize));
-      expect(style.fontSize, bodyLarge.fontSize);
-      expect(style.fontWeight, bodyLarge.fontWeight);
+      final roles = tester.element(value).bullType;
+      final style = tester.widget<Text>(value).style;
+      expect(
+        style,
+        roles.body.copyWith(
+          fontWeight: FontWeight.w500,
+          color: testBullTheme.onSurface,
+          decoration: TextDecoration.none,
+        ),
+      );
     });
 
     testWidgets('calls onCopied instead of the default toast', (tester) async {
