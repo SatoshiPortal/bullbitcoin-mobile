@@ -470,8 +470,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       child:
                                           state.usesSelectedInputsOnly ||
                                               pickableWallet == null
-                                          ? SizedBox(
-                                              height: 48,
+                                          ? ConstrainedBox(
+                                              constraints: const BoxConstraints(
+                                                minHeight: 48,
+                                              ),
                                               child: Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
@@ -481,6 +483,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                   style: context
                                                       .font
                                                       .headlineSmall,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             )

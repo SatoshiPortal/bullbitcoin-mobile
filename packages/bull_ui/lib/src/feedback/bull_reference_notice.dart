@@ -21,6 +21,7 @@ class BullReferenceNotice extends StatelessWidget {
     required this.reference,
     required this.copiedMessage,
     required this.actionLabel,
+    this.copyLabel,
     required this.onAction,
     this.tagColor,
     this.bgColor,
@@ -36,6 +37,9 @@ class BullReferenceNotice extends StatelessWidget {
 
   /// Toast shown once [reference] is on the clipboard.
   final String copiedMessage;
+
+  /// Accessible name of the copy button; see [BullCopyField.copyLabel].
+  final String? copyLabel;
 
   /// Label of the single action, typically a way out of the flow.
   final String actionLabel;
@@ -68,6 +72,7 @@ class BullReferenceNotice extends StatelessWidget {
         BullCopyField(
           text: reference,
           copiedMessage: copiedMessage,
+          copyLabel: copyLabel,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

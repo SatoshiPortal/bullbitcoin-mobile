@@ -1089,10 +1089,6 @@
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
-  "walletDetailsCopyButton": "কপি করুন",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "backupWalletGoogleDrivePrivacyMessage3": "আপনার ফোন ছাড়বে না এবং এটি ",
   "@backupWalletGoogleDrivePrivacyMessage3": {
     "description": "Third part of privacy message"

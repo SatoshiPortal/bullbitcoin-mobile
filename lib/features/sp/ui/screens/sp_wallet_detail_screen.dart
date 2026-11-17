@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/buttons/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
 import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';

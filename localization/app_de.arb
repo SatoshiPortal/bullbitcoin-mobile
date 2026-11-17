@@ -356,7 +356,6 @@
   "payPayoutMethod": "Auszahlungsmethode",
   "ledgerVerifyButton": "Adresse verifizieren",
   "sendErrorSwapFeesNotLoaded": "Swap-Gebühren konnten nicht geladen werden.",
-  "walletDetailsCopyButton": "Kopieren",
   "backupWalletGoogleDrivePrivacyMessage3": "Ihr Telefon verlassen und ist.",
   "backupCompletedDescription": "Jetzt testen wir Ihr Backup, um sicherzustellen, dass alles korrekt durchgeführt wurde.",
   "sendErrorInsufficientFundsForFees": "Nicht genügend Guthaben, um Betrag und Gebühren zu decken.",

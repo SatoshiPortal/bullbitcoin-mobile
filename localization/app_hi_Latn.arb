@@ -405,10 +405,6 @@
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
   },
-  "walletDetailsCopyButton": "Copy Karo",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "mempoolSettingsTitle": "Mempool Server",
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"

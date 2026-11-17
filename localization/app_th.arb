@@ -1106,10 +1106,6 @@
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
-  "walletDetailsCopyButton": "คัดลอก",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "backupWalletGoogleDrivePrivacyMessage3": "ออกจากโทรศัพท์และเป็นโทรศัพท์ ",
   "@backupWalletGoogleDrivePrivacyMessage3": {
     "description": "Third part of privacy message"

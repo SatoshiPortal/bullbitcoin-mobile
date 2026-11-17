@@ -657,7 +657,6 @@
   "walletDetailsSignerLabel": "Ստորագրող",
   "walletDetailsSignerDeviceLabel": "Ստորագրող սարք",
   "walletDetailsSignerDeviceNotSupported": "Չի աջակցվում",
-  "walletDetailsCopyButton": "Պատճենել",
   "mempoolSettingsTitle": "Mempool սերվեր",
   "mempoolSettingsDescription": "Կարգավորեք հատուկ mempool սերվերներ տարբեր ցանցերի համար։ Յուրաքանչյուր ցանց կարող է օգտագործել իր սեփական սերվերը բլոկների զննիչի և վճարի հաշվարկման համար։",
   "mempoolSettingsDefaultServer": "Լռելյայն սերվեր",

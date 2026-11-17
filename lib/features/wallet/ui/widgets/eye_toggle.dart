@@ -1,5 +1,6 @@
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,11 +13,16 @@ class EyeToggle extends StatelessWidget {
     final hide = context.select(
       (SettingsCubit settingsCubit) => settingsCubit.state.hideAmounts ?? true,
     );
-    return GestureDetector(
-      onTap: () {
+    return IconButton(
+      tooltip: hide
+          ? context.loc.walletShowAmountsTooltip
+          : context.loc.walletHideAmountsTooltip,
+      // 9 + 30 + 9 keeps a 48 dp target around the unchanged 30 dp badge.
+      padding: const EdgeInsets.all(9),
+      onPressed: () {
         context.read<SettingsCubit>().toggleHideAmounts(!hide);
       },
-      child: Container(
+      icon: Container(
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(context.bullShapes.key),

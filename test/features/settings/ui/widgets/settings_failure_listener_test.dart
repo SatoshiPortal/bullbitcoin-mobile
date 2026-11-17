@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_failure_listener.dart';
@@ -58,7 +58,7 @@ void main() {
   /// The snackbar schedules a 3s auto-dismiss timer; drain it so the test does
   /// not end with a pending timer.
   Future<void> settleSnackBar(WidgetTester tester) async {
-    SnackBarUtils.dismiss();
+    BullSnackBar.dismiss();
     await tester.pumpAndSettle();
   }
 

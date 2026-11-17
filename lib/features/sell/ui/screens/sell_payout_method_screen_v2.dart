@@ -276,23 +276,11 @@ class _ErrorRetryV2 extends StatelessWidget {
   const _ErrorRetryV2({required this.failure, required this.onRetry});
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      Text(
-        failure is SellNetworkFailure
-            ? '${context.loc.oopsSomethingWentWrong}\n${failure.toTranslated(context)}'
-            : failure.toTranslated(context),
-        textAlign: .center,
-        style: context.bullText.bodyMedium?.copyWith(color: context.bull.error),
-      ),
-      const Gap(8),
-      BullButton.small(
-        label: context.loc.retry,
-        disabled: onRetry == null,
-        onPressed: () => onRetry?.call(),
-        bgColor: context.bull.primary,
-        textColor: context.bull.onPrimary,
-      ),
-    ],
+  Widget build(BuildContext context) => BullErrorState(
+    message: failure is SellNetworkFailure
+        ? '${context.loc.oopsSomethingWentWrong}\n${failure.toTranslated(context)}'
+        : failure.toTranslated(context),
+    retryLabel: context.loc.retry,
+    onRetry: onRetry,
   );
 }
