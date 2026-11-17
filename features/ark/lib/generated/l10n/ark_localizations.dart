@@ -781,6 +781,30 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Share'**
   String get share;
+
+  /// No description provided for @boardDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Board destination: {account}'**
+  String boardDestination(String account);
+
+  /// No description provided for @boardFastPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'FAST fee policy only. No fee speed selection.'**
+  String get boardFastPolicy;
+
+  /// No description provided for @boardFeeReview.
+  ///
+  /// In en, this message translates to:
+  /// **'The actual miner fee and source debit are determined in the future funding review.'**
+  String get boardFeeReview;
+
+  /// No description provided for @boardAmountInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive whole amount in sats within the Bitcoin supply limit.'**
+  String get boardAmountInvalid;
 }
 
 class _ArkLocalizationsDelegate

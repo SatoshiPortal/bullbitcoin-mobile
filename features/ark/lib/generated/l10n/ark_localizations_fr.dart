@@ -373,4 +373,21 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get share => 'Partager';
+
+  @override
+  String boardDestination(String account) {
+    return 'Compte Ark à alimenter : $account';
+  }
+
+  @override
+  String get boardFastPolicy =>
+      'Politique de frais FAST uniquement. Aucun choix de vitesse.';
+
+  @override
+  String get boardFeeReview =>
+      'Les frais miniers réels et le débit du portefeuille source seront déterminés lors de la future revue du financement.';
+
+  @override
+  String get boardAmountInvalid =>
+      'Saisissez un montant entier positif en sats, dans la limite de l’offre de bitcoins.';
 }

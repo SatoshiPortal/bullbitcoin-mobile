@@ -370,4 +370,20 @@ class ArkLocalizationsEn extends ArkLocalizations {
 
   @override
   String get share => 'Share';
+
+  @override
+  String boardDestination(String account) {
+    return 'Board destination: $account';
+  }
+
+  @override
+  String get boardFastPolicy => 'FAST fee policy only. No fee speed selection.';
+
+  @override
+  String get boardFeeReview =>
+      'The actual miner fee and source debit are determined in the future funding review.';
+
+  @override
+  String get boardAmountInvalid =>
+      'Enter a positive whole amount in sats within the Bitcoin supply limit.';
 }
