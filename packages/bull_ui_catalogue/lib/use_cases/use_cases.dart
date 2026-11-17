@@ -248,6 +248,7 @@ m.Widget bullTopBarUseCase(m.BuildContext context) {
         onBack: () {},
         onAction: () {},
         actionIcon: BullIcons.tune,
+        actionTooltip: 'Sort and filter',
         actionBadge: context.knobs.boolean(label: 'action badge'),
       ),
     ),

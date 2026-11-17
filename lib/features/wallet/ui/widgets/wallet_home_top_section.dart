@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/core/widgets/buttons/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
@@ -121,7 +121,8 @@ class _Amounts extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Flexible(child: _BtcTotalAmt()),
-            Gap(16),
+            // The toggle's 48 dp target already pads its badge by 9.
+            Gap(7),
             EyeToggle(),
           ],
         ),

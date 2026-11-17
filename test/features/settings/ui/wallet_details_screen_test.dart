@@ -88,4 +88,10 @@ void main() {
     await _pumpScreen(tester, isDefault: false);
     expect(find.byType(BullIcon), findsOneWidget);
   });
+
+  testWidgets('names the delete wallet button', (tester) async {
+    await _pumpScreen(tester, isDefault: false);
+
+    expect(find.byTooltip('Delete Wallet'), findsOneWidget);
+  });
 }

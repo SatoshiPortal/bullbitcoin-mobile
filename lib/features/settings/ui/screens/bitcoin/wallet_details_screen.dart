@@ -39,6 +39,7 @@ class WalletDetailsScreen extends StatelessWidget {
         actions: [
           if (wallet != null && wallet.isDefault == false)
             IconButton(
+              tooltip: context.loc.walletDeletionConfirmationTitle,
               onPressed: isDeletingWallet
                   ? null
                   : () => WalletDeletionConfirmationSheet.show(

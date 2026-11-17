@@ -188,6 +188,19 @@ Workflow when you need a widget:
 
 When you spot a duplicate of an existing core widget in feature code, flag it in the PR description as a follow-up cleanup. Don't silently leave it. Don't fix unrelated duplicates in the same PR either — that breaks atomic commits.
 
+## Accessibility — every screen is drivable through its semantics tree
+
+The semantics tree serves two readers: TalkBack/VoiceOver users, and agents and tests that drive the app by name instead of by screenshot and pixel coordinates. A control that is unnamed or hides its state fails both, so treat these as hard rules for new and touched UI:
+
+- **Every interactive element has a translated name.** `tooltip:` on `IconButton` (and `actionTooltip` on `BullTopBar`, which asserts it for a custom action icon), visible text on text buttons, `Semantics(label:, button: true)` around a custom tappable. Never an icon-only `GestureDetector`/`InkWell` without a name.
+- **State is exposed, not only drawn.** Selected, checked/toggled, enabled and expanded come from the Material widget or `Semantics(selected:, checked:, enabled:)`; screen and section titles are `Semantics(header: true)` (`BullTopBar` does it); dialogs announce their title (`Semantics(namesRoute: true)`, as `AlertDialog` does).
+- **Tap targets are at least 48×48 dp.** Grow the target with padding or constraints, not the icon.
+- **No gesture-only action.** A swipe, long press or drag also has a named button or a semantics action.
+- **Secrets stay out of the tree.** Sealed secret widgets exclude their content from semantics (see Security); accessibility never exposes key material.
+- **Test it.** Find controls with `find.byTooltip` / `find.bySemanticsLabel`, check state with `tester.getSemantics(...)` + `matchesSemantics(...)` under `tester.ensureSemantics()`, and use `meetsGuideline(androidTapTargetGuideline)` / `meetsGuideline(labeledTapTargetGuideline)` from `flutter_test` on screens you build.
+
+**Driving the app as an agent.** Prefer the semantics tree to screenshots: `adb -s <device> shell uiautomator dump /sdcard/ui.xml`, read each node's `content-desc`, `text`, `selected`/`checked` and `bounds`, then `adb -s <device> shell input tap <x> <y>` at the centre of the node you want. Names are translated, so set the app language first and match the localized string. Take a screenshot only to check visuals. A control you cannot find by name is an accessibility bug: fix it rather than tapping coordinates.
+
 ## Commits — atomic + Conventional
 
 Format: `type(scope): description`
