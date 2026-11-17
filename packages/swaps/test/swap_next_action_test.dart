@@ -168,7 +168,7 @@ void main() {
 
   group('timeout refund', () {
     final created = DateTime.utc(2026);
-    final later = created.add(const Duration(hours: 2));
+    final later = created.add(const Duration(hours: 25));
 
     test('a paid swap holding our lockup awaits the timeout refund', () {
       expect(
@@ -184,12 +184,29 @@ void main() {
       );
     });
 
-    test('nothing is attempted in the first hour', () {
+    test('a claim or co-sign that never resolves falls back to it', () {
+      expect(
+        submarine(
+          SwapStatus.canCoop,
+          sendTxid: 'lockup',
+        ).awaitsTimeoutRefund(later),
+        isTrue,
+      );
+      expect(
+        chain(
+          SwapStatus.claimable,
+          sendTxid: 'lockup',
+        ).awaitsTimeoutRefund(later),
+        isTrue,
+      );
+    });
+
+    test('nothing is attempted in the first day', () {
       expect(
         submarine(
           SwapStatus.paid,
           sendTxid: 'lockup',
-        ).awaitsTimeoutRefund(created.add(const Duration(minutes: 30))),
+        ).awaitsTimeoutRefund(created.add(const Duration(hours: 23))),
         isFalse,
       );
     });
@@ -215,10 +232,17 @@ void main() {
       expect(reverse(SwapStatus.paid).awaitsTimeoutRefund(later), isFalse);
     });
 
-    test('only a paid swap waits on the timeout', () {
+    test('a refundable or settled swap is not a timeout case', () {
       expect(
         chain(
-          SwapStatus.claimable,
+          SwapStatus.refundable,
+          sendTxid: 'lockup',
+        ).awaitsTimeoutRefund(later),
+        isFalse,
+      );
+      expect(
+        chain(
+          SwapStatus.completed,
           sendTxid: 'lockup',
         ).awaitsTimeoutRefund(later),
         isFalse,

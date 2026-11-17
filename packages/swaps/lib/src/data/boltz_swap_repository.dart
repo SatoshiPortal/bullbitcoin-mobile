@@ -1670,11 +1670,11 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     current = await reconcileLockupTxid(current);
     switch (current.nextAction) {
       case SwapAction.claim:
-        await claim(current);
+        await _orTimeoutRefund(current, () => claim(current));
       case SwapAction.refund:
         await refund(current);
       case SwapAction.coopSign:
-        await coopSign(current);
+        await _orTimeoutRefund(current, () => coopSign(current));
       case SwapAction.none:
         if (await _settleOnEvidence(current)) break;
         if (!current.awaitsTimeoutRefund(DateTime.now())) return current;
@@ -1682,6 +1682,21 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     }
     return getSwap(swapId: current.id);
   });
+
+  /// Runs [action]; when it fails on a swap still holding our lockup a day
+  /// later, falls back to the script-path refund, which the chain refuses
+  /// until our timelock passes.
+  Future<void> _orTimeoutRefund(
+    Swap swap,
+    Future<Object?> Function() action,
+  ) async {
+    try {
+      await action();
+    } catch (_) {
+      if (!swap.awaitsTimeoutRefund(DateTime.now())) rethrow;
+      await refund(swap, scriptPathOnly: true);
+    }
+  }
 
   /// The id of another stored swap that already records [txid], if any.
   Future<String?> _swapRecordingTxid(
@@ -2303,10 +2318,16 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           'refund for ${swap.id} is not yet final (timelock); retry later',
         );
       }
-      swapsLog.severe(
-        'SWAPS: refund failed for ${swap.id}: ${_errorMessage(e)}',
-        error: e,
-      );
+      if (_errorMessage(e).toLowerCase().contains('missingorspent')) {
+        swapsLog.warning(
+          'SWAPS: refund for ${swap.id} found the lockup already spent',
+        );
+      } else {
+        swapsLog.severe(
+          'SWAPS: refund failed for ${swap.id}: ${_errorMessage(e)}',
+          error: e,
+        );
+      }
       // The script-path-only (zero-Boltz) retry must not fall back to the
       // outspend recovery, which queries the Boltz API. Surface the failure.
       if (scriptPathOnly) {

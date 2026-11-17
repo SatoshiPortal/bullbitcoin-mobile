@@ -350,18 +350,29 @@ sealed class Swap with _$Swap {
           : SwapAction.none,
   };
 
-  /// Our lockup is in while the swap still waits on the provider. Should the
-  /// provider never finish it, only the script-path refund recovers the
-  /// funds once the timelock passes; the chain itself refuses the refund
-  /// until then, so attempting is safe.
+  /// Our lockup is in while the swap still waits on the provider, or on a
+  /// claim or co-sign that keeps failing. Should it never finish, only the
+  /// script-path refund recovers the funds once the timelock passes; the
+  /// chain itself refuses the refund until then, so attempting is safe.
   bool awaitsTimeoutRefund(DateTime now) =>
-      status == SwapStatus.paid &&
-      now.difference(creationTime) >= const Duration(hours: 1) &&
+      now.difference(creationTime) >= const Duration(hours: 24) &&
       switch (this) {
-        LnSendSwap(:final sendTxid, :final refundTxid) =>
-          sendTxid != null && refundTxid == null,
-        ChainSwap(:final sendTxid, :final refundTxid, :final receiveTxid) =>
-          sendTxid != null && refundTxid == null && receiveTxid == null,
+        LnSendSwap(:final status, :final sendTxid, :final refundTxid) =>
+          (status == SwapStatus.paid || status == SwapStatus.canCoop) &&
+              sendTxid != null &&
+              refundTxid == null,
+        ChainSwap(
+          :final status,
+          :final sendTxid,
+          :final refundTxid,
+          :final receiveTxid,
+        ) =>
+          (status == SwapStatus.paid ||
+                  status == SwapStatus.claimable ||
+                  status == SwapStatus.canCoop) &&
+              sendTxid != null &&
+              refundTxid == null &&
+              receiveTxid == null,
         LnReceiveSwap() => false,
       };
 

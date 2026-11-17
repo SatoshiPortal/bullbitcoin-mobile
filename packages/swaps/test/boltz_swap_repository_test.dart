@@ -849,6 +849,73 @@ void main() {
   });
 
   group('resolveScriptPath (zero Boltz)', () {
+    test('a claim that keeps failing a day later falls back to the '
+        'script-path refund', () async {
+      when(() => storage.fetch(any())).thenAnswer(
+        (_) async =>
+            stores.isEmpty ? chainModel(status: 'claimable') : stores.last,
+      );
+      when(
+        () => boltz.getChainClaimTxSize(
+          swapId: any(named: 'swapId'),
+          claimAddress: any(named: 'claimAddress'),
+          isCooperative: any(named: 'isCooperative'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 200);
+      when(
+        () => boltz.claimLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: any(named: 'tryCooperate'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenThrow(Exception('No Bitcoin UTXO detected for this script'));
+      when(
+        () => boltz.checkLockupOutspends(
+          swapId: any(named: 'swapId'),
+          swapType: any(named: 'swapType'),
+          network: any(named: 'network'),
+          swapDirection: any(named: 'swapDirection'),
+          isClaim: any(named: 'isClaim'),
+        ),
+      ).thenAnswer((_) async => []);
+      when(
+        () => boltz.refundLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          refundLiquidAddress: any(named: 'refundLiquidAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: any(named: 'tryCooperate'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 'signed-hex');
+      when(
+        () => boltz.broadcastChainSwapRefund(
+          swapId: any(named: 'swapId'),
+          signedTxHex: any(named: 'signedTxHex'),
+          broadcastViaBoltz: any(named: 'broadcastViaBoltz'),
+          electrum: any(named: 'electrum'),
+        ),
+      ).thenAnswer((_) async => 'refund-txid');
+
+      final result = await repo().resolve(
+        chainModel(status: 'claimable').toEntity(),
+      );
+
+      expect(result, isA<Ok<Swap, SwapsFailure>>());
+      expect((stores.last as ChainSwapModel).refundTxid, 'refund-txid');
+      verify(
+        () => boltz.refundLbtcToBtcChainSwap(
+          swapId: any(named: 'swapId'),
+          refundLiquidAddress: any(named: 'refundLiquidAddress'),
+          absoluteFees: any(named: 'absoluteFees'),
+          tryCooperate: false,
+          electrum: any(named: 'electrum'),
+        ),
+      ).called(1);
+    });
+
     test('refunds a stuck swap script-path only — never requests a Boltz '
         'cooperative signature and broadcasts via electrum', () async {
       when(
