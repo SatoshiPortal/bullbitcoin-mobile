@@ -103,5 +103,14 @@
   "operationCompleted": "Terminée",
   "operationFailed": "Échec",
   "operationUnknown": "Résultat inconnu",
-  "operationConflicted": "Transaction conflictuelle observée"
+  "operationConflicted": "Transaction conflictuelle observée",
+  "observedActivity": "Activité observée",
+  "activityObservationsUnavailable": "Observations d’activité indisponibles",
+  "movementBoard": "Financement Ark",
+  "movementPayment": "Paiement",
+  "movementRenewal": "Renouvellement",
+  "movementExit": "Sortie",
+  "movementLightningReceipt": "Réception Lightning",
+  "observedTimeUtc": "Heure observée (UTC)",
+  "transactionId": "Identifiant de transaction"
 }
