@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -63,7 +62,7 @@ class AppTheme {
     final brightness = themeType == AppThemeType.dark
         ? Brightness.dark
         : Brightness.light;
-    final fonts = AppFonts.textTheme;
+    const type = BullTypography.standard;
     const shapes = BullShapes.standard;
 
     final bullTheme = _bullThemeFrom(colors);
@@ -117,8 +116,8 @@ class AppTheme {
       ),
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
-      fontFamily: fonts.fontFamily,
-      textTheme: fonts.textTheme.apply(
+      fontFamily: BullTypography.fontFamily,
+      textTheme: type.toTextTheme().apply(
         bodyColor: colors.text,
         displayColor: colors.text,
       ),
@@ -126,7 +125,7 @@ class AppTheme {
        Make sure to check impact on all different inputs in the app and adjust accordingly.
        + do the same for other widgets like dropdowns, buttons, etc.
       inputDecorationTheme: InputDecorationTheme(
-        hintStyle: fonts.textTheme.bodyLarge?.copyWith(
+        hintStyle: type.body.copyWith(
           color: colours.surfaceContainer,
         ),
         filled: true,
@@ -156,9 +155,7 @@ class AppTheme {
             : SystemUiOverlayStyle.dark,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: fonts.textTheme.headlineMedium!.copyWith(
-          color: colors.text,
-        ),
+        titleTextStyle: type.subtitle.copyWith(color: colors.text),
         centerTitle: true,
         iconTheme: IconThemeData(color: colors.text),
         actionsIconTheme: IconThemeData(color: colors.text),
@@ -193,17 +190,9 @@ class AppTheme {
           side: BorderSide(color: colors.border),
         ),
         textColor: colors.text,
-        titleTextStyle: fonts.textTheme.headlineSmall!.copyWith(
-          fontWeight: .w400,
-        ),
-        subtitleTextStyle: fonts.textTheme.labelMedium!.copyWith(
-          color: colors.textMuted,
-          fontWeight: .w400,
-        ),
-        leadingAndTrailingTextStyle: fonts.textTheme.labelLarge!.copyWith(
-          color: colors.text,
-          fontWeight: .w500,
-        ),
+        titleTextStyle: type.subtitle.copyWith(fontWeight: .w400),
+        subtitleTextStyle: type.caption.copyWith(color: colors.textMuted),
+        leadingAndTrailingTextStyle: type.label.copyWith(color: colors.text),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         refreshBackgroundColor: colors.text,

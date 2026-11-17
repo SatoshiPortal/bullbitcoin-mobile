@@ -2,8 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX, Gap;
 import 'package:material_ui/material_ui.dart';
 
 /// Items grouped by day, each group under its day label.
@@ -57,7 +56,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
                 errorMessage!,
                 maxLines: 2,
                 textAlign: .center,
-                style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.error,
                 ),
               ),
@@ -75,7 +74,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
                 loadingMessage,
                 maxLines: 2,
                 textAlign: .center,
-                style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.onSurface,
                 ),
               ),
@@ -93,7 +92,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
                 emptyMessage,
                 maxLines: 2,
                 textAlign: .center,
-                style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.onSurface,
                 ),
               ),

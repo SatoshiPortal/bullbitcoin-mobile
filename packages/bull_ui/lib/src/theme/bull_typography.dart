@@ -44,6 +44,9 @@ class BullTypography extends ThemeExtension<BullTypography> {
   /// The family of every role, declared by the app's `pubspec.yaml`.
   static const fontFamily = 'Golos Text';
 
+  /// Bull's brand family, for the few wordmark headings sized by their layout rather than by a role.
+  static const brandFamily = 'Bebas Neue';
+
   /// Bull's type scale: size and line height in logical px, in Golos Text, which ships only the 400, 500 and 700 weights.
   static const standard = BullTypography(
     display: TextStyle(

@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullTypography, Gap;
 import 'package:url_launcher/url_launcher.dart';
 
 class ExchangeLandingScreenV2 extends StatelessWidget {
@@ -49,7 +48,8 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                     const Gap(16),
                     BBText(
                       context.loc.exchangeBrandName,
-                      style: AppFonts.textTitleTheme.textStyle.copyWith(
+                      style: TextStyle(
+                        fontFamily: BullTypography.brandFamily,
                         color: context.appColors.primary,
                         fontSize: 64,
                       ),
