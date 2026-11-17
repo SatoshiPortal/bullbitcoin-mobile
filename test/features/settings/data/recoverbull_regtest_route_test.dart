@@ -23,6 +23,8 @@ class _External extends Mock implements ExternalTor {}
 
 class _Tor extends Mock implements Tor {}
 
+class _UnreadDatabase extends Mock implements SqliteDatabase {}
+
 SettingsEntity _selected(Environment environment, {bool enabled = true}) =>
     SettingsEntity(
       environment: environment,
@@ -94,6 +96,71 @@ void main() {
     );
     adapters.add(value);
     return value;
+  }
+
+  for (final production in [Environment.mainnet, Environment.testnet]) {
+    for (final startsOnRegtest in [false, true]) {
+      final initial = startsOnRegtest ? Environment.regtest : production;
+      final target = startsOnRegtest ? production : Environment.regtest;
+      test(
+        '$initial to $target refuses the captured runtime before route or database access',
+        () async {
+          selected = _selected(initial);
+          final services = GetIt.asNewInstance();
+          final unreadDatabase = _UnreadDatabase();
+          services.registerSingleton<SettingsRepository>(settings);
+          services.registerSingleton<SqliteDatabase>(unreadDatabase);
+          services.registerSingleton<Tor>(tor);
+          addTearDown(services.reset);
+          final capturedPath = await SettingsRecoverBullBindings.setup(
+            services,
+            databasePath: '/tmp/scope/recoverbull.sqlite',
+          );
+          expect(
+            capturedPath,
+            startsOnRegtest
+                ? '/tmp/scope/recoverbull-regtest.sqlite'
+                : '/tmp/scope/recoverbull.sqlite',
+          );
+          expect(
+            await services<RecoverBullEnvironmentPort>().currentNetwork(),
+            isA<Ok<BitcoinNetwork, RecoverBullFailure>>().having(
+              (result) => result.value.name,
+              'captured network',
+              initial.name,
+            ),
+          );
+          selected = _selected(target);
+          expect(
+            await services<RecoverBullEnvironmentPort>().currentNetwork(),
+            isA<Err<BitcoinNetwork, RecoverBullFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<VaultContextChangedFailure>(),
+            ),
+          );
+          expect(
+            await services<RecoverBullLegacySettingsPort>().read(),
+            isA<Err<LegacyBackupSettings, RecoverBullFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<VaultContextChangedFailure>(),
+            ),
+          );
+          expect(
+            await services<RecoverBullRoutePort>().open(),
+            isA<Err<RecoverBullRoute, RecoverBullFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<VaultContextChangedFailure>(),
+            ),
+          );
+          verifyZeroInteractions(unreadDatabase);
+          verifyZeroInteractions(external);
+          verifyZeroInteractions(embedded);
+        },
+      );
+    }
   }
 
   test('regtest preserves the selected concrete network', () async {

@@ -7,6 +7,32 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final locale in ['en', 'fr']) {
+    testWidgets(
+      'context changes show the existing generic RecoverBull $locale message',
+      (tester) async {
+        String? expected;
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: Locale(locale),
+            localizationsDelegates: RecoverBullFeature.localizationsDelegates,
+            supportedLocales: RecoverBullLocalizations.supportedLocales,
+            home: Builder(
+              builder: (context) {
+                expected = RecoverBullLocalizations.of(context)
+                    .recoverbullGenericFailure;
+                return Text(
+                  const VaultContextChangedFailure().toTranslated(context),
+                );
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(expected, isNotEmpty);
+        expect(find.text(expected ?? ''), findsOneWidget);
+        expect(find.textContaining('VaultContextChangedFailure'), findsNothing);
+      },
+    );
     testWidgets('storage failures have distinct actionable $locale messages', (
       tester,
     ) async {
