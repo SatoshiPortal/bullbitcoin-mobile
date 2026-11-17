@@ -1676,11 +1676,76 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       case SwapAction.coopSign:
         await coopSign(current);
       case SwapAction.none:
+        if (await _settleOnEvidence(current)) break;
         if (!current.awaitsTimeoutRefund(DateTime.now())) return current;
         await refund(current, scriptPathOnly: true);
     }
     return getSwap(swapId: current.id);
   });
+
+  /// Completes a swap Boltz reported settled once our own evidence agrees: a
+  /// send on a preimage that hashes to the invoice's payment hash, a direct
+  /// payment on its incoming transaction in the receiving wallet (and on no
+  /// other swap). Returns whether the swap was completed.
+  Future<bool> _settleOnEvidence(Swap swap) async {
+    switch (swap) {
+      case LnSendSwap(
+        status: SwapStatus.paid,
+        :final sendTxid?,
+        :final invoice,
+      ):
+        final String? preimage;
+        try {
+          preimage =
+              swap.preimage ?? await getSendSwapPreimage(swapId: swap.id);
+        } catch (_) {
+          return false;
+        }
+        if (preimage == null ||
+            !preimageMatchesInvoice(preimage: preimage, invoice: invoice)) {
+          return false;
+        }
+        await updateSwapFields(
+          swap.id,
+          preimage: preimage,
+          status: SwapStatus.completed,
+          completionTime: DateTime.now(),
+        );
+        swapsLog.fine(
+          'SWAPS: ${swap.id} completed on a verified preimage '
+          '(lockup $sendTxid)',
+        );
+        return true;
+      case LnReceiveSwap(
+        status: SwapStatus.paid,
+        wasDirectPayment: true,
+        :final receiveTxid?,
+        :final receiveWalletId,
+      ):
+        final txs = await _walletTxs(receiveWalletId);
+        final tx = txs.where((tx) => tx.txId == receiveTxid).firstOrNull;
+        if (tx == null || !tx.isIncoming) return false;
+        final recordedOn = await _boltz.storage.fetchByTxId(receiveTxid);
+        if (recordedOn != null && recordedOn.id != swap.id) {
+          swapsLog.warning(
+            'SWAPS: ${swap.id} direct payment $receiveTxid already belongs '
+            'to swap ${recordedOn.id} — ignoring',
+          );
+          return false;
+        }
+        await updateSwapFields(
+          swap.id,
+          status: SwapStatus.completed,
+          completionTime: DateTime.now(),
+        );
+        swapsLog.fine(
+          'SWAPS: ${swap.id} direct payment $receiveTxid seen in the wallet',
+        );
+        return true;
+      default:
+        return false;
+    }
+  }
 
   @override
   Future<Result<Swap, SwapsFailure>> resolveScriptPath(Swap swap) =>
@@ -2232,17 +2297,18 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     try {
       final preimage =
           swap.preimage ?? await getSendSwapPreimage(swapId: swap.id);
-      if (preimage != null && swap.preimage == null) {
+      // The coop close MuSig-signs whatever transaction hash the server
+      // hands us (a key-path sweep of OUR lockup), so the invoice must be
+      // proven paid (preimage hashes to its payment hash) before we sign —
+      // and before the preimage is stored as that proof. Refusing is
+      // invisible to the user: an honest Boltz claims via the script path.
+      final proven =
+          preimage != null &&
+          preimageMatchesInvoice(preimage: preimage, invoice: swap.invoice);
+      if (proven && swap.preimage == null) {
         await updateSwapFields(swap.id, preimage: preimage);
       }
-      // Completion is event-driven and never gated on this — but SIGNING is:
-      // the coop close MuSig-signs whatever transaction hash the server
-      // hands us (a key-path sweep of OUR lockup), so the invoice must be
-      // proven paid (preimage hashes to its payment hash) before we sign.
-      // Refusing is invisible to the user: an honest Boltz claims via the
-      // script path and the swap completes on transaction.claimed as usual.
-      if (preimage == null ||
-          !preimageMatchesInvoice(preimage: preimage, invoice: swap.invoice)) {
+      if (!proven) {
         throw SwapsException(
           'not coop-signing ${swap.id}: server preimage '
           '${preimage == null ? 'missing' : 'does not hash to the invoice '

@@ -143,21 +143,14 @@ class SwapStatusMapper {
         return null;
 
       // Magic Routing Hint direct payment: the sender paid our chain address
-      // directly — no lockup exists and there is nothing to claim. Only mark
-      // completed when Boltz reported the transaction id; otherwise hold at
-      // paid and let reconciliation or the wallet's own tx detection settle
-      // it (docs: transaction.direct is not a sole source of truth).
+      // directly — no lockup exists and there is nothing to claim. The event
+      // only names a candidate txid; the swap completes once the receiving
+      // wallet holds that incoming transaction (docs: transaction.direct is
+      // not a sole source of truth).
       case boltz.SwapStatus.txnDirect:
         if (swap is! LnReceiveSwapModel) return null;
-        if (transactionId != null) {
-          return swap.copyWith(
-            receiveTxid: transactionId,
-            wasDirectPayment: true,
-            status: swap_entity.SwapStatus.completed.name,
-            completionTime: nowMs,
-          );
-        }
         return swap.copyWith(
+          receiveTxid: swap.receiveTxid ?? transactionId,
           wasDirectPayment: true,
           status: swap_entity.SwapStatus.paid.name,
         );
@@ -178,7 +171,8 @@ class SwapStatusMapper {
 
       case boltz.SwapStatus.invoiceSettled:
         if (swap is! LnReceiveSwapModel) return null;
-        if (swap.receiveTxid != null || swap.wasDirectPayment) {
+        if (swap.wasDirectPayment) return null;
+        if (swap.receiveTxid != null) {
           if (localStatus == swap_entity.SwapStatus.completed) return null;
           return swap.copyWith(
             status: swap_entity.SwapStatus.completed.name,
@@ -236,9 +230,16 @@ class SwapStatusMapper {
             );
         }
 
+      // Boltz claimed our lockup. A send completes only on proof the invoice
+      // was paid: a stored preimage, which is verified before it is stored.
+      // Without one it stays paid until the resolver fetches and verifies
+      // it, or refunds once the timelock passes.
       case boltz.SwapStatus.txnClaimed:
         switch (swap) {
           case LnSendSwapModel():
+            if (swap.preimage == null) {
+              return swap.copyWith(status: swap_entity.SwapStatus.paid.name);
+            }
             return swap.copyWith(
               status: swap_entity.SwapStatus.completed.name,
               completionTime: swap.completionTime ?? nowMs,

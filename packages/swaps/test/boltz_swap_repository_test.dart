@@ -205,6 +205,99 @@ void main() {
     registerFallbackValue(voidWrite);
   });
 
+  group('settle on evidence', () {
+    const invoice =
+        'lnbc1pnwp2uqdpswejhy6tx090hxatzd4shy6twv40hqun9d9kkzem9yp6x2um5pp5238x9'
+        'nhgqvmsncufuke8256r6rg04rzg2qs4e7mrx9chaqx3463ssp5qurswpc8qurswpc8qursw'
+        'pc8qurswpc8qurswpc8qurswpc8qurs9qrsgqcqzyszy8d43nzfdv30dwg94qewenply4xj'
+        'em57tgrztwjhw04jcgh57jxtsqskm4a8hqydnr8ehevsx70x0c6mmpaxqyhdvz7g927jh55'
+        'mvcqwgxy2s';
+    const preimage =
+        '2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a';
+
+    SwapModel paidSend() => SwapModel.lnSend(
+      id: 'send-1',
+      type: SwapType.liquidToLightning.name,
+      status: 'paid',
+      keyIndex: 0,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      sendWalletId: 'w-liquid',
+      invoice: invoice,
+      paymentAddress: 'lq1lockup',
+      paymentAmount: 1000,
+      sendTxid: 'lockup-txid',
+    );
+
+    SwapModel directReceive() => SwapModel.lnReceive(
+      id: 'receive-1',
+      type: SwapType.lightningToBitcoin.name,
+      status: 'paid',
+      keyIndex: 0,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      receiveWalletId: 'w-btc',
+      invoice: invoice,
+      receiveTxid: 'direct-txid',
+      wasDirectPayment: true,
+    );
+
+    Future<void> resolve(SwapModel model) async {
+      when(() => storage.fetch(any()))
+          .thenAnswer((_) async => stores.isEmpty ? model : stores.last);
+      await repo().resolve(model.toEntity());
+    }
+
+    test('a send completes on a preimage proving the invoice paid', () async {
+      when(() => boltz.getLbtcLnSwapPreimage(swapId: any(named: 'swapId')))
+          .thenAnswer((_) async => preimage);
+
+      await resolve(paidSend());
+
+      final stored = stores.last as LnSendSwapModel;
+      expect(stored.status, SwapStatus.completed.name);
+      expect(stored.preimage, preimage);
+    });
+
+    test('a preimage that does not prove payment completes nothing', () async {
+      when(() => boltz.getLbtcLnSwapPreimage(swapId: any(named: 'swapId')))
+          .thenAnswer((_) async => preimage.replaceFirst('2a', '2b'));
+
+      await resolve(paidSend());
+
+      verifyNever(() => storage.store(any()));
+    });
+
+    test('a direct payment completes once the wallet holds it', () async {
+      walletTxs['direct-txid'] = const SwapWalletTx(
+        txId: 'direct-txid',
+        isIncoming: true,
+      );
+
+      await resolve(directReceive());
+
+      expect(stores.last.status, SwapStatus.completed.name);
+    });
+
+    test('a direct payment the wallet has not seen stays paid', () async {
+      await resolve(directReceive());
+
+      verifyNever(() => storage.store(any()));
+    });
+
+    test('a co-sign never stores a preimage that proves nothing', () async {
+      when(() => boltz.getLbtcLnSwapPreimage(swapId: any(named: 'swapId')))
+          .thenAnswer((_) async => preimage.replaceFirst('2a', '2b'));
+      final send = paidSend();
+      when(() => storage.fetch(any())).thenAnswer((_) async => send);
+
+      await expectLater(
+        repo().coopSign(send.toEntity()),
+        throwsA(isA<SwapsException>()),
+      );
+
+      verifyNever(() => storage.store(any()));
+    });
+  });
+
   group('rescue', () {
     final claimToLiquid = RestoredSwap(
       id: 'restored-1',
