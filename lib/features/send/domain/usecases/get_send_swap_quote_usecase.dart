@@ -17,9 +17,13 @@ class GetSendSwapQuoteUsecase {
     required BigInt amountSat,
   }) async {
     if (!NetworkCapabilities.supports(
-      wallet.network.shared,
-      NetworkCapability.swaps,
-    )) {
+          wallet.network.shared,
+          NetworkCapability.swaps,
+        ) ||
+        !NetworkCapabilities.supports(
+          wallet.network.shared,
+          NetworkCapability.exchange,
+        )) {
       return const Err(SendSwapRouteUnavailableFailure());
     }
     if (amountSat <= BigInt.zero) {

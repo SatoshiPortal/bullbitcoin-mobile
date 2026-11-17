@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+
 /// A swap master key already derived from the default bitcoin wallet by the
 /// app's secrets layer. The engine stores and signs with it; it never sees
 /// the wallet's own mnemonic.
@@ -7,7 +9,7 @@ class DerivedSwapMasterKey {
   final String xpub;
   final String mnemonic;
   final String fingerprint;
-  final bool isTestnet;
+  final NetworkEnv environment;
 
   const DerivedSwapMasterKey({
     required this.walletFingerprint,
@@ -15,8 +17,10 @@ class DerivedSwapMasterKey {
     required this.xpub,
     required this.mnemonic,
     required this.fingerprint,
-    required this.isTestnet,
+    required this.environment,
   });
+
+  bool get isTestnet => environment == NetworkEnv.testnet;
 
   @override
   String toString() =>

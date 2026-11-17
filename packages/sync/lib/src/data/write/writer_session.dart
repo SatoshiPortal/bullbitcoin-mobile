@@ -586,6 +586,14 @@ final class WriterSession {
     Err(:final failure) => throw WriterRefusal(failure),
   };
 
+  /// Funding shares this session's bounded failure reporting while its
+  /// writer lease is supplied by BitcoinSpendGate rather than [run].
+  void reportSpendFailure(WalletKey key, SyncFailure failure) =>
+      _reportFailure(key, failure);
+
+  /// Ends a funding failure episode on success, as [run] does for other commands.
+  void reportSpendSuccess(WalletKey key) => _failures.remove(key);
+
   /// Only an [Exception] becomes a typed failure. Callers let anything else
   /// thrown, a programmer [Error] above all, propagate with its trace.
   static SyncFailure mapFailure(Exception error) {

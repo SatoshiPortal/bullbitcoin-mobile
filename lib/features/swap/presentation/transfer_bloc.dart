@@ -4,7 +4,14 @@ import 'package:bb_mobile/features/send/public/send_facade.dart'
         SendInsufficientBalanceFailure,
         SendInsufficientFundsForFeesFailure;
 import 'package:primitives/primitives.dart'
-    show BitcoinTransactionRecipient, BitcoinUnit, Err, Ok, Result, Sats;
+    show
+        BitcoinTransactionRecipient,
+        BitcoinUnit,
+        Err,
+        NetworkEnv,
+        Ok,
+        Result,
+        Sats;
 
 import 'dart:async';
 
@@ -272,7 +279,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       final pendingResult = await _getPendingOrderSwapsUsecase.execute();
       if (pendingResult case Ok(:final value)) {
         final pendingTransfer = value
-            .where((order) => order.purpose == OrderSwapPurpose.transfer)
+            .where(
+              (order) =>
+                  order.purpose == OrderSwapPurpose.transfer &&
+                  switch (settings.activeNetwork) {
+                    NetworkEnv.mainnet =>
+                      order.environment == OrderSwapEnvironment.mainnet,
+                    NetworkEnv.testnet =>
+                      order.environment == OrderSwapEnvironment.testnet,
+                    _ => false,
+                  },
+            )
             .firstOrNull;
         if (pendingTransfer != null) {
           fromWallet = wallets
@@ -340,14 +357,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   Future<void> _resumePendingTransfer(Emitter<TransferState> emit) async {
     final fromWallet = state.fromWallet;
     if (fromWallet == null) return;
+    final expectedEnvironment = switch (fromWallet.network.environment) {
+      NetworkEnv.mainnet => OrderSwapEnvironment.mainnet,
+      NetworkEnv.testnet => OrderSwapEnvironment.testnet,
+      _ => null,
+    };
+    if (expectedEnvironment == null) return;
     final pendingResult = await _getPendingOrderSwapsUsecase.execute();
     if (pendingResult case Err()) return;
     final pending =
         (pendingResult as Ok<List<OrderSwapRecord>, SwapFailure>).value;
     final record = pending.where((candidate) {
-      final expectedEnvironment = fromWallet.network.requireHistoricalTestnet()
-          ? OrderSwapEnvironment.testnet
-          : OrderSwapEnvironment.mainnet;
       final expectedInNetwork = fromWallet.isLiquid
           ? OrderSwapNetwork.liquid
           : OrderSwapNetwork.bitcoin;
@@ -2470,15 +2490,17 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     String address,
   ) async {
     try {
-      final request = await _detectBitcoinStringUsecase.execute(data: address);
-      final onDestinationChain = switch (request) {
-        Bip21PaymentRequest(:final network) =>
-          fromWallet.isLiquid ? network.isBitcoin : network.isLiquid,
-        _ =>
-          fromWallet.isLiquid
-              ? request.isBitcoinAddress
-              : request.isLiquidAddress,
-      };
+      final request = await _detectBitcoinStringUsecase.execute(
+        data: address,
+        environment: fromWallet.network.environment,
+      );
+      if (request case Bip21PaymentRequest(:final network)) {
+        return network.environment == fromWallet.network.environment &&
+            (fromWallet.isLiquid ? network.isBitcoin : network.isLiquid);
+      }
+      final onDestinationChain = fromWallet.isLiquid
+          ? request.isBitcoinAddress
+          : request.isLiquidAddress;
       return onDestinationChain &&
           request.isTestnet != fromWallet.network.isMainnet;
     } on Exception {

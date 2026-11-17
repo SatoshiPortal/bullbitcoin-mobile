@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:swaps/swaps.dart';
 
 // The only substitutes are persistence/keychain and remote-chain backends.
@@ -30,7 +31,7 @@ class ReproChainBackend implements LockupChain {
     required String txid,
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
     knownLookups++;
     final operation = lookup;
@@ -41,7 +42,7 @@ class ReproChainBackend implements LockupChain {
   Future<LockupBroadcast> broadcast({
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
     void Function()? requireAdmission,
   }) => throw StateError('A known transaction must never be rebroadcast');
 }
@@ -50,7 +51,7 @@ class ReproElectrumBackend implements ElectrumRunner {
   @override
   Future<T> run<T>({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required Future<T> Function(ElectrumConnection) operation,
     bool Function(Object)? isTransient,
   }) => operation(
@@ -64,6 +65,6 @@ class ReproElectrumBackend implements ElectrumRunner {
   @override
   Future<bool> usesCustomServers({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async => true;
 }

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:bb_mobile/features/buy/domain/validate_buy_destination_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -31,6 +32,7 @@ part 'buy_state.dart';
 
 class BuyBloc extends Bloc<BuyEvent, BuyState> {
   BuyBloc({
+    ValidateBuyDestinationUsecase? validateDestination,
     required this._syncBuyReceiptUsecase,
     required this._loadBuyContextUsecase,
     required this._confirmBuyOrderUsecase,
@@ -40,7 +42,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required this._cancelAbandonedBuyPayjoinUsecase,
     required this._getBuyPayjoinEnabledUsecase,
     required this._labelCompletedBuyOrderUsecase,
-  }) : super(const BuyState()) {
+  }) : _validateDestination =
+           validateDestination ?? ValidateBuyDestinationUsecase(),
+       super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
     on<_BuyCurrencyInputChanged>(_onCurrencyInputChanged);
@@ -60,6 +64,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyAccelerateTransactionConfirmed>(_onAccelerateTransactionConfirmed);
   }
 
+  final ValidateBuyDestinationUsecase _validateDestination;
+  int _destinationGeneration = 0;
   int _orderCreationGeneration = 0;
 
   /// Set once the order is confirmed at its quote: later reads of the order
@@ -212,6 +218,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuySelectedWalletChanged event,
     Emitter<BuyState> emit,
   ) async {
+    _destinationGeneration++;
     emit(state.copyWith(selectedWallet: event.wallet));
   }
 
@@ -219,7 +226,12 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     _BuyBitcoinAddressInputChanged event,
     Emitter<BuyState> emit,
   ) async {
-    emit(state.copyWith(bitcoinAddressInput: event.bitcoinAddress));
+    final generation = ++_destinationGeneration;
+    emit(state.copyWith(bitcoinAddressInput: ''));
+    if (event.bitcoinAddress.trim().isEmpty) return;
+    final address = await _validateDestination.execute(event.bitcoinAddress);
+    if (emit.isDone || generation != _destinationGeneration) return;
+    emit(state.copyWith(bitcoinAddressInput: address ?? ''));
   }
 
   Future<void> _onCreateOrder(

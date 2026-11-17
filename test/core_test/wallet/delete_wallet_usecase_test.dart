@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:swaps/swaps.dart';
 
 import 'dart:io';
@@ -81,7 +82,13 @@ void main() {
 
     walletRepository = _MockWalletRepository();
     swapStore = _MockSwapStore();
-    references = SeedReferences(walletRepository);
+    references = SeedReferences(
+      walletRepository,
+      admission: SqliteParentCustodyAdmission(
+        directory: () async => logDirectory.path,
+        mayCreate: true,
+      ),
+    );
     usecase = DeleteWalletUsecase(
       walletRepository: walletRepository,
       seedReferences: references,

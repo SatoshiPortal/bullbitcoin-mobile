@@ -6,7 +6,7 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Opens the Bull menu ([showBullDropdownMenu]) of [items] under [child] when
-/// it is tapped, the selected one tinted and in bold.
+/// it is tapped, the selected one in bold primary text.
 ///
 /// The menu of every inline picker (language, currency), whatever [child]
 /// looks like; [BullPickerChip] is the text-and-chevron default.

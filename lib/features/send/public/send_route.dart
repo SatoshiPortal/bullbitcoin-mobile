@@ -1,6 +1,5 @@
 enum SendRoute {
-  send('/send'),
-  requestIdentifier('request-identifier');
+  send('/send');
 
   const SendRoute(this.path);
 

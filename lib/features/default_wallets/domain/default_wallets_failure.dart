@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:primitives/primitives.dart' show Failure;
 
 sealed class DefaultWalletsFailure extends Failure {
@@ -18,4 +19,10 @@ final class DefaultWalletsSaveFailure extends DefaultWalletsFailure {
 
 final class DefaultWalletsDeleteFailure extends DefaultWalletsFailure {
   const DefaultWalletsDeleteFailure();
+}
+
+final class DefaultWalletsInvalidAddressFailure extends DefaultWalletsFailure {
+  final WalletAddressType type;
+
+  const DefaultWalletsInvalidAddressFailure(this.type);
 }

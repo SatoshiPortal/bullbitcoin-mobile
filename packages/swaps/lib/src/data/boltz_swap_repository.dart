@@ -8,7 +8,7 @@ import 'package:swaps/src/data/swap_storage.dart';
 import 'package:swaps/src/domain/boltz_swaps.dart';
 import 'package:swaps/src/domain/entities/swap_failure.dart';
 import 'package:swaps/src/domain/swap_resolver.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result, NetworkEnv;
 import 'package:swaps/src/data/models/swap_model.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:swaps/src/domain/entities/restored_swap.dart';
@@ -45,23 +45,23 @@ typedef WalletTxsLookup = Future<List<SwapWalletTx>> Function(
 typedef FastestFee = Future<int> Function({
   required int txSize,
   required bool isLiquid,
-  required bool isTestnet,
+  required NetworkEnv environment,
 });
 
 typedef WalletsList = Future<List<SwapWalletInfo>> Function({
-  required bool isTestnet,
+  required NetworkEnv environment,
 });
 
 /// The swap master key derived from the default bitcoin wallet by the app's
 /// secrets layer; null when unavailable (watch-only / hardware-only /
 /// pre-onboarding). Only invoked when no key is stored yet.
 typedef SwapMasterKeySource = Future<DerivedSwapMasterKey?> Function({
-  required bool isTestnet,
+  required NetworkEnv environment,
 });
 
 class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   final BoltzDatasource _boltz;
-  final bool _isTestnet;
+  final NetworkEnv _environment;
   final ElectrumRunner _electrum;
   final NewAddressFor _newAddressFor;
   final WalletTxLookup _walletTx;
@@ -88,7 +88,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   BoltzSwapRepository({
     required this._boltz,
-    required this._isTestnet,
+    required this._environment,
     required this._electrum,
     required this._newAddressFor,
     required this._walletTx,
@@ -98,14 +98,21 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     required this._swapMasterKeySource,
     required this._lockupChain,
   }) {
+    if (_boltz.environment != _environment ||
+        (_environment == NetworkEnv.regtest) != _boltz.storage.isRegtestStore) {
+      throw ArgumentError('Swap engine and storage network differ');
+    }
     _boltz.effectAdmission = _requireEffectAdmission;
   }
 
   /// The Boltz provider on the backend at [url], over the shared [storage].
   factory BoltzSwapRepository.connect({
     required String url,
+    String? webSocketUrl,
+    String? bitcoinExplorerUrl,
+    String? liquidExplorerUrl,
     required SwapStorage storage,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required ElectrumRunner electrum,
     required LockupChain lockupChain,
     required NewAddressFor newAddressFor,
@@ -115,8 +122,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     required WalletsList wallets,
     required SwapMasterKeySource swapMasterKeySource,
   }) => BoltzSwapRepository(
-    boltz: BoltzDatasource(url: url, boltzStore: storage),
-    isTestnet: isTestnet,
+    boltz: BoltzDatasource(
+      url: url,
+      environment: environment,
+      webSocketUrl: webSocketUrl,
+      bitcoinExplorerUrl: bitcoinExplorerUrl,
+      liquidExplorerUrl: liquidExplorerUrl,
+      boltzStore: storage,
+    ),
+    environment: environment,
     electrum: electrum,
     lockupChain: lockupChain,
     newAddressFor: newAddressFor,
@@ -143,8 +157,11 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         .whenComplete(completer.complete);
   }
 
-  Stream<Swap> get swapUpdatesStream =>
-      _boltz.swapUpdatesStream.map((swapModel) => swapModel.toEntity());
+  Stream<Swap> get swapUpdatesStream => _boltz.swapUpdatesStream.map(
+    (swapModel) => swapModel.toEntity(
+      environment: Environment.fromName(_environment.name),
+    ),
+  );
 
   /// RECEIVE LN TO BTC
 
@@ -161,12 +178,14 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         walletId: walletId,
         index: index,
         outAmount: amountSat,
-        isTestnet: _isTestnet,
+        environment: _environment,
         electrumUrl: electrumUrl,
         magicRouteHintAddress: claimAddress,
         description: description,
       );
-      return btcLnSwap.toEntity() as LnReceiveSwap;
+      return btcLnSwap.toEntity(
+        environment: Environment.fromName(_environment.name),
+      ) as LnReceiveSwap;
     });
   }
 
@@ -209,13 +228,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         walletId: walletId,
         index: index,
         outAmount: amountSat,
-        isTestnet: _isTestnet,
+        environment: _environment,
         electrumUrl: electrumUrl,
         magicRouteHintAddress: claimAddress,
         description: description,
       );
 
-      return lbtcLnSwap.toEntity() as LnReceiveSwap;
+      return lbtcLnSwap.toEntity(
+        environment: Environment.fromName(_environment.name),
+      ) as LnReceiveSwap;
     });
   }
 
@@ -256,11 +277,13 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         walletId: walletId,
         index: index,
         invoice: invoice,
-        isTestnet: _isTestnet,
+        environment: _environment,
         electrumUrl: electrumUrl,
       );
 
-      return btcLnSwap.toEntity() as LnSendSwap;
+      return btcLnSwap.toEntity(
+        environment: Environment.fromName(_environment.name),
+      ) as LnSendSwap;
     });
   }
 
@@ -308,11 +331,13 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         walletId: walletId,
         index: index,
         invoice: invoice,
-        isTestnet: _isTestnet,
+        environment: _environment,
         electrumUrl: electrumUrl,
       );
 
-      return lbtcLnSwap.toEntity() as LnSendSwap;
+      return lbtcLnSwap.toEntity(
+        environment: Environment.fromName(_environment.name),
+      ) as LnSendSwap;
     });
   }
 
@@ -361,14 +386,16 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         sendWalletId: sendWalletId,
         index: index,
         amountSat: amountSat,
-        isTestnet: _isTestnet,
+        environment: _environment,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
         receiveWalletId: receiveWalletId,
         externalRecipientAddress: externalRecipientAddress,
       );
 
-      return chainSwap.toEntity() as ChainSwap;
+      return chainSwap.toEntity(
+        environment: Environment.fromName(_environment.name),
+      ) as ChainSwap;
     });
   }
 
@@ -386,14 +413,16 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         sendWalletId: sendWalletId,
         index: index,
         amountSat: amountSat,
-        isTestnet: _isTestnet,
+        environment: _environment,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
         receiveWalletId: receiveWalletId,
         externalRecipientAddress: externalRecipientAddress,
       );
 
-      return chainSwap.toEntity() as ChainSwap;
+      return chainSwap.toEntity(
+        environment: Environment.fromName(_environment.name),
+      ) as ChainSwap;
     });
   }
 
@@ -500,13 +529,20 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     if (swapModel == null) {
       throw "No swap found";
     }
-    return swapModel.toEntity();
+    return swapModel.toEntity(
+      environment: Environment.fromName(_environment.name),
+    );
   }
 
   /// DB-backed: emits current state on listen + every change, so observers
   /// can't miss a terminal update like the old broadcast stream could.
-  Stream<Swap> watchSwap({required String swapId}) =>
-      _boltz.storage.watchSwap(swapId).map((model) => model.toEntity());
+  Stream<Swap> watchSwap({required String swapId}) => _boltz.storage
+      .watchSwap(swapId)
+      .map(
+        (model) => model.toEntity(
+          environment: Environment.fromName(_environment.name),
+        ),
+      );
 
   Future<Swap> reconcileLockupTxid(Swap swap) async {
     // Only a chain swap missing its lockup txid needs this. Submarine
@@ -545,7 +581,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       throw "No swap model found";
     }
 
-    final swap = swapModel.toEntity();
+    final swap = swapModel.toEntity(
+      environment: Environment.fromName(_environment.name),
+    );
     // check the status before updating it
     // it is possible that the stream updates the status before this method
     // we don't want a status ahead of paid to be updated back to paid
@@ -596,7 +634,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }) => _boltz.storage.mutate(swapId, () async {
     final model = await _boltz.storage.fetch(swapId);
     if (model == null) throw SwapsException('swap $swapId not found');
-    final swap = model.toEntity();
+    final swap = model.toEntity(
+      environment: Environment.fromName(_environment.name),
+    );
     final (lockup, pending) = switch (swap) {
       LnSendSwap(:final sendTxid, :final pendingLockupTx) ||
       ChainSwap(
@@ -641,7 +681,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       _boltz.storage.mutate(swapId, () async {
         final model = await _boltz.storage.fetch(swapId);
         if (model == null) return;
-        final updated = switch (model.toEntity()) {
+        final updated = switch (model.toEntity(
+          environment: Environment.fromName(_environment.name),
+        )) {
           final LnSendSwap swap => swap.copyWith(
             pendingLockupTx: null,
             pendingLockupTxid: null,
@@ -695,7 +737,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         txid: txid,
         signedTx: pendingTx,
         isLiquid: isLiquid,
-        isTestnet: _isTestnet,
+        environment: _environment,
       );
 
       Future<Swap> record(String txid) async {
@@ -725,7 +767,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         requireAdmission: _requireEffectAdmission,
         signedTx: pendingTx,
         isLiquid: isLiquid,
-        isTestnet: _isTestnet,
+        environment: _environment,
       )) {
         case LockupAccepted(:final txid):
           return await record(txid);
@@ -760,7 +802,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       throw "No swap model found";
     }
 
-    final swap = swapModel.toEntity();
+    final swap = swapModel.toEntity(
+      environment: Environment.fromName(_environment.name),
+    );
     final updatedSwap = switch (swap) {
       LnSendSwap() => swap.copyWith(
         fees: swap.fees?.copyWith(lockupFee: lockupFees),
@@ -783,7 +827,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           throw "No swap model found";
         }
 
-        final swap = swapModel.toEntity();
+        final swap = swapModel.toEntity(
+          environment: Environment.fromName(_environment.name),
+        );
         if (!(swap.status == SwapStatus.paid ||
             swap.status == SwapStatus.canCoop)) {
           throw "Can only update status of a paid or canCoop swap";
@@ -820,14 +866,14 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<bool> swapMasterKeyReady({required String walletFingerprint}) =>
       _boltz.swapMasterKeyReady(
         walletFingerprint: walletFingerprint,
-        isTestnet: _isTestnet,
+        environment: _environment,
       );
 
   /// Persists a swap master key the app's secrets layer derived. Called once,
   /// only when [swapMasterKeyReady] reported a miss, so swap creation and
   /// restore READ the key from storage and never derive lazily.
   Future<void> storeSwapMasterKey(DerivedSwapMasterKey key) =>
-      _boltz.storeSwapMasterKey(key: key, isTestnet: _isTestnet);
+      _boltz.storeSwapMasterKey(key: key, environment: _environment);
 
   /// What the seed viewer shows about the swap master key for
   /// [walletFingerprint]; null when none is stored. Carries no words — see
@@ -837,7 +883,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }) async {
     final model = await _boltz.getSwapMasterKeyForWallet(
       walletFingerprint: walletFingerprint,
-      isTestnet: _isTestnet,
+      environment: _environment,
     );
     if (model == null) return null;
     return SwapMasterKeyInfo(
@@ -852,7 +898,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<String?> getSwapMnemonic({required String walletFingerprint}) async {
     final model = await _boltz.getSwapMasterKeyForWallet(
       walletFingerprint: walletFingerprint,
-      isTestnet: _isTestnet,
+      environment: _environment,
     );
     return model?.mnemonic;
   }
@@ -862,13 +908,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<void> deleteSwapMasterKey({required String walletFingerprint}) =>
       _boltz.deleteSwapMasterKey(
         walletFingerprint: walletFingerprint,
-        isTestnet: _isTestnet,
+        environment: _environment,
       );
 
   // Reverse and submarine swaps consume 1 index; chain swaps consume 2 (boltz
   // derives the refund key at `index` and the claim key at `index + 1`).
   Future<int> _reserveSwapKeyIndex(int count) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
+    final swapMasterKey = await _boltz.getSwapMasterKey(
+      environment: _environment,
+    );
     // The index counter is keyed by the swap master key's OWN fingerprint —
     // NOT the default wallet's fingerprint (which keys the master key blob).
     // Both are 1:1 with the seed, so they stay consistent.
@@ -937,7 +985,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     if (swapModel == null) {
       throw 'No swap model found';
     }
-    final swap = swapModel.toEntity();
+    final swap = swapModel.toEntity(
+      environment: Environment.fromName(_environment.name),
+    );
     final fees = (swap.fees ?? const SwapFees()).copyWith(
       claimFee: claimFee ?? swap.fees?.claimFee,
       refundFee: refundFee ?? swap.fees?.refundFee,
@@ -1037,10 +1087,18 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }
 
   Future<List<Swap>> getOngoingSwaps({String? walletId}) async {
-    final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
+    final allSwapModels = await _boltz.storage.fetchAll(
+      isTestnet: _environment == NetworkEnv.regtest
+          ? null
+          : _environment == NetworkEnv.testnet,
+    );
 
     final allSwaps = allSwapModels
-        .map((swapModel) => swapModel.toEntity())
+        .map(
+          (swapModel) => swapModel.toEntity(
+            environment: Environment.fromName(_environment.name),
+          ),
+        )
         .toList();
     // Still in flight, holding a lockup whose broadcast is being confirmed,
     // or holding funds that must be claimed or refunded.
@@ -1064,10 +1122,16 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<List<Swap>> getAllSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(
       walletId: walletId,
-      isTestnet: _isTestnet,
+      isTestnet: _environment == NetworkEnv.regtest
+          ? null
+          : _environment == NetworkEnv.testnet,
     );
     final allSwaps = allSwapModels
-        .map((swapModel) => swapModel.toEntity())
+        .map(
+          (swapModel) => swapModel.toEntity(
+            environment: Environment.fromName(_environment.name),
+          ),
+        )
         .toList();
     return allSwaps;
   }
@@ -1075,8 +1139,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   /// Restores all swaps derivable from the dedicated swap master key via Boltz,
   /// across BTC-LN, LBTC-LN and chain. Identification only (Phase 1); importing
   /// them into local storage is handled separately.
-  Future<List<RestoredSwap>> restoreSwaps({required bool isTestnet}) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: isTestnet);
+  Future<List<RestoredSwap>> restoreSwaps({
+    required NetworkEnv environment,
+  }) async {
+    if (environment != _environment) {
+      throw SwapsException('Restore network does not match its engine');
+    }
+    final swapMasterKey = await _boltz.getSwapMasterKey(
+      environment: environment,
+    );
     swapsLog.fine(
       'SWAP_RESTORE: master key ${swapMasterKey.fingerprint} '
       '(${swapMasterKey.network})',
@@ -1090,6 +1161,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     return [
       for (final s in summaries)
         RestoredSwap(
+          environment: _environment,
           id: s.id,
           kind: _restoredKind(s.kind),
           status: _restoreStatusToSwapStatus(s.status, kind: s.kind),
@@ -1200,7 +1272,13 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
   }) async {
-    final swapMasterKey = await _boltz.getSwapMasterKey(isTestnet: _isTestnet);
+    if (restored.environment != _environment) {
+      throw SwapsException('Restored swap belongs to another network');
+    }
+
+    final swapMasterKey = await _boltz.getSwapMasterKey(
+      environment: _environment,
+    );
     final creationTime = restored.createdAt.millisecondsSinceEpoch;
     // A refund-action swap with funds still locked on-chain is stored as
     // refundable (not the terminal failed/expired/refunded the restore status
@@ -1241,7 +1319,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
               obj.outAmount.toInt(),
             ),
             status: status,
-            isTestnet: _isTestnet,
+            isTestnet: _environment == NetworkEnv.testnet,
             keyIndex: obj.keyIndex.toInt(),
             creationTime: creationTime,
             receiveWalletId: receiveWalletId!,
@@ -1267,7 +1345,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
               obj.outAmount.toInt(),
             ),
             status: status,
-            isTestnet: _isTestnet,
+            isTestnet: _environment == NetworkEnv.testnet,
             keyIndex: obj.keyIndex.toInt(),
             creationTime: creationTime,
             receiveWalletId: receiveWalletId!,
@@ -1295,7 +1373,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
               obj.outAmount.toInt(),
             ),
             status: status,
-            isTestnet: _isTestnet,
+            isTestnet: _environment == NetworkEnv.testnet,
             keyIndex: obj.keyIndex.toInt(),
             creationTime: creationTime,
             sendWalletId: sendWalletId,
@@ -1323,7 +1401,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
               obj.outAmount.toInt(),
             ),
             status: status,
-            isTestnet: _isTestnet,
+            isTestnet: _environment == NetworkEnv.testnet,
             keyIndex: obj.keyIndex.toInt(),
             creationTime: creationTime,
             sendWalletId: sendWalletId,
@@ -1358,7 +1436,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
             obj.outAmount.toInt(),
           ),
           status: status,
-          isTestnet: _isTestnet,
+          isTestnet: _environment == NetworkEnv.testnet,
           keyIndex: obj.refundIndex.toInt(),
           creationTime: creationTime,
           sendWalletId: sendWalletId,
@@ -1383,7 +1461,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     subscribeToSwaps([id]);
     await reconcileSwaps([id]);
     swapsLog.fine('SWAP_RESTORE: rescued $id as ${stored.runtimeType}');
-    return stored.toEntity();
+    return stored.toEntity(
+      environment: Environment.fromName(_environment.name),
+    );
   }
 
   void _logSkippedRestores(List<boltz.SkippedRestoreSwap> skipped) {
@@ -1424,7 +1504,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     if (swapModel == null) {
       return null; // No swap found for the given txId
     }
-    return swapModel.toEntity();
+    return swapModel.toEntity(
+      environment: Environment.fromName(_environment.name),
+    );
   }
 
   Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees(SwapType type) async {
@@ -1496,7 +1578,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }) async {
     final allSwaps = await _boltz.storage.fetchAll(walletId: walletId);
     for (final swapModel in allSwaps) {
-      final swap = swapModel.toEntity();
+      final swap = swapModel.toEntity(
+        environment: Environment.fromName(_environment.name),
+      );
       if (swap.type == SwapType.lightningToBitcoin ||
           swap.type == SwapType.lightningToLiquid) {
         continue;
@@ -1664,7 +1748,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   /// Fingerprint of the default bitcoin wallet for this environment; null
   /// when none exists. Used by the seed viewer's swap-key usecases.
   Future<String?> defaultBitcoinFingerprint() async {
-    final wallets = await _wallets(isTestnet: _isTestnet);
+    final wallets = await _wallets(environment: _environment);
     for (final w in wallets) {
       if (w.isDefault && !w.isLiquid && w.fingerprint.isNotEmpty) {
         return w.fingerprint;
@@ -1692,7 +1776,10 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }
 
   @override
-  bool get isTestnet => _isTestnet;
+  NetworkEnv get environment => _environment;
+
+  @override
+  bool get isTestnet => _environment == NetworkEnv.testnet;
 
   @override
   Stream<Swap> get updates => swapUpdatesStream;
@@ -1898,14 +1985,14 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   Future<String> _electrumUrl({required bool isLiquid}) => _electrum.run(
     isLiquid: isLiquid,
-    isTestnet: _isTestnet,
+    environment: _environment,
     operation: (connection) async => connection.url,
   );
 
   /// Refuses a wallet that is unknown or not on [isLiquid]'s chain, before
   /// anything is created.
   Future<void> _requireWallet(String walletId, {required bool isLiquid}) async {
-    final wallets = await _wallets(isTestnet: _isTestnet);
+    final wallets = await _wallets(environment: _environment);
     final wallet = wallets.where((w) => w.id == walletId).firstOrNull;
     if (wallet == null || wallet.isLiquid != isLiquid) {
       throw SwapsException(
@@ -2168,7 +2255,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     try {
       return await _electrum.run(
         isLiquid: claimOnLiquid,
-        isTestnet: _isTestnet,
+        environment: _environment,
         isTransient: _isServerFailure,
         operation: (connection) async {
           // A claim always pays the live (fastest) estimate: one that sits
@@ -2345,7 +2432,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     try {
       final (txid, _) = await _electrum.run(
         isLiquid: refundOnLiquid,
-        isTestnet: _isTestnet,
+        environment: _environment,
         isTransient: _isServerFailure,
         operation: (connection) => _attemptRefund(
           swap,
@@ -2595,7 +2682,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       final live = await _fastestFee(
         txSize: txSize,
         isLiquid: isLiquid,
-        isTestnet: _isTestnet,
+        environment: _environment,
       );
       fees = live > floor ? live : floor;
     } catch (e) {
@@ -2693,7 +2780,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       };
       if (await _electrum.usesCustomServers(
         isLiquid: isLiquid,
-        isTestnet: _isTestnet,
+        environment: _environment,
       )) {
         swapsLog.fine(
           'SWAPS: ${swap.id} outspend lookup skipped — custom electrum',
@@ -2701,7 +2788,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         return null;
       }
       final network = Network.fromEnvironment(
-        isTestnet: _isTestnet,
+        environment: _environment,
         isLiquid: isLiquid,
       );
       final direction = swap is ChainSwap
@@ -2841,7 +2928,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         await swapMasterKeyReady(walletFingerprint: fingerprint)) {
       return;
     }
-    final key = await _swapMasterKeySource(isTestnet: _isTestnet);
+    final key = await _swapMasterKeySource(environment: _environment);
     if (key == null) {
       throw SwapsException(
         'no default bitcoin wallet seed available to derive the swap '
@@ -2859,14 +2946,17 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   Future<List<RestoredSwap>> _restore() async {
     await _ensureMasterKey();
-    return restoreSwaps(isTestnet: _isTestnet);
+    return restoreSwaps(environment: _environment);
   }
 
   Future<Swap> _rescue(
     RestoredSwap restored, {
     required String walletId,
   }) async {
-    final wallets = await _wallets(isTestnet: _isTestnet);
+    if (restored.environment != _environment) {
+      throw SwapsException('Restored swap belongs to another network');
+    }
+    final wallets = await _wallets(environment: _environment);
     final selected = wallets.where((w) => w.id == walletId).firstOrNull;
     if (selected == null || selected.isLiquid != restored.actsOnLiquid) {
       throw SwapsException(

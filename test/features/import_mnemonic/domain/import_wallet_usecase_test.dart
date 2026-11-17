@@ -29,6 +29,8 @@ class _MockWallet extends Mock implements Wallet {}
 
 class _MockMetadataRow extends Mock implements WalletMetadataModel {}
 
+class _Admission extends Fake implements ParentCustodyAdmissionPort {}
+
 void main() {
   const words = [
     'abandon',
@@ -65,6 +67,7 @@ void main() {
         .import(words: words, language: bip39.Language.english);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
+    registerFallbackValue(_Admission());
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
   });
@@ -82,6 +85,7 @@ void main() {
       secrets: secrets,
       settingsRepository: settingsRepository,
       walletRepository: walletRepository,
+      admission: _Admission(),
     );
     when(
       () => checkDuplicate.execute(
@@ -100,15 +104,15 @@ void main() {
 
   void stubCreateWallet(Future<Wallet> Function() answer) {
     when(
-      () => walletRepository.createWallet(
-        secret: any(named: 'secret'),
+      () => walletRepository.importWallet(
+        parent: any(named: 'parent'),
+        secrets: secrets,
+        admission: any(named: 'admission'),
         network: any(named: 'network'),
         scriptType: any(named: 'scriptType'),
-        isDefault: any(named: 'isDefault'),
-        sync: any(named: 'sync'),
         label: any(named: 'label'),
       ),
-    ).thenAnswer((_) async => answer());
+    ).thenAnswer((_) async => Ok(await answer()));
   }
 
   for (final language in bip39.Language.values) {
@@ -129,6 +133,7 @@ void main() {
           secrets: secrets,
           settingsRepository: settingsRepository,
           walletRepository: walletRepository,
+          admission: _Admission(),
         );
         final result = await usecase.execute(
           mnemonicWords: words,
@@ -143,15 +148,12 @@ void main() {
         final secret = entries.single as Secret;
         expect(secret.info.language, language);
         verify(
-          () => walletRepository.createWallet(
-            secret: any(
-              that: isA<Secret>().having((s) => s.id, 'id', secret.id),
-              named: 'secret',
-            ),
+          () => walletRepository.importWallet(
+            parent: secret.id,
+            secrets: secrets,
+            admission: any(named: 'admission'),
             network: Network.bitcoinMainnet,
             scriptType: ScriptType.bip84,
-            isDefault: false,
-            sync: false,
             label: 'Vector',
           ),
         ).called(1);
@@ -276,12 +278,12 @@ void main() {
 
         expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
         verifyNever(
-          () => walletRepository.createWallet(
-            secret: any(named: 'secret'),
+          () => walletRepository.importWallet(
+            parent: any(named: 'parent'),
+            secrets: secrets,
+            admission: any(named: 'admission'),
             network: any(named: 'network'),
             scriptType: any(named: 'scriptType'),
-            isDefault: any(named: 'isDefault'),
-            sync: any(named: 'sync'),
             label: any(named: 'label'),
           ),
         );

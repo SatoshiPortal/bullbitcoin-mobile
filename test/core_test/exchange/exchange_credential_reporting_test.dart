@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/exchange_settings/domain/usecases/get_secure_
 import 'package:bb_mobile/features/limit_orders/domain/repositories/limit_order_repository.dart';
 import 'package:bb_mobile/features/limit_orders/domain/usecases/load_limit_order_creation_usecase.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -57,10 +58,12 @@ class _DeleteDefaults extends Mock implements DeleteDefaultWalletUsecase {}
 void main() {
   late _Logger logger;
   late Logger previous;
-  setUpAll(() {
+  setUpAll(() async {
+    await BullSdk.init();
     registerFallbackValue(StackTrace.empty);
     registerFallbackValue(WalletAddressType.bitcoin);
   });
+  tearDownAll(BullSdk.dispose);
   setUp(() {
     previous = log;
     logger = _Logger();
@@ -170,7 +173,7 @@ void main() {
               bitcoin: DefaultWallet(
                 recipientId: 'recipient',
                 walletType: WalletAddressType.bitcoin,
-                address: 'bc1qfixture',
+                address: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
               ),
             ),
           );
@@ -219,7 +222,7 @@ void main() {
             verify(
               () => save.execute(
                 walletType: WalletAddressType.bitcoin,
-                address: 'bc1qfixture',
+                address: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
                 existingRecipientId: 'recipient',
               ),
             ).called(1);
@@ -227,7 +230,7 @@ void main() {
             verify(
               () => delete.execute(
                 walletType: WalletAddressType.bitcoin,
-                address: 'bc1qfixture',
+                address: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
                 recipientId: 'recipient',
               ),
             ).called(1);

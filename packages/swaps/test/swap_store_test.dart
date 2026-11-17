@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:swaps/src/data/models/swap_model.dart';
@@ -38,7 +39,8 @@ void main() {
 
   setUp(() {
     storage = _MockSwapStorage();
-    store = SwapStoreImpl(storage: storage, isTestnet: false);
+    when(() => storage.isRegtestStore).thenReturn(false);
+    store = SwapStoreImpl(storage: storage, environment: NetworkEnv.mainnet);
   });
 
   group('ongoing', () {

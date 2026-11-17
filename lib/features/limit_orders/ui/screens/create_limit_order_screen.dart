@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -33,7 +34,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
   final _discountController = TextEditingController(text: '1');
   final _limitPriceController = TextEditingController();
   final _amountController = TextEditingController();
-  final _lightningController = TextEditingController();
   final _amountNode = FocusNode();
   final _discountNode = FocusNode();
   final _limitPriceNode = FocusNode();
@@ -60,7 +60,6 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
     _discountController.dispose();
     _limitPriceController.dispose();
     _amountController.dispose();
-    _lightningController.dispose();
     _amountNode.dispose();
     _discountNode.dispose();
     _limitPriceNode.dispose();
@@ -423,23 +422,16 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           ],
           const Gap(8),
         ],
-        Text(
-          context.loc.limitOrdersLightningAddressLabel,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const Gap(8),
-        TextField(
-          controller: _lightningController,
+        PaymentDestinationField(
+          value: state.lightningAddressInput,
+          label: context.loc.limitOrdersLightningAddressLabel,
+          hint: context.loc.limitOrdersLightningAddressHint,
+          acceptedTypes: const {PaymentDestinationType.lightningAddress},
           keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.done,
-          autocorrect: false,
-          onSubmitted: cubit.setLightningAddress,
-          decoration: InputDecoration(
-            hintText: context.loc.limitOrdersLightningAddressHint,
-            errorText: state.lightningAddressInvalid
-                ? context.loc.limitOrdersLightningAddressError
-                : null,
-          ),
+          onChanged: cubit.setLightningAddress,
+          error: state.lightningAddressInvalid
+              ? context.loc.limitOrdersLightningAddressError
+              : null,
         ),
         if (state.amountLimitViolation case final violation?) ...[
           const Gap(12),
