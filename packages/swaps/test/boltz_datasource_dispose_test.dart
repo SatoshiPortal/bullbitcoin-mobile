@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:swaps/src/data/boltz_api.dart';
 import 'package:swaps/src/data/swap_storage.dart';
@@ -17,6 +18,7 @@ void main() {
   setUp(() {
     opened = [];
     boltz = BoltzDatasource(
+      environment: NetworkEnv.mainnet,
       url: 'boltz.test',
       boltzStore: SwapStorage(
         rows: _MockRowStore(),
