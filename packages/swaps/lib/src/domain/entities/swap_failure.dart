@@ -10,6 +10,11 @@ sealed class SwapsFailure extends Failure {
   const SwapsFailure([super.logMessage]);
 }
 
+/// Existing work still owns the resolver; no competing action was admitted.
+final class SwapsBusyFailure extends SwapsFailure {
+  const SwapsBusyFailure([super.logMessage]);
+}
+
 /// No default bitcoin wallet seed is available to derive the swap master
 /// key (watch-only, hardware-only or pre-onboarding wallet) — restore and
 /// rescue cannot run.
@@ -66,6 +71,7 @@ final class SwapsUnexpectedFailure extends SwapsFailure {
 /// Maps a raw engine error to its modeled failure. The raw text goes into
 /// `logMessage`; the boundary logs it, the UI never sees it.
 SwapsFailure classifySwapsFailure(Object error) {
+  if (error is SwapsFailure) return error;
   final message = error.toString();
   final lower = message.toLowerCase();
   if (lower.contains('no default bitcoin wallet seed')) {

@@ -182,7 +182,9 @@ class AppLockupChain implements swaps.LockupChain {
     required String signedTx,
     required bool isLiquid,
     required bool isTestnet,
+    void Function()? requireAdmission,
   }) async {
+    requireAdmission?.call();
     final Result<String, SyncFailure> result;
     if (isLiquid) {
       result = await broadcastLiquidTransaction(

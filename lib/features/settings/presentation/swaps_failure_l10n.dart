@@ -15,6 +15,7 @@ extension SwapsFailureL10n on SwapsFailure {
 
     // Never `logMessage`: the raw reason is logged at the boundary and is
     // never fit to show a user.
+    SwapsBusyFailure() ||
     SwapsUnexpectedFailure() => context.loc.swapsFailureUnexpected,
   };
 }

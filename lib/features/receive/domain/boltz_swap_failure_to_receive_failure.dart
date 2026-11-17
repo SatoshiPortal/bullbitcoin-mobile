@@ -14,6 +14,7 @@ extension BoltzSwapFailureToReceiveFailure on SwapsFailure {
     SwapsBoltzUnavailableFailure() ||
     SwapsNetworkFailure() => ReceiveNetworkFailure(logMessage),
     SwapsBoltzRejectedFailure() => ReceiveSwapUnavailableFailure(logMessage),
+    SwapsBusyFailure() ||
     SwapsMasterKeyUnavailableFailure() ||
     SwapsNotRestorableFailure() ||
     SwapsRefundNotFinalFailure() ||

@@ -74,6 +74,17 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   /// Serializes swap creation so two concurrent creations can never compute
   /// the same key index from a stale table scan.
   Future<void> _creationLock = Future.value();
+  bool _effectsSuspended = false;
+
+  @override
+  void suspendEffects() => _effectsSuspended = true;
+
+  @override
+  void resumeEffects() => _effectsSuspended = false;
+
+  void _requireEffectAdmission() {
+    if (_effectsSuspended) throw const SwapsBusyFailure();
+  }
 
   BoltzSwapRepository({
     required this._boltz,
@@ -86,7 +97,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     required this._wallets,
     required this._swapMasterKeySource,
     required this._lockupChain,
-  });
+  }) {
+    _boltz.effectAdmission = _requireEffectAdmission;
+  }
 
   /// The Boltz provider on the backend at [url], over the shared [storage].
   factory BoltzSwapRepository.connect({
@@ -116,6 +129,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   /// Closes the backend connection; the provider is unusable afterwards.
   void dispose() => _boltz.dispose();
+
+  /// Joins provider event writes, not native creations already admitted here.
+  Future<void> close() => _boltz.close();
 
   Future<T> _withCreationLock<T>(Future<T> Function() action) {
     final completer = Completer<void>();
@@ -161,6 +177,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final txid = await _boltz.claimBtcReverseSwap(
       swapId: swapId,
       claimAddress: bitcoinAddress,
@@ -209,6 +226,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final signedTxHex = await _boltz.claimLBtcReverseSwap(
       swapId: swapId,
       claimAddress: liquidAddress,
@@ -247,6 +265,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }
 
   Future<void> coopSignBitcoinToLightningSwap({required String swapId}) async {
+    _requireEffectAdmission();
     await _boltz.coopSignBtcSubmarineSwap(swapId: swapId);
     await _updateCompletedSendSwap(swapId: swapId);
     return;
@@ -259,6 +278,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final signedTxHex = await _boltz.refundBtcSubmarineSwap(
       swapId: swapId,
       refundAddress: bitcoinAddress,
@@ -297,6 +317,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }
 
   Future<void> coopSignLiquidToLightningSwap({required String swapId}) async {
+    _requireEffectAdmission();
     await _boltz.coopSignLbtcSubmarineSwap(swapId: swapId);
     await _updateCompletedSendSwap(swapId: swapId);
     return;
@@ -309,6 +330,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final signedTxHex = await _boltz.refundLbtcSubmarineSwap(
       swapId: swapId,
       refundAddress: liquidAddress,
@@ -382,6 +404,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final signedTxHex = await _boltz.claimLbtcToBtcChainSwap(
       swapId: swapId,
       claimBitcoinAddress: bitcoinClaimAddress,
@@ -405,6 +428,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final signedTxHex = await _boltz.claimBtcToLbtcChainSwap(
       swapId: swapId,
       claimLiquidAddress: liquidClaimAddress,
@@ -428,6 +452,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
       swapId: swapId,
       refundBitcoinAddress: bitcoinRefundAddress,
@@ -451,6 +476,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     bool cooperate = true,
     ElectrumConnection? electrum,
   }) async {
+    _requireEffectAdmission();
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,
@@ -694,7 +720,9 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         }
       }
 
+      _requireEffectAdmission();
       switch (await _lockupChain.broadcast(
+        requireAdmission: _requireEffectAdmission,
         signedTx: pendingTx,
         isLiquid: isLiquid,
         isTestnet: _isTestnet,
@@ -715,6 +743,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           return swap;
       }
     } catch (e) {
+      if (e is SwapsBusyFailure) rethrow;
       swapsLog.warning(
         'SWAPS: ${swap.id} pending lockup not settled (${e.runtimeType})',
       );
@@ -1677,6 +1706,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
   @override
   Future<Result<Swap, SwapsFailure>> resolve(Swap swap) => _guard(() async {
+    _requireEffectAdmission();
     var current = await getSwap(swapId: swap.id);
     current = await resolvePendingLockup(current);
     current = await reconcileLockupTxid(current);
@@ -1704,7 +1734,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   ) async {
     try {
       await action();
-    } catch (_) {
+    } catch (error) {
+      if (error is SwapsFailure) rethrow;
       if (!swap.awaitsTimeoutRefund(DateTime.now())) rethrow;
       await refund(swap, scriptPathOnly: true);
     }
@@ -1804,6 +1835,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   @override
   Future<Result<Swap, SwapsFailure>> resolveScriptPath(Swap swap) =>
       _guard(() async {
+        _requireEffectAdmission();
         final current = await getSwap(swapId: swap.id);
         switch (current.nextAction) {
           case SwapAction.claim:
@@ -2184,6 +2216,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
                 return await sizedFee(cooperative: false);
               }
             } catch (e) {
+              if (e is SwapsFailure) rethrow;
               if (storedFee == null) rethrow;
               swapsLog.warning(
                 'SWAPS: live claim fee unavailable for ${swap.id} '
@@ -2219,6 +2252,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
                 electrum: connection,
               );
             } catch (e) {
+              if (e is SwapsFailure) rethrow;
               if (_isLockupNotVisible(e)) rethrow;
               swapsLog.severe(
                 'SWAPS: coop claim failed for ${swap.id} '
@@ -2254,6 +2288,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         },
       );
     } catch (e) {
+      if (e is SwapsFailure) rethrow;
       if (_isLockupNotVisible(e)) {
         swapsLog.fine(
           'SWAPS: claim for ${swap.id} found no lockup on the electrum server',
@@ -2322,6 +2357,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       );
       return txid;
     } catch (e) {
+      if (e is SwapsFailure) rethrow;
       // A non-final rejection means the timelock has not passed — nothing of
       // ours can be on-chain, so the outspend recovery must not get the
       // chance to match an unrelated spend. It is expected while a swap
@@ -2479,6 +2515,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         );
         txid = await broadcast(cooperate: true, fees: fees);
       } catch (e) {
+        if (e is SwapsFailure) rethrow;
         swapsLog.severe(
           'SWAPS: coop refund failed for ${swap.id} '
           '(${_errorMessage(e)}); trying script path (Boltz-free)',

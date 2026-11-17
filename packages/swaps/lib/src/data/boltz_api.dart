@@ -36,6 +36,9 @@ BoltzWebSocket _createBoltzWebSocket(
 const boltzReferralId = 'BULL';
 
 class BoltzDatasource {
+  /// Installed by the owning repository, checked after native-store reads.
+  void Function()? effectAdmission;
+
   final String _baseUrl;
   final BoltzWebSocketFactory webSocketFactory;
   late String _httpsUrl;
@@ -79,7 +82,14 @@ class BoltzDatasource {
     // an explicit http:// is a deliberate dev/staging opt-in (SSH tunnel to
     // a local backend) and the websocket follows it as ws://.
     _httpsUrl = _baseUrl.startsWith('http://') ? _baseUrl : 'https://$_baseUrl';
-    _http = Dio(BaseOptions(baseUrl: _httpsUrl));
+    _http = Dio(
+      BaseOptions(
+        baseUrl: _httpsUrl,
+        connectTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 15),
+      ),
+    );
   }
 
   String get _wsBaseUrl => _baseUrl.startsWith('http://')
@@ -407,6 +417,7 @@ class BoltzDatasource {
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
+      effectAdmission?.call();
 
       return await btcLnSwap.claim(
         outAddress: claimAddress,
@@ -495,6 +506,7 @@ class BoltzDatasource {
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
+      effectAdmission?.call();
 
       return await lbtcLnSwap.claim(
         outAddress: claimAddress,
@@ -689,6 +701,7 @@ class BoltzDatasource {
   Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
+      effectAdmission?.call();
       return await btcLnSwap.coopCloseSubmarine();
     } catch (e) {
       if (e is BoltzError) {
@@ -702,6 +715,7 @@ class BoltzDatasource {
   Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
+      effectAdmission?.call();
       await lbtcLnSwap.coopCloseSubmarine();
       return;
     } catch (e) {
@@ -722,6 +736,7 @@ class BoltzDatasource {
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
+      effectAdmission?.call();
       return await btcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -746,6 +761,7 @@ class BoltzDatasource {
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
+      effectAdmission?.call();
       return await lbtcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -971,6 +987,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
       // The claim spends the server lockup on the RECEIVING chain (Liquid).
       return await chainSwap.claim(
         outAddress: claimLiquidAddress,
@@ -996,6 +1013,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
       // The claim spends the server lockup on the RECEIVING chain (Bitcoin).
       return await chainSwap.claim(
         outAddress: claimBitcoinAddress,
@@ -1048,6 +1066,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
       // BtcToLbtc refunds spend the user's BITCOIN lockup.
       return await chainSwap.refund(
         refundAddress: refundBitcoinAddress,
@@ -1073,6 +1092,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
 
       // LbtcToBtc refunds spend the user's LIQUID lockup.
       final signedTxHex = await chainSwap.refund(
@@ -1343,6 +1363,7 @@ class BoltzDatasource {
     SwapStatus boltzStatus,
     String? transactionId,
   ) {
+    if (_disposed) return Future<void>.value();
     final previous = _eventChains[swapId] ?? Future.value();
     final next = previous.then(
       (_) =>
@@ -1361,16 +1382,30 @@ class BoltzDatasource {
   /// mapping pipeline as websocket events, so recovery never depends on Boltz
   /// replaying events missed while disconnected.
   Future<void> reconcileSwaps(List<String> swapIds) async {
-    for (final swapId in swapIds) {
-      try {
-        final response = await _http.get<Map<String, dynamic>>('/swap/$swapId');
-        final data = response.data;
-        if (data == null) continue;
-        final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
-        await _enqueueEvent(swapId, status.status, status.transaction?.id);
-      } catch (e) {
-        swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
+    if (_disposed) return;
+    final cancellation = CancelToken();
+    final deadline = Timer(const Duration(seconds: 30), () {
+      cancellation.cancel('status reconciliation deadline');
+    });
+    try {
+      for (final swapId in swapIds) {
+        if (_disposed || cancellation.isCancelled) break;
+        try {
+          final response = await _http.get<Map<String, dynamic>>(
+            '/swap/$swapId',
+            cancelToken: cancellation,
+          );
+          if (_disposed || cancellation.isCancelled) break;
+          final data = response.data;
+          if (data == null) continue;
+          final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
+          await _enqueueEvent(swapId, status.status, status.transaction?.id);
+        } catch (e) {
+          swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
+        }
       }
+    } finally {
+      deadline.cancel();
     }
   }
 
@@ -1380,11 +1415,13 @@ class BoltzDatasource {
     SwapStatus boltzStatus, {
     String? transactionId,
   }) async {
+    if (_disposed) return;
     try {
       // The repository writers hold the same per-swap lock, so a store here
       // can never write back a row that predates a concurrent field update.
       await _boltzStore.mutate(swapId, () async {
         final swapModel = await _boltzStore.fetch(swapId);
+        if (_disposed) return;
         if (swapModel == null) {
           unsubscribeToSwaps([swapId]);
           return;
@@ -1400,12 +1437,12 @@ class BoltzDatasource {
         switch (mapping) {
           case SwapUnchanged():
             if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
-              _swapUpdatesController.add(swapModel);
+              if (!_disposed) _swapUpdatesController.add(swapModel);
               unsubscribeToSwaps([swapId]);
             } else if (_swapNeedsProcessing(swapModel)) {
               // Status unchanged but the swap still needs a claim, refund or coop
               // close: re-emit so reconciliation un-sticks a missed action.
-              _swapUpdatesController.add(swapModel);
+              if (!_disposed) _swapUpdatesController.add(swapModel);
             }
 
           case SwapUpdated(:final swap):
@@ -1414,7 +1451,7 @@ class BoltzDatasource {
               '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
               '(event ${boltzStatus.name})',
             );
-            _swapUpdatesController.add(swap);
+            if (!_disposed) _swapUpdatesController.add(swap);
             if (_isSettled(swap) && !_swapNeedsProcessing(swap)) {
               unsubscribeToSwaps([swapId]);
             }
@@ -1508,7 +1545,13 @@ class BoltzDatasource {
     _boltzWebSocket = null;
     webSocket?.dispose();
     _subscribedSwapIds.clear();
-    _http.close();
+    _http.close(force: true);
+  }
+
+  /// Close read transports and join mutations already admitted from events.
+  Future<void> close() async {
+    dispose();
+    await Future.wait(_eventChains.values.toList());
   }
 
   void unsubscribeToSwaps(List<String> swapIds) {
