@@ -866,5 +866,82 @@
   "recoverbullPassphraseWhitespace": "Leading or trailing spaces are part of your passphrase.",
   "recoverbullContinueWithoutPassphrase": "Continue without",
   "recoverbullContinueWithoutPassphraseWarning": "Open a different wallet? It is probably empty. This does not recover the wallet in your backup.",
-  "recoverbullPassphraseVerify": "Verify"
+  "recoverbullPassphraseVerify": "Verify",
+  "torSettingsModeDirectDescription": "Connects directly to the Tor network without a pluggable transport.",
+  "@torSettingsModeDirectDescription": {
+    "description": "Direct Tor mode explanation"
+  },
+  "torSettingsDescCensored": "Tor could not reach the network. This often means the connection is being filtered.",
+  "@torSettingsDescCensored": {
+    "description": "Explains that Tor traffic seems blocked by the network, and that this diagnosis is best-effort."
+  },
+  "torSettingsModeAutomaticDescription": "Tries a direct Tor connection first and uses Snowflake if the network appears to block Tor.",
+  "@torSettingsModeAutomaticDescription": {
+    "description": "Automatic Tor mode explanation"
+  },
+  "torSettingsModeSnowflakeDescription": "Uses volunteer Snowflake proxies to reach Tor from a filtered network.",
+  "@torSettingsModeSnowflakeDescription": {
+    "description": "Snowflake Tor mode explanation"
+  },
+  "torSettingsDescConnected": "Tor proxy is running and ready",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsStatusCensored": "Connection appears filtered",
+  "@torSettingsStatusCensored": {
+    "description": "Shown when Tor cannot complete its handshake, which is consistent with the network filtering Tor traffic."
+  },
+  "torSettingsActiveTransport": "Active transport: {transport}",
+  "@torSettingsActiveTransport": {
+    "description": "Transport currently used by embedded Tor",
+    "placeholders": {
+      "transport": {
+        "type": "String"
+      }
+    }
+  },
+  "torSettingsModeSnowflake": "Snowflake",
+  "@torSettingsModeSnowflake": {
+    "description": "Snowflake Tor transport mode label"
+  },
+  "torTitle": "Tor",
+  "@torTitle": {
+    "description": "Short title for Tor configuration entry points"
+  },
+  "backupWalletHowToDecide": "How to decide?",
+  "@backupWalletHowToDecide": {
+    "description": "Link text to open modal explaining how to choose backup method"
+  },
+  "backupWalletHowToDecideBackupModalTitle": "How to decide",
+  "@backupWalletHowToDecideBackupModalTitle": {
+    "description": "Modal title for backup method comparison help"
+  },
+  "backupSettingsSecurityWarning": "Security Warning",
+  "@backupSettingsSecurityWarning": {
+    "description": "Title for backup key security warning modal"
+  },
+  "torSettingsTitle": "Tor Settings",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "recoverbullSnowflakeSlow": "Snowflake can take several minutes on a filtered network. Keep the app open.",
+  "@recoverbullSnowflakeSlow": {
+    "description": "Shown on the RecoverBull connection screen while Snowflake bootstraps, which can take minutes."
+  },
+  "torSettingsExternalProxyUnavailableDescription": "Bull could not connect to the configured SOCKS5 proxy.",
+  "@torSettingsExternalProxyUnavailableDescription": {"description": "Status description when the external SOCKS5 proxy is unavailable"},
+  "torSettingsStatusNoInternetOrBlocked": "No internet or censored network",
+  "@torSettingsStatusNoInternetOrBlocked": {"description": "Status title when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"},
+  "torSettingsDescNoInternetOrBlocked": "This network has no internet access, or it blocks Tor.",
+  "@torSettingsDescNoInternetOrBlocked": {"description": "Status description when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"},
+  "recoverbullUseSnowflake": "Use Snowflake",
+  "@recoverbullUseSnowflake": {"description": "Button restarting Tor through Snowflake from the connection failure panel"},
+  "recoverbullDiscardPendingBackup": "Discard and start over",
+  "@recoverbullDiscardPendingBackup": {"description": "Button discarding a sealed backup whose save did not complete, so the user can choose a new password"},
+  "recoverbullRecoveryIncompleteTitle": "Wallets not created yet",
+  "@recoverbullRecoveryIncompleteTitle": {"description": "Title when a backup was imported but its wallets could not be created"},
+  "recoverbullRecoveryIncompleteDescription": "Your backup was imported, but its wallets could not be created. Retry to finish the recovery.",
+  "@recoverbullRecoveryIncompleteDescription": {"description": "Explains that the backup was imported but its wallets could not be created, with a retry"},
+  "recoverbullScrambleKeypadHint": "Scramble the digits on every tap",
+  "@recoverbullScrambleKeypadHint": {"description": "Tooltip on the PIN keypad key that shuffles the digit keys after each press so an onlooker cannot follow their positions"}
 }

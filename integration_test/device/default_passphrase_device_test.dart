@@ -38,7 +38,8 @@ import 'package:bull_recoverbull/src/domain/usecases/restore_vault_usecase.dart'
 import 'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
-import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
+import 'package:bull_recoverbull/src/ui/pages/password_input_page.dart';
+import 'package:bull_recoverbull/src/ui/recoverbull_flow_navigator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -159,7 +160,11 @@ void main({bool isInitialized = false}) {
     Fingerprint? owned;
     try {
       final secret = custodyValue(
-        await secrets.import(words: words, passphrase: phrase),
+        await secrets.import(
+          words: words,
+          passphrase: phrase,
+          language: Language.english,
+        ),
       );
       owned = secret.id;
       expect(secret.info.hasPassphrase, isTrue);
@@ -256,7 +261,11 @@ void main({bool isInitialized = false}) {
     Fingerprint? owned;
     try {
       final secret = custodyValue(
-        await secrets.import(words: words, passphrase: phrase),
+        await secrets.import(
+          words: words,
+          passphrase: phrase,
+          language: Language.english,
+        ),
       );
       owned = secret.id;
       final vaults = SecretsVaultRepository(secrets);
@@ -281,10 +290,13 @@ void main({bool isInitialized = false}) {
         theme: AppTheme.themeData(AppThemeType.light),
         localizationsDelegates: rb.RecoverBullFeature.localizationsDelegates,
         supportedLocales: RecoverBullLocalizations.supportedLocales,
-        home: VaultFlowPage(
+        home: RecoverBullFlowHost(
           flow: flow,
-          presentation: () async => presentation,
+          presentation: presentation,
+          page: const PasswordInputPage(),
           copiedMessage: 'Copied',
+          onTestVault: () {},
+          onFinished: () {},
         ),
       );
 
@@ -323,7 +335,9 @@ void main({bool isInitialized = false}) {
         tester,
         () => find.text('Enter a vault key instead').evaluate().isNotEmpty,
       );
-      await tester.tap(find.text('Enter a vault key instead'));
+      await tester.tap(
+        find.widgetWithText(BullButton, 'Enter a vault key instead'),
+      );
       await tester.pumpAndSettle();
       await _waitFor(
         tester,

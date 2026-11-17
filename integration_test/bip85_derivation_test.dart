@@ -58,7 +58,10 @@ Future<void> main({bool isInitialized = false}) async {
     await sqlite.managers.bip85Derivations.delete();
     await sqlite.managers.walletMetadatas.delete();
 
-    final imported = await secrets.import(words: mnemonic.words);
+    final imported = await secrets.import(
+      words: mnemonic.words,
+      language: Language.english,
+    );
     final Secret secret;
     switch (imported) {
       case Ok(:final value):

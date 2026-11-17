@@ -26,7 +26,9 @@ import 'package:bull_recoverbull/src/domain/usecases/save_vault_usecase.dart';
 import 'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
-import 'package:bull_recoverbull/src/ui/screens/vault_flow_page.dart';
+import 'package:bull_recoverbull/src/ui/pages/password_input_page.dart';
+import 'package:bull_recoverbull/src/ui/recoverbull_flow_navigator.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:bull_ui/testing.dart';
 import 'package:drift/native.dart';
 import 'package:material_ui/material_ui.dart';
@@ -41,6 +43,9 @@ void main() {
     testWidgets(
       'server key is fetched once while passphrase retries stay local: $changeServer',
       (tester) async {
+        tester.view.physicalSize = const Size(1080, 2340);
+        tester.view.devicePixelRatio = 2.75;
+        addTearDown(tester.view.reset);
         const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
         ScreenCaptureProtection.instance.enabledByUser = true;
         tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -67,6 +72,7 @@ void main() {
           final imported = await secrets.import(
             words: [...List.filled(11, 'abandon'), 'about'],
             passphrase: 'synthetic-phrase',
+            language: custody.Language.english,
           );
           final secret =
               (imported as Ok<custody.Secret, custody.SecretFailure>).value;
@@ -142,16 +148,23 @@ void main() {
             theme: ThemeData(extensions: testBullExtensions),
             localizationsDelegates: RecoverBullFeature.localizationsDelegates,
             supportedLocales: RecoverBullLocalizations.supportedLocales,
-            home: VaultFlowPage(
+            home: RecoverBullFlowHost(
               flow: RecoverBullFlow.recoverVault,
-              presentation: () async => presentation,
+              presentation: presentation,
+              page: const PasswordInputPage(),
               copiedMessage: 'Copied',
+              onTestVault: () {},
+              onFinished: () {},
             ),
           ),
         );
         await tester.runAsync(() async {
           await presentation.cubit.settings();
         });
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.widgetWithText(BullButton, 'Pick a password instead'),
+        );
         await tester.pumpAndSettle();
         await tester.enterText(
           find.byType(TextField),
@@ -165,6 +178,10 @@ void main() {
           await tester.tap(find.text('Continue'));
           await failure;
         });
+        await _pumpUntil(
+          tester,
+          () => find.text('Passphrase required').evaluate().isNotEmpty,
+        );
         await tester.pumpAndSettle();
         expect(find.text('Passphrase required'), findsWidgets);
         expect(server.fetches, 1);
@@ -214,7 +231,9 @@ void main() {
             tester.widget<TextField>(find.byType(TextField)).controller?.text,
             isEmpty,
           );
-          await tester.tap(find.text('Enter a vault key instead'));
+          await tester.tap(
+            find.widgetWithText(BullButton, 'Enter a vault key instead'),
+          );
           await tester.pumpAndSettle();
           await tester.enterText(find.byType(TextField), server.key.hex);
           await tester.ensureVisible(find.text('Continue'));
@@ -225,6 +244,10 @@ void main() {
             await tester.tap(find.text('Continue'));
             await failure;
           });
+          await _pumpUntil(
+            tester,
+            () => find.text('Passphrase required').evaluate().isNotEmpty,
+          );
           await tester.pumpAndSettle();
           expect(find.text('Passphrase required'), findsWidgets);
           expect(server.fetches, 1);
@@ -283,5 +306,18 @@ final class _Sessions extends Fake implements KeyServerSessionRepository {
   Future<Result<KeyServerRepository, RecoverBullFailure>> open(
     Uri server, {
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async => Ok(this.server);
+}
+
+/// Alternates real time and frames until [done]: the fetch finishes on the
+/// real event loop, then hands its outcome to the progress page.
+Future<void> _pumpUntil(WidgetTester tester, bool Function() done) async {
+  for (var i = 0; i < 200 && !done(); i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
+    await tester.pump();
+  }
+  expect(done(), isTrue);
 }

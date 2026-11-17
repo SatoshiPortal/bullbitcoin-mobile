@@ -73,8 +73,10 @@ void main() {
     log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
-    final stored =
-        (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
+    final stored = (await secrets.import(
+      words: words,
+      language: Language.english,
+    )) as Ok<Secret, SecretFailure>;
     fingerprint = stored.value.id.hex;
 
     walletRepository = _MockWalletRepository();

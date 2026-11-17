@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "मानचित्र",
   "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
   "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
   "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
@@ -1368,7 +1367,7 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "कनेक्ट",
+  "torSettingsStatusConnected": "तैयार",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -5465,10 +5464,6 @@
   "fundExchangeSinpeDescription": "SINPE का उपयोग कर Colones स्थानांतरण",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " शब्द",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Ledger पर पता सत्यापित करें",
   "@receiveVerifyAddressOnLedger": {
@@ -11463,5 +11458,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "हम पुष्टि नहीं कर सके कि आपका लेनदेन प्रसारित हुआ। दोबारा कोशिश करने से पहले किसी ब्लॉक एक्सप्लोरर में जाँच करें।",
   "broadcastSignedTxErrorNetworkNotEnabled": "मौजूदा सेटिंग्स में इस नेटवर्क पर प्रसारण सक्षम नहीं है।",
   "settingsDarkModeTitle": "डार्क मोड",
-  "settingsSourceCodeTitle": "सोर्स कोड"
+  "settingsSourceCodeTitle": "सोर्स कोड",
+  "torSettingsStatusNoInternetOrBlocked": "इंटरनेट नहीं है या नेटवर्क सेंसर है",
+  "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।",
+  "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।"
 }

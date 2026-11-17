@@ -29,6 +29,18 @@ final class CompleteVaultUsecase {
     this.unavailableFailure,
   });
 
+  /// Retries the wallet creation of an import that committed without them.
+  Future<VaultCompletion> retryWallets(VaultCompletion completion) async {
+    final recovery = completion.recovery;
+    if (recovery is! VaultRecoveryNeedsWallets) return completion;
+    return VaultCompletion(
+      vault: completion.vault,
+      verifiedContext: completion.verifiedContext,
+      recovery: await _restore.retryWallets(recovery),
+      warning: completion.warning,
+    );
+  }
+
   Future<Result<VaultCompletion, RecoverBullFailure>> execute({
     required EncryptedVault vault,
     required VaultKey key,

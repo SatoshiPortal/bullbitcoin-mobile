@@ -143,6 +143,7 @@ void main() {
             passphrase: 'TREZOR',
             network: network,
             scriptTypes: {primitives.ScriptType.bip49},
+            language: bip39.Language.english,
           )) {
             Ok(:final value) => value[primitives.ScriptType.bip49],
             _ => null,
@@ -249,6 +250,7 @@ void main() {
         words: words,
         network: BitcoinNetwork.mainnet,
         scriptTypes: primitives.ScriptType.values.toSet(),
+        language: bip39.Language.english,
       )) {
         Ok(:final value) => value,
         _ => fail('preview failed'),

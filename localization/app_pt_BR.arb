@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
   "backupWarningLoseReasonLostPhone": "Perder o celular",
   "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
@@ -1312,7 +1311,7 @@
   "@swapTitle": {
     "description": "AppBar title for swap/internal transfer screen"
   },
-  "torSettingsStatusConnected": "Conectado",
+  "torSettingsStatusConnected": "Pronto",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -9856,10 +9855,6 @@
   "@networkFeesLabel": {
     "description": "Label for network transaction fees in onchain send"
   },
-  "wordsDropdownSuffix": " palavras",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "recoverYourWalletTitle": "Recupere sua carteira",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"
@@ -11288,5 +11283,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que sua transação foi transmitida. Verifique em um explorador de blocos antes de tentar novamente.",
   "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas configurações atuais.",
   "settingsDarkModeTitle": "Modo escuro",
-  "settingsSourceCodeTitle": "Código-fonte"
+  "settingsSourceCodeTitle": "Código-fonte",
+  "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
+  "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado."
 }

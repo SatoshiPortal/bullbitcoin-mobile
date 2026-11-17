@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_sdk/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -43,6 +44,7 @@ void main() {
           await repo.store(
             words: words,
             passphrase: passphrase.isEmpty ? null : passphrase,
+            language: bip39.Language.english,
           ),
         );
         final secret = ok(await repo.use(info, (m) => m));

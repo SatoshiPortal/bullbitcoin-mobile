@@ -24,7 +24,10 @@ void main() {
         scratchDirectory: () async => directory.path,
       );
       expect(
-        await secrets.import(words: '${'abandon ' * 11}about'.split(' ')),
+        await secrets.import(
+          words: '${'abandon ' * 11}about'.split(' '),
+          language: custody.Language.english,
+        ),
         isA<Ok>(),
       );
       final context = VaultContext(
@@ -79,10 +82,17 @@ final class _Routes implements RecoverBullRoutePort {
   @override
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async {
     opens++;
     return const Err(RecoverBullUnexpectedFailure());
   }
+
+  @override
+  Stream<TorConnectionState> watch() => const Stream.empty();
+
+  @override
+  bool get snowflakeAvailable => false;
 }
 
 final class _Owners

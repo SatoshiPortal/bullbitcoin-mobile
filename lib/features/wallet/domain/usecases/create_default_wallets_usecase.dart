@@ -26,6 +26,7 @@ class CreateDefaultWalletsUsecase {
   @useResult
   Future<Result<List<Wallet>, DefaultWalletFailure>> execute({
     List<String>? mnemonicWords,
+    Language? language,
     Secret? secret,
     String passphrase = '',
     NetworkEnv? expectedNetwork,
@@ -35,6 +36,10 @@ class CreateDefaultWalletsUsecase {
     }
     if (passphrase.isNotEmpty && mnemonicWords == null) {
       throw ArgumentError('A passphrase requires mnemonic words');
+    }
+    // Words are only meaningful in their own wordlist: never assume one.
+    if ((mnemonicWords == null) != (language == null)) {
+      throw ArgumentError('Mnemonic words require their language');
     }
     if (secret != null && defaultWalletSecretRefusal(secret.info) != null) {
       return const Err(DefaultWalletMnemonicRequiredFailure());
@@ -121,7 +126,7 @@ class CreateDefaultWalletsUsecase {
       final defaultSecret =
           resumedSecret ??
           secret ??
-          switch (await _resolveSecret(mnemonicWords, passphrase)) {
+          switch (await _resolveSecret(mnemonicWords, language, passphrase)) {
             Ok(:final value) => value,
             Err() => null,
           };
@@ -172,11 +177,13 @@ class CreateDefaultWalletsUsecase {
 
   Future<Result<Secret, SecretFailure>> _resolveSecret(
     List<String>? words,
+    Language? language,
     String passphrase,
   ) async {
-    if (words == null) return _secrets.generate();
+    if (words == null || language == null) return _secrets.generate();
     final imported = await _secrets.import(
       words: words,
+      language: language,
       passphrase: passphrase,
     );
     // Import reports a duplicate only after comparing the full seed. Reuse it

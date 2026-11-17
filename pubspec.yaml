@@ -26,6 +26,7 @@ workspace:
   - packages/bull_logger
   - packages/bull_pricer
   - packages/swaps
+  - features/btc_map
   - packages/novlang
   - features/logs
   - features/quick_actions
@@ -40,6 +41,7 @@ dependencies:
   bull_payjoin:
   bull_pricer:
   novlang:
+  btc_map:
   bull_ui:
   primitives:
   background_tasks:

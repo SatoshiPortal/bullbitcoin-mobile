@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Карта",
   "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо:",
   "backupWarningLoseReasonLostPhone": "Втратите телефон",
   "backupWarningLoseReasonDeletedApp": "Видалите застосунок",
@@ -1288,7 +1287,7 @@
   "autoswapWarningOkButton": "ЗАРЕЄСТРУВАТИСЯ",
   "swapTitle": "Внутрішній обмін",
   "sendOutputTooSmall": "Вихід нижче обмеження пилу",
-  "torSettingsStatusConnected": "Зв'язатися",
+  "torSettingsStatusConnected": "Готово",
   "ledgerSuccessVerifyTitle": "Перевірити адресу на Ledger ...",
   "backupSettingsFailedToDeriveKey": "Переміщений для відновлення ключа резервного копіювання",
   "googleDriveProvider": "Українська",
@@ -2146,7 +2145,6 @@
   "sendSwapInProgressBitcoin": "Ведуться ковпа. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "electrumDeleteServerTitle": "Видалити користувальницький сервер",
   "buySelfie": "Селфі з ID",
-  "wordsDropdownSuffix": " слова",
   "backupSettingsKeyWarningBold": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
   "exchangeLandingConnectAccount": "Підключіть свій обліковий запис Біткойн",
   "importWatchOnlyLabel": "Етикетка",
@@ -4620,5 +4618,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Не вдалося підтвердити, що транзакцію було трансльовано. Перевірте її в оглядачі блоків, перш ніж повторити спробу.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляцію в цій мережі не ввімкнено в поточних налаштуваннях.",
   "settingsDarkModeTitle": "Темний режим",
-  "settingsSourceCodeTitle": "Вихідний код"
+  "settingsSourceCodeTitle": "Вихідний код",
+  "torSettingsStatusNoInternetOrBlocked": "Немає інтернету або мережа під цензурою",
+  "torSettingsDescNoInternetOrBlocked": "Ця мережа не має доступу до інтернету або блокує Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull не вдалося підключитися до налаштованого проксі SOCKS5."
 }

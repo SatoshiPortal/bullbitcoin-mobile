@@ -1,3 +1,4 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -40,6 +41,7 @@ void main() {
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     final imported = await secrets.import(
       words: [...List.filled(11, 'abandon'), 'about'],
+      language: bip39.Language.english,
     );
     final regtestSecret = (imported as Ok<Secret, SecretFailure>).value;
     final regtestWallet = WalletMock();
@@ -68,10 +70,12 @@ void main() {
       final secrets = Secrets(scratchDirectory: () async => '/tmp');
       final regtestResult = await secrets.import(
         words: [...List.filled(11, 'abandon'), 'about'],
+        language: bip39.Language.english,
       );
       final testnetResult = await secrets.import(
         words: 'legal winner thank year wave sausage worth useful legal winner thank yellow'
             .split(' '),
+        language: bip39.Language.english,
       );
       final regtestSecret = (regtestResult as Ok<Secret, SecretFailure>).value;
       final testnetSecret = (testnetResult as Ok<Secret, SecretFailure>).value;

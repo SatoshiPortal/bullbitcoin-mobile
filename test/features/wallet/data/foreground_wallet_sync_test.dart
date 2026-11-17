@@ -189,6 +189,7 @@ void main() {
         final secrets = Secrets(scratchDirectory: () async => directory.path);
         final secret = await secrets.import(
           words: [...List.filled(11, 'abandon'), 'about'],
+          language: Language.english,
         ) as Ok<Secret, SecretFailure>;
         final local = row.copyWith(
           signer: Signer.local,

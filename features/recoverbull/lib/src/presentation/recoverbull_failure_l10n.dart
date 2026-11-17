@@ -13,6 +13,7 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
     VaultPassphraseAcknowledgementFailure() =>
       context.loc.recoverbullPassphraseAcknowledgement,
     VaultInvalidFailure() => context.loc.recoverbullErrorInvalidVaultFile,
+    VaultDecryptionFailure() => context.loc.recoverbullErrorDecryptFailed,
     VaultWalletMismatchFailure() =>
       context.loc.recoverbullErrorVaultBelongsToAnotherWallet,
     KeyServerFailure(kind: KeyServerFailureKind.credentials) =>
@@ -26,7 +27,25 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       ),
     KeyServerFailure(kind: KeyServerFailureKind.locked) =>
       context.loc.recoverbullLockoutAlert,
+    KeyServerFailure(:final cause?) => switch (cause) {
+      KeyServerUnreachableCause.circuitTimeout =>
+        context.loc.recoverbullServerCircuitTimeout,
+      KeyServerUnreachableCause.torNetworkUnreachable =>
+        context.loc.recoverbullServerTorNetworkUnreachable,
+      KeyServerUnreachableCause.onionUnreachable =>
+        context.loc.recoverbullServerOnionUnreachable,
+      KeyServerUnreachableCause.connectionRefused =>
+        context.loc.recoverbullServerConnectionRefused,
+      KeyServerUnreachableCause.proxyGone =>
+        context.loc.recoverbullServerTorSessionGone,
+      KeyServerUnreachableCause.httpError =>
+        context.loc.recoverbullServerHttpError,
+      KeyServerUnreachableCause.badResponse =>
+        context.loc.recoverbullServerBadResponse,
+    },
     KeyServerFailure() => context.loc.recoverbullErrorConnectionFailed,
+    ExternalTorProxyUnavailableFailure() =>
+      context.loc.torSettingsExternalProxyUnavailableDescription,
     VaultSecretMissingFailure() ||
     VaultKeystoreLockedFailure() ||
     VaultStorageFailure() ||
@@ -48,4 +67,19 @@ extension RecoverBullFailureL10n on RecoverBullFailure {
       delay.inSeconds < 1 ? 1 : delay.inSeconds,
     );
   }
+}
+
+/// A fixed, untranslated label naming the exact transport reason, shown under the message so a report names it.
+extension KeyServerFailureDetail on KeyServerFailure {
+  String? get technicalLabel => switch (cause) {
+    KeyServerUnreachableCause.circuitTimeout => 'Tor: connect timeout',
+    KeyServerUnreachableCause.torNetworkUnreachable =>
+      'Tor: network unreachable',
+    KeyServerUnreachableCause.onionUnreachable => 'Tor: onion unreachable',
+    KeyServerUnreachableCause.connectionRefused => 'Tor: connection refused',
+    KeyServerUnreachableCause.proxyGone => 'Tor: session closed',
+    KeyServerUnreachableCause.httpError => 'HTTP ${httpStatus ?? '?'}',
+    KeyServerUnreachableCause.badResponse => 'Server: bad response',
+    null => null,
+  };
 }

@@ -50,10 +50,10 @@ const testBullTheme = BullTheme(
 
 /// Every theme extension `bull_ui` components read, for tests that build their
 /// own `ThemeData`: `ThemeData(extensions: testBullExtensions)`.
-const testBullExtensions = <ThemeExtension<dynamic>>[
-  testBullTheme,
-  BullShapes.standard,
-];
+final testBullExtensions = bullUiExtensions(
+  colors: testBullTheme,
+  brightness: Brightness.light,
+);
 
 /// Wraps [child] in a `MaterialApp` carrying [testBullExtensions].
 Widget wrapWithTheme(Widget child) {

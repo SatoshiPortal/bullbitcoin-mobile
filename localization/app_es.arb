@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Sin una copia de seguridad, perderás el acceso a tus bitcoin si:",
   "backupWarningLoseReasonLostPhone": "Pierdes tu teléfono",
   "backupWarningLoseReasonDeletedApp": "Eliminas la aplicación",
@@ -1485,7 +1484,6 @@
   "submitButton": "Enviar",
   "optionalPassphraseHint": "Frase de contraseña opcional",
   "requiredHint": "Requerido",
-  "wordsDropdownSuffix": " palabras",
   "emptyMnemonicWordsError": "Ingrese todas las palabras de su mnemónico",
   "tryAgainButton": "Intentar de nuevo",
   "errorGenericTitle": "¡Ups! Algo salió mal",
@@ -3230,7 +3228,7 @@
   "torSettingsPortValidationRange": "El puerto debe estar entre 1 y 65535",
   "torSettingsSaveButton": "Guardar",
   "torSettingsConnectionStatus": "Estado de conexión",
-  "torSettingsStatusConnected": "Conectado",
+  "torSettingsStatusConnected": "Listo",
   "torSettingsStatusConnecting": "Conectando...",
   "torSettingsStatusDisconnected": "Desconectado",
   "torSettingsStatusUnknown": "Estado desconocido",
@@ -4624,5 +4622,12 @@
   "broadcastSignedTxErrorOutcomeUnknown": "No pudimos confirmar que tu transacción se haya transmitido. Revisa un explorador de bloques antes de volver a intentarlo.",
   "broadcastSignedTxErrorNetworkNotEnabled": "La transmisión en esta red no está habilitada en la configuración actual.",
   "settingsDarkModeTitle": "Modo oscuro",
-  "settingsSourceCodeTitle": "Código fuente"
+  "settingsSourceCodeTitle": "Código fuente",
+  "torSettingsStatusNoInternetOrBlocked": "Sin internet o red censurada",
+  "torSettingsDescNoInternetOrBlocked": "Esta red no tiene acceso a internet o bloquea Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado.",
+  "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque",
+  "mnemonicWordCountLabel": "Palabras",
+  "passphraseOptionOffSubtitle": "Palabra adicional opcional (BIP39)",
+  "passphraseOptionOnSubtitle": "Se introduce abajo, nunca se muestra"
 }

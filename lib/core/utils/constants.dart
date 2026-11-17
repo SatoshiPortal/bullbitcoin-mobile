@@ -16,7 +16,6 @@ class SettingsConstants {
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
   static const exchangeTermsAndConditionsLink =
       'https://www.bullbitcoin.com/terms';
-  static const btcMapUrl = 'https://btcmap.org/map';
   static const recoverbullUrl =
       'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }

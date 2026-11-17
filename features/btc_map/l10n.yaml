@@ -1,0 +1,6 @@
+arb-dir: localization
+output-dir: lib/generated/l10n
+template-arb-file: app_en.arb
+output-localization-file: btc_map_localizations.dart
+output-class: BtcMapLocalizations
+nullable-getter: false

@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "지도",
   "backupWarningDescription": "백업이 없으면 다음과 같은 경우 비트코인에 접근할 수 없습니다:",
   "backupWarningLoseReasonLostPhone": "휴대폰을 분실한 경우",
   "backupWarningLoseReasonDeletedApp": "앱을 삭제한 경우",
@@ -1368,7 +1367,7 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "연결하기",
+  "torSettingsStatusConnected": "준비됨",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -5465,10 +5464,6 @@
   "fundExchangeSinpeDescription": "SINPE를 사용하여 Colones 전송",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " 이름 *",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Ledger에 주소 확인",
   "@receiveVerifyAddressOnLedger": {
@@ -11276,5 +11271,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "거래가 브로드캐스트되었는지 확인할 수 없습니다. 다시 시도하기 전에 블록 탐색기에서 확인하세요.",
   "broadcastSignedTxErrorNetworkNotEnabled": "현재 설정에서는 이 네트워크에서 브로드캐스트가 활성화되어 있지 않습니다.",
   "settingsDarkModeTitle": "다크 모드",
-  "settingsSourceCodeTitle": "소스 코드"
+  "settingsSourceCodeTitle": "소스 코드",
+  "torSettingsStatusNoInternetOrBlocked": "인터넷이 없거나 검열된 네트워크",
+  "torSettingsDescNoInternetOrBlocked": "이 네트워크는 인터넷에 연결되어 있지 않거나 Tor를 차단합니다.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다."
 }

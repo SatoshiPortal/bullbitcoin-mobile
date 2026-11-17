@@ -11,11 +11,15 @@ import 'backup_settings_failure.dart';
 final class BackupStatusSummary {
   final bool physicalVerified;
   final bool encryptedVerified;
+
+  /// An encrypted backup from before the current backup system, never stored or tested since.
+  final bool encryptedHistorical;
   final DateTime? physicalAt;
   final DateTime? encryptedAt;
   const BackupStatusSummary({
     this.physicalVerified = false,
     this.encryptedVerified = false,
+    this.encryptedHistorical = false,
     this.physicalAt,
     this.encryptedAt,
   });
@@ -69,6 +73,10 @@ final class ReadBackupStatusUsecase {
         BackupStatusSummary(
           physicalVerified: bitcoin.isPhysicalBackupTested,
           encryptedVerified: current?.isVerified ?? false,
+          encryptedHistorical:
+              current?.storedAt == null &&
+              current?.verifiedAt == null &&
+              bitcoin.latestEncryptedBackup != null,
           physicalAt: bitcoin.latestPhysicalBackup,
           // The old date keeps access available, never the verification badge.
           encryptedAt:

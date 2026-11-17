@@ -25,6 +25,42 @@ class _Recover extends Mock implements RecoverOnboardingWalletUsecase {}
 class _Scan extends Mock implements ScanOnboardingWalletUsecase {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(bip39.Language.english));
+  testWidgets('the keyboard offers every recovery phrase language', (
+    tester,
+  ) async {
+    const channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (_) async => true);
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null),
+    );
+    final bloc = OnboardingBloc(
+      createOnboardingWalletUsecase: _Create(),
+      recoverOnboardingWalletUsecase: _Recover(),
+      scanOnboardingWalletUsecase: _Scan(),
+    );
+    addTearDown(bloc.close);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider.value(
+          value: bloc,
+          child: const OnboardingPhysicalRecovery(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(TextField).first);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('mnemonicLanguageKey')), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('an empty scan asks before recovering the wallet', (
     tester,
   ) async {
@@ -36,12 +72,14 @@ void main() {
     final scan = _Scan();
     when(
       () => scan.execute(
+        language: any(named: 'language'),
         words: any(named: 'words'),
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) async => const Ok(false));
     when(
       () => recover.execute(
+        language: any(named: 'language'),
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
       ),
@@ -84,6 +122,7 @@ void main() {
     );
     verifyNever(
       () => recover.execute(
+        language: any(named: 'language'),
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
       ),
@@ -92,6 +131,7 @@ void main() {
     await tester.pumpAndSettle();
     verifyNever(
       () => recover.execute(
+        language: any(named: 'language'),
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
       ),
@@ -107,7 +147,11 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     verify(
-      () => recover.execute(mnemonicWords: ['abandon'], passphrase: 'pass'),
+      () => recover.execute(
+        mnemonicWords: ['abandon'],
+        language: bip39.Language.english,
+        passphrase: 'pass',
+      ),
     ).called(1);
     recovery.complete(const Err(OnboardingWalletSetupFailure()));
     await tester.pump();
@@ -127,6 +171,7 @@ void main() {
       final pending = Completer<Result<bool, OnboardingFailure>>();
       when(
         () => scan.execute(
+          language: any(named: 'language'),
           words: any(named: 'words'),
           passphrase: any(named: 'passphrase'),
         ),
@@ -162,6 +207,7 @@ void main() {
       expect(find.textContaining('This wallet looks empty'), findsNothing);
       verifyNever(
         () => recover.execute(
+          language: any(named: 'language'),
           mnemonicWords: any(named: 'mnemonicWords'),
           passphrase: any(named: 'passphrase'),
         ),
@@ -184,12 +230,14 @@ void main() {
     final recovery = Completer<Result<void, OnboardingFailure>>();
     when(
       () => recover.execute(
+        language: any(named: 'language'),
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
       ),
     ).thenAnswer((_) => recovery.future);
     when(
       () => scan.execute(
+        language: any(named: 'language'),
         words: any(named: 'words'),
         passphrase: any(named: 'passphrase'),
       ),
@@ -225,19 +273,29 @@ void main() {
     expect(find.text('This wallet looks empty'), findsNothing);
     verifyNever(
       () => recover.execute(
+        language: any(named: 'language'),
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
       ),
     );
     await tester.tap(find.text('Retry'));
     await tester.pumpAndSettle();
-    verify(() => scan.execute(words: ['abandon'], passphrase: ' pass '))
-        .called(2);
+    verify(
+      () => scan.execute(
+        words: ['abandon'],
+        language: bip39.Language.english,
+        passphrase: ' pass ',
+      ),
+    ).called(2);
     await tester.tap(find.text('Continue without checking'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     verify(
-      () => recover.execute(mnemonicWords: ['abandon'], passphrase: ' pass '),
+      () => recover.execute(
+        mnemonicWords: ['abandon'],
+        language: bip39.Language.english,
+        passphrase: ' pass ',
+      ),
     ).called(1);
     recovery.complete(const Err(OnboardingWalletSetupFailure()));
     await tester.pump();
@@ -255,6 +313,7 @@ void main() {
     final scan = _Scan();
     when(
       () => scan.execute(
+        language: any(named: 'language'),
         words: any(named: 'words'),
         passphrase: any(named: 'passphrase'),
       ),
@@ -308,6 +367,7 @@ void main() {
     final recovery = Completer<Result<void, OnboardingFailure>>();
     when(
       () => recover.execute(
+        language: any(named: 'language'),
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
       ),
@@ -315,6 +375,7 @@ void main() {
     final scan = _Scan();
     when(
       () => scan.execute(
+        language: any(named: 'language'),
         words: any(named: 'words'),
         passphrase: any(named: 'passphrase'),
       ),
@@ -345,12 +406,18 @@ void main() {
     await tester.pump();
     verifyNever(
       () => scan.execute(
+        language: any(named: 'language'),
         words: any(named: 'words'),
         passphrase: any(named: 'passphrase'),
       ),
     );
-    verify(() => recover.execute(mnemonicWords: ['abandon'], passphrase: ''))
-        .called(1);
+    verify(
+      () => recover.execute(
+        mnemonicWords: ['abandon'],
+        language: bip39.Language.english,
+        passphrase: '',
+      ),
+    ).called(1);
     expect(find.textContaining('This wallet looks empty'), findsNothing);
     recovery.complete(const Err(OnboardingWalletSetupFailure()));
     await tester.pump();

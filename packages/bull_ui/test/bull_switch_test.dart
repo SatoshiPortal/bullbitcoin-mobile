@@ -6,54 +6,48 @@ import 'test_app.dart';
 
 void main() {
   group('BullSwitch', () {
-    Switch pumpedSwitch(WidgetTester tester) =>
-        tester.widget<Switch>(find.byType(Switch));
+    const on = {WidgetState.selected};
+    const off = <WidgetState>{};
+    final theme = BullSwitch.themeData(testBullTheme);
 
-    testWidgets('uses the app-wide switch colours', (tester) async {
-      await tester.pumpWidget(
-        wrapWithTheme(BullSwitch(value: false, onChanged: (_) {})),
-      );
+    SwitchThemeData appliedTheme(WidgetTester tester) =>
+        SwitchTheme.of(tester.element(find.byType(Switch)));
 
-      final s = pumpedSwitch(tester);
-      expect(s.activeThumbColor, testBullTheme.surface);
-      expect(s.activeTrackColor, testBullTheme.text);
-      expect(s.inactiveThumbColor, testBullTheme.surface);
-      expect(s.inactiveTrackColor, testBullTheme.textMuted);
+    test('off is a hollow outlined track with a grey thumb and a cross', () {
+      expect(theme.trackColor?.resolve(off), testBullTheme.transparent);
+      expect(theme.trackOutlineColor?.resolve(off), testBullTheme.outline);
+      expect(theme.trackOutlineWidth?.resolve(off), 2);
+      expect(theme.thumbColor?.resolve(off), testBullTheme.textMuted);
+      expect(theme.thumbIcon?.resolve(off)?.icon, Icons.close);
     });
 
-    testWidgets('keeps the off track distinct from tinted rows', (
+    test('on is a primary track with a white thumb and a check', () {
+      expect(theme.trackColor?.resolve(on), testBullTheme.primary);
+      expect(theme.thumbColor?.resolve(on), testBullTheme.onPrimary);
+      final icon = theme.thumbIcon?.resolve(on);
+      expect(icon?.icon, Icons.check);
+      expect(icon?.color, testBullTheme.primary);
+    });
+
+    test('a disabled switch keeps its look, faded', () {
+      final disabled = {WidgetState.selected, WidgetState.disabled};
+      expect(
+        theme.trackColor?.resolve(disabled),
+        testBullTheme.primary.withValues(alpha: 0.38),
+      );
+      expect(theme.thumbIcon?.resolve(disabled)?.icon, Icons.check);
+    });
+
+    testWidgets('draws with its own theme whatever the app theme', (
       tester,
     ) async {
       await tester.pumpWidget(
         wrapWithTheme(BullSwitch(value: false, onChanged: (_) {})),
       );
-
-      // The receive payjoin row sits on surfaceContainerHighest; an off track
-      // of the same colour made the track vanish into the row.
+      expect(appliedTheme(tester).thumbIcon?.resolve(off)?.icon, Icons.close);
       expect(
-        pumpedSwitch(tester).inactiveTrackColor,
-        isNot(testBullTheme.surfaceContainerHighest),
-      );
-    });
-
-    testWidgets('resolves the track outline from the theme, not a raw colour', (
-      tester,
-    ) async {
-      // A transparent token that differs from Colors.transparent, so a
-      // hardcoded colour would fail here instead of matching by coincidence.
-      final theme = testBullTheme.copyWith(
-        transparent: const Color(0x00ABCDEF),
-      );
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(extensions: [theme]),
-          home: Scaffold(body: BullSwitch(value: true, onChanged: (_) {})),
-        ),
-      );
-
-      expect(
-        pumpedSwitch(tester).trackOutlineColor?.resolve(<WidgetState>{}),
-        theme.transparent,
+        appliedTheme(tester).trackOutlineColor?.resolve(off),
+        testBullTheme.outline,
       );
     });
 
@@ -74,7 +68,7 @@ void main() {
         wrapWithTheme(const BullSwitch(value: true, onChanged: null)),
       );
 
-      expect(pumpedSwitch(tester).onChanged, isNull);
+      expect(tester.widget<Switch>(find.byType(Switch)).onChanged, isNull);
     });
   });
 }

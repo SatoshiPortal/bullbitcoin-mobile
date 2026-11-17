@@ -180,6 +180,7 @@ void main() {
         () => checkDuplicate.execute(
           mnemonicWords: any(named: 'mnemonicWords'),
           passphrase: any(named: 'passphrase'),
+          language: any(named: 'language'),
         ),
       );
 
@@ -196,6 +197,7 @@ void main() {
         () => importWallet.execute(
           mnemonicWords: any(named: 'mnemonicWords'),
           label: any(named: 'label'),
+          language: any(named: 'language'),
         ),
       );
 
@@ -229,6 +231,7 @@ void main() {
         () => checkDuplicate.execute(
           mnemonicWords: any(named: 'mnemonicWords'),
           passphrase: any(named: 'passphrase'),
+          language: bip39.Language.english,
         ),
       ).thenAnswer((_) async => const Ok(null));
     });

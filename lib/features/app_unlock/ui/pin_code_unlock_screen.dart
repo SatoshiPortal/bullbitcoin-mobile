@@ -7,7 +7,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDialPad, BullInputText, BullSnackBar, BullTopBar, Gap;
+    show BullButton, BullInputText, BullPinPad, BullSnackBar, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
@@ -179,16 +179,15 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   selector: (state) =>
                       state.timeoutSeconds == 0 && !state.isVerifying,
                   builder: (context, padEnabled) {
-                    return BullDialPad(
-                      disableFeedback: true,
-                      onlyDigits: true,
+                    return BullPinPad(
+                      scrambleHint: context.loc.pinCodeScrambleKeypadHint,
                       enabled: padEnabled,
-                      onNumberPressed: (value) => context
-                          .read<AppUnlockBloc>()
-                          .add(AppUnlockPinCodeNumberAdded(int.parse(value))),
-                      onBackspacePressed: () => context
-                          .read<AppUnlockBloc>()
-                          .add(const AppUnlockPinCodeNumberRemoved()),
+                      onDigit: (digit) => context.read<AppUnlockBloc>().add(
+                        AppUnlockPinCodeNumberAdded(digit),
+                      ),
+                      onBackspace: () => context.read<AppUnlockBloc>().add(
+                        const AppUnlockPinCodeNumberRemoved(),
+                      ),
                     );
                   },
                 ),

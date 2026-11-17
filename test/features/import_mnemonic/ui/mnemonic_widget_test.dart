@@ -1,8 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullMnemonicKeyboard, BullSegmented, BullTypography;
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
@@ -96,7 +97,7 @@ List<String> semanticsStrings(WidgetTester tester) {
 /// A key on the in-app keyboard, scoped so the letter is matched on the
 /// keyboard and not in a field or a suggestion chip.
 Finder keyboardKey(String letter) => find.descendant(
-  of: find.byType(MnemonicKeyboard),
+  of: find.byType(BullMnemonicKeyboard),
   matching: find.text(letter),
 );
 
@@ -127,7 +128,7 @@ Future<void> tapKey(WidgetTester tester, String letter) async {
 }
 
 Finder _backspaceKey() => find.descendant(
-  of: find.byType(MnemonicKeyboard),
+  of: find.byType(BullMnemonicKeyboard),
   matching: find.byIcon(Icons.backspace_outlined),
 );
 
@@ -190,25 +191,26 @@ Future<void> submit(WidgetTester tester) async {
   await tester.pump();
 }
 
-/// The color of the square index badge of field [index] - the widget that
-/// answers "is this word acceptable".
-Color badgeColor(WidgetTester tester, int index) {
+/// The color of the index badge of field [index] - the widget that answers "is this word acceptable". The badge is the nearest decorated box around its label inside that field, whatever its size.
+Color? badgeColor(WidgetTester tester, int index) {
   final displayIndex = index + 1;
   final label = displayIndex < 10 ? '0$displayIndex' : '$displayIndex';
   final badge = tester.widget<Container>(
     find
         .ancestor(
-          of: find.text(label),
+          of: find.descendant(
+            of: find.byType(MnemonicWord).at(index),
+            matching: find.text(label),
+          ),
           matching: find.byWidgetPredicate(
             (widget) =>
-                widget is Container &&
-                widget.constraints?.maxWidth == 34 &&
-                widget.constraints?.maxHeight == 34,
+                widget is Container && widget.decoration is BoxDecoration,
           ),
         )
         .first,
   );
-  return (badge.decoration! as BoxDecoration).color!;
+  final decoration = badge.decoration;
+  return decoration is BoxDecoration ? decoration.color : null;
 }
 
 void main() {
@@ -244,14 +246,14 @@ void main() {
       tester,
     ) async {
       await pumpWidget(tester, onSubmit: (_) {});
-      expect(find.byType(MnemonicKeyboard), findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsNothing);
 
       await focusField(tester, 0);
-      expect(find.byType(MnemonicKeyboard), findsOneWidget);
+      expect(find.byType(BullMnemonicKeyboard), findsOneWidget);
 
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
-      expect(find.byType(MnemonicKeyboard), findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsNothing);
     });
 
     testWidgets('tapping empty page space dismisses the keyboard', (
@@ -259,7 +261,7 @@ void main() {
     ) async {
       await pumpWidget(tester, onSubmit: (_) {});
       await focusField(tester, 0);
-      expect(find.byType(MnemonicKeyboard), findsOneWidget);
+      expect(find.byType(BullMnemonicKeyboard), findsOneWidget);
 
       // Tap the gap between the two columns, level with the first field — a
       // point that lands on no field.
@@ -267,7 +269,7 @@ void main() {
       await tester.tapAt(Offset(400, row.center.dy));
       await tester.pumpAndSettle();
 
-      expect(find.byType(MnemonicKeyboard), findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsNothing);
       expect(fieldHasFocus(tester, 0), isFalse);
     });
 
@@ -307,6 +309,32 @@ void main() {
 
       expect(submitted, isFalse);
       expect(find.text('Enter all words of your mnemonic'), findsOneWidget);
+    });
+
+    testWidgets('a refused long phrase scrolls its error into view', (
+      tester,
+    ) async {
+      tester.view
+        ..devicePixelRatio = 1
+        ..physicalSize = const Size(393, 760);
+      addTearDown(tester.view.reset);
+      await pumpWidget(
+        tester,
+        length: bip39.MnemonicLength.words24,
+        onSubmit: (_) {},
+      );
+
+      await submit(tester);
+      await tester.pumpAndSettle();
+
+      // The submit button is pinned under the scroll: the error at the end of
+      // the 24 fields must be brought on screen, not left below the fold.
+      final error = tester.getRect(
+        find.text('Enter all words of your mnemonic'),
+      );
+      final viewport = tester.getRect(find.byType(SingleChildScrollView));
+      expect(error.top, greaterThanOrEqualTo(viewport.top));
+      expect(error.bottom, lessThanOrEqualTo(viewport.bottom));
     });
 
     testWidgets('renders a caller-owned external error above the button', (
@@ -391,9 +419,7 @@ void main() {
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(DropdownButton<bip39.MnemonicLength>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('24 words').last);
+      await tester.tap(find.text('24'));
       await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsNWidgets(24));
@@ -426,19 +452,157 @@ void main() {
         // rebuilds. The pump after the unfocus is required: without it the
         // unfocus and refocus coalesce into no notification at all.
         final node23 = tester.widget<TextField>(wordField(23)).focusNode!;
-        final dropdown = tester.widget<DropdownButton<bip39.MnemonicLength>>(
-          find.byType(DropdownButton<bip39.MnemonicLength>),
+        final picker = tester.widget<BullSegmented>(
+          find.byKey(const Key('mnemonicLengthPicker')),
         );
         FocusManager.instance.primaryFocus?.unfocus();
         await tester.pump();
         node23.requestFocus();
-        dropdown.onChanged!(bip39.MnemonicLength.words12);
+        picker.onSelected('12');
         await tester.pumpAndSettle();
 
         expect(tester.takeException(), isNull);
         expect(find.byType(TextField), findsNWidgets(12));
       },
     );
+  });
+
+  group('MnemonicWidget page', () {
+    testWidgets('the word count is a segmented control of every length', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final picker = tester.widget<BullSegmented>(
+        find.byKey(const Key('mnemonicLengthPicker')),
+      );
+      expect(picker.items, {'12', '15', '18', '21', '24'});
+      expect(picker.initialValue, '12');
+      expect(find.byType(DropdownButton<bip39.MnemonicLength>), findsNothing);
+    });
+
+    testWidgets('a single allowed length shows no word count control', (
+      tester,
+    ) async {
+      await pumpWidget(
+        tester,
+        allowMultipleMnemonicLength: false,
+        onSubmit: (_) {},
+      );
+      expect(find.byKey(const Key('mnemonicLengthPicker')), findsNothing);
+    });
+
+    testWidgets('the word count title reads in the caption role', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final title = tester.widget<Text>(
+        find
+            .descendant(
+              of: find.ancestor(
+                of: find.byKey(const Key('mnemonicLengthPicker')),
+                matching: find.byType(Column),
+              ),
+              matching: find.byType(Text),
+            )
+            .first,
+      );
+      final caption = BullTypography.standard.caption;
+      expect(title.style?.fontSize, caption.fontSize);
+      expect(title.style?.height, caption.height);
+    });
+
+    testWidgets('word fields are compact and read at body size', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final first = tester.getRect(find.byType(MnemonicWord).at(0));
+      final second = tester.getRect(find.byType(MnemonicWord).at(1));
+      final right = tester.getRect(find.byType(MnemonicWord).at(6));
+      expect(first.height, 40);
+      expect(second.top - first.bottom, 8);
+      expect(right.left - first.right, 16);
+      final word = find.descendant(
+        of: find.byType(MnemonicWord).first,
+        matching: find.byType(TextField),
+      );
+      final body = BullTypography.standard.body;
+      final wordStyle = tester.widget<TextField>(word).style;
+      final badgeStyle = tester.widget<Text>(find.text('01')).style;
+      expect(wordStyle?.fontSize, body.fontSize);
+      expect(wordStyle?.height, body.height);
+      expect(badgeStyle?.fontSize, body.fontSize);
+      expect(badgeStyle?.height, body.height);
+      expect(badgeStyle?.fontWeight, FontWeight.w700);
+    });
+
+    testWidgets('a typed word keeps the field at its resting height', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final resting = tester.getRect(find.byType(MnemonicWord).first).height;
+      await typeWord(tester, 0, 'ab');
+      // The clear button appears: it must not push the field taller than its
+      // neighbour in the other column.
+      expect(find.byIcon(Icons.close), findsOneWidget);
+      expect(tester.getRect(find.byType(MnemonicWord).first).height, resting);
+    });
+
+    testWidgets('word fields grow with the system text size', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpWidget(tester, onSubmit: (_) {});
+      final field = tester.getRect(find.byType(MnemonicWord).first);
+      final badge = tester.getRect(find.text('01'));
+      final text = tester.getRect(
+        find.descendant(
+          of: find.byType(MnemonicWord).first,
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(field.height, greaterThan(40));
+      for (final inner in [badge, text]) {
+        expect(inner.top, greaterThanOrEqualTo(field.top));
+        expect(inner.bottom, lessThanOrEqualTo(field.bottom));
+      }
+    });
+
+    testWidgets('submit is pinned at the bottom, hidden while typing', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      final button = find.byType(BullButton);
+      expect(button, findsOneWidget);
+      // Pinned: under the scroll area, not inside it.
+      expect(
+        find.ancestor(of: button, matching: find.byType(SingleChildScrollView)),
+        findsNothing,
+      );
+      expect(
+        tester.getRect(button).bottom,
+        greaterThan(
+          tester.view.physicalSize.height / tester.view.devicePixelRatio - 40,
+        ),
+      );
+
+      await focusField(tester, 0);
+      expect(button, findsNothing);
+      expect(find.byType(BullMnemonicKeyboard), findsOneWidget);
+
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      expect(button, findsOneWidget);
+    });
+
+    testWidgets('the passphrase row says what the switch does', (tester) async {
+      await pumpWidget(tester, allowPassphrase: true, onSubmit: (_) {});
+      expect(find.text('Optional extra word (BIP39)'), findsOneWidget);
+      await tester.ensureVisible(find.text('Optional extra word (BIP39)'));
+      // The subtitle is part of the tappable row.
+      await tester.tap(find.text('Optional extra word (BIP39)'));
+      await tester.pumpAndSettle();
+      expect(find.text('Entered below, never shown'), findsOneWidget);
+      expect(passphraseField(), findsOneWidget);
+    });
   });
 
   group('MnemonicWidget keyboard', () {
@@ -832,6 +996,21 @@ void main() {
       // 'zone' and 'zoo' are the only english words starting with 'zo'.
       expect(find.text('zone'), findsOneWidget);
       expect(find.text('zoo'), findsOneWidget);
+    });
+
+    testWidgets('the shortest words lead, nothing before the first letter', (
+      tester,
+    ) async {
+      await pumpWidget(tester, onSubmit: (_) {});
+      await focusField(tester, 0);
+      BullMnemonicKeyboard keyboard() => tester.widget<BullMnemonicKeyboard>(
+        find.byType(BullMnemonicKeyboard),
+      );
+      expect(keyboard().suggestions, isEmpty);
+
+      await typeWord(tester, 0, 'ab');
+      // 'able' is the shortest word after 'ab', then 'about' and 'above'.
+      expect(keyboard().suggestions, ['able', 'about', 'above']);
     });
 
     testWidgets('tapping a suggestion fills the focused field', (tester) async {

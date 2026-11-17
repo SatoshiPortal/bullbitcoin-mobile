@@ -33,6 +33,7 @@ void main() {
     secrets = s.Secrets(scratchDirectory: () async => '/tmp');
     stored = (await secrets.import(
       words: words,
+      language: bip39.Language.english,
     ) as Ok<s.Secret, s.SecretFailure>).value;
     registerFallbackValue(stored);
     registerFallbackValue(Network.bitcoinMainnet);
@@ -162,6 +163,7 @@ void main() {
         final protected = (await secrets.import(
           words: words,
           passphrase: 'synthetic-passphrase',
+          language: bip39.Language.english,
         ) as Ok<s.Secret, s.SecretFailure>).value;
         final bitcoin = _Wallet();
         final liquid = _Wallet();
@@ -192,6 +194,7 @@ void main() {
         final result = await create.execute(
           secret: supplied == null ? protected : null,
           mnemonicWords: supplied == null ? null : words,
+          language: supplied == null ? null : bip39.Language.english,
           passphrase: supplied ?? '',
         );
         if (supplied == null || supplied == 'synthetic-passphrase') {
@@ -250,6 +253,7 @@ void main() {
     final protected = (await secrets.import(
       words: words,
       passphrase: 'synthetic-passphrase',
+      language: bip39.Language.english,
     ) as Ok<s.Secret, s.SecretFailure>).value;
     final received = <s.Secret>[];
     stubCreation(received);
@@ -266,6 +270,7 @@ void main() {
       for (var i = 0; i < 2; i++) {
         final result = await create.execute(
           mnemonicWords: words,
+          language: bip39.Language.english,
           passphrase: 'synthetic-passphrase',
         );
         expect((result as Ok).value, hasLength(2));
@@ -303,7 +308,10 @@ void main() {
       stubCreation(received);
 
       expect(
-        (await create.execute(mnemonicWords: shared) as Ok).value,
+        (await create.execute(
+          mnemonicWords: shared,
+          language: bip39.Language.english,
+        ) as Ok).value,
         hasLength(2),
       );
       expect(received.map((r) => r.id), [french.id, french.id]);
@@ -324,6 +332,22 @@ void main() {
     verifyZeroInteractions(settings);
     verifyZeroInteractions(wallets);
   });
+
+  test(
+    'words without their language are rejected before wallet access',
+    () async {
+      await expectLater(
+        create.execute(mnemonicWords: words),
+        throwsArgumentError,
+      );
+      await expectLater(
+        create.execute(language: bip39.Language.french),
+        throwsArgumentError,
+      );
+      verifyZeroInteractions(settings);
+      verifyZeroInteractions(wallets);
+    },
+  );
 
   test('a seed-only secret is refused as needing a mnemonic', () async {
     // BIP32 test vector 1: seed 000102…0f, master fingerprint 3442193e.
@@ -376,7 +400,10 @@ void main() {
         });
 
         expect(
-          (await create.execute(mnemonicWords: words) as Err).failure,
+          (await create.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ) as Err).failure,
           isA<DefaultWalletCreationFailure>(),
         );
         final persisted = Map<String, String>.of(storage.entries);
@@ -385,13 +412,16 @@ void main() {
           verifyNever(() => wallets.deleteWallet(walletId: 'bitcoin'));
         }
 
-        expect((await create.execute(mnemonicWords: words) as Ok).value, [
-          bitcoin,
-          liquid,
-        ]);
+        expect(
+          (await create.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ) as Ok).value,
+          [bitcoin, liquid],
+        );
         expect(storage.entries, persisted);
         expect(
-          await secrets.import(words: words),
+          await secrets.import(words: words, language: bip39.Language.english),
           isA<Err<s.Secret, s.SecretFailure>>().having(
             (result) => result.failure,
             'failure',
@@ -406,6 +436,7 @@ void main() {
     final protected = (await secrets.import(
       words: words,
       passphrase: 'synthetic-passphrase',
+      language: bip39.Language.english,
     ) as Ok<s.Secret, s.SecretFailure>).value;
     final bitcoin = _Wallet();
     final liquid = _Wallet();
@@ -488,7 +519,10 @@ void main() {
     ).thenThrow(Exception('temporary wallet creation failure'));
 
     expect(
-      (await create.execute(mnemonicWords: words) as Err).failure,
+      (await create.execute(
+        mnemonicWords: words,
+        language: bip39.Language.english,
+      ) as Err).failure,
       isA<DefaultWalletCreationFailure>(),
     );
     verify(
@@ -525,6 +559,7 @@ void main() {
           (await create.execute(
             secret: useHandle ? stored : null,
             mnemonicWords: useHandle ? null : words,
+            language: useHandle ? null : bip39.Language.english,
           ) as Err).failure,
           isA<DefaultWalletAlreadyExistsFailure>(),
         );

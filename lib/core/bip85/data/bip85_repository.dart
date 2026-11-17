@@ -43,6 +43,7 @@ class Bip85Repository {
     required bip39.MnemonicLength length,
     required int index,
     String? alias,
+    required bip39.Language language,
   }) async {
     try {
       final result = await _datasource.recordMnemonic(
@@ -50,6 +51,7 @@ class Bip85Repository {
         length: length,
         index: index,
         alias: alias,
+        language: language,
       );
       return Ok(result);
     } catch (e, st) {

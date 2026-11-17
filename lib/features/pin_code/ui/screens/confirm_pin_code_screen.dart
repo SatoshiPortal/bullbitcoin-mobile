@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDialPad, BullInputText, BullTopBar, Gap;
+    show BullButton, BullInputText, BullPinPad, BullTopBar, Gap;
 
 class ConfirmPinCodeScreen extends StatelessWidget {
   const ConfirmPinCodeScreen({super.key});
@@ -107,19 +107,14 @@ class ConfirmPinCodeScreen extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: BullDialPad(
-                  disableFeedback: true,
-                  onlyDigits: true,
-                  onNumberPressed: (value) =>
-                      context.read<PinCodeSettingBloc>().add(
-                        PinCodeSettingPinCodeConfirmationNumberAdded(
-                          int.parse(value),
-                        ),
-                      ),
-                  onBackspacePressed: () =>
-                      context.read<PinCodeSettingBloc>().add(
-                        const PinCodeSettingPinCodeConfirmationNumberRemoved(),
-                      ),
+                child: BullPinPad(
+                  scrambleHint: context.loc.pinCodeScrambleKeypadHint,
+                  onDigit: (digit) => context.read<PinCodeSettingBloc>().add(
+                    PinCodeSettingPinCodeConfirmationNumberAdded(digit),
+                  ),
+                  onBackspace: () => context.read<PinCodeSettingBloc>().add(
+                    const PinCodeSettingPinCodeConfirmationNumberRemoved(),
+                  ),
                 ),
               ),
               const Gap(16),

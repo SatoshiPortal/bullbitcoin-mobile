@@ -30,12 +30,34 @@ import 'tor_logger.dart';
 /// today, or an `AF_UNIX` socket.
 const _socksPolicy = onion.SocksPolicy.onionOnly;
 
-/// [torConnectBudget] as the SDK takes it, applied to the client and every session alike.
-final _connectTimeoutMs = BigInt.from(torConnectBudget.inMilliseconds);
+/// The transport's connect budget as the SDK takes it, for the client and every session alike.
+BigInt _connectTimeoutMs(TorTransport transport) =>
+    BigInt.from(transport.connectBudget.inMilliseconds);
 
 /// How long to wait, once `bootstrap()` returns, for Arti to report it can
 /// carry traffic.
 const _trafficReadyTimeout = Duration(seconds: 60);
+
+/// Each transport keeps its own Arti directories: a client being torn down
+/// still holds Arti's state lock for a while, and a Snowflake client started
+/// right after a stalled direct one then failed to set up its guard manager.
+@visibleForTesting
+({String state, String cache}) torDirectoryNames(TorTransport transport) =>
+    switch (transport) {
+      TorTransport.direct => (state: 'tor_state', cache: 'tor'),
+      TorTransport.snowflake => (
+        state: 'tor_state_snowflake',
+        cache: 'tor_snowflake',
+      ),
+    };
+
+/// Snowflake reaches Tor through volunteer WebRTC proxies and can take minutes
+/// on a filtered network: it gets no deadline, a user leaving stops it.
+@visibleForTesting
+Duration? trafficReadyTimeoutFor(TorTransport transport) => switch (transport) {
+  TorTransport.direct => _trafficReadyTimeout,
+  TorTransport.snowflake => null,
+};
 
 /// How long readiness is withheld after Arti first reports `readyForTraffic`.
 ///
@@ -119,9 +141,10 @@ final class OnionTorBackend implements EmbeddedTorPort {
 
     try {
       final support = await getApplicationSupportDirectory();
-      final cache = await getApplicationCacheDirectory();
-      final stateDir = await Directory('${support.path}/tor_state').create();
-      final cacheDir = await Directory('${cache.path}/tor').create();
+      final cacheRoot = await getApplicationCacheDirectory();
+      final (:state, :cache) = torDirectoryNames(transport);
+      final stateDir = await Directory('${support.path}/$state').create();
+      final cacheDir = await Directory('${cacheRoot.path}/$cache').create();
 
       _log.config('Starting embedded Tor with ${transport.name} transport...');
       final startedAt = DateTime.now();
@@ -131,7 +154,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
           cacheDir: cacheDir.path,
           socksPort: 0,
           policy: _socksPolicy,
-          connectTimeoutMs: _connectTimeoutMs,
+          connectTimeoutMs: _connectTimeoutMs(transport),
         ),
         TorTransport.snowflake => await _startWithSnowflake(
           stateDir.path,
@@ -166,7 +189,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       // `bootstrap()` returns once the directory is usable, before Arti
       // reports `readyForTraffic`; announcing readiness then sent the first
       // request into a client that was not ready yet.
-      await waitForTraffic(_trafficReadyTimeout);
+      await waitForTraffic(trafficReadyTimeoutFor(transport));
       if (generation != _generation) throw _cancelled();
       _log.fine(
         'Embedded Tor reports ready after '
@@ -192,28 +215,47 @@ final class OnionTorBackend implements EmbeddedTorPort {
         '${endpoint.port}',
       );
       return endpoint;
-    } on TorBackendException {
+    } on TorBackendException catch (error) {
+      _logStartFailure(generation, transport, error.failure);
       await _cleanup();
       rethrow;
     } on onion.TorFailure catch (error) {
       final failure = _mapFailure(error, _lastDiagnostic);
+      _logStartFailure(generation, transport, failure);
       await _cleanup();
       throw TorBackendException(failure);
     } catch (error) {
+      final failure = TorUnexpectedFailure(error.toString());
+      _logStartFailure(generation, transport, failure);
       await _cleanup();
-      throw TorBackendException(TorUnexpectedFailure(error.toString()));
+      throw TorBackendException(failure);
     }
   }
+
+  /// Without this line a support log cannot tell why Tor never became ready.
+  /// A start ended by [stop], such as the switch to Snowflake, is no failure.
+  void _logStartFailure(
+    int generation,
+    TorTransport transport,
+    TorFailure failure,
+  ) => generation != _generation
+      ? _log.fine('Embedded Tor ${transport.name} start stopped')
+      : _log.warning(
+          'Embedded Tor ${transport.name} start failed: '
+          '${failure.runtimeType} ${failure.logMessage ?? ''}',
+        );
 
   /// Completes once a status reports `readyForTraffic`, fails on [stop] or
   /// after [timeout].
   @visibleForTesting
-  Future<void> waitForTraffic(Duration timeout) => _trafficReady.future.timeout(
-    timeout,
-    onTimeout: () => throw TorBackendException(
-      TorBootstrapTimeoutFailure('Not ready for traffic after $timeout'),
-    ),
-  );
+  Future<void> waitForTraffic(Duration? timeout) => timeout == null
+      ? _trafficReady.future
+      : _trafficReady.future.timeout(
+          timeout,
+          onTimeout: () => throw TorBackendException(
+            TorBootstrapTimeoutFailure('Not ready for traffic after $timeout'),
+          ),
+        );
 
   /// Waits out [_readinessHold]; [stop] ends the wait early so a restart does not queue behind it.
   @visibleForTesting
@@ -309,7 +351,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       final session = await service.openSessionWithConnectTimeout(
         socksPort: 0,
         policy: _socksPolicy,
-        connectTimeoutMs: _connectTimeoutMs,
+        connectTimeoutMs: _connectTimeoutMs(transport),
       );
       return TorSession(
         TorProxyEndpoint(
@@ -414,7 +456,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
       socksPort: 0,
       snowflakePort: snowflakePort,
       policy: _socksPolicy,
-      connectTimeoutMs: _connectTimeoutMs,
+      connectTimeoutMs: _connectTimeoutMs(TorTransport.snowflake),
     );
   }
 

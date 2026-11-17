@@ -16,6 +16,11 @@ final class VaultInvalidFailure extends RecoverBullFailure {
   const VaultInvalidFailure();
 }
 
+/// The key, from the server or typed in, does not open this vault.
+final class VaultDecryptionFailure extends RecoverBullFailure {
+  const VaultDecryptionFailure();
+}
+
 final class VaultSecretMissingFailure extends RecoverBullFailure {
   const VaultSecretMissingFailure();
 }
@@ -61,11 +66,51 @@ enum KeyServerFailureKind {
   rejected,
 }
 
+/// Why the key server could not be reached, as far as the transport can tell.
+enum KeyServerUnreachableCause {
+  /// Tor did not reach the onion service in time.
+  circuitTimeout,
+
+  /// Tor could not build a circuit.
+  torNetworkUnreachable,
+
+  /// The descriptor fetch or the rendezvous failed.
+  onionUnreachable,
+
+  /// The server refused or closed the stream.
+  connectionRefused,
+
+  /// The local Tor session stopped answering.
+  proxyGone,
+
+  /// The server answered with an HTTP error status.
+  httpError,
+
+  /// The server was reached but its answer was invalid.
+  badResponse,
+}
+
 final class KeyServerFailure extends RecoverBullFailure {
   final KeyServerFailureKind kind;
   final Duration? retryAfter;
 
-  const KeyServerFailure(this.kind, {this.retryAfter});
+  /// Null when the transport could not tell.
+  final KeyServerUnreachableCause? cause;
+
+  /// Set when [cause] is [KeyServerUnreachableCause.httpError].
+  final int? httpStatus;
+
+  const KeyServerFailure(
+    this.kind, {
+    this.retryAfter,
+    this.cause,
+    this.httpStatus,
+  });
+}
+
+/// The user-configured Tor proxy does not answer.
+final class ExternalTorProxyUnavailableFailure extends RecoverBullFailure {
+  const ExternalTorProxyUnavailableFailure();
 }
 
 final class RecoverBullStorageFullFailure extends RecoverBullFailure {

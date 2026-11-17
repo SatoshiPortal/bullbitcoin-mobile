@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:convert/convert.dart' as convert;
-import 'package:crypto/crypto.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/domain/domain.dart';
 import 'package:meta/meta.dart';
@@ -17,24 +15,24 @@ final class FingerprintDeriver {
   @internal
   const FingerprintDeriver();
 
-  /// The BIP39 seed of [words] in [language] with [passphrase]. Throws bip39's own exception on words that are not a mnemonic — before any PBKDF2 is spent.
+  /// The BIP39 seed of [words] in [language] with [passphrase]. Throws bip39's own exception on words that are not a mnemonic.
   ///
-  /// bip39 validates; the PBKDF2 runs on `package:crypto`, about 20× faster than bip39's pointycastle one and paid on every operation. Pinned against bip39 by `seed_pbkdf2_test.dart`. The sentence is bip39's canonical words joined by a space, which NFKD makes identical to a sentence joined by the language's own separator.
+  /// bip39 validates and derives; the package keeps no PBKDF2 of its own.
   Uint8List seed(
     List<String> words, {
     String passphrase = '',
-    bip39.Language language = bip39.Language.english,
+    required bip39.Language language,
   }) {
     words = normalizeWords(words);
     _elements(words, language);
-    final mnemonic = bip39.Mnemonic.fromWords(words: words, language: language);
-    return _pbkdf2HmacSha512(
-      // bip39 rebuilds `words` from its wordlists, which are NFKD already
-      // (all ten, pinned by `seed_pbkdf2_test.dart`), so only the
-      // caller-supplied passphrase needs normalizing.
-      password: utf8.encode(mnemonic.words.join(' ')),
-      salt: utf8.encode(nfkd('mnemonic$passphrase')),
-    );
+    final derived = bip39.Mnemonic.fromWords(
+      words: words,
+      language: language,
+      passphrase: passphrase,
+    ).seed;
+    final seed = Uint8List.fromList(derived);
+    derived.fillRange(0, derived.length, 0);
+    return seed;
   }
 
   /// Canonical BIP39 spelling, without changing element boundaries.
@@ -45,10 +43,7 @@ final class FingerprintDeriver {
       Fingerprint(convert.hex.encode(Bip32Keys.fromSeed(seed).fingerprint));
 
   /// Validates words without deriving a seed: wordlist and checksum only, no PBKDF2. Throws bip39's own exception.
-  void check(
-    List<String> words, {
-    bip39.Language language = bip39.Language.english,
-  }) {
+  void check(List<String> words, {required bip39.Language language}) {
     words = normalizeWords(words);
     _elements(words, language);
     bip39.Mnemonic.fromWords(words: words, language: language);
@@ -71,21 +66,4 @@ final class FingerprintDeriver {
       );
     }
   }
-}
-
-/// BIP39's PBKDF2: HMAC-SHA512, 2048 iterations, one 64-byte block.
-Uint8List _pbkdf2HmacSha512({
-  required List<int> password,
-  required List<int> salt,
-}) {
-  final hmac = Hmac(sha512, password);
-  var u = hmac.convert([...salt, 0, 0, 0, 1]).bytes;
-  final t = Uint8List.fromList(u);
-  for (var i = 1; i < 2048; i++) {
-    u = hmac.convert(u).bytes;
-    for (var j = 0; j < t.length; j++) {
-      t[j] ^= u[j];
-    }
-  }
-  return t;
 }
