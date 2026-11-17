@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -877,6 +878,30 @@ final class BarkNativeSession implements ArkNativeSession {
     }
   }
 
+  Outpoint? _boardChainAnchor(String encoded) {
+    if (encoded.length > 1024 * 1024) return null;
+    try {
+      final metadata = jsonDecode(encoded);
+      if (metadata is! Map<String, dynamic> || metadata.length != 2) {
+        return null;
+      }
+      final anchor = metadata['chain_anchor'],
+          fee = metadata['onchain_fee_sat'];
+      if (anchor is! String || fee is! int || fee < 0) return null;
+      final parts = anchor.split(':');
+      if (parts.length != 2 ||
+          !RegExp(r'^[0-9a-f]{64}$').hasMatch(parts[0]) ||
+          !RegExp(r'^(0|[1-9][0-9]{0,9})$').hasMatch(parts[1])) {
+        return null;
+      }
+      final vout = int.tryParse(parts[1]);
+      if (vout == null || vout > 0xffffffff) return null;
+      return (txId: parts[0], vout: vout);
+    } on FormatException {
+      return null;
+    }
+  }
+
   @override
   Future<ArkOperation?> reconcile(ArkOperation operation) async {
     ArkOperationStatus? status;
@@ -911,14 +936,28 @@ final class BarkNativeSession implements ArkNativeSession {
     }
     if (operation.kind == ArkOperationKind.board && reference != null) {
       final vtxos = await _run('reconcile-board', _wallet.allVtxos);
-      if (vtxos.any(
-        (v) =>
-            v.id.split(':').first == reference &&
-            (v.state is bark.SpendableVtxoState ||
-                v.state is bark.SpentVtxoState ||
-                v.state is bark.ExitedVtxoState),
+      final history = await _run('reconcile-board-history', _wallet.history);
+      final matched = <bark.Movement>[];
+      for (final movement in history.where(
+        (m) => m.subsystemName == 'bark.board' && m.subsystemKind == 'board',
       )) {
-        status = ArkOperationStatus.succeeded;
+        final anchor = _boardChainAnchor(movement.metadataJson);
+        if (anchor == null) return null; // Unsupported metadata is not proof.
+        if (anchor.txId == reference) matched.add(movement);
+      }
+      if (matched.length == 1) {
+        final movement = matched.single;
+        if (movement.status == 'successful' &&
+            movement.outputVtxoIds.length == 1 &&
+            vtxos.any(
+              (v) =>
+                  v.id == movement.outputVtxoIds.single &&
+                  (v.state is bark.SpendableVtxoState ||
+                      v.state is bark.SpentVtxoState ||
+                      v.state is bark.ExitedVtxoState),
+            )) {
+          status = ArkOperationStatus.succeeded;
+        }
       }
     }
     if (operation.kind == ArkOperationKind.renewal) {
