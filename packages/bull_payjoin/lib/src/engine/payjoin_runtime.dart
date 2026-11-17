@@ -38,6 +38,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   required PayjoinLogPort log,
   required PayjoinCodecPort codec,
   PayjoinRegtestProfile? regtestProfile,
+  RegtestHostProfile? regtestHostProfile,
   Future<bool> Function()? isCurrent,
 }) async {
   // Scoped to this runtime rather than held in a library global: two runtimes
@@ -45,7 +46,20 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   // other's destination, and the order of `openPayjoin` calls would silently
   // decide where a session's failures are reported.
   final payjoinLog = logger.PayjoinLogger(log);
-  final regtest = regtestProfile != null;
+  final host = regtestHostProfile ?? regtestProfile?.hostProfile;
+  final regtest = host != null;
+  PayjoinFailure? unavailable;
+  if (host != null && regtestProfile == null) {
+    try {
+      regtestProfile = PayjoinRegtestProfile.fromBuildEnvironment(
+        hostProfile: host,
+      );
+    } on FormatException {
+      unavailable = const PayjoinUnavailableFailure(
+        'Regtest Payjoin trust is unavailable',
+      );
+    }
+  }
   if (regtest) {
     databasePath =
         '${File(databasePath).parent.path}${Platform.pathSeparator}payjoin-regtest.sqlite';
@@ -78,13 +92,20 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
   try {
     if (!regtest) await importLegacyPayjoinData(database, legacyData, log: log);
     if (regtestProfile != null) {
-      fixtureTransport = PayjoinRegtestTransport(
-        profile: regtestProfile,
-        environment: NetworkEnv.regtest,
-        isCurrent: isCurrent,
-      );
+      try {
+        fixtureTransport = PayjoinRegtestTransport(
+          profile: regtestProfile,
+          environment: NetworkEnv.regtest,
+          isCurrent: isCurrent,
+        );
+      } on TlsException {
+        unavailable = const PayjoinUnavailableFailure(
+          'Regtest Payjoin trust is unavailable',
+        );
+      }
     }
     final transport = fixtureTransport;
+    final current = unavailable == null ? isCurrent : () async => false;
     final local = LocalPayjoinDatasource(db: database);
     final policy = PayjoinPolicyStore(database);
     if (regtest) await policy.ensureDefaults();
@@ -98,12 +119,12 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
             receiveTimeout: const Duration(seconds: 35),
           ),
         );
-    if (transport == null && isCurrent != null) {
+    if (transport == null && current != null) {
       dio.interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) async {
             try {
-              if (!await isCurrent()) {
+              if (!await current()) {
                 throw const PayjoinRuntimeInactiveException();
               }
               handler.next(options);
@@ -120,7 +141,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       );
     }
     final pdk = PdkPayjoinDatasource(
-      isCurrent: isCurrent,
+      isCurrent: current,
       networkOverride: regtest ? BitcoinNetwork.regtest : null,
       servers: regtestProfile?.servers,
       ohttpKeysFetcher: transport?.fetchOhttpKeys ?? fetchOhttpKeys,
@@ -130,7 +151,7 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
     );
     final engine = PayjoinRepositoryImpl(
       regtest: regtest,
-      isCurrent: isCurrent,
+      isCurrent: current,
       localPayjoinDatasource: local,
       pdkPayjoinDatasource: pdk,
       log: payjoinLog,
@@ -149,9 +170,24 @@ Future<Result<PayjoinLifecycle, PayjoinFailure>> openPayjoin({
       payjoinLog,
       codec,
       regtest: regtest,
-      isCurrent: isCurrent,
+      isCurrent: current,
     );
-    return Ok(_PayjoinLifecycle(database, engine, roles.payjoin, transport));
+    final blocked = unavailable;
+    final unavailableRoles = blocked == null
+        ? null
+        : Payjoin.unavailable(blocked);
+    final publicPayjoin = unavailableRoles == null
+        ? roles.payjoin
+        : Payjoin(
+            sender: unavailableRoles.sender,
+            receiver: unavailableRoles.receiver,
+            sessions: roles.payjoin.sessions,
+            policy: roles.payjoin.policy,
+            diagnostics: unavailableRoles.diagnostics,
+          );
+    return Ok(
+      _PayjoinLifecycle(database, engine, publicPayjoin, transport, blocked),
+    );
   } catch (error, trace) {
     // No quarantine-and-retry here: with the import's row-level quarantine,
     // a post-open throw is an IO/disk problem or a bug — a fresh file would
@@ -231,6 +267,7 @@ final class _PayjoinLifecycle implements PayjoinLifecycle {
   final PayjoinDatabase _database;
   final PayjoinRepositoryImpl _engine;
   final PayjoinRegtestTransport? _transport;
+  final PayjoinFailure? _unavailable;
 
   @override
   final Payjoin payjoin;
@@ -240,10 +277,12 @@ final class _PayjoinLifecycle implements PayjoinLifecycle {
     this._engine,
     this.payjoin,
     this._transport,
+    this._unavailable,
   );
 
   @override
   Future<Result<void, PayjoinFailure>> resume() async {
+    if (_unavailable case final failure?) return Err(failure);
     try {
       await _engine.resumePayjoinsOnStartup();
       return const Ok(null);

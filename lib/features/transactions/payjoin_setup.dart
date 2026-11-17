@@ -50,21 +50,19 @@ abstract final class PayjoinSetup {
       }
     }
 
-    Future<PayjoinRegtestProfile?>? capturedProfile;
-    Future<PayjoinRegtestProfile?> captureProfile() =>
+    Future<RegtestHostProfile?>? capturedProfile;
+    Future<RegtestHostProfile?> captureProfile() =>
         capturedProfile ??= () async {
           final settings = await locator<GetSettingsUsecase>().execute();
           final host = RegtestHostProfile.forNetwork(settings.activeNetwork);
           capturedRegtest = host != null;
-          return host == null
-              ? null
-              : PayjoinRegtestProfile.fromBuildEnvironment(hostProfile: host);
+          return host;
         }();
 
     final runtime = RecoverablePayjoin(() async {
       final profile = await captureProfile();
       return openPayjoin(
-        regtestProfile: profile,
+        regtestHostProfile: profile,
         isCurrent: isCurrent,
         databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
