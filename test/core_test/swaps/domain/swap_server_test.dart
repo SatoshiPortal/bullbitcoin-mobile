@@ -28,8 +28,8 @@ void main() {
       '10.0.2.2:9001/v2',
     );
     expect(
-      SwapServer.parse('localhost:9001', isTestnet: true)?.host,
-      'localhost:9001',
+      SwapServer.parse('localhost:9001/v2', isTestnet: true)?.host,
+      'localhost:9001/v2',
     );
     expect(
       SwapServer.parse(
@@ -38,6 +38,22 @@ void main() {
       ),
       isNotNull,
     );
+  });
+
+  test('a bare host gets the /v2 API path', () {
+    expect(
+      SwapServer.parse('boltz.example.com', isTestnet: false)?.host,
+      'boltz.example.com/v2',
+    );
+    expect(
+      SwapServer.parse('http://127.0.0.1:9001', isTestnet: true)?.host,
+      'http://127.0.0.1:9001/v2',
+    );
+  });
+
+  test('a path other than the /v2 API is refused', () {
+    expect(SwapServer.parse('boltz.example.com/v1', isTestnet: false), isNull);
+    expect(SwapServer.parse('boltz.example.com/api', isTestnet: false), isNull);
   });
 
   test('rejects input that is not an address', () {
