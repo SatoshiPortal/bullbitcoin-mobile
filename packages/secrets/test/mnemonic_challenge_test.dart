@@ -6,6 +6,7 @@ import 'package:secrets/testing.dart';
 import 'package:secrets/src/widgets/painted_text.dart' show debugPaintedTextOf;
 
 import 'result_helpers.dart';
+import 'read_budget.dart';
 
 /// The sealed challenge: it shuffles, judges and reports, and the host styles tiles it cannot read.
 ///
@@ -60,7 +61,7 @@ void main() {
     return secret;
   }
 
-  Future<void> settle(WidgetTester tester, [int ms = 500]) async {
+  Future<void> settle(WidgetTester tester, [int ms = readBudgetMs]) async {
     await tester.runAsync(
       () => Future<void>.delayed(Duration(milliseconds: ms)),
     );

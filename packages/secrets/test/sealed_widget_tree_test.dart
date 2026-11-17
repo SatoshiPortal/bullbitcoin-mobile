@@ -4,6 +4,8 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 
+import 'read_budget.dart';
+
 /// A host walking its own element tree reaches every public widget field below it. The sealed widgets must leave nothing there that resolves to the words: this walks the tree as any host could, with no `src/` import, and awaits every future it finds.
 void main() {
   const words = [
@@ -60,7 +62,8 @@ void main() {
           ),
         );
         await tester.runAsync(
-          () => Future<void>.delayed(const Duration(milliseconds: 500)),
+          () =>
+              Future<void>.delayed(const Duration(milliseconds: readBudgetMs)),
         );
         await tester.pumpAndSettle();
 
