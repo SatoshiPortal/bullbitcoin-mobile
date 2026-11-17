@@ -70,12 +70,7 @@ List<String> productionDartFiles(String root) {
     final parent = Directory('$root/$group');
     if (!parent.existsSync()) continue;
     for (final member in parent.listSync(followLinks: false)) {
-      // The packages that define key material are not its consumers:
-      // packages/secrets, and packages/rust_bindings, which declares the
-      // binding types (SwapMasterKey, Wallet) and the bridge that calls them.
-      if (member is Directory &&
-          member.path != '$root/packages/secrets' &&
-          member.path != '$root/packages/rust_bindings') {
+      if (member is Directory && member.path != '$root/packages/secrets') {
         roots.add(Directory('${member.path}/lib'));
       }
     }
@@ -92,6 +87,11 @@ List<String> productionDartFiles(String root) {
         ))
           if (file is File &&
               file.path.endsWith('.dart') &&
+              // The generated bridge declares the binding types (SwapMasterKey,
+              // Wallet) and calls them; its hand-written wrappers are checked.
+              !file.path.startsWith(
+                '$root/packages/rust_bindings/lib/src/rust/',
+              ) &&
               !RegExp(r'\.(g|freezed|gr|config|mocks|steps)\.dart$')
                   .hasMatch(file.path) &&
               !file.path
@@ -223,6 +223,10 @@ const _bridgeLibrary = 'package:rust_bindings/src/rust/frb_generated.dart';
 // it is matched on its path.
 bool _isTestingLibrary(String uri) =>
     uri == 'package:secrets/testing.dart' ||
+    uri == 'package:rust_bindings/testing.dart' ||
+    (!uri.contains(':') &&
+        RegExp(r'(^|/)rust_bindings/lib/testing\.dart$')
+            .hasMatch(Uri.parse(uri).normalizePath().path)) ||
     uri.startsWith('package:secrets/src/testing/') ||
     (!uri.contains(':') &&
         RegExp(r'(^|/)secrets/lib/(testing\.dart$|src/testing/)')
@@ -264,6 +268,7 @@ String? materialSymbol(Element element) {
                 'newBip84',
                 'newBip86',
               }.contains(member)),
+    'package:rust_bindings/src/lwk_consolidate.dart' => member == 'batchSign',
     _ when uri.startsWith('package:rust_bindings/src/rust/third_party/lwk/') =>
       {
         'Descriptor.newConfidential',
@@ -332,6 +337,13 @@ bool _isException(String path, AstNode node, String symbol) {
       owner == 'Bip32Derivation' &&
       function == 'getBip32Xpub' &&
       member == 'Bip32Keys.fromBase58') {
+    return true;
+  }
+  // The consolidation helper signs with the words it is given; its callers
+  // are checked through `batchSign` itself.
+  if (path == 'packages/rust_bindings/lib/src/lwk_consolidate.dart' &&
+      function == 'batchSign' &&
+      member == 'Wallet.signTx') {
     return true;
   }
   // satoshifier decodes extended keys with this mixed decoder; it did so
