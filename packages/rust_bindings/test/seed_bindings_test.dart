@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:bull_sdk/boltz.dart' as boltz;
-import 'package:bull_sdk/bull_sdk.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/boltz.dart' as boltz;
+import 'package:rust_bindings/rust_bindings.dart';
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 
 // The seed-based Liquid and Boltz bindings, exercised over the host library:

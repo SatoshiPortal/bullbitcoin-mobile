@@ -11,8 +11,8 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/pay/domain/pay_failure.dart';
 import 'package:bb_mobile/features/pay/domain/prepare_pay_liquid_payin_usecase.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
-import 'package:bull_sdk/src/rust/frb_generated.dart';
+import 'package:rust_bindings/lwk.dart' as lwk;
+import 'package:rust_bindings/src/rust/frb_generated.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

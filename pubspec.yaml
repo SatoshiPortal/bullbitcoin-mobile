@@ -78,7 +78,7 @@ dependencies:
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
   file_picker: ^13.3.3
-  bull_sdk:
+  rust_bindings:
   boltz_stream:
   bitbox_transport:
   universal_ble: ^3.3.0

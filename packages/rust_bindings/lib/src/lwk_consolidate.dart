@@ -1,19 +1,19 @@
-import 'package:bull_sdk/lwk.dart';
+import 'package:rust_bindings/lwk.dart';
 
 /// Hand-maintained port of `lwk-dart`'s `lib/src/consolidate.dart` helpers.
 ///
-/// bull_sdk generates its own independent copy of the `Wallet`/`Blockchain`
+/// rust_bindings generates its own independent copy of the `Wallet`/`Blockchain`
 /// FRB types from lwk's Rust source (see `flutter_rust_bridge.yaml`'s
 /// `rust_input`) — a second, separate native-library binding, not the same
 /// Dart classes `lwk-dart`'s own generated package produces. That means
 /// `lwk-dart`'s hand-written Dart helpers, written against ITS types, cannot
-/// be imported and called with a `bull_sdk` `Wallet` instance; the same
+/// be imported and called with a `rust_bindings` `Wallet` instance; the same
 /// architectural reason the boltz-dart helpers were reimplemented here
 /// instead of imported. This file re-derives the same small amount of
-/// orchestration logic against bull_sdk's own generated `Wallet`/`Blockchain`
+/// orchestration logic against rust_bindings' own generated `Wallet`/`Blockchain`
 /// — every primitive it calls (`Wallet.consolidate`, `Wallet.signTx`,
 /// `Blockchain.broadcastSignedPset`, `getLbtcAssetId`/`getLtestAssetId`)
-/// already exists in bull_sdk's generated bindings, so no Rust/FFI changes
+/// already exists in rust_bindings' generated bindings, so no Rust/FFI changes
 /// are needed to keep this in sync with lwk-dart's own convenience layer.
 
 /// Number of confirmed L-BTC UTXOs in the wallet.

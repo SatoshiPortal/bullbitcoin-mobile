@@ -1,4 +1,4 @@
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show MnemonicLength;
 
 /// Produces fresh BIP39 words.

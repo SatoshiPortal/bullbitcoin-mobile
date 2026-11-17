@@ -9,9 +9,9 @@ ExternalLibrary nativeAssetsLibrary() => _NativeAssetLibrary();
 class _NativeAssetLibrary implements ExternalLibrary {
   @override
   final ffi.DynamicLibrary ffiDynamicLibrary = ffi.DynamicLibrary.codeAsset(
-    'package:bull_sdk/src/rust/frb_generated.io.dart',
+    'package:rust_bindings/src/rust/frb_generated.io.dart',
   );
 
   @override
-  final String debugInfo = 'Native Assets: bull_sdk';
+  final String debugInfo = 'Native Assets: rust_bindings';
 }

@@ -5,7 +5,7 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 
 /// Wallet transaction scenarios served by [ElectrumFixture]. Each has a first
 /// chain state, synced as a new wallet would, and a second one to sync next.

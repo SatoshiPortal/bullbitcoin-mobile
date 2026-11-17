@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 
 // A synthetic one-input, one-output transaction. Nothing here comes from a

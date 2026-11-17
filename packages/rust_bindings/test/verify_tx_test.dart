@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bull_sdk.dart';
+import 'package:rust_bindings/rust_bindings.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // GHSA-6jp4-8v48-cc5v guard, exercised the way a client uses it: before

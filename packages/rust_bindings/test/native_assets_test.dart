@@ -1,8 +1,8 @@
 import 'dart:isolate';
 
-import 'package:bull_sdk/bull_sdk.dart';
-import 'package:bull_sdk/lwk.dart' as lwk;
-import 'package:bull_sdk/onion.dart' show OnionCore;
+import 'package:rust_bindings/rust_bindings.dart';
+import 'package:rust_bindings/lwk.dart' as lwk;
+import 'package:rust_bindings/onion.dart' show OnionCore;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

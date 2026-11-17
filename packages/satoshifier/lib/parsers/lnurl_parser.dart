@@ -1,4 +1,4 @@
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 import 'package:satoshifier/satoshifier.dart';
 
 class LnurlParser {

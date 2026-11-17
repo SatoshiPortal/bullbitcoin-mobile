@@ -9,7 +9,7 @@ import 'package:sync/sync.dart'
         WalletKey,
         WalletRevision;
 import 'package:bb_mobile/features/wallet/domain/wallet_spend_failure.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:primitives/primitives.dart' hide Network;

@@ -1,4 +1,4 @@
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 
 import '../bitcoin_transaction_decoder.dart';
 

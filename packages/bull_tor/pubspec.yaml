@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  bull_sdk:
+  rust_bindings:
   connectivity_plus: ^7.3.1
   get_it: ^9.1.1
   meta: ^1.17.0

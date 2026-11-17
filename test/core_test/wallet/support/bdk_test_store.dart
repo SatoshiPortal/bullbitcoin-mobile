@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
 /// Native fixture construction belongs to tests, never production readers.

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_balance.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/bwk.dart';
 import 'package:primitives/primitives.dart';
 
 /// Maps the bwk FFI `SpBalanceView` to the domain [SpBalance], so the entity

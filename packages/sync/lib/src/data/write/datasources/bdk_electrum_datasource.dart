@@ -1,4 +1,4 @@
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:meta/meta.dart';
 
 import '../../../domain/ports/wallet_connection_port.dart';

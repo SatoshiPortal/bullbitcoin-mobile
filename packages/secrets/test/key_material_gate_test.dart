@@ -35,7 +35,7 @@ void main() {
       ..writeAsStringSync(jsonEncode(config));
     File('${fixture.path}/bridge.dart').writeAsStringSync('''
 export 'package:bip32_keys/bip32_keys.dart';
-export 'package:bull_sdk/bdk.dart' show DescriptorSecretKey;
+export 'package:rust_bindings/bdk.dart' show DescriptorSecretKey;
 export 'package:recoverbull/recoverbull.dart';
 export 'package:secrets/testing.dart';
 ''');
@@ -78,7 +78,7 @@ export 'package:secrets/testing.dart';
       const path =
           'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
       const xprv = """
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 class BitcoinSigner {
   void _wallet(String value) {
     final key = bdk.DescriptorSecretKey.fromString(privateKey: value);
@@ -89,7 +89,7 @@ class BitcoinSigner {
       expect(await inspect('signer_xprv', xprv, policyPath: path), isEmpty);
       expect(await inspect('outside_signer', xprv), isNotEmpty);
       const words = """
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 class BitcoinSigner {
   bdk.Mnemonic _wallet(String value) => bdk.Mnemonic.fromString(mnemonic: value);
 }
@@ -279,7 +279,7 @@ Object install() => testing.FakeSecureStoragePlatform().install();
 
   test('dot shorthand and instance method tear-offs are checked', () async {
     final violations = await inspect('shorthand', '''
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 bdk.DescriptorSecretKey secret(String key) => .fromString(privateKey: key);
 Object extract(bdk.DescriptorSecretKeyInterface key) => key.secretBytes;
 ''');
@@ -350,7 +350,7 @@ Object seed(dynamic input) => input.seed;
 
   const scan = '''
 import 'dart:typed_data';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 Object _performDryScan() {
   final words = bdk.Mnemonic.fromEntropy(entropy: Uint8List(16));
   final key = bdk.DescriptorSecretKey(
@@ -369,7 +369,7 @@ Object _performDryScan() {
   });
 
   const swaps = '''
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 class SwapMasterKeyModel {
   factory SwapMasterKeyModel.fromBoltz(boltz.SwapMasterKey key) {
     final privateKey = key.xprv;
@@ -400,7 +400,7 @@ class SwapMasterKeyModel {
     'swap exemption does not authorize deriving a child from wallet words',
     () async {
       final violations = await inspect('swap_create', '''
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 class SwapMasterKeyModel {
   Object toBoltz() => boltz.SwapMasterKey.create;
 }
@@ -453,8 +453,8 @@ class SwapMasterKeyModel {
 
   test('seed-based Liquid and swap entry points are checked', () async {
     final violations = await inspect('seed_entry_points', '''
-import 'package:bull_sdk/boltz.dart' as boltz;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/boltz.dart' as boltz;
+import 'package:rust_bindings/lwk.dart' as lwk;
 final descriptor = lwk.Descriptor.newConfidentialFromSeed;
 Object sign(lwk.Wallet wallet) => wallet.signTxWithSeed;
 Object details(lwk.Wallet wallet) =>
@@ -475,7 +475,7 @@ final swap = boltz.SwapMasterKey.createFromSeed;
     'Silent Payments accounts built from words or seed are checked',
     () async {
       final violations = await inspect('bwk_constructors', '''
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/bwk.dart';
 final first = SpAccount.createFromMnemonic;
 final second = SpAccount.createFromMnemonicWithScanRuntime;
 final third = SpAccount.createFromSeed;
@@ -490,7 +490,7 @@ final fifth = deriveSpAddressFromSeed;
     'the bridge starts only with its own handler: no tracing handler, no mock',
     () async {
       final violations = await inspect('bridge_init', '''
-import 'package:bull_sdk/bull_sdk.dart';
+import 'package:rust_bindings/rust_bindings.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 class Trace extends BaseHandler {}
 Future<void> traced() => BullSdk.init(handler: Trace());

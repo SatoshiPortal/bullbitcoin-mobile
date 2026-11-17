@@ -19,7 +19,7 @@ import 'support/bdk_test_store.dart';
 
 import 'package:bb_mobile/features/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_transaction_model.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 

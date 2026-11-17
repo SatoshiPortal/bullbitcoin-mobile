@@ -1,5 +1,5 @@
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';

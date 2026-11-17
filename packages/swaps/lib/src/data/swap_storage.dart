@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bull_sdk/boltz.dart';
+import 'package:rust_bindings/boltz.dart';
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/log.dart';
 

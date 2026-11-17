@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bull_sdk.dart';
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/rust_bindings.dart';
+import 'package:rust_bindings/bwk.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Published, funds-free BIP39 vectors; shared with seed_bindings_test.dart.

@@ -12,7 +12,7 @@ import 'package:sync/src/data/write/writer_session.dart';
 import 'dart:io';
 
 import 'package:primitives/primitives.dart';
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:test/test.dart';
 import 'package:sync/sync.dart';
 

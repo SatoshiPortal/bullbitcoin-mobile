@@ -14,7 +14,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  bull_sdk:
+  rust_bindings:
   boltz_stream:
   bolt11_decoder:
     git:

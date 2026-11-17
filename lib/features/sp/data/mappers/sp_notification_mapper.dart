@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_coin_mapper.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 
 /// Maps the bwk FFI `SpNotification` union into the domain [SpNotification].
 abstract final class SpNotificationMapper {

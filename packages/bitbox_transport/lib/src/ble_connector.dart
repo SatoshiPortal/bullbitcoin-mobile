@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bitbox.dart' as api;
+import 'package:rust_bindings/bitbox.dart' as api;
 import 'package:universal_ble/universal_ble.dart';
 
 const _bleConnectionTimeout = Duration(seconds: 30);

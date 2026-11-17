@@ -9,7 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  bull_sdk:
+  rust_bindings:
   web_socket_channel: ^3.0.1
 
 dev_dependencies:

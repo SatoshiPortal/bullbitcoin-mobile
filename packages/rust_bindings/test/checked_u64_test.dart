@@ -1,4 +1,4 @@
-import 'package:bull_sdk/src/checked_u64.dart';
+import 'package:rust_bindings/src/checked_u64.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

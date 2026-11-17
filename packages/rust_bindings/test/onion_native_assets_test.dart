@@ -1,4 +1,4 @@
-import 'package:bull_sdk/onion.dart';
+import 'package:rust_bindings/onion.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

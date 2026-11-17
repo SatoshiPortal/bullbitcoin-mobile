@@ -1,6 +1,6 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 
 /// Maps the bwk FFI `SpPaymentView` into the domain [SpPayment].
 abstract final class SpPaymentMapper {

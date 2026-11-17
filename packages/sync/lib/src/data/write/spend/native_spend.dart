@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/bull_sdk.dart' as bull_sdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:rust_bindings/rust_bindings.dart' as bull_sdk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 

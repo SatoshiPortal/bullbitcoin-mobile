@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart';
-import 'package:bull_sdk/bbqr.dart' as bbqr;
+import 'package:rust_bindings/bbqr.dart' as bbqr;
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:sync/sync.dart' show canonicalBitcoinPsbt;
 

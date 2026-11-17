@@ -1,7 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_address.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 
 /// Maps between the domain [SpRecipient] and the bwk FFI `RecipientView`.
 abstract final class SpRecipientMapper {

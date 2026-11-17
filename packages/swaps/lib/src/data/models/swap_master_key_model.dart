@@ -2,7 +2,7 @@ import 'package:swaps/src/util.dart' show SwapsException;
 import 'package:primitives/primitives.dart';
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 
 /// The dedicated swap master key (the "swap mnemonic"), derived by the app's
 /// secrets layer and persisted per network. Boltz swap constructors derive

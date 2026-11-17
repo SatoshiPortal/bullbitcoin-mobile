@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'platform.dart';
 
-import 'package:bull_sdk/bitbox.dart' as api;
+import 'package:rust_bindings/bitbox.dart' as api;
 
 /// Transfers USB frames between the native transport and Rust queues.
 class UsbConnector {

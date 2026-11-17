@@ -18,7 +18,7 @@ import 'package:swaps/src/domain/entities/swap_tx_outspend.dart'
     hide SwapDirection;
 import 'package:swaps/src/domain/entities/swap_tx_outspend.dart' as outspend;
 import 'package:swaps/src/log.dart';
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 
 /// Fresh receive address on [walletId], for claim/refund destinations.
 typedef NewAddressFor = Future<String> Function(String walletId);

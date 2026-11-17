@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bull_sdk/boltz.dart';
-import 'package:bull_sdk/bull_sdk.dart';
+import 'package:rust_bindings/boltz.dart';
+import 'package:rust_bindings/rust_bindings.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

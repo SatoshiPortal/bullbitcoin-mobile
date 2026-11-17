@@ -1,7 +1,7 @@
 /// Re-exports the embedded Tor client that the SDK ships, so consumers depend
 /// on a single, SDK-pinned `onion` version instead of pinning it themselves.
 ///
-/// Import with a prefix: `import 'package:bull_sdk/onion.dart' as onion;`
+/// Import with a prefix: `import 'package:rust_bindings/onion.dart' as onion;`
 ///
 /// Unlike lwk and boltz, `onion` is **not** compiled into
 /// `librust_lib_bull_sdk.so`: it builds its own, the same way `bdk_dart` does,

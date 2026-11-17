@@ -1,6 +1,6 @@
 import 'package:bitbox_transport/bitbox_transport.dart';
-import 'package:bull_sdk/bitbox.dart' as bitbox;
-import 'package:bull_sdk/bull_sdk.dart';
+import 'package:rust_bindings/bitbox.dart' as bitbox;
+import 'package:rust_bindings/rust_bindings.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

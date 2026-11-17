@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/bwk.dart';
 
 /// The bwk Silent Payments FFI: one live `SpAccount` and the simulations pinned
 /// to it.

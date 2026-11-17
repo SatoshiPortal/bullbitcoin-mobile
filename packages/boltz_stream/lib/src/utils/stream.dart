@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bull_sdk/boltz.dart';
+import 'package:rust_bindings/boltz.dart';
 import 'package:web_socket_channel/io.dart';
 
 final String mainnetBaseUrl = 'api.boltz.exchange/v2';

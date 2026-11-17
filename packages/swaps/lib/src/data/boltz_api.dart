@@ -18,8 +18,8 @@ import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
 import 'package:swaps/src/log.dart';
 import 'package:boltz_stream/boltz_stream.dart';
 import 'package:dio/dio.dart';
-import 'package:bull_sdk/boltz.dart' hide Network;
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' hide Network;
+import 'package:rust_bindings/boltz.dart' as boltz;
 
 typedef BoltzWebSocketFactory = BoltzWebSocket Function(
   String boltzUrl, {

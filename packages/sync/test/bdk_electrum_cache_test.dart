@@ -21,7 +21,7 @@ import 'package:sync/src/data/write/datasources/electrum_cache_datasource.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 

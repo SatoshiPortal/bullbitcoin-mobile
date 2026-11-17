@@ -2,7 +2,7 @@
 /// built on, so consumers depend on a single, SDK-pinned bdk_dart version
 /// instead of pinning bdk_dart themselves.
 ///
-/// Import with a prefix: `import 'package:bull_sdk/bdk.dart' as bdk;`
+/// Import with a prefix: `import 'package:rust_bindings/bdk.dart' as bdk;`
 library;
 
 export 'package:bdk_dart/bdk.dart';

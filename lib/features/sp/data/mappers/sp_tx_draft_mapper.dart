@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_coin_mapper.dart';
 import 'package:bb_mobile/features/sp/data/mappers/sp_recipient_mapper.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 
 /// Maps a bwk FFI `TxSimulation` to the domain [SpTxDraft].
 ///

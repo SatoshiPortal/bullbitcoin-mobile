@@ -1,8 +1,8 @@
 import 'dart:isolate';
 
 import 'package:flutter/services.dart';
-import 'package:bull_sdk/bitbox.dart' as api;
-import 'package:bull_sdk/bull_sdk.dart';
+import 'package:rust_bindings/bitbox.dart' as api;
+import 'package:rust_bindings/rust_bindings.dart';
 
 import 'platform.dart';
 import 'usb_connector.dart';
