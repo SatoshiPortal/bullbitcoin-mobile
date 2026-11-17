@@ -34,6 +34,11 @@ class WalletHomeTopSection extends StatelessWidget {
   /// straddles the bottom edge, while the balance above is never covered.
   static const double _actionsOverhang = BullQuickActionBar.height / 2;
 
+  /// Minimum height of the background image; anything painted behind this
+  /// section must stay within it.
+  static const double minBackgroundHeight =
+      _balanceAreaHeight + _actionsTopSpacing + _actionsOverhang;
+
   @override
   Widget build(BuildContext context) {
     return Stack(

@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
+import 'package:bull_ui/bull_ui.dart'
+    show BullQuickActionBar, bullUiLocalizationsDelegate;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,101 +24,135 @@ class _Price extends MockBloc<BitcoinPriceEvent, BitcoinPriceState>
 
 class _Chart extends MockCubit<PriceChartState> implements PriceChartCubit {}
 
-void main() {
-  testWidgets(
-    'balance grows for unconfirmed amount at 200 percent text scale',
-    (tester) async {
-      final wallet = _Wallet();
-      final settings = _Settings();
-      final price = _Price();
-      final chart = _Chart();
-      whenListen(
-        wallet,
-        const Stream<WalletState>.empty(),
-        initialState: const WalletState(
-          status: WalletStatus.success,
-          unconfirmedIncomingBalance: 100,
-        ),
-      );
-      whenListen(
-        settings,
-        const Stream<SettingsState>.empty(),
-        initialState: const SettingsState(
-          storedSettings: SettingsEntity(
-            environment: Environment.mainnet,
-            bitcoinUnit: BitcoinUnit.btc,
-            currencyCode: 'CAD',
-            hideAmounts: true,
+const _actionKey = ValueKey('actions');
+
+Future<void> _pumpTopSection(
+  WidgetTester tester, {
+  required double textScale,
+  required double actionsHeight,
+  required int unconfirmedIncomingBalance,
+}) async {
+  final wallet = _Wallet();
+  final settings = _Settings();
+  final price = _Price();
+  final chart = _Chart();
+  whenListen(
+    wallet,
+    const Stream<WalletState>.empty(),
+    initialState: WalletState(
+      status: WalletStatus.success,
+      unconfirmedIncomingBalance: unconfirmedIncomingBalance,
+    ),
+  );
+  whenListen(
+    settings,
+    const Stream<SettingsState>.empty(),
+    initialState: const SettingsState(
+      storedSettings: SettingsEntity(
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.btc,
+        currencyCode: 'CAD',
+        hideAmounts: true,
+      ),
+    ),
+  );
+  whenListen(
+    price,
+    const Stream<BitcoinPriceState>.empty(),
+    initialState: const BitcoinPriceState(
+      currency: 'CAD',
+      bitcoinPrice: 100000,
+    ),
+  );
+  whenListen(
+    chart,
+    const Stream<PriceChartState>.empty(),
+    initialState: const PriceChartState(),
+  );
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: AppTheme.themeData(AppThemeType.light),
+      localizationsDelegates: [
+        ...AppLocalizations.localizationsDelegates,
+        bullUiLocalizationsDelegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: MediaQuery(
+          data: MediaQueryData(
+            size: const Size(360, 800),
+            textScaler: TextScaler.linear(textScale),
           ),
-        ),
-      );
-      whenListen(
-        price,
-        const Stream<BitcoinPriceState>.empty(),
-        initialState: const BitcoinPriceState(
-          currency: 'CAD',
-          bitcoinPrice: 100000,
-        ),
-      );
-      whenListen(
-        chart,
-        const Stream<PriceChartState>.empty(),
-        initialState: const PriceChartState(),
-      );
-      const actionKey = ValueKey('actions');
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.themeData(AppThemeType.light),
-          localizationsDelegates: [
-            ...AppLocalizations.localizationsDelegates,
-            bullUiLocalizationsDelegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: MediaQuery(
-              data: const MediaQueryData(
-                size: Size(360, 800),
-                textScaler: TextScaler.linear(2),
-              ),
-              child: MultiBlocProvider(
-                providers: [
-                  BlocProvider<WalletBloc>.value(value: wallet),
-                  BlocProvider<SettingsCubit>.value(value: settings),
-                  BlocProvider<BitcoinPriceBloc>.value(value: price),
-                  BlocProvider<PriceChartCubit>.value(value: chart),
-                ],
-                child: const SingleChildScrollView(
-                  child: SizedBox(
-                    width: 360,
-                    child: WalletHomeTopSection(
-                      actions: SizedBox(key: actionKey, height: 100),
-                    ),
-                  ),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<WalletBloc>.value(value: wallet),
+              BlocProvider<SettingsCubit>.value(value: settings),
+              BlocProvider<BitcoinPriceBloc>.value(value: price),
+              BlocProvider<PriceChartCubit>.value(value: chart),
+            ],
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: 360,
+                child: WalletHomeTopSection(
+                  actions: SizedBox(key: _actionKey, height: actionsHeight),
                 ),
               ),
             ),
           ),
         ),
+      ),
+    ),
+  );
+  await tester.pump();
+}
+
+void main() {
+  testWidgets(
+    'balance grows for unconfirmed amount at 200 percent text scale',
+    (tester) async {
+      await _pumpTopSection(
+        tester,
+        textScale: 2,
+        actionsHeight: 100,
+        unconfirmedIncomingBalance: 100,
       );
-      await tester.pump();
       expect(tester.takeException(), isNull);
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       final unconfirmed = find.text(l10n.walletBalanceUnconfirmedIncoming);
       expect(unconfirmed, findsOneWidget);
       expect(
-        tester.getTopLeft(find.byKey(actionKey)).dy,
+        tester.getTopLeft(find.byKey(_actionKey)).dy,
         greaterThanOrEqualTo(tester.getBottomLeft(unconfirmed).dy + 12),
       );
-      expect(tester.getTopLeft(find.byKey(actionKey)).dy, greaterThan(224));
+      expect(tester.getTopLeft(find.byKey(_actionKey)).dy, greaterThan(224));
       // The actions straddle the bottom edge of the background image.
       final backgroundBottom = tester.getBottomLeft(find.byType(Image)).dy;
       expect(
         backgroundBottom,
-        greaterThan(tester.getTopLeft(find.byKey(actionKey)).dy),
+        greaterThan(tester.getTopLeft(find.byKey(_actionKey)).dy),
       );
       expect(
         backgroundBottom,
-        lessThan(tester.getBottomLeft(find.byKey(actionKey)).dy),
+        lessThan(tester.getBottomLeft(find.byKey(_actionKey)).dy),
+      );
+    },
+  );
+
+  testWidgets(
+    'background image is minBackgroundHeight tall with the quick action bar',
+    (tester) async {
+      // The home screen sizes its overscroll backdrop from this constant; a
+      // taller backdrop shows below the image.
+      await _pumpTopSection(
+        tester,
+        textScale: 1,
+        actionsHeight: BullQuickActionBar.height,
+        unconfirmedIncomingBalance: 0,
+      );
+      expect(tester.takeException(), isNull);
+      expect(
+        tester.getSize(find.byType(Image)).height,
+        WalletHomeTopSection.minBackgroundHeight,
       );
     },
   );
