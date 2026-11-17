@@ -1,6 +1,6 @@
 import 'package:bull_sdk/bull_sdk.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet;
-import 'package:swaps/src/data/models/swap_master_key_model.dart';
+import 'package:swaps/swaps.dart' as swaps;
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
@@ -14,6 +14,27 @@ import 'package:secrets/testing.dart';
 class _Wallets extends Mock implements WalletRepository {}
 
 class _Wallet extends Mock implements wallet.Wallet {}
+
+class _Rows extends Mock implements swaps.SwapRowStore {}
+
+class _Electrum extends Mock implements swaps.ElectrumRunner {}
+
+class _Lockup extends Mock implements swaps.LockupChain {}
+
+class _Keychain implements swaps.SecretStore {
+  final _values = <String, String>{};
+  @override
+  Future<String?> read(String key) async => _values[key];
+  @override
+  Future<void> write(String key, String value) async {
+    _values[key] = value;
+  }
+
+  @override
+  Future<void> delete(String key) async {
+    _values.remove(key);
+  }
+}
 
 void main() {
   setUpAll(BullSdk.init);
@@ -55,7 +76,7 @@ void main() {
     );
   }
   test(
-    'real glue derives and rehydrates the captured concrete key network',
+    'real glue derives and persists the captured concrete key network',
     () async {
       FakeSecureStoragePlatform().install();
       final secrets = Secrets(scratchDirectory: () async => '/unused');
@@ -68,6 +89,7 @@ void main() {
       final defaultWallet = _Wallet();
       when(() => defaultWallet.masterFingerprint).thenReturn(secret.id.hex);
       final glue = SwapsAppGlue(walletRepository: wallets, secrets: secrets);
+      final canonical = swaps.SwapStorage(rows: _Rows(), secrets: _Keychain());
       for (final environment in [
         NetworkEnv.mainnet,
         NetworkEnv.testnet,
@@ -83,10 +105,40 @@ void main() {
         final derived = await glue.swapMasterKey(environment: environment);
         if (derived == null) fail('Expected the ephemeral default wallet key');
         expect(derived.environment, environment);
-        final rehydrated = SwapMasterKeyModel.fromJson(
-          SwapMasterKeyModel.fromDerived(derived).toJson(),
-        ).toBoltz();
-        expect(rehydrated.network.name, environment.name);
+        final electrum = _Electrum();
+        final lockup = _Lockup();
+        final repository = swaps.BoltzSwapRepository.connect(
+          url: 'fixture.example',
+          environment: environment,
+          webSocketUrl: environment == NetworkEnv.regtest
+              ? 'ws://fixture.example:9004'
+              : null,
+          storage: environment == NetworkEnv.regtest
+              ? canonical.regtestView(rows: _Rows())
+              : canonical,
+          electrum: electrum,
+          lockupChain: lockup,
+          newAddressFor: (_) async => throw StateError('No address operation'),
+          walletTx: (_, {required walletId}) async => null,
+          walletTxs: (_, {bool sync = false}) async => const [],
+          fastestFee: ({
+            required txSize,
+            required isLiquid,
+            required environment,
+          }) async => throw StateError('No fee operation'),
+          wallets: ({required environment}) async => const [],
+          swapMasterKeySource: ({required environment}) async =>
+              throw StateError('Existing key must not be rederived'),
+        );
+        addTearDown(repository.close);
+        await repository.storeSwapMasterKey(derived);
+        final stored = await repository.getSwapMasterKeyInfo(
+          walletFingerprint: derived.walletFingerprint,
+        );
+        expect(stored?.network, environment.name);
+        expect(stored?.fingerprint, derived.fingerprint);
+        verifyZeroInteractions(electrum);
+        verifyZeroInteractions(lockup);
       }
     },
   );
