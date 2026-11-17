@@ -291,10 +291,9 @@ class _SubHeader extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         loc.coinsSortFilter,
-                        style: context.bullText.labelMedium?.copyWith(
-                          fontSize: 12.5,
+                        style: context.bullType.caption.copyWith(
                           color: filtered ? colors.primary : colors.text,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       if (filter.activeFilterCount > 0) ...[
@@ -322,8 +321,7 @@ class _SubHeader extends StatelessWidget {
                   textAlign: TextAlign.end,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.bullText.labelLarge?.copyWith(
-                    fontSize: 12,
+                  style: context.bullType.caption.copyWith(
                     color: colors.textMuted,
                   ),
                 ),
@@ -554,9 +552,8 @@ class _EmptyState extends StatelessWidget {
             Text(
               context.loc.coinsEmptyTitle,
               textAlign: TextAlign.center,
-              style: context.bullText.titleMedium?.copyWith(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w700,
                 color: colors.text,
               ),
             ),
@@ -564,8 +561,8 @@ class _EmptyState extends StatelessWidget {
             Text(
               context.loc.coinsEmptyBody,
               textAlign: TextAlign.center,
-              style: context.bullText.bodyMedium?.copyWith(
-                fontSize: 13.5,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
                 height: 1.5,
                 color: colors.textMuted,
               ),
@@ -595,9 +592,8 @@ class _FilteredEmptyState extends StatelessWidget {
             Text(
               context.loc.coinsFilteredEmptyTitle,
               textAlign: TextAlign.center,
-              style: context.bullText.titleMedium?.copyWith(
-                fontSize: 14.5,
-                fontWeight: FontWeight.w600,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w700,
                 color: colors.text,
               ),
             ),
@@ -609,9 +605,8 @@ class _FilteredEmptyState extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 child: Text(
                   context.loc.coinsClearFilters,
-                  style: context.bullText.labelLarge?.copyWith(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w700,
                     color: colors.primary,
                   ),
                 ),
@@ -682,8 +677,8 @@ class _FooterHint extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.bullText.labelLarge?.copyWith(
-                  fontSize: 11.5,
+                style: context.bullType.caption.copyWith(
+                  fontWeight: FontWeight.w500,
                   color: colors.textMuted,
                 ),
               ),

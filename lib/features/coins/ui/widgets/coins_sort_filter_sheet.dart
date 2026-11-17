@@ -55,8 +55,7 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
           const SizedBox(height: 16),
           Text(
             loc.coinsSortFilter,
-            style: context.bullText.titleLarge?.copyWith(
-              fontSize: 17,
+            style: context.bullType.body.copyWith(
               fontWeight: FontWeight.w700,
               color: colors.text,
             ),
