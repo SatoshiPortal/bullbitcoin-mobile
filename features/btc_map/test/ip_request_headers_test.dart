@@ -32,7 +32,20 @@ void main() {
       received.headers.forEach((name, _) => headers.add(name));
       received.response.headers.contentType = ContentType.json;
       received.response.write(
-        jsonEncode({'success': true, 'latitude': 1, 'longitude': 2}),
+        jsonEncode({
+          'type': 'data',
+          'nodes': [
+            {
+              'type': 'data',
+              'data': [
+                {'geo': 1},
+                {'lat': 2, 'lng': 3},
+                1,
+                2,
+              ],
+            },
+          ],
+        }),
       );
       await received.response.close();
       expect(await lookup, isA<Ok<GeoPoint, BullMapFailure>>());
@@ -40,9 +53,7 @@ void main() {
         headers.toSet().difference({'host', 'accept-encoding', 'connection'}),
         isEmpty,
       );
-      expect(received.uri.queryParameters, {
-        'fields': 'success,latitude,longitude',
-      });
+      expect(received.uri.queryParameters, isEmpty);
     },
   );
 }

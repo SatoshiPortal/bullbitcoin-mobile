@@ -5,17 +5,41 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
+Object locationResponse(
+  Object? latitude,
+  Object? longitude, {
+  Object? geoReference = 1,
+  Object? latitudeReference = 2,
+}) => {
+  'type': 'data',
+  'nodes': [
+    {
+      'type': 'data',
+      'data': [null],
+    },
+    {
+      'type': 'data',
+      'data': [
+        {'geo': geoReference, 'merchantOgImage': 4},
+        {'lat': latitudeReference, 'lng': 3},
+        latitude,
+        longitude,
+        null,
+      ],
+    },
+  ],
+};
+
 void main() {
   IpMapLocationRepository repository(Object? body, {int status = 200}) {
     final client = Dio()
       ..interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
-            expect(options.uri.host, 'ipwho.is');
+            expect(options.uri.host, 'btcmap.org');
+            expect(options.uri.path, '/map/__data.json');
             expect(options.uri.scheme, 'https');
-            expect(options.queryParameters, {
-              'fields': 'success,latitude,longitude',
-            });
+            expect(options.queryParameters, isEmpty);
             expect(options.headers, isEmpty);
             if (status != 200) {
               handler.reject(
@@ -42,11 +66,7 @@ void main() {
   test(
     'looks up the caller connection without app or wallet identifiers',
     () async {
-      final result = await repository({
-        'success': true,
-        'latitude': 45.5,
-        'longitude': -73.6,
-      }).locate();
+      final result = await repository(locationResponse(45.5, -73.6)).locate();
       expect(
         result,
         isA<Ok<GeoPoint, BullMapFailure>>().having(
@@ -58,15 +78,33 @@ void main() {
     },
   );
 
+  test('zero coordinates remain valid', () async {
+    expect(
+      await repository(locationResponse(0, 0)).locate(),
+      isA<Ok<GeoPoint, BullMapFailure>>().having(
+        (r) => r.value,
+        'position',
+        GeoPoint(latitude: 0, longitude: 0),
+      ),
+    );
+  });
+
   test('rejects failures, malformed bodies and invalid coordinates', () async {
     for (final body in <Object?>[
       null,
       [],
-      {'success': false, 'latitude': 1, 'longitude': 2},
       {'latitude': 1, 'longitude': 2},
-      {'success': true, 'latitude': '1', 'longitude': 2},
-      {'success': true, 'latitude': 91, 'longitude': 2},
-      {'success': true, 'latitude': 1, 'longitude': double.nan},
+      locationResponse('1', 2),
+      locationResponse(91, 2),
+      locationResponse(1, double.nan),
+      locationResponse(1, double.infinity),
+      locationResponse(1, 2, geoReference: -1),
+      locationResponse(1, 2, geoReference: 999),
+      locationResponse(1, 2, geoReference: '1'),
+      locationResponse(1, 2, latitudeReference: -1),
+      locationResponse(1, 2, latitudeReference: 999),
+      locationResponse(1, 2, latitudeReference: 2.0),
+      locationResponse(null, 2),
     ]) {
       expect(
         await repository(body).locate(),
