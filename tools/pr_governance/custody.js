@@ -18,12 +18,16 @@ const FSS_IMPORTERS_ALLOWED = new Set([
 
 const inSecrets = (path) => path.startsWith('packages/secrets/');
 const isDart = (path) => path.endsWith('.dart');
+// flutter_rust_bridge writes this suppression into every file it generates, for its own runtime's
+// internal members. Neither package depends on package:secrets, so the seal cannot be reached from
+// their generated bindings; hand-written files there stay checked.
+const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
 
 const RULES = [
   {
     id: 'seal-ignore',
-    applies: isDart,
+    applies: (path) => isDart(path) && !isGeneratedBridge(path),
     matches: (text) => /\bignore(_for_file)?\s*:.*\binvalid_use_of_internal_member\b/.test(text),
     why: 'silences `invalid_use_of_internal_member`, the analyzer seal on package:secrets (`Secret.revealMnemonic`, every constructor the package does not export)',
   },
