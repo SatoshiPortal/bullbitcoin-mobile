@@ -520,7 +520,7 @@ void main() {
       subject.invalidate();
       var replaced = false;
       final replacement = subject.current().whenComplete(() => replaced = true);
-      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await pumpEventQueue();
       expect(bindings.first.closes, 1);
       expect(bindings, hasLength(1));
       expect(replaced, false);
@@ -555,7 +555,7 @@ void main() {
         subject.invalidate();
         var closed = false;
         final closing = subject.close().whenComplete(() => closed = true);
-        await Future<void>.delayed(const Duration(milliseconds: 50));
+        await pumpEventQueue();
         expect(closed, false);
         gate.complete();
         await expectLater(closing, throwsA(same(failure)));
@@ -583,8 +583,8 @@ void main() {
                 .value;
         subject.invalidate();
         expect(await first.isCurrent(), false);
-        // Let the retired close fail before anyone waits for it.
-        await Future<void>.delayed(const Duration(milliseconds: 50));
+        // The retired close has failed before anyone asks the host again.
+        await expectLater(first.close(), throwsA(same(failure)));
         expect(
           await subject.current(),
           isA<Err<ArkForegroundRuntime, ArkFailure>>(),
