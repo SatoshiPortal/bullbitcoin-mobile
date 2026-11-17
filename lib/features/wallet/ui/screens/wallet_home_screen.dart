@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
-import 'package:bb_mobile/core/themes/colors.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/announcements/ui/widgets/announcement_carousel.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -130,14 +130,14 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       onPopInvokedWithResult: (didPop, _) {},
       child: Stack(
         children: [
-          // Black background visible only during iOS top overscroll. It stops
-          // where the header image does, so it never shows below it.
+          // Backdrop visible only during iOS top overscroll. It stops where
+          // the header image does, so it never shows below it.
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: ColoredBox(
-              color: AppColors.dark.background,
+              color: context.appColors.homeHeaderBackground,
               child: const SizedBox(
                 height: WalletHomeTopSection.minBackgroundHeight,
               ),
