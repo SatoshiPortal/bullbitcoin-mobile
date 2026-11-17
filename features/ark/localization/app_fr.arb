@@ -96,5 +96,12 @@
   "exitStatusFailed": "Sortie à vérifier",
   "spendableInSats": "Disponible (sats)",
   "pendingInSats": "En attente (sats)",
-  "reserveInSats": "Réserve de frais sur la chaîne (sats)"
+  "reserveInSats": "Réserve de frais sur la chaîne (sats)",
+  "operationPrepared": "Préparée",
+  "operationAdmitted": "Admise",
+  "operationPending": "En attente",
+  "operationCompleted": "Terminée",
+  "operationFailed": "Échec",
+  "operationUnknown": "Résultat inconnu",
+  "operationConflicted": "Transaction conflictuelle observée"
 }

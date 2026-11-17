@@ -199,5 +199,19 @@
   "pendingInSats": "Pending (sats)",
   "@pendingInSats": {},
   "reserveInSats": "On-chain fee reserve (sats)",
-  "@reserveInSats": {}
+  "@reserveInSats": {},
+  "operationPrepared": "Prepared",
+  "@operationPrepared": {},
+  "operationAdmitted": "Admitted",
+  "@operationAdmitted": {},
+  "operationPending": "Pending",
+  "@operationPending": {},
+  "operationCompleted": "Completed",
+  "@operationCompleted": {},
+  "operationFailed": "Failed",
+  "@operationFailed": {},
+  "operationUnknown": "Outcome unknown",
+  "@operationUnknown": {},
+  "operationConflicted": "Conflicting transaction observed",
+  "@operationConflicted": {}
 }
