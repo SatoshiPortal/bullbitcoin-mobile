@@ -3,3 +3,4 @@ library;
 
 export '../data/ark_foreground_runtime.dart'
     show ArkForegroundRuntime, openArkForeground, prepareArkCustodyReferences;
+export '../data/ark_foreground_host.dart' show ArkForegroundHost, arkHostPaths;

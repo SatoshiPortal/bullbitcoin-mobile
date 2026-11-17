@@ -53,6 +53,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
+import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -137,7 +138,10 @@ class AppRouter {
       );
     },
     routes: [
-      ...createArkUnavailableRoutes(),
+      // An admitted regtest Ark profile serves the feature; others stay closed.
+      ...(locator.isRegistered<ArkForegroundHost>()
+          ? locator<ArkForegroundHost>().routes
+          : createArkUnavailableRoutes()),
       ShellRoute(
         notifyRootObserver: true,
         builder: (context, state, child) {

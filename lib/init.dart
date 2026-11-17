@@ -9,6 +9,7 @@ import 'dart:async';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
+import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -69,6 +70,8 @@ class Bull {
     );
     if (setup case Err()) return setup;
     await initializeWalletRuntime(locator);
+    // Before any seed deletion is reachable in an admitted Ark profile.
+    await _setupArkRegtestProfile();
     Bloc.observer = AppBlocObserver();
 
     // Flush wizard pending values (if any) to SQLite now that the
@@ -92,4 +95,25 @@ class Bull {
     await Report.recordMigration();
     return const Ok(null);
   }
+}
+
+/// Explicit regtest Ark profile supplied at build time. Builds without both
+/// endpoints keep the unavailable Ark routes and open no Ark storage.
+/// BULL_ARK_REGTEST_INITIALIZE_NEW authorizes creating the account registry
+/// of a fresh, controlled regtest profile; it is never inferred from files.
+Future<void> _setupArkRegtestProfile() async {
+  const ark = String.fromEnvironment('BULL_ARK_REGTEST_URL');
+  const esplora = String.fromEnvironment('BULL_ARK_REGTEST_ESPLORA_URL');
+  const initializeNew = bool.fromEnvironment('BULL_ARK_REGTEST_INITIALIZE_NEW');
+  final arkUrl = Uri.tryParse(ark);
+  final esploraUrl = Uri.tryParse(esplora);
+  if (ark.isEmpty || esplora.isEmpty || arkUrl == null || esploraUrl == null) {
+    return;
+  }
+  await ArkForegroundHost.setup(
+    locator,
+    arkUrl: arkUrl,
+    primaryEsploraUrl: esploraUrl,
+    initializeNew: initializeNew,
+  );
 }
