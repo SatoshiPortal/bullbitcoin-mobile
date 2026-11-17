@@ -38,12 +38,12 @@ class WalletCard extends StatelessWidget {
         child: Material(
           elevation: 2,
           shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
-          color: context.appColors.background,
+          color: context.appColors.walletCardBackground,
           borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: Container(
             constraints: const BoxConstraints(minHeight: 90),
             decoration: BoxDecoration(
-              color: context.appColors.background,
+              color: context.appColors.walletCardBackground,
               border: Border(left: BorderSide(color: tagColor, width: 4)),
               borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
