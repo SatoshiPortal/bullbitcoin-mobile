@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: rust-bindings-codegen onion-codegen native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -111,6 +111,15 @@ action-pins-check:
 pr-governance-ci-test:
 	@echo "🛡️ Testing PR governance and custody policy (CI only)"
 	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
+
+# Regenerate the flutter_rust_bridge bindings after changing a Rust API. Needs
+# flutter_rust_bridge_codegen 2.13.0, the Flutter of .fvmrc on PATH and libclang
+# (LLVM_PATH=<llvm dir> when it is not found). Commit the output on its own.
+rust-bindings-codegen:
+	@bash packages/rust_bindings/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
+onion-codegen:
+	@bash packages/onion/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
