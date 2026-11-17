@@ -168,6 +168,7 @@ class _TopChrome extends StatelessWidget {
           ? () => openSortFilterSheet(context, state)
           : null,
       actionIcon: BullIcons.tune,
+      actionTooltip: context.loc.coinsSortFilter,
       actionBadge: state.filter.hasActiveFilter,
     );
   }
