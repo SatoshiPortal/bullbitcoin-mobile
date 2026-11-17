@@ -245,6 +245,14 @@ void main() {
         if (operationFile.existsSync()) {
           throw StateError('a Board was already prepared; reconcile only');
         }
+        // As the account screen does: a Board quote needs a fresh snapshot.
+        _report(
+          'synchronize=${await facade.synchronize(account, renew: false)}',
+        );
+        final fresh = _ok(await facade.read(account), 'read before Board');
+        if (fresh.stale || fresh.recovery != ArkRecoveryStatus.complete) {
+          throw StateError('Ark snapshot not fresh before Board');
+        }
         final prepared = _ok(
           await facade.prepareBoard(config, Sats.fromInt(20000)),
           'prepare',
