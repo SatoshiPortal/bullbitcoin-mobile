@@ -14,6 +14,10 @@ import '../domain/usecases/read_ark_usecase.dart';
 import '../domain/usecases/quote_ark_operation_usecase.dart';
 import '../domain/usecases/confirm_ark_operation_usecase.dart';
 import '../domain/usecases/create_ark_receive_usecase.dart';
+import '../domain/ark_board_preparation.dart';
+import '../domain/usecases/prepare_ark_board_usecase.dart';
+import '../domain/usecases/read_ark_board_usecase.dart';
+import '../domain/usecases/confirm_ark_board_usecase.dart';
 
 export 'package:ark/ark.dart'
     show
@@ -63,6 +67,14 @@ export 'package:ark/ark.dart'
         ArkQuote;
 
 export '../domain/ark_failure.dart';
+export '../domain/ark_board_preparation.dart';
+
+/// Only this feature issues a Board review, from a trusted host journal read.
+final class ArkBoardReview {
+  final ArkBoardPreparation _preparation;
+  const ArkBoardReview._(this._preparation);
+  ArkBoardPreparation get details => _preparation;
+}
 
 /// Issued only by ArkFacade.quote. Display metadata conveys no construction
 /// authority: confirmation always uses the original immutable package quote.
@@ -99,6 +111,9 @@ final class ArkFacade {
   final QuoteArkOperationUsecase _quote;
   final ConfirmArkOperationUsecase _confirm;
   final CreateArkReceiveUsecase _receive;
+  final PrepareArkBoardUsecase _prepareBoard;
+  final ReadArkBoardUsecase _readBoard;
+  final ConfirmArkBoardUsecase _confirmBoard;
 
   const ArkFacade(
     this._enable,
@@ -108,11 +123,33 @@ final class ArkFacade {
     this._synchronize,
     this._quote,
     this._confirm,
-    this._receive, [
+    this._receive,
+    this._prepareBoard,
+    this._readBoard,
+    this._confirmBoard, [
     this._accounts,
     this._reviewClaimRecovery,
     this._rebroadcastClaim,
   ]);
+
+  @useResult
+  Future<Result<ArkBoardPreparation, ArkFailure>> prepareBoard(
+    ArkAccountConfig config,
+    Sats amount,
+  ) => _prepareBoard.execute(config, amount);
+
+  @useResult
+  Future<Result<ArkBoardReview, ArkFailure>> reviewBoard(
+    ArkAccountId account,
+    String operationId,
+  ) async =>
+      (await _readBoard.execute(account, operationId)).map(ArkBoardReview._);
+
+  @useResult
+  Future<Result<ArkOperation, ArkFailure>> confirmBoard(
+    ArkAccountId account,
+    ArkBoardReview review,
+  ) => _confirmBoard.execute(account, review._preparation);
 
   @useResult
   Future<Result<List<ArkAccountId>, ArkFailure>> listEnabledAccounts(

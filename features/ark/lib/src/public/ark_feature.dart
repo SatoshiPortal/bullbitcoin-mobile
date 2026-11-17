@@ -10,6 +10,7 @@ import '../data/ark_operation_id.dart';
 import '../data/ark_repository_impl.dart';
 import '../data/create_ark_facade.dart';
 import '../domain/ark_account_selection_port.dart';
+import '../domain/ark_board_funding_port.dart';
 import '../domain/ark_provisioning_port.dart';
 import '../domain/repositories/ark_account_registry_repository.dart';
 import '../domain/usecases/load_ark_settings_usecase.dart';
@@ -22,11 +23,15 @@ import '../domain/usecases/create_ark_receive_usecase.dart';
 import '../domain/usecases/request_ark_receive_usecase.dart';
 import '../domain/usecases/review_ark_payment_usecase.dart';
 import '../domain/usecases/parse_ark_destination_usecase.dart';
+import '../domain/usecases/prepare_ark_board_usecase.dart';
+import '../domain/usecases/read_ark_board_usecase.dart';
+import '../domain/usecases/confirm_ark_board_usecase.dart';
 import '../presentation/ark_cubit.dart';
 import '../presentation/ark_settings_cubit.dart';
 import '../presentation/ark_payment_cubit.dart';
 import '../presentation/ark_receive_cubit.dart';
 import '../presentation/ark_operation_cubit.dart';
+import '../presentation/ark_board_cubit.dart';
 import '../presentation/ark_l10n.dart';
 import '../ui/ark_settings_screen.dart';
 import '../ui/ark_account_screen.dart';
@@ -38,10 +43,23 @@ import '../ui/ark_exits_screen.dart';
 import '../ui/ark_operation_review_screen.dart';
 import '../ui/ark_snapshot_page.dart';
 import '../ui/ark_unavailable_screen.dart';
+import '../ui/ark_board_screen.dart';
+import '../ui/ark_exit_progress_fee_screen.dart';
 import 'ark_facade.dart';
 import 'ark_navigation.dart';
 
-enum _Kind { settings, account, payment, receive, vtxos, info, exits, review }
+enum _Kind {
+  settings,
+  account,
+  payment,
+  receive,
+  vtxos,
+  info,
+  exits,
+  review,
+  board,
+  progressFee,
+}
 
 const _paths = {
   _Kind.settings: '/ark',
@@ -52,6 +70,8 @@ const _paths = {
   _Kind.info: '/ark/info',
   _Kind.exits: '/ark/exits',
   _Kind.review: '/ark/review',
+  _Kind.board: '/ark/board',
+  _Kind.progressFee: '/ark/exit-progress',
 };
 Object _configuration(ArkAccountConfig c) => (
   c.id,
@@ -79,6 +99,7 @@ final class ArkFeature {
   final ArkClient _client;
   final ArkPreferencesRepository _preferences;
   final ArkProvisioningPort _provisioning;
+  final ArkBoardFundingPort _boardFunding;
   final ArkRepositoryImpl _repository;
   final ArkFacade facade;
   final _ownerListeners = <VoidCallback>{};
@@ -105,14 +126,17 @@ final class ArkFeature {
     required ArkPreferencesRepository preferences,
     required ArkProvisioningPort provisioning,
     required ArkAccountRegistryRepository registry,
+    required ArkBoardFundingPort boardFunding,
   }) : _client = client,
        _preferences = preferences,
        _provisioning = provisioning,
+       _boardFunding = boardFunding,
        _repository = ArkRepositoryImpl(client),
        facade = createArkFacade(
          client: client,
          preferences: preferences,
          provisioning: provisioning,
+         boardFunding: boardFunding,
          registry: registry,
        );
 
@@ -303,8 +327,21 @@ class _ArkPageState extends State<_ArkPage> {
       _loading = false;
       if (result case Ok(:final value)) {
         _enabled = value.enabled;
-        if (widget.kind != _Kind.payment || value.enabled) {
+        if ((widget.kind != _Kind.payment && widget.kind != _Kind.board) ||
+            value.enabled) {
           _owner = switch (widget.kind) {
+            _Kind.board => ArkBoardCubit(
+              PrepareArkBoardUsecase(
+                feature._boardFunding,
+                feature._preferences,
+              ),
+              ReadArkBoardUsecase(feature._boardFunding),
+              ConfirmArkBoardUsecase(
+                feature._boardFunding,
+                feature._preferences,
+              ),
+              config: feature._config,
+            ),
             _Kind.payment => ArkPaymentCubit(
               ReviewArkPaymentUsecase(
                 const ParseArkDestinationUsecase(),
@@ -313,6 +350,7 @@ class _ArkPageState extends State<_ArkPage> {
               ConfirmArkOperationUsecase(repository, feature._preferences),
               freshArkOperationId,
               account: account,
+              synchronize: SynchronizeArkUsecase(repository),
             ),
             _Kind.receive => ArkReceiveCubit(
               RequestArkReceiveUsecase(
@@ -413,7 +451,7 @@ class _ArkPageState extends State<_ArkPage> {
       _ => ArkExitsScreen(
         snapshot: snapshot,
         onReviewExit: () => _unavailable(owner),
-        onReviewProgress: () => _unavailable(owner),
+        onReviewProgress: () => _open(owner, _Kind.progressFee),
         onReviewClaim: (_) => _unavailable(owner),
       ),
     };
@@ -445,6 +483,10 @@ class _ArkPageState extends State<_ArkPage> {
       ArkReceiveCubit() => ArkReceiveScreen(
         cubit: owner,
       ), // Share honestly absent.
+      ArkBoardCubit() => ArkBoardScreen(
+        cubit: owner,
+        onReconcile: () => _open(owner, _Kind.vtxos),
+      ),
       ArkOperationCubit() => ArkOperationReviewScreen(
         cubit: owner,
         onReconcile: () => _open(owner, _Kind.vtxos),
@@ -454,11 +496,24 @@ class _ArkPageState extends State<_ArkPage> {
         enabled: _enabled,
         onSend: () => _open(owner, _Kind.payment),
         onReceive: () => _open(owner, _Kind.receive),
-        onBoard: () => _unavailable(owner),
+        onBoard: () => _open(owner, _Kind.board),
         onVtxos: () => _open(owner, _Kind.vtxos),
         onExits: () => _open(owner, _Kind.exits),
         onInfo: () => _open(owner, _Kind.info),
       ),
+      ArkCubit() when widget.kind == _Kind.progressFee =>
+        ArkExitProgressFeeScreen(
+          config: widget.feature._config,
+          onReviewRequest: (config, rate) {
+            if (_live(owner) && identical(config, widget.feature._config)) {
+              _open(
+                owner,
+                _Kind.review,
+                request: ArkQuoteRequest.exitProgress(feeRate: rate),
+              );
+            }
+          },
+        ),
       ArkCubit() => ArkSnapshotPage(
         cubit: owner,
         builder: (snapshot) => _observed(owner, snapshot),
