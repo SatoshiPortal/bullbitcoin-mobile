@@ -98,7 +98,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: ThemeData.dark().copyWith(
-          extensions: [dark, BullShapes.standard],
+          extensions: [dark, BullShapes.standard, BullTypography.standard],
         ),
         home: Scaffold(
           body: Center(
