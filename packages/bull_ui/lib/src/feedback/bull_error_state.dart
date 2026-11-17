@@ -2,6 +2,7 @@ import 'package:bull_ui/src/buttons/bull_button.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A load failure with a way to try again: the error [message] above a retry
@@ -31,7 +32,7 @@ class BullErrorState extends StatelessWidget {
         BullText(
           message,
           textAlign: TextAlign.center,
-          style: context.bullText.bodyMedium,
+          role: BullTextRole.body,
           color: colors.error,
         ),
         const Gap(8),
