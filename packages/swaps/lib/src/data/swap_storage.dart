@@ -44,6 +44,7 @@ class SwapStorage {
   final SwapRowStore _rows;
   final SecretStore _secrets;
   final Map<String, Lock> _writeLocks = {};
+  final Map<String, Lock> _allocationLocks = {};
 
   SwapStorage({required this._rows, required this._secrets});
 
@@ -188,6 +189,15 @@ class SwapStorage {
       index.toString(),
     );
   }
+
+  /// Reserves a range within this storage instance before returning its start.
+  Future<int> reserveSwapKeyIndex(String fingerprint, int count, int floor) =>
+      (_allocationLocks[fingerprint] ??= Lock()).synchronized(() async {
+        final stored = await getSwapKeyIndex(fingerprint);
+        final current = stored != null && stored > floor ? stored : floor;
+        await setSwapKeyIndex(fingerprint, current + count);
+        return current;
+      });
 
   // SECURE STORAGE — BULL_SDK SWAP OBJECTS
   Future<void> storeBtcLnSwap(BtcLnSwap swap) async {

@@ -859,7 +859,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       final top = swap is ChainSwap ? swap.keyIndex + 1 : swap.keyIndex;
       if (top > localHighest) localHighest = top;
     }
-    final int current;
+    final int seedFloor;
     if (stored == null) {
       // Also seed past boltz's highest known index (-1 when none) so a new
       // swap can't re-derive an in-use key on a recovered seed. Boltz's
@@ -868,13 +868,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       final highest = await _boltz.restoreSwapIndex(
         swapMasterKey: swapMasterKey,
       );
-      current = (highest > localHighest ? highest : localHighest) + 1;
+      seedFloor = highest + 1;
     } else {
-      current = stored > localHighest + 1 ? stored : localHighest + 1;
+      seedFloor = stored;
     }
-    await _boltz.storage.setSwapKeyIndex(
+    final floor = seedFloor > localHighest + 1 ? seedFloor : localHighest + 1;
+    final current = await _boltz.storage.reserveSwapKeyIndex(
       swapMasterKey.fingerprint,
-      current + count,
+      count,
+      floor,
     );
     swapsLog.fine(
       'SWAP_KEY: reserved index $current (count=$count) '
