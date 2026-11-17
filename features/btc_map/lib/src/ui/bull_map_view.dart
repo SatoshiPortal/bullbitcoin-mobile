@@ -190,8 +190,7 @@ class _BullMapViewState extends State<BullMapView> {
       await map.addSource(
         _sourceId,
         GeojsonSourceProperties(
-          // Keep Android from parsing the complete dataset through Gson on
-          // its UI thread. The JSON update below uses the native parser.
+          // Keep Android from parsing the complete dataset through Gson on its UI thread. The JSON update below uses the native parser.
           data: const {'type': 'FeatureCollection', 'features': <Object>[]},
           cluster: true,
           clusterRadius: 50,

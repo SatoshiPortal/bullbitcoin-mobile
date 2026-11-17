@@ -5,8 +5,7 @@ import '../domain/entities/geo_bounds.dart';
 import '../domain/entities/geo_point.dart';
 import '../domain/entities/merchant.dart';
 
-/// Compact rendering data: moving the map never copies the merchant catalogue
-/// into a worker. Only ids and coordinates are needed to prepare native pins.
+/// Compact rendering data: moving the map never copies the merchant catalogue into a worker. Only ids and coordinates are needed to prepare native pins.
 final class MapMarkerIndex {
   static List<Merchant>? _lastMerchants;
   static Future<MapMarkerIndex>? _lastIndex;
@@ -16,8 +15,7 @@ final class MapMarkerIndex {
 
   MapMarkerIndex._(this._points, this.positions);
 
-  /// One retained preparation, reused when a cached map is reopened. A new
-  /// dataset or category replaces it rather than growing a cache per filter.
+  /// One retained preparation, reused when a cached map is reopened. A new dataset or category replaces it rather than growing a cache per filter.
   static Future<MapMarkerIndex> forMerchants(List<Merchant> merchants) {
     final previous = _lastIndex;
     if (identical(merchants, _lastMerchants) && previous != null) {
@@ -75,8 +73,7 @@ final class MapMarkerIndex {
     );
   }
 
-  /// A zoom into a much smaller area must drop the old world's pins, even
-  /// though those old bounds contain the new view. Reuse is for small pans.
+  /// A zoom into a much smaller area must drop the old world's pins, even though those old bounds contain the new view. Reuse is for small pans.
   static bool canReuse(GeoBounds loaded, GeoBounds viewport) =>
       covers(loaded, viewport) &&
       _width(loaded) <= _width(viewport) * 4 &&

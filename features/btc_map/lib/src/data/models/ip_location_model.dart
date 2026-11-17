@@ -6,9 +6,7 @@ class IpLocationModel {
 
   const IpLocationModel(this.latitude, this.longitude);
 
-  /// BTC Map's map page exposes Netlify's approximate connection location in
-  /// Svelte's data table. This optional website response is not a stable API:
-  /// an unsupported shape deliberately leaves the map at its default view.
+  /// BTC Map's map page exposes Netlify's approximate connection location in Svelte's data table. This optional website response is not a stable API: an unsupported shape deliberately leaves the map at its default view.
   factory IpLocationModel.fromJson(Object? json) {
     if (json case {'type': 'data', 'nodes': final List nodes}) {
       for (final node in nodes) {

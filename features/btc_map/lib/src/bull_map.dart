@@ -9,8 +9,7 @@ import 'package:btc_map/src/domain/merchant_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-/// Entry point of the package: where the cache lives, and a session per open
-/// map.
+/// Entry point of the package: where the cache lives, and a session per open map.
 abstract final class BullMap {
   static Directory? _cacheDirectory;
   static MerchantRepository? _repository;
@@ -20,8 +19,7 @@ abstract final class BullMap {
     _repository = null;
   }
 
-  /// Sessions reuse one repository, including decoded merchants, until init
-  /// changes the cache directory. Opening the map still requests a delta sync.
+  /// Sessions reuse one repository, including decoded merchants, until init changes the cache directory. Opening the map still requests a delta sync.
   static BullMapSession open() {
     final directory = _cacheDirectory;
     if (directory == null) throw StateError('BullMap.init was not called');
@@ -40,14 +38,12 @@ final class BullMapSession {
 
   BullMapSession._(this._repository);
 
-  /// The merchants stored on the device, without touching the network. Empty
-  /// before the first successful sync.
+  /// The merchants stored on the device, without touching the network. Empty before the first successful sync.
   @useResult
   Future<Result<List<Merchant>, BullMapFailure>> cachedMerchants() =>
       _repository.cached();
 
-  /// Brings the device copy up to date with BTC Map and returns all of it.
-  /// Concurrent calls share one download.
+  /// Brings the device copy up to date with BTC Map and returns all of it. Concurrent calls share one download.
   @useResult
   Future<Result<List<Merchant>, BullMapFailure>> syncMerchants() =>
       _repository.sync();

@@ -11,9 +11,7 @@ import '../domain/entities/geo_point.dart';
 import '../domain/repositories/map_location_repository.dart';
 import 'models/ip_location_model.dart';
 
-/// Best-effort centering from the connection's public IP, without GPS access.
-/// The provider sees the connection IP and generic HTTP metadata; no Bull,
-/// wallet or user identifiers are added, and neither the IP nor result is logged.
+/// Best-effort centering from the connection's public IP, without GPS access. The provider sees the connection IP and generic HTTP metadata; no Bull, wallet or user identifiers are added, and neither the IP nor result is logged.
 final class IpMapLocationRepository implements MapLocationRepository {
   static const _timeout = Duration(seconds: 3);
 
