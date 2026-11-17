@@ -222,20 +222,103 @@ void main() {
       expect(native.fundings, 0);
     },
   );
+  for (final stage in ['exits-observe', 'ark']) {
+    test(
+      'failed $stage recovers only after a successful full matching pass',
+      () async {
+        native.failingStage = stage;
+        final failed = requireOk(
+          await client.synchronize(account, renew: false),
+        );
+        expect(failed.failedStages, [stage]);
+        expect(failed.snapshot.stale, true);
+        native.failingStage = null;
+        await refuseQuoteAndSubmission();
+        final actualStages = <String>[];
+        native.afterStage = actualStages.add;
+        final retry = requireOk(
+          await client.synchronize(account, renew: false),
+        );
+        expect(actualStages, contains(stage));
+        expect(retry.failedStages, isEmpty);
+        expect(retry.snapshot.recovery, ArkRecoveryStatus.complete);
+        expect(retry.snapshot.vtxoInventoryComplete, true);
+        expect(retry.snapshot.tipHeight, 100);
+        expect(retry.snapshot.stale, false);
+        final quote = requireOk(await client.quote(account, request));
+        final funded = requireOk(
+          await client.submit(
+            account,
+            ArkSubmission.boardFunding(
+              operationId: 'after-$stage-retry',
+              quoteId: quote.id,
+            ),
+          ),
+        );
+        expect(funded.status, ArkOperationStatus.prepared);
+        expect(native.fundings, 1);
+        expect(native.registrations, 0);
+        expect(native.executes, 0);
+      },
+    );
+  }
   test(
-    'observed opaque exits failure is not resolved by a later void success',
+    'another provider cannot discharge the captured failed-stage binding',
     () async {
-      native.failingStage = 'exits-observe';
-      final failed = requireOk(await client.synchronize(account, renew: false));
-      expect(failed.failedStages, ['exits-observe']);
+      await client.close();
+      native = FakeOpener()..requireBoardServerInfo = true;
+      final other = ArkAccountId(
+        parent: Fingerprint('87654321'),
+        network: BitcoinNetwork.regtest,
+        serverIdentity: 'server',
+      );
+      final bound = ArkAccountConfig(
+        id: other,
+        arkUrl: config.arkUrl,
+        primaryEsploraUrl: config.primaryEsploraUrl,
+        fallbackEsploraUrl: Uri.parse('http://localhost:3001'),
+      );
+      final transport = FakePreflight();
+      client = BarkArkClient(
+        storagePath: temp.path,
+        childProvider: FakeChild(),
+        transactionVerifier: FakeVerifier(),
+        executionPolicy: FakePolicy(),
+        executionMode: ArkExecutionMode.foreground,
+        stageBudget: budget,
+        opener: native,
+        preflight: transport,
+        clock: () => clock,
+      );
+      requireOk(await client.create(bound));
+      native.failingStage = 'onchain';
+      final failed = requireOk(await client.synchronize(other, renew: false));
+      expect(failed.failedStages, ['onchain']);
       expect(failed.snapshot.stale, true);
       native.failingStage = null;
-      final actualStages = <String>[];
-      native.afterStage = actualStages.add;
-      final retry = requireOk(await client.synchronize(account, renew: false));
-      expect(actualStages, contains('exits-observe'));
-      expect(retry.snapshot.stale, true);
-      await refuseQuoteAndSubmission();
+      transport.primaryUnreachable = true;
+      final alternate = requireOk(
+        await client.synchronize(other, renew: false),
+      );
+      expect(alternate.completedStages, contains(ArkStage.onchain));
+      expect(alternate.snapshot.recovery, ArkRecoveryStatus.complete);
+      expect(alternate.snapshot.vtxoInventoryComplete, true);
+      expect(alternate.snapshot.tipHeight, 100);
+      expect(alternate.snapshot.stale, true);
+      expect(
+        await client.quote(other, request),
+        isA<Err<ArkQuote, ArkWalletFailure>>(),
+      );
+      expect(native.fundings, 0);
+      transport.primaryUnreachable = false;
+      final matched = requireOk(await client.synchronize(other, renew: false));
+      expect(matched.failedStages, isEmpty);
+      expect(matched.snapshot.stale, false);
+      expect(
+        await client.quote(other, request),
+        isA<Ok<ArkQuote, ArkWalletFailure>>(),
+      );
+      expect(native.fundings, 0);
     },
   );
   test(
