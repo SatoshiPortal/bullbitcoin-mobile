@@ -93,7 +93,10 @@ final class ArkStore {
 
   /// One durable observation: positive-but-partial ids cannot erase themselves,
   /// and a failed snapshot commit cannot advance retirement evidence.
-  void commitObservation(ArkSnapshot snapshot) {
+  void commitObservation(
+    ArkSnapshot snapshot, {
+    Map<String, Object?>? syncFailures,
+  }) {
     _db.execute('BEGIN IMMEDIATE');
     try {
       final prior = get('inventory-obligations') ?? get('complete-inventory');
@@ -152,6 +155,7 @@ final class ArkStore {
           'vtxos': snapshot.vtxos.map(vtxoToJson).toList(),
         });
       }
+      if (syncFailures != null) put('sync-stage-failures', syncFailures);
       saveSnapshot(snapshot);
       _db.execute('COMMIT');
     } catch (_) {

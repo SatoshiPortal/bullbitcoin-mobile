@@ -189,6 +189,7 @@ final class BarkArkClient implements ArkClient {
           operations: await _verifiedOperations(store, account),
           stale:
               snapshot.stale ||
+              _SyncFailures.load(store, account).causes.isNotEmpty ||
               now().difference(snapshot.observedAt) >
                   const Duration(minutes: 5),
         ),
@@ -544,6 +545,8 @@ final class BarkArkClient implements ArkClient {
     Uri source, {
     bool commit = true,
     bool authoritativePass = true,
+    _SyncFailures? syncFailures,
+    Set<String> successfulStages = const {},
   }) async {
     final previous = store.snapshot;
     var observed = await session.observe(
@@ -570,6 +573,16 @@ final class BarkArkClient implements ArkClient {
         .map((v) => v.id)
         .toSet();
     observed = await _classifyAbandonedBoards(store, observed, proofs);
+    final barriers = syncFailures ?? _SyncFailures.load(store, account);
+    barriers.resolve(
+      {...successfulStages, if (syncFailures != null) 'observe'},
+      source,
+      observed.serverInfo?.publicKey,
+      store.get('server')?['key'],
+    );
+    if (barriers.candidate.isNotEmpty) {
+      observed = copySnapshot(observed, stale: true);
+    }
     final previousTip = previous?.tipHeight;
     final nextTip = observed.tipHeight;
     if (previousTip != null && (nextTip == null || nextTip < previousTip)) {
@@ -695,8 +708,12 @@ final class BarkArkClient implements ArkClient {
     return observed;
   }
 
-  void _commitObservation(ArkStore store, ArkSnapshot snapshot) {
-    store.commitObservation(snapshot);
+  void _commitObservation(
+    ArkStore store,
+    ArkSnapshot snapshot, {
+    Map<String, Object?>? syncFailures,
+  }) {
+    store.commitObservation(snapshot, syncFailures: syncFailures);
     _changes[snapshot.account.canonical]?.add(Ok(snapshot));
   }
 
@@ -715,6 +732,15 @@ final class BarkArkClient implements ArkClient {
       final completed = <ArkStage>{};
       final failedKinds = <ArkStage>{};
       final rounds = <String>[];
+      final barriers = _SyncFailures.load(store, account);
+      final successfulStages = <String>{};
+      void record(String stage, bool failedStage) => barriers.record(
+        store,
+        stage,
+        failedStage,
+        source,
+        (store.snapshot?.revision ?? 0) + 1,
+      );
       for (final entry in {
         'ark': ArkStage.ark,
         'lightning': ArkStage.lightning,
@@ -725,17 +751,21 @@ final class BarkArkClient implements ArkClient {
         'exits-observe': ArkStage.exits,
       }.entries) {
         if (!_mayRun(account)) {
+          record(entry.key, false);
           failed.add('deferred');
           break;
         }
         try {
           await session.synchronizeStage(entry.key);
+          successfulStages.add(entry.key);
           completed.add(entry.value);
         } on ArkStageDeferred {
+          record(entry.key, false);
           failed.add('deferred');
           break;
         } catch (error) {
           if (error is Error) rethrow;
+          record(entry.key, true);
           failed.add(entry.key);
           failedKinds.add(entry.value);
         }
@@ -766,9 +796,12 @@ final class BarkArkClient implements ArkClient {
           source,
           commit: false,
           authoritativePass: failed.isEmpty,
+          syncFailures: barriers,
+          successfulStages: successfulStages,
         );
         completed.add(ArkStage.vtxos);
       } on ArkStageDeferred {
+        record('observe', false);
         final previous = store.snapshot;
         if (previous == null) {
           return const Err(
@@ -869,7 +902,18 @@ final class BarkArkClient implements ArkClient {
       if (failed.isNotEmpty || rounds.isNotEmpty) {
         snapshot = copySnapshot(snapshot, stale: true);
       }
-      _commitObservation(store, snapshot);
+      _commitObservation(
+        store,
+        snapshot,
+        syncFailures: barriers.encode(
+          failed.isEmpty &&
+                  !snapshot.stale &&
+                  snapshot.vtxoInventoryComplete &&
+                  snapshot.recovery == ArkRecoveryStatus.complete
+              ? barriers.candidate
+              : barriers.causes,
+        ),
+      );
       return Ok(
         ArkPassOutcome(
           snapshot: snapshot,
@@ -1204,6 +1248,7 @@ final class BarkArkClient implements ArkClient {
   ) async {
     final previous = store.snapshot;
     if (previous == null ||
+        _SyncFailures.load(store, quote.account).causes.isNotEmpty ||
         previous.revision != quote.generation ||
         !quote.validUntil.isAfter(now())) {
       throw const ArkBoundaryException(ArkStaleQuoteFailure());
@@ -1560,3 +1605,110 @@ ArkSnapshot copySnapshot(
   pendingBoards: value.pendingBoards,
   vtxoCompleteness: vtxoCompleteness ?? value.vtxoCompleteness,
 );
+
+/// A deferred stage is scheduling debt; an opaque failure needs stronger proof.
+final class _SyncFailures {
+  final ArkAccountId account;
+  final List<Map<String, Object?>> causes;
+  List<Map<String, Object?>> candidate;
+  _SyncFailures(this.account, this.causes) : candidate = [...causes];
+  static const stages = {
+    'ark',
+    'lightning',
+    'rounds',
+    'boards',
+    'server',
+    'onchain',
+    'exits-observe',
+    'observe',
+  };
+  static _SyncFailures load(ArkStore store, ArkAccountId account) {
+    final data = store.get('sync-stage-failures');
+    if (data == null) return _SyncFailures(account, []);
+    final rows = data['causes'];
+    if (data['account'] != account.canonical ||
+        rows is! List ||
+        rows.length > 16) {
+      throw const FormatException('Invalid synchronization evidence binding');
+    }
+    final config = configFromJson(store.get('config') ?? {});
+    if (config.id != account) {
+      throw const FormatException('Invalid synchronization account');
+    }
+    final maxRevision = (store.snapshot?.revision ?? 0) + 1;
+    final sources = {
+      config.primaryEsploraUrl.toString(),
+      config.fallbackEsploraUrl?.toString(),
+    };
+    final causes = <Map<String, Object?>>[];
+    final seen = <(Object?, Object?)>{};
+    for (final row in rows) {
+      if (row is! Map<String, dynamic> ||
+          !stages.contains(row['stage']) ||
+          !{'failed', 'deferred'}.contains(row['kind']) ||
+          row['source'] is! String ||
+          !sources.contains(row['source']) ||
+          row['generation'] is! int ||
+          row['generation'] != 1 ||
+          row['revision'] is! int ||
+          (row['revision'] as int) < 0 ||
+          (row['revision'] as int) > maxRevision ||
+          !seen.add((row['stage'], row['source']))) {
+        throw const FormatException('Invalid synchronization cause');
+      }
+      causes.add(Map<String, Object?>.from(row));
+    }
+    return _SyncFailures(account, causes);
+  }
+
+  Map<String, Object?> encode(List<Map<String, Object?>> values) => {
+    'account': account.canonical,
+    'causes': values,
+  };
+  void record(
+    ArkStore store,
+    String stage,
+    bool failed,
+    Uri source,
+    int revision,
+  ) {
+    final prior = causes
+        .where((c) => c['stage'] == stage && c['source'] == source.toString())
+        .firstOrNull;
+    causes.removeWhere(
+      (c) => c['stage'] == stage && c['source'] == source.toString(),
+    );
+    causes.add({
+      'stage': stage,
+      'kind': failed || prior?['kind'] == 'failed' ? 'failed' : 'deferred',
+      'source': source.toString(),
+      'generation': 1,
+      'revision': revision,
+    });
+    candidate = [...causes];
+    store.put('sync-stage-failures', encode(causes));
+  }
+
+  void resolve(
+    Set<String> completed,
+    Uri source,
+    String? serverKey,
+    Object? pinnedKey,
+  ) {
+    candidate = causes.where((cause) {
+      if (cause['source'] != source.toString() ||
+          !completed.contains(cause['stage'])) {
+        return true;
+      }
+      if (cause['kind'] == 'deferred') return false;
+      if (cause['stage'] == 'onchain') return false;
+      if (cause['stage'] == 'server' &&
+          serverKey != null &&
+          serverKey.isNotEmpty &&
+          (pinnedKey == null || pinnedKey == serverKey)) {
+        return false;
+      }
+      return true;
+    }).toList();
+  }
+}
