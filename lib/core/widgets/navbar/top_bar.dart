@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
@@ -30,6 +29,7 @@ class TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final material = MaterialLocalizations.of(context);
     return Container(
       color: color,
       padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
@@ -39,6 +39,7 @@ class TopBar extends StatelessWidget {
           if (onBack != null) ...[
             IconButton(
               icon: const Icon(Icons.arrow_back),
+              tooltip: material.backButtonTooltip,
               onPressed: () => onBack!(),
               iconSize: 24,
               color: context.appColors.onSurface,
@@ -56,10 +57,17 @@ class TopBar extends StatelessWidget {
                       height: 32,
                       width: 32,
                     )
-                  : BBText(
-                      title,
-                      style: context.font.headlineMedium,
-                      color: context.appColors.onSurface,
+                  : Semantics(
+                      header: true,
+                      // Plain Text: BBText with maxLines shrinks the font.
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.font.headlineMedium?.copyWith(
+                          color: context.appColors.onSurface,
+                        ),
+                      ),
                     ),
             ),
           ),
@@ -74,6 +82,9 @@ class TopBar extends StatelessWidget {
           ] else if (onAction != null) ...[
             IconButton(
               icon: Icon(actionIcon ?? Icons.close),
+              tooltip: actionIcon == null || actionIcon == Icons.close
+                  ? material.closeButtonTooltip
+                  : null,
               onPressed: () => onAction!(),
               iconSize: 24,
               color: context.appColors.onSurface,
