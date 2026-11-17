@@ -381,6 +381,42 @@ void main() {
       );
     });
 
+    ArkForegroundHost host() => ArkForegroundHost(
+      locator,
+      arkUrl: Uri.parse('http://127.0.0.1:3535'),
+      primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+      initializeNew: true,
+      preferences: _Preferences(),
+    );
+
+    test('host invalidation retires the mounted runtime', () async {
+      final subject = host();
+      addTearDown(subject.close);
+      final first =
+          (await subject.current() as Ok<ArkForegroundRuntime, ArkFailure>)
+              .value;
+      expect(await first.isCurrent(), true);
+      subject.invalidate();
+      expect(await first.isCurrent(), false);
+      final second =
+          (await subject.current() as Ok<ArkForegroundRuntime, ArkFailure>)
+              .value;
+      expect(identical(first, second), false);
+      expect(await second.isCurrent(), true);
+    });
+
+    test('a runtime still opening when invalidated is not published', () async {
+      final subject = host();
+      addTearDown(subject.close);
+      final pending = subject.current();
+      subject.invalidate();
+      expect(await pending, isA<Err<ArkForegroundRuntime, ArkFailure>>());
+      expect(
+        await subject.current(),
+        isA<Ok<ArkForegroundRuntime, ArkFailure>>(),
+      );
+    });
+
     test('a wallet network change makes the runtime stale', () async {
       final result = await openArkForeground(
         locator,
