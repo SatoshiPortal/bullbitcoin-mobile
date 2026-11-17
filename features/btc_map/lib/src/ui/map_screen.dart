@@ -48,6 +48,7 @@ class _MapScreenState extends State<MapScreen> {
             BullMapView(
               merchants: state.mapMerchants,
               controller: _mapController,
+              initialCenter: state.initialCenter,
               onMerchantTap: _showMerchant,
               onViewportChanged: context.read<MapCubit>().viewportChanged,
             ),

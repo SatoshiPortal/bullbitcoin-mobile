@@ -23,10 +23,15 @@ class BullMapView extends StatefulWidget {
     required this.controller,
     required this.onMerchantTap,
     required this.onViewportChanged,
+    this.initialCenter,
   });
 
   final List<Merchant> merchants;
   final BullMapController controller;
+
+  /// Used once, unless the user has already touched the map or picked a place.
+  final GeoPoint? initialCenter;
+
   final ValueChanged<Merchant> onMerchantTap;
 
   /// Called with what the map shows each time the camera comes to rest.
@@ -55,6 +60,8 @@ class _BullMapViewState extends State<BullMapView> {
   /// Taps are this many logical pixels wide, so a 7 px dot is easy to hit.
   static const _tapTolerance = 32.0;
   static const _merchantZoom = 17.0;
+  // IP geolocation identifies an approximate region, not a precise position.
+  static const _regionZoom = 10.0;
 
   static const _initialCamera = CameraPosition(
     target: LatLng(20, 0),
@@ -74,6 +81,7 @@ class _BullMapViewState extends State<BullMapView> {
 
   /// The style the map was last given, to notice a theme change.
   String? _styleUrl;
+  bool _initialCenterConsumed = false;
 
   @override
   void initState() {
@@ -92,6 +100,7 @@ class _BullMapViewState extends State<BullMapView> {
       _byId = _index(widget.merchants);
       if (_layersReady) unawaited(_updateMerchants());
     }
+    unawaited(_centerInitially());
   }
 
   @override
@@ -112,24 +121,50 @@ class _BullMapViewState extends State<BullMapView> {
 
   @override
   Widget build(BuildContext context) {
-    return MapLibreMap(
-      // A theme change swaps the style in place; _onStyleLoaded then adds the
-      // merchant layers again, in the new theme's colours.
-      styleString: _styleUrlFor(context),
-      initialCameraPosition: _initialCamera,
-      onMapCreated: (controller) => _map = controller,
-      onStyleLoadedCallback: _onStyleLoaded,
-      onMapClick: _onMapClick,
-      onCameraIdle: _onCameraIdle,
-      // The user's position is never requested: no location permission.
-      myLocationEnabled: false,
-      tiltGesturesEnabled: false,
-      // OpenStreetMap's licence requires the attribution to stay visible. Both
-      // native SDKs show it by default; it moves to the top because the bottom
-      // of the map is under the merchant list.
-      attributionButtonPosition: AttributionButtonPosition.topRight,
-      attributionButtonColor: context.bull.onSurface,
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (_) => _initialCenterConsumed = true,
+      child: MapLibreMap(
+        // A theme change swaps the style in place; _onStyleLoaded then adds the
+        // merchant layers again, in the new theme's colours.
+        styleString: _styleUrlFor(context),
+        initialCameraPosition: _initialCamera,
+        onMapCreated: (controller) {
+          _map = controller;
+          unawaited(_centerInitially());
+        },
+        onStyleLoadedCallback: _onStyleLoaded,
+        onMapClick: _onMapClick,
+        onCameraIdle: _onCameraIdle,
+        // No device location or GPS is requested, even when IP centering succeeds.
+        myLocationEnabled: false,
+        tiltGesturesEnabled: false,
+        // OpenStreetMap's licence requires the attribution to stay visible. Both
+        // native SDKs show it by default; it moves to the top because the bottom
+        // of the map is under the merchant list.
+        attributionButtonPosition: AttributionButtonPosition.topRight,
+        attributionButtonColor: context.bull.onSurface,
+      ),
     );
+  }
+
+  Future<void> _centerInitially() async {
+    final map = _map;
+    final center = widget.initialCenter;
+    if (!mounted || _initialCenterConsumed || map == null || center == null) {
+      return;
+    }
+    _initialCenterConsumed = true;
+    try {
+      await map.moveCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(center.latitude, center.longitude),
+          _regionZoom,
+        ),
+      );
+    } on PlatformException {
+      // Best effort, like the IP lookup itself: leave the current view alone.
+    }
   }
 
   Future<void> _onStyleLoaded() async {
@@ -306,6 +341,7 @@ class _BullMapViewState extends State<BullMapView> {
   }
 
   Future<void> _focus(GeoPoint location) async {
+    _initialCenterConsumed = true;
     try {
       await _map?.animateCamera(
         CameraUpdate.newLatLngZoom(
