@@ -46,7 +46,7 @@ void main() {
     when(() => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async {});
     when(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')))
-        .thenAnswer((_) async {});
+        .thenAnswer((_) async => const Ok(null));
     stubEnvironment(Environment.mainnet);
     usecase = SetSwapServerUsecase(
       swapServerSettingRepository: serverSettings,

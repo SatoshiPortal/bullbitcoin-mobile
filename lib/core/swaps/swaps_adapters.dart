@@ -140,8 +140,9 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
 /// wallet call, never a third-party explorer.
 class AppLockupChain implements swaps.LockupChain {
   final WalletConnectionPort _connections;
+  final SettingsRepository? _settingsRepository;
 
-  AppLockupChain(this._connections);
+  AppLockupChain(this._connections, {this._settingsRepository});
 
   @override
   Future<String?> txidOf({
@@ -182,7 +183,21 @@ class AppLockupChain implements swaps.LockupChain {
     required String signedTx,
     required bool isLiquid,
     required bool isTestnet,
+    void Function()? requireAdmission,
   }) async {
+    if (isTestnet) {
+      final repository = _settingsRepository;
+      if (repository == null) throw const swaps.SwapsAuthorizationFailure();
+      try {
+        final settings = await repository.fetch();
+        if (settings.isSuperuser != true || settings.isDevModeEnabled != true) {
+          throw const swaps.SwapsAuthorizationFailure();
+        }
+      } catch (_) {
+        throw const swaps.SwapsAuthorizationFailure();
+      }
+    }
+    requireAdmission?.call();
     final Result<String, SyncFailure> result;
     if (isLiquid) {
       result = await broadcastLiquidTransaction(

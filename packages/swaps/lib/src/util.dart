@@ -182,11 +182,14 @@ abstract class LockupChain {
   });
 
   /// Broadcasts our already-signed lockup: a finalized PSBT (base64) on
-  /// Bitcoin, a signed PSET on Liquid.
+  /// Bitcoin, a signed PSET on Liquid. Recheck [requireAdmission] after any
+  /// authorization reads, immediately before admitting the broadcast. A
+  /// refusal throws without submitting or clearing the pending transaction.
   Future<LockupBroadcast> broadcast({
     required String signedTx,
     required bool isLiquid,
     required bool isTestnet,
+    void Function()? requireAdmission,
   });
 }
 

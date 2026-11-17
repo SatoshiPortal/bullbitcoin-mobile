@@ -72,7 +72,9 @@ class _FakeLockupChain implements LockupChain {
     required String signedTx,
     required bool isLiquid,
     required bool isTestnet,
+    void Function()? requireAdmission,
   }) async {
+    requireAdmission?.call();
     broadcasts.add(signedTx);
     return outcome;
   }
@@ -1479,8 +1481,9 @@ void main() {
           .thenAnswer((_) async => masterKey);
       when(() => storage.getSwapKeyIndex(any()))
           .thenAnswer((_) async => storedCounter);
-      when(() => storage.setSwapKeyIndex(any(), any()))
-          .thenAnswer((_) async {});
+      when(() => storage.reserveSwapKeyIndex(any(), any(), any())).thenAnswer(
+        (invocation) async => invocation.positionalArguments[2] as int,
+      );
       when(
         () => storage.fetchAll(
           walletId: any(named: 'walletId'),
@@ -1549,7 +1552,7 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 9);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 11)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 9)).called(1);
     });
 
     test('a counter ahead of local swaps is used as-is', () async {
@@ -1558,7 +1561,7 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 10);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 12)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 10)).called(1);
     });
 
     test('a swap from before 6.12 does not raise the next index', () async {
@@ -1567,7 +1570,7 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 3);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 5)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 3)).called(1);
     });
 
     test('an unset counter seeds past both boltz and local swaps', () async {
@@ -1576,7 +1579,18 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 9);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 11)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 9)).called(1);
+    });
+
+    test('an unset counter seeds past a higher remote index', () async {
+      stubCreation(storedCounter: null, localTop: 7);
+      when(
+        () =>
+            boltz.restoreSwapIndex(swapMasterKey: any(named: 'swapMasterKey')),
+      ).thenAnswer((_) async => 20);
+
+      expect(await createAndCaptureIndex(), 21);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 21)).called(1);
     });
 
     test(
@@ -1599,7 +1613,7 @@ void main() {
             swapMasterKey: any(named: 'swapMasterKey'),
           ),
         );
-        verifyNever(() => storage.setSwapKeyIndex(any(), any()));
+        verifyNever(() => storage.reserveSwapKeyIndex(any(), any(), any()));
       },
     );
   });

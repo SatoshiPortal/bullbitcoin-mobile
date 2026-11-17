@@ -12,6 +12,8 @@ extension SwapsFailureToSwapFailure on SwapsFailure {
     SwapsBoltzUnavailableFailure() ||
     SwapsNetworkFailure() => SwapNetworkFailure(logMessage),
     SwapsBoltzRejectedFailure() => SwapProviderFailure(logMessage),
+    SwapsBusyFailure() ||
+    SwapsAuthorizationFailure() ||
     SwapsMasterKeyUnavailableFailure() ||
     SwapsNotRestorableFailure() ||
     SwapsRefundNotFinalFailure() ||

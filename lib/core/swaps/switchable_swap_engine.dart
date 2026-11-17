@@ -13,6 +13,9 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   SwapEngineParts _parts;
   final StreamController<Swap> _updates = StreamController<Swap>.broadcast();
   StreamSubscription<Swap>? _forwarding;
+  bool _creationSuspended = false;
+  bool _effectsSuspended = false;
+  final Set<Future<void>> _creations = {};
 
   SwitchableSwapEngine(this._parts) {
     _forward();
@@ -21,14 +24,50 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   SwapStore get _store => _parts.store;
   BoltzSwapRepository get _boltz => _parts.boltz;
 
+  void suspendCreation() => _creationSuspended = true;
+
+  void resumeCreation() => _creationSuspended = false;
+
+  Future<Result<T, SwapsFailure>> _create<T>(
+    Future<Result<T, SwapsFailure>> Function(BoltzSwapRepository) action,
+  ) async {
+    if (_creationSuspended) {
+      return const Err(SwapsBusyFailure());
+    }
+    final completion = Completer<void>();
+    _creations.add(completion.future);
+    final provider = _boltz;
+    try {
+      return await action(provider);
+    } finally {
+      _creations.remove(completion.future);
+      completion.complete();
+    }
+  }
+
   /// Points every call at [next] and closes the previous provider's
   /// connection. Calls already running on the previous engine finish there.
   Future<void> replace(SwapEngineParts next) async {
     final previous = _parts;
-    _parts = next;
+    if (identical(previous.boltz, next.boltz) &&
+        identical(previous.store, next.store)) {
+      return;
+    }
+    previous.boltz.suspendEffects();
+    await previous.boltz.close();
     await _forwarding?.cancel();
+    _parts = next;
+    if (_effectsSuspended) next.boltz.suspendEffects();
     _forward();
-    previous.boltz.dispose();
+  }
+
+  Future<void> close() async {
+    suspendCreation();
+    suspendEffects();
+    await _boltz.close();
+    await Future.wait(_creations.toList());
+    await _forwarding?.cancel();
+    await _updates.close();
   }
 
   void _forward() {
@@ -62,6 +101,18 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
 
   @override
   bool get isTestnet => _boltz.isTestnet;
+
+  @override
+  void suspendEffects() {
+    _effectsSuspended = true;
+    _boltz.suspendEffects();
+  }
+
+  @override
+  void resumeEffects() {
+    _effectsSuspended = false;
+    _boltz.resumeEffects();
+  }
 
   @override
   Stream<Swap> get updates => _updates.stream;
@@ -126,25 +177,35 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   Future<Result<LnSendSwap, SwapsFailure>> createBitcoinToLightningSwap({
     required String walletId,
     required String invoice,
-  }) =>
-      _boltz.createBitcoinToLightningSwap(walletId: walletId, invoice: invoice);
+  }) => _create(
+    (provider) => provider.createBitcoinToLightningSwap(
+      walletId: walletId,
+      invoice: invoice,
+    ),
+  );
 
   @override
   Future<Result<LnSendSwap, SwapsFailure>> createLiquidToLightningSwap({
     required String walletId,
     required String invoice,
-  }) =>
-      _boltz.createLiquidToLightningSwap(walletId: walletId, invoice: invoice);
+  }) => _create(
+    (provider) => provider.createLiquidToLightningSwap(
+      walletId: walletId,
+      invoice: invoice,
+    ),
+  );
 
   @override
   Future<Result<LnReceiveSwap, SwapsFailure>> createLightningToBitcoinSwap({
     required String walletId,
     required int amountSat,
     String? description,
-  }) => _boltz.createLightningToBitcoinSwap(
-    walletId: walletId,
-    amountSat: amountSat,
-    description: description,
+  }) => _create(
+    (provider) => provider.createLightningToBitcoinSwap(
+      walletId: walletId,
+      amountSat: amountSat,
+      description: description,
+    ),
   );
 
   @override
@@ -152,10 +213,12 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
     required String walletId,
     required int amountSat,
     String? description,
-  }) => _boltz.createLightningToLiquidSwap(
-    walletId: walletId,
-    amountSat: amountSat,
-    description: description,
+  }) => _create(
+    (provider) => provider.createLightningToLiquidSwap(
+      walletId: walletId,
+      amountSat: amountSat,
+      description: description,
+    ),
   );
 
   @override
@@ -163,10 +226,12 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
     required String sendWalletId,
     required int amountSat,
     required ChainSwapDestination destination,
-  }) => _boltz.createBitcoinToLiquidSwap(
-    sendWalletId: sendWalletId,
-    amountSat: amountSat,
-    destination: destination,
+  }) => _create(
+    (provider) => provider.createBitcoinToLiquidSwap(
+      sendWalletId: sendWalletId,
+      amountSat: amountSat,
+      destination: destination,
+    ),
   );
 
   @override
@@ -174,10 +239,12 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
     required String sendWalletId,
     required int amountSat,
     required ChainSwapDestination destination,
-  }) => _boltz.createLiquidToBitcoinSwap(
-    sendWalletId: sendWalletId,
-    amountSat: amountSat,
-    destination: destination,
+  }) => _create(
+    (provider) => provider.createLiquidToBitcoinSwap(
+      sendWalletId: sendWalletId,
+      amountSat: amountSat,
+      destination: destination,
+    ),
   );
 
   @override
