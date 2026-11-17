@@ -57,4 +57,47 @@ void main() {
       verifyZeroInteractions(create);
     },
   );
+  for (final enabled in [false, true]) {
+    test('regtest restore requires developer access: $enabled', () async {
+      final scratch = await Directory.systemTemp.createTemp(
+        'recoverbull-regtest-',
+      );
+      addTearDown(() => scratch.delete(recursive: true));
+      final storage = FakeSecureStoragePlatform()..install();
+      final settings = _Settings();
+      final entity = _Entity();
+      when(() => entity.environment).thenReturn(Environment.regtest);
+      when(() => entity.isSuperuser).thenReturn(true);
+      when(() => entity.isDevModeEnabled).thenReturn(enabled);
+      when(settings.fetch).thenAnswer((_) async => entity);
+      final create = _Create();
+      final adapter = RecoverBullWalletAdapter(
+        _Wallets(),
+        settings,
+        Secrets(scratchDirectory: () async => scratch.path),
+        create,
+      );
+      final result = await adapter.restoreDefaults(
+        VaultContext(
+          fingerprint: Fingerprint('73c5da0a'),
+          network: BitcoinNetwork.regtest,
+        ),
+      );
+      expect(result, isA<Err<VaultContext, RecoverBullFailure>>());
+      if (enabled) {
+        expect(
+          storage.reads,
+          greaterThan(0),
+          reason: 'The supported network reaches real custody lookup',
+        );
+      } else {
+        expect(
+          storage.reads,
+          0,
+          reason: 'Authorization is required before custody lookup',
+        );
+      }
+      verifyZeroInteractions(create);
+    });
+  }
 }
