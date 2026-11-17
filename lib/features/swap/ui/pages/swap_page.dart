@@ -110,42 +110,311 @@ class SwapPageState extends State<SwapPage> {
             disableScroll: true,
             child: Form(
               key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    const Gap(12),
-                    BullInfoCard(
-                      description: context.loc.swapInfoDescription,
-                      tagColor: context.appColors.inverseSurface,
-                      bgColor: context.appColors.inverseSurface.withValues(
-                        alpha: 0.1,
+              child: Column(
+                crossAxisAlignment: .stretch,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        children: [
+                          const Gap(12),
+                          BullInfoCard(
+                            description: context.loc.swapInfoDescription,
+                            tagColor: context.appColors.inverseSurface,
+                            bgColor: context.appColors.inverseSurface
+                                .withValues(alpha: 0.1),
+                          ),
+                          const Gap(12),
+                          Row(
+                            mainAxisAlignment: .spaceBetween,
+                            children: [
+                              BlocSelector<TransferBloc, TransferState, bool>(
+                                selector: (state) => state.sendToExternal,
+                                builder: (context, sendToExternal) {
+                                  return Text(
+                                    sendToExternal
+                                        ? context.loc.swapExternalTransferLabel
+                                        : context.loc.swapInternalTransferTitle,
+                                    style: context.font.bodyLarge,
+                                  );
+                                },
+                              ),
+                              BlocSelector<TransferBloc, TransferState, bool>(
+                                selector: (state) => state.sendToExternal,
+                                builder: (context, sendToExternal) {
+                                  return BullSwitch(
+                                    value: sendToExternal,
+                                    onChanged: (value) {
+                                      context.read<TransferBloc>().add(
+                                        TransferEvent.sendToExternalToggled(
+                                          value,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          const Gap(12),
+                          const SwapFromWalletDropdown(),
+                          BlocSelector<TransferBloc, TransferState, bool>(
+                            selector: (state) => state.sendToExternal,
+                            builder: (context, sendToExternal) {
+                              if (sendToExternal) {
+                                return const Column(
+                                  children: [
+                                    Gap(12),
+                                    SwapExternalAddressInput(),
+                                  ],
+                                );
+                              }
+                              return BlocSelector<
+                                TransferBloc,
+                                TransferState,
+                                (Wallet?, Wallet?)
+                              >(
+                                selector: (state) =>
+                                    (state.fromWallet, state.toWallet),
+                                builder: (context, wallets) {
+                                  final (fromWallet, toWallet) = wallets;
+                                  return Column(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: IconButton(
+                                          tooltip: context
+                                              .loc
+                                              .swapReverseDirectionTooltip,
+                                          icon: Icon(
+                                            Icons.swap_vert,
+                                            color: context.appColors.primary,
+                                          ),
+                                          onPressed:
+                                              fromWallet != null &&
+                                                  toWallet != null
+                                              ? () {
+                                                  context.read<TransferBloc>().add(
+                                                    TransferEvent.walletsChanged(
+                                                      fromWallet: toWallet,
+                                                      toWallet: fromWallet,
+                                                    ),
+                                                  );
+                                                }
+                                              : null,
+                                        ),
+                                      ),
+                                      const SwapToWalletDropdown(),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                          const Gap(12),
+                          SwapAmountInput(
+                            amountController: _amountController,
+                            amountSat: _amountSat,
+                            focusNode: _amountNode,
+                          ),
+                          const Gap(12),
+                          SwapBalanceRow(amountController: _amountController),
+                          const Gap(12),
+                          BlocSelector<TransferBloc, TransferState, bool>(
+                            selector: (state) => state.consolidationRequired,
+                            builder: (context, consolidationRequired) {
+                              if (!consolidationRequired) {
+                                return const SizedBox.shrink();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: ConsolidationRequiredCard(
+                                  title: context.loc.consolidationRequiredTitle,
+                                  onTap: () {
+                                    final walletId = context
+                                        .read<TransferBloc>()
+                                        .state
+                                        .fromWallet
+                                        ?.id;
+                                    if (walletId != null) {
+                                      context.pushNamed(
+                                        ConsolidationRoute.consolidation.name,
+                                        pathParameters: {'walletId': walletId},
+                                      );
+                                    }
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          BlocSelector<
+                            TransferBloc,
+                            TransferState,
+                            (SwapCreationException?, SwapFailure?)
+                          >(
+                            selector: (state) => (
+                              state.swapCreationException,
+                              state.swapFailure,
+                            ),
+                            builder: (context, errors) {
+                              final (swapCreationError, swapFailure) = errors;
+                              if (swapCreationError == null &&
+                                  swapFailure == null) {
+                                return const SizedBox.shrink();
+                              }
+                              final message =
+                                  swapFailure?.toTranslated(context) ??
+                                  (swapCreationError
+                                          is InsufficientFundsSwapException
+                                      ? context.loc.swapInsufficientFunds
+                                      : context
+                                            .loc
+                                            .sendErrorSwapCreationFailed);
+                              return Text(
+                                message,
+                                style: context.font.labelLarge?.copyWith(
+                                  color: context.appColors.error,
+                                ),
+                                maxLines: 4,
+                              );
+                            },
+                          ),
+                          BlocSelector<TransferBloc, TransferState, bool>(
+                            selector: (state) =>
+                                state.shouldShowReceiveExactAmount,
+                            builder: (context, showReceiveExactAmount) {
+                              if (!showReceiveExactAmount) {
+                                return const SizedBox.shrink();
+                              }
+                              return Column(
+                                children: [
+                                  const Gap(24),
+                                  Row(
+                                    mainAxisAlignment: .spaceBetween,
+                                    children: [
+                                      BlocSelector<
+                                        TransferBloc,
+                                        TransferState,
+                                        bool
+                                      >(
+                                        selector: (state) =>
+                                            state.receiveExactAmount,
+                                        builder: (context, receiveExactAmount) {
+                                          return Text(
+                                            receiveExactAmount
+                                                ? context
+                                                      .loc
+                                                      .swapReceiveExactAmountLabel
+                                                : context
+                                                      .loc
+                                                      .swapSubtractFeesLabel,
+                                            style: context.font.bodyLarge,
+                                          );
+                                        },
+                                      ),
+                                      BlocSelector<
+                                        TransferBloc,
+                                        TransferState,
+                                        (bool, bool)
+                                      >(
+                                        selector: (state) => (
+                                          state.receiveExactAmount,
+                                          state.isMaxSelected,
+                                        ),
+                                        builder: (context, selected) {
+                                          final (
+                                            receiveExactAmount,
+                                            isMaxSelected,
+                                          ) = selected;
+                                          return BullSwitch(
+                                            value: receiveExactAmount,
+                                            // Max drains the wallet; an exact
+                                            // receivable amount can't be honored.
+                                            onChanged: isMaxSelected
+                                                ? null
+                                                : (value) {
+                                                    context
+                                                        .read<TransferBloc>()
+                                                        .add(
+                                                          TransferEvent.receiveExactAmountToggled(
+                                                            value,
+                                                          ),
+                                                        );
+                                                  },
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                          const Gap(12),
+                        ],
                       ),
                     ),
-                    const Gap(12),
-                    Row(
-                      mainAxisAlignment: .spaceBetween,
+                  ),
+                  // The main action stays pinned: toggles above must not move it.
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: Column(
+                      mainAxisSize: .min,
+                      crossAxisAlignment: .stretch,
                       children: [
                         BlocSelector<TransferBloc, TransferState, bool>(
-                          selector: (state) => state.sendToExternal,
-                          builder: (context, sendToExternal) {
-                            return Text(
-                              sendToExternal
-                                  ? context.loc.swapExternalTransferLabel
-                                  : context.loc.swapInternalTransferTitle,
-                              style: context.font.bodyLarge,
+                          selector: (state) => state.shouldShowAdvancedOptions,
+                          builder: (context, showAdvancedOptions) {
+                            if (!showAdvancedOptions) {
+                              return const SizedBox.shrink();
+                            }
+                            return Column(
+                              crossAxisAlignment: .stretch,
+                              children: [
+                                BullButton.big(
+                                  label: context.loc.sendAdvancedOptions,
+                                  bgColor: context.appColors.transparent,
+                                  textColor: context.appColors.secondary,
+                                  outlined: true,
+                                  borderColor: context.appColors.secondary,
+                                  onPressed: () {
+                                    BullBottomSheet.show(
+                                      context: context,
+                                      child: BlocProvider.value(
+                                        value: context.read<TransferBloc>(),
+                                        child:
+                                            const SwapAdvancedOptionsBottomSheet(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const Gap(16),
+                              ],
                             );
                           },
                         ),
                         BlocSelector<TransferBloc, TransferState, bool>(
-                          selector: (state) => state.sendToExternal,
-                          builder: (context, sendToExternal) {
-                            return BullSwitch(
-                              value: sendToExternal,
-                              onChanged: (value) {
+                          selector: (state) =>
+                              state.isStarting ||
+                              state.isCreatingSwap ||
+                              state.continueClicked ||
+                              state.hasAmountError,
+                          builder: (context, disabled) {
+                            return BullButton.big(
+                              label: context.loc.swapContinueButton,
+                              bgColor: context.appColors.secondary,
+                              textColor: context.appColors.onSecondary,
+                              disabled: disabled,
+                              onPressed: () {
+                                if (!_formKey.currentState!.validate()) {
+                                  return;
+                                }
                                 context.read<TransferBloc>().add(
-                                  TransferEvent.sendToExternalToggled(value),
+                                  TransferEvent.swapCreated(
+                                    _amountController.text,
+                                  ),
                                 );
                               },
                             );
@@ -153,235 +422,8 @@ class SwapPageState extends State<SwapPage> {
                         ),
                       ],
                     ),
-                    const Gap(12),
-                    const SwapFromWalletDropdown(),
-                    BlocSelector<TransferBloc, TransferState, bool>(
-                      selector: (state) => state.sendToExternal,
-                      builder: (context, sendToExternal) {
-                        if (sendToExternal) {
-                          return const Column(
-                            children: [Gap(12), SwapExternalAddressInput()],
-                          );
-                        }
-                        return BlocSelector<
-                          TransferBloc,
-                          TransferState,
-                          (Wallet?, Wallet?)
-                        >(
-                          selector: (state) =>
-                              (state.fromWallet, state.toWallet),
-                          builder: (context, wallets) {
-                            final (fromWallet, toWallet) = wallets;
-                            return Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: IconButton(
-                                    tooltip:
-                                        context.loc.swapReverseDirectionTooltip,
-                                    icon: Icon(
-                                      Icons.swap_vert,
-                                      color: context.appColors.primary,
-                                    ),
-                                    onPressed:
-                                        fromWallet != null && toWallet != null
-                                        ? () {
-                                            context.read<TransferBloc>().add(
-                                              TransferEvent.walletsChanged(
-                                                fromWallet: toWallet,
-                                                toWallet: fromWallet,
-                                              ),
-                                            );
-                                          }
-                                        : null,
-                                  ),
-                                ),
-                                const SwapToWalletDropdown(),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    const Gap(12),
-                    SwapAmountInput(
-                      amountController: _amountController,
-                      amountSat: _amountSat,
-                      focusNode: _amountNode,
-                    ),
-                    const Gap(12),
-                    SwapBalanceRow(amountController: _amountController),
-                    const Gap(12),
-                    BlocSelector<TransferBloc, TransferState, bool>(
-                      selector: (state) => state.consolidationRequired,
-                      builder: (context, consolidationRequired) {
-                        if (!consolidationRequired) {
-                          return const SizedBox.shrink();
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: ConsolidationRequiredCard(
-                            title: context.loc.consolidationRequiredTitle,
-                            onTap: () {
-                              final walletId = context
-                                  .read<TransferBloc>()
-                                  .state
-                                  .fromWallet
-                                  ?.id;
-                              if (walletId != null) {
-                                context.pushNamed(
-                                  ConsolidationRoute.consolidation.name,
-                                  pathParameters: {'walletId': walletId},
-                                );
-                              }
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                    BlocSelector<
-                      TransferBloc,
-                      TransferState,
-                      (SwapCreationException?, SwapFailure?)
-                    >(
-                      selector: (state) =>
-                          (state.swapCreationException, state.swapFailure),
-                      builder: (context, errors) {
-                        final (swapCreationError, swapFailure) = errors;
-                        if (swapCreationError == null && swapFailure == null) {
-                          return const SizedBox.shrink();
-                        }
-                        final message =
-                            swapFailure?.toTranslated(context) ??
-                            (swapCreationError is InsufficientFundsSwapException
-                                ? context.loc.swapInsufficientFunds
-                                : context.loc.sendErrorSwapCreationFailed);
-                        return Text(
-                          message,
-                          style: context.font.labelLarge?.copyWith(
-                            color: context.appColors.error,
-                          ),
-                          maxLines: 4,
-                        );
-                      },
-                    ),
-                    BlocSelector<TransferBloc, TransferState, bool>(
-                      selector: (state) => state.shouldShowReceiveExactAmount,
-                      builder: (context, showReceiveExactAmount) {
-                        if (!showReceiveExactAmount) {
-                          return const SizedBox.shrink();
-                        }
-                        return Column(
-                          children: [
-                            const Gap(24),
-                            Row(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                BlocSelector<TransferBloc, TransferState, bool>(
-                                  selector: (state) => state.receiveExactAmount,
-                                  builder: (context, receiveExactAmount) {
-                                    return Text(
-                                      receiveExactAmount
-                                          ? context
-                                                .loc
-                                                .swapReceiveExactAmountLabel
-                                          : context.loc.swapSubtractFeesLabel,
-                                      style: context.font.bodyLarge,
-                                    );
-                                  },
-                                ),
-                                BlocSelector<
-                                  TransferBloc,
-                                  TransferState,
-                                  (bool, bool)
-                                >(
-                                  selector: (state) => (
-                                    state.receiveExactAmount,
-                                    state.isMaxSelected,
-                                  ),
-                                  builder: (context, selected) {
-                                    final (receiveExactAmount, isMaxSelected) =
-                                        selected;
-                                    return BullSwitch(
-                                      value: receiveExactAmount,
-                                      // Max drains the wallet; an exact
-                                      // receivable amount can't be honored.
-                                      onChanged: isMaxSelected
-                                          ? null
-                                          : (value) {
-                                              context.read<TransferBloc>().add(
-                                                TransferEvent.receiveExactAmountToggled(
-                                                  value,
-                                                ),
-                                              );
-                                            },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    const Gap(24),
-                    BlocSelector<TransferBloc, TransferState, bool>(
-                      selector: (state) => state.shouldShowAdvancedOptions,
-                      builder: (context, showAdvancedOptions) {
-                        if (!showAdvancedOptions) {
-                          return const SizedBox.shrink();
-                        }
-                        return Column(
-                          crossAxisAlignment: .stretch,
-                          children: [
-                            BullButton.big(
-                              label: context.loc.sendAdvancedOptions,
-                              bgColor: context.appColors.transparent,
-                              textColor: context.appColors.secondary,
-                              outlined: true,
-                              borderColor: context.appColors.secondary,
-                              onPressed: () {
-                                BullBottomSheet.show(
-                                  context: context,
-                                  child: BlocProvider.value(
-                                    value: context.read<TransferBloc>(),
-                                    child:
-                                        const SwapAdvancedOptionsBottomSheet(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Gap(16),
-                          ],
-                        );
-                      },
-                    ),
-                    BlocSelector<TransferBloc, TransferState, bool>(
-                      selector: (state) =>
-                          state.isStarting ||
-                          state.isCreatingSwap ||
-                          state.continueClicked ||
-                          state.hasAmountError,
-                      builder: (context, disabled) {
-                        return BullButton.big(
-                          label: context.loc.swapContinueButton,
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
-                          disabled: disabled,
-                          onPressed: () {
-                            if (!_formKey.currentState!.validate()) {
-                              return;
-                            }
-                            context.read<TransferBloc>().add(
-                              TransferEvent.swapCreated(_amountController.text),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    const Gap(24),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
