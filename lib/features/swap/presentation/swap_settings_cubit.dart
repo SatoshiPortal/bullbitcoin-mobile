@@ -30,13 +30,16 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
 
   Future<void> load() async {
     final swapServer = await _getSwapServerUsecase.execute();
+    if (isClosed) return;
     emit(
       state.copyWith(
         swapServer: swapServer.server,
         swapServerIsTestnet: swapServer.isTestnet,
       ),
     );
-    switch (await _getSwapRouteSettingsUsecase.execute()) {
+    final routeSettings = await _getSwapRouteSettingsUsecase.execute();
+    if (isClosed) return;
+    switch (routeSettings) {
       case Ok(:final value):
         emit(
           state.copyWith(
@@ -55,7 +58,9 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
   Future<void> setExchangeFallbackEnabled(bool enabled) async {
     if (state.saving || !state.loaded) return;
     emit(state.copyWith(saving: true, failure: null));
-    switch (await _setSwapExchangeFallbackUsecase.execute(enabled)) {
+    final result = await _setSwapExchangeFallbackUsecase.execute(enabled);
+    if (isClosed) return;
+    switch (result) {
       case Ok():
         emit(state.copyWith(saving: false, exchangeFallbackEnabled: enabled));
       case Err(:final failure):
@@ -66,7 +71,9 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
   Future<void> setRouteOverride(SwapRouteOverride override) async {
     if (state.saving || !state.loaded) return;
     emit(state.copyWith(saving: true, failure: null));
-    switch (await _setSwapRouteOverrideUsecase.execute(override)) {
+    final result = await _setSwapRouteOverrideUsecase.execute(override);
+    if (isClosed) return;
+    switch (result) {
       case Ok():
         emit(state.copyWith(saving: false, routeOverride: override));
       case Err(:final failure):
@@ -80,7 +87,9 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
   Future<SwapValidationFailure?> setSwapServer(String input) async {
     if (state.saving) return null;
     emit(state.copyWith(saving: true, failure: null));
-    switch (await _setSwapServerUsecase.execute(input)) {
+    final result = await _setSwapServerUsecase.execute(input);
+    if (isClosed) return null;
+    switch (result) {
       case Ok(:final value):
         emit(state.copyWith(saving: false, swapServer: value));
         return null;

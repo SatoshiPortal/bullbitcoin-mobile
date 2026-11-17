@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
@@ -62,6 +64,18 @@ void main() {
     getSwapServerUsecase: getServer,
     setSwapServerUsecase: setServer,
   );
+
+  test('a save finishing after the screen closed emits nothing', () async {
+    final saved = Completer<Result<SwapServer, SwapFailure>>();
+    when(() => setServer.execute(any())).thenAnswer((_) => saved.future);
+    final cubit = build();
+
+    final saving = cubit.setSwapServer('boltz.example.com');
+    await cubit.close();
+    saved.complete(const Ok(SwapServer.mainnetDefault));
+
+    expect(await saving, isNull);
+  });
 
   test('loads the stored choices', () async {
     final cubit = build();

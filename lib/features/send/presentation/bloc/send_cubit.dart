@@ -1618,7 +1618,7 @@ class SendCubit extends Cubit<SendState>
   }) async {
     final inputGeneration = _paymentRequestInputGeneration;
     final route = await _getSendSwapRouteUsecase.execute();
-    if (inputGeneration != _paymentRequestInputGeneration) {
+    if (isClosed || inputGeneration != _paymentRequestInputGeneration) {
       return _BoltzChainSendOutcome.stopped;
     }
     if (!route.startsWithBoltz) return _BoltzChainSendOutcome.useExchange;
@@ -1642,7 +1642,7 @@ class SendCubit extends Cubit<SendState>
     final limitsAndFees = await _getSwapLimitsAndFeesUsecase.execute(
       fromLiquid ? SwapType.liquidToBitcoin : SwapType.bitcoinToLiquid,
     );
-    if (inputGeneration != _paymentRequestInputGeneration) {
+    if (isClosed || inputGeneration != _paymentRequestInputGeneration) {
       return _BoltzChainSendOutcome.stopped;
     }
     final Result<ChainSwap, SwapsFailure> created;
@@ -1665,7 +1665,7 @@ class SendCubit extends Cubit<SendState>
                 amountSat: amountSat,
                 destination: destination,
               );
-        if (inputGeneration != _paymentRequestInputGeneration) {
+        if (isClosed || inputGeneration != _paymentRequestInputGeneration) {
           return _BoltzChainSendOutcome.stopped;
         }
     }
@@ -1690,6 +1690,7 @@ class SendCubit extends Cubit<SendState>
         return _BoltzChainSendOutcome.stopped;
       case Ok(value: final swap):
         await _orderSwapSubscription?.cancel();
+        if (isClosed) return _BoltzChainSendOutcome.stopped;
         _orderSwapSubscription = null;
         _watchBoltzSwap(swap.id);
         emit(
@@ -2268,12 +2269,15 @@ class SendCubit extends Cubit<SendState>
     if (invoice.amountSat <= 0) return false;
     final inputGeneration = _paymentRequestInputGeneration;
     final route = await _getSendSwapRouteUsecase.execute();
+    if (isClosed) return true;
     if (!route.startsWithBoltz) return false;
     final created = await _createBoltzSendSwapUsecase.execute(
       wallet: wallet,
       invoice: invoice,
     );
-    if (inputGeneration != _paymentRequestInputGeneration) return true;
+    if (isClosed || inputGeneration != _paymentRequestInputGeneration) {
+      return true;
+    }
     switch (created) {
       case Ok(:final value):
         await _continueWithLightningSwap(value, invoice: invoice);
@@ -2303,6 +2307,7 @@ class SendCubit extends Cubit<SendState>
     required Bolt11PaymentRequest invoice,
   }) async {
     await _orderSwapSubscription?.cancel();
+    if (isClosed) return;
     _orderSwapSubscription = null;
     _watchBoltzSwap(swap.id);
     if (state.spendableBalanceSat < swap.paymentAmount) {
