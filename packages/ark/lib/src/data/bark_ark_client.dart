@@ -815,6 +815,18 @@ final class BarkArkClient implements ArkClient {
         );
         failed.add('deferred');
         failedKinds.add(ArkStage.vtxos);
+      } catch (error) {
+        if (error is Error) rethrow;
+        record('observe', true);
+        final previous = store.snapshot;
+        if (previous != null) {
+          _commitObservation(
+            store,
+            copySnapshot(previous, stale: true),
+            syncFailures: barriers.encode(barriers.causes),
+          );
+        }
+        rethrow;
       }
       if (failed.isNotEmpty) snapshot = copySnapshot(snapshot, stale: true);
       if (renew &&
