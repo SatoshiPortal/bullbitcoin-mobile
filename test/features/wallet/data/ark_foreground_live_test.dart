@@ -14,7 +14,8 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
-import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
+import 'package:bull_ark/ark_setup.dart'
+    show ArkBoardFundingPort, ArkPreferencesRepository;
 import 'package:bull_ark/bull_ark.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -33,6 +34,8 @@ class _SettingsValue extends Mock implements SettingsEntity {}
 class _Wallets extends Mock implements WalletMetadataDatasource {}
 
 class _Wallet extends Mock implements WalletMetadataModel {}
+
+class _Board extends Mock implements ArkBoardFundingPort {}
 
 class _WalletCatalog implements SeedReferencePort {
   @override
@@ -121,6 +124,7 @@ void main() {
         arkUrl: Uri.parse(arkUrl!),
         primaryEsploraUrl: Uri.parse(esploraUrl!),
         initializeNew: true,
+        boardFunding: (bind: (_, _) => _Board(), close: () async {}),
         preferences: _Preferences(),
       );
       final runtime = switch (opened) {

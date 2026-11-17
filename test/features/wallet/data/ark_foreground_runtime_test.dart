@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bull_ark/ark_setup.dart';
+import 'package:ark/ark.dart' show ArkClient;
 import 'package:bull_ark/bull_ark.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -32,6 +34,33 @@ class _SettingsValue extends Mock implements SettingsEntity {}
 class _Wallets extends Mock implements WalletMetadataDatasource {}
 
 class _Wallet extends Mock implements WalletMetadataModel {}
+
+class _Board extends Mock implements ArkBoardFundingPort {}
+
+/// Records the runtime's use of its Board funding binding.
+final class _Binding {
+  ArkClient? client;
+  Future<String> Function(ArkAccountId account)? source;
+  int binds = 0;
+  int closes = 0;
+  Object? refuse;
+  Future<void> Function()? onClose;
+
+  ArkBoardFundingBinding get value => (
+    bind: (client, source) {
+      binds++;
+      this.client = client;
+      this.source = source;
+      final failure = refuse;
+      if (failure != null) throw failure;
+      return _Board();
+    },
+    close: () async {
+      closes++;
+      await onClose?.call();
+    },
+  );
+}
 
 class _WalletCatalog implements SeedReferencePort {
   @override
@@ -352,6 +381,7 @@ void main() {
         arkUrl: Uri.parse('http://100.64.0.9:3535'),
         primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
         initializeNew: true,
+        boardFunding: _Binding().value,
         preferences: _Preferences(),
       );
       expect(result, isA<Ok<ArkForegroundRuntime, ArkFailure>>());
@@ -371,6 +401,7 @@ void main() {
         arkUrl: Uri.parse('http://127.0.0.1:3535'),
         primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
         initializeNew: true,
+        boardFunding: _Binding().value,
         preferences: _Preferences(),
       );
       final runtime = (result as Ok<ArkForegroundRuntime, ArkFailure>).value;
@@ -386,6 +417,7 @@ void main() {
       arkUrl: Uri.parse('http://127.0.0.1:3535'),
       primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
       initializeNew: true,
+      boardFunding: () => _Binding().value,
       preferences: _Preferences(),
     );
 
@@ -417,12 +449,126 @@ void main() {
       );
     });
 
+    test('Board binds once to the runtime client and closes with it', () async {
+      final binding = _Binding();
+      final result = await openArkForeground(
+        locator,
+        arkUrl: Uri.parse('http://127.0.0.1:3535'),
+        primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+        initializeNew: true,
+        boardFunding: binding.value,
+        preferences: _Preferences(),
+      );
+      final runtime = (result as Ok<ArkForegroundRuntime, ArkFailure>).value;
+      expect(binding.binds, 1);
+      expect(binding.client, isNotNull);
+      final source = binding.source;
+      if (source == null) throw StateError('missing source resolver');
+      expect(await source(runtime.account), 'owned-regtest-wallet');
+      when(() => settingsValue.environment).thenReturn(Environment.mainnet);
+      await expectLater(source(runtime.account), throwsStateError);
+      expect(binding.closes, 0);
+      await runtime.close();
+      expect(binding.closes, 1);
+      await runtime.close();
+      expect(binding.closes, 1);
+    });
+
+    test(
+      'a Board bind failure closes the binding and keeps the error',
+      () async {
+        final binding = _Binding()..refuse = StateError('factory refused');
+        await expectLater(
+          openArkForeground(
+            locator,
+            arkUrl: Uri.parse('http://127.0.0.1:3535'),
+            primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+            initializeNew: true,
+            boardFunding: binding.value,
+            preferences: _Preferences(),
+          ),
+          throwsA(same(binding.refuse)),
+        );
+        expect(binding.closes, 1);
+      },
+    );
+
+    test('a replacement waits until the retired runtime has drained', () async {
+      final gate = Completer<void>();
+      final bindings = <_Binding>[];
+      final subject = ArkForegroundHost(
+        locator,
+        arkUrl: Uri.parse('http://127.0.0.1:3535'),
+        primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+        initializeNew: true,
+        boardFunding: () {
+          final binding = _Binding();
+          if (bindings.isEmpty) binding.onClose = () => gate.future;
+          bindings.add(binding);
+          return binding.value;
+        },
+        preferences: _Preferences(),
+      );
+      addTearDown(() async {
+        if (!gate.isCompleted) gate.complete();
+        await subject.close();
+      });
+      expect(
+        await subject.current(),
+        isA<Ok<ArkForegroundRuntime, ArkFailure>>(),
+      );
+      subject.invalidate();
+      var replaced = false;
+      final replacement = subject.current().whenComplete(() => replaced = true);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(bindings.first.closes, 1);
+      expect(bindings, hasLength(1));
+      expect(replaced, false);
+      gate.complete();
+      expect(await replacement, isA<Ok<ArkForegroundRuntime, ArkFailure>>());
+      expect(bindings, hasLength(2));
+    });
+
+    test(
+      'host close waits for retired runtimes and rethrows a failure',
+      () async {
+        final gate = Completer<void>();
+        final failure = StateError('board close failed');
+        final subject = ArkForegroundHost(
+          locator,
+          arkUrl: Uri.parse('http://127.0.0.1:3535'),
+          primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+          initializeNew: true,
+          boardFunding: () =>
+              (_Binding()
+                    ..onClose = () async {
+                      await gate.future;
+                      throw failure;
+                    })
+                  .value,
+          preferences: _Preferences(),
+        );
+        expect(
+          await subject.current(),
+          isA<Ok<ArkForegroundRuntime, ArkFailure>>(),
+        );
+        subject.invalidate();
+        var closed = false;
+        final closing = subject.close().whenComplete(() => closed = true);
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        expect(closed, false);
+        gate.complete();
+        await expectLater(closing, throwsA(same(failure)));
+      },
+    );
+
     test('a wallet network change makes the runtime stale', () async {
       final result = await openArkForeground(
         locator,
         arkUrl: Uri.parse('http://100.64.0.9:3535'),
         primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
         initializeNew: true,
+        boardFunding: _Binding().value,
         preferences: _Preferences(),
       );
       final runtime = (result as Ok<ArkForegroundRuntime, ArkFailure>).value;
@@ -439,6 +585,7 @@ void main() {
           arkUrl: Uri.parse('http://100.64.0.9:3535'),
           primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
           initializeNew: true,
+          boardFunding: _Binding().value,
           preferences: _Preferences(),
         ),
         isA<Err<ArkForegroundRuntime, ArkFailure>>(),
