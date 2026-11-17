@@ -89,6 +89,8 @@ final class FakeOpener implements ArkNativeOpener {
   int registrations = 0;
   int tip = 100;
   bool failExecute = false;
+  bool requireBoardServerInfo = false;
+  final boardServerEvents = <String>[];
   Future<ArkClaimTransaction> Function(ArkQuote)? claimPreparer;
   bool reconcileSuccess = false;
   bool missingVtxos = false;
@@ -147,6 +149,7 @@ final class FakeSession implements ArkNativeSession {
   final FakeOpener owner;
   final ArkAccountConfig config;
   final ArkStageRunner stages;
+  bool serverReady = false;
   FakeSession(this.owner, this.config, this.stages);
   @override
   void close() {
@@ -159,7 +162,11 @@ final class FakeSession implements ArkNativeSession {
       owner.stageEntered?.complete();
       await owner.releaseStage?.future;
     }
+    if (owner.requireBoardServerInfo && name == 'server') {
+      owner.boardServerEvents.add('server');
+    }
     if (owner.failingStage == name) throw Exception('stage refused');
+    if (name == 'server') serverReady = true;
     if (name == 'initial-scan' && owner.failInitialScan) {
       owner.failInitialScan = false;
       throw Exception('scan failure');
@@ -174,9 +181,15 @@ final class FakeSession implements ArkNativeSession {
     required Uri chainSource,
     required List<ArkOperation> operations,
     required ArkRecoveryStatus previousRecovery,
-  }) => stages.run(
-    'observe',
-    () async => ArkSnapshot(
+  }) => stages.run('observe', () async {
+    if (owner.requireBoardServerInfo) owner.boardServerEvents.add('observe');
+    return ArkSnapshot(
+      serverInfo: owner.requireBoardServerInfo && serverReady
+          ? ArkServerInfo(
+              publicKey: 'server-key',
+              minimumBoard: Sats.fromInt(1000),
+            )
+          : null,
       account: account,
       revision: revision,
       observedAt: now,
@@ -210,8 +223,8 @@ final class FakeSession implements ArkNativeSession {
       operations: operations,
       movements: owner.movementEvidence,
       vtxoCompleteness: owner.inventoryCompleteness,
-    ),
-  );
+    );
+  });
   @override
   Future<ArkQuote> estimate({
     required ArkSnapshot snapshot,
@@ -221,6 +234,12 @@ final class FakeSession implements ArkNativeSession {
     required int configGeneration,
     required DateTime now,
   }) => stages.run('estimate', () async {
+    if (owner.requireBoardServerInfo && request is ArkBoardQuoteRequest) {
+      owner.boardServerEvents.add('estimate-board');
+      if (snapshot.serverInfo == null) {
+        throw const ArkBoundaryException(ArkValidationFailure());
+      }
+    }
     final kind = switch (request) {
       ArkPaymentQuoteRequest() => ArkOperationKind.payment,
       ArkRenewalQuoteRequest() => ArkOperationKind.renewal,

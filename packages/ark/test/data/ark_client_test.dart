@@ -227,6 +227,84 @@ void main() {
       expect(snapshot.stale, isTrue);
     },
   );
+  test(
+    'cold board quote refreshes its own session before observation',
+    () async {
+      expect(await client.create(config), isA<Ok>());
+      native.requireBoardServerInfo = true;
+      final result = await client.quote(
+        account,
+        ArkQuoteRequest.board(amount: Sats.fromInt(1000)),
+      );
+      expect(result, isA<Ok<ArkQuote, ArkWalletFailure>>());
+      expect(native.boardServerEvents, ['server', 'observe', 'estimate-board']);
+      expect(native.closes, native.opens);
+      final snapshot = (await client.read(
+        account,
+      ) as Ok<ArkSnapshot, ArkWalletFailure>).value;
+      expect(snapshot.serverInfo?.minimumBoard, Sats.fromInt(1000));
+      expect(snapshot.operations, isEmpty);
+      expect(native.executes, 0);
+      expect(native.registrations, 0);
+    },
+  );
+
+  test(
+    'cold board funding revalidates with its own refreshed server',
+    () async {
+      expect(await client.create(config), isA<Ok>());
+      native.requireBoardServerInfo = true;
+      final quoted = await client.quote(
+        account,
+        ArkQuoteRequest.board(amount: Sats.fromInt(1000)),
+      );
+      final quote = (quoted as Ok<ArkQuote, ArkWalletFailure>).value;
+      native.boardServerEvents.clear();
+      final prepared = await client.submit(
+        account,
+        ArkSubmission.boardFunding(
+          quoteId: quote.id,
+          operationId: 'cold-board',
+        ),
+      );
+      expect(prepared, isA<Ok<ArkOperation, ArkWalletFailure>>());
+      expect(native.boardServerEvents, ['server', 'observe', 'estimate-board']);
+      final snapshot = (await client.read(
+        account,
+      ) as Ok<ArkSnapshot, ArkWalletFailure>).value;
+      expect(snapshot.operations.single.id, 'cold-board');
+      expect(native.closes, native.opens);
+      expect(native.executes, 0);
+      expect(native.registrations, 0);
+    },
+  );
+
+  for (final revokeBudget in [false, true]) {
+    test(
+      'cold board server refusal budget=$revokeBudget cannot use old observation',
+      () async {
+        expect(await client.create(config), isA<Ok>());
+        native.requireBoardServerInfo = true;
+        if (revokeBudget) {
+          native.afterStage = (name) {
+            if (name == 'server') budget.allowed = false;
+          };
+        } else {
+          native.failingStage = 'server';
+        }
+        final result = await client.quote(
+          account,
+          ArkQuoteRequest.board(amount: Sats.fromInt(1000)),
+        );
+        expect(result, isA<Err<ArkQuote, ArkWalletFailure>>());
+        expect(native.boardServerEvents, ['server']);
+        expect(native.closes, native.opens);
+        expect(native.executes, 0);
+        expect(native.registrations, 0);
+      },
+    );
+  }
+
   test('board requires reviewed quote and exact journalled tuple; signed PSBT refused', () async {
     await client.create(config);
     final quoted = await client.quote(
