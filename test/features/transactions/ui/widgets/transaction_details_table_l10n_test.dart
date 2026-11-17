@@ -22,15 +22,25 @@ void main() {
   testWidgets('dates an order in the app language and clock format', (
     tester,
   ) async {
-    await _pumpInFrench(tester, Transaction(order: _buyOrder()));
+    await _pump(tester, Transaction(order: _buyOrder()));
 
     expect(find.text('17 nov. 2026 17:08'), findsOneWidget);
+  });
+
+  testWidgets('dates an order in Latin script for Hinglish', (tester) async {
+    await _pump(
+      tester,
+      Transaction(order: _buyOrder()),
+      locale: const Locale.fromSubtags(languageCode: 'hi', scriptCode: 'Latn'),
+    );
+
+    expect(find.textContaining('Nov 17, 2026'), findsOneWidget);
   });
 
   testWidgets('names the order type and statuses in the app language', (
     tester,
   ) async {
-    await _pumpInFrench(tester, Transaction(order: _buyOrder()));
+    await _pump(tester, Transaction(order: _buyOrder()));
 
     expect(find.text('Acheter du Bitcoin'), findsOneWidget);
     expect(find.text('En cours'), findsOneWidget);
@@ -39,7 +49,11 @@ void main() {
   });
 }
 
-Future<void> _pumpInFrench(WidgetTester tester, Transaction transaction) async {
+Future<void> _pump(
+  WidgetTester tester,
+  Transaction transaction, {
+  Locale locale = const Locale('fr'),
+}) async {
   tester.view.physicalSize = const Size(1080, 4000);
   addTearDown(tester.view.reset);
   final detailsCubit = _MockTransactionDetailsCubit();
@@ -64,7 +78,7 @@ Future<void> _pumpInFrench(WidgetTester tester, Transaction transaction) async {
   await tester.pumpWidget(
     MaterialApp(
       navigatorKey: navigatorKey,
-      locale: const Locale('fr'),
+      locale: locale,
       theme: AppTheme.themeData(AppThemeType.light),
       localizationsDelegates: const [
         bullUiLocalizationsDelegate,
