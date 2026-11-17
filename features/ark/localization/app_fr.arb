@@ -112,5 +112,6 @@
   "movementExit": "Sortie",
   "movementLightningReceipt": "Réception Lightning",
   "observedTimeUtc": "Heure observée (UTC)",
-  "transactionId": "Identifiant de transaction"
+  "transactionId": "Identifiant de transaction",
+  "share": "Partager"
 }

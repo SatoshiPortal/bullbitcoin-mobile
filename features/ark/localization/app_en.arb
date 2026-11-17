@@ -231,5 +231,7 @@
   "observedTimeUtc": "Observed time (UTC)",
   "@observedTimeUtc": {},
   "transactionId": "Transaction ID",
-  "@transactionId": {}
+  "@transactionId": {},
+  "share": "Share",
+  "@share": {}
 }
