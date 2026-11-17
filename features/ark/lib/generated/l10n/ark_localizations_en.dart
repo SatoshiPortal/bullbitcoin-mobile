@@ -386,4 +386,20 @@ class ArkLocalizationsEn extends ArkLocalizations {
   @override
   String get boardAmountInvalid =>
       'Enter a positive whole amount in sats within the Bitcoin supply limit.';
+
+  @override
+  String exitProgressAccount(String account) {
+    return 'Exit progression account: $account';
+  }
+
+  @override
+  String get exitProgressFeeRate => 'Fee rate (sat/vB)';
+
+  @override
+  String get exitProgressReserveNotice =>
+      'Progress may expose the account-wide confirmed exit reserve. A future review must show the actual fee and reserve at risk.';
+
+  @override
+  String get exitProgressRateInvalid =>
+      'Enter a positive whole rate in sat/vB within the supported exact-integer input range.';
 }

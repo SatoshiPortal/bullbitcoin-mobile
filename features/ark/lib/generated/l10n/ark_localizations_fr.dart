@@ -390,4 +390,20 @@ class ArkLocalizationsFr extends ArkLocalizations {
   @override
   String get boardAmountInvalid =>
       'Saisissez un montant entier positif en sats, dans la limite de l’offre de bitcoins.';
+
+  @override
+  String exitProgressAccount(String account) {
+    return 'Compte Ark pour la progression de sortie : $account';
+  }
+
+  @override
+  String get exitProgressFeeRate => 'Taux de frais (sat/vB)';
+
+  @override
+  String get exitProgressReserveNotice =>
+      'La progression peut exposer la réserve de sortie confirmée de tout le compte. Une future revue devra présenter les frais réels et la réserve exposée.';
+
+  @override
+  String get exitProgressRateInvalid =>
+      'Saisissez un taux entier positif en sat/vB, dans la plage de saisie à représentation entière exacte.';
 }

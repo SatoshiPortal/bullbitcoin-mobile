@@ -805,6 +805,30 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Enter a positive whole amount in sats within the Bitcoin supply limit.'**
   String get boardAmountInvalid;
+
+  /// No description provided for @exitProgressAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit progression account: {account}'**
+  String exitProgressAccount(String account);
+
+  /// No description provided for @exitProgressFeeRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee rate (sat/vB)'**
+  String get exitProgressFeeRate;
+
+  /// No description provided for @exitProgressReserveNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress may expose the account-wide confirmed exit reserve. A future review must show the actual fee and reserve at risk.'**
+  String get exitProgressReserveNotice;
+
+  /// No description provided for @exitProgressRateInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive whole rate in sat/vB within the supported exact-integer input range.'**
+  String get exitProgressRateInvalid;
 }
 
 class _ArkLocalizationsDelegate
