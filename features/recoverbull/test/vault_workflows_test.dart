@@ -24,7 +24,7 @@ void main() {
   setUp(() async {
     storage = FakeSecureStoragePlatform().install();
     secrets = custody.Secrets(scratchDirectory: () async => '.');
-    _ok(await secrets.import(words: words));
+    _ok(await secrets.import(words: words, language: custody.Language.english));
     repository = SecretsVaultRepository(secrets);
     wallets = _Wallets(context);
     facade = RecoverBullFeature.create(
@@ -60,7 +60,11 @@ void main() {
     'a passphrase default can be sealed without storing its passphrase',
     () async {
       final protected = _ok(
-        await secrets.import(words: words, passphrase: 'synthetic-passphrase'),
+        await secrets.import(
+          words: words,
+          passphrase: 'synthetic-passphrase',
+          language: custody.Language.english,
+        ),
       );
       final protectedContext = VaultContext(
         fingerprint: protected.id,

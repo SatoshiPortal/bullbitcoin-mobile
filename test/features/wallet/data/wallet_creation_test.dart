@@ -71,6 +71,7 @@ void main() {
     final imported = await Secrets(scratchDirectory: () async => '/tmp').import(
       words: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
           .split(' '),
+      language: Language.english,
     );
     secret = (imported as Ok<Secret, SecretFailure>).value;
     row = await WalletMetadataService.deriveFromSecret(

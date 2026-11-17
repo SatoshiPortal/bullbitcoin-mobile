@@ -1707,7 +1707,6 @@
   "sellMxnBalance": "Saldo MXN",
   "fundExchangeWarningTactic4": "Ti chiedono di inviare Bitcoin ad un loro indirizzo",
   "fundExchangeSinpeDescription": "Colonne di trasferimento utilizzando SINPE",
-  "wordsDropdownSuffix": " parole",
   "receiveVerifyAddressOnLedger": "Verifica l'indirizzo su Ledger",
   "buyWaitForFreeWithdrawal": "Attendi l'invio gratuito",
   "sellSendPaymentCrcBalance": "Saldo CRC",
@@ -4778,5 +4777,9 @@
   "settingsDarkModeTitle": "Modalità scura",
   "settingsSourceCodeTitle": "Codice sorgente",
   "torSettingsStatusNoInternetOrBlocked": "Nessuna connessione internet o rete censurata",
-  "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor."
+  "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor.",
+  "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco",
+  "mnemonicWordCountLabel": "Parole",
+  "passphraseOptionOffSubtitle": "Parola aggiuntiva facoltativa (BIP39)",
+  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata"
 }

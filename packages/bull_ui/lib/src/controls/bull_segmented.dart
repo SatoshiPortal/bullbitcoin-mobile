@@ -1,6 +1,7 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Full-width sliding segmented control.
@@ -78,17 +79,21 @@ class _BullSegmentedState extends State<BullSegmented> {
           ),
           children: {
             for (final item in widget.items)
+              // One role for every segment, so a control reads at the same
+              // size on every screen; the selection shows by colour and weight.
               item: Text(
                 item,
                 style: item == selectedSegment
-                    ? Theme.of(context).textTheme.labelLarge
-                          ?.copyWith(color: colors.primary)
+                    ? context.bullType.label.copyWith(color: colors.primary)
                     : widget.disabledItems.contains(item)
-                    ? Theme.of(context).textTheme.labelMedium?.copyWith(
+                    ? context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
                         color: colors.outline.withValues(alpha: 0.5),
                       )
-                    : Theme.of(context).textTheme.labelMedium
-                          ?.copyWith(color: colors.secondary),
+                    : context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: colors.secondary,
+                      ),
               ),
           },
         ),

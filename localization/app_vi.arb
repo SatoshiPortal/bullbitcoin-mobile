@@ -1810,7 +1810,6 @@
   "submitButton": "Gửi",
   "optionalPassphraseHint": "Cụm mật khẩu (tùy chọn)",
   "requiredHint": "Bắt buộc",
-  "wordsDropdownSuffix": " từ",
   "emptyMnemonicWordsError": "Nhập đầy đủ các từ trong mnemonic của bạn",
   "tryAgainButton": "Thử lại",
   "errorGenericTitle": "Rất tiếc! Đã xảy ra lỗi",

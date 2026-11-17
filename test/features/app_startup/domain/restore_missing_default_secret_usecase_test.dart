@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' hide Network, ScriptType;
@@ -89,6 +90,7 @@ void main() {
       passphrase: passphrase,
       network: primitives.BitcoinNetwork.mainnet,
       scriptTypes: {primitives.ScriptType.bip84},
+      language: Language.english,
     );
     final descriptors =
         (result as Ok<Map<primitives.ScriptType, Descriptors>, SecretFailure>)
@@ -146,6 +148,7 @@ void main() {
       );
       expect(
         await usecase.execute(
+          language: Language.english,
           expectedFingerprint: _zooFingerprint,
           words: _zoo,
         ),
@@ -166,6 +169,7 @@ void main() {
       );
       expect(
         await usecase.execute(
+          language: Language.english,
           expectedFingerprint: _zooFingerprint,
           words: _zoo,
         ),
@@ -190,12 +194,17 @@ void main() {
       (_) async => Ok<List<Wallet>, WalletFailure>([mainnet, testnet]),
     );
     expect(
-      await usecase.execute(expectedFingerprint: _zooFingerprint, words: _zoo),
+      await usecase.execute(
+        language: Language.english,
+        expectedFingerprint: _zooFingerprint,
+        words: _zoo,
+      ),
       isA<Err<void, AppStartupFailure>>(),
     );
     expect(storage.entries, isEmpty);
     expect(
       await usecase.execute(
+        language: Language.english,
         expectedFingerprint: _zooFingerprint,
         expectedWalletId: testnet.id,
         words: _zoo,
@@ -217,6 +226,7 @@ void main() {
       );
       expect(
         await usecase.execute(
+          language: Language.english,
           expectedFingerprint: _zooFingerprint,
           expectedWalletId: secondary.id,
           words: _zoo,
@@ -248,6 +258,7 @@ void main() {
         ).thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([invalid]));
         expect(
           await usecase.execute(
+            language: Language.english,
             expectedFingerprint: _zooFingerprint,
             expectedWalletId: invalid.id,
             words: _zoo,
@@ -264,6 +275,7 @@ void main() {
     final created = await secrets.import(
       words: _missing,
       passphrase: passphrase,
+      language: Language.english,
     );
     final fingerprint = (created as Ok<Secret, SecretFailure>).value.id.hex;
     final wallet = await realWallet(fingerprint, _missing, passphrase);
@@ -275,6 +287,7 @@ void main() {
     );
 
     final wrong = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: fingerprint,
       words: _missing,
       passphrase: passphrase.trim(),
@@ -283,6 +296,7 @@ void main() {
     expect(storage.entries, isEmpty);
 
     final restored = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: fingerprint,
       words: _missing,
       passphrase: passphrase,
@@ -299,6 +313,7 @@ void main() {
             Ok<List<Wallet>, WalletFailure>([localWallet(_missingFingerprint)]),
       );
       final result = await usecase.execute(
+        language: Language.english,
         expectedFingerprint: _missingFingerprint,
         words: _missing,
       );
@@ -316,6 +331,7 @@ void main() {
       ]),
     );
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _missing,
     );
@@ -327,6 +343,7 @@ void main() {
     when(() => wallets.getWallets())
         .thenAnswer((_) async => const Ok<List<Wallet>, WalletFailure>([]));
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _missing,
     );
@@ -336,6 +353,7 @@ void main() {
 
   test('stores the words of the missing wallet', () async {
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _missing,
     );
@@ -346,6 +364,7 @@ void main() {
 
   test("refuses another wallet's words and leaves nothing behind", () async {
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: _other,
     );
@@ -364,6 +383,7 @@ void main() {
       )..install();
 
       final result = await usecase.execute(
+        language: Language.english,
         expectedFingerprint: _missingFingerprint,
         words: _other,
       );
@@ -371,15 +391,17 @@ void main() {
       expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
       expect(storage.entries, isEmpty);
       expect(
-        await secrets.import(words: _other),
+        await secrets.import(words: _other, language: Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
     },
   );
 
   test("keeps another wallet's words when a wallet uses them", () async {
-    final other =
-        (await secrets.import(words: _other)) as Ok<Secret, SecretFailure>;
+    final other = (await secrets.import(
+      words: _other,
+      language: Language.english,
+    )) as Ok<Secret, SecretFailure>;
     final otherFingerprint = other.value.id.hex;
     expect(
       await secrets.trash(Fingerprint(otherFingerprint)),
@@ -392,6 +414,7 @@ void main() {
     );
 
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       expectedWalletId: expectedWallet.id,
       words: _other,
@@ -403,11 +426,93 @@ void main() {
 
   test('refuses words that are not a recovery phrase', () async {
     final result = await usecase.execute(
+      language: Language.english,
       expectedFingerprint: _missingFingerprint,
       words: [..._missing.take(11), 'abandon'],
     );
 
     expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
     expect(storage.entries, isEmpty);
+  });
+
+  group('a default wallet restored from a French phrase', () {
+    // A generated French phrase, never a real wallet's.
+    final french = bip39.Mnemonic(
+      List<int>.generate(16, (i) => i * 7 + 1),
+      Language.french,
+    ).words;
+    late String fingerprint;
+
+    setUp(() async {
+      final imported = await secrets.import(
+        words: french,
+        language: Language.french,
+      );
+      fingerprint = (imported as Ok<Secret, SecretFailure>).value.id.hex;
+      storage.entries.clear();
+      final preview = await secrets.preview.bitcoinDescriptors(
+        words: french,
+        language: Language.french,
+        network: primitives.BitcoinNetwork.mainnet,
+        scriptTypes: {primitives.ScriptType.bip84},
+      );
+      final descriptors =
+          (preview
+                  as Ok<Map<primitives.ScriptType, Descriptors>, SecretFailure>)
+              .value[primitives.ScriptType.bip84];
+      if (descriptors == null) throw StateError('missing descriptors');
+      final wallet = localWallet(
+        fingerprint,
+        external: descriptors.external,
+        internal: descriptors.internal,
+        isDefault: true,
+      );
+      when(() => wallets.getWallets())
+          .thenAnswer((_) async => Ok<List<Wallet>, WalletFailure>([wallet]));
+    });
+
+    test('is stored back in French', () async {
+      final result = await usecase.execute(
+        language: Language.french,
+        expectedFingerprint: fingerprint,
+        words: french,
+      );
+
+      expect(result, isA<Ok<void, AppStartupFailure>>());
+      final stored = await secrets.fetch(Fingerprint(fingerprint));
+      expect(
+        (stored as Ok<Secret, SecretFailure>).value.info.language,
+        Language.french,
+      );
+    });
+
+    test('is refused when its words are read as English', () async {
+      final result = await usecase.execute(
+        language: Language.english,
+        expectedFingerprint: fingerprint,
+        words: french,
+      );
+
+      expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
+      expect(storage.entries, isEmpty);
+    });
+
+    test('is refused with a broken checksum', () async {
+      final words = [...french];
+      words[11] = words[11] == 'abaisser' ? 'abandon' : 'abaisser';
+      expect(
+        () => bip39.Mnemonic.fromWords(words: words, language: Language.french),
+        throwsA(isA<bip39.MnemonicException>()),
+      );
+
+      final result = await usecase.execute(
+        language: Language.french,
+        expectedFingerprint: fingerprint,
+        words: words,
+      );
+
+      expect((result as Err).failure, isA<AppStartupRestoreMismatchFailure>());
+      expect(storage.entries, isEmpty);
+    });
   });
 }

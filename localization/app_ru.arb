@@ -1705,7 +1705,6 @@
   "sellMxnBalance": "MXN Баланс",
   "fundExchangeWarningTactic4": "Они просят отправить биткойн на их адрес",
   "fundExchangeSinpeDescription": "Трансфер Колонны с помощью SINPE",
-  "wordsDropdownSuffix": " слова",
   "receiveVerifyAddressOnLedger": "Проверка Адреса на Ledger",
   "buyWaitForFreeWithdrawal": "Ожидание свободного вывода",
   "sellSendPaymentCrcBalance": "CRC Баланс",
