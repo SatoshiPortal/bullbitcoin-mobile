@@ -31,10 +31,7 @@ final class IpMapLocationRepository implements MapLocationRepository {
       );
     try {
       final response = await client
-          .get<Object?>(
-            'https://ipwho.is/',
-            queryParameters: {'fields': 'success,latitude,longitude'},
-          )
+          .get<Object?>('https://btcmap.org/map/__data.json')
           .timeout(_timeout);
       final point = IpLocationModel.fromJson(response.data).toDomain();
       return point == null ? const Err(BullMapUnexpectedFailure()) : Ok(point);
