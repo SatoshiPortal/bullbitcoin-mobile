@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:bull_ark/src/data/sqlite_ark_reminder_repository.dart';
+import 'package:bull_ark/ark_foreground_maintenance_setup.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notifications/notifications.dart';
@@ -10,6 +12,8 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import 'ark_durable_stores_test.dart' show value;
+import 'ark_maintenance_schedule_test.dart' show Registry;
+import 'fake_ark_client.dart';
 import 'ark_operations_test.dart' show account;
 import 'ark_reminder_deadline_test.dart' show warning;
 
@@ -149,6 +153,25 @@ void main() {
     if (held != null && !held.isCompleted) held.complete();
     await store.close();
     directory.deleteSync(recursive: true);
+  });
+
+  test('unavailable notification plugin keeps stored reminders and opens maintenance', () async {
+    expect(await apply(), isA<Ok>());
+    final saved = row();
+    await store.close();
+    final result = await openArkForegroundMaintenance(
+      path: path,
+      locale: const Locale('en'),
+      client: FakeArkClient(),
+      accounts: Registry(),
+      initializeNew: false,
+    );
+    expect(result, isA<Ok<ArkForegroundMaintenance, ArkFailure>>());
+    final maintenance =
+        (result as Ok<ArkForegroundMaintenance, ArkFailure>).value;
+    expect(maintenance.remindersReady, false);
+    await maintenance.close();
+    expect(row(), saved);
   });
 
   test(
