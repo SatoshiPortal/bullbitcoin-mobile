@@ -842,7 +842,21 @@ void main() {
     });
 
     test('is idempotent on a recorded refund txid', () async {
+      when(() => storage.fetch(any()))
+          .thenAnswer((_) async => chainModel(refundTxid: 'already-done'));
+
       final txid = await repo().refund(chainSwap(refundTxid: 'already-done'));
+
+      expect(txid, 'already-done');
+      verifyNever(() => storage.store(any()));
+    });
+
+    test('a stale copy of the swap never refunds a recorded refund', () async {
+      when(() => storage.fetch(any()))
+          .thenAnswer((_) async => chainModel(refundTxid: 'already-done'));
+
+      final txid = await repo().refund(chainSwap());
+
       expect(txid, 'already-done');
       verifyNever(() => storage.store(any()));
     });

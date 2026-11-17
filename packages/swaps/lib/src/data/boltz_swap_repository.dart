@@ -2097,9 +2097,10 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   // script path, walks the app's electrum servers, and records the outcome.
 
   Future<String> claim(Swap swap, {bool scriptPathOnly = false}) async {
-    final existing = switch (swap) {
-      LnReceiveSwap() => swap.receiveTxid,
-      ChainSwap() => swap.receiveTxid,
+    final stored = await getSwap(swapId: swap.id);
+    final existing = switch (stored) {
+      LnReceiveSwap(:final receiveTxid) => receiveTxid,
+      ChainSwap(:final receiveTxid) => receiveTxid,
       LnSendSwap() => throw SwapsException(
         'submarine swap ${swap.id} is refunded or coop-signed, never claimed',
       ),
@@ -2264,9 +2265,10 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   }
 
   Future<String> refund(Swap swap, {bool scriptPathOnly = false}) async {
-    final existing = switch (swap) {
-      ChainSwap() => swap.refundTxid,
-      LnSendSwap() => swap.refundTxid,
+    final stored = await getSwap(swapId: swap.id);
+    final existing = switch (stored) {
+      ChainSwap(:final refundTxid) => refundTxid,
+      LnSendSwap(:final refundTxid) => refundTxid,
       LnReceiveSwap() => throw SwapsException(
         'reverse swap ${swap.id} is claimed, never refunded',
       ),
