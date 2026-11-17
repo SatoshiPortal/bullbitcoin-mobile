@@ -34,7 +34,6 @@ Future<int?> showBullDropdownMenu<T>({
   return showMenu<int>(
     context: anchor,
     position: position,
-    initialValue: selectedIndex < 0 ? null : selectedIndex,
     color: colors.surface,
     surfaceTintColor: colors.transparent,
     elevation: 0,

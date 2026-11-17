@@ -51,35 +51,39 @@ void main() {
       expect(find.text('Banana'), findsOneWidget);
     });
 
-    testWidgets('opens the menu right under the field, as wide as it', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        wrapWithTheme(
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: BullDropdown<String>(
-              value: 'a',
-              onChanged: (_) {},
-              items: _fruit,
+    for (final selected in ['a', 'b']) {
+      testWidgets(
+        'opens the menu right under the field, as wide as it, with $selected '
+        'selected',
+        (tester) async {
+          await tester.pumpWidget(
+            wrapWithTheme(
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: BullDropdown<String>(
+                  value: selected,
+                  onChanged: (_) {},
+                  items: _fruit,
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-      final field = tester.getRect(find.byType(BullDropdown<String>));
-      await tester.tap(find.text('Apple'));
-      await tester.pumpAndSettle();
+          );
+          final field = tester.getRect(find.byType(BullDropdown<String>));
+          await tester.tap(find.byType(BullDropdown<String>));
+          await tester.pumpAndSettle();
 
-      final menu = tester.getRect(
-        find.ancestor(
-          of: find.text('Banana'),
-          matching: find.byType(SingleChildScrollView),
-        ),
+          final menu = tester.getRect(
+            find.ancestor(
+              of: find.text('Apple').last,
+              matching: find.byType(SingleChildScrollView),
+            ),
+          );
+          expect(menu.top, closeTo(field.bottom, 1));
+          expect(menu.left, closeTo(field.left, 1));
+          expect(menu.width, closeTo(field.width, 1));
+        },
       );
-      expect(menu.top, closeTo(field.bottom, 1));
-      expect(menu.left, closeTo(field.left, 1));
-      expect(menu.width, closeTo(field.width, 1));
-    });
+    }
 
     testWidgets('marks the selected row in primary and bold', (tester) async {
       await tester.pumpWidget(

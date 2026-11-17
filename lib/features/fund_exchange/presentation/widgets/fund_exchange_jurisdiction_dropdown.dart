@@ -4,18 +4,18 @@ import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_juris
 import 'package:material_ui/material_ui.dart';
 
 class FundExchangeJurisdictionDropdown extends StatelessWidget {
-  final FundingJurisdiction initialValue;
+  final FundingJurisdiction value;
   final void Function(FundingJurisdiction)? onChanged;
   const FundExchangeJurisdictionDropdown({
     super.key,
-    required this.initialValue,
+    required this.value,
     this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return BullDropdown<FundingJurisdiction>(
-      value: initialValue,
+      value: value,
       items: [
         BullPickerItem(
           value: FundingJurisdiction.canada,
