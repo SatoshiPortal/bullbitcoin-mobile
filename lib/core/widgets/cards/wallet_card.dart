@@ -48,6 +48,8 @@ class WalletCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
             child: Stack(
+              // Centres the content once the minimum height exceeds it.
+              alignment: AlignmentDirectional.centerStart,
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(
