@@ -4785,6 +4785,7 @@
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "settingsDarkModeTitle": "Mode sombre",
   "settingsSourceCodeTitle": "Code source",
+  "parentCustodyMetadataUnavailable": "Les données de sécurité du wallet sont absentes ou endommagées. Cette action a été arrêtée pour protéger votre phrase de récupération. Contactez le support avant de réessayer.",
   "torSettingsStatusNoInternetOrBlocked": "Pas d’internet ou réseau censuré",
   "torSettingsDescNoInternetOrBlocked": "Ce réseau n’a pas accès à internet, ou il bloque Tor.",
   "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",

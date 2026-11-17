@@ -1,18 +1,24 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:primitives/primitives.dart';
+import 'package:sqlite3/sqlite3.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/datasources/spend_gate_store_datasource.dart';
 import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/write/spend/native_spend.dart';
 import 'package:sync/src/data/write/writer_lock.dart';
 import 'package:sync/sync.dart';
+import 'package:sync/src/domain/spend.dart' show signedForGeneration;
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sync/write.dart';
 
 import '../support/connections.dart';
+import '../support/funding_reservations.dart';
 
 // The policy around the native builder, with the builder faked: what each
 // build, bump, consolidation and broadcast may spend, and what it hands out.
@@ -43,6 +49,46 @@ Uint8List _transaction(List<Outpoint> inputs) {
   return bytes.toBytes();
 }
 
+/// Minimal PSBT with native-segwit witness prevouts; no signer or network.
+String _fundingPsbt(
+  List<Outpoint> inputs, {
+  bool legacy = false,
+  bool finalised = false,
+}) {
+  final tx = _transaction(inputs);
+  final bytes = BytesBuilder()
+    ..add([0x70, 0x73, 0x62, 0x74, 0xff, 1, 0, tx.length])
+    ..add(tx)
+    ..addByte(0);
+  for (final _ in inputs) {
+    final script = legacy
+        ? [0x76, 0xa9, 20, ...List.filled(20, 7), 0x88, 0xac]
+        : [0, 20, ...List.filled(20, 7)];
+    final value = ByteData(8)..setUint64(0, 50000, Endian.little);
+    bytes
+      ..add([1, 1, 9 + script.length])
+      ..add(value.buffer.asUint8List())
+      ..addByte(script.length)
+      ..add(script);
+    if (finalised) bytes.add([1, 7, 0]);
+    bytes.addByte(0);
+  }
+  bytes.addByte(0); // sole output map
+  return base64Encode(bytes.toBytes());
+}
+
+SignedSpend signedForGenerationForTest(
+  WalletKey key,
+  int generation,
+  List<int> bytes,
+  SpendOwner? owner,
+) => signedForGeneration(
+  key: key,
+  generation: generation,
+  transaction: SignedBitcoinTransaction(bytes),
+  owner: owner,
+);
+
 final class _Bitcoin implements NativeBitcoinSpend {
   final _Natives natives;
   _Bitcoin(this.natives);
@@ -63,7 +109,10 @@ final class _Bitcoin implements NativeBitcoinSpend {
           for (final coin in natives.coins)
             if (natives.ignoreExclusions || !excluded.contains(coin)) coin,
         ].take(1).toList();
-    return BuiltTransaction('psbt-${natives.builds}', inputs);
+    return BuiltTransaction(
+      natives.encode?.call(inputs) ?? 'psbt-${natives.builds}',
+      natives.effectiveInputs ?? inputs,
+    );
   }
 
   @override
@@ -149,6 +198,8 @@ final class _Liquid implements NativeLiquidSpend {
 
 final class _Natives implements NativeSpendSessions {
   List<Outpoint> coins = [];
+  String Function(List<Outpoint>)? encode;
+  List<Outpoint>? effectiveInputs;
   List<Outpoint>? original;
   List<Outpoint> bumpInputs = [];
   List<List<Outpoint>> lwkBatches = [];
@@ -249,6 +300,8 @@ void main() {
   late _Natives natives;
   late _Reservations reservations;
   late _Transport transport;
+  late SqliteFundingReservations funding;
+  var storesClosed = false;
 
   final bitcoin = BitcoinWalletDescriptor(
     key: WalletKey(id: 'spender', network: BitcoinNetwork.testnet),
@@ -306,10 +359,12 @@ void main() {
   };
 
   setUp(() {
+    storesClosed = false;
     dir = Directory.systemTemp.createTempSync('spend-writer-');
     freezes = MemoryFreezeStore();
     natives = _Natives()..coins = [_a, _b, _c];
     reservations = _Reservations();
+    funding = SqliteFundingReservations('${dir.path}/funding.sqlite');
     transport = _Transport();
     stores = openForeground(
       documentsDirectory: dir.path,
@@ -317,6 +372,7 @@ void main() {
       reservedAddresses: _Reserved(),
       freezes: freezes,
       inputReservations: reservations,
+      fundingReservations: funding,
       connections: FixtureConnections(const []),
       spendSessions: natives,
       spendTransport: transport.send,
@@ -332,8 +388,539 @@ void main() {
 
   tearDown(() async {
     revisions.close();
-    await stores.close();
+    if (!storesClosed) await stores.close();
+    funding.close();
     dir.deleteSync(recursive: true);
+  });
+
+  group('prepareFunding', () {
+    final arkOwner = SpendOwner(protocol: 'ark', session: 'board-1');
+    const context = '{"output":0,"expiryHeight":1008}';
+
+    Future<Result<UnsignedSpend, SyncFailure>> prepare({
+      SpendOwner? by,
+      List<Outpoint>? selected,
+      int? gen,
+      String metadata = context,
+    }) => stores.spend.prepareFunding(
+      bitcoin.key,
+      gen ?? generation(bitcoin.key),
+      pay(by: by ?? arkOwner, selected: selected),
+      context: metadata,
+    );
+
+    setUp(() {
+      natives.encode = _fundingPsbt;
+    });
+
+    test(
+      'persists native revision then exact reservation before hand-out',
+      () async {
+        natives.persistWrites = true;
+        funding.beforeReserve = () async {
+          expect((natives.persisted, natives.closed), (1, 1));
+          expect(revisions.record(bitcoin.key)?.intent, isNull);
+          expect(revisions.record(bitcoin.key)?.state.stamp.revision, 2);
+          expect(
+            WriterLock.acquire(dir.path, bitcoin.key),
+            isA<Err<WriterLock, SyncFailure>>(),
+          );
+        };
+        final spend = ok(await prepare());
+        expect(spend.owner, arkOwner);
+        expect(spend.inputs, [_a]);
+        expect(funding.encoded, spend.encoded);
+        expect(ok(await funding.reservations()).single.outpoint, _a);
+        final lock = ok(WriterLock.acquire(dir.path, bitcoin.key));
+        lock.release();
+      },
+    );
+
+    test('public wallet refuses an absent configured funding port', () async {
+      final sync = Sync.foreground(
+        documentsDirectory: dir.path,
+        catalog: _Catalog([bitcoin]),
+        reservedAddresses: _Reserved(),
+        freezes: freezes,
+        inputReservations: reservations,
+        connections: FixtureConnections(const []),
+      );
+      try {
+        final wallet = ok(await sync.wallet(bitcoin.key));
+        expect(
+          err(
+            await wallet.tx.prepareFunding(pay(by: arkOwner), context: context),
+          ),
+          isA<SyncSpendRefusedFailure>(),
+        );
+        expect(natives.opened, 0);
+      } finally {
+        await sync.close();
+      }
+    });
+
+    test(
+      'close waits for an admitted reservation without disposing its stores',
+      () async {
+        final entered = Completer<void>();
+        final release = Completer<void>();
+        funding.beforeReserve = () async {
+          entered.complete();
+          await release.future;
+        };
+        final pending = prepare();
+        await entered.future;
+        var closed = false;
+        final closing = stores.close().then((_) {
+          closed = true;
+        });
+        await Future<void>.delayed(Duration.zero);
+        expect(closed, isFalse);
+        expect(
+          WriterLock.acquire(dir.path, bitcoin.key),
+          isA<Err<WriterLock, SyncFailure>>(),
+        );
+        release.complete();
+        ok(await pending);
+        await closing;
+        storesClosed = true;
+        expect(closed, isTrue);
+      },
+    );
+
+    test(
+      'a late Payjoin overlap refuses hand-out and keeps both obligations',
+      () async {
+        funding.beforeReserve = () async {
+          reservations.held = [reservation(_a, owner)];
+        };
+        expect(err(await prepare()), isA<SyncProtectedInputsFailure>());
+        expect(ok(await funding.reservations()).single.outpoint, _a);
+        for (final by in [arkOwner, owner]) {
+          expect(
+            err(
+              await stores.spend.broadcast(
+                signedForGenerationForTest(
+                  bitcoin.key,
+                  generation(bitcoin.key),
+                  _transaction([_a]),
+                  by,
+                ),
+              ),
+            ),
+            isA<SyncProtectedInputsFailure>(),
+          );
+        }
+        expect(transport.sent, isEmpty);
+      },
+    );
+
+    test(
+      'revision failure retains durable intent and never reserves funding',
+      () async {
+        final db = sqlite3.open(revisionStorePath(dir.path));
+        db.execute(
+          "CREATE TRIGGER refuse_revision BEFORE UPDATE ON revisions WHEN NEW.revision > OLD.revision BEGIN SELECT RAISE(ABORT, 'fixture'); END",
+        );
+        natives.persistWrites = true;
+        try {
+          expect(err(await prepare()), isA<SyncStorageFailure>());
+          expect(funding.calls, 0);
+          expect(revisions.record(bitcoin.key)?.intent, WriteIntent.load);
+          expect((natives.persisted, natives.closed), (1, 1));
+        } finally {
+          db.execute('DROP TRIGGER refuse_revision');
+          db.close();
+        }
+        expect(err(await prepare()), isA<SyncSpendBlockedFailure>());
+      },
+    );
+
+    test(
+      'pending broadcasts block preparation before native or reservation work',
+      () async {
+        ok(
+          await stores.spend.broadcast(
+            signedForGenerationForTest(
+              bitcoin.key,
+              generation(bitcoin.key),
+              _transaction([_a]),
+              null,
+            ),
+          ),
+        );
+        final failure = err(await prepare()) as SyncSpendBlockedFailure;
+        expect(failure.status, BitcoinSpendStatus.pending);
+        expect(natives.opened, 0);
+        expect(funding.calls, 0);
+      },
+    );
+
+    for (final expected in [
+      BitcoinSpendStatus.ready,
+      BitcoinSpendStatus.pending,
+    ]) {
+      test(
+        'rechecks readiness after slow funding releases its lease: $expected',
+        () async {
+          final key = bitcoin.key;
+          final readiness = stores.spend.readiness(key);
+          Future<void> published(BitcoinSpendStatus status) => readiness
+              .watch()
+              .firstWhere((value) => value.data == status)
+              .timeout(const Duration(seconds: 3))
+              .then((_) {});
+          await published(BitcoinSpendStatus.ready);
+          natives.persistWrites = true;
+          final entered = Completer<void>();
+          final release = Completer<void>();
+          funding.beforeReserve = () async {
+            entered.complete();
+            await release.future;
+          };
+          final pending = prepare();
+          await entered.future;
+          try {
+            // Revision publication asks the guard while funding still owns the lease. Let that real acquisition budget expire before releasing it.
+            await published(BitcoinSpendStatus.busy);
+            if (expected == BitcoinSpendStatus.pending) {
+              final gate = SpendGateStoreDatasource.openExisting(
+                spendGateStorePath(dir.path),
+              );
+              try {
+                gate.accepted(bitcoin, generation(key), 'd' * 64);
+              } finally {
+                gate.close();
+              }
+            }
+            release.complete();
+            ok(await pending);
+            // No explicit check(), native revision or other event should be needed. The fresh guard verdict may still refuse a spend.
+            await published(expected);
+          } finally {
+            if (!release.isCompleted) release.complete();
+            await pending;
+          }
+        },
+      );
+    }
+
+    test('holds admission beyond wait budget and serializes freezes', () async {
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      funding.beforeReserve = () async {
+        entered.complete();
+        await release.future;
+      };
+      final pending = prepare();
+      await entered.future;
+      try {
+        for (final by in <SpendOwner?>[null, owner]) {
+          final rejected = await stores.spend.broadcast(
+            signedForGenerationForTest(
+              bitcoin.key,
+              generation(bitcoin.key),
+              _transaction([_a]),
+              by,
+            ),
+          );
+          expect(err(rejected), isA<SyncBusyFailure>());
+        }
+        expect(transport.sent, isEmpty);
+        expect(
+          WriterLock.acquire(dir.path, bitcoin.key),
+          isA<Err<WriterLock, SyncFailure>>(),
+        );
+        var frozen = false;
+        final freezing = stores.freezes
+            .freeze([FrozenOutpoint(_a, origin: 'user')])
+            .then((value) {
+              frozen = true;
+              return value;
+            });
+        await Future<void>.delayed(Duration.zero);
+        expect(frozen, isFalse);
+        release.complete();
+        ok(await pending);
+        ok(await freezing);
+      } finally {
+        if (!release.isCompleted) release.complete();
+        await pending;
+      }
+    });
+
+    test('waits behind an admitted ordinary or Payjoin broadcast', () async {
+      for (final by in <SpendOwner?>[null, owner]) {
+        final entered = Completer<void>();
+        final release = Completer<void>();
+        transport.during = () async {
+          entered.complete();
+          await release.future;
+        };
+        transport.reply = const Err(SyncConnectionFailure());
+        final sending = stores.spend.broadcast(
+          signedForGenerationForTest(
+            bitcoin.key,
+            generation(bitcoin.key),
+            _transaction([_a]),
+            by,
+          ),
+        );
+        await entered.future;
+        try {
+          expect(err(await prepare()), isA<SyncBusyFailure>());
+          expect(natives.builds, 0);
+          expect(funding.calls, 0);
+        } finally {
+          release.complete();
+          await sending;
+        }
+      }
+    });
+
+    test(
+      'reservation failure grants nothing; uncertain commit stays protected',
+      () async {
+        funding.failBeforeCommit = true;
+        expect(err(await prepare()), isA<SyncStorageFailure>());
+        expect(ok(await funding.reservations()), isEmpty);
+        funding.failBeforeCommit = false;
+        funding.failAfterCommit = true;
+        expect(err(await prepare()), isA<SyncStorageFailure>());
+        expect(ok(await funding.reservations()).single.outpoint, _a);
+        expect(
+          err(
+            await stores.spend.build(
+              bitcoin.key,
+              generation(bitcoin.key),
+              pay(selected: [_a]),
+            ),
+          ),
+          isA<SyncProtectedInputsFailure>(),
+        );
+        expect(
+          err(
+            await stores.spend.broadcast(
+              signedForGenerationForTest(
+                bitcoin.key,
+                generation(bitcoin.key),
+                _transaction([_a]),
+                owner,
+              ),
+            ),
+          ),
+          isA<SyncProtectedInputsFailure>(),
+        );
+        expect(transport.sent, isEmpty);
+        await stores.close();
+        funding.close();
+        funding = SqliteFundingReservations('${dir.path}/funding.sqlite');
+        stores = openForeground(
+          documentsDirectory: dir.path,
+          catalog: _Catalog([bitcoin, liquid]),
+          reservedAddresses: _Reserved(),
+          freezes: freezes,
+          inputReservations: reservations,
+          fundingReservations: funding,
+          connections: FixtureConnections(const []),
+          spendSessions: natives,
+          spendTransport: transport.send,
+        );
+        expect(ok(await funding.reservations()).single.outpoint, _a);
+        expect(
+          err(
+            await stores.spend.broadcast(
+              signedForGenerationForTest(
+                bitcoin.key,
+                generation(bitcoin.key),
+                _transaction([_a]),
+                owner,
+              ),
+            ),
+          ),
+          isA<SyncProtectedInputsFailure>(),
+        );
+      },
+    );
+
+    test('identical owner retry is idempotent; changed transaction/context refused', () async {
+      final first = ok(await prepare(selected: [_a]));
+      final repeated = ok(await prepare(selected: [_a]));
+      expect(repeated.encoded, first.encoded);
+      expect(ok(await funding.reservations()), hasLength(1));
+      expect(
+        err(await prepare(selected: [_b])),
+        isA<SyncSpendRefusedFailure>(),
+      );
+      expect(
+        err(await prepare(selected: [_a], metadata: 'changed')),
+        isA<SyncSpendRefusedFailure>(),
+      );
+      final conflicting = first; // host enforces atomic outpoint uniqueness too
+      expect(
+        err(
+          await funding.reserve(
+            key: bitcoin.key,
+            spend: UnsignedSpend(
+              revision: conflicting.revision,
+              encoded: conflicting.encoded,
+              inputs: conflicting.inputs,
+              owner: other,
+            ),
+            context: context,
+          ),
+        ),
+        isA<SyncSpendRefusedFailure>(),
+      );
+    });
+
+    test(
+      'successful funding rearms failure diagnostics for the next episode',
+      () async {
+        final messages = <String>[];
+        final subscription = log.logger.logger.onRecord.listen((record) {
+          if (record.message.contains(
+            'Wallet writer unexpected storage failure category=storage',
+          )) {
+            messages.add(record.message);
+          }
+        });
+        try {
+          funding.failBeforeCommit = true;
+          expect(err(await prepare()), isA<SyncStorageFailure>());
+          expect(err(await prepare()), isA<SyncStorageFailure>());
+          await Future<void>.delayed(Duration.zero);
+          expect(messages, hasLength(1));
+          funding.failBeforeCommit = false;
+          ok(await prepare());
+          funding.beforeReserve = () async {
+            throw const FormatException('fixture reserve');
+          };
+          expect(err(await prepare()), isA<SyncStorageFailure>());
+          await Future<void>.delayed(Duration.zero);
+          expect(messages, hasLength(2));
+        } finally {
+          await subscription.cancel();
+        }
+      },
+    );
+
+    test(
+      'native persistence and policy read failures never reach reserve',
+      () async {
+        natives.persistFailure = const FormatException('fixture persist');
+        expect(err(await prepare()), isA<SyncStorageFailure>());
+        expect(funding.calls, 0);
+        natives.persistFailure = null;
+        funding.readFailure = const SyncStorageFailure();
+        expect(err(await prepare()), isA<SyncStorageFailure>());
+        expect(funding.calls, 0);
+        expect(
+          err(
+            await stores.spend.build(
+              bitcoin.key,
+              generation(bitcoin.key),
+              pay(),
+            ),
+          ),
+          isA<SyncStorageFailure>(),
+        );
+        expect(
+          err(
+            await stores.spend.broadcast(
+              signedForGenerationForTest(
+                bitcoin.key,
+                generation(bitcoin.key),
+                _transaction([_a]),
+                null,
+              ),
+            ),
+          ),
+          isA<SyncStorageFailure>(),
+        );
+        expect(transport.sent, isEmpty);
+        funding.readFailure = null;
+        funding.beforeReserve = () async {
+          throw const FormatException('fixture reserve');
+        };
+        expect(err(await prepare()), isA<SyncStorageFailure>());
+        expect(ok(await funding.reservations()), isEmpty);
+      },
+    );
+
+    test(
+      'effective inputs, owner scope and freezes remain authoritative',
+      () async {
+        reservations.held = [reservation(_a, owner)];
+        expect(
+          err(await prepare(selected: [_a])),
+          isA<SyncProtectedInputsFailure>(),
+        );
+        expect(
+          err(
+            await prepare(
+              selected: [_a],
+              by: SpendOwner(protocol: owner.protocol, session: 'other'),
+            ),
+          ),
+          isA<SyncProtectedInputsFailure>(),
+        );
+        reservations.held = [reservation(_a, arkOwner, walletId: 'elsewhere')];
+        expect(
+          err(await prepare(selected: [_a])),
+          isA<SyncProtectedInputsFailure>(),
+        );
+        reservations.held = [];
+        ok(await stores.freezes.freeze([FrozenOutpoint(_a, origin: 'user')]));
+        expect(
+          err(await prepare(selected: [_a])),
+          isA<SyncProtectedInputsFailure>(),
+        );
+        ok(await stores.freezes.unfreeze([_a]));
+        natives.effectiveInputs = [_b];
+        expect(
+          err(await prepare(selected: [_a])),
+          isA<SyncInvalidTransactionFailure>(),
+        );
+        expect(funding.calls, 0);
+      },
+    );
+
+    test(
+      'refuses missing owner, stale generation, invalid context and PSBT',
+      () async {
+        expect(
+          err(
+            await stores.spend.prepareFunding(
+              bitcoin.key,
+              generation(bitcoin.key),
+              pay(),
+              context: context,
+            ),
+          ),
+          isA<SyncSpendRefusedFailure>(),
+        );
+        expect(
+          err(await prepare(gen: generation(bitcoin.key) + 1)),
+          isA<SyncNotFoundFailure>(),
+        );
+        for (final metadata in ['', 'x' * 4097, 'é' * 2049]) {
+          expect(
+            err(await prepare(metadata: metadata)),
+            isA<SyncSpendRefusedFailure>(),
+          );
+        }
+        for (final encode in <String Function(List<Outpoint>)>[
+          (_) => 'invalid',
+          (inputs) => _fundingPsbt(inputs, legacy: true),
+          (inputs) => _fundingPsbt(inputs, finalised: true),
+        ]) {
+          natives.encode = encode;
+          expect(err(await prepare()), isA<SyncInvalidTransactionFailure>());
+        }
+        expect(funding.calls, 0);
+      },
+    );
   });
 
   group('build', () {

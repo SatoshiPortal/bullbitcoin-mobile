@@ -37,6 +37,7 @@ export 'src/domain/repositories/wallet_writer_repository.dart';
 export 'src/domain/coin_freezes.dart';
 export 'src/domain/ports/freeze_store_port.dart';
 export 'src/domain/ports/input_reservation_port.dart';
+export 'src/domain/ports/funding_reservation_port.dart';
 export 'src/domain/ports/read_admission_port.dart';
 export 'src/domain/ports/reserved_address_port.dart';
 export 'src/domain/ports/wallet_catalog_port.dart';
@@ -47,9 +48,11 @@ export 'src/data/read/address_script.dart' show bitcoinAddressScript;
 export 'src/data/read/validate_address.dart' show validateAddress;
 export 'src/data/read/wallet_snapshot_reader.dart' show WalletSnapshotException;
 export 'src/domain/decoded_transactions.dart';
+export 'src/data/codec/bitcoin_psbt_facts.dart';
 export 'src/data/codec/bitcoin_codec.dart'
     show
         bitcoinPsbtFee,
+        inspectBitcoinPsbt,
         bitcoinPublicDescriptor,
         bitcoinScriptAddress,
         canonicalBitcoinPsbt,

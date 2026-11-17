@@ -81,24 +81,17 @@ class DeleteWalletUsecase {
   /// Best-effort cleanup: a failure here leaves an orphan seed entry but must
   /// not fail the wallet deletion the user asked for.
   Future<void> _deleteOrphanSeed(Fingerprint fingerprint) async {
-    final Set<Fingerprint> remaining;
-    switch (await _seedReferences.getCustodyFingerprints()) {
-      case Ok(:final value):
-        remaining = value;
+    switch (await _seedReferences.deleteUnreferenced(_secrets, fingerprint)) {
+      case Ok():
+        log.fine('Seed deleted source=wallet_cleanup');
+      case Err(failure: ParentCustodyReferencedFailure()):
+        log.fine('Seed cleanup skipped reason=referenced');
+      case Err(failure: ParentCustodyStateFailure()):
+        log.warning('Seed cleanup refused reason=custody_state');
+      case Err(failure: ParentCustodyMetadataFailure()):
+        log.warning('Seed cleanup refused reason=custody_metadata');
       case Err():
         log.warning('Seed cleanup failed reason=references_unavailable');
-        return;
     }
-
-    if (remaining.contains(fingerprint)) {
-      log.fine('Seed cleanup skipped reason=referenced');
-      return;
-    }
-
-    // Unconditional on the package side; the "still used by a wallet" guard
-    // is this usecase's, and was applied above.
-    final deleted = await _secrets.trash(fingerprint);
-    // The keystore boundary owns storage failures.
-    if (deleted is Ok) log.fine('Seed deleted source=wallet_cleanup');
   }
 }

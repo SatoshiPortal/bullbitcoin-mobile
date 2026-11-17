@@ -21,6 +21,7 @@ import '../domain/coin_freezes.dart';
 import '../domain/observed.dart';
 import '../domain/ports/freeze_store_port.dart';
 import '../domain/ports/input_reservation_port.dart';
+import '../domain/ports/funding_reservation_port.dart';
 import '../domain/ports/reserved_address_port.dart';
 import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/ports/wallet_connection_port.dart';
@@ -54,12 +55,18 @@ final class Sync {
   /// while it cannot answer. [inputReservations] is mandatory: spends check
   /// their inputs against both. Spends are broadcast through the servers
   /// [connections] selects.
+  ///
+  /// [fundingReservations] optionally enables atomic funding preparation. Its
+  /// reads are always combined with [inputReservations] for every spend. A
+  /// missing port refuses preparation; it never falls back to an unreserved
+  /// build. Both providers must read directly, without reentering sync.
   static Sync foreground({
     required String documentsDirectory,
     required WalletCatalogPort catalog,
     required ReservedAddressPort reservedAddresses,
     required FreezeStorePort freezes,
     required InputReservationPort inputReservations,
+    FundingReservationPort? fundingReservations,
     required WalletConnectionPort connections,
   }) {
     final stores = stores_.openForeground(
@@ -68,6 +75,7 @@ final class Sync {
       reservedAddresses: reservedAddresses,
       freezes: freezes,
       inputReservations: inputReservations,
+      fundingReservations: fundingReservations,
       connections: connections,
     );
     stores.freezes.demand();
@@ -333,6 +341,21 @@ extension type const WalletTxGroup._(Wallet _wallet) {
   @useResult
   Future<Result<UnsignedSpend, SyncFailure>> build(SpendRequest request) =>
       _wallet._spender.build(_wallet.key, _wallet.generation, request);
+
+  /// Builds unfinalised native-segwit funding and durably reserves its
+  /// effective inputs before releasing the spend admission. Requires a
+  /// non-null owner and a configured [FundingReservationPort]. [context]
+  /// contains at most 4096 UTF-8 bytes of public recovery metadata.
+  @useResult
+  Future<Result<UnsignedSpend, SyncFailure>> prepareFunding(
+    BitcoinSpendRequest request, {
+    required String context,
+  }) => _wallet._spender.prepareFunding(
+    _wallet.key,
+    _wallet.generation,
+    request,
+    context: context,
+  );
 
   /// A BIP125 replacement, built only on an original whose own inputs'
   /// signatures verify. An input the builder adds faces every protection.
@@ -601,6 +624,14 @@ final class _NoSpender implements WalletSpender {
     int generation,
     SpendRequest request,
   ) => _refused();
+
+  @override
+  Future<Result<UnsignedSpend, SyncFailure>> prepareFunding(
+    WalletKey key,
+    int generation,
+    BitcoinSpendRequest request, {
+    required String context,
+  }) => _refused();
 
   @override
   Future<Result<UnsignedSpend, SyncFailure>> bump(

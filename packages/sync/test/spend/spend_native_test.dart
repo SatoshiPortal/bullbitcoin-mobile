@@ -13,6 +13,7 @@ import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sync/write.dart';
 
 import '../support/connections.dart';
+import '../support/funding_reservations.dart';
 import '../support/regtest_wallet.dart';
 
 // The prototype's protocol on the real BDK builder: abandoned previews and
@@ -155,6 +156,7 @@ void main() {
   late Directory dir;
   late ForegroundStores stores;
   late BitcoinWalletDescriptor descriptor;
+  late SqliteFundingReservations funding;
   final sent = <SignedTransaction>[];
 
   T ok<T>(Result<T, SyncFailure> result) => switch (result) {
@@ -201,6 +203,7 @@ void main() {
   setUp(() async {
     dir = Directory.systemTemp.createTempSync('spend-native-');
     descriptor = regtestDescriptor();
+    funding = SqliteFundingReservations('${dir.path}/funding.sqlite');
     sent.clear();
     stores = openForeground(
       documentsDirectory: dir.path,
@@ -208,6 +211,7 @@ void main() {
       reservedAddresses: NoReservedAddresses(),
       freezes: MemoryFreezeStore(),
       inputReservations: _NoReservations(),
+      fundingReservations: funding,
       connections: FixtureConnections(const []),
       spendSessions: _Sessions(dir.path),
       spendTransport: (transaction, network) async {
@@ -243,11 +247,83 @@ void main() {
 
   tearDown(() async {
     await stores.close();
+    funding.close();
     dir.deleteSync(recursive: true);
   });
 
   Future<int> generation() async =>
       ok(await stores.revisions.read(descriptor.key)).stamp.generation;
+
+  test(
+    'real BDK funding stays unfinalised and reserved through owner broadcast',
+    () async {
+      final key = descriptor.key;
+      final owner = SpendOwner(protocol: 'ark', session: 'native-board');
+      final sync = Sync.foreground(
+        documentsDirectory: dir.path,
+        catalog: SingleWalletCatalog(descriptor),
+        reservedAddresses: NoReservedAddresses(),
+        freezes: MemoryFreezeStore(),
+        inputReservations: _NoReservations(),
+        fundingReservations: funding,
+        connections: FixtureConnections(const []),
+      );
+      late UnsignedSpend spend;
+      try {
+        final wallet = ok(await sync.wallet(key));
+        spend = ok(
+          await wallet.tx.prepareFunding(
+            BitcoinSpendRequest(
+              recipients: [SpendRecipient(_recipient, amountSat: 10000)],
+              fee: SpendFeeRate(500),
+              owner: owner,
+            ),
+            context: 'board-output:0',
+          ),
+        );
+      } finally {
+        await sync.close();
+      }
+      final parsed = bdk.Psbt(psbtBase64: spend.encoded);
+      try {
+        expect(parsed.input(), isNotEmpty);
+        for (final input in parsed.input()) {
+          expect(input.finalScriptSig, isNull);
+          expect(input.finalScriptWitness, isNull);
+          expect(input.partialSigs, isEmpty);
+          expect(input.witnessUtxo?.scriptPubkey.toBytes().take(2), [0, 20]);
+        }
+      } finally {
+        parsed.dispose();
+      }
+      expect(funding.encoded, spend.encoded);
+      final signed = _sign(spend.encoded);
+      expect(
+        decodeBitcoinPsbt(signed).txid,
+        decodeBitcoinPsbt(spend.encoded).txid,
+      );
+      final attempted = await stores.spend.build(
+        key,
+        await generation(),
+        BitcoinSpendRequest(
+          recipients: [SpendRecipient(_recipient, amountSat: 10000)],
+          fee: SpendFeeRate(500),
+          selected: spend.inputs,
+          selectedOnly: true,
+        ),
+      );
+      expect(attempted, isA<Err<UnsignedSpend, SyncFailure>>());
+      expect(
+        (attempted as Err<UnsignedSpend, SyncFailure>).failure,
+        isA<SyncProtectedInputsFailure>(),
+      );
+      final receipt = ok(
+        await stores.spend.broadcast(spend.signed(SignedPsbt(signed))),
+      );
+      expect(receipt.durable, isTrue);
+      expect(sent, hasLength(1));
+    },
+  );
 
   test('abandoned previews and bumps reveal no new change index', () async {
     final key = descriptor.key;

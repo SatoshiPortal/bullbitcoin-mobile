@@ -4,6 +4,7 @@ import 'domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
 import 'data/frozen_utxos_freeze_store.dart';
+import 'data/sqlite_parent_custody_admission.dart';
 import 'data/broadcast_observation_follow_up.dart';
 import 'data/catalog_wallet_secret_references_repository.dart';
 import 'domain/repositories/wallet_secret_references_repository.dart';
@@ -259,8 +260,17 @@ class WalletLocator {
       () =>
           GetUnconfirmedIncomingBalanceUsecase(swapStore: locator<SwapStore>()),
     );
+    locator.registerLazySingleton<ParentCustodyAdmissionPort>(
+      () => SqliteParentCustodyAdmission(
+        directory: () async => (await getApplicationDocumentsDirectory()).path,
+        mayCreate: true,
+      ),
+    );
     locator.registerLazySingleton<SeedReferences>(
-      () => SeedReferences(locator<WalletRepository>()),
+      () => SeedReferences(
+        locator<WalletRepository>(),
+        admission: locator<ParentCustodyAdmissionPort>(),
+      ),
     );
     locator.registerFactory<core.DeleteWalletUsecase>(
       () => core.DeleteWalletUsecase(
