@@ -147,6 +147,15 @@ void main() {
       );
     });
 
+    test('skips non-positive ids instead of crashing the entire sync', () {
+      for (final id in [0, -1]) {
+        expect(
+          MerchantModel.fromJson({'id': id, 'lat': 1, 'lon': 1}).toDomain(),
+          isNull,
+        );
+      }
+    });
+
     test('keeps only http(s) links, so no other scheme can be launched', () {
       final merchant = MerchantModel.fromJson({
         'id': 1,
