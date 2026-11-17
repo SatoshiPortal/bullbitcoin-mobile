@@ -15603,5 +15603,25 @@
   "swapReverseDirectionTooltip": "Reverse direction",
   "@swapReverseDirectionTooltip": {
     "description": "Accessible name of the Swap button that exchanges the source and destination wallets"
+  },
+  "destinationAmountFromQr": "{type} · {amount} sats from the QR",
+  "@destinationAmountFromQr": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "destinationExpectedType": "Enter or scan a valid {type}.",
+  "@destinationExpectedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
   }
 }

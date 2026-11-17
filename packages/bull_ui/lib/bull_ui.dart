@@ -147,6 +147,7 @@ export 'src/inputs/bull_dropdown.dart';
 export 'src/inputs/bull_dropdown_menu.dart' show showBullDropdownMenu;
 export 'src/inputs/bull_filter_chip.dart';
 export 'src/inputs/bull_input_text.dart';
+export 'src/inputs/bull_payment_destination_input.dart';
 export 'src/inputs/bull_keypad.dart' show BullKeyScramble;
 export 'src/inputs/bull_language_picker.dart';
 export 'src/inputs/bull_picker_chip.dart';

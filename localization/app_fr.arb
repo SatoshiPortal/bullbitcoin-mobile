@@ -4809,5 +4809,7 @@
   "walletShowAmountsTooltip": "Afficher les montants",
   "walletHideAmountsTooltip": "Masquer les montants",
   "priceChartShowTooltip": "Afficher le graphique des prix",
-  "swapReverseDirectionTooltip": "Inverser le sens"
+  "swapReverseDirectionTooltip": "Inverser le sens",
+  "destinationAmountFromQr": "{type} · {amount} sats depuis le QR",
+  "destinationExpectedType": "Saisissez ou scannez une adresse valide : {type}."
 }

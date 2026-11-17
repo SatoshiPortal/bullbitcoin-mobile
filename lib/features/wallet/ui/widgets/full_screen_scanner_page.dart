@@ -1,19 +1,30 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;
 
-class SwapQrScannerPage extends StatefulWidget {
-  const SwapQrScannerPage({super.key});
+/// Callback for when a payment request is detected from a QR code
+typedef OnScannedPaymentRequestCallback = void Function(
+  (String, PaymentRequest?) data,
+);
+
+class FullScreenScannerPage extends StatefulWidget {
+  final OnScannedPaymentRequestCallback onScannedPaymentRequest;
+
+  const FullScreenScannerPage({
+    super.key,
+    required this.onScannedPaymentRequest,
+  });
 
   @override
-  State<SwapQrScannerPage> createState() => _SwapQrScannerPageState();
+  State<FullScreenScannerPage> createState() => _FullScreenScannerState();
 }
 
-class _SwapQrScannerPageState extends State<SwapQrScannerPage> {
+class _FullScreenScannerState extends State<FullScreenScannerPage> {
   (String, PaymentRequest?) data = ('', null);
 
   Future<void> _onScanned(String qr) async {
@@ -21,28 +32,18 @@ class _SwapQrScannerPageState extends State<SwapQrScannerPage> {
 
     try {
       final pr = await PaymentRequest.parse(qr);
-      String address = '';
-      if (pr.isBitcoinAddress) {
-        address = (pr as BitcoinPaymentRequest).address;
-      } else if (pr.isLiquidAddress) {
-        address = (pr as LiquidPaymentRequest).address;
-      } else if (pr.isBip21) {
-        final bip21 = pr as Bip21PaymentRequest;
-        address = bip21.address;
-      } else {
-        address = qr;
-      }
-      data = (address, pr);
-      if (mounted) {
-        context.pop(address);
-      }
+      data = (qr, pr);
+      widget.onScannedPaymentRequest(data);
+      if (mounted) context.pop();
     } catch (e) {
+      log.info(
+        'Scanned QR is not a payment request',
+        error: e.runtimeType.toString(),
+      );
       data = (qr, null);
-      if (mounted) {
-        context.pop(qr);
-      }
+      widget.onScannedPaymentRequest(data);
+      if (mounted) context.pop();
     }
-    setState(() {});
   }
 
   @override
@@ -69,6 +70,7 @@ class _SwapQrScannerPageState extends State<SwapQrScannerPage> {
                 bgColor: context.appColors.transparent,
               ),
             ),
+
           Positioned(
             bottom: MediaQuery.of(context).size.height * 0.02,
             left: 0,

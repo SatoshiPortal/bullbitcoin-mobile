@@ -1,105 +1,40 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
-import 'package:bb_mobile/features/swap/ui/swap_router.dart';
-import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
+import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, BullText, Gap;
-import 'package:go_router/go_router.dart';
 
-class SwapExternalAddressInput extends StatelessWidget {
+class SwapExternalAddressInput extends StatefulWidget {
   const SwapExternalAddressInput({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final state = context
-        .select<TransferBloc, ({String address, SwapFailure? error})>(
-          (bloc) => (
-            address: bloc.state.externalAddress,
-            error: bloc.state.externalAddressError,
-          ),
-        );
+  State<SwapExternalAddressInput> createState() =>
+      _SwapExternalAddressInputState();
+}
 
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        Text(
-          context.loc.swapToLabel,
-          style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.onSurface,
-          ),
-        ),
-        const Gap(4),
-        BullInputText(
-          onChanged: (value) {
-            context.read<TransferBloc>().add(
-              TransferEvent.externalAddressChanged(value),
-            );
-          },
-          value: state.address,
-          hint: context.loc.swapExternalAddressHint,
-          hintStyle: context.font.bodyMedium?.copyWith(
-            color: context.appColors.textMuted,
-          ),
-          maxLines: 1,
-          rightIcon: Row(
-            mainAxisSize: .min,
-            children: [
-              IconButton(
-                tooltip: context.loc.payScanQRCode,
-                icon: Icon(
-                  Icons.qr_code_scanner,
-                  color: context.appColors.onSurface,
-                  size: 20,
-                ),
-                onPressed: () async {
-                  final result = await context.pushNamed<String>(
-                    SwapRoute.scanQr.name,
-                  );
-                  if (result != null && context.mounted) {
-                    context.read<TransferBloc>().add(
-                      TransferEvent.externalAddressChanged(result),
-                    );
-                  }
-                },
-              ),
-              IconButton(
-                tooltip: MaterialLocalizations.of(context).pasteButtonLabel,
-                icon: Icon(
-                  Icons.paste_sharp,
-                  color: context.appColors.onSurface,
-                  size: 20,
-                ),
-                onPressed: () {
-                  Clipboard.getData(Clipboard.kTextPlain).then((value) {
-                    if (value != null) {
-                      if (context.mounted) {
-                        context.read<TransferBloc>().add(
-                          TransferEvent.externalAddressChanged(
-                            value.text ?? '',
-                          ),
-                        );
-                      }
-                    }
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
-        if (state.error case final error?)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: BullText(
-              error.toTranslated(context),
-              style: context.font.labelSmall,
-              color: context.appColors.error,
-            ),
-          ),
-      ],
+class _SwapExternalAddressInputState extends State<SwapExternalAddressInput> {
+  String? _rawInput;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<TransferBloc>().state;
+    return PaymentDestinationField(
+      value: _rawInput ?? state.externalAddress,
+      label: context.loc.swapToLabel,
+      hint: context.loc.swapExternalAddressHint,
+      acceptedTypes: {
+        state.fromWallet?.isLiquid == true
+            ? PaymentDestinationType.bitcoin
+            : PaymentDestinationType.liquid,
+      },
+      error: state.externalAddressError?.toTranslated(context),
+      onChanged: (value) {
+        setState(() => _rawInput = value);
+        context.read<TransferBloc>().add(
+          TransferEvent.externalAddressChanged(value),
+        );
+      },
     );
   }
 }
