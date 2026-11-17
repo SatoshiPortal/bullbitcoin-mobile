@@ -11,15 +11,11 @@ class QuickActionsRow extends StatefulWidget {
     required this.cubit,
     required this.onAction,
     required this.onCustomize,
-    this.bar = false,
   });
 
   final QuickActionsCubit cubit;
   final ValueChanged<QuickAction> onAction;
   final VoidCallback onCustomize;
-
-  /// Draw the actions as one [BullQuickActionBar] card instead of free discs.
-  final bool bar;
 
   @override
   State<QuickActionsRow> createState() => _QuickActionsRowState();
@@ -84,8 +80,7 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
           onLongPress: widget.onCustomize,
         ),
     ];
-    if (widget.bar) return BullQuickActionBar(children: controls);
-    return BullQuickActionRow(children: controls);
+    return BullQuickActionBar(children: controls);
   }
 
   Future<void> _showMore() async {
@@ -127,8 +122,8 @@ class _MoreSheet extends StatelessWidget {
       final l10n = QuickActionsLocalizations.of(context);
       final actions = QuickActionsLayout.resolve(
         available: value.available,
-
         selection: value.selection,
+        defaults: value.defaults,
       ).more;
       return SafeArea(
         child: Padding(

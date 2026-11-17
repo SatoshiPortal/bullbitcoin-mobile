@@ -24,6 +24,20 @@ void main() {
     expect(cubit.state.available, contains(QuickAction.buy));
   });
 
+  test('a null stored selection drafts the injected defaults', () async {
+    final cubit = createQuickActionsCubit(
+      storage: MemoryStorage(),
+      warning: (_) {},
+      exchangeVisible: const Stream.empty(),
+      defaults: QuickActionsLayout.iosDefaults,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    expect(cubit.state.defaults, QuickActionsLayout.iosDefaults);
+    expect(cubit.state.selection, isNull);
+    expect(cubit.state.draft?.actions, QuickActionsLayout.iosDefaults);
+  });
+
   test(
     'failed save restores the draft and keeps the confirmed selection',
     () async {

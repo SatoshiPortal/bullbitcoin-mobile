@@ -15,7 +15,6 @@ class WalletQuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) => QuickActionsRow(
     cubit: quickActions,
-    bar: true,
     onAction: (action) {
       if (quickActions.state.available.contains(action)) {
         onAction(context, action);
