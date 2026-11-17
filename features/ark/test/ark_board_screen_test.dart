@@ -1,3 +1,4 @@
+import 'package:bull_ark/ark_setup.dart' show ArkBoardBelowMinimumFailure;
 import 'package:bull_ark/src/domain/usecases/confirm_ark_board_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/prepare_ark_board_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/read_ark_board_usecase.dart';
@@ -37,6 +38,30 @@ BullButton button(WidgetTester tester, String label) =>
     tester.widget<BullButton>(find.widgetWithText(BullButton, label));
 
 void main() {
+  for (final minimum in [20000, 54321]) {
+    testWidgets('Board shows the server minimum $minimum after refusal', (
+      tester,
+    ) async {
+      final rig = Rig();
+      rig.funding.prepared = Err(
+        ArkBoardBelowMinimumFailure(Sats.fromInt(minimum)),
+      );
+      await tester.pumpWidget(app(rig.screen));
+      await tester.pumpAndSettle();
+      final input = tester.widget<ArkBoardAmountScreen>(
+        find.byType(ArkBoardAmountScreen),
+      );
+      input.onReviewRequest?.call(rig.cubit.config, Sats.fromInt(1000));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Minimum boarding amount (sats): $minimum'),
+        findsOneWidget,
+      );
+      expect(rig.cubit.state, isA<ArkBoardPending>());
+      expect(rig.funding.calls, ['prepare']);
+      expect(find.widgetWithText(BullButton, 'Confirm'), findsNothing);
+    });
+  }
   testWidgets(
     'mount is passive; explicit review shows actual source debit and fee units',
     (tester) async {

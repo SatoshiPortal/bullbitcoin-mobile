@@ -343,6 +343,55 @@ void main() {
       );
     },
   );
+  for (final minimum in [20000, 54321]) {
+    test('native Board minimum $minimum survives the host boundary', () async {
+      final data = await review();
+      when(() => metadata.fetch(fundingWalletId))
+          .thenAnswer((_) async => fundingMetadata);
+      // The public confirm path exercises the same native-result mapper as
+      // prepare. Refusal precedes signing, so no native source wallet is opened.
+      when(() => client.synchronize(account, renew: false)).thenAnswer(
+        (_) async =>
+            Err(ArkValidationFailure.belowMinimum(Sats.fromInt(minimum))),
+      );
+      expect(
+        await actor.confirm(account, 'operation', data.$2),
+        isA<Err<ArkOperation, ArkFailure>>().having(
+          (result) => result.failure,
+          'typed native minimum',
+          isA<ArkBoardBelowMinimumFailure>().having(
+            (failure) => failure.minimum,
+            'server minimum',
+            Sats.fromInt(minimum),
+          ),
+        ),
+      );
+      verify(() => client.synchronize(account, renew: false)).called(1);
+      expect(keystore.reads, 0);
+      expect(
+        sourceOk(await fixture.store.readBoardReview('operation')).phase,
+        'prepared',
+      );
+    });
+  }
+  test('legacy below-minimum failure never invents a minimum', () async {
+    final data = await review();
+    when(() => metadata.fetch(fundingWalletId))
+        .thenAnswer((_) async => fundingMetadata);
+    when(() => client.synchronize(account, renew: false)).thenAnswer(
+      (_) async =>
+          const Err(ArkValidationFailure(ArkFailureReason.belowMinimum)),
+    );
+    expect(
+      await actor.confirm(account, 'operation', data.$2),
+      isA<Err<ArkOperation, ArkFailure>>().having(
+        (result) => result.failure,
+        'missing native minimum',
+        isA<ArkServiceUnavailableFailure>(),
+      ),
+    );
+    expect(keystore.reads, 0);
+  });
   test(
     'changed source parent refuses without using the old reviewed key',
     () async {
