@@ -182,24 +182,11 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
         const Gap(BullSpacing.xs),
         BullDropdown<String>(
           value: selectedValue,
-          items: values
-              .asMap()
-              .entries
-              .map(
-                (entry) => DropdownMenuItem<String>(
-                  value: values[entry.key],
-                  child: BullText(
-                    displayTexts[entry.key],
-                    style: context.bullText.headlineSmall?.copyWith(
-                      color: context.bull.onSurface,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-          onChanged: (value) {
-            if (value != null) onChanged(value);
-          },
+          items: [
+            for (var i = 0; i < values.length; i++)
+              BullPickerItem(value: values[i], label: displayTexts[i]),
+          ],
+          onChanged: onChanged,
         ),
       ],
     );

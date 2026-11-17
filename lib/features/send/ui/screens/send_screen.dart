@@ -52,6 +52,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullCountdown,
+        BullDropdown,
         BullFadingLinearProgress,
         BullInfoCard,
         BullInputText,
@@ -482,43 +483,25 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                 ),
                                               ),
                                             )
-                                          : DropdownButtonFormField<String>(
-                                              alignment: Alignment.centerLeft,
-                                              decoration: const InputDecoration(
-                                                border: InputBorder.none,
-                                                contentPadding: EdgeInsets.zero,
-                                              ),
-                                              icon: Icon(
-                                                Icons.keyboard_arrow_down,
-                                                color:
-                                                    context.appColors.secondary,
-                                              ),
-                                              iconSize: 24,
-                                              initialValue: selectedWallet.id,
-                                              items: wallets.map((w) {
-                                                return DropdownMenuItem(
-                                                  value: w.id,
-                                                  child: Text(
-                                                    w.displayLabel(context),
-                                                    style: context
-                                                        .font
-                                                        .headlineSmall,
+                                          : BullDropdown<String>(
+                                              value: selectedWallet.id,
+                                              items: [
+                                                for (final w in wallets)
+                                                  BullPickerItem(
+                                                    value: w.id,
+                                                    label: w.displayLabel(
+                                                      context,
+                                                    ),
                                                   ),
-                                                );
-                                              }).toList(),
-                                              onChanged: (walletId) {
-                                                if (walletId != null) {
-                                                  context
-                                                      .read<SendCubit>()
-                                                      .updateSelectedWallet(
-                                                        wallets.firstWhere(
-                                                          (wallet) =>
-                                                              wallet.id ==
-                                                              walletId,
-                                                        ),
-                                                      );
-                                                }
-                                              },
+                                              ],
+                                              onChanged: (walletId) => context
+                                                  .read<SendCubit>()
+                                                  .updateSelectedWallet(
+                                                    wallets.firstWhere(
+                                                      (wallet) =>
+                                                          wallet.id == walletId,
+                                                    ),
+                                                  ),
                                             ),
                                     ),
                                   ),

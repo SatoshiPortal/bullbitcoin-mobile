@@ -4,7 +4,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, BullShimmerLine, Gap;
 
 class SwapFromWalletDropdown extends StatelessWidget {
   const SwapFromWalletDropdown();
@@ -24,27 +25,22 @@ class SwapFromWalletDropdown extends StatelessWidget {
           const BullShimmerLine()
         else
           BullDropdown<Wallet>(
-            items: wallets
-                .where((wallet) => wallet.signsLocally)
-                .map(
-                  (wallet) => DropdownMenuItem(
-                    value: wallet,
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          wallet.isLiquid
-                              ? 'assets/logos/liquid.png'
-                              : 'assets/logos/bitcoin.png',
-                          width: 20,
-                          height: 20,
-                        ),
-                        const Gap(8),
-                        Text(wallet.displayLabel(context)),
-                      ],
-                    ),
+            items: [
+              for (final wallet in wallets.where(
+                (wallet) => wallet.signsLocally,
+              ))
+                BullPickerItem(
+                  value: wallet,
+                  label: wallet.displayLabel(context),
+                  leading: Image.asset(
+                    wallet.isLiquid
+                        ? 'assets/logos/liquid.png'
+                        : 'assets/logos/bitcoin.png',
+                    width: 20,
+                    height: 20,
                   ),
-                )
-                .toList(),
+                ),
+            ],
             value: selected,
             validator: (value) {
               if (value == null) {
@@ -53,17 +49,15 @@ class SwapFromWalletDropdown extends StatelessWidget {
               return null;
             },
             onChanged: (value) {
-              if (value != null) {
-                final bloc = context.read<TransferBloc>();
-                final currentToWallet = bloc.state.toWallet;
-                if (currentToWallet != null) {
-                  bloc.add(
-                    TransferWalletsChanged(
-                      fromWallet: value,
-                      toWallet: currentToWallet,
-                    ),
-                  );
-                }
+              final bloc = context.read<TransferBloc>();
+              final currentToWallet = bloc.state.toWallet;
+              if (currentToWallet != null) {
+                bloc.add(
+                  TransferWalletsChanged(
+                    fromWallet: value,
+                    toWallet: currentToWallet,
+                  ),
+                );
               }
             },
           ),

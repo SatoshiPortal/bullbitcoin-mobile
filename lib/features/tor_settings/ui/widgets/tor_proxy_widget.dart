@@ -4,7 +4,13 @@ import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_c
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_connection_status_card.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_port_input_bottom_sheet.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDropdown, BullInfoCard, BullSettingsEntryItem, BullSnackBar, Gap;
+    show
+        BullDropdown,
+        BullInfoCard,
+        BullPickerItem,
+        BullSettingsEntryItem,
+        BullSnackBar,
+        Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_tor/tor.dart';
@@ -198,22 +204,14 @@ class _EmbeddedTransportCard extends StatelessWidget {
           const Gap(12),
           BullDropdown<TorTransportMode>(
             value: state.transportMode,
-            items: TorTransportMode.values
-                .map(
-                  (mode) => DropdownMenuItem(
-                    value: mode,
-                    child: Text(_modeLabel(context, mode)),
-                  ),
-                )
-                .toList(),
-            onChanged: (mode) {
-              if (mode != null) {
-                context
-                    .read<TorSettingsCubit>()
-                    .updateTransportMode(mode)
-                    .ignore();
-              }
-            },
+            items: [
+              for (final mode in TorTransportMode.values)
+                BullPickerItem(value: mode, label: _modeLabel(context, mode)),
+            ],
+            onChanged: (mode) => context
+                .read<TorSettingsCubit>()
+                .updateTransportMode(mode)
+                .ignore(),
           ),
           const Gap(8),
           Text(

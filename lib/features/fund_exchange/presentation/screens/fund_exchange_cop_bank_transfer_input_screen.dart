@@ -14,7 +14,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullScrollableColumn, BullShapesX, Gap;
+    show
+        BullDropdown,
+        BullFadingLinearProgress,
+        BullPickerItem,
+        BullScrollableColumn,
+        BullShapesX,
+        Gap;
 
 class FundExchangeCopBankTransferInputScreen extends StatefulWidget {
   const FundExchangeCopBankTransferInputScreen({super.key});
@@ -213,35 +219,8 @@ class _FundExchangeCopBankTransferInputScreenState
                       color: context.appColors.secondary,
                     ),
                     const Gap(8.0),
-                    DropdownButtonFormField<FundingInstitution>(
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: context.appColors.onSecondary,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            context.bullShapes.input,
-                          ),
-                          borderSide: BorderSide(
-                            color: context.appColors.secondaryFixedDim,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(
-                            context.bullShapes.input,
-                          ),
-                          borderSide: BorderSide(
-                            color: context.appColors.secondaryFixedDim,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
-                      ),
-                      icon: Icon(
-                        Icons.keyboard_arrow_down,
-                        color: context.appColors.secondary,
-                      ),
+                    BullDropdown<FundingInstitution>(
+                      value: _selectedInstitution,
                       onChanged: (value) {
                         setState(() {
                           _selectedInstitution = value;
@@ -250,12 +229,13 @@ class _FundExchangeCopBankTransferInputScreenState
                       validator: (v) => v == null
                           ? context.loc.fundExchangeCopSelectBankError
                           : null,
-                      items: institutions.map((institution) {
-                        return DropdownMenuItem<FundingInstitution>(
-                          value: institution,
-                          child: Text(institution.name),
-                        );
-                      }).toList(),
+                      items: [
+                        for (final institution in institutions)
+                          BullPickerItem(
+                            value: institution,
+                            label: institution.name,
+                          ),
+                      ],
                     ),
                     const Gap(24.0),
                     // Amount field
