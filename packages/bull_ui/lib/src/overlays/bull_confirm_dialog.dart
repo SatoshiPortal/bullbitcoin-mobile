@@ -58,42 +58,55 @@ class BullConfirmDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final type = context.bullType;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: type.title.copyWith(color: colors.text)),
-        const Gap(BullSpacing.sm),
-        // A long message scrolls, so the buttons stay on screen.
-        Flexible(
-          child: SingleChildScrollView(
-            child: Text(message, style: type.body.copyWith(color: colors.text)),
+    // As AlertDialog does: the dialog scopes its own route and its title
+    // names it, so a screen reader announces the title when it opens.
+    return Semantics(
+      scopesRoute: true,
+      explicitChildNodes: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            namesRoute: true,
+            container: true,
+            child: Text(title, style: type.title.copyWith(color: colors.text)),
           ),
-        ),
-        const Gap(BullSpacing.lg),
-        Row(
-          children: [
-            Expanded(
-              child: BullButton.small(
-                label: cancelLabel,
-                onPressed: () => Navigator.of(context).pop(false),
-                bgColor: colors.transparent,
-                outlined: true,
-                textColor: colors.secondary,
+          const Gap(BullSpacing.sm),
+          // A long message scrolls, so the buttons stay on screen.
+          Flexible(
+            child: SingleChildScrollView(
+              child: Text(
+                message,
+                style: type.body.copyWith(color: colors.text),
               ),
             ),
-            const Gap(BullSpacing.sm),
-            Expanded(
-              child: BullButton.small(
-                label: confirmLabel,
-                onPressed: () => Navigator.of(context).pop(true),
-                bgColor: destructive ? colors.error : colors.primary,
-                textColor: destructive ? colors.onError : colors.onPrimary,
+          ),
+          const Gap(BullSpacing.lg),
+          Row(
+            children: [
+              Expanded(
+                child: BullButton.small(
+                  label: cancelLabel,
+                  onPressed: () => Navigator.of(context).pop(false),
+                  bgColor: colors.transparent,
+                  outlined: true,
+                  textColor: colors.secondary,
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+              const Gap(BullSpacing.sm),
+              Expanded(
+                child: BullButton.small(
+                  label: confirmLabel,
+                  onPressed: () => Navigator.of(context).pop(true),
+                  bgColor: destructive ? colors.error : colors.primary,
+                  textColor: destructive ? colors.onError : colors.onPrimary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
