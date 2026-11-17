@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 
@@ -24,7 +25,6 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/insufficient_funds_exception.dart';
 import 'package:bb_mobile/core/wallet/domain/no_spendable_utxo_exception.dart';
@@ -272,8 +272,12 @@ class _MockDropPendingSwapLockupUsecase extends Mock
 
 class _MockWatchSwapUsecase extends Mock implements boltz.WatchSwapUsecase {}
 
+class _MockPrepareInternalRecipient extends Mock
+    implements PrepareInternalRecipientUsecase {}
+
 class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
+    super.prepareInternalRecipientUsecase,
     super.mode,
     super.watchWalletRevisionsUsecase,
     super.wallet,
@@ -534,6 +538,7 @@ void main() {
   late StreamController<PayjoinSession> payjoinEvents;
 
   _TestableSendCubit buildCubit({
+    PrepareInternalRecipientUsecase? prepareInternalRecipientUsecase,
     Wallet? wallet,
     Set<Outpoint> initialSweepOutpoints = const {},
     Set<Outpoint> initialSelectedOutpoints = const {},
@@ -548,6 +553,7 @@ void main() {
     SendSpPaymentForSendUsecase? sendSpPaymentForSendUsecase,
     ValidateSpRecipientForSendUsecase? validateSpRecipientForSendUsecase,
   }) => _TestableSendCubit(
+    prepareInternalRecipientUsecase: prepareInternalRecipientUsecase,
     watchWalletRevisionsUsecase: watchWalletRevisionsUsecase,
     mode: isSpMode
         ? SendModeSp(walletLabel: spWalletLabel)
@@ -3022,6 +3028,15 @@ void main() {
           ),
           [Sats.fromInt(10000), Sats.fromInt(50000)],
         );
+        expect(cubit.state.qrAmountRecipientIds, {1});
+        cubit.setStateForTest(
+          cubit.state.copyWith(isWalletManuallySelected: true),
+        );
+        await cubit.recipientAmountChanged(1, '60000');
+        expect(cubit.state.qrAmountRecipientIds, {1});
+        expect(cubit.state.recipientDrafts[1].amount, '60000');
+        await cubit.recipientAddressChanged(1, '');
+        expect(cubit.state.qrAmountRecipientIds, isEmpty);
       },
     );
 
@@ -3192,7 +3207,9 @@ void main() {
       'keeps additional recipients while the primary address is incomplete',
       () async {
         when(() => detectBitcoinStringUsecase.execute(data: any(named: 'data')))
-            .thenAnswer((_) async => throw StateError('incomplete address'));
+            .thenAnswer(
+              (_) async => throw const FormatException('incomplete address'),
+            );
         final cubit = buildCubit();
         addTearDown(cubit.close);
         cubit.setStateForTest(
@@ -3882,6 +3899,81 @@ void main() {
       expect(cubit.state.bitcoinAbsoluteFeesSat, 1000);
     });
 
+    test(
+      'previews fees for multiple fixed recipients with no remainder',
+      () async {
+        final wallet = _bitcoinLocalWallet();
+        final preview = Completer<BitcoinFeePreviewSlot>();
+        late List<BitcoinTransactionRecipient> previewedRecipients;
+        when(
+          () => previewBitcoinFeeUsecase.execute(
+            walletId: wallet.id,
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            replaceByFee: true,
+            selectedInputs: const [],
+            selectedOnly: false,
+          ),
+        ).thenAnswer((invocation) {
+          previewedRecipients =
+              invocation.namedArguments[#recipients]
+                  as List<BitcoinTransactionRecipient>;
+          return preview.future;
+        });
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          readyState(wallet).copyWith(
+            recipientDrafts: const [
+              (
+                id: 0,
+                address: 'bc1qfirst',
+                amount: '10000',
+                receivesRemainder: false,
+                isValid: true,
+              ),
+              (
+                id: 1,
+                address: 'bc1qsecond',
+                amount: '20000',
+                receivesRemainder: false,
+                isValid: true,
+              ),
+            ],
+          ),
+        );
+
+        await cubit.recipientAmountChanged(0, '12000');
+        await untilCalled(
+          () => previewBitcoinFeeUsecase.execute(
+            walletId: wallet.id,
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            replaceByFee: true,
+            selectedInputs: const [],
+            selectedOnly: false,
+          ),
+        ).timeout(const Duration(seconds: 2));
+        expect(previewedRecipients.map((recipient) => recipient.amountSat), [
+          Sats.fromInt(12000),
+          Sats.fromInt(20000),
+        ]);
+        preview.complete(
+          const BitcoinFeePreviewSlot(
+            feeSat: 1000,
+            unsignedPsbt: 'preview',
+            txSize: 140,
+            recipientAmountsSat: [12000, 20000],
+            isToSelf: false,
+          ),
+        );
+        await pumpEventQueue();
+
+        expect(cubit.state.recipientAmountsSat, [12000, 20000]);
+        expect(cubit.state.bitcoinAbsoluteFeesSat, 1000);
+      },
+    );
+
     test('ignores a slower remainder preview after a newer edit', () async {
       final wallet = _bitcoinLocalWallet();
       final previews = <Completer<BitcoinFeePreviewSlot>>[];
@@ -4507,6 +4599,209 @@ void main() {
       ]);
     });
   });
+
+  test(
+    'fixed BIP21 confirms the requested amount from the chosen wallet',
+    () async {
+      final first = _bitcoinLocalWallet();
+      final second = _bitcoinWallet(balanceSat: 1000000);
+      final wallets = [first, second];
+      final request = _payjoinBip21();
+      stubSweepLoad(wallet: first, utxos: []);
+      stubSweepLoad(wallet: second, utxos: []);
+      when(
+        () => bestWalletUsecase.execute(
+          wallets: wallets,
+          request: request,
+          amountSat: 50000,
+        ),
+      ).thenReturn(Ok(first));
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: second.id,
+          recipients: any(
+            named: 'recipients',
+            that: _paysTo(request.address, amountSat: 50000),
+          ),
+          networkFee: any(named: 'networkFee'),
+          replaceByFee: true,
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: false,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          unsignedPsbt: 'chosen-wallet-unsigned',
+          txSize: 110,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(50000)],
+        )),
+      );
+      when(
+        () => calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async => 100);
+      when(
+        () => signBitcoinTxUsecase.execute(
+          psbt: 'chosen-wallet-unsigned',
+          walletId: second.id,
+        ),
+      ).thenAnswer(
+        (_) async => (signedPsbt: 'chosen-wallet-signed', txSize: 110),
+      );
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          wallets: wallets,
+          paymentRequest: request,
+          inputAmountCurrencyCode: 'sats',
+        ),
+      );
+
+      await cubit.continueOnAddressConfirmed();
+      expect(cubit.state.step, SendStep.amount);
+      await cubit.amountChanged(amount: '1');
+      expect(cubit.state.amount, isEmpty);
+      expect(cubit.state.effectiveAmountSat, 50000);
+      await cubit.updateSelectedWallet(second);
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.step, SendStep.confirm);
+      expect(cubit.state.selectedWallet?.id, second.id);
+      expect(cubit.state.confirmedAmountSat, 50000);
+      expect(cubit.state.paymentRequest, request);
+      verify(
+        () => signBitcoinTxUsecase.execute(
+          psbt: 'chosen-wallet-unsigned',
+          walletId: second.id,
+        ),
+      ).called(1);
+    },
+  );
+
+  test(
+    'two direct hardware wallets offer a choice even without a local signer',
+    () async {
+      final first = _bitcoinLocalWallet().copyWith(signer: SignerEntity.remote);
+      final second = _bitcoinWallet(balanceSat: 1000000)
+          .copyWith(signer: SignerEntity.remote);
+      final wallets = [first, second];
+      final request = _payjoinBip21();
+      stubSweepLoad(wallet: first, utxos: []);
+      stubSweepLoad(wallet: second, utxos: []);
+      when(
+        () => bestWalletUsecase.execute(
+          wallets: wallets,
+          request: request,
+          amountSat: 50000,
+        ),
+      ).thenReturn(
+        const Err(SendInsufficientBalanceFailure('no local signer')),
+      );
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          wallets: wallets,
+          paymentRequest: request,
+          inputAmountCurrencyCode: 'sats',
+        ),
+      );
+
+      await cubit.continueOnAddressConfirmed();
+
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.step, SendStep.amount);
+      expect(
+        wallets.map((wallet) => wallet.id),
+        contains(cubit.state.selectedWallet?.id),
+      );
+      expect(cubit.state.effectiveAmountSat, 50000);
+      expect(cubit.state.unsignedPsbt, isNull);
+      verifyNever(
+        () => signBitcoinTxUsecase.execute(
+          psbt: any(named: 'psbt'),
+          walletId: any(named: 'walletId'),
+        ),
+      );
+    },
+  );
+
+  test(
+    'fixed BIP21 amount waits for a choice between direct wallets',
+    () async {
+      final wallet = _bitcoinLocalWallet();
+      final secondWallet = _bitcoinWallet(balanceSat: 1000000);
+      final wallets = [wallet, secondWallet];
+      final request = _payjoinBip21();
+      stubSweepLoad(wallet: wallet, utxos: []);
+      when(
+        () => bestWalletUsecase.execute(
+          wallets: wallets,
+          request: request,
+          amountSat: 50000,
+        ),
+      ).thenReturn(Ok(wallet));
+      when(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: wallet.id,
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          replaceByFee: true,
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: false,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
+        ),
+      ).thenAnswer(
+        (_) async => Ok((
+          unsignedPsbt: 'unsigned',
+          txSize: 110,
+          isToSelf: false,
+          recipientAmountsSat: [Sats.fromInt(50000)],
+        )),
+      );
+      when(
+        () => calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: any(named: 'psbt'),
+        ),
+      ).thenAnswer((_) async => 100);
+      when(
+        () =>
+            signBitcoinTxUsecase.execute(psbt: 'unsigned', walletId: wallet.id),
+      ).thenAnswer((_) async => (signedPsbt: 'signed', txSize: 110));
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      cubit.setStateForTest(
+        SendState(
+          wallets: wallets,
+          paymentRequest: request,
+          inputAmountCurrencyCode: 'sats',
+        ),
+      );
+
+      await cubit.continueOnAddressConfirmed();
+
+      expect(cubit.state.failure, isNull);
+      expect(cubit.state.step, SendStep.amount);
+      expect(cubit.state.effectiveAmountSat, 50000);
+      expect(cubit.state.paymentRequest, request);
+      expect(cubit.state.unsignedPsbt, isNull);
+      verifyNever(
+        () => prepareBitcoinSendUsecase.execute(
+          walletId: wallet.id,
+          recipients: any(named: 'recipients'),
+          networkFee: any(named: 'networkFee'),
+          replaceByFee: true,
+          selectedInputs: any(named: 'selectedInputs'),
+          selectedOnly: false,
+          hasFrozenInputs: any(named: 'hasFrozenInputs'),
+        ),
+      );
+    },
+  );
 
   group('SendCubit direct non-Bitcoin requests', () {
     test('routes a zero-amount Lightning invoice to amount entry', () async {
@@ -5751,47 +6046,54 @@ void main() {
           .called(1);
     });
 
-    test('reports nothing while the address is still being typed', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      when(() => detectBitcoinStringUsecase.execute(data: any(named: 'data')))
-          .thenThrow(const FormatException('invalid'));
+    test(
+      'reports invalid input after on-change validation completes',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(() => detectBitcoinStringUsecase.execute(data: any(named: 'data')))
+            .thenThrow(const FormatException('invalid'));
 
-      // Every keystroke of a real address is an unparseable prefix. Reporting
-      // the parse result here put "invalid address" on screen from the first
-      // character; it belongs to Continue, against the finished input.
-      for (final prefix in ['b', 'bc', 'bc1', 'bc1q']) {
-        await cubit.onChangedText(prefix);
-        expect(
-          cubit.state.failure,
-          isNull,
-          reason: 'typing "$prefix" must not raise a failure yet',
+        // The unified field reports the latest validation result while keeping
+        // the raw prefix editable.
+        for (final prefix in ['b', 'bc', 'bc1', 'bc1q']) {
+          await cubit.onChangedText(prefix);
+          expect(
+            cubit.state.failure,
+            isA<SendInvalidPaymentRequestFailure>(),
+            reason: 'the completed validation of "$prefix" is invalid',
+          );
+        }
+
+        await cubit.continueOnAddressConfirmed();
+
+        expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+      },
+    );
+
+    test(
+      'clears a stale error while a replacement address is validated',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        when(() => detectBitcoinStringUsecase.execute(data: 'nonsense'))
+            .thenThrow(const FormatException('invalid'));
+        await cubit.onChangedText('nonsense');
+        expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+
+        final pending = Completer<PaymentRequest>();
+        when(() => detectBitcoinStringUsecase.execute(data: 'valid'))
+            .thenAnswer((_) => pending.future);
+        final editing = cubit.onChangedText('valid');
+        expect(cubit.state.failure, isNull);
+        pending.complete(
+          const PaymentRequest.bitcoin(address: 'valid', isTestnet: false),
         );
-      }
-
-      await cubit.continueOnAddressConfirmed();
-
-      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
-    });
-
-    test('clears a Continue failure once the user edits the address', () async {
-      final cubit = buildCubit();
-      addTearDown(cubit.close);
-      when(() => detectBitcoinStringUsecase.execute(data: any(named: 'data')))
-          .thenThrow(const FormatException('invalid'));
-
-      await cubit.onChangedText('nonsense');
-      await cubit.continueOnAddressConfirmed();
-      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
-
-      await cubit.onChangedText('nonsense2');
-
-      expect(
-        cubit.state.failure,
-        isNull,
-        reason: 'editing the field must dismiss the stale error',
-      );
-    });
+        await editing;
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.paymentRequestAddress, 'valid');
+      },
+    );
 
     test('parses the current input when continuing', () async {
       final cubit = buildCubit();
@@ -5898,15 +6200,17 @@ void main() {
 
     test(
       'does not convert a payment detector StateError into input failure',
-      () {
+      () async {
         final cubit = buildCubit();
         addTearDown(cubit.close);
         when(() => detectBitcoinStringUsecase.execute(data: 'invalid-address'))
             .thenThrow(StateError('detector state is invalid'));
 
-        cubit.onChangedText('invalid-address');
-
-        expectLater(cubit.continueOnAddressConfirmed(), throwsStateError);
+        await expectLater(
+          cubit.onChangedText('invalid-address'),
+          throwsStateError,
+        );
+        await expectLater(cubit.continueOnAddressConfirmed(), throwsStateError);
       },
     );
 
@@ -6768,6 +7072,96 @@ void main() {
     });
   });
 
+  group('internal recipient admission', () {
+    late _MockPrepareInternalRecipient prepare;
+    late Completer<Result<PreparedInternalRecipient, SendFailure>> pending;
+
+    _TestableSendCubit start() {
+      prepare = _MockPrepareInternalRecipient();
+      pending = Completer<Result<PreparedInternalRecipient, SendFailure>>();
+      when(
+        () => prepare.execute(
+          walletId: 'destination',
+          wallets: any(named: 'wallets'),
+          request: any(named: 'request'),
+          excludedAddresses: any(named: 'excludedAddresses'),
+          fixedSourceWalletId: any(named: 'fixedSourceWalletId'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      final cubit = buildCubit(prepareInternalRecipientUsecase: prepare);
+      cubit.setStateForTest(
+        SendState(
+          wallets: [_bitcoinLocalWallet()],
+          paymentRequest: const PaymentRequest.bitcoin(
+            address: 'primary',
+            isTestnet: false,
+          ),
+          recipientDrafts: const [
+            (
+              id: 0,
+              address: 'primary',
+              amount: '',
+              receivesRemainder: false,
+              isValid: true,
+            ),
+          ],
+        ),
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    test(
+      'cancelled address issuance never adds an empty or stale draft',
+      () async {
+        final cubit = start();
+        final adding = cubit.addInternalRecipient('destination');
+        expect(cubit.state.addingInternalRecipient, isTrue);
+        cubit.cancelPendingInternalRecipient();
+        pending.complete(Ok((wallet: _bitcoinLocalWallet(), address: 'fresh')));
+        await adding;
+        expect(cubit.state.addingInternalRecipient, isFalse);
+        expect(cubit.state.recipientDrafts, hasLength(1));
+        expect(cubit.state.internalRecipientWallets, isEmpty);
+      },
+    );
+
+    test(
+      'cannot continue while an internal receive address is pending',
+      () async {
+        final cubit = start();
+        final adding = cubit.addInternalRecipient('destination');
+        await cubit.continueOnAddressConfirmed();
+        expect(cubit.state.step, SendStep.address);
+        expect(cubit.state.addingInternalRecipient, isTrue);
+        cubit.cancelPendingInternalRecipient();
+        pending.complete(const Err(SendInvalidPaymentRequestFailure()));
+        await adding;
+      },
+    );
+
+    test('a late receive result cannot alter another step', () async {
+      final cubit = start();
+      final adding = cubit.addInternalRecipient('destination');
+      cubit.setStateForTest(cubit.state.copyWith(step: SendStep.amount));
+      pending.complete(Ok((wallet: _bitcoinLocalWallet(), address: 'fresh')));
+      await adding;
+      expect(cubit.state.step, SendStep.amount);
+      expect(cubit.state.recipientDrafts, hasLength(1));
+      expect(cubit.state.addingInternalRecipient, isFalse);
+    });
+
+    test('receive failure leaves the recipient list intact', () async {
+      final cubit = start();
+      final adding = cubit.addInternalRecipient('destination');
+      pending.complete(const Err(SendInvalidPaymentRequestFailure()));
+      await adding;
+      expect(cubit.state.recipientDrafts, hasLength(1));
+      expect(cubit.state.addingInternalRecipient, isFalse);
+      expect(cubit.state.failure, isA<SendInvalidPaymentRequestFailure>());
+    });
+  });
+
   group('SP build and broadcast', () {
     late _MockValidateSpRecipientForSendUsecase validateRecipient;
     late _MockPrepareSpPaymentForSendUsecase prepare;
@@ -6853,6 +7247,68 @@ void main() {
       );
     });
 
+    test(
+      'SP paste validates its card without advancing or loading fees',
+      () async {
+        final cubit = spCubit();
+        addTearDown(cubit.close);
+        seedConfirm(cubit);
+        cubit.setStateForTest(
+          cubit.state.copyWith(step: SendStep.address, paymentRequest: null),
+        );
+        await cubit.onChangedText('bc1-address');
+        expect(cubit.state.step, SendStep.address);
+        expect(cubit.state.paymentRequestAddress, 'bc1-address');
+        expect(cubit.state.failure, isNull);
+        verifyNever(
+          () => detectBitcoinStringUsecase.execute(data: any(named: 'data')),
+        );
+        verifyNever(
+          () => getNetworkFeesUsecase.execute(
+            isLiquid: any(named: 'isLiquid'),
+            network: any(named: 'network'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'SP validation cannot restore an input cleared while awaiting',
+      () async {
+        final pending = Completer<Result<SpRecipient, SendFailure>>();
+        when(
+          () => validateRecipient.execute(
+            input: '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
+            amountSat: Sats.fromInt(1000),
+            isMax: false,
+          ),
+        ).thenAnswer((_) => pending.future);
+        final cubit = spCubit();
+        addTearDown(cubit.close);
+        seedConfirm(cubit);
+        cubit.setStateForTest(
+          cubit.state.copyWith(step: SendStep.address, paymentRequest: null),
+        );
+        final validating = cubit.onChangedText(
+          '1BoatSLRHtKNngkdXEeobR76b53LETtpyT',
+        );
+        await cubit.onChangedText('');
+        pending.complete(
+          Ok(
+            SpRecipientStandard(
+              address: SpAddress('1BoatSLRHtKNngkdXEeobR76b53LETtpyT'),
+              amountSat: Sats.fromInt(1000),
+              isMax: false,
+            ),
+          ),
+        );
+        await validating;
+        expect(cubit.state.copiedRawPaymentRequest, isEmpty);
+        expect(cubit.state.paymentRequest, isNull);
+        expect(cubit.state.step, SendStep.address);
+      },
+    );
+
     test('SP validates input rejected by the regular address parser', () async {
       when(() => detectBitcoinStringUsecase.execute(data: 'bc1-address'))
           .thenThrow(const FormatException('unsupported'));
@@ -6873,6 +7329,29 @@ void main() {
       expect(cubit.state.failure, isNull);
       expect(cubit.state.paymentRequestAddress, 'bc1-address');
     });
+
+    test(
+      'SP scan validates input rejected by the regular address parser',
+      () async {
+        when(() => detectBitcoinStringUsecase.execute(data: 'bc1-address'))
+            .thenThrow(const FormatException('unsupported'));
+        when(
+          () => getNetworkFeesUsecase.execute(
+            isLiquid: any(named: 'isLiquid'),
+            network: any(named: 'network'),
+          ),
+        ).thenAnswer((_) async => _feeOptions());
+        final cubit = spCubit();
+        addTearDown(cubit.close);
+        seedConfirm(cubit);
+
+        await cubit.onScannedPaymentRequest('bc1-address', null);
+
+        expect(cubit.state.step, SendStep.amount);
+        expect(cubit.state.failure, isNull);
+        expect(cubit.state.paymentRequestAddress, 'bc1-address');
+      },
+    );
 
     test(
       'a wrong-network recipient shows the mismatch, not build failed',
@@ -7246,6 +7725,15 @@ void main() {
       cubit.backClicked();
       cubit.backClicked();
 
+      when(
+        () =>
+            detectBitcoinStringUsecase.execute(data: 'bc1qnewrecipientaddress'),
+      ).thenAnswer(
+        (_) async => const PaymentRequest.bitcoin(
+          address: 'bc1qnewrecipientaddress',
+          isTestnet: false,
+        ),
+      );
       await cubit.onChangedText('bc1qnewrecipientaddress');
 
       expect(cubit.state.lightningSwap, isNull);

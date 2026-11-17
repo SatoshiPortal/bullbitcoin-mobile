@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/send/domain/fixed_amount_wallet_choice_policy.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show BitcoinSpendStatus, WalletSpendBlockedException;
@@ -115,6 +117,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SendCubit extends Cubit<SendState>
     implements FeeModalActions, FeeModalViewState {
   SendCubit({
+    this._prepareInternalRecipientUsecase,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._wallet,
     this.mode = const SendModeBitcoin(),
@@ -209,6 +212,8 @@ class SendCubit extends Cubit<SendState>
 
   // ignore: unused_field
   final Wallet? _wallet;
+  final PrepareInternalRecipientUsecase? _prepareInternalRecipientUsecase;
+  int _internalRecipientGeneration = 0;
   final SendMode mode;
   bool get isSpMode => mode is SendModeSp;
   final LabelsFacade _labelsFacade;
@@ -308,6 +313,7 @@ class SendCubit extends Cubit<SendState>
 
   @override
   Future<void> close() async {
+    _internalRecipientGeneration++;
     _recipientPreviewTimer?.cancel();
     await (
       _orderSwapSubscription?.cancel() ?? Future.value(),
@@ -401,6 +407,7 @@ class SendCubit extends Cubit<SendState>
   void clearFailure() => emit(state.copyWith(failure: null));
 
   int _startNewPaymentRequestInput() {
+    cancelPendingInternalRecipient();
     final generation = ++_paymentRequestInputGeneration;
     _invalidateSignedTransaction();
     _dropBoltzSwap();
@@ -421,6 +428,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   void backClicked() {
+    cancelPendingInternalRecipient();
     _invalidateSignedTransaction();
     if (state.step != SendStep.address) _dropBoltzSwap();
     if (state.step == SendStep.address) {
@@ -570,10 +578,25 @@ class SendCubit extends Cubit<SendState>
   /// Called when a payment request is detected directly from the scanner
   Future<void> onScannedPaymentRequest(
     String scannedRawPaymentRequest,
-    PaymentRequest? paymentRequest,
-  ) async {
+    PaymentRequest? paymentRequest, {
+    bool autoContinue = true,
+  }) async {
     if (state.selectedInputsUnavailable) return;
-    _startNewPaymentRequestInput();
+    if (isSpMode) {
+      final input = onChangedText(scannedRawPaymentRequest);
+      final generation = _paymentRequestInputGeneration;
+      await input;
+      if (!isClosed &&
+          generation == _paymentRequestInputGeneration &&
+          state.copiedRawPaymentRequest == scannedRawPaymentRequest.trim() &&
+          state.hasValidPaymentRequest &&
+          state.failure == null &&
+          autoContinue) {
+        await continueOnAddressConfirmed();
+      }
+      return;
+    }
+    final generation = _startNewPaymentRequestInput();
     clearFailure();
     final raw = scannedRawPaymentRequest.trim().toLowerCase();
     if (paymentRequest == null ||
@@ -586,10 +609,13 @@ class SendCubit extends Cubit<SendState>
           data: scannedRawPaymentRequest,
         );
       } on Exception {
+        if (isClosed || generation != _paymentRequestInputGeneration) return;
         // An unreadable scan still replaces the previous recipient: a stale
         // MAX/remainder state must not survive it.
         emit(
           state.copyWith(
+            copiedRawPaymentRequest: scannedRawPaymentRequest.trim(),
+            scannedRawPaymentRequest: scannedRawPaymentRequest,
             failure: const SendInvalidPaymentRequestFailure(),
             paymentRequest: null,
             recipientDrafts: _primaryRecipientDrafts(
@@ -603,6 +629,7 @@ class SendCubit extends Cubit<SendState>
         return;
       }
     }
+    if (isClosed || generation != _paymentRequestInputGeneration) return;
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
       RegExp(r'^["\"]+|["\"]+$'),
       '',
@@ -621,6 +648,8 @@ class SendCubit extends Cubit<SendState>
         copiedRawPaymentRequest: sanitizedText,
         paymentRequest: paymentRequest,
         recipientDrafts: recipientDrafts,
+        internalRecipientWallets: _internalWalletsFor(recipientDrafts),
+        qrAmountRecipientIds: _qrAmountsFor(recipientDrafts),
         recipientAmountsSat: recipientChanged
             ? const []
             : state.recipientAmountsSat,
@@ -632,7 +661,7 @@ class SendCubit extends Cubit<SendState>
     // nothing actually changed so the modal doesn't re-shimmer on a
     // no-op scan.
     if (recipientChanged) clearBitcoinFeePreviews();
-    await continueOnAddressConfirmed();
+    if (autoContinue) await continueOnAddressConfirmed();
   }
 
   /// Called when text is pasted or entered manually
@@ -683,6 +712,15 @@ class SendCubit extends Cubit<SendState>
       _pendingPaymentRequestInput = null;
       return;
     }
+    if (isSpMode) {
+      _pendingPaymentRequestInput = null;
+      await _confirmSpRecipient(
+        sanitizedText,
+        advance: false,
+        inputGeneration: inputGeneration,
+      );
+      return;
+    }
     final parsing = Future<PaymentRequest>.sync(
       () => _detectBitcoinStringUsecase.execute(data: sanitizedText),
     );
@@ -697,21 +735,28 @@ class SendCubit extends Cubit<SendState>
         return;
       }
       final address = _bitcoinAddressOf(paymentRequest);
+      final drafts = _primaryRecipientDrafts(
+        paymentRequest: paymentRequest,
+        address: address ?? sanitizedText,
+        isValid: address != null,
+      );
       emit(
         state.copyWith(
           paymentRequest: paymentRequest,
-          recipientDrafts: _primaryRecipientDrafts(
-            paymentRequest: paymentRequest,
-            address: address ?? sanitizedText,
-            isValid: address != null,
-          ),
+          recipientDrafts: drafts,
+          internalRecipientWallets: _internalWalletsFor(drafts),
+          qrAmountRecipientIds: _qrAmountsFor(drafts),
         ),
       );
+    } on Error {
+      rethrow;
     } catch (e) {
-      if (inputGeneration != _paymentRequestInputGeneration ||
+      if (isClosed ||
+          inputGeneration != _paymentRequestInputGeneration ||
           state.copiedRawPaymentRequest != sanitizedText) {
         return;
       }
+      emit(state.copyWith(failure: const SendInvalidPaymentRequestFailure()));
       // Type only, never the reason: this is user-pasted text and could be a
       // mistyped seed phrase or private key, which must never reach the logs.
       log.warning(
@@ -720,6 +765,18 @@ class SendCubit extends Cubit<SendState>
       );
     }
   }
+
+  Set<int> _qrAmountsFor(Iterable<SendRecipientDraft> recipients) => {
+    for (final recipient in recipients)
+      if (state.qrAmountRecipientIds.contains(recipient.id)) recipient.id,
+  };
+
+  Map<int, Wallet> _internalWalletsFor(
+    Iterable<SendRecipientDraft> recipients,
+  ) => {
+    for (final recipient in recipients)
+      recipient.id: ?state.internalRecipientWallets[recipient.id],
+  };
 
   List<SendRecipientDraft> _primaryRecipientDrafts({
     required PaymentRequest? paymentRequest,
@@ -830,16 +887,80 @@ class SendCubit extends Cubit<SendState>
     return paymentRequest;
   }
 
-  Future<bool> addRecipient() async {
+  void cancelPendingInternalRecipient() {
+    _internalRecipientGeneration++;
+    if (!isClosed && state.addingInternalRecipient) {
+      emit(
+        state.copyWith(
+          addingInternalRecipient: false,
+          loadingBestWallet: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> addInternalRecipient(String walletId) async {
+    final prepare = _prepareInternalRecipientUsecase;
+    if (prepare == null ||
+        state.step != SendStep.address ||
+        isSpMode ||
+        !state.canAddRecipient ||
+        state.addingInternalRecipient ||
+        state.recipientDrafts.any((recipient) => !recipient.isValid)) {
+      return;
+    }
+    final generation = ++_internalRecipientGeneration;
+    emit(state.copyWith(addingInternalRecipient: true, failure: null));
+    final result = await prepare.execute(
+      walletId: walletId,
+      wallets: state.wallets,
+      request: state.paymentRequest,
+      excludedAddresses: state.recipientDrafts
+          .map((recipient) => recipient.address)
+          .toSet(),
+      fixedSourceWalletId: state.isSweep || state.usesSelectedInputsOnly
+          ? (_wallet?.id ?? state.selectedWallet?.id)
+          : null,
+    );
+    if (isClosed || generation != _internalRecipientGeneration) return;
+    if (state.step != SendStep.address) {
+      cancelPendingInternalRecipient();
+      return;
+    }
+    switch (result) {
+      case Err(:final failure):
+        emit(state.copyWith(addingInternalRecipient: false, failure: failure));
+      case Ok(:final value):
+        await _addRecipient(internal: value, internalGeneration: generation);
+        if (!isClosed && generation == _internalRecipientGeneration) {
+          emit(state.copyWith(addingInternalRecipient: false));
+        }
+    }
+  }
+
+  Future<bool> addRecipient() {
+    cancelPendingInternalRecipient();
+    return _addRecipient();
+  }
+
+  Future<bool> _addRecipient({
+    PreparedInternalRecipient? internal,
+    int? internalGeneration,
+  }) async {
+    bool cancelled() =>
+        internalGeneration != null &&
+        (internalGeneration != _internalRecipientGeneration ||
+            state.step != SendStep.address);
     final inputGeneration = _paymentRequestInputGeneration;
-    if (state.selectedInputsUnavailable ||
+    if (cancelled() ||
+        state.selectedInputsUnavailable ||
         (state.usesSelectedInputsOnly &&
             state.selectedWallet?.isLiquid == true)) {
       return false;
     }
     emit(state.copyWith(loadingBestWallet: true, failure: null));
     final paymentRequest = await _resolvePrimaryPaymentRequest(inputGeneration);
-    if (paymentRequest == null) return false;
+    if (paymentRequest == null || cancelled()) return false;
     if (!state.supportsRecipientList) {
       emit(state.copyWith(loadingBestWallet: false));
       return false;
@@ -871,6 +992,7 @@ class SendCubit extends Cubit<SendState>
       await _setSelectedWallet(wallet, manual: false);
     }
     if (isClosed ||
+        cancelled() ||
         inputGeneration != _paymentRequestInputGeneration ||
         state.paymentRequest != paymentRequest ||
         !state.supportsRecipientList) {
@@ -880,6 +1002,7 @@ class SendCubit extends Cubit<SendState>
     _orderSwapSubscription = null;
     await previousOrderSwapSubscription?.cancel();
     if (isClosed ||
+        cancelled() ||
         inputGeneration != _paymentRequestInputGeneration ||
         state.paymentRequest != paymentRequest ||
         !state.supportsRecipientList) {
@@ -892,16 +1015,21 @@ class SendCubit extends Cubit<SendState>
             isValid: state.hasValidPaymentRequest,
           )
         : List<SendRecipientDraft>.of(state.recipientDrafts);
+    final recipientId = _nextRecipientId++;
     recipients.add((
-      id: _nextRecipientId++,
-      address: '',
+      id: recipientId,
+      address: internal?.address ?? '',
       amount: '',
       receivesRemainder: false,
-      isValid: false,
+      isValid: internal != null,
     ));
     emit(
       state.copyWith(
         recipientDrafts: recipients,
+        internalRecipientWallets: {
+          ...state.internalRecipientWallets,
+          if (internal != null) recipientId: internal.wallet,
+        },
         recipientAmountsSat: const [],
         lightningInvoice: null,
         lightningOrder: null,
@@ -919,6 +1047,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   void removeRecipient(int id) {
+    cancelPendingInternalRecipient();
     if (state.recipientDrafts.length <= 1) return;
     final removed = state.recipientDrafts.firstWhere(
       (recipient) => recipient.id == id,
@@ -939,6 +1068,9 @@ class SendCubit extends Cubit<SendState>
     emit(
       state.copyWith(
         recipientDrafts: recipients,
+        qrAmountRecipientIds: {...state.qrAmountRecipientIds}..remove(id),
+        internalRecipientWallets: {...state.internalRecipientWallets}
+          ..remove(id),
         recipientAmountsSat: const [],
         failure: null,
       ),
@@ -950,6 +1082,15 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> recipientAddressChanged(int id, String text) async {
+    cancelPendingInternalRecipient();
+    if (state.internalRecipientWallets.containsKey(id)) {
+      emit(
+        state.copyWith(
+          internalRecipientWallets: {...state.internalRecipientWallets}
+            ..remove(id),
+        ),
+      );
+    }
     final generation = (_recipientInputGenerations[id] ?? 0) + 1;
     _recipientInputGenerations[id] = generation;
     final sanitized = text.trim().replaceAll(RegExp(r'^["\"]+|["\"]+$'), '');
@@ -1046,7 +1187,10 @@ class SendCubit extends Cubit<SendState>
 
   void _scheduleRecipientPreview() {
     _recipientPreviewTimer?.cancel();
-    if (!state.usesRecipientList || !state.hasRemainderRecipient) return;
+    if (!state.usesRecipientList ||
+        (!state.hasRemainderRecipient && !state.hasMultipleRecipients)) {
+      return;
+    }
     final wallet = state.selectedWallet;
     if (wallet == null || wallet.isLiquid) return;
     if (state.selectedFee == null || _previewBitcoinRecipients() == null) {
@@ -1114,6 +1258,9 @@ class SendCubit extends Cubit<SendState>
     emit(
       state.copyWith(
         recipientDrafts: recipients,
+        qrAmountRecipientIds: address == null
+            ? state.qrAmountRecipientIds
+            : ({...state.qrAmountRecipientIds}..remove(id)),
         recipientAmountsSat: clearPreparedTransaction
             ? const []
             : state.recipientAmountsSat,
@@ -1166,6 +1313,10 @@ class SendCubit extends Cubit<SendState>
         amount: recipients.first.amount,
         inputAmountCurrencyCode: inputCurrencyCode,
         recipientDrafts: recipients,
+        qrAmountRecipientIds: {
+          ...state.qrAmountRecipientIds,
+          if (id != 0 && amountSat > 0) id,
+        },
         recipientAmountsSat: const [],
         failure: null,
       ),
@@ -1175,7 +1326,9 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> continueOnAddressConfirmed() async {
-    if (state.selectedInputsUnavailable) return;
+    if (state.selectedInputsUnavailable || state.addingInternalRecipient) {
+      return;
+    }
     final inputGeneration = _paymentRequestInputGeneration;
     PaymentRequest? confirmedRequest;
     bool isStale() =>
@@ -1343,14 +1496,22 @@ class SendCubit extends Cubit<SendState>
           case Ok(:final value):
             wallet = value;
           case Err(:final failure):
-            emit(
-              state.copyWith(
-                loadingBestWallet: false,
-                creatingSwap: false,
-                failure: failure,
-              ),
-            );
-            return;
+            final directWallets = const FixedAmountWalletChoicePolicy()
+                .eligibleWallets(paymentRequest, state.wallets);
+            if (!state.usesSelectedInputsOnly && directWallets.length >= 2) {
+              // Hardware wallets can fund a direct request even though the
+              // automatic selector normally prefers a local signer.
+              wallet = directWallets.first;
+            } else {
+              emit(
+                state.copyWith(
+                  loadingBestWallet: false,
+                  creatingSwap: false,
+                  failure: failure,
+                ),
+              );
+              return;
+            }
         }
       }
 
@@ -1434,7 +1595,13 @@ class SendCubit extends Cubit<SendState>
         return;
       }
       if (paymentRequest.isBip21) {
-        if (paymentRequest.amountSat == null) {
+        final needsWalletChoice = const FixedAmountWalletChoicePolicy()
+            .requiresChoice(
+              request: paymentRequest,
+              wallets: state.wallets,
+              hasFixedSource: state.usesSelectedInputsOnly,
+            );
+        if (paymentRequest.amountSat == null || needsWalletChoice) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         } else {
           if (!await handleChainSwap(inputGeneration: inputGeneration) ||
@@ -1769,7 +1936,7 @@ class SendCubit extends Cubit<SendState>
           return spendableSat >= outputTotal + (state.absoluteFees ?? 0);
         }
         return spendableSat >=
-            (state.inputAmountSat + (state.absoluteFees ?? 0));
+            (state.effectiveAmountSat + (state.absoluteFees ?? 0));
     }
   }
 
@@ -1800,6 +1967,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> amountChanged({String? amount, bool isMax = false}) async {
+    if (state.hasFixedRequestAmount) return;
     try {
       clearFailure();
       String validatedAmount;
@@ -2058,7 +2226,7 @@ class SendCubit extends Cubit<SendState>
         amountConfirmedClicked: true,
         confirmedAmountSat: state.usesRecipientList
             ? state.totalFixedRecipientAmountSat
-            : state.inputAmountSat,
+            : state.effectiveAmountSat,
       ),
     );
 
@@ -2070,7 +2238,7 @@ class SendCubit extends Cubit<SendState>
       } else {
         final invoiceResult = await _resolveLightningAddressUsecase.execute(
           lightningAddress: state.paymentRequestAddress,
-          amountSat: state.inputAmountSat,
+          amountSat: state.effectiveAmountSat,
         );
         switch (invoiceResult) {
           case Ok(:final value):
@@ -2123,7 +2291,7 @@ class SendCubit extends Cubit<SendState>
       switch (await _createSendSwapUsecase.execute(
         walletId: state.selectedWallet!.id,
         invoice: invoice,
-        amountSat: state.inputAmountSat,
+        amountSat: state.effectiveAmountSat,
         quote: state.lightningQuote,
         note: state.label,
       )) {
@@ -2195,7 +2363,7 @@ class SendCubit extends Cubit<SendState>
     if (state.failure is SendFeesUnavailableFailure &&
         state.selectedWallet?.network == Network.bitcoinRegtest &&
         state.sendType == SendType.bitcoin &&
-        state.inputAmountSat > 0 &&
+        state.effectiveAmountSat > 0 &&
         await hasBalance()) {
       emit(
         state.copyWith(step: SendStep.confirm, amountConfirmedClicked: false),
@@ -2212,7 +2380,7 @@ class SendCubit extends Cubit<SendState>
                   0,
                   (sum, amount) => sum + amount,
                 )
-              : state.inputAmountSat,
+              : state.effectiveAmountSat,
           amountConfirmedClicked: false,
         ),
       );
@@ -4026,7 +4194,14 @@ class SendCubit extends Cubit<SendState>
   /// Resolves the typed or scanned recipient in SP mode and moves to the
   /// amount step. The bitcoin path resolves a [PaymentRequest] instead; SP
   /// addresses are not a payment-request format the detector knows.
-  Future<void> _confirmSpRecipient(String rawPaymentRequest) async {
+  Future<void> _confirmSpRecipient(
+    String rawPaymentRequest, {
+    bool advance = true,
+    int? inputGeneration,
+  }) async {
+    final generation = inputGeneration ?? _paymentRequestInputGeneration;
+    bool isStale() => isClosed || generation != _paymentRequestInputGeneration;
+    if (isStale()) return;
     // The network decides how the shared screens render the request, so read it
     // first and stop on a failure. Guessing mainnet here would show a testnet
     // wallet a mainnet request.
@@ -4043,6 +4218,7 @@ class SendCubit extends Cubit<SendState>
       amountSat: Sats.fromInt(state.inputAmountSat),
       isMax: state.sendMax,
     );
+    if (isStale()) return;
     switch (result) {
       case Ok(value: final recipient):
         _spRecipient = recipient;
@@ -4055,12 +4231,12 @@ class SendCubit extends Cubit<SendState>
               isTestnet: network.requireHistoricalTestnet(),
             ),
             sendType: SendType.bitcoin,
-            step: SendStep.amount,
+            step: advance ? SendStep.amount : state.step,
             loadingBestWallet: false,
           ),
         );
         if (recipientChanged) clearBitcoinFeePreviews();
-        await loadFees();
+        if (advance) await loadFees(inputGeneration: generation);
       case Err(failure: final failure):
         _clearSpRecipient(failure);
     }
