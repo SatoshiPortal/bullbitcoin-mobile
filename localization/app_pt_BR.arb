@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
   "backupWarningLoseReasonLostPhone": "Perder o celular",
   "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
@@ -9855,10 +9854,6 @@
   "networkFeesLabel": "Taxas de rede",
   "@networkFeesLabel": {
     "description": "Label for network transaction fees in onchain send"
-  },
-  "wordsDropdownSuffix": " palavras",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "recoverYourWalletTitle": "Recupere sua carteira",
   "@recoverYourWalletTitle": {

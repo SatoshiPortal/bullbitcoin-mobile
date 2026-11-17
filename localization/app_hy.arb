@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Քարտեզ",
   "buyUnexpectedError": "Ձեր պատվերը հնարավոր չեղավ ստեղծել այս պահին։ Փորձեք կրկին կամ դիմեք աջակցման ծառայությանը։",
   "buyConfirmPayoutWallet": "Վճարման դրամապանակ",
   "buyPayoutMethodLiquid": "L-BTC Liquid-ում",
@@ -1810,7 +1809,6 @@
   "submitButton": "Ուղարկել",
   "optionalPassphraseHint": "Ընտրովի Passphrase",
   "requiredHint": "Պարտադիր",
-  "wordsDropdownSuffix": " բառ",
   "emptyMnemonicWordsError": "Մուտքագրեք ձեր մնեմոնիկի բոլոր բառերը",
   "tryAgainButton": "Կրկին փորձել",
   "errorGenericTitle": "Ուպս! Ինչ-որ բան սխալ գնաց",

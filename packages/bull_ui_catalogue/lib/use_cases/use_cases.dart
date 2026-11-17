@@ -383,16 +383,109 @@ m.Widget bullCheckboxUncheckedUseCase(m.BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(name: 'Default', type: BullDialPad)
-m.Widget bullDialPadUseCase(m.BuildContext context) {
-  return _frame(
-    context,
-    m.SizedBox(
-      width: 320,
-      child: BullDialPad(
-        onNumberPressed: (_) {},
-        onBackspacePressed: () {},
-        onlyDigits: context.knobs.boolean(label: 'only digits'),
+const _mnemonicLanguages = [
+  BullKeyboardLanguage(code: 'EN', name: 'English'),
+  BullKeyboardLanguage(code: 'FR', name: 'French'),
+  BullKeyboardLanguage(code: 'JA', name: 'Japanese'),
+];
+
+@widgetbook.UseCase(name: 'QWERTY', type: BullMnemonicKeyboard)
+m.Widget bullMnemonicKeyboardUseCase(m.BuildContext context) {
+  // Resize the viewport to watch the panel keep 35% of its height.
+  return m.Align(
+    alignment: m.Alignment.bottomCenter,
+    child: BullMnemonicKeyboard(
+      enabledLetters: BullMnemonicKeyboard.qwerty.toSet().difference({'x'}),
+      canBackspace: true,
+      canAdvance: context.knobs.boolean(label: 'can advance'),
+      onLetter: (_) {},
+      onBackspace: () {},
+      onEnter: () {},
+      shuffleActive: context.knobs.boolean(label: 'shuffle active'),
+      onToggleShuffle: () {},
+      shuffleHint: 'Scramble the keys and suggestions on every tap',
+      suggestions: const ['able', 'about', 'above'],
+      languages: _mnemonicLanguages,
+      onLanguage: (_) {},
+      languageHint: 'Recovery phrase language',
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'AZERTY with accents', type: BullMnemonicKeyboard)
+m.Widget bullMnemonicKeyboardAccentsUseCase(m.BuildContext context) {
+  // Long press e for its accents, or open them with the page key.
+  const rows = ['azertyuiop', 'qsdfghjklm', 'wxcvbn'];
+  final layout = [for (final row in rows) ...row.split('')];
+  const accents = ['e\u0301', 'e\u0300'];
+  return m.Align(
+    alignment: m.Alignment.bottomCenter,
+    child: BullMnemonicKeyboard(
+      layout: layout,
+      rows: [for (final row in rows) row.length],
+      accents: accents,
+      variants: const {'e': accents},
+      enabledLetters: {...layout, ...accents},
+      canBackspace: false,
+      canAdvance: true,
+      onLetter: (_) {},
+      onBackspace: () {},
+      onEnter: () {},
+      shuffleActive: false,
+      onToggleShuffle: () {},
+      shuffleHint: 'Scramble the keys and suggestions on every tap',
+      languages: _mnemonicLanguages,
+      selectedLanguage: 1,
+      onLanguage: (_) {},
+      languageHint: 'Recovery phrase language',
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Character grid', type: BullMnemonicKeyboard)
+m.Widget bullMnemonicKeyboardGridUseCase(m.BuildContext context) {
+  final layout = [
+    for (var code = 0x3042; code < 0x3042 + 44; code++)
+      String.fromCharCode(code),
+  ];
+  return m.Align(
+    alignment: m.Alignment.bottomCenter,
+    child: BullMnemonicKeyboard(
+      layout: layout,
+      scrollable: true,
+      enabledLetters: layout.toSet(),
+      canBackspace: true,
+      canAdvance: false,
+      onLetter: (_) {},
+      onBackspace: () {},
+      onEnter: () {},
+      shuffleActive: false,
+      onToggleShuffle: () {},
+      shuffleHint: 'Scramble the keys and suggestions on every tap',
+      languages: _mnemonicLanguages,
+      selectedLanguage: 2,
+      onLanguage: (_) {},
+      languageHint: 'Recovery phrase language',
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Default', type: BullPinPad)
+m.Widget bullPinPadUseCase(m.BuildContext context) {
+  // Keys are surface-coloured, so the pad sits on the screen background, as on
+  // the PIN screens. Resize the viewport to watch the keys follow the space.
+  return m.ColoredBox(
+    color: context.bull.background,
+    child: m.Align(
+      alignment: m.Alignment.bottomCenter,
+      child: m.Padding(
+        padding: const m.EdgeInsets.all(16),
+        child: BullPinPad(
+          onDigit: (_) {},
+          onBackspace: () {},
+          scrambleHint: 'Scramble the digits on every tap',
+          enabled: context.knobs.boolean(label: 'enabled', initialValue: true),
+        ),
       ),
     ),
   );

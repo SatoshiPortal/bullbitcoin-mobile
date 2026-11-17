@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
   "backupWarningLoseReasonLostPhone": "Perder o telefone",
   "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
@@ -1703,7 +1702,6 @@
   "sellMxnBalance": "MXN Balanço",
   "fundExchangeWarningTactic4": "Eles pedem para enviar Bitcoin para seu endereço",
   "fundExchangeSinpeDescription": "Transferir Colones usando SINPE",
-  "wordsDropdownSuffix": " palavras",
   "receiveVerifyAddressOnLedger": "Verificar endereço no Ledger",
   "buyWaitForFreeWithdrawal": "Aguarde a retirada livre",
   "sellSendPaymentCrcBalance": "CRC Balanço",

@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Harita",
   "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
   "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
   "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
@@ -5437,10 +5436,6 @@
   "fundExchangeSinpeDescription": "SINPE kullanarak Transfer Kolonleri",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " kelimeler",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Adresi Ledger",
   "@receiveVerifyAddressOnLedger": {

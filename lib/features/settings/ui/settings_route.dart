@@ -25,8 +25,7 @@ enum SettingsRoute {
   autoswapSettings('autoswap-settings'),
   appSettings('app-settings'),
   swapRestore('swap-restore'),
-  swapRescue('swap-rescue'),
-  btcMap('btc-map');
+  swapRescue('swap-rescue');
 
   final String path;
 

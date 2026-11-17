@@ -54,11 +54,16 @@ format-check:
 	@echo "🎨 dart format should have nothing to change"
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
+BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/bull_ui/lib/src/inputs/bull_mnemonic_keyboard.dart packages/bull_ui/lib/src/inputs/bull_pin_pad.dart
+
 bull-ui-check:
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
 	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^lib/core/themes/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
+	@echo "🧱 keypad text sizes and colours (typography roles and BullKeypadColors, never a typed-in size or colour)"
+	@if grep -nE "fontSize: *[0-9.]" $(BULL_KEYPAD_FILES) lib/features/import_mnemonic/ui/widgets/mnemonic_widget.dart; then echo "Read a text size from context.bullType.<role>, or size a glyph from BullKeypadMetrics.glyphSize; the numbers live only in BullTypography.standard"; exit 1; fi
+	@if grep -n "Color(0x" $(BULL_KEYPAD_FILES); then echo "Read a keypad colour from context.bullKeypad.<role>; the values live only in BullKeypadColors"; exit 1; fi
 
 # Resolved-symbol custody policy, available locally with the pinned Dart SDK.
 # Named exceptions cover exported swap child keys and public-only xpub decoding.
@@ -109,6 +114,11 @@ build-runner:
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
 	@$(MAKE) recoverbull-build-runner
+	@$(MAKE) btc-map-build-runner
+
+.PHONY: btc-map-build-runner
+btc-map-build-runner:
+	@(cd features/btc_map && fvm dart run build_runner build --force-jit)
 
 .PHONY: recoverbull-build-runner
 recoverbull-build-runner:
@@ -122,6 +132,7 @@ translations:
 	@echo "🌐 Generating translations files"
 	@$(MAKE) novlang-translations
 	@fvm flutter gen-l10n
+	@(cd features/btc_map && fvm flutter gen-l10n)
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations

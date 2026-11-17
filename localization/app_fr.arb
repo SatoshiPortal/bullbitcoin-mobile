@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Carte",
   "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si :",
   "backupWarningLoseReasonLostPhone": "Vous perdez votre téléphone",
   "backupWarningLoseReasonDeletedApp": "Vous supprimez l'application",
@@ -1482,7 +1481,6 @@
   "submitButton": "Soumettre",
   "optionalPassphraseHint": "Passphrase facultative",
   "requiredHint": "Obligatoire",
-  "wordsDropdownSuffix": " mots",
   "emptyMnemonicWordsError": "Entrez tous les mots de votre mnémonique",
   "tryAgainButton": "Réessayer",
   "errorGenericTitle": "Oups ! Une erreur s'est produite",
@@ -4716,7 +4714,6 @@
   "mnemonicLanguageLabel": "Langue de la phrase de récupération",
   "mnemonicLanguageSuggestion": "Ces mots correspondent à la langue {language}. Sélectionnez-la pour continuer.",
   "mnemonicLanguageAmbiguous": "Ces mots correspondent à plusieurs langues. Sélectionnez la langue de votre phrase de récupération.",
-  "mnemonicDefaultEnglishOnly": "Les portefeuilles par défaut nécessitent actuellement une phrase de récupération en anglais. Après la configuration, vous pouvez importer une autre langue dans un portefeuille Bitcoin séparé.",
   "mnemonicLanguageName": "{language, select, english{Anglais} french{Français} spanish{Espagnol} italian{Italien} portuguese{Portugais} czech{Tchèque} korean{Coréen} simplifiedChinese{Chinois (simplifié)} traditionalChinese{Chinois (traditionnel)} japanese{Japonais} other{Langue inconnue}}",
   "mnemonicOtherLanguageWordsError": "Ces mots figurent dans la liste de mots « {language} », pas « {selected} », et ne forment pas non plus une phrase de récupération valide dans cette langue. Vérifiez chaque mot et sa position.",
   "importMnemonicScanServerUnavailable": "Impossible de joindre un serveur pour vérifier ce portefeuille. Vous pouvez quand même l'importer.",
@@ -4781,10 +4778,14 @@
   "passphraseClearedNotice": "Votre passphrase a été effacée par sécurité. Saisissez-la à nouveau ou choisissez de continuer sans passphrase.",
   "continueWithoutPassphrase": "Continuer sans passphrase",
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
-  "passphraseOptionHelp": "Seulement si ce wallet en avait une. Sinon, laissez ce champ vide.",
   "settingsDarkModeTitle": "Mode sombre",
   "settingsSourceCodeTitle": "Code source",
   "torSettingsStatusNoInternetOrBlocked": "Pas d’internet ou réseau censuré",
   "torSettingsDescNoInternetOrBlocked": "Ce réseau n’a pas accès à internet, ou il bloque Tor.",
+  "pinCodeScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
+  "mnemonicWordCountLabel": "Mots",
+  "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
+  "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée",
+  "networkWalletReuseNoRecoveryPhrase": "Ce portefeuille n'a pas de phrase de récupération, il ne peut donc pas être réutilisé ici. Importez une phrase de récupération ou créez un nouveau portefeuille.",
   "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné."
 }

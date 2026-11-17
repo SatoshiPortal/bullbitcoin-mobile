@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
@@ -46,6 +47,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
   /// why a phrase was refused.
   Future<Result<void, AppStartupFailure>> restoreDefaultSecret(
     List<String> words, {
+    required Language language,
     String passphrase = '',
   }) async {
     final failure = switch (state) {
@@ -62,6 +64,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
       expectedFingerprint: failure.masterFingerprint,
       expectedWalletId: failure.walletId,
       words: words,
+      language: language,
       passphrase: passphrase,
     );
     if (result is Ok) add(const AppStartupStarted());

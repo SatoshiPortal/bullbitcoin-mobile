@@ -164,7 +164,11 @@ void main({bool isInitialized = false}) {
     Fingerprint? owned;
     try {
       final secret = custodyValue(
-        await secrets.import(words: words, passphrase: phrase),
+        await secrets.import(
+          words: words,
+          passphrase: phrase,
+          language: Language.english,
+        ),
       );
       owned = secret.id;
       expect(secret.info.hasPassphrase, isTrue);
@@ -261,7 +265,11 @@ void main({bool isInitialized = false}) {
     Fingerprint? owned;
     try {
       final secret = custodyValue(
-        await secrets.import(words: words, passphrase: phrase),
+        await secrets.import(
+          words: words,
+          passphrase: phrase,
+          language: Language.english,
+        ),
       );
       owned = secret.id;
       final vaults = SecretsVaultRepository(secrets);

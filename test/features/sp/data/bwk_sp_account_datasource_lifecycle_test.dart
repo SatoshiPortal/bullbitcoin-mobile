@@ -33,6 +33,7 @@ void main() {
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     final result = await secrets.import(
       words: [...List.filled(11, 'abandon'), 'about'],
+      language: Language.english,
     );
     secret = (result as Ok<Secret, SecretFailure>).value;
     datasource = BwkSpAccountDatasource();

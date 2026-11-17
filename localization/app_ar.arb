@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "خريطة",
   "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
   "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
   "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
@@ -5078,10 +5077,6 @@
   "fundExchangeSinpeDescription": "Colones using SINPE",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " الكلمات",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Verify Address on Ledger",
   "@receiveVerifyAddressOnLedger": {

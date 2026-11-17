@@ -138,9 +138,18 @@ void main() {
   });
 
   testWidgets('every word measures the same', (tester) async {
-    final short = await metricsOf(tester, PaintedWord('act', style: style));
-    final long = await metricsOf(tester, PaintedWord('abstract', style: style));
-    final wide = await metricsOf(tester, PaintedWord('wagon', style: style));
+    final short = await metricsOf(
+      tester,
+      PaintedWord('act', style: style, language: Language.english),
+    );
+    final long = await metricsOf(
+      tester,
+      PaintedWord('abstract', style: style, language: Language.english),
+    );
+    final wide = await metricsOf(
+      tester,
+      PaintedWord('wagon', style: style, language: Language.english),
+    );
     expect(long, short);
     expect(wide, short);
   });
@@ -148,11 +157,19 @@ void main() {
   testWidgets('two mnemonics of one length measure the same', (tester) async {
     final a = await metricsOf(
       tester,
-      PaintedMnemonic([...List.filled(11, 'act'), 'add'], style: style),
+      PaintedMnemonic(
+        [...List.filled(11, 'act'), 'add'],
+        style: style,
+        language: Language.english,
+      ),
     );
     final b = await metricsOf(
       tester,
-      PaintedMnemonic([...List.filled(11, 'abstract'), 'wagon'], style: style),
+      PaintedMnemonic(
+        [...List.filled(11, 'abstract'), 'wagon'],
+        style: style,
+        language: Language.english,
+      ),
     );
     expect(b, a);
   });
@@ -173,7 +190,7 @@ void main() {
   ) async {
     final metrics = await metricsOf(
       tester,
-      PaintedWord('abstract', style: style),
+      PaintedWord('abstract', style: style, language: Language.english),
     );
     final painter = TextPainter(
       text: const TextSpan(text: 'abstract', style: style),

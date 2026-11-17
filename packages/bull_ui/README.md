@@ -11,9 +11,7 @@ feature-by-feature in later scoped PRs as usages migrate. Nothing is moved or re
 
 ## Theme injection
 
-`bull_ui` is **brightness-agnostic** and never hardcodes a colour. The app injects the
-palette: it builds a `BullTheme` (a `ThemeExtension`) from `AppColors.light` and another
-from `AppColors.dark`, and registers each on the matching `ThemeData` via `extensions:`.
+`bull_ui` is **brightness-agnostic**: the app injects the palette. It builds a `BullTheme` (a `ThemeExtension`) from `AppColors.light` and another from `AppColors.dark`, and registers each on the matching `ThemeData` with `extensions: bullUiExtensions(colors: …, brightness: …)`, which adds every other extension the components read (`BullShapes`, `BullTypography`, `BullKeypadColors`). The one exception to injected colours is `BullKeypadColors`: `bull_ui` holds its `light` and `dark` presets, chosen so each glyph-on-key and key-on-panel pair has the same contrast in both themes.
 Components read colours through `context.bull` (e.g. `context.bull.primary`). `BullTheme` is a
 **1:1 mirror of the app's `AppColors`** — same field names — so the app wires every field through
 without translation. Derived fills use `tokenColor.withValues(alpha: …)` so they adapt to both
@@ -25,8 +23,8 @@ Brightness-invariant tokens are static consts, from the design system:
 
 - **`BullShapes`** — corner radius per role (`context.bullShapes.card`); Bull's values live in `BullShapes.standard`.
 - **`BullSpacing`** — `zero·xxs·xs·sm·md·lg·xl·xxl·xxxl` = `0·4·8·12·16·24·32·48·64`.
-- **Type** comes from the Material `TextTheme` (`Theme.of(context).textTheme`, sourced from
-  `AppFonts`) — there is no separate text-token class.
+- **`BullTypography`** — text style per role (`display·headline·title·subtitle·body·label·caption`), read with `context.bullType.body` or `BullText(role: .body)`; Bull's values live in `BullTypography.standard`, nothing below 12. A caller may change a role's weight or colour, never its size. Older components still read the Material `TextTheme`.
+- **`BullKeypadColors`** — keypad panel, key and glyph colours per role (`context.bullKeypad.key`), in `BullKeypadColors.light` and `.dark`.
 - **Icons** via `BullIcon(BullIcons.…)`.
 
 **Tokens are fixed — never scaled by screen size.** Responsiveness is a *layout* concern
@@ -58,7 +56,7 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 
 **Inputs** — `BullCheckbox`, `BullFilterChip`, `BullInputText`,
 `BullLabeledTextInput`, `BullSecretTextInput`, `BullPasteInput`, `BullDropdown`,
-`BullSelectableList` + `BullSelectableListItem`, `BullDialPad`,
+`BullSelectableList` + `BullSelectableListItem`, `BullMnemonicKeyboard`, `BullPinPad`,
 `BullAmountInputFormatter`, `BullLowerCaseTextFormatter`.
 
 **Controls** — `BullSegmented`, `BullSwipeAction`, `BullSwitch`.

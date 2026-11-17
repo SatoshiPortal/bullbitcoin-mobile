@@ -48,6 +48,26 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('the keyboard offers every recovery phrase language', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) =>
+            RestoreDefaultSecretScreen(onCancel: () {}),
+        home: const SizedBox.shrink(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(TextField).first);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('mnemonicLanguageKey')), findsOneWidget);
+  });
+
   testWidgets('the system back cancels instead of closing the app', (
     tester,
   ) async {

@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Χάρτης",
   "backupWarningDescription": "Χωρίς αντίγραφο ασφαλείας, θα χάσετε την πρόσβαση στα bitcoin σας εάν:",
   "backupWarningLoseReasonLostPhone": "Χάσετε το τηλέφωνό σας",
   "backupWarningLoseReasonDeletedApp": "Διαγράψετε την εφαρμογή",
@@ -4793,10 +4792,6 @@
   "fundExchangeSinpeDescription": "Μεταφορά Αποικιών χρησιμοποιώντας SINPE",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " λέξεις",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Verify Address on Ledger",
   "@receiveVerifyAddressOnLedger": {

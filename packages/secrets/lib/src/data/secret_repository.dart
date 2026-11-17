@@ -107,7 +107,7 @@ class SecretRepository {
   /// Fingerprint a candidate mnemonic would have, without storing it.
   Future<Result<Fingerprint, SecretFailure>> idOf({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) => boundary(
     () => Isolate.run(
@@ -157,7 +157,7 @@ class SecretRepository {
   /// Stores a mnemonic and returns its description. Mnemonics are the only kind anything writes; [Seed] stays readable for entries that predate that.
   Future<Result<SecretInfo, SecretFailure>> store({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     bool rejectExisting = false,
     Set<Fingerprint>? acceptOnly,
@@ -195,7 +195,7 @@ class SecretRepository {
   /// Compares the full seed, not merely the collision-prone fingerprint.
   Future<Result<SecretInfo?, SecretFailure>> find({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) {
     final candidate = List<String>.of(words);

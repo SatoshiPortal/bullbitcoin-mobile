@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "मानचित्र",
   "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
   "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
   "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
@@ -5465,10 +5464,6 @@
   "fundExchangeSinpeDescription": "SINPE का उपयोग कर Colones स्थानांतरण",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " शब्द",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Ledger पर पता सत्यापित करें",
   "@receiveVerifyAddressOnLedger": {

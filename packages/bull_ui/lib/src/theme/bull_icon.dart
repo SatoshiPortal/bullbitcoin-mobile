@@ -41,6 +41,22 @@ abstract final class BullIcons {
   static const IconData arrowUpward = Icons.arrow_upward;
   static const IconData chatBubbleOutline = Icons.chat_bubble_outline;
   static const IconData headsetMic = Icons.headset_mic;
+  static const IconData search = Icons.search;
+  static const IconData verified = Icons.verified;
+  static const IconData warningAmber = Icons.warning_amber_rounded;
+  static const IconData currencyBitcoin = Icons.currency_bitcoin;
+  static const IconData restaurant = Icons.restaurant;
+  static const IconData storefront = Icons.storefront;
+  static const IconData localGroceryStore = Icons.local_grocery_store;
+  static const IconData localCafe = Icons.local_cafe;
+  static const IconData localAtm = Icons.local_atm;
+  static const IconData hotel = Icons.hotel;
+  static const IconData contentCut = Icons.content_cut;
+  static const IconData phoneOutlined = Icons.phone_outlined;
+  static const IconData emailOutlined = Icons.email_outlined;
+  static const IconData language = Icons.language;
+  static const IconData link = Icons.link;
+  static const IconData qrCode = Icons.qr_code_2;
 }
 
 /// A thin wrapper over the Flutter [Icon] so feature code never touches

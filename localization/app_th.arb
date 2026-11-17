@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "แผนที่",
   "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
   "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
   "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
@@ -5465,10 +5464,6 @@
   "fundExchangeSinpeDescription": "การโอนเงินโดยใช้ SINPE",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " คําพูด",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "ระบุที่อยู่บน Ledger",
   "@receiveVerifyAddressOnLedger": {

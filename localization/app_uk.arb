@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Карта",
   "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо:",
   "backupWarningLoseReasonLostPhone": "Втратите телефон",
   "backupWarningLoseReasonDeletedApp": "Видалите застосунок",
@@ -2146,7 +2145,6 @@
   "sendSwapInProgressBitcoin": "Ведуться ковпа. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "electrumDeleteServerTitle": "Видалити користувальницький сервер",
   "buySelfie": "Селфі з ID",
-  "wordsDropdownSuffix": " слова",
   "backupSettingsKeyWarningBold": "Попередження: Будьте обережні, де ви зберігаєте ключ резервного копіювання.",
   "exchangeLandingConnectAccount": "Підключіть свій обліковий запис Біткойн",
   "importWatchOnlyLabel": "Етикетка",

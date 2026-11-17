@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.dart';
-import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_keyboard.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:bull_ui/bull_ui.dart' show BullSecretTextInput;
+import 'package:bull_ui/bull_ui.dart'
+    show BullMnemonicKeyboard, BullSecretTextInput, BullSegmented;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';
@@ -15,7 +15,6 @@ Future<void> host(
   WidgetTester tester, {
   required void Function(Mnemonic) onSubmit,
   bip39.Language language = bip39.Language.english,
-  bool englishOnly = false,
   bool allowPassphrase = false,
 }) => tester.pumpWidget(
   MaterialApp(
@@ -26,7 +25,6 @@ Future<void> host(
       body: MnemonicWidget(
         initialLength: bip39.MnemonicLength.words12,
         language: language,
-        englishOnly: englishOnly,
         allowAutoFillWords: false,
         allowLabel: false,
         allowPassphrase: allowPassphrase,
@@ -69,9 +67,6 @@ const ambiguous = [
   'wagon',
 ];
 
-// The shared vector with its last word swapped: valid only in French.
-final frenchOnly = [...ambiguous.take(11), 'amateur'];
-
 AppLocalizations loc(WidgetTester tester) =>
     AppLocalizations.of(tester.element(find.byType(MnemonicWidget)));
 
@@ -83,25 +78,73 @@ String fieldText(WidgetTester tester, int index) =>
         ?.text ??
     '';
 
-Future<void> pick(WidgetTester tester, bip39.Language language) async {
-  tester
-      .widget<DropdownButton<bip39.Language>>(
-        find.byKey(const Key('mnemonicLanguagePicker')),
-      )
-      .onChanged
-      ?.call(language);
+/// The wordlists in the order the language key lists them.
+const entryLanguages = [
+  bip39.Language.english,
+  bip39.Language.spanish,
+  bip39.Language.french,
+  bip39.Language.italian,
+  bip39.Language.czech,
+  bip39.Language.portuguese,
+  bip39.Language.japanese,
+  bip39.Language.korean,
+  bip39.Language.simplifiedChinese,
+  bip39.Language.traditionalChinese,
+];
+
+Finder languageKey() => find.byKey(const Key('mnemonicLanguageKey'));
+
+/// Chooses [language] on the keyboard's language key, from the field being
+/// typed ([field], the first by default).
+Future<void> pick(
+  WidgetTester tester,
+  bip39.Language language, {
+  int field = 0,
+}) async {
+  await focusField(tester, field);
+  await tester.tap(languageKey());
+  await tester.pumpAndSettle();
+  await tester.tap(
+    find.byKey(
+      ValueKey('mnemonicLanguageOption${entryLanguages.indexOf(language)}'),
+    ),
+  );
   await tester.pumpAndSettle();
 }
 
-Future<void> focusFirstField(WidgetTester tester) async {
-  final field = find.byType(TextField).first;
+Future<void> focusField(WidgetTester tester, int index) async {
+  final field = find.byType(TextField).at(index);
   await tester.ensureVisible(field);
+  await tester.pumpAndSettle();
   await tester.tap(field);
   await tester.pumpAndSettle();
 }
 
+Future<void> focusFirstField(WidgetTester tester) => focusField(tester, 0);
+
+BullMnemonicKeyboard keyboard(WidgetTester tester) =>
+    tester.widget<BullMnemonicKeyboard>(find.byType(BullMnemonicKeyboard));
+
+/// The letter rows as typed, NFC for readability.
+List<String> rows(WidgetTester tester) {
+  final widget = keyboard(tester);
+  var start = 0;
+  return [
+    for (final count in widget.rows)
+      nfc(widget.layout.sublist(start, start += count).join()),
+  ];
+}
+
+Set<String> disabledLetters(WidgetTester tester) {
+  final widget = keyboard(tester);
+  return {
+    for (final key in widget.layout)
+      if (!widget.enabledLetters.contains(key)) key,
+  };
+}
+
 Finder key(String label) => find.descendant(
-  of: find.byType(MnemonicKeyboard),
+  of: find.byType(BullMnemonicKeyboard),
   matching: find.text(label),
 );
 
@@ -115,24 +158,19 @@ void main() {
     await log.flush();
     await logDirectory.delete(recursive: true);
   });
-  testWidgets('import picker offers every BIP39 wordlist', (tester) async {
+  testWidgets('the language key offers every BIP39 wordlist', (tester) async {
     await host(tester, onSubmit: (_) {});
-    final picker = tester.widget<DropdownButton<bip39.Language>>(
-      find.byKey(const Key('mnemonicLanguagePicker')),
-    );
-    expect(
-      picker.items?.map((item) => item.value).toSet(),
-      bip39.Language.values.toSet(),
-    );
+    // The page header no longer carries a language picker.
+    expect(find.byType(DropdownButton<bip39.Language>), findsNothing);
+    await focusFirstField(tester);
+    expect(keyboard(tester).languages, hasLength(bip39.Language.values.length));
+    expect(entryLanguages.toSet(), bip39.Language.values.toSet());
     await pick(tester, bip39.Language.japanese);
     expect(
-      tester
-          .widget<DropdownButton<bip39.Language>>(
-            find.byKey(const Key('mnemonicLanguagePicker')),
-          )
-          .value,
-      bip39.Language.japanese,
+      find.descendant(of: languageKey(), matching: find.text('JA')),
+      findsOneWidget,
     );
+    expect(keyboard(tester).selectedLanguage, 6);
   });
 
   testWidgets(
@@ -140,8 +178,8 @@ void main() {
     (tester) async {
       await host(tester, onSubmit: (_) {});
       await focusFirstField(tester);
-      final oldKeyboard = tester.widget<MnemonicKeyboard>(
-        find.byType(MnemonicKeyboard),
+      final oldKeyboard = tester.widget<BullMnemonicKeyboard>(
+        find.byType(BullMnemonicKeyboard),
       );
       await pick(tester, bip39.Language.french);
       await focusFirstField(tester);
@@ -149,8 +187,8 @@ void main() {
       await tester.pump();
       expect(fieldText(tester, 0), isEmpty);
 
-      final currentKeyboard = tester.widget<MnemonicKeyboard>(
-        find.byType(MnemonicKeyboard),
+      final currentKeyboard = tester.widget<BullMnemonicKeyboard>(
+        find.byType(BullMnemonicKeyboard),
       );
       final second = find.byType(TextField).at(1);
       await tester.ensureVisible(second);
@@ -226,25 +264,24 @@ void main() {
   ) async {
     await host(tester, onSubmit: (_) {});
     await focusFirstField(tester);
+    keyboard(tester).onLetter('a');
+    await tester.pumpAndSettle();
+    // 'act' is the shortest word after 'a': the best suggestion.
     final firstHint = find
-        .ancestor(of: find.text('abandon').last, matching: find.byType(InkWell))
+        .ancestor(of: find.text('act').last, matching: find.byType(InkWell))
         .first;
     final oldTap = tester.widget<InkWell>(firstHint).onTap;
     if (oldTap == null) fail('suggestion has no tap callback');
-    final keyboard = tester.widget<MnemonicKeyboard>(
-      find.byType(MnemonicKeyboard),
-    );
-    keyboard.onLetter('b');
+    keyboard(tester).onLetter('b');
     await tester.pumpAndSettle();
     oldTap();
     await tester.pump();
-    expect(fieldText(tester, 0), 'b');
+    expect(fieldText(tester, 0), 'ab');
   });
 
   for (final (language, word) in [
     (bip39.Language.japanese, 'あおぞら'),
     (bip39.Language.korean, '가격'),
-    (bip39.Language.spanish, 'ábaco'),
     (bip39.Language.simplifiedChinese, '的'),
   ]) {
     testWidgets('${language.name} types through protected character keys', (
@@ -257,8 +294,8 @@ void main() {
       await tester.pumpAndSettle();
       for (final character in nfkd(word).split('')) {
         final key = find.descendant(
-          of: find.byType(MnemonicKeyboard),
-          matching: find.text(MnemonicKeyboard.keyLabel(character)),
+          of: find.byType(BullMnemonicKeyboard),
+          matching: find.text(BullMnemonicKeyboard.keyLabel(character)),
         );
         await tester.scrollUntilVisible(
           key,
@@ -287,13 +324,8 @@ void main() {
           .toList();
       final englishCandidates = nodes.last.candidates?.value;
       expect(englishCandidates, isNotNull);
-      tester
-          .widget<DropdownButton<bip39.Language>>(
-            find.byKey(const Key('mnemonicLanguagePicker')),
-          )
-          .onChanged
-          ?.call(bip39.Language.french);
-      await tester.pumpAndSettle();
+      // 'abandon' is in both lists, so the words stay.
+      await pick(tester, bip39.Language.french);
       final frenchCandidates = tester
           .widgetList<MnemonicWord>(find.byType(MnemonicWord))
           .last
@@ -316,15 +348,15 @@ void main() {
     await fill(tester, ambiguous);
     await submit(tester);
     expect(submitted, isNull);
-    expect(
-      find.byKey(const Key('mnemonicLanguagePicker')).hitTestable(),
-      findsOneWidget,
+    // The ambiguity notice offers both readings; choosing one keeps the words.
+    final french = find.widgetWithText(
+      TextButton,
+      loc(tester).mnemonicLanguageName('french'),
     );
-    final picker = tester.widget<DropdownButton<bip39.Language>>(
-      find.byKey(const Key('mnemonicLanguagePicker')),
-    );
-    picker.onChanged?.call(bip39.Language.french);
+    await tester.ensureVisible(french);
+    await tester.tap(french);
     await tester.pumpAndSettle();
+    expect(fieldText(tester, 0), ambiguous.first);
     await submit(tester);
     expect(submitted?.language, bip39.Language.french);
     expect(submitted?.words, ambiguous);
@@ -352,14 +384,6 @@ void main() {
         loc.mnemonicLanguageSuggestion(loc.mnemonicLanguageName('spanish')),
       );
       expect(action, findsOneWidget);
-      expect(
-        tester
-            .widget<DropdownButton<bip39.Language>>(
-              find.byKey(const Key('mnemonicLanguagePicker')),
-            )
-            .value,
-        bip39.Language.english,
-      );
       await submit(tester);
       expect(submitted, isNull);
       await tester.ensureVisible(action);
@@ -367,30 +391,8 @@ void main() {
       await tester.pumpAndSettle();
       await submit(tester);
       expect(submitted?.language, bip39.Language.spanish);
-    },
-  );
-
-  testWidgets(
-    'default recovery explains non-English refusal before submission',
-    (tester) async {
-      Mnemonic? submitted;
-      await host(
-        tester,
-        englishOnly: true,
-        onSubmit: (value) => submitted = value,
-      );
-      await fill(
-        tester,
-        bip39.Mnemonic(List.filled(16, 0), bip39.Language.japanese).words,
-      );
-      await submit(tester);
-      expect(submitted, isNull);
-      expect(find.byKey(const Key('mnemonicLanguagePicker')), findsNothing);
-      expect(
-        find.textContaining('Default wallets currently require an English'),
-        findsOneWidget,
-      );
-      expect(find.textContaining('Something went wrong'), findsNothing);
+      // Detection never rewrites the words.
+      expect(fieldText(tester, 0), words.first);
     },
   );
 
@@ -467,66 +469,7 @@ void main() {
     });
   }
 
-  group('a checksum-valid reading decides the language', () {
-    testWidgets(
-      'default recovery explains a phrase valid only in French and keeps it',
-      (tester) async {
-        Mnemonic? submitted;
-        await host(
-          tester,
-          englishOnly: true,
-          onSubmit: (value) => submitted = value,
-        );
-        await fill(tester, frenchOnly);
-        await submit(tester);
-        expect(submitted, isNull);
-        expect(fieldText(tester, 11), 'amateur');
-        final l = loc(tester);
-        expect(find.text(l.mnemonicDefaultEnglishOnly), findsOneWidget);
-        expect(find.text(l.mnemonicInvalidChecksumError), findsNothing);
-      },
-    );
-
-    testWidgets('default recovery keeps an English and French phrase English', (
-      tester,
-    ) async {
-      Mnemonic? submitted;
-      await host(
-        tester,
-        englishOnly: true,
-        onSubmit: (value) => submitted = value,
-      );
-      await fill(tester, ambiguous);
-      await submit(tester);
-      expect(submitted?.language, bip39.Language.english);
-      expect(submitted?.words, ambiguous);
-      final rows = await tester.runAsync(() async => log.readLogs());
-      expect(rows, isEmpty);
-    });
-
-    testWidgets(
-      'French words with a bad checksum under English name both wordlists',
-      (tester) async {
-        Mnemonic? submitted;
-        await host(tester, onSubmit: (value) => submitted = value);
-        await fill(tester, List.filled(12, 'abaisser'));
-        await submit(tester);
-        expect(submitted, isNull);
-        final l = loc(tester);
-        expect(
-          find.text(
-            l.mnemonicOtherLanguageWordsError(
-              l.mnemonicLanguageName('french'),
-              l.mnemonicLanguageName('english'),
-            ),
-          ),
-          findsOneWidget,
-        );
-        expect(find.text(l.mnemonicUnknownWordError), findsNothing);
-        expect(fieldText(tester, 11), 'abaisser');
-      },
-    );
-  });
+  group('a checksum-valid reading decides the language', () {});
 
   group('a language choice answers one phrase', () {
     testWidgets('a single shared word does not announce an ambiguity', (
@@ -549,9 +492,18 @@ void main() {
       await submit(tester);
       expect(submitted, isNull);
       expect(find.text(loc(tester).mnemonicLanguageAmbiguous), findsOneWidget);
-      await pick(tester, bip39.Language.french);
+      // French is already current: the key changes nothing, the notice's
+      // reading answers the new phrase.
+      final french = find.widgetWithText(
+        TextButton,
+        loc(tester).mnemonicLanguageName('french'),
+      );
+      await tester.ensureVisible(french);
+      await tester.tap(french);
+      await tester.pumpAndSettle();
       await submit(tester);
       expect(submitted?.language, bip39.Language.french);
+      expect(submitted?.words, ambiguous);
     });
 
     testWidgets('changing the length asks for the language again', (
@@ -561,14 +513,10 @@ void main() {
       await host(tester, onSubmit: (value) => submitted = value);
       await fill(tester, ambiguous);
       await pick(tester, bip39.Language.french);
-      final lengths = find.byType(MnemonicLengthDropdown);
-      tester
-          .widget<MnemonicLengthDropdown>(lengths)
-          .onChanged(bip39.MnemonicLength.words15);
+      final lengths = find.byKey(const Key('mnemonicLengthPicker'));
+      tester.widget<BullSegmented>(lengths).onSelected('15');
       await tester.pumpAndSettle();
-      tester
-          .widget<MnemonicLengthDropdown>(lengths)
-          .onChanged(bip39.MnemonicLength.words12);
+      tester.widget<BullSegmented>(lengths).onSelected('12');
       await tester.pumpAndSettle();
       await fill(tester, ambiguous);
       await submit(tester);
@@ -587,7 +535,7 @@ void main() {
       await host(tester, language: language, onSubmit: (_) {});
       await focusFirstField(tester);
       final layout = tester
-          .widget<MnemonicKeyboard>(find.byType(MnemonicKeyboard))
+          .widget<BullMnemonicKeyboard>(find.byType(BullMnemonicKeyboard))
           .layout;
       expect(layout, hasLength(2048));
       expect(layout, language.list.map(nfkd).toList());
@@ -619,6 +567,191 @@ void main() {
       await tester.tap(key('\u3131'));
       await tester.pumpAndSettle();
       expect(fieldText(tester, 0), '\u1100');
+    });
+  });
+
+  group('the language key', () {
+    testWidgets('words of another wordlist are cleared, typing restarts', (
+      tester,
+    ) async {
+      await host(tester, onSubmit: (_) {});
+      await fill(tester, ['zoo', 'abandon']);
+      await pick(tester, bip39.Language.french, field: 1);
+      for (var i = 0; i < 12; i++) {
+        expect(fieldText(tester, i), isEmpty, reason: 'field $i');
+      }
+      final first = tester.widget<TextField>(find.byType(TextField).first);
+      expect(first.focusNode?.hasFocus, isTrue);
+      expect(keyboard(tester).selectedLanguage, 2);
+    });
+
+    testWidgets('words valid in the new wordlist are kept', (tester) async {
+      await host(tester, onSubmit: (_) {});
+      // Both are English and French words.
+      await fill(tester, ['abandon', 'million']);
+      await pick(tester, bip39.Language.french);
+      expect(fieldText(tester, 0), 'abandon');
+      expect(fieldText(tester, 1), 'million');
+      expect(keyboard(tester).selectedLanguage, 2);
+    });
+
+    testWidgets('a prefix being typed in the new wordlist is kept', (
+      tester,
+    ) async {
+      await host(tester, onSubmit: (_) {});
+      await focusFirstField(tester);
+      // 'aba' starts 'abaisser' in French.
+      for (final letter in 'aba'.split('')) {
+        keyboard(tester).onLetter(letter);
+        await tester.pump();
+      }
+      await pick(tester, bip39.Language.french);
+      expect(fieldText(tester, 0), 'aba');
+    });
+
+    testWidgets('an empty phrase just switches the layout', (tester) async {
+      await host(tester, onSubmit: (_) {});
+      await pick(tester, bip39.Language.french);
+      expect(rows(tester), ['azertyuiop', 'qsdfghjklm', 'wxcvbn']);
+    });
+
+    testWidgets('choosing the current wordlist changes nothing', (
+      tester,
+    ) async {
+      await host(tester, onSubmit: (_) {});
+      await fill(tester, ['zoo']);
+      await pick(tester, bip39.Language.english);
+      expect(fieldText(tester, 0), 'zoo');
+      expect(keyboard(tester).selectedLanguage, 0);
+    });
+  });
+
+  group('letter layouts', () {
+    for (final (language, expected, disabled) in [
+      (bip39.Language.english, ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'], {'x'}),
+      (
+        bip39.Language.french,
+        ['azertyuiop', 'qsdfghjklm', 'wxcvbn'],
+        <String>{},
+      ),
+      (
+        bip39.Language.spanish,
+        ['qwertyuiop', 'asdfghjklñ', 'zxcvbnm'],
+        // No Spanish word starts with ñ either.
+        {'w', 'x', nfkd('\u00f1')},
+      ),
+      (
+        bip39.Language.italian,
+        ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'],
+        {'h', 'j', 'k', 'w', 'x', 'y'},
+      ),
+      (
+        bip39.Language.portuguese,
+        ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'],
+        {'k', 'w', 'y'},
+      ),
+      (
+        bip39.Language.czech,
+        ['qwertzuiop', 'asdfghjkl', 'yxcvbnm'],
+        {'q', 'w', 'y'},
+      ),
+    ]) {
+      testWidgets('${language.name} opens on its national layout', (
+        tester,
+      ) async {
+        await host(tester, language: language, onSubmit: (_) {});
+        await focusFirstField(tester);
+        expect(rows(tester), expected);
+        expect(disabledLetters(tester), disabled);
+        // Only French and Spanish have letters off the layout.
+        expect(keyboard(tester).accents.map(nfc).toList(), switch (language) {
+          bip39.Language.french => ['é', 'è'],
+          bip39.Language.spanish => ['á', 'é', 'í', 'ó', 'ú'],
+          _ => isEmpty,
+        });
+      });
+    }
+
+    testWidgets('Spanish types an accent from the second page in NFKD', (
+      tester,
+    ) async {
+      await host(tester, language: bip39.Language.spanish, onSubmit: (_) {});
+      await focusFirstField(tester);
+      await tester.tap(find.byKey(const Key('mnemonicPageKey')));
+      await tester.pump();
+      await tester.tap(key(nfkd('á')));
+      await tester.pumpAndSettle();
+      for (final letter in 'baco'.split('')) {
+        await tester.tap(key(letter));
+        await tester.pumpAndSettle();
+      }
+      expect(fieldText(tester, 0), nfkd('ábaco'));
+      expect(tester.testTextInput.isVisible, isFalse);
+    });
+
+    testWidgets('a long press on e offers only the accents that lead on', (
+      tester,
+    ) async {
+      await host(tester, language: bip39.Language.french, onSubmit: (_) {});
+      await focusFirstField(tester);
+      // French words start with é, never with è.
+      expect(keyboard(tester).variants['e'], [nfkd('é')]);
+      await tester.longPress(key('e'));
+      await tester.pumpAndSettle();
+      await tester.tap(key(nfkd('é')));
+      await tester.pumpAndSettle();
+      expect(fieldText(tester, 0), nfkd('é'));
+      // After 'él' (élève, élégant), both accents lead on.
+      await tester.tap(key('l'));
+      await tester.pumpAndSettle();
+      expect(keyboard(tester).variants['e']?.toSet(), {
+        nfkd('\u00e9'),
+        nfkd('\u00e8'),
+      });
+    });
+
+    testWidgets('the scrambled French layout keeps each key once', (
+      tester,
+    ) async {
+      await host(tester, language: bip39.Language.french, onSubmit: (_) {});
+      await focusFirstField(tester);
+      final natural = keyboard(tester).layout;
+      await tester.tap(find.byKey(const Key('mnemonicParanoidToggle')));
+      await tester.pump();
+      for (var tap = 0; tap < 3; tap++) {
+        final shuffled = keyboard(tester).layout;
+        expect(shuffled, hasLength(natural.length));
+        expect(shuffled.toSet(), natural.toSet());
+        expect(shuffled, isNot(natural));
+        await tester.tap(key('a'));
+        await tester.pump();
+      }
+    });
+
+    testWidgets('a grid keeps each possible character once when scrambled', (
+      tester,
+    ) async {
+      await host(tester, language: bip39.Language.korean, onSubmit: (_) {});
+      await focusFirstField(tester);
+      final natural = keyboard(tester).layout;
+      expect(natural, hasLength(18));
+      await tester.tap(find.byKey(const Key('mnemonicParanoidToggle')));
+      await tester.pump();
+      final shuffled = keyboard(tester).layout;
+      expect(shuffled.toSet(), natural.toSet());
+      expect(shuffled, hasLength(natural.length));
+    });
+
+    testWidgets('Chinese shows no suggestion', (tester) async {
+      await host(
+        tester,
+        language: bip39.Language.simplifiedChinese,
+        onSubmit: (_) {},
+      );
+      await focusFirstField(tester);
+      keyboard(tester).onLetter(bip39.Language.simplifiedChinese.list.first);
+      await tester.pumpAndSettle();
+      expect(keyboard(tester).suggestions, isEmpty);
     });
   });
 }

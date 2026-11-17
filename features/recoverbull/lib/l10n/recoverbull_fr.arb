@@ -355,5 +355,6 @@
   "recoverbullUseSnowflake": "Utiliser Snowflake",
   "recoverbullDiscardPendingBackup": "Abandonner et recommencer",
   "recoverbullRecoveryIncompleteTitle": "Portefeuilles pas encore créés",
-  "recoverbullRecoveryIncompleteDescription": "Votre sauvegarde a été importée, mais ses portefeuilles n’ont pas pu être créés. Réessayez pour terminer la récupération."
+  "recoverbullRecoveryIncompleteDescription": "Votre sauvegarde a été importée, mais ses portefeuilles n’ont pas pu être créés. Réessayez pour terminer la récupération.",
+  "recoverbullScrambleKeypadHint": "Mélanger les chiffres à chaque appui"
 }

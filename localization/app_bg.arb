@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Карта",
   "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
   "buyConfirmPayoutWallet": "Портфейл за изплащане",
   "buyPayoutMethodLiquid": "L-BTC в Liquid",
@@ -4221,10 +4220,6 @@
   "fundExchangeSinpeDescription": "Прехвърляне на колони чрез SINPE",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " думи",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Потвърдете адреса на Ledger",
   "@receiveVerifyAddressOnLedger": {
