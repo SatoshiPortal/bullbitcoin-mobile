@@ -20,7 +20,7 @@ LIBRARIES = {
 
 
 class VerifyRustcPinsTest(unittest.TestCase):
-    def check_apk(self, *, abis=("arm64-v8a",), changed=None, expected_abis=None):
+    def check_apk(self, *, abis=("arm64-v8a",), changed=None, expected_abis=None, require_bark=False):
         files = {
             f"lib/{abi}/{name}": f"rustc version {version}\n".encode()
             for abi in abis
@@ -34,7 +34,7 @@ class VerifyRustcPinsTest(unittest.TestCase):
                     if content is not None:
                         archive.writestr(path, content)
             result = subprocess.run(
-                ["bash", str(SCRIPT), str(apk), SDK_RUST, PAYJOIN_RUST, *(expected_abis or abis)],
+                ["bash", str(SCRIPT), *(["--require-bark"] if require_bark else []), str(apk), SDK_RUST, PAYJOIN_RUST, *(expected_abis or abis)],
                 text=True,
                 capture_output=True,
                 check=False,
@@ -106,6 +106,63 @@ class VerifyRustcPinsTest(unittest.TestCase):
         result = self.check_apk(changed={"lib/arm64-v8a/libnew.so": b"rustc version 1.100.0\n"})
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Untracked Rust library", result.stderr)
+
+    def test_accepts_exact_bark_compiler_with_legacy_and_required_cli(self):
+        for required in (False, True):
+            with self.subTest(required=required):
+                result = self.check_apk(
+                    changed={"lib/arm64-v8a/libbark_ffi_dart.so": b"rustc version 1.90.0\nrustc version 1.90.0\n"},
+                    require_bark=required,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("libbark_ffi_dart.so: rustc 1.90.0", result.stdout)
+
+    def test_required_bark_is_checked_in_every_expected_abi(self):
+        abis = ("arm64-v8a", "x86_64")
+        for missing in (None, "arm64-v8a", "x86_64"):
+            with self.subTest(missing=missing):
+                result = self.check_apk(
+                    abis=abis,
+                    changed={f"lib/{abi}/libbark_ffi_dart.so": b"rustc version 1.90.0\n" for abi in abis if abi != missing},
+                    require_bark=True,
+                )
+                if missing is None:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                else:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(f"Missing tracked Rust library: {missing}/libbark_ffi_dart.so", result.stderr)
+
+    def test_rejects_required_bark_absent_in_single_abi(self):
+        result = self.check_apk(require_bark=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Missing tracked Rust library: arm64-v8a/libbark_ffi_dart.so", result.stderr)
+
+    def test_rejects_wrong_missing_or_mixed_bark_markers(self):
+        for markers, diagnostic in (
+            (b"rustc version 1.100.0\n", "Unexpected rustc markers"),
+            (b"no version", "No rustc version marker"),
+            (b"rustc version 1.90.0\nrustc version 1.100.0\n", "Unexpected rustc markers"),
+        ):
+            with self.subTest(markers=markers):
+                result = self.check_apk(changed={"lib/arm64-v8a/libbark_ffi_dart.so": markers})
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
+
+    def test_rejects_extra_abi_bark_without_marker(self):
+        result = self.check_apk(changed={"lib/x86_64/libbark_ffi_dart.so": b"no version"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Tracked Rust library in unexpected ABI", result.stderr)
+
+    def test_rejects_unknown_library_with_bark_compiler(self):
+        result = self.check_apk(changed={"lib/arm64-v8a/libother.so": b"rustc version 1.90.0\n"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Untracked Rust library", result.stderr)
+
+    def test_bare_required_bark_flag_reports_usage(self):
+        result = subprocess.run(["bash", str(SCRIPT), "--require-bark"], text=True, capture_output=True, check=False)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("Usage:", result.stderr)
+        self.assertNotIn("unbound variable", result.stderr)
 
     def test_rejects_invalid_archive(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -8,6 +8,7 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - packages/ark
   - packages/secrets
   - packages/bull_payjoin
   - packages/bull_ui

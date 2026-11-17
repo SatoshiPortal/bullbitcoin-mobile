@@ -18,7 +18,7 @@ ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Native Assets hooks select exact Rust versions. RUSTUP_TOOLCHAIN covers
 # inherited cargo/rustc calls; explicit rustup run requests use the preinstalled
-# SatoshiPortal and official Payjoin toolchains below.
+# SatoshiPortal, Payjoin and Bark toolchains below.
 ARG RUST_VERSION="1.100.0"
 
 # Android versions (passed via --build-arg from Makefile, defaults as fallback)
@@ -123,9 +123,8 @@ ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 # Pre-install clippy and rustfmt for the pinned toolchain.
 RUN rustup component add clippy rustfmt
 
-# Force every cargo/rustc invocation through the pinned RUST_VERSION,
-# regardless of what plugins/build scripts request via +channel or
-# rust-toolchain.toml. Blocks rustup auto-install of other toolchains.
+# Select the default/preflight compiler without completing unrelated manifest
+# targets. Native Assets still invokes each explicit preinstalled crate pin.
 ENV RUSTUP_TOOLCHAIN=${RUST_VERSION}
 ENV RUSTUP_AUTO_INSTALL=0
 
@@ -154,6 +153,13 @@ ARG PAYJOIN_RUST_VERSION="1.85.1"
 RUN rustup toolchain install ${PAYJOIN_RUST_VERSION} --profile minimal
 RUN rustup component add --toolchain ${PAYJOIN_RUST_VERSION} clippy rustfmt
 RUN rustup target add --toolchain ${PAYJOIN_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
+# Bark Native Assets selects its compiler for APK and app bundle builds.
+ARG BARK_RUST_VERSION="1.90.0"
+RUN rustup toolchain install ${BARK_RUST_VERSION} --profile minimal
+RUN rustup component add --toolchain ${BARK_RUST_VERSION} clippy rustfmt
+RUN rustup target add --toolchain ${BARK_RUST_VERSION} aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+RUN rustup run ${BARK_RUST_VERSION} rustc --version | grep -F "rustc ${BARK_RUST_VERSION}"
 
 # Belt-and-suspenders verification: abort if the installed Rust does not match
 # EXPECTED_RUST_VERSION when provided.
