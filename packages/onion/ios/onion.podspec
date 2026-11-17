@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Embedded Tor client and loopback SOCKS5 proxy for Bull Bitcoin, built on Arti.
                        DESC
-  s.homepage         = 'https://github.com/SatoshiPortal/bull_sdk'
+  s.homepage         = 'https://github.com/SatoshiPortal/bullbitcoin-mobile'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Satoshi Portal' => 'https://bullbitcoin.com' }
   s.module_name      = 'onion'

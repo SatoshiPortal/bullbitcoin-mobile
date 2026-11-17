@@ -65,7 +65,7 @@ tokio = { version = "1", features = ["full", "test-util"] }
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
 
-# Excluded from the bull_sdk cargo workspace (see the root Cargo.toml for why),
+# Not part of the rust_bindings cargo workspace (see the onion README for why),
 # so this profile applies. Mirrors the aggregate's settings so a reader is not
 # surprised by a different code shape between the two halves of the app.
 [profile.release]

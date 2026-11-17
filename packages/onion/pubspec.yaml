@@ -1,7 +1,7 @@
 name: onion
 description: "Embedded Tor client and loopback SOCKS5 proxy, built on Arti. Not an official Tor Project product."
 version: 0.1.0
-repository: https://github.com/SatoshiPortal/bull_sdk
+repository: https://github.com/SatoshiPortal/bullbitcoin-mobile
 
 environment:
   sdk: "3.14.0"

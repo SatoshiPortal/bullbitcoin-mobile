@@ -52,5 +52,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-// No cargokit — native Rust code provided by bull_sdk
+// No cargokit — native Rust code provided by rust_bindings
 

@@ -12,7 +12,7 @@ Embedded Tor client and loopback SOCKS5 proxy for Bull Bitcoin Mobile, built on
 
 The Rust implementation, flutter_rust_bridge bindings, and mobile Snowflake
 transport are complete. The package is consumed through
-`package:bull_sdk/onion.dart`; its hermetic Rust suite exercises the lifecycle,
+`package:rust_bindings/onion.dart`; its hermetic Rust suite exercises the lifecycle,
 bridge configuration, and SOCKS protocol without a device attached.
 
 ## Why this exists
@@ -203,7 +203,7 @@ runs the probe against a working and a bogus destination, and drives an actual
 SOCKS5 `CONNECT` end to end — reading a live HTTP response back through the
 tunnel.
 
-## Why this is a standalone package, not part of the bull_sdk aggregate
+## Why this is a standalone package, not part of the rust_bindings aggregate
 
 It was going to be a sub-crate of `rust_lib_bull_sdk`, like `lwk` and `boltz`.
 Cargo refuses:

@@ -163,7 +163,7 @@ Shared code never imports `data/write`, and `data/read` never does. `make native
 
 ## Native test suites
 
-`native_test/lwk_worker_test.dart` is a separate native integration suite because bull_sdk's Rust shared library is not built by the BDK asset hook used by ordinary Flutter unit tests. Supply the host library built from the pinned SDK (its own locked Cargo build and pinned toolchain), then run on Linux:
+`native_test/lwk_worker_test.dart` is a separate native integration suite because rust_bindings' Rust shared library is not built by the BDK asset hook used by ordinary Flutter unit tests. Supply the host library built from the pinned SDK (its own locked Cargo build and pinned toolchain), then run on Linux:
 
 ```sh
 LD_LIBRARY_PATH="$BULL_SDK_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" fvm flutter test packages/sync/native_test/lwk_worker_test.dart
