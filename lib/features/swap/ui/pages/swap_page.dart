@@ -39,6 +39,7 @@ class SwapPageState extends State<SwapPage> {
   static const _actionsPadding = EdgeInsets.fromLTRB(16, 8, 16, 16);
 
   final _formKey = GlobalKey<FormState>();
+  final _errorKey = GlobalKey();
   final TextEditingController _amountController = TextEditingController();
   final FocusNode _amountNode = FocusNode();
   int _amountSat = 0;
@@ -289,30 +290,43 @@ class SwapPageState extends State<SwapPage> {
             );
           },
         ),
-        BlocSelector<
-          TransferBloc,
-          TransferState,
-          (SwapCreationException?, SwapFailure?)
-        >(
-          selector: (state) => (state.swapCreationException, state.swapFailure),
-          builder: (context, errors) {
-            final (swapCreationError, swapFailure) = errors;
-            if (swapCreationError == null && swapFailure == null) {
-              return const SizedBox.shrink();
-            }
-            final message =
-                swapFailure?.toTranslated(context) ??
-                (swapCreationError is InsufficientFundsSwapException
-                    ? context.loc.swapInsufficientFunds
-                    : context.loc.sendErrorSwapCreationFailed);
-            return Text(
-              message,
-              style: context.font.labelLarge?.copyWith(
-                color: context.appColors.error,
+        BlocListener<TransferBloc, TransferState>(
+          // Continue is pinned, so a failure below the fold would go unseen.
+          listenWhen: (previous, current) =>
+              (current.swapCreationException != null ||
+                  current.swapFailure != null) &&
+              (current.swapCreationException !=
+                      previous.swapCreationException ||
+                  current.swapFailure != previous.swapFailure),
+          listener: (context, state) => _revealError(),
+          child:
+              BlocSelector<
+                TransferBloc,
+                TransferState,
+                (SwapCreationException?, SwapFailure?)
+              >(
+                selector: (state) =>
+                    (state.swapCreationException, state.swapFailure),
+                builder: (context, errors) {
+                  final (swapCreationError, swapFailure) = errors;
+                  if (swapCreationError == null && swapFailure == null) {
+                    return const SizedBox.shrink();
+                  }
+                  final message =
+                      swapFailure?.toTranslated(context) ??
+                      (swapCreationError is InsufficientFundsSwapException
+                          ? context.loc.swapInsufficientFunds
+                          : context.loc.sendErrorSwapCreationFailed);
+                  return Text(
+                    message,
+                    key: _errorKey,
+                    style: context.font.labelLarge?.copyWith(
+                      color: context.appColors.error,
+                    ),
+                    maxLines: 4,
+                  );
+                },
               ),
-              maxLines: 4,
-            );
-          },
         ),
         BlocSelector<TransferBloc, TransferState, bool>(
           selector: (state) => state.shouldShowReceiveExactAmount,
@@ -367,6 +381,18 @@ class SwapPageState extends State<SwapPage> {
         const Gap(12),
       ],
     );
+  }
+
+  void _revealError() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final errorContext = _errorKey.currentContext;
+      if (errorContext == null) return;
+      Scrollable.ensureVisible(
+        errorContext,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+        duration: const Duration(milliseconds: 200),
+      );
+    });
   }
 
   Widget _buildActions(BuildContext context, bool showAdvancedOptions) {
