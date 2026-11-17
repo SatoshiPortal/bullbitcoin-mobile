@@ -23,6 +23,8 @@ final class MerchantRepository {
   /// deletions included, so an evicted place is not fetched again.
   DateTime? _cursor;
 
+  bool _cacheDirty = false;
+
   /// The merchants last returned. Handed back as is when a sync brings no
   /// change, so the map does not re-upload identical pins.
   List<Merchant>? _merchants;
@@ -62,14 +64,16 @@ final class MerchantRepository {
       } on DioException catch (error) {
         return Err(BullMapNetworkFailure(error.type.name));
       }
-      _cursor = _newest(_cursor, fetched.map((place) => place.updatedAt));
+      final cursor = _newest(_cursor, fetched.map((place) => place.updatedAt));
+      _cacheDirty = _cacheDirty || cursor != _cursor;
+      _cursor = cursor;
       // BTC Map's `updated_since` is exclusive today; dropping what is already
       // stored keeps an inclusive server from rewriting the cache every time.
       final changes = [
         for (final place in fetched)
           if (_changes(snapshot, place)) place,
       ];
-      if (changes.isEmpty) return Ok(_currentMerchants());
+      if (changes.isEmpty && !_cacheDirty) return Ok(_currentMerchants());
 
       for (final place in changes) {
         if (place.isDeleted) {
@@ -78,16 +82,20 @@ final class MerchantRepository {
           snapshot[place.id] = place;
         }
       }
-      _merchants = null;
+      if (changes.isNotEmpty) {
+        _merchants = null;
+        _cacheDirty = true;
+      }
 
       try {
         await _cache.write(
           snapshot.values.toList(growable: false),
           cursor: _cursor,
         );
+        _cacheDirty = false;
       } on Exception {
-        // The map can still show what was just downloaded; the next sync
-        // starts from the older cache and fetches these changes again.
+        // Keep the downloaded places on screen and retry this write on the
+        // next sync, even when the server has no more changes.
       }
       return Ok(_currentMerchants());
     } on Exception catch (error) {
