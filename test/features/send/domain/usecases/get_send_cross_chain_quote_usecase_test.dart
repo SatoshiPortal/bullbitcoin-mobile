@@ -18,42 +18,50 @@ void main() {
     usecase = GetSendCrossChainQuoteUsecase(swapFacade);
   });
 
-  test('regtest refuses before requesting a remote quote', () async {
-    final result = await usecase.execute(
-      wallet: _wallet(Network.bitcoinRegtest),
-      amountSat: BigInt.from(1000),
-      isInAmountFixed: false,
-    );
-    expect(
-      result,
-      isA<Err>().having(
-        (result) => result.failure,
-        'failure',
-        isA<SendSwapRouteUnavailableFailure>(),
-      ),
-    );
-    verifyZeroInteractions(swapFacade);
-  });
+  for (final network in [Network.bitcoinRegtest, Network.liquidRegtest]) {
+    test('$network refuses before requesting a remote quote', () async {
+      final result = await usecase.execute(
+        wallet: _wallet(network),
+        amountSat: BigInt.from(1000),
+        isInAmountFixed: false,
+      );
+      expect(
+        result,
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SendSwapRouteUnavailableFailure>(),
+        ),
+      );
+      verifyZeroInteractions(swapFacade);
+    });
+  }
 
-  test('quotes Liquid to Bitcoin as exact output', () async {
-    when(
-      () => swapFacade.getQuote(
-        environment: OrderSwapEnvironment.testnet,
+  for (final isTestnet in [false, true]) {
+    final environment = isTestnet
+        ? OrderSwapEnvironment.testnet
+        : OrderSwapEnvironment.mainnet;
+    final network = isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+    test('$environment quotes Liquid to Bitcoin as exact output', () async {
+      when(
+        () => swapFacade.getQuote(
+          environment: environment,
+          amountSat: BigInt.from(100000),
+          isInAmountFixed: false,
+          inNetwork: OrderSwapNetwork.liquid,
+          outNetwork: OrderSwapNetwork.bitcoin,
+        ),
+      ).thenAnswer((_) async => Ok(_quote()));
+
+      final result = await usecase.execute(
+        wallet: _wallet(network),
         amountSat: BigInt.from(100000),
         isInAmountFixed: false,
-        inNetwork: OrderSwapNetwork.liquid,
-        outNetwork: OrderSwapNetwork.bitcoin,
-      ),
-    ).thenAnswer((_) async => Ok(_quote()));
+      );
 
-    final result = await usecase.execute(
-      wallet: _wallet(Network.liquidTestnet),
-      amountSat: BigInt.from(100000),
-      isInAmountFixed: false,
-    );
-
-    expect(result, isA<Ok<OrderSwapQuote, SendFailure>>());
-  });
+      expect(result, isA<Ok<OrderSwapQuote, SendFailure>>());
+    });
+  }
 
   test('quotes Bitcoin to Liquid as exact output', () async {
     when(
