@@ -67,6 +67,7 @@ class AppTheme {
         : Brightness.light;
 
     final bullTheme = _bullThemeFrom(colors);
+    final typography = AppTheme.typography.resolved(colors.text);
 
     return ThemeData(
       useMaterial3: true,
@@ -123,10 +124,7 @@ class AppTheme {
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
       fontFamily: typography.body.fontFamily,
-      textTheme: typography.toTextTheme().apply(
-        bodyColor: colors.text,
-        displayColor: colors.text,
-      ),
+      textTheme: typography.toTextTheme(),
       appBarTheme: AppBarTheme(
         backgroundColor: colors.transparent,
         systemOverlayStyle: themeType == AppThemeType.dark
