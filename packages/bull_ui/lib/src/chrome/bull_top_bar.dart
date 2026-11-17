@@ -2,11 +2,8 @@ import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Top bar — back button + centered title + an optional trailing action.
-///
-/// Duplicated from `core/widgets/navbar/top_bar.dart` (the `BB*` original is
-/// left untouched). Adds an optional red-dot badge on the trailing action to
-/// flag an active filter.
+/// Top bar — back button + centered title + an optional trailing action, with
+/// an optional red-dot badge on the trailing action to flag an active filter.
 class BullTopBar extends StatelessWidget {
   const BullTopBar({
     super.key,
