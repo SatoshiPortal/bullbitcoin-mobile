@@ -127,33 +127,6 @@ class AppTheme {
         bodyColor: colors.text,
         displayColor: colors.text,
       ),
-      /* TODO: Add theme for inputs like TextField here and remove BBInputText
-       Make sure to check impact on all different inputs in the app and adjust accordingly.
-       + do the same for other widgets like dropdowns, buttons, etc.
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: type.body.copyWith(
-          color: colours.surfaceContainer,
-        ),
-        filled: true,
-        fillColor: colours.onPrimary,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-      ),
-       */
       appBarTheme: AppBarTheme(
         backgroundColor: colors.transparent,
         systemOverlayStyle: themeType == AppThemeType.dark
