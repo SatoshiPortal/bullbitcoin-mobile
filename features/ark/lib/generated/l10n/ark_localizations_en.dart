@@ -434,4 +434,7 @@ class ArkLocalizationsEn extends ArkLocalizations {
 
   @override
   String get exitMaximumClaimFee => 'Maximum claim fee (sats)';
+
+  @override
+  String get abandonedBoardState => 'Abandoned board (never signed)';
 }

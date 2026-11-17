@@ -889,6 +889,12 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Maximum claim fee (sats)'**
   String get exitMaximumClaimFee;
+
+  /// No description provided for @abandonedBoardState.
+  ///
+  /// In en, this message translates to:
+  /// **'Abandoned board (never signed)'**
+  String get abandonedBoardState;
 }
 
 class _ArkLocalizationsDelegate
