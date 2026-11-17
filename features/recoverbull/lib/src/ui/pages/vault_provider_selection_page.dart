@@ -280,10 +280,7 @@ class HowToDecideVaultLocation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final body = context.bullText.labelMedium?.copyWith(
-      height: 1.5,
-      fontSize: 14,
-    );
+    final body = context.bullType.label.copyWith(height: 1.5);
     TextSpan recommendation(String title, String text) => TextSpan(
       style: context.bullText.bodyMedium,
       children: [
