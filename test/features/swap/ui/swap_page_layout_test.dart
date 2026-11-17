@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
@@ -88,5 +91,49 @@ void main() {
     );
     expect(tester.takeException(), isNull);
     expect(tester.getRect(continueButton).bottom, lessThanOrEqualTo(200));
+  });
+
+  testWidgets('a swap creation error scrolls into view above the actions', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final states = StreamController<TransferState>.broadcast();
+    addTearDown(states.close);
+    final initial = TransferState(
+      fromWallet: _wallet,
+      consolidationRequired: true,
+    );
+    final bloc = _MockTransferBloc();
+    when(() => bloc.state).thenReturn(initial);
+    when(() => bloc.stream).thenAnswer((_) => states.stream);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider<TransferBloc>.value(
+          value: bloc,
+          child: const SwapPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final failed = initial.copyWith(
+      swapCreationException: InsufficientFundsSwapException(),
+    );
+    when(() => bloc.state).thenReturn(failed);
+    states.add(failed);
+    // Build the error, start the scroll after that frame, then finish it.
+    await tester.pump();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    final error = tester.getRect(find.text('Insufficient Funds'));
+    final actions = tester.getRect(find.text('Continue'));
+    expect(error.bottom, lessThanOrEqualTo(actions.top));
   });
 }
