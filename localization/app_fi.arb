@@ -1433,7 +1433,6 @@
   "submitButton": "Lähetä",
   "optionalPassphraseHint": "Valinnainen salafraasi",
   "requiredHint": "Pakollinen",
-  "wordsDropdownSuffix": " sanaa",
   "emptyMnemonicWordsError": "Syötä kaikki siemenlauseen sanat",
   "tryAgainButton": "Yritä uudelleen",
   "errorGenericTitle": "Hups! Jotain meni pieleen",

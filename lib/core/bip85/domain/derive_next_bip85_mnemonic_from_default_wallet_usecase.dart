@@ -58,6 +58,8 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
       };
 
       const application = Bip85Application.bip39;
+      // BIP85 children are English by design.
+      const language = bip39.Language.english;
       final indexResult = await _bip85Repository.fetchNextIndexForApplication(
         application,
       );
@@ -68,6 +70,7 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
           final words = switch (await secret.derive.bip85.mnemonic(
             wordCount: MnemonicLength.values.byName(length.name),
             index: value,
+            language: language,
           )) {
             Ok(:final value) => value,
             Err(:final failure) => throw StateError(
@@ -79,10 +82,14 @@ class DeriveNextBip85MnemonicFromDefaultWalletUsecase {
             length: length,
             index: value,
             alias: alias,
+            language: language,
           )).map(
             (derivation) => (
               derivation: derivation,
-              mnemonic: bip39.Mnemonic.fromWords(words: words),
+              mnemonic: bip39.Mnemonic.fromWords(
+                words: words,
+                language: language,
+              ),
             ),
           );
       }

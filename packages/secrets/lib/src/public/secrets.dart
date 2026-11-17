@@ -71,6 +71,8 @@ final class Secrets {
     MnemonicLength wordCount = MnemonicLength.words12,
   }) async => (await _repository.store(
     words: Generator.mnemonic(wordCount: wordCount),
+    // bdk generates English words.
+    language: Language.english,
     rejectExisting: true,
   )).map(_handle);
 
@@ -80,7 +82,7 @@ final class Secrets {
   @useResult
   Future<Result<Secret, SecretFailure>> import({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     Set<Fingerprint>? acceptOnly,
   }) async => (await _repository.store(
@@ -136,7 +138,7 @@ final class Secrets {
   @useResult
   Future<Result<bool, SecretFailure>> contains({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) async => (await find(
     words: words,
@@ -149,7 +151,7 @@ final class Secrets {
   @useResult
   Future<Result<Secret?, SecretFailure>> find({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
   }) async => (await _repository.find(
     words: words,
@@ -164,13 +166,13 @@ final class Secrets {
 
   /// External and internal public descriptors of account 0 for words that are not stored, in [language] and with [passphrase], keyed by each of [scriptTypes].
   ///
-  /// Stateless: the keystore is neither read nor written, and the seed is derived once for every script type, used and wiped in a separate isolate. Only public descriptor strings leave it. Invalid words return [InvalidMnemonicFailure]. For English words they equal those of the same words once imported (`secret.derive.descriptors.bitcoin`); `import` accepts English only for now.
+  /// Stateless: the keystore is neither read nor written, and the seed is derived once for every script type, used and wiped in a separate isolate. Only public descriptor strings leave it. Invalid words return [InvalidMnemonicFailure]. They equal those of the same words once imported in the same language (`secret.derive.descriptors.bitcoin`).
   @internal
   @useResult
   Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
   previewBitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required Set<ScriptType> scriptTypes,
@@ -188,7 +190,7 @@ final class Secrets {
   @useResult
   Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required ScriptType scriptType,
@@ -311,7 +313,7 @@ extension type const SecretPreview._(Secrets _secrets) {
   Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>
   bitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required Set<ScriptType> scriptTypes,
@@ -327,7 +329,7 @@ extension type const SecretPreview._(Secrets _secrets) {
   @useResult
   Future<Result<bool, SecretFailure>> matchesBitcoinDescriptors({
     required List<String> words,
-    Language language = Language.english,
+    required Language language,
     String? passphrase,
     required BitcoinNetwork network,
     required ScriptType scriptType,

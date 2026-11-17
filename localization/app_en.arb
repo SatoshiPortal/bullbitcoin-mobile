@@ -5536,10 +5536,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "wordsDropdownSuffix": " words",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "emptyMnemonicWordsError": "Enter all words of your mnemonic",
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
@@ -15069,10 +15065,6 @@
   "@mnemonicLanguageAmbiguous": {
     "description": "Requires explicit language confirmation when wordlists overlap."
   },
-  "mnemonicDefaultEnglishOnly": "Default wallets currently require an English recovery phrase. After setup, you can import other languages as a separate Bitcoin wallet.",
-  "@mnemonicDefaultEnglishOnly": {
-    "description": "Explains the temporary Liquid SDK restriction before default-wallet recovery."
-  },
   "mnemonicLanguageName": "{language, select, english{English} french{French} spanish{Spanish} italian{Italian} portuguese{Portuguese} czech{Czech} korean{Korean} simplifiedChinese{Chinese (Simplified)} traditionalChinese{Chinese (Traditional)} japanese{Japanese} other{Unknown language}}",
   "@mnemonicLanguageName": {
     "description": "Localized BIP39 wordlist names keyed by Language.name, not UI locales.",
@@ -15424,10 +15416,6 @@
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
   },
-  "passphraseOptionHelp": "Only if this wallet was created with one. Otherwise leave empty.",
-  "@passphraseOptionHelp": {
-    "description": "Advanced passphrase field help during recovery."
-  },
   "settingsDarkModeTitle": "Dark mode",
   "@settingsDarkModeTitle": {
     "description": "App settings switch: on uses the dark theme, off the light theme."
@@ -15443,5 +15431,25 @@
   "torSettingsDescNoInternetOrBlocked": "This network has no internet access, or it blocks Tor.",
   "@torSettingsDescNoInternetOrBlocked": {
     "description": "Status description when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"
+  },
+  "pinCodeScrambleKeypadHint": "Scramble the digits on every tap",
+  "@pinCodeScrambleKeypadHint": {
+    "description": "Tooltip on the PIN keypad key that turns on the privacy mode: the digit keys are randomised after each key press so their positions cannot be read by an onlooker"
+  },
+  "mnemonicWordCountLabel": "Words",
+  "@mnemonicWordCountLabel": {
+    "description": "Label above the control choosing how many words the recovery phrase has"
+  },
+  "passphraseOptionOffSubtitle": "Optional extra word (BIP39)",
+  "@passphraseOptionOffSubtitle": {
+    "description": "Subtitle of the passphrase switch while it is off"
+  },
+  "passphraseOptionOnSubtitle": "Entered below, never shown",
+  "@passphraseOptionOnSubtitle": {
+    "description": "Subtitle of the passphrase switch while it is on: the passphrase field below stays obscured"
+  },
+  "networkWalletReuseNoRecoveryPhrase": "This wallet has no recovery phrase, so it can't be reused here. Import a recovery phrase or create a new wallet.",
+  "@networkWalletReuseNoRecoveryPhrase": {
+    "description": "Shown when a test-network wallet setup tries to reuse a wallet stored as a raw seed, which has no recovery phrase."
   }
 }

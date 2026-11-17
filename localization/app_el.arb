@@ -4793,10 +4793,6 @@
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
   },
-  "wordsDropdownSuffix": " λέξεις",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "receiveVerifyAddressOnLedger": "Verify Address on Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"

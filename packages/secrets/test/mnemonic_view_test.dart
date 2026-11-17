@@ -6,6 +6,8 @@ import 'package:secrets/testing.dart';
 import 'package:secrets/src/widgets/painted_text.dart'
     show PaintedMnemonic, PaintedPassphrase, PaintedWord, debugPaintedTextOf;
 
+import 'read_budget.dart';
+
 /// The sealed display: it shows a secret's words and hands them to nobody.
 ///
 /// What is asserted here is what a reader cannot check by eye — that the words stay out of the semantics tree, that a card handed a different secret never shows the previous one's, and that a failed read renders no stored text.
@@ -56,13 +58,14 @@ void main() {
     await tester.runAsync(() async {
       secret = (await secrets.import(
         words: words,
+        language: Language.english,
       ) as Ok<Secret, SecretFailure>).value;
     });
     return secret;
   }
 
   /// Lets real time pass — for the isolate — then drains the frames the completed read scheduled.
-  Future<void> settle(WidgetTester tester, [int ms = 500]) async {
+  Future<void> settle(WidgetTester tester, [int ms = readBudgetMs]) async {
     await tester.runAsync(
       () => Future<void>.delayed(Duration(milliseconds: ms)),
     );
@@ -100,6 +103,7 @@ void main() {
       secret = (await secrets.import(
         words: wordsA,
         passphrase: 'synthetic',
+        language: Language.english,
       ) as Ok<Secret, SecretFailure>).value;
     });
     await tester.pumpWidget(
@@ -221,6 +225,7 @@ void main() {
       secret = (await secrets.import(
         words: wordsA,
         passphrase: 'hunter2',
+        language: Language.english,
       ) as Ok<Secret, SecretFailure>).value;
     });
     for (final view in [

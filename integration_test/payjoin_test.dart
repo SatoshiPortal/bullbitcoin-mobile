@@ -1,3 +1,5 @@
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -190,12 +192,14 @@ Future<void> main({bool isInitialized = false}) async {
 
       final receiverSecret = switch (await secrets.import(
         words: receiverMnemonic!.split(' '),
+        language: bip39.Language.english,
       )) {
         Ok(:final value) => value,
         Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
       };
       final senderSecret = switch (await secrets.import(
         words: senderMnemonic!.split(' '),
+        language: bip39.Language.english,
       )) {
         Ok(:final value) => value,
         Err(:final failure) => fail('import failed: ${failure.runtimeType}'),

@@ -72,6 +72,7 @@ void main() {
           final imported = await secrets.import(
             words: [...List.filled(11, 'abandon'), 'about'],
             passphrase: 'synthetic-phrase',
+            language: custody.Language.english,
           );
           final secret =
               (imported as Ok<custody.Secret, custody.SecretFailure>).value;

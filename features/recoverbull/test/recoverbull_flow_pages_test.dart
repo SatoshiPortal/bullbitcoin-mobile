@@ -227,7 +227,7 @@ void main() {
       for (final digit in pin.split('')) {
         await tester.tap(
           find.descendant(
-            of: find.byType(BullDialPad),
+            of: find.byType(BullPinPad),
             matching: find.text(digit),
           ),
         );

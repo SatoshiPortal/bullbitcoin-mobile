@@ -117,7 +117,7 @@ extension type const SecretBip85._(Secret _secret) {
   Future<Result<List<String>, SecretFailure>> mnemonic({
     required MnemonicLength wordCount,
     required int index,
-    Language language = Language.english,
+    required Language language,
   }) => _secret.bip85Mnemonic(
     wordCount: wordCount,
     index: index,

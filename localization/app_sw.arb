@@ -1822,7 +1822,6 @@
   "submitButton": "Wasilisha",
   "optionalPassphraseHint": "Passphrase ya Hiari",
   "requiredHint": "Inahitajika",
-  "wordsDropdownSuffix": " maneno",
   "emptyMnemonicWordsError": "Weka maneno yote ya msemo wako",
   "tryAgainButton": "Jaribu Tena",
   "errorGenericTitle": "Lo! Hitilafu fulani imetokea",

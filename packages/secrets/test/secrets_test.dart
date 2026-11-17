@@ -369,8 +369,9 @@ void main() {
     test('a bad checksum', () async {
       final storage = FakeSecureStoragePlatform();
 
-      final result = await secretsWith(storage)
-          .import(words: List.filled(12, 'abandon'));
+      final result = await secretsWith(
+        storage,
+      ).import(words: List.filled(12, 'abandon'), language: Language.english);
 
       expect(
         (result as Err<Secret, SecretFailure>).failure,
@@ -381,8 +382,10 @@ void main() {
 
     test('an unknown word, without repeating it', () async {
       // bip39 names the word in its message. The failure must not.
-      final result = await secretsWith(FakeSecureStoragePlatform())
-          .import(words: [...words.sublist(0, 11), 'zzzzbogus']);
+      final result = await secretsWith(FakeSecureStoragePlatform()).import(
+        words: [...words.sublist(0, 11), 'zzzzbogus'],
+        language: Language.english,
+      );
 
       final failure = (result as Err<Secret, SecretFailure>).failure;
       expect(failure, isA<InvalidMnemonicFailure>());
@@ -390,8 +393,9 @@ void main() {
     });
 
     test('contains validates the candidate', () async {
-      final result = await secretsWith(FakeSecureStoragePlatform())
-          .contains(words: List.filled(12, 'abandon'));
+      final result = await secretsWith(
+        FakeSecureStoragePlatform(),
+      ).contains(words: List.filled(12, 'abandon'), language: Language.english);
 
       expect(
         (result as Err<bool, SecretFailure>).failure,
@@ -438,7 +442,8 @@ void main() {
           final storage = FakeSecureStoragePlatform();
 
           final failure = err(
-            await secretsWith(storage).import(words: regrouped),
+            await secretsWith(storage)
+                .import(words: regrouped, language: Language.english),
           );
 
           expect(failure, isA<InvalidMnemonicFailure>());
@@ -449,8 +454,10 @@ void main() {
 
       test('a trailing space is still an invalid mnemonic', () async {
         final failure = err(
-          await secretsWith(FakeSecureStoragePlatform())
-              .import(words: ['${words.first} ', ...words.sublist(1)]),
+          await secretsWith(FakeSecureStoragePlatform()).import(
+            words: ['${words.first} ', ...words.sublist(1)],
+            language: Language.english,
+          ),
         );
 
         expect(failure, isA<InvalidMnemonicFailure>());
@@ -460,7 +467,7 @@ void main() {
         // Candidate lookup and import must agree about malformed input.
         final failure = err(
           await secretsWith(FakeSecureStoragePlatform())
-              .contains(words: regrouped),
+              .contains(words: regrouped, language: Language.english),
         );
 
         expect(failure, isA<InvalidMnemonicFailure>());
@@ -474,7 +481,9 @@ void main() {
         // path every unparsable value takes — and it must never be written
         // over, because "does not parse" is not "is the same secret".
         final clean = secretsWith(FakeSecureStoragePlatform());
-        final id = ok(await clean.import(words: fifteen)).id;
+        final id = ok(
+          await clean.import(words: fifteen, language: Language.english),
+        ).id;
         final planted = jsonEncode({
           'mnemonicWords': regrouped,
           'passphrase': null,
@@ -494,7 +503,9 @@ void main() {
         expect(fetched, isNot(isA<SecretNotFoundFailure>()));
         expect(fetched, isNot(isA<InvalidMnemonicFailure>()));
 
-        final reimport = err(await secrets.import(words: fifteen));
+        final reimport = err(
+          await secrets.import(words: fifteen, language: Language.english),
+        );
         expect(reimport, isA<StoreSecretFailure>());
         expect(
           storage.entries['seed_${id.hex}'],
@@ -679,6 +690,7 @@ void main() {
         final result = await secrets.import(
           words: words,
           acceptOnly: {Fingerprint('00000000')},
+          language: Language.english,
         );
         expect(err(result), isA<FingerprintMismatchFailure>());
         expect(storage.entries, isEmpty);
@@ -692,6 +704,7 @@ void main() {
         await secrets.import(
           words: words,
           acceptOnly: {Fingerprint('00000000'), id},
+          language: Language.english,
         ),
       );
       expect(secret.id, id);
@@ -703,8 +716,9 @@ void main() {
     // Before: a count BIP39 does not define reached the boundary as the storage model's `FormatException`, and read as "the keystore refused" whether the words came from the user or from a vault. Two origins, two remedies, one wrong answer. Each origin now decides for itself.
     test('from an import, it is an invalid mnemonic', () async {
       FakeSecureStoragePlatform().install();
-      final result = await Secrets(scratchDirectory: () async => '/tmp')
-          .import(words: List.filled(11, 'abandon'));
+      final result = await Secrets(
+        scratchDirectory: () async => '/tmp',
+      ).import(words: List.filled(11, 'abandon'), language: Language.english);
       expect(
         (result as Err<Secret, SecretFailure>).failure,
         isA<InvalidMnemonicFailure>(),

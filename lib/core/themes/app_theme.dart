@@ -66,10 +66,12 @@ class AppTheme {
     final fonts = AppFonts.textTheme;
     const shapes = BullShapes.standard;
 
+    final bullTheme = _bullThemeFrom(colors);
+
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      extensions: [_bullThemeFrom(colors), shapes],
+      extensions: bullUiExtensions(colors: bullTheme, brightness: brightness),
       // Material widgets read Bull's colours, so nothing is derived from the red seed. Roles without a Bull colour use the nearest one.
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.primary,
@@ -183,26 +185,7 @@ class AppTheme {
         shadowColor: colors.border,
         margin: EdgeInsets.zero,
       ),
-      switchTheme: SwitchThemeData(
-        trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-          if (states.contains(WidgetState.selected)) {
-            return colors.text;
-          }
-          return colors.textMuted;
-        }),
-        trackOutlineWidth: const WidgetStatePropertyAll(0),
-        thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
-          return colors.surface;
-        }),
-        padding: EdgeInsets.zero,
-        overlayColor: WidgetStateProperty.all(colors.transparent),
-        trackOutlineColor: WidgetStateProperty.all(colors.transparent),
-        materialTapTargetSize: .shrinkWrap,
-        thumbIcon: WidgetStateProperty.all(
-          Icon(Icons.circle, color: colors.surface),
-        ),
-        splashRadius: 0,
-      ),
+      switchTheme: BullSwitch.themeData(bullTheme),
       listTileTheme: ListTileThemeData(
         tileColor: colors.surface,
         shape: RoundedRectangleBorder(

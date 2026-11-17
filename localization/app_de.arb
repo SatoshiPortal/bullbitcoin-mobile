@@ -1663,7 +1663,6 @@
   "sellMxnBalance": "MXN-Guthaben",
   "fundExchangeWarningTactic4": "Sie bitten darum, Bitcoin an ihre Adresse zu senden.",
   "fundExchangeSinpeDescription": "Überweisen Sie Costa-Rica-Colón mit SINPE",
-  "wordsDropdownSuffix": " Wörter",
   "receiveVerifyAddressOnLedger": "Bitte überprüfen Sie die Adresse auf Ihrem Ledger.",
   "buyWaitForFreeWithdrawal": "Auf kostenlose Auszahlung warten",
   "sellSendPaymentCrcBalance": "CRC-Guthaben",
@@ -4845,5 +4844,9 @@
   "settingsDarkModeTitle": "Dunkelmodus",
   "settingsSourceCodeTitle": "Quellcode",
   "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
-  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor."
+  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor.",
+  "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen",
+  "mnemonicWordCountLabel": "Wörter",
+  "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
+  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt"
 }

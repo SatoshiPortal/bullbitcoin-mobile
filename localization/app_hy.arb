@@ -1809,7 +1809,6 @@
   "submitButton": "Ուղարկել",
   "optionalPassphraseHint": "Ընտրովի Passphrase",
   "requiredHint": "Պարտադիր",
-  "wordsDropdownSuffix": " բառ",
   "emptyMnemonicWordsError": "Մուտքագրեք ձեր մնեմոնիկի բոլոր բառերը",
   "tryAgainButton": "Կրկին փորձել",
   "errorGenericTitle": "Ուպս! Ինչ-որ բան սխալ գնաց",

@@ -5469,10 +5469,6 @@
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
   },
-  "wordsDropdownSuffix": " کلمات",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "receiveVerifyAddressOnLedger": "بررسی آدرس در Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"

@@ -101,31 +101,43 @@ void main() {
   group('CheckDuplicateMnemonicUsecase', () {
     test('returns Ok when the mnemonic is not stored', () async {
       expect(
-        await usecase.execute(mnemonicWords: words),
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
         isA<Ok<void, ImportMnemonicFailure>>(),
       );
     });
 
     test('allows an orphan secret to be retried', () async {
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
 
-      final result = await usecase.execute(mnemonicWords: words);
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        language: bip39.Language.english,
+      );
 
       expect(result, isA<Ok<void, ImportMnemonicFailure>>());
     });
 
     test('rejects a referenced secret only on the target network', () async {
-      expect(await secrets.import(words: words), isA<Ok>());
+      expect(
+        await secrets.import(words: words, language: bip39.Language.english),
+        isA<Ok>(),
+      );
       final row = _Row();
       when(() => row.masterFingerprint).thenReturn('73c5da0a');
       when(() => row.id).thenReturn('wpkh([73c5da0a/84h/0h/0h])');
       when(() => row.networkCode).thenReturn('bitcoinMainnet');
       when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
       expect(
-        await usecase.execute(mnemonicWords: words),
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
         isA<Err<void, ImportMnemonicFailure>>().having(
           (result) => result.failure,
           'failure',
@@ -135,7 +147,10 @@ void main() {
       when(() => row.id).thenReturn('wpkh([73c5da0a/84h/1h/0h])');
       when(() => row.networkCode).thenReturn('bitcoinTestnet');
       expect(
-        await usecase.execute(mnemonicWords: words),
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
         isA<Ok<void, ImportMnemonicFailure>>(),
       );
     });
@@ -143,14 +158,20 @@ void main() {
     test(
       'unresolved catalog networks do not block orphan import preflight',
       () async {
-        expect(await secrets.import(words: words), isA<Ok>());
+        expect(
+          await secrets.import(words: words, language: bip39.Language.english),
+          isA<Ok>(),
+        );
         final invalid = _Row();
         when(() => invalid.masterFingerprint).thenReturn('73c5da0a');
         when(() => invalid.id).thenReturn('invalid origin');
         when(() => invalid.networkCode).thenReturn('unresolved');
         when(() => metadata.fetchAll()).thenAnswer((_) async => [invalid]);
         expect(
-          await usecase.execute(mnemonicWords: words),
+          await usecase.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ),
           isA<Ok<void, ImportMnemonicFailure>>(),
         );
         final valid = _Row();
@@ -160,7 +181,10 @@ void main() {
         when(() => metadata.fetchAll())
             .thenAnswer((_) async => [invalid, valid]);
         expect(
-          await usecase.execute(mnemonicWords: words),
+          await usecase.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ),
           isA<Err<void, ImportMnemonicFailure>>().having(
             (result) => result.failure,
             'failure',
@@ -172,13 +196,14 @@ void main() {
 
     test('a passphrase makes a different secret, not a duplicate', () async {
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
 
       final result = await usecase.execute(
         mnemonicWords: words,
         passphrase: 'TREZOR',
+        language: bip39.Language.english,
       );
 
       expect(result, isA<Ok<void, ImportMnemonicFailure>>());
@@ -189,13 +214,16 @@ void main() {
       () async {
         const sentinel = 'SYNTHETIC_KEYSTORE_SENTINEL';
         expect(
-          await secrets.import(words: words),
+          await secrets.import(words: words, language: bip39.Language.english),
           isA<Ok<Secret, SecretFailure>>(),
         );
         // contains now reads and compares the stored seed, so every retry must fail.
         storage.scripted.addAll(List.filled(5, Exception(sentinel)));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         final failure = (result as Err).failure;
         expect(failure, isA<ImportMnemonicUnexpectedFailure>());

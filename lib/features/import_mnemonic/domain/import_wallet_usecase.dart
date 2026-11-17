@@ -29,7 +29,7 @@ class ImportWalletUsecase {
   @useResult
   Future<Result<Wallet, ImportMnemonicFailure>> execute({
     required List<String> mnemonicWords,
-    Language language = Language.english,
+    required Language language,
     ScriptType scriptType = ScriptType.bip84,
     String passphrase = '',
     String? label,

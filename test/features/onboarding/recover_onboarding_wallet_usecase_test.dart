@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/onboarding_failure.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/recover_onboarding_wallet_usecase.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -32,6 +33,7 @@ void main() {
     );
 
     registerFallbackValue(<String>[]);
+    registerFallbackValue(Language.english);
   });
 
   group('RecoverOnboardingWalletUsecase', () {
@@ -39,12 +41,16 @@ void main() {
         'without leaking the raw exception', () async {
       when(
         () => createDefaultWalletsUsecase.execute(
+          language: any(named: 'language'),
           mnemonicWords: any(named: 'mnemonicWords'),
           passphrase: '',
         ),
       ).thenAnswer((_) async => const Err(DefaultWalletCreationFailure()));
 
-      final result = await usecase.execute(mnemonicWords: mnemonicWords);
+      final result = await usecase.execute(
+        mnemonicWords: mnemonicWords,
+        language: Language.english,
+      );
 
       expect(result, isA<Err<void, OnboardingFailure>>());
       final failure = (result as Err<void, OnboardingFailure>).failure;
@@ -59,6 +65,7 @@ void main() {
       () async {
         when(
           () => createDefaultWalletsUsecase.execute(
+            language: any(named: 'language'),
             mnemonicWords: any(named: 'mnemonicWords'),
             passphrase: '',
           ),
@@ -66,7 +73,10 @@ void main() {
         when(() => completePhysicalBackupVerificationUsecase.execute())
             .thenThrow(Exception('No default wallet found'));
 
-        final result = await usecase.execute(mnemonicWords: mnemonicWords);
+        final result = await usecase.execute(
+          mnemonicWords: mnemonicWords,
+          language: Language.english,
+        );
 
         expect(result, isA<Err<void, OnboardingFailure>>());
         final failure = (result as Err<void, OnboardingFailure>).failure;
@@ -79,6 +89,7 @@ void main() {
       const passphrase = ' Mixed Case ';
       when(
         () => createDefaultWalletsUsecase.execute(
+          language: any(named: 'language'),
           mnemonicWords: mnemonicWords,
           passphrase: passphrase,
         ),
@@ -88,12 +99,14 @@ void main() {
       expect(
         await usecase.execute(
           mnemonicWords: mnemonicWords,
+          language: Language.english,
           passphrase: passphrase,
         ),
         isA<Ok<void, OnboardingFailure>>(),
       );
       verify(
         () => createDefaultWalletsUsecase.execute(
+          language: any(named: 'language'),
           mnemonicWords: mnemonicWords,
           passphrase: passphrase,
         ),
@@ -103,13 +116,17 @@ void main() {
     test('returns Ok on success', () async {
       when(
         () => createDefaultWalletsUsecase.execute(
+          language: any(named: 'language'),
           mnemonicWords: any(named: 'mnemonicWords'),
         ),
       ).thenAnswer((_) async => const Ok([]));
       when(() => completePhysicalBackupVerificationUsecase.execute())
           .thenAnswer((_) async {});
 
-      final result = await usecase.execute(mnemonicWords: mnemonicWords);
+      final result = await usecase.execute(
+        mnemonicWords: mnemonicWords,
+        language: Language.english,
+      );
 
       expect(result, isA<Ok<void, OnboardingFailure>>());
     });

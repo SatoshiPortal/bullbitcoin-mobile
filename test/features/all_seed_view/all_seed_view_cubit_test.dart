@@ -67,7 +67,7 @@ void main() {
   setUp(() async {
     FakeSecureStoragePlatform().install();
     final stored = await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words);
+        .import(words: words, language: Language.english);
     aSecret = (stored as Ok<Secret, SecretFailure>).value;
 
     getAllSecretsUsecase = _MockGetAllSecretsUsecase();

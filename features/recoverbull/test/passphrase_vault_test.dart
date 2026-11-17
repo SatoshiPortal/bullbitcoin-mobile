@@ -112,7 +112,11 @@ void main() {
   setUp(() async {
     storage = FakeSecureStoragePlatform().install();
     secrets = custody.Secrets(scratchDirectory: () async => '.');
-    final imported = await secrets.import(words: words, passphrase: passphrase);
+    final imported = await secrets.import(
+      words: words,
+      passphrase: passphrase,
+      language: custody.Language.english,
+    );
     secret = switch (imported) {
       Ok(:final value) => value,
       Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
@@ -234,7 +238,10 @@ void main() {
         ),
       );
       expect(sibling, isNot(secret.id));
-      final plain = await secrets.import(words: words);
+      final plain = await secrets.import(
+        words: words,
+        language: custody.Language.english,
+      );
       expect((plain as Err).failure, isA<custody.SecretAlreadyExistsFailure>());
       expect(
         ((plain as Err).failure as custody.SecretAlreadyExistsFailure).id,

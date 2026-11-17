@@ -411,12 +411,12 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                           context,
                           (_) => Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: BullDialPad(
-                              disableFeedback: true,
-                              onlyDigits: true,
-                              onNumberPressed: (e) =>
-                                  _inputController.text += e,
-                              onBackspacePressed: () {
+                            child: BullPinPad(
+                              scrambleHint:
+                                  context.loc.recoverbullScrambleKeypadHint,
+                              onDigit: (digit) =>
+                                  _inputController.text += '$digit',
+                              onBackspace: () {
                                 final text = _inputController.text;
                                 if (text.isNotEmpty) {
                                   _inputController.text = text.substring(

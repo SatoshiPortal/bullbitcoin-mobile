@@ -8,7 +8,7 @@ import 'package:unorm_dart/unorm_dart.dart' show nfkd;
 /// One mnemonic word painted without a string-bearing widget in the tree.
 final class PaintedWord extends _PaintedText {
   @internal
-  PaintedWord(String word, {super.language, super.style, super.key})
+  PaintedWord(String word, {required super.language, super.style, super.key})
     : super([nfkd(word)], _Cell.word, plain: nfkd(word));
 }
 
@@ -22,18 +22,24 @@ final class PaintedPassphrase extends _PaintedText {
         [for (final rune in passphrase.runes) String.fromCharCode(rune)],
         _Cell.character,
         plain: passphrase,
+        // Characters, not words: the wordlist only keys the metrics cache.
+        language: Language.english,
       );
 }
 
 /// A complete mnemonic painted as a grid of words, without exposing its words to the host.
 final class PaintedMnemonic extends _PaintedText {
   @internal
-  PaintedMnemonic(List<String> words, {super.language, super.style, super.key})
-    : super(
-        words.map(nfkd).toList(),
-        _Cell.word,
-        plain: words.map(nfkd).join(language.separator),
-      );
+  PaintedMnemonic(
+    List<String> words, {
+    required super.language,
+    super.style,
+    super.key,
+  }) : super(
+         words.map(nfkd).toList(),
+         _Cell.word,
+         plain: words.map(nfkd).join(language.separator),
+       );
 }
 
 /// Secret text shares one private renderer. The host can place its widget but cannot read its text; screenshot protection belongs to the host screen.
@@ -50,7 +56,7 @@ abstract class _PaintedText extends LeafRenderObjectWidget {
     this._cells,
     this._kind, {
     required this._plain,
-    this._language = Language.english,
+    required this._language,
     this._style,
     super.key,
   });
