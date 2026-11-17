@@ -47,7 +47,10 @@ class SwapEngineSwitcher {
 
   /// Ok means activated. Busy retains the serialized transition; callers must
   /// not infer that a previous driver has closed or install another one.
-  Future<Result<void, SwapsFailure>> rebuild({bool? isTestnet}) {
+  Future<Result<void, SwapsFailure>> rebuild({
+    bool? isTestnet,
+    bool waitForCompletion = false,
+  }) {
     if (_disposed) return Future.value(const Err(SwapsBusyFailure()));
     final target = isTestnet ?? _desiredIsTestnet;
     _desiredIsTestnet = target;
@@ -57,6 +60,7 @@ class SwapEngineSwitcher {
     _swapWatcher.suspend();
     final work = _pending.then((_) => _rebuild(target, revision));
     _pending = work.then<void>((_) {});
+    if (waitForCompletion) return work;
     return Future.any([
       work,
       Future<Result<void, SwapsFailure>>.delayed(
