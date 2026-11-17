@@ -11319,5 +11319,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Σχόλια, φωτογραφίες και άλλα",
   "merchantMapWebsite": "Ιστότοπος",
   "merchantMapZoomInForMore": "Εμφανίζονται τα πλησιέστερα {shown} από {total}. Κάντε μεγέθυνση για να δείτε τα υπόλοιπα.",
-  "merchantMapZoomInToSeeNearby": "Κάντε μεγέθυνση στον χάρτη για να δείτε κοντινά μέρη"
+  "merchantMapZoomInToSeeNearby": "Κάντε μεγέθυνση στον χάρτη για να δείτε κοντινά μέρη",
+  "merchantMapLinkFailed": "Δεν ήταν δυνατό να ανοίξει αυτός ο σύνδεσμος"
 }

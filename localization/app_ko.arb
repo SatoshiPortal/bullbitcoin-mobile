@@ -11319,5 +11319,6 @@
   "merchantMapViewOnBtcMapSubtitle": "댓글, 사진 등",
   "merchantMapWebsite": "웹사이트",
   "merchantMapZoomInForMore": "{total}개 중 가까운 {shown}개 표시. 나머지를 보려면 확대하세요.",
-  "merchantMapZoomInToSeeNearby": "주변 장소를 보려면 지도를 확대하세요"
+  "merchantMapZoomInToSeeNearby": "주변 장소를 보려면 지도를 확대하세요",
+  "merchantMapLinkFailed": "이 링크를 열 수 없습니다"
 }

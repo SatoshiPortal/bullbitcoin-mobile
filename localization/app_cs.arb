@@ -11319,5 +11319,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Komentáře, fotky a další",
   "merchantMapWebsite": "Web",
   "merchantMapZoomInForMore": "Zobrazeno nejbližších {shown} z {total}. Přibližte mapu, abyste viděli zbytek.",
-  "merchantMapZoomInToSeeNearby": "Přibližte mapu, abyste viděli místa v okolí"
+  "merchantMapZoomInToSeeNearby": "Přibližte mapu, abyste viděli místa v okolí",
+  "merchantMapLinkFailed": "Tento odkaz nelze otevřít"
 }

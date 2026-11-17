@@ -11626,5 +11626,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Comments, photos aur bahut kuch",
   "merchantMapWebsite": "Website",
   "merchantMapZoomInForMore": "{total} mein se sabse nazdeeki {shown} dikhaye ja rahe hain. Baaki dekhne ke liye zoom in karein.",
-  "merchantMapZoomInToSeeNearby": "Aas-paas ki jagahein dekhne ke liye map par zoom in karein"
+  "merchantMapZoomInToSeeNearby": "Aas-paas ki jagahein dekhne ke liye map par zoom in karein",
+  "merchantMapLinkFailed": "Yeh link nahi khul saka"
 }

@@ -3680,5 +3680,6 @@
   "merchantMapViewOnBtcMapSubtitle": "კომენტარები, ფოტოები და სხვა",
   "merchantMapWebsite": "ვებსაიტი",
   "merchantMapZoomInForMore": "ნაჩვენებია უახლოესი {shown} / {total}. დანარჩენის სანახავად გაადიდეთ.",
-  "merchantMapZoomInToSeeNearby": "ახლომდებარე ადგილების სანახავად გაადიდეთ რუკა"
+  "merchantMapZoomInToSeeNearby": "ახლომდებარე ადგილების სანახავად გაადიდეთ რუკა",
+  "merchantMapLinkFailed": "ამ ბმულის გახსნა ვერ მოხერხდა"
 }

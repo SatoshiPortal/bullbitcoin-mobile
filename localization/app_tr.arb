@@ -11319,5 +11319,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Yorumlar, fotoğraflar ve daha fazlası",
   "merchantMapWebsite": "Web sitesi",
   "merchantMapZoomInForMore": "{total} yerden en yakın {shown} tanesi gösteriliyor. Kalanları görmek için yakınlaştırın.",
-  "merchantMapZoomInToSeeNearby": "Yakındaki yerleri görmek için haritayı yakınlaştırın"
+  "merchantMapZoomInToSeeNearby": "Yakındaki yerleri görmek için haritayı yakınlaştırın",
+  "merchantMapLinkFailed": "Bu bağlantı açılamadı"
 }

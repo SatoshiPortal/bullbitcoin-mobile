@@ -3557,5 +3557,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Bình luận, ảnh và hơn thế nữa",
   "merchantMapWebsite": "Trang web",
   "merchantMapZoomInForMore": "Đang hiển thị {shown} địa điểm gần nhất trên {total}. Phóng to để xem phần còn lại.",
-  "merchantMapZoomInToSeeNearby": "Phóng to bản đồ để xem các địa điểm gần đây"
+  "merchantMapZoomInToSeeNearby": "Phóng to bản đồ để xem các địa điểm gần đây",
+  "merchantMapLinkFailed": "Không thể mở liên kết này"
 }

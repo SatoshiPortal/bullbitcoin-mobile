@@ -4654,5 +4654,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Kommentit, kuvat ja muuta",
   "merchantMapWebsite": "Verkkosivusto",
   "merchantMapZoomInForMore": "Näytetään lähimmät {shown}/{total}. Lähennä nähdäksesi loput.",
-  "merchantMapZoomInToSeeNearby": "Lähennä karttaa nähdäksesi lähellä olevat paikat"
+  "merchantMapZoomInToSeeNearby": "Lähennä karttaa nähdäksesi lähellä olevat paikat",
+  "merchantMapLinkFailed": "Linkkiä ei voitu avata"
 }

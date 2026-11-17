@@ -8701,5 +8701,6 @@
   "merchantMapViewOnBtcMapSubtitle": "মন্তব্য, ফটো আৰু অধিক",
   "merchantMapWebsite": "ৱেবছাইট",
   "merchantMapZoomInForMore": "{total}ৰ ভিতৰত ওচৰৰ {shown} দেখুওৱা হৈছে। বাকীবোৰ চাবলৈ জুম ইন কৰক।",
-  "merchantMapZoomInToSeeNearby": "ওচৰৰ ঠাইবোৰ চাবলৈ মেপখন জুম ইন কৰক"
+  "merchantMapZoomInToSeeNearby": "ওচৰৰ ঠাইবোৰ চাবলৈ মেপখন জুম ইন কৰক",
+  "merchantMapLinkFailed": "এই লিংকটো খুলিব পৰা নগ'ল"
 }

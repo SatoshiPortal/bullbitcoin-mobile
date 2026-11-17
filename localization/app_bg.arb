@@ -9438,5 +9438,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Коментари, снимки и още",
   "merchantMapWebsite": "Уебсайт",
   "merchantMapZoomInForMore": "Показани най-близките {shown} от {total}. Увеличете, за да видите останалите.",
-  "merchantMapZoomInToSeeNearby": "Увеличете картата, за да видите места наблизо"
+  "merchantMapZoomInToSeeNearby": "Увеличете картата, за да видите места наблизо",
+  "merchantMapLinkFailed": "Тази връзка не може да се отвори"
 }

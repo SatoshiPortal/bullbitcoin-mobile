@@ -2,6 +2,7 @@ import 'package:bull_map/bull_map.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -76,42 +77,42 @@ class MerchantDetailsSheet extends StatelessWidget {
               icon: BullIcons.qrCode,
               title: context.loc.merchantMapRequiredApp,
               subtitle: _displayHost(requiredAppUrl),
-              onTap: () => _open(requiredAppUrl),
+              onTap: () => _open(context, requiredAppUrl),
             ),
           if (phone != null)
             BullSettingsEntryItem(
               icon: BullIcons.phoneOutlined,
               title: context.loc.merchantMapPhone,
               subtitle: phone,
-              onTap: () => _open(Uri(scheme: 'tel', path: phone)),
+              onTap: () => _open(context, Uri(scheme: 'tel', path: phone)),
             ),
           if (email != null)
             BullSettingsEntryItem(
               icon: BullIcons.emailOutlined,
               title: context.loc.merchantMapEmail,
               subtitle: email,
-              onTap: () => _open(Uri(scheme: 'mailto', path: email)),
+              onTap: () => _open(context, Uri(scheme: 'mailto', path: email)),
             ),
           if (website != null)
             BullSettingsEntryItem(
               icon: BullIcons.language,
               title: context.loc.merchantMapWebsite,
               subtitle: _displayHost(website),
-              onTap: () => _open(website),
+              onTap: () => _open(context, website),
             ),
           for (final link in merchant.socialLinks)
             BullSettingsEntryItem(
               icon: BullIcons.link,
               title: _displayHost(link),
               subtitle: link.path.length > 1 ? link.path : null,
-              onTap: () => _open(link),
+              onTap: () => _open(context, link),
             ),
           if (btcMapUrl != null)
             BullSettingsEntryItem(
               icon: BullIcons.currencyBitcoin,
               title: context.loc.merchantMapViewOnBtcMap,
               subtitle: context.loc.merchantMapViewOnBtcMapSubtitle,
-              onTap: () => _open(btcMapUrl),
+              onTap: () => _open(context, btcMapUrl),
             ),
         ],
       ),
@@ -122,9 +123,18 @@ class MerchantDetailsSheet extends StatelessWidget {
   static String _displayHost(Uri uri) =>
       uri.host.startsWith('www.') ? uri.host.substring(4) : uri.host;
 
-  /// Outside the app, in the browser, dialer or mail app.
-  static Future<void> _open(Uri uri) =>
-      launchUrl(uri, mode: LaunchMode.externalApplication);
+  /// Outside the app, in the browser, dialer or mail app. Says so when no app
+  /// on the device can open it (no dialer, no mail app).
+  static Future<void> _open(BuildContext context, Uri uri) async {
+    bool opened;
+    try {
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } on PlatformException {
+      opened = false;
+    }
+    if (opened || !context.mounted) return;
+    BullSnackBar.show(context, message: context.loc.merchantMapLinkFailed);
+  }
 }
 
 /// The verified badge, or the attention one when the listing is stale or was

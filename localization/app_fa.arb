@@ -11319,5 +11319,6 @@
   "merchantMapViewOnBtcMapSubtitle": "نظرات، عکس‌ها و موارد بیشتر",
   "merchantMapWebsite": "وب‌سایت",
   "merchantMapZoomInForMore": "نمایش {shown} مکان نزدیک‌تر از {total}. برای دیدن بقیه بزرگ‌نمایی کنید.",
-  "merchantMapZoomInToSeeNearby": "برای دیدن مکان‌های نزدیک، نقشه را بزرگ‌نمایی کنید"
+  "merchantMapZoomInToSeeNearby": "برای دیدن مکان‌های نزدیک، نقشه را بزرگ‌نمایی کنید",
+  "merchantMapLinkFailed": "این پیوند باز نشد"
 }

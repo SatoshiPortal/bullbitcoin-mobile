@@ -4661,5 +4661,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Comentarios, fotos y más",
   "merchantMapWebsite": "Sitio web",
   "merchantMapZoomInForMore": "Mostrando los {shown} más cercanos de {total}. Acerca la vista para ver el resto.",
-  "merchantMapZoomInToSeeNearby": "Acerca el mapa para ver lugares cercanos"
+  "merchantMapZoomInToSeeNearby": "Acerca el mapa para ver lugares cercanos",
+  "merchantMapLinkFailed": "No se pudo abrir este enlace"
 }

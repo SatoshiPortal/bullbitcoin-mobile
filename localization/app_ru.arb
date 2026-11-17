@@ -4672,5 +4672,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Комментарии, фото и многое другое",
   "merchantMapWebsite": "Сайт",
   "merchantMapZoomInForMore": "Показаны ближайшие {shown} из {total}. Приблизьте карту, чтобы увидеть остальные.",
-  "merchantMapZoomInToSeeNearby": "Приблизьте карту, чтобы увидеть места рядом"
+  "merchantMapZoomInToSeeNearby": "Приблизьте карту, чтобы увидеть места рядом",
+  "merchantMapLinkFailed": "Не удалось открыть ссылку"
 }

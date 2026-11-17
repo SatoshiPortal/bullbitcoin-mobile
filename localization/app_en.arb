@@ -15657,5 +15657,9 @@
   "merchantMapZoomInToSeeNearby": "Zoom in on the map to see places nearby",
   "@merchantMapZoomInToSeeNearby": {
     "description": "Merchant map list: the map shows too large an area to list nearby places"
+  },
+  "merchantMapLinkFailed": "Couldn't open this link",
+  "@merchantMapLinkFailed": {
+    "description": "Merchant map details: no app on the device could open the tapped phone, email or web link"
   }
 }

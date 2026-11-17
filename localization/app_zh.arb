@@ -4666,5 +4666,6 @@
   "merchantMapViewOnBtcMapSubtitle": "评论、照片等",
   "merchantMapWebsite": "网站",
   "merchantMapZoomInForMore": "显示 {total} 个中最近的 {shown} 个。放大以查看其余地点。",
-  "merchantMapZoomInToSeeNearby": "放大地图以查看附近地点"
+  "merchantMapZoomInToSeeNearby": "放大地图以查看附近地点",
+  "merchantMapLinkFailed": "无法打开此链接"
 }

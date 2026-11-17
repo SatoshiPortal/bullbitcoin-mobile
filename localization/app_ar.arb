@@ -11322,5 +11322,6 @@
   "merchantMapViewOnBtcMapSubtitle": "التعليقات والصور والمزيد",
   "merchantMapWebsite": "الموقع الإلكتروني",
   "merchantMapZoomInForMore": "عرض أقرب {shown} من {total}. كبّر الخريطة لرؤية البقية.",
-  "merchantMapZoomInToSeeNearby": "كبّر الخريطة لرؤية الأماكن القريبة"
+  "merchantMapZoomInToSeeNearby": "كبّر الخريطة لرؤية الأماكن القريبة",
+  "merchantMapLinkFailed": "تعذّر فتح هذا الرابط"
 }

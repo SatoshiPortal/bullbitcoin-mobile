@@ -11323,5 +11323,6 @@
   "merchantMapViewOnBtcMapSubtitle": "ความคิดเห็น รูปภาพ และอื่นๆ",
   "merchantMapWebsite": "เว็บไซต์",
   "merchantMapZoomInForMore": "แสดง {shown} แห่งที่ใกล้ที่สุดจาก {total} ซูมเข้าเพื่อดูที่เหลือ",
-  "merchantMapZoomInToSeeNearby": "ซูมเข้าแผนที่เพื่อดูสถานที่ใกล้เคียง"
+  "merchantMapZoomInToSeeNearby": "ซูมเข้าแผนที่เพื่อดูสถานที่ใกล้เคียง",
+  "merchantMapLinkFailed": "ไม่สามารถเปิดลิงก์นี้ได้"
 }

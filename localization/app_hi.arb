@@ -11506,5 +11506,6 @@
   "merchantMapViewOnBtcMapSubtitle": "टिप्पणियाँ, फ़ोटो और बहुत कुछ",
   "merchantMapWebsite": "वेबसाइट",
   "merchantMapZoomInForMore": "{total} में से सबसे नज़दीकी {shown} दिखाए जा रहे हैं। बाकी देखने के लिए ज़ूम इन करें।",
-  "merchantMapZoomInToSeeNearby": "आस-पास की जगहें देखने के लिए मैप पर ज़ूम इन करें"
+  "merchantMapZoomInToSeeNearby": "आस-पास की जगहें देखने के लिए मैप पर ज़ूम इन करें",
+  "merchantMapLinkFailed": "यह लिंक नहीं खुल सका"
 }

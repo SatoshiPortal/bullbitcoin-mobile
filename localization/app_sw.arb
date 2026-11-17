@@ -3569,5 +3569,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Maoni, picha na zaidi",
   "merchantMapWebsite": "Tovuti",
   "merchantMapZoomInForMore": "Inaonyesha {shown} ya karibu zaidi kati ya {total}. Kuza ili kuona mengine.",
-  "merchantMapZoomInToSeeNearby": "Kuza ramani ili kuona maeneo ya karibu"
+  "merchantMapZoomInToSeeNearby": "Kuza ramani ili kuona maeneo ya karibu",
+  "merchantMapLinkFailed": "Imeshindwa kufungua kiungo hiki"
 }

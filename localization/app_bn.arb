@@ -11525,5 +11525,6 @@
   "merchantMapViewOnBtcMapSubtitle": "মন্তব্য, ছবি এবং আরও অনেক কিছু",
   "merchantMapWebsite": "ওয়েবসাইট",
   "merchantMapZoomInForMore": "{total}টির মধ্যে নিকটতম {shown}টি দেখানো হচ্ছে। বাকিগুলো দেখতে জুম ইন করুন।",
-  "merchantMapZoomInToSeeNearby": "কাছাকাছি স্থান দেখতে ম্যাপে জুম ইন করুন"
+  "merchantMapZoomInToSeeNearby": "কাছাকাছি স্থান দেখতে ম্যাপে জুম ইন করুন",
+  "merchantMapLinkFailed": "এই লিংকটি খোলা যায়নি"
 }

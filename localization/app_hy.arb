@@ -3557,5 +3557,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Մեկնաբանություններ, լուսանկարներ և ավելին",
   "merchantMapWebsite": "Կայք",
   "merchantMapZoomInForMore": "Ցուցադրված են ամենամոտ {shown}-ը {total}-ից։ Մեծացրեք՝ մնացածը տեսնելու համար։",
-  "merchantMapZoomInToSeeNearby": "Մեծացրեք քարտեզը՝ մոտակա վայրերը տեսնելու համար"
+  "merchantMapZoomInToSeeNearby": "Մեծացրեք քարտեզը՝ մոտակա վայրերը տեսնելու համար",
+  "merchantMapLinkFailed": "Չհաջողվեց բացել այս հղումը"
 }

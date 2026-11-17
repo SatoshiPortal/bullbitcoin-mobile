@@ -4663,5 +4663,6 @@
   "merchantMapViewOnBtcMapSubtitle": "Коментарі, фото та інше",
   "merchantMapWebsite": "Вебсайт",
   "merchantMapZoomInForMore": "Показано найближчі {shown} з {total}. Наблизьте мапу, щоб побачити решту.",
-  "merchantMapZoomInToSeeNearby": "Наблизьте мапу, щоб побачити місця поруч"
+  "merchantMapZoomInToSeeNearby": "Наблизьте мапу, щоб побачити місця поруч",
+  "merchantMapLinkFailed": "Не вдалося відкрити посилання"
 }
