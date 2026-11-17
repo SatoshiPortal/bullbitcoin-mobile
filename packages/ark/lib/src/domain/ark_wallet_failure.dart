@@ -41,7 +41,11 @@ final class ArkStorageFailure extends ArkWalletFailure {
 }
 
 final class ArkValidationFailure extends ArkWalletFailure {
-  const ArkValidationFailure([super.reason = ArkFailureReason.validation]);
+  final Sats? minimum;
+  const ArkValidationFailure([super.reason = ArkFailureReason.validation])
+    : minimum = null;
+  const ArkValidationFailure.belowMinimum(Sats this.minimum)
+    : super(ArkFailureReason.belowMinimum);
 }
 
 final class ArkStaleQuoteFailure extends ArkWalletFailure {

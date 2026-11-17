@@ -427,10 +427,14 @@ final class BarkNativeSession implements ArkNativeSession {
         kind = ArkOperationKind.board;
         final info = snapshot.serverInfo;
         final minimum = info?.minimumBoard;
-        if (info == null ||
-            (minimum != null && amount.compareTo(minimum) < 0)) {
+        if (info == null) {
           throw const ArkBoundaryException(
             ArkValidationFailure(ArkFailureReason.validation),
+          );
+        }
+        if (minimum != null && amount.compareTo(minimum) < 0) {
+          throw ArkBoundaryException(
+            ArkValidationFailure.belowMinimum(minimum),
           );
         }
         estimate = await _run(
