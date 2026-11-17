@@ -1312,7 +1312,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         emit(
           state.copyWith(
             externalAddress: sanitizedText,
-            externalAddressError: 'Please select a wallet first',
+            externalAddressError: const SwapSourceWalletMissingFailure(),
           ),
         );
         return;
@@ -1326,13 +1326,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         if (generation != _transactionGeneration) return;
       } catch (e) {
         if (generation != _transactionGeneration) return;
-        final errorMessage = fromWallet.isLiquid == true
-            ? 'Please enter a valid Bitcoin address'
-            : 'Please enter a valid Liquid address';
+        final failure = SwapInvalidExternalAddressFailure(
+          expectsBitcoin: fromWallet.isLiquid == true,
+        );
         emit(
           state.copyWith(
             externalAddress: sanitizedText,
-            externalAddressError: errorMessage,
+            externalAddressError: failure,
           ),
         );
         return;
@@ -1352,7 +1352,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               emit(
                 state.copyWith(
                   externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Bitcoin address',
+                  externalAddressError: const SwapInvalidExternalAddressFailure(
+                    expectsBitcoin: true,
+                  ),
                 ),
               );
               return;
@@ -1362,7 +1364,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               emit(
                 state.copyWith(
                   externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Liquid address',
+                  externalAddressError: const SwapInvalidExternalAddressFailure(
+                    expectsBitcoin: false,
+                  ),
                 ),
               );
               return;
@@ -1374,7 +1378,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               emit(
                 state.copyWith(
                   externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Bitcoin address',
+                  externalAddressError: const SwapInvalidExternalAddressFailure(
+                    expectsBitcoin: true,
+                  ),
                 ),
               );
               return;
@@ -1386,7 +1392,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
               emit(
                 state.copyWith(
                   externalAddress: sanitizedText,
-                  externalAddressError: 'Please enter a valid Liquid address',
+                  externalAddressError: const SwapInvalidExternalAddressFailure(
+                    expectsBitcoin: false,
+                  ),
                 ),
               );
               return;
@@ -1418,13 +1426,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           ),
         );
       } catch (e) {
-        final errorMessage = fromWallet.isLiquid == true
-            ? 'Please enter a valid Bitcoin address'
-            : 'Please enter a valid Liquid address';
+        final failure = SwapInvalidExternalAddressFailure(
+          expectsBitcoin: fromWallet.isLiquid == true,
+        );
         emit(
           state.copyWith(
             externalAddress: sanitizedText,
-            externalAddressError: errorMessage,
+            externalAddressError: failure,
           ),
         );
         return;
@@ -1435,13 +1443,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         '',
       );
       final fromWallet = state.fromWallet;
-      final errorMessage = fromWallet?.isLiquid == true
-          ? 'Please enter a valid Bitcoin address'
-          : 'Please enter a valid Liquid address';
+      final failure = SwapInvalidExternalAddressFailure(
+        expectsBitcoin: fromWallet?.isLiquid == true,
+      );
       emit(
         state.copyWith(
           externalAddress: sanitizedText,
-          externalAddressError: errorMessage,
+          externalAddressError: failure,
         ),
       );
     }

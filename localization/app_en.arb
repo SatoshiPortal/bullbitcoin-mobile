@@ -15567,5 +15567,13 @@
   "walletTypeWatchSigner": "Watch-Signer",
   "@walletTypeWatchSigner": {
     "description": "Subtitle of a wallet card on the home screen: a wallet signed by an external signer"
+  },
+  "swapErrorInvalidBitcoinAddress": "Please enter a valid Bitcoin address",
+  "@swapErrorInvalidBitcoinAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Bitcoin"
+  },
+  "swapErrorInvalidLiquidAddress": "Please enter a valid Liquid address",
+  "@swapErrorInvalidLiquidAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Liquid"
   }
 }
