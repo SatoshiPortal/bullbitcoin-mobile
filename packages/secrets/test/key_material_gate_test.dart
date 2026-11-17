@@ -262,6 +262,44 @@ class ExtendedPubkey {
     );
   });
 
+  Future<List<String>> inspectReach(String name, String source) async {
+    final file = File('${fixture.path}/$name.dart')..writeAsStringSync(source);
+    final result = await collection
+        .contextFor(file.resolveSymbolicLinksSync())
+        .currentSession
+        .getResolvedUnit(file.resolveSymbolicLinksSync());
+    return checkSecretsReach(
+      (result as ResolvedUnitResult).unit,
+      'packages/rust_bindings/lib/src/rust/$name.dart',
+    );
+  }
+
+  test(
+    'a bindings file may not reach package:secrets by any spelling',
+    () async {
+      final absolute = Uri.file(
+        '$repository/packages/secrets/lib/secrets.dart',
+      );
+      for (final (name, uri) in [
+        ('reach_package', 'package:secrets/secrets.dart'),
+        ('reach_file', absolute.toString()),
+      ]) {
+        expect(
+          await inspectReach(
+            name,
+            "import '$uri';\nObject? f(Secret s) => s;\n",
+          ),
+          isNotEmpty,
+          reason: uri,
+        );
+      }
+      expect(
+        await inspectReach('reach_none', "import 'dart:io';\nFile? f;\n"),
+        isEmpty,
+      );
+    },
+  );
+
   test('a consumer of the word-signing helper is checked', () async {
     expect(
       await inspect('batch_sign_consumer', '''
