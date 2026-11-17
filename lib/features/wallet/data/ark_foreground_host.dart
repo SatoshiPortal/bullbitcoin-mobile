@@ -48,6 +48,7 @@ final class ArkForegroundHost {
   Future<Result<ArkForegroundRuntime, ArkFailure>>? _pending;
   int _pendingGeneration = 0;
   final _retired = <Future<(Object, StackTrace)?>>{};
+  (Object, StackTrace)? _closeFailure;
   int _generation = 0;
   bool _closed = false;
 
@@ -148,30 +149,39 @@ final class ArkForegroundHost {
   }
 
   /// Invalidates [runtime] and records its close until it has drained.
+  ///
+  /// The close always starts, even if invalidation throws; that error is
+  /// reported as the close failure.
   void _retire(ArkForegroundRuntime runtime) {
-    runtime.invalidate();
-    late final Future<(Object, StackTrace)?> closing;
-    closing = runtime
-        .close()
-        .then<(Object, StackTrace)?>(
-          (_) => null,
-          onError: (Object error, StackTrace stack) => (error, stack),
-        )
-        .whenComplete(() => _retired.remove(closing));
-    _retired.add(closing);
+    (Object, StackTrace)? invalidation;
+    try {
+      runtime.invalidate();
+    } catch (error, stack) {
+      invalidation = (error, stack);
+    }
+    _retired.add(
+      runtime.close().then<(Object, StackTrace)?>(
+        (_) => invalidation,
+        onError: (Object error, StackTrace stack) =>
+            invalidation ?? (error, stack),
+      ),
+    );
   }
 
-  /// Waits for every retired runtime and returns the first close failure.
+  /// Waits for every retired runtime. The first close failure is kept: the
+  /// host then refuses to open another runtime and close rethrows it.
   Future<(Object, StackTrace)?> _drain() async {
-    (Object, StackTrace)? first;
     while (_retired.isNotEmpty) {
-      for (final failure in await Future.wait(List.of(_retired))) {
+      final batch = List.of(_retired);
+      final results = await Future.wait(batch);
+      _retired.removeAll(batch);
+      for (final failure in results) {
         if (failure == null) continue;
         log.warning('Ark runtime close failed', error: failure.$1);
-        first ??= failure;
+        _closeFailure ??= failure;
       }
     }
-    return first;
+    return _closeFailure;
   }
 
   Future<Result<ArkForegroundRuntime, ArkFailure>> _current(
