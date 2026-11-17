@@ -19,6 +19,19 @@ import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
+/// Constructs the wallet-owned Board actor over the runtime's single client.
+typedef ArkBoardFundingFactory = ArkBoardFundingPort Function(
+  ArkClient client,
+  Future<String> Function(ArkAccountId account) sourceWalletId,
+);
+
+/// One Board funding binding per runtime: bound once to its client, and
+/// closed after the runtime is invalidated and before its client closes.
+typedef ArkBoardFundingBinding = ({
+  ArkBoardFundingFactory bind,
+  Future<void> Function() close,
+});
+
 /// Foreground owner of one selected Ark configuration and its native client.
 ///
 /// Call [invalidate] before replacing the selected wallet, network or endpoint.
@@ -26,6 +39,7 @@ import 'package:secrets/secrets.dart';
 final class ArkForegroundRuntime {
   final ArkFeature feature;
   final ArkClient _client;
+  final Future<void> Function() _closeBoardFunding;
   final _ForegroundPolicy _policy;
   final _WalletArkSelection _selection;
   final ArkAccountConfig _config;
@@ -34,6 +48,7 @@ final class ArkForegroundRuntime {
   ArkForegroundRuntime._(
     this.feature,
     this._client,
+    this._closeBoardFunding,
     this._policy,
     this._selection,
     this._config,
@@ -75,6 +90,12 @@ final class ArkForegroundRuntime {
       trace = stack;
     }
     try {
+      await _closeBoardFunding();
+    } catch (failure, stack) {
+      error ??= failure;
+      trace ??= stack;
+    }
+    try {
       await _client.close();
     } catch (failure, stack) {
       error ??= failure;
@@ -113,6 +134,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   required Uri arkUrl,
   required Uri primaryEsploraUrl,
   required bool initializeNew,
+  required ArkBoardFundingBinding boardFunding,
   ArkPreferencesRepository? preferences,
 }) async {
   try {
@@ -151,6 +173,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
       stageBudget: const native.ArkUnlimitedStageBudget(),
     );
     try {
+      final board = boardFunding.bind(client, selection.sourceWalletId);
       final feature = ArkFeature(
         selection,
         config: config,
@@ -163,14 +186,25 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           ArkDerivationCollision(locator<Bip85Repository>()),
         ),
         registry: registry,
+        boardFunding: board,
       );
       return Ok(
-        ArkForegroundRuntime._(feature, client, policy, selection, config),
+        ArkForegroundRuntime._(
+          feature,
+          client,
+          boardFunding.close,
+          policy,
+          selection,
+          config,
+        ),
       );
     } catch (failure, stack) {
-      // Admitted work on this client must drain even if construction
-      // subsequently fails. Preserve the original failure.
+      // The binding may hold this client, so its admitted work must drain
+      // before the client, even if construction fails. Preserve the failure.
       policy.active = false;
+      try {
+        await boardFunding.close();
+      } catch (_) {}
       try {
         await client.close();
       } catch (_) {}

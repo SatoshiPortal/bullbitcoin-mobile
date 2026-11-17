@@ -1,6 +1,12 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
+import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/features/wallet/data/wallet_native_runtime.dart';
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
+import 'package:secrets/secrets.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_ark/bull_ark.dart'
@@ -23,6 +29,8 @@ const arkHostPaths = [
   '/ark/review',
   '/ark/unavailable',
   '/ark/claim-recovery',
+  '/ark/board',
+  '/ark/exit-progress',
 ];
 
 /// Root composition of the foreground Ark runtime for an admitted profile.
@@ -35,6 +43,7 @@ final class ArkForegroundHost {
   final Uri _esplora;
   final bool _initialize;
   final ArkPreferencesRepository? _preferences;
+  final ArkBoardFundingBinding Function() _boardFunding;
   ArkForegroundRuntime? _runtime;
   Future<Result<ArkForegroundRuntime, ArkFailure>>? _pending;
   int _generation = 0;
@@ -45,6 +54,7 @@ final class ArkForegroundHost {
     required Uri arkUrl,
     required Uri primaryEsploraUrl,
     required bool initializeNew,
+    required this._boardFunding,
     this._preferences,
   }) : _ark = arkUrl,
        _esplora = primaryEsploraUrl,
@@ -52,6 +62,9 @@ final class ArkForegroundHost {
 
   /// Registers the host for an explicit regtest Ark profile and installs its
   /// custody references. Must run before seed deletion is reachable.
+  ///
+  /// Each opened runtime gets its own Board funding factory, bound once to
+  /// that runtime's client over the app-wide funding authority.
   static Future<void> setup(
     GetIt locator, {
     required Uri arkUrl,
@@ -63,6 +76,18 @@ final class ArkForegroundHost {
       arkUrl: arkUrl,
       primaryEsploraUrl: primaryEsploraUrl,
       initializeNew: initializeNew,
+      boardFunding: () {
+        final factory = WalletArkFundingFactory(
+          authority: locator<SqliteArkFundingReservations>(),
+          runtime: locator<WalletNativeRuntime>(),
+          metadata: locator<WalletMetadataDatasource>(),
+          sourceSync: locator<ForegroundWalletSync>(),
+          secrets: locator<Secrets>(),
+          fees: locator<FeesRepository>(),
+          custody: locator<ParentCustodyAdmissionPort>(),
+        );
+        return (bind: factory.bindRealClient, close: factory.close);
+      },
     );
     locator.registerSingleton<ArkForegroundHost>(
       host,
@@ -118,6 +143,7 @@ final class ArkForegroundHost {
       arkUrl: _ark,
       primaryEsploraUrl: _esplora,
       initializeNew: _initialize,
+      boardFunding: _boardFunding(),
       preferences: _preferences,
     );
     if (opened case Ok(:final value)) {
