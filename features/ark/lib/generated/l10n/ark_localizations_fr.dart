@@ -370,4 +370,7 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get transactionId => 'Identifiant de transaction';
+
+  @override
+  String get share => 'Partager';
 }

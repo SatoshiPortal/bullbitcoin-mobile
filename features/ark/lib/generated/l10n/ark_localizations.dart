@@ -775,6 +775,12 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Transaction ID'**
   String get transactionId;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
 }
 
 class _ArkLocalizationsDelegate

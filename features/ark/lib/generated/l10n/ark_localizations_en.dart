@@ -367,4 +367,7 @@ class ArkLocalizationsEn extends ArkLocalizations {
 
   @override
   String get transactionId => 'Transaction ID';
+
+  @override
+  String get share => 'Share';
 }
