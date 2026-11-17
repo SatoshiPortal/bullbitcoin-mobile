@@ -70,7 +70,12 @@ List<String> productionDartFiles(String root) {
     final parent = Directory('$root/$group');
     if (!parent.existsSync()) continue;
     for (final member in parent.listSync(followLinks: false)) {
-      if (member is Directory && member.path != '$root/packages/secrets') {
+      // The packages that define key material are not its consumers:
+      // packages/secrets, and packages/rust_bindings, which declares the
+      // binding types (SwapMasterKey, Wallet) and the bridge that calls them.
+      if (member is Directory &&
+          member.path != '$root/packages/secrets' &&
+          member.path != '$root/packages/rust_bindings') {
         roots.add(Directory('${member.path}/lib'));
       }
     }
@@ -212,7 +217,7 @@ const _unresolvedSensitiveMembers = {
   'deriveSpAddressFromSeed',
 };
 
-const _bridgeLibrary = 'package:bull_sdk/src/rust/frb_generated.dart';
+const _bridgeLibrary = 'package:rust_bindings/src/rust/frb_generated.dart';
 
 // A relative URI in an inactive conditional alternative is never resolved, so
 // it is matched on its path.
@@ -259,15 +264,19 @@ String? materialSymbol(Element element) {
                 'newBip84',
                 'newBip86',
               }.contains(member)),
-    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/') => {
-      'Descriptor.newConfidential',
-      'Descriptor.newConfidentialFromSeed',
-      'Wallet.signTx',
-      'Wallet.signTxWithSeed',
-      'Wallet.signedPsetWithExtraDetails',
-      'Wallet.signedPsetWithExtraDetailsWithSeed',
-    }.contains(symbol),
-    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/boltz/') =>
+    _ when uri.startsWith('package:rust_bindings/src/rust/third_party/lwk/') =>
+      {
+        'Descriptor.newConfidential',
+        'Descriptor.newConfidentialFromSeed',
+        'Wallet.signTx',
+        'Wallet.signTxWithSeed',
+        'Wallet.signedPsetWithExtraDetails',
+        'Wallet.signedPsetWithExtraDetailsWithSeed',
+      }.contains(symbol),
+    _
+        when uri.startsWith(
+          'package:rust_bindings/src/rust/third_party/boltz/',
+        ) =>
       owner == 'SwapMasterKey' &&
           {
             'new',
@@ -276,7 +285,10 @@ String? materialSymbol(Element element) {
             'xprv',
             'mnemonic',
           }.contains(member),
-    _ when uri.startsWith('package:bull_sdk/src/rust/third_party/dart_bwk/') =>
+    _
+        when uri.startsWith(
+          'package:rust_bindings/src/rust/third_party/dart_bwk/',
+        ) =>
       (owner == 'SpAccount' &&
               ((member?.startsWith('createFromMnemonic') ?? false) ||
                   (member?.startsWith('createFromSeed') ?? false))) ||
@@ -320,6 +332,29 @@ bool _isException(String path, AstNode node, String symbol) {
       owner == 'Bip32Derivation' &&
       function == 'getBip32Xpub' &&
       member == 'Bip32Keys.fromBase58') {
+    return true;
+  }
+  // satoshifier decodes extended keys with this mixed decoder; it did so
+  // before moving into the workspace. Listed precisely so that any other use
+  // is still flagged, and so that the private-key acceptance can be removed
+  // here when satoshifier rejects private versions.
+  if (member == 'Bip32Keys.fromBase58' &&
+      {
+            'packages/satoshifier/lib/extended_pubkey.dart': {
+              ('ExtendedPubkey', 'parse'),
+            },
+            'packages/satoshifier/lib/descriptor.dart': {
+              ('Descriptor', 'fromStrings'),
+              ('Descriptor', 'parseDescriptorWithOrigin'),
+            },
+            'packages/satoshifier/lib/utils/bip32_utils.dart': {
+              ('Bip32Utils', 'fingerprint'),
+              ('Bip32Utils', 'convertToXpub'),
+              ('Bip32Utils', 'convertToYpub'),
+              ('Bip32Utils', 'convertToZpub'),
+            },
+          }[path]?.contains((owner, function)) ==
+          true) {
     return true;
   }
   // The exported swap master key is a documented, independent child secret.

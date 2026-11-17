@@ -137,13 +137,16 @@ const writerModules = 'packages/sync/lib/src/data/write/';
 /// The package that owns native wallet state may use BDK and LWK anywhere.
 const nativeOwner = 'packages/sync/';
 
+/// The package that declares the BDK and LWK bindings, not a consumer of them.
+const nativeProvider = 'packages/rust_bindings/';
+
 /// Directive URIs that bring BDK or LWK wallet bindings into a library.
 bool isNativeWalletUri(String uri) =>
-    uri == 'package:bull_sdk/bdk.dart' ||
-    uri == 'package:bull_sdk/lwk.dart' ||
+    uri == 'package:rust_bindings/bdk.dart' ||
+    uri == 'package:rust_bindings/lwk.dart' ||
     uri.startsWith('package:bdk_dart/') ||
-    uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/') ||
-    uri == 'package:bull_sdk/src/lwk_consolidate.dart';
+    uri.startsWith('package:rust_bindings/src/rust/third_party/lwk/') ||
+    uri == 'package:rust_bindings/src/lwk_consolidate.dart';
 
 /// Whether [unit] imports, exports or references a BDK or LWK symbol. The
 /// symbol check catches a re-export bridge that never names the SDK.
@@ -160,7 +163,10 @@ bool usesNativeWallets(CompilationUnit unit) {
 /// Ratchet: outside [nativeOwner], only the files listed in
 /// [nativeImportAllowlist] may touch BDK or LWK. The list only shrinks.
 List<String> checkNativeImports(CompilationUnit unit, String relativePath) {
-  if (relativePath.startsWith(nativeOwner)) return const [];
+  if (relativePath.startsWith(nativeOwner) ||
+      relativePath.startsWith(nativeProvider)) {
+    return const [];
+  }
   if (nativeImportAllowlist.contains(relativePath)) return const [];
   return usesNativeWallets(unit)
       ? ['$relativePath: BDK/LWK outside sync (native import ratchet)']
@@ -390,8 +396,8 @@ class _NativeWriteVisitor extends RecursiveAstVisitor<void> {
     // aliases. SDK imports identify old path helpers before caller cutover.
     return unit.directives.whereType<ImportDirective>().any((directive) {
           final uri = directive.uri.stringValue ?? '';
-          return uri == 'package:bull_sdk/bdk.dart' ||
-              uri == 'package:bull_sdk/lwk.dart';
+          return uri == 'package:rust_bindings/bdk.dart' ||
+              uri == 'package:rust_bindings/lwk.dart';
         }) ||
         unit.toSource().contains('nativeWalletStoragePath') ||
         unit.toSource().contains('_bdk_dart');
@@ -684,7 +690,7 @@ String? nativeWriteSymbol(Element element) {
                 }.contains(name) ||
                 element is ConstructorElement));
   }
-  if (uri.startsWith('package:bull_sdk/src/rust/third_party/lwk/')) {
+  if (uri.startsWith('package:rust_bindings/src/rust/third_party/lwk/')) {
     forbidden = owner == 'Wallet' && {'init', 'sync_'}.contains(name);
   }
   // Calls to legacy deletion wrappers are forbidden as well as direct IO.
