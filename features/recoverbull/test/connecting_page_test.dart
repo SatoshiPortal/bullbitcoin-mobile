@@ -386,9 +386,14 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 
+    String clock(Duration d) =>
+        '${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
+    final shown = {
+      for (var s = 0; s <= 5; s++)
+        clock(server.operationTimeout - Duration(seconds: s)),
+    };
     final countdown = find.byWidgetPredicate(
-      (widget) =>
-          widget is Text && RegExp(r'^1:1[0-5]$').hasMatch(widget.data ?? ''),
+      (widget) => widget is Text && shown.contains(widget.data),
     );
     expect(countdown, findsOneWidget);
     server.answer.complete(const Ok(null));
