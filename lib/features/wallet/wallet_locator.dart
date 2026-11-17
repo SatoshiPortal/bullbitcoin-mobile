@@ -64,6 +64,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.d
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -306,6 +307,9 @@ class WalletLocator {
       () => WalletBloc(
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
           locator<WalletFacade>(),
+        ),
+        retrySwapsOnRefreshUsecase: RetrySwapsOnRefreshUsecase(
+          locator<SwapFacade>(),
         ),
         checkSpWalletSetupForWalletUsecase:
             locator<CheckSpWalletSetupForWalletUsecase>(),

@@ -218,6 +218,9 @@ class SwapsLocator {
     locator.registerFactory<RetrySwapUsecase>(
       () => RetrySwapUsecase(locator<SwapWatcher>()),
     );
+    locator.registerFactory<RetryOngoingSwapsUsecase>(
+      () => RetryOngoingSwapsUsecase(locator<SwapWatcher>()),
+    );
     locator.registerFactory<CreateBitcoinToLightningSwapUsecase>(
       () => CreateBitcoinToLightningSwapUsecase(
         locator<BoltzSwaps>(),

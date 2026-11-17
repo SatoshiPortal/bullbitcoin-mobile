@@ -1374,7 +1374,7 @@ class BoltzDatasource {
 
           case SwapUpdated(:final swap):
             await _boltzStore.store(swap);
-            swapsLog.info(
+            swapsLog.fine(
               '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
               '(event ${boltzStatus.name})',
             );

@@ -22,6 +22,7 @@ import 'package:bb_mobile/features/swap/domain/usecases/replace_prepared_order_s
 import 'package:bb_mobile/features/swap/domain/usecases/save_prepared_order_swap_payin_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_order_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/usecases/watch_swap_app_update_required_usecase.dart';
+import 'package:swaps/swaps.dart' show RetryOngoingSwapsUsecase;
 
 export '../domain/entities/order_swap_refresh_batch.dart';
 export '../domain/entities/order_swap_polling.dart';
@@ -54,6 +55,7 @@ class SwapFacade {
   final GetSwapAppUpdateRequiredUsecase _getAppUpdateRequired;
   final WatchSwapAppUpdateRequiredUsecase _watchAppUpdateRequired;
   final GetSwapRouteUsecase _getRoute;
+  final RetryOngoingSwapsUsecase _retryOngoingSwaps;
 
   SwapFacade(
     this._getQuote,
@@ -73,6 +75,7 @@ class SwapFacade {
     this._getAppUpdateRequired,
     this._watchAppUpdateRequired,
     this._getRoute,
+    this._retryOngoingSwaps,
   );
 
   bool get isAppUpdateRequired => _getAppUpdateRequired.execute();
@@ -80,6 +83,9 @@ class SwapFacade {
   Stream<bool> watchAppUpdateRequired() => _watchAppUpdateRequired.execute();
 
   Future<SwapRoute> getRoute() => _getRoute.execute();
+
+  /// Retries every ongoing Boltz swap now, ignoring retry backoffs.
+  Future<void> retryOngoingSwaps() => _retryOngoingSwaps.execute();
 
   Future<Result<OrderSwapQuote, SwapFailure>> getQuote({
     required OrderSwapEnvironment environment,

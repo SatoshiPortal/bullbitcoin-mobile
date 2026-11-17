@@ -492,7 +492,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       final swapObject = await _boltz.storage.fetchChainSwap(swap.id);
       final lockupTxid = await _boltz.chainSwapUserLockupTxid(swapObject);
       if (lockupTxid == null) return swap;
-      swapsLog.info(
+      swapsLog.fine(
         'SWAPS: ${swap.id} lockup txid recovered from chain '
         '(crash-window backfill)',
       );
@@ -874,7 +874,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       swapMasterKey.fingerprint,
       current + count,
     );
-    swapsLog.info(
+    swapsLog.fine(
       'SWAP_KEY: reserved index $current (count=$count) '
       'fp=${swapMasterKey.fingerprint}',
     );
@@ -1809,21 +1809,23 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     await _ensureMasterKey();
     final electrumUrl = await _electrumUrl(isLiquid: toLiquid);
     final claimAddress = await _newAddressFor(walletId);
-    return toLiquid
-        ? _boltzCreateLightningToLiquidSwap(
-            walletId: walletId,
-            amountSat: amountSat,
-            electrumUrl: electrumUrl,
-            claimAddress: claimAddress,
-            description: description,
-          )
-        : _boltzCreateLightningToBitcoinSwap(
-            walletId: walletId,
-            amountSat: amountSat,
-            electrumUrl: electrumUrl,
-            claimAddress: claimAddress,
-            description: description,
-          );
+    return _created(
+      toLiquid
+          ? _boltzCreateLightningToLiquidSwap(
+              walletId: walletId,
+              amountSat: amountSat,
+              electrumUrl: electrumUrl,
+              claimAddress: claimAddress,
+              description: description,
+            )
+          : _boltzCreateLightningToBitcoinSwap(
+              walletId: walletId,
+              amountSat: amountSat,
+              electrumUrl: electrumUrl,
+              claimAddress: claimAddress,
+              description: description,
+            ),
+    );
   }, classify: classifySwapCreationFailure);
 
   @override
@@ -1875,17 +1877,19 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     await _requireWithinLimits(type, decoded.sats);
     await _ensureMasterKey();
     final electrumUrl = await _electrumUrl(isLiquid: fromLiquid);
-    return fromLiquid
-        ? _boltzCreateLiquidToLightningSwap(
-            walletId: walletId,
-            invoice: invoice,
-            electrumUrl: electrumUrl,
-          )
-        : _boltzCreateBitcoinToLightningSwap(
-            walletId: walletId,
-            invoice: invoice,
-            electrumUrl: electrumUrl,
-          );
+    return _created(
+      fromLiquid
+          ? _boltzCreateLiquidToLightningSwap(
+              walletId: walletId,
+              invoice: invoice,
+              electrumUrl: electrumUrl,
+            )
+          : _boltzCreateBitcoinToLightningSwap(
+              walletId: walletId,
+              invoice: invoice,
+              electrumUrl: electrumUrl,
+            ),
+    );
   }, classify: classifySwapCreationFailure);
 
   @override
@@ -1931,24 +1935,34 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       ToWallet(:final walletId) => (walletId, null),
       ToAddress(:final address) => (null, address),
     };
-    return fromLiquid
-        ? _boltzCreateLiquidToBitcoinSwap(
-            sendWalletId: sendWalletId,
-            amountSat: amountSat,
-            btcElectrumUrl: btcElectrumUrl,
-            lbtcElectrumUrl: lbtcElectrumUrl,
-            receiveWalletId: receiveWalletId,
-            externalRecipientAddress: externalRecipientAddress,
-          )
-        : _boltzCreateBitcoinToLiquidSwap(
-            sendWalletId: sendWalletId,
-            amountSat: amountSat,
-            btcElectrumUrl: btcElectrumUrl,
-            lbtcElectrumUrl: lbtcElectrumUrl,
-            receiveWalletId: receiveWalletId,
-            externalRecipientAddress: externalRecipientAddress,
-          );
+    return _created(
+      fromLiquid
+          ? _boltzCreateLiquidToBitcoinSwap(
+              sendWalletId: sendWalletId,
+              amountSat: amountSat,
+              btcElectrumUrl: btcElectrumUrl,
+              lbtcElectrumUrl: lbtcElectrumUrl,
+              receiveWalletId: receiveWalletId,
+              externalRecipientAddress: externalRecipientAddress,
+            )
+          : _boltzCreateBitcoinToLiquidSwap(
+              sendWalletId: sendWalletId,
+              amountSat: amountSat,
+              btcElectrumUrl: btcElectrumUrl,
+              lbtcElectrumUrl: lbtcElectrumUrl,
+              receiveWalletId: receiveWalletId,
+              externalRecipientAddress: externalRecipientAddress,
+            ),
+    );
   }, classify: classifySwapCreationFailure);
+
+  Future<T> _created<T extends Swap>(Future<T> creation) async {
+    final swap = await creation;
+    swapsLog.fine(
+      'SWAPS: created ${swap.id} ${swap.type.name} keyIndex=${swap.keyIndex}',
+    );
+    return swap;
+  }
 
   @override
   Future<Result<SwapMasterKeyInfo?, SwapsFailure>> masterKeyInfo() =>

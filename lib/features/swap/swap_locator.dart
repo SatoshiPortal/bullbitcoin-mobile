@@ -257,6 +257,7 @@ class SwapLocator {
         locator<GetSwapAppUpdateRequiredUsecase>(),
         locator<WatchSwapAppUpdateRequiredUsecase>(),
         locator<GetSwapRouteUsecase>(),
+        locator<RetryOngoingSwapsUsecase>(),
       ),
     );
     locator.registerFactory<ScheduleOrderSwapRefreshUsecase>(

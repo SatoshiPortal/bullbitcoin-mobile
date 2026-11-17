@@ -36,6 +36,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incomi
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -87,8 +88,10 @@ WalletBloc createBloc(
   SyncWalletsUsecase? refreshSync,
   ReadWalletUsecase? readWallet,
   GetUnconfirmedIncomingBalanceUsecase? getUnconfirmed,
+  RetrySwapsOnRefreshUsecase? retrySwaps,
 }) {
   return WalletBloc(
+    retrySwapsOnRefreshUsecase: retrySwaps,
     readWalletUsecase: readWallet ?? _stubbedReadWallet(),
     getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
@@ -111,7 +114,29 @@ class _MockSyncWalletUsecase extends Mock implements SyncWalletUsecase {}
 
 class _ViewWalletBloc extends Mock implements WalletBloc {}
 
+class _MockRetrySwapsOnRefreshUsecase extends Mock
+    implements RetrySwapsOnRefreshUsecase {}
+
 void main() {
+  test('a manual refresh retries ongoing swaps at once', () async {
+    final retrySwaps = _MockRetrySwapsOnRefreshUsecase();
+    when(retrySwaps.execute).thenAnswer((_) async {});
+    final getWallets = _MockGetWalletsUsecase();
+    when(() => getWallets.execute())
+        .thenAnswer((_) async => Ok([_syncedWallet]));
+    final bloc = createBloc(
+      _MockExternalTorStatusUsecase(),
+      getWallets: getWallets,
+      retrySwaps: retrySwaps,
+    );
+
+    await bloc.refresh();
+    await pumpEventQueue();
+
+    verify(retrySwaps.execute).called(1);
+    await bloc.close();
+  });
+
   for (final catalogueChanged in [false, true]) {
     test(
       'pass completion preserves incoming unless catalogue changed: $catalogueChanged',
