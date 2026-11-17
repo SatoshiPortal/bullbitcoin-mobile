@@ -68,4 +68,25 @@ void main() {
         tester.view.physicalSize.height / tester.view.devicePixelRatio;
     expect(internal.bottom, greaterThan(screenHeight - 100));
   });
+
+  testWidgets('a very short viewport scrolls the actions with the form', (
+    tester,
+  ) async {
+    // Only the height is short: the test font is wider than real glyphs.
+    tester.view.physicalSize = const Size(800, 200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await continueRect(tester, TransferState(fromWallet: _wallet));
+    expect(tester.takeException(), isNull);
+
+    final continueButton = find.text('Continue');
+    await tester.scrollUntilVisible(
+      continueButton,
+      100,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(tester.takeException(), isNull);
+    expect(tester.getRect(continueButton).bottom, lessThanOrEqualTo(200));
+  });
 }
