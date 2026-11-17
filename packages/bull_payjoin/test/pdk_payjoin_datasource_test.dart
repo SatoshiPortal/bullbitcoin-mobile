@@ -150,6 +150,29 @@ void main() {
   });
 
   group('fetchDirectoryKeys', () {
+    test('receiver creation preserves inactive discovery refusal', () async {
+      final datasource = PdkPayjoinDatasource(
+        codec: const TestPayjoinCodec(),
+        log: PayjoinLogger.silent,
+        dio: Dio(),
+        isCurrent: () async => false,
+      );
+      try {
+        await expectLater(
+          datasource.createReceiver(
+            walletId: 'wallet',
+            address: 'unused',
+            isTestnet: true,
+            maxFeeRateSatPerVb: BigInt.one,
+            expireAfterSec: 60,
+          ),
+          throwsA(isA<PayjoinRuntimeInactiveException>()),
+        );
+      } finally {
+        await datasource.dispose();
+      }
+    });
+
     test(
       'inactive discovery is terminal without a second server attempt',
       () async {
