@@ -121,7 +121,8 @@ class _Amounts extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Flexible(child: _BtcTotalAmt()),
-            Gap(16),
+            // The toggle's 48 dp target already pads its badge by 9.
+            Gap(7),
             EyeToggle(),
           ],
         ),
