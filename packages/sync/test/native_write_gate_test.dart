@@ -480,6 +480,25 @@ final store = save;
       );
     });
 
+    test('rust_bindings declares the bindings, satoshifier only its listed parsers', () async {
+      expect(
+        await inspectImports(
+          'import_provider',
+          direct,
+          'packages/rust_bindings/lib/src/lwk_consolidate.dart',
+        ),
+        isEmpty,
+      );
+      expect(
+        await inspectImports(
+          'import_satoshifier_unlisted',
+          direct,
+          'packages/satoshifier/lib/new_parser.dart',
+        ),
+        contains(contains('native import ratchet')),
+      );
+    });
+
     test('a listed file that stopped using BDK must leave the list', () {
       final listed = nativeImportAllowlist.first;
       expect(staleNativeImportEntries(nativeImportAllowlist.skip(1).toSet()), [
@@ -489,12 +508,17 @@ final store = save;
     });
   });
 
-  test('outside sync, only secrets may use BDK or LWK', () {
+  test('outside sync, only secrets and four satoshifier parsers may use BDK or LWK', () {
     expect(
       nativeImportAllowlist.where(
         (path) => !path.startsWith('packages/secrets/'),
       ),
-      isEmpty,
+      unorderedEquals([
+        'packages/satoshifier/lib/enums/network.dart',
+        'packages/satoshifier/lib/parsers/bitcoin_address_parser.dart',
+        'packages/satoshifier/lib/parsers/liquid_address_parser.dart',
+        'packages/satoshifier/lib/parsers/psbt_parser.dart',
+      ]),
     );
   });
 }

@@ -198,6 +198,57 @@ class Bip32Derivation {
     },
   );
 
+  test(
+    'satoshifier decoder exemption requires the listed file, class and method',
+    () async {
+      const path = 'packages/satoshifier/lib/extended_pubkey.dart';
+      const source = '''
+import 'package:bip32_keys/bip32_keys.dart';
+class ExtendedPubkey {
+  static Bip32Keys parse(String value) => Bip32Keys.fromBase58(value);
+}
+''';
+      expect(
+        await inspect('satoshifier_parse', source, policyPath: path),
+        isEmpty,
+      );
+      expect(
+        await inspect(
+          'satoshifier_other_method',
+          source.replaceAll('parse(', 'other('),
+          policyPath: path,
+        ),
+        contains(endsWith('#Bip32Keys.fromBase58')),
+      );
+      expect(
+        await inspect(
+          'satoshifier_other_file',
+          source,
+          policyPath: 'packages/satoshifier/lib/other.dart',
+        ),
+        contains(endsWith('#Bip32Keys.fromBase58')),
+      );
+    },
+  );
+
+  test('rust_bindings is a provider, its consumers are scanned', () {
+    final root = Directory.systemTemp.createTempSync('key_material_roots_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    for (final path in [
+      'packages/rust_bindings/lib/a.dart',
+      'packages/secrets/lib/b.dart',
+      'packages/sync/lib/c.dart',
+      'lib/d.dart',
+    ]) {
+      File('${root.path}/$path')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('');
+    }
+    final files = productionDartFiles(root.path)
+        .map((f) => f.substring(root.path.length + 1));
+    expect(files, unorderedEquals(['packages/sync/lib/c.dart', 'lib/d.dart']));
+  });
+
   test('test keystore aliases and re-exports retain identity', () async {
     final violations = await inspect('fake_keystore', '''
 import 'bridge.dart' as bridge;
