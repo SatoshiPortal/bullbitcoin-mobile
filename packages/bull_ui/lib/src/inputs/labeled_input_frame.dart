@@ -2,6 +2,7 @@ import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The bold label and bordered, shadowed card shared by the labelled inputs.
@@ -22,9 +23,10 @@ class LabeledInputFrame extends StatelessWidget {
   final Widget child;
 
   /// The text style the labelled inputs use for their value and placeholder.
-  static TextStyle? fieldStyle(BuildContext context, Color color) =>
-      Theme.of(context).textTheme.bodySmall
-          ?.copyWith(fontWeight: FontWeight.w700, fontSize: 14, color: color);
+  static TextStyle? fieldStyle(BuildContext context, Color color) => context
+      .bullType
+      .label
+      .copyWith(fontWeight: FontWeight.w700, color: color);
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +36,10 @@ class LabeledInputFrame extends StatelessWidget {
       children: [
         BullText(
           label,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+          style: context.bullType.label.copyWith(
             fontWeight: FontWeight.w700,
             color: colors.text,
             letterSpacing: 0,
-            fontSize: 14,
           ),
         ),
         const Gap(8),
