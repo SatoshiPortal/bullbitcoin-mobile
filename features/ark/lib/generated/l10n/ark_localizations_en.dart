@@ -318,4 +318,25 @@ class ArkLocalizationsEn extends ArkLocalizations {
 
   @override
   String get reserveInSats => 'On-chain fee reserve (sats)';
+
+  @override
+  String get operationPrepared => 'Prepared';
+
+  @override
+  String get operationAdmitted => 'Admitted';
+
+  @override
+  String get operationPending => 'Pending';
+
+  @override
+  String get operationCompleted => 'Completed';
+
+  @override
+  String get operationFailed => 'Failed';
+
+  @override
+  String get operationUnknown => 'Outcome unknown';
+
+  @override
+  String get operationConflicted => 'Conflicting transaction observed';
 }

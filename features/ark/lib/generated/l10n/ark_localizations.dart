@@ -679,6 +679,48 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'On-chain fee reserve (sats)'**
   String get reserveInSats;
+
+  /// No description provided for @operationPrepared.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepared'**
+  String get operationPrepared;
+
+  /// No description provided for @operationAdmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Admitted'**
+  String get operationAdmitted;
+
+  /// No description provided for @operationPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get operationPending;
+
+  /// No description provided for @operationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get operationCompleted;
+
+  /// No description provided for @operationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get operationFailed;
+
+  /// No description provided for @operationUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Outcome unknown'**
+  String get operationUnknown;
+
+  /// No description provided for @operationConflicted.
+  ///
+  /// In en, this message translates to:
+  /// **'Conflicting transaction observed'**
+  String get operationConflicted;
 }
 
 class _ArkLocalizationsDelegate
