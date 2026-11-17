@@ -271,6 +271,7 @@ class ExtendedPubkey {
     return checkSecretsReach(
       (result as ResolvedUnitResult).unit,
       'packages/rust_bindings/lib/src/rust/$name.dart',
+      root: fixture.path,
     );
   }
 
@@ -299,6 +300,35 @@ class ExtendedPubkey {
       );
     },
   );
+
+  test('a bindings file may not use secrets through inference, a conditional '
+      'alternative or an outside part', () async {
+    File('${fixture.path}/secret_source.dart').writeAsStringSync('''
+import 'package:secrets/secrets.dart';
+Secret? source() => null;
+''');
+    expect(
+      await inspectReach('reach_inferred', '''
+import 'secret_source.dart';
+Object? f() => source()?.revealMnemonic;
+'''),
+      isNotEmpty,
+    );
+    expect(
+      await inspectReach(
+        'reach_conditional',
+        "import 'dart:io' if (dart.library.js_interop) "
+            "'package:secrets/secrets.dart';\nFile? f;\n",
+      ),
+      isNotEmpty,
+    );
+    File('${fixture.path}/outside_part.dart')
+        .writeAsStringSync("part of 'reach_part.dart';\n");
+    expect(
+      await inspectReach('reach_part', "part 'outside_part.dart';\n"),
+      contains(contains('part outside its package')),
+    );
+  });
 
   test('a consumer of the word-signing helper is checked', () async {
     expect(
