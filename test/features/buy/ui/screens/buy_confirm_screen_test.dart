@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:flutter/rendering.dart';
 
 import 'dart:async';
