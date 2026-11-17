@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypography, Gap;
 
 /// Page 1 of the wizard — splash-style welcome that mirrors
 /// `OnboardingSplash` visually. Renders only the centered content; the
@@ -23,8 +22,9 @@ class WelcomeStep extends StatelessWidget {
           const Gap(36),
           BullText(
             context.loc.onboardingBullBitcoin,
-            style: AppFonts.textTitleTheme.textStyle.copyWith(
-              fontSize: 54,
+            style: TextStyle(
+              fontFamily: BullTypography.brandFamily,
+              fontSize: 54, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
               fontWeight: FontWeight.w500,
               color: context.appColors.onPrimaryFixed,
               height: 1,
@@ -32,8 +32,9 @@ class WelcomeStep extends StatelessWidget {
           ),
           BullText(
             context.loc.onboardingOwnYourMoney,
-            style: AppFonts.textTitleTheme.textStyle.copyWith(
-              fontSize: 40,
+            style: TextStyle(
+              fontFamily: BullTypography.brandFamily,
+              fontSize: 40, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
               fontWeight: FontWeight.w500,
               color: context.appColors.secondaryFixed,
               height: 1,

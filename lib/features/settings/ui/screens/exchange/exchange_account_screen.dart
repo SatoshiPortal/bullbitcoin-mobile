@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
 
 class ExchangeAccountScreen extends StatelessWidget {
   const ExchangeAccountScreen({super.key});
@@ -23,13 +24,14 @@ class ExchangeAccountScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 context.loc.exchangeAccountSettingsTitle,
-                style: const TextStyle(fontSize: 24, fontWeight: .bold),
+                style: context.bullType.title.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 context.loc.exchangeAccountComingSoon,
-                style: TextStyle(
-                  fontSize: 16,
+                style: context.bullType.body.copyWith(
                   color: context.appColors.textMuted,
                 ),
                 textAlign: .center,

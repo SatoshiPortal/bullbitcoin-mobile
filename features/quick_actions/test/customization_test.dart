@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullQuickAction, BullShapes, BullSnackBar;
+    show BullButton, BullQuickAction, BullShapes, BullSnackBar, BullTypography;
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/semantics.dart';
@@ -41,6 +41,7 @@ Future<void> openEditor(
                 )
               : testBullTheme,
           BullShapes.standard,
+          BullTypography.standard,
         ],
       ),
       builder: (context, child) => MediaQuery(

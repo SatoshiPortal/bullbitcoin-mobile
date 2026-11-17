@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
 
 class SwapProgressIndicator extends StatelessWidget {
   const SwapProgressIndicator({required this.swap});
@@ -89,10 +90,9 @@ class SwapProgressIndicator extends StatelessWidget {
                         } else {
                           indicatorChild = Text(
                             '${index + 1}',
-                            style: TextStyle(
+                            style: context.bullType.body.copyWith(
                               color: context.appColors.onSurfaceVariant,
-                              fontWeight: .bold,
-                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
                             ),
                           );
                         }
@@ -124,14 +124,15 @@ class SwapProgressIndicator extends StatelessWidget {
                               const SizedBox(height: 8),
                               Text(
                                 steps[index],
-                                style: TextStyle(
+                                style: context.bullType.caption.copyWith(
                                   color: _getStepLabelColor(
                                     context,
                                     index,
                                     currentStep,
                                   ),
-                                  fontSize: 11,
-                                  fontWeight: isCompleted ? .w600 : .normal,
+                                  fontWeight: isCompleted
+                                      ? FontWeight.w700
+                                      : FontWeight.w400,
                                 ),
                                 textAlign: .center,
                                 maxLines: 2,

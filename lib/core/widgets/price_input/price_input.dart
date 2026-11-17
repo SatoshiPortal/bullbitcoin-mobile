@@ -4,7 +4,12 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullPickerItem, BullPickerMenu, Gap;
+    show
+        BullAmountInputFormatter,
+        BullPickerItem,
+        BullPickerMenu,
+        BullTypographyX,
+        Gap;
 
 class PriceInput extends StatelessWidget {
   const PriceInput({
@@ -58,8 +63,7 @@ class PriceInput extends StatelessWidget {
                       child: isMax
                           ? Text(
                               'MAX',
-                              style: context.font.displaySmall!.copyWith(
-                                fontSize: 36,
+                              style: context.bullType.display.copyWith(
                                 color: context.appColors.secondary,
                               ),
                             )
@@ -79,8 +83,7 @@ class PriceInput extends StatelessWidget {
                               cursorColor: context.appColors.outline,
                               cursorOpacityAnimates: true,
                               cursorHeight: 30,
-                              style: context.font.displaySmall!.copyWith(
-                                fontSize: 36,
+                              style: context.bullType.display.copyWith(
                                 color: context.appColors.secondary,
                               ),
                               textAlign: .center,
@@ -92,8 +95,7 @@ class PriceInput extends StatelessWidget {
                                     focusNode != null && focusNode!.hasFocus
                                     ? null
                                     : "0",
-                                hintStyle: context.font.displaySmall!.copyWith(
-                                  fontSize: 36,
+                                hintStyle: context.bullType.display.copyWith(
                                   color: context.appColors.secondary,
                                 ),
                               ),

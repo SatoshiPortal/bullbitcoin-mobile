@@ -44,8 +44,7 @@ class FreezeConfirmDialog extends StatelessWidget {
             Expanded(
               child: Text(
                 loc.coinsFreezeConfirmTitle(count),
-                style: context.bullText.titleLarge?.copyWith(
-                  fontSize: 17,
+                style: context.bullType.body.copyWith(
                   fontWeight: FontWeight.w700,
                   color: colors.text,
                 ),
@@ -56,8 +55,8 @@ class FreezeConfirmDialog extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           loc.coinsFreezeConfirmBody,
-          style: context.bullText.bodyMedium?.copyWith(
-            fontSize: 13.5,
+          style: context.bullType.label.copyWith(
+            fontWeight: FontWeight.w400,
             color: colors.textMuted,
           ),
         ),

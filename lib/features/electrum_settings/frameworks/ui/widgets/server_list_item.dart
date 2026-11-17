@@ -79,10 +79,9 @@ class ServerListItem extends StatelessWidget {
                               ),
                               child: Text(
                                 server.protocol.toUpperCase(),
-                                style: context.font.bodySmall?.copyWith(
+                                style: context.bullType.caption.copyWith(
                                   color: context.appColors.tertiary,
-                                  fontSize: 10,
-                                  fontWeight: .w600,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),

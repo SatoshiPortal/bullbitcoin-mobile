@@ -3,7 +3,13 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullShapesX, BullShimmerLine, BullSnackBar, Gap;
+    show
+        BullDialog,
+        BullShapesX,
+        BullShimmerLine,
+        BullSnackBar,
+        BullTypographyX,
+        Gap;
 
 class CopyInput extends StatelessWidget {
   const CopyInput({
@@ -109,10 +115,7 @@ class CopyInput extends StatelessWidget {
         title: modalTitle != null
             ? Text(
                 modalTitle!,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontSize: 20,
-                  fontWeight: .w700,
-                ),
+                style: context.bullType.subtitle.copyWith(fontWeight: .w700),
                 textAlign: .center,
               )
             : null,
@@ -120,7 +123,7 @@ class CopyInput extends StatelessWidget {
         content: SingleChildScrollView(
           child: SelectableText(
             modalContent ?? text,
-            style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
+            style: context.bullType.subtitle,
           ),
         ),
         actions: [

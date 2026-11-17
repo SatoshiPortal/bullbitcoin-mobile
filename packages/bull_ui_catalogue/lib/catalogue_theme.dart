@@ -104,24 +104,6 @@ class CatalogueColors {
   );
 }
 
-/// Catalogue-local Golos-Text [TextTheme], mirroring the app's `AppFonts`
-/// roles so the catalogue renders type at the right sizes/weights. Components
-/// read roles via `Theme.of(context).textTheme`, so this is what matters.
-const TextTheme _catalogueTextTheme = TextTheme(
-  displayLarge: TextStyle(fontSize: 46, fontWeight: FontWeight.w500),
-  displayMedium: TextStyle(fontSize: 43, fontWeight: FontWeight.w500),
-  displaySmall: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
-  headlineLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-  headlineMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-  headlineSmall: TextStyle(fontSize: 16),
-  bodyLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-  bodyMedium: TextStyle(fontSize: 14),
-  bodySmall: TextStyle(fontSize: 14),
-  labelLarge: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-  labelMedium: TextStyle(fontSize: 12),
-  labelSmall: TextStyle(fontSize: 10),
-);
-
 /// Builds a Material [ThemeData] carrying the [BullTheme] extension, matching
 /// how the app wires `bull_ui` (extension on `ThemeData.extensions`). Components
 /// read their colours via `context.bull`, so the extension is what matters.
@@ -132,8 +114,8 @@ ThemeData catalogueThemeData(Brightness brightness) {
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
-    fontFamily: 'Golos Text',
-    textTheme: _catalogueTextTheme,
+    fontFamily: BullTypography.fontFamily,
+    textTheme: BullTypography.standard.toTextTheme(),
     extensions: bullUiExtensions(colors: bull, brightness: brightness),
     colorScheme: ColorScheme.fromSeed(
       seedColor: bull.primary,
