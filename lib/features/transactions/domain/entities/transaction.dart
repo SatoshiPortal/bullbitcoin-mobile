@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:primitives/primitives.dart'
-    show NetworkCapabilities, NetworkCapability;
+    show NetworkCapabilities, NetworkCapability, BitcoinNetwork, LiquidNetwork;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
@@ -30,6 +30,15 @@ sealed class Transaction with _$Transaction {
       order?.transactionId;
   bool get supportsPublicExplorer {
     final network = walletTransaction?.network;
+    final origin = swap;
+    if (network == null && origin != null) {
+      return NetworkCapabilities.supports(
+        origin.isBitcoin
+            ? BitcoinNetwork.fromName(origin.environment.name)
+            : LiquidNetwork.fromName(origin.environment.name),
+        NetworkCapability.publicExplorer,
+      );
+    }
     return network == null ||
         NetworkCapabilities.supports(
           network.shared,

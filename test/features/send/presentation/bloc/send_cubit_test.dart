@@ -8408,6 +8408,66 @@ void main() {
       expect(cubit.state.chainSwap?.status, boltz.SwapStatus.completed);
     });
   });
+  for (final environment in [
+    NetworkEnv.mainnet,
+    NetworkEnv.testnet,
+    NetworkEnv.regtest,
+  ]) {
+    test(
+      '${environment.name} Liquid to Bitcoin Send reaches Boltz with a concrete destination',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        final wallet = _liquidWallet(balanceSat: 1000000).copyWith(
+          network: Network.fromEnvironment(
+            environment: environment,
+            isLiquid: true,
+          ),
+        );
+        final destination = Network.fromEnvironment(
+          environment: environment,
+          isLiquid: false,
+        );
+        when(() => getSendSwapRouteUsecase.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
+        // Stop at the first provider read: no signing, exchange or remote calls.
+        when(
+          () => getSwapLimitsAndFeesUsecase.execute(
+            boltz.SwapType.liquidToBitcoin,
+          ),
+        ).thenAnswer(
+          (_) async =>
+              const Err(boltz.SwapsBoltzRejectedFailure('fixture-fees')),
+        );
+        cubit.setStateForTest(
+          SendState(
+            step: SendStep.address,
+            sendType: SendType.bitcoin,
+            selectedWallet: SendWalletBitcoin(wallet),
+            paymentRequest: PaymentRequest.bip21(
+              network: destination,
+              uri: 'bitcoin:public-fixture',
+              address: 'public-fixture',
+              amountSat: 50000,
+            ),
+            amount: '50000',
+            inputAmountCurrencyCode: 'sats',
+            bitcoinFeesList: _feeOptions(),
+            liquidFeesList: _feeOptions(),
+          ),
+        );
+        await expectLater(cubit.handleChainSwap(), completes);
+        verify(
+          () => getSwapLimitsAndFeesUsecase.execute(
+            boltz.SwapType.liquidToBitcoin,
+          ),
+        ).called(1);
+        expect(cubit.state.failure, isA<SendSwapCreationFailure>());
+        verifyZeroInteractions(createLiquidToBitcoinSwapUsecase);
+        verifyZeroInteractions(getSendCrossChainQuoteUsecase);
+      },
+    );
+  }
 }
 
 class _MockRetryPayjoinProposalUsecase extends Mock

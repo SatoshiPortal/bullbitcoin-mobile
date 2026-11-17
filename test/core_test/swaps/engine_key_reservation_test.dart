@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -38,21 +40,38 @@ class _ReadBarrierKeychain extends ReproKeychainBackend {
 
 void main() {
   setUpAll(BullSdk.init);
-  for (final replaceEngine in [false, true]) {
+  for (final variant in [
+    'same-engine',
+    'same-network replacement',
+    'testnet-regtest replacement',
+  ]) {
+    final replaceEngine = variant != 'same-engine';
+    final crossEnvironment = variant == 'testnet-regtest replacement';
     test(
-      'R6 ${replaceEngine ? 'real engine replacement' : 'sequential same-engine control'} reserves disjoint child-key ranges',
+      'R6 real $variant with a shared fingerprint preserves disjoint child-key ranges',
       () async {
         final random = Random.secure();
         // Ephemeral test-only material is never printed or written to disk.
+        final seed = List<int>.generate(64, (_) => random.nextInt(256));
         final key = await native.SwapMasterKey.createFromSeed(
-          seed: List<int>.generate(64, (_) => random.nextInt(256)),
+          seed: seed,
           network: native.Network.testnet,
         );
+        final regtestKey = await native.SwapMasterKey.createFromSeed(
+          seed: seed,
+          network: native.Network.regtest,
+        );
+        seed.fillRange(0, seed.length, 0);
+        expect(regtestKey.fingerprint, key.fingerprint);
         final db = BoltzSwapsDatabase(NativeDatabase.memory());
+        final regtestDb = BoltzSwapsDatabase(NativeDatabase.memory());
         final keychain = _ReadBarrierKeychain();
         final storage = SwapStorage(
           rows: DriftSwapRowStore(db),
           secrets: keychain,
+        );
+        final regtestStorage = storage.regtestView(
+          rows: DriftSwapRowStore(regtestDb),
         );
         await storage.setSwapKeyIndex(key.fingerprint, 0);
         final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
@@ -94,10 +113,15 @@ void main() {
           }
           await request.response.close();
         });
-        BoltzSwapRepository repository() => BoltzSwapRepository.connect(
+        BoltzSwapRepository repository({
+          NetworkEnv environment = NetworkEnv.testnet,
+        }) => BoltzSwapRepository.connect(
           url: 'http://127.0.0.1:${server.port}',
-          storage: storage,
-          isTestnet: true,
+          storage: environment == NetworkEnv.regtest ? regtestStorage : storage,
+          environment: environment,
+          webSocketUrl: environment == NetworkEnv.regtest
+              ? 'ws://127.0.0.1:${server.port}'
+              : null,
           electrum: ReproElectrumBackend(),
           lockupChain: ReproChainBackend(),
           newAddressFor: (_) async =>
@@ -107,9 +131,9 @@ void main() {
           fastestFee: ({
             required txSize,
             required isLiquid,
-            required isTestnet,
+            required environment,
           }) async => 1,
-          wallets: ({required isTestnet}) async => const [
+          wallets: ({required environment}) async => const [
             SwapWalletInfo(
               id: 'btc',
               isLiquid: false,
@@ -123,7 +147,7 @@ void main() {
               fingerprint: 'test-root',
             ),
           ],
-          swapMasterKeySource: ({required isTestnet}) async =>
+          swapMasterKeySource: ({required environment}) async =>
               throw StateError('The real stored key must be reused'),
         );
         final first = repository();
@@ -134,19 +158,38 @@ void main() {
             xpub: key.xpub,
             mnemonic: key.mnemonic,
             fingerprint: key.fingerprint,
-            isTestnet: true,
+            environment: NetworkEnv.testnet,
           ),
         );
-        final second = repository();
+        final nextEnvironment = crossEnvironment
+            ? NetworkEnv.regtest
+            : NetworkEnv.testnet;
+        final second = repository(environment: nextEnvironment);
+        if (crossEnvironment) {
+          await second.storeSwapMasterKey(
+            DerivedSwapMasterKey(
+              walletFingerprint: 'test-root',
+              xprv: regtestKey.xprv,
+              xpub: regtestKey.xpub,
+              mnemonic: regtestKey.mnemonic,
+              fingerprint: regtestKey.fingerprint,
+              environment: NetworkEnv.regtest,
+            ),
+          );
+        }
         addTearDown(() async {
           first.dispose();
           second.dispose();
           await server.close(force: true);
           await listener.cancel();
           await db.close();
+          await regtestDb.close();
         });
         final engine = SwitchableSwapEngine((
-          store: SwapStoreImpl(storage: storage, isTestnet: true),
+          store: SwapStoreImpl(
+            storage: storage,
+            environment: NetworkEnv.testnet,
+          ),
           boltz: first,
         ));
         keychain.enabled = replaceEngine;
@@ -159,7 +202,10 @@ void main() {
         if (replaceEngine) {
           await keychain.firstRead.future.timeout(const Duration(seconds: 5));
           await engine.replace((
-            store: SwapStoreImpl(storage: storage, isTestnet: true),
+            store: SwapStoreImpl(
+              storage: crossEnvironment ? regtestStorage : storage,
+              environment: nextEnvironment,
+            ),
             boltz: second,
           ));
         } else {

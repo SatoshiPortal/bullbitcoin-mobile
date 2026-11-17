@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/swap/domain/regtest_boltz_profile.dart';
+import 'package:drift_flutter/drift_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -51,6 +54,27 @@ class SwapsLocator {
         ),
       ),
     );
+    locator.registerLazySingleton<SwapStorage>(
+      () => locator<SwapStorage>().regtestView(
+        rows: DriftSwapRowStore(
+          BoltzSwapsDatabase(
+            driftDatabase(
+              name: 'boltz_swaps_regtest',
+              native: DriftNativeOptions(
+                databaseDirectory: getApplicationDocumentsDirectory,
+                shareAcrossIsolates: true,
+                setup: (database) {
+                  database.execute('PRAGMA busy_timeout = 2000;');
+                  database.execute('PRAGMA journal_mode = WAL;');
+                  database.execute('PRAGMA synchronous = FULL;');
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+      instanceName: 'regtest',
+    );
     await BoltzSwapsDbMigration(
       appDb: locator<SqliteDatabase>(),
       swapsDb: locator<BoltzSwapsDatabase>(),
@@ -67,18 +91,19 @@ class SwapsLocator {
     locator.registerLazySingleton<SwapsAppGlue>(
       () => SwapsAppGlue(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
         secrets: locator<Secrets>(),
       ),
     );
-    final initialServer = await locator<SwapServerSettingRepository>().fetch(
-      isTestnet: !environment.isMainnet,
-    );
+    final initialServer = environment.networkEnv == NetworkEnv.regtest
+        ? null
+        : await locator<SwapServerSettingRepository>().fetch(
+            isTestnet: environment.networkEnv == NetworkEnv.testnet,
+          );
     locator.registerLazySingleton<SwitchableSwapEngine>(
       () => SwitchableSwapEngine(
         _buildEngine(
           locator,
-          isTestnet: !environment.isMainnet,
+          environment: environment.networkEnv,
           server: initialServer,
         ),
       ),
@@ -103,12 +128,14 @@ class SwapsLocator {
         settingsRepository: locator<SettingsRepository>(),
         engine: locator<SwitchableSwapEngine>(),
         swapWatcher: locator<SwapWatcher>(),
-        build: ({required isTestnet}) async => _buildEngine(
+        build: ({required environment}) async => _buildEngine(
           locator,
-          isTestnet: isTestnet,
-          server: await locator<SwapServerSettingRepository>().fetch(
-            isTestnet: isTestnet,
-          ),
+          environment: environment,
+          server: environment == NetworkEnv.regtest
+              ? null
+              : await locator<SwapServerSettingRepository>().fetch(
+                  isTestnet: environment == NetworkEnv.testnet,
+                ),
         ),
       ),
       dispose: (switcher) => switcher.dispose(),
@@ -123,19 +150,31 @@ class SwapsLocator {
 
   static SwapEngineParts _buildEngine(
     GetIt locator, {
-    required bool isTestnet,
-    required SwapServer server,
+    required NetworkEnv environment,
+    required SwapServer? server,
   }) {
-    final url = server.forEnvironment(isTestnet: isTestnet).host;
-    log.info('[Swaps] boltz datasource url="$url" isTestnet=$isTestnet');
+    final profile = RegtestBoltzProfile.forNetwork(environment);
+    final url =
+        profile?.api.toString() ??
+        server
+            ?.forEnvironment(isTestnet: environment == NetworkEnv.testnet)
+            .host;
+    if (url == null) throw StateError('Missing Boltz backend');
+    final storage = environment == NetworkEnv.regtest
+        ? locator<SwapStorage>(instanceName: 'regtest')
+        : locator<SwapStorage>();
+    log.info('[Swaps] boltz datasource url="$url" network=${environment.name}');
     final glue = locator<SwapsAppGlue>();
     final fees = locator<FeesRepository>();
     final addresses = locator<WalletAddressRepository>();
     final walletTxs = locator<WalletTransactionRepository>();
     final boltz = BoltzSwapRepository.connect(
       url: url,
-      storage: locator<SwapStorage>(),
-      isTestnet: isTestnet,
+      storage: storage,
+      environment: environment,
+      webSocketUrl: profile?.webSocket.toString(),
+      bitcoinExplorerUrl: profile?.bitcoinExplorer.toString(),
+      liquidExplorerUrl: profile?.liquidExplorer.toString(),
       electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
       lockupChain: AppLockupChain(
         locator<WalletConnectionPort>(),
@@ -174,13 +213,11 @@ class SwapsLocator {
           ({
             required int txSize,
             required bool isLiquid,
-            required bool isTestnet,
+            required NetworkEnv environment,
           }) async {
             final options = await fees.getNetworkFees(
               network: wallet.Network.fromEnvironment(
-                environment: isTestnet
-                    ? NetworkEnv.testnet
-                    : NetworkEnv.mainnet,
+                environment: environment,
                 isLiquid: isLiquid,
               ),
             );
@@ -190,10 +227,7 @@ class SwapsLocator {
       swapMasterKeySource: glue.swapMasterKey,
     );
     return (
-      store: SwapStoreImpl(
-        storage: locator<SwapStorage>(),
-        isTestnet: isTestnet,
-      ),
+      store: SwapStoreImpl(storage: storage, environment: environment),
       boltz: boltz,
     );
   }

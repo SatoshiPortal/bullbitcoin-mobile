@@ -38,76 +38,85 @@ void main() {
     );
   });
 
-  test(
-    'regtest refuses before receive-address or provider side effects',
-    () async {
-      when(() => getWallet.execute('wallet-1'))
-          .thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
-      final result = await usecase.execute(
-        walletId: 'wallet-1',
-        amountSat: 1000,
-        invoice: _invoice(amountSat: 1000),
-      );
-      expect(
-        result,
-        isA<Err>().having(
-          (result) => result.failure,
-          'failure',
-          isA<SendSwapRouteUnavailableFailure>(),
-        ),
-      );
-      verifyZeroInteractions(swapFacade);
-      verifyZeroInteractions(getReceiveAddress);
-    },
-  );
+  for (final network in [Network.bitcoinRegtest, Network.liquidRegtest]) {
+    test(
+      '$network refuses before receive-address or provider side effects',
+      () async {
+        when(() => getWallet.execute('wallet-1'))
+            .thenAnswer((_) async => _wallet(network));
+        final result = await usecase.execute(
+          walletId: 'wallet-1',
+          amountSat: 1000,
+          invoice: _invoice(amountSat: 1000),
+        );
+        expect(
+          result,
+          isA<Err>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SendSwapRouteUnavailableFailure>(),
+          ),
+        );
+        verifyZeroInteractions(swapFacade);
+        verifyZeroInteractions(getReceiveAddress);
+      },
+    );
+  }
 
-  test(
-    'creates an output-fixed order with an owned fallback address',
-    () async {
-      final invoice = _invoice(amountSat: 1000);
-      when(() => getWallet.execute('wallet-1'))
-          .thenAnswer((_) async => _wallet(Network.liquidTestnet));
-      when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
-          .thenAnswer((_) async => _address());
-      when(
-        () => swapFacade.createOrder(
-          amountSat: BigInt.from(1000),
-          isInAmountFixed: false,
-          inNetwork: OrderSwapNetwork.liquid,
-          outNetwork: OrderSwapNetwork.lightning,
-          destinationAddress: 'lntb-invoice',
-          fallbackAddress: 'tlq1-fallback',
-          purpose: OrderSwapPurpose.sendLightning,
-          environment: OrderSwapEnvironment.testnet,
-          sourceWalletId: 'wallet-1',
+  for (final isTestnet in [false, true]) {
+    final environment = isTestnet
+        ? OrderSwapEnvironment.testnet
+        : OrderSwapEnvironment.mainnet;
+    final network = isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+    final fallback = isTestnet ? 'tlq1-fallback' : 'lq1-fallback';
+    test(
+      '$environment creates an output-fixed order with an owned fallback address',
+      () async {
+        final invoice = _invoice(amountSat: 1000, isTestnet: isTestnet);
+        when(() => getWallet.execute('wallet-1'))
+            .thenAnswer((_) async => _wallet(network));
+        when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
+            .thenAnswer((_) async => _address(address: fallback));
+        when(
+          () => swapFacade.createOrder(
+            amountSat: BigInt.from(1000),
+            isInAmountFixed: false,
+            inNetwork: OrderSwapNetwork.liquid,
+            outNetwork: OrderSwapNetwork.lightning,
+            destinationAddress: invoice.invoice,
+            fallbackAddress: fallback,
+            purpose: OrderSwapPurpose.sendLightning,
+            environment: environment,
+            sourceWalletId: 'wallet-1',
+            note: 'coffee',
+          ),
+        ).thenAnswer((_) async => Ok(_record(environment: environment)));
+
+        final result = await usecase.execute(
+          walletId: 'wallet-1',
+          invoice: invoice,
+          amountSat: 1000,
           note: 'coffee',
-        ),
-      ).thenAnswer((_) async => Ok(_record()));
+        );
 
-      final result = await usecase.execute(
-        walletId: 'wallet-1',
-        invoice: invoice,
-        amountSat: 1000,
-        note: 'coffee',
-      );
-
-      expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
-      verify(
-        () => swapFacade.createOrder(
-          amountSat: BigInt.from(1000),
-          isInAmountFixed: false,
-          inNetwork: OrderSwapNetwork.liquid,
-          outNetwork: OrderSwapNetwork.lightning,
-          destinationAddress: 'lntb-invoice',
-          fallbackAddress: 'tlq1-fallback',
-          purpose: OrderSwapPurpose.sendLightning,
-          environment: OrderSwapEnvironment.testnet,
-          sourceWalletId: 'wallet-1',
-          note: 'coffee',
-        ),
-      ).called(1);
-    },
-  );
+        expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
+        verify(
+          () => swapFacade.createOrder(
+            amountSat: BigInt.from(1000),
+            isInAmountFixed: false,
+            inNetwork: OrderSwapNetwork.liquid,
+            outNetwork: OrderSwapNetwork.lightning,
+            destinationAddress: invoice.invoice,
+            fallbackAddress: fallback,
+            purpose: OrderSwapPurpose.sendLightning,
+            environment: environment,
+            sourceWalletId: 'wallet-1',
+            note: 'coffee',
+          ),
+        ).called(1);
+      },
+    );
+  }
 
   test('allows an entered amount for an amountless invoice', () async {
     final invoice = _invoice(amountSat: 0);
@@ -190,14 +199,17 @@ void main() {
   });
 }
 
-Bolt11PaymentRequest _invoice({required int amountSat, int? expiresAt}) =>
-    PaymentRequest.bolt11(
-      invoice: 'lntb-invoice',
-      amountSat: amountSat,
-      paymentHash: 'hash',
-      expiresAt: expiresAt ?? 2000000000,
-      isTestnet: true,
-    ) as Bolt11PaymentRequest;
+Bolt11PaymentRequest _invoice({
+  required int amountSat,
+  int? expiresAt,
+  bool isTestnet = true,
+}) => PaymentRequest.bolt11(
+  invoice: isTestnet ? 'lntb-invoice' : 'lnbc-invoice',
+  amountSat: amountSat,
+  paymentHash: 'hash',
+  expiresAt: expiresAt ?? 2000000000,
+  isTestnet: isTestnet,
+) as Bolt11PaymentRequest;
 
 Wallet _wallet(Network network, {bool remote = false}) => Wallet(
   origin: 'wallet-1',
@@ -212,18 +224,20 @@ Wallet _wallet(Network network, {bool remote = false}) => Wallet(
   balanceSat: BigInt.from(100000),
 );
 
-WalletAddress _address() => WalletAddress(
+WalletAddress _address({String address = 'tlq1-fallback'}) => WalletAddress(
   walletId: 'wallet-1',
   index: 0,
-  address: 'tlq1-fallback',
+  address: address,
   createdAt: DateTime.utc(2026),
   updatedAt: DateTime.utc(2026),
 );
 
-OrderSwapRecord _record() => OrderSwapRecord(
+OrderSwapRecord _record({
+  OrderSwapEnvironment environment = OrderSwapEnvironment.testnet,
+}) => OrderSwapRecord(
   localId: 'local-1',
   purpose: OrderSwapPurpose.sendLightning,
-  environment: OrderSwapEnvironment.testnet,
+  environment: environment,
   inNetwork: OrderSwapNetwork.liquid,
   outNetwork: OrderSwapNetwork.lightning,
   isInAmountFixed: false,

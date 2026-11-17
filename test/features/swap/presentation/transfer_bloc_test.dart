@@ -189,6 +189,7 @@ Matcher _toAddress(String address) =>
 void main() {
   setUpAll(() {
     registerFallbackValue(Network.bitcoinMainnet);
+    registerFallbackValue(SwapType.bitcoinToLiquid);
     registerFallbackValue(const ToWallet(''));
     registerFallbackValue(const RelativeFee(250));
     registerFallbackValue(OrderSwapEnvironment.mainnet);
@@ -2400,9 +2401,12 @@ void main() {
         externalAddressError: error,
       );
 
-      void stubDetected(PaymentRequest request) =>
-          when(() => detectBitcoin.execute(data: 'destination'))
-              .thenAnswer((_) async => request);
+      void stubDetected(PaymentRequest request) => when(
+        () => detectBitcoin.execute(
+          data: 'destination',
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer((_) async => request);
 
       void verifyNoSwap() {
         verifyNever(
@@ -2859,16 +2863,192 @@ void main() {
       expect(bloc.state.swap?.status, SwapStatus.completed);
     });
   });
+  test(
+    'regtest transfer ignores pending Orders from another environment',
+    () async {
+      final source = _liquidWallet().copyWith(network: Network.liquidRegtest);
+      final destination = _destinationWallet().copyWith(
+        network: Network.bitcoinRegtest,
+      );
+      when(() => getSettings.execute()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(() => getPendingOrders.execute())
+          .thenAnswer((_) async => Ok([prepared]));
+      when(() => getWallets.execute())
+          .thenAnswer((_) async => Ok([source, destination]));
+      when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+          .thenAnswer((_) async => _feeOptions());
+      when(() => getExchangeRate.execute(currencyCode: 'USD'))
+          .thenAnswer((_) async => const Ok(1.0));
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
+      when(() => getLimitsAndFees.execute(any()))
+          .thenAnswer((_) async => const Err(SwapsBoltzUnavailableFailure()));
+      bloc.add(const TransferEvent.started());
+      await bloc.stream.firstWhere((state) => !state.isStarting);
+      expect(bloc.state.startError, isNull);
+      expect(bloc.state.fromWallet, source);
+      expect(bloc.state.toWallet, destination);
+      expect(bloc.state.orderSwap, isNull);
+      verify(() => getPendingOrders.execute()).called(1);
+      verifyZeroInteractions(watchOrder);
+      verifyZeroInteractions(createOrder);
+    },
+  );
+
+  test('regtest transfer does not interpret a pending Lightning Order as a binary network', () async {
+    final source = _liquidWallet().copyWith(network: Network.liquidRegtest);
+    final destination = _destinationWallet().copyWith(
+      network: Network.bitcoinRegtest,
+    );
+    when(() => getSettings.execute()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.regtest,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
+    when(() => getPendingOrders.execute()).thenAnswer(
+      (_) async => Ok([_prepared(purpose: OrderSwapPurpose.receiveLightning)]),
+    );
+    when(() => getWallets.execute())
+        .thenAnswer((_) async => Ok([source, destination]));
+    when(() => getNetworkFees.execute(isLiquid: any(named: 'isLiquid')))
+        .thenAnswer((_) async => _feeOptions());
+    when(() => getExchangeRate.execute(currencyCode: 'USD'))
+        .thenAnswer((_) async => const Ok(1.0));
+    when(() => getSwapRoute.execute()).thenAnswer((_) async => SwapRoute.boltz);
+    when(() => getLimitsAndFees.execute(any()))
+        .thenAnswer((_) async => const Err(SwapsBoltzUnavailableFailure()));
+    bloc.add(const TransferEvent.started());
+    await bloc.stream.firstWhere((state) => !state.isStarting);
+    expect(bloc.state.startError, isNull);
+    expect(bloc.state.fromWallet, source);
+    expect(bloc.state.orderSwap, isNull);
+    verify(() => getPendingOrders.execute()).called(1);
+    verifyZeroInteractions(watchOrder);
+    verifyZeroInteractions(createOrder);
+  });
+
+  test(
+    'a concrete Bitcoin regtest destination reaches Liquid to Bitcoin Boltz',
+    () async {
+      when(() => getSwapRoute.execute())
+          .thenAnswer((_) async => SwapRoute.boltz);
+      when(
+        () => detectBitcoin.execute(
+          data: 'destination',
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer(
+        (_) async => const PaymentRequest.bip21(
+          network: Network.bitcoinRegtest,
+          uri: 'bitcoin:bcrt1fixture',
+          address: 'bcrt1fixture',
+        ),
+      );
+      when(
+        () => createLiquidToBitcoin.execute(
+          sendWalletId: 'wallet-1:regtest',
+          amountSat: any(named: 'amountSat'),
+          destination: any(named: 'destination'),
+        ),
+      ).thenAnswer(
+        (_) async => const Err(SwapsBoltzRejectedFailure('fixture')),
+      );
+      bloc.emit(
+        TransferState(
+          fromWallet: _liquidWallet().copyWith(
+            network: Network.liquidRegtest,
+            balanceSat: BigInt.from(100000),
+          ),
+          toWallet: _destinationWallet().copyWith(
+            network: Network.bitcoinRegtest,
+          ),
+          sendToExternal: true,
+          externalAddress: 'destination',
+          bitcoinUnit: BitcoinUnit.sats,
+          liquidNetworkFees: _feeOptions(),
+          bitcoinNetworkFees: _feeOptions(),
+          receiveExactAmount: false,
+        ),
+      );
+      bloc.add(const TransferEvent.swapCreated('1000'));
+      await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+      verify(
+        () => createLiquidToBitcoin.execute(
+          sendWalletId: 'wallet-1:regtest',
+          amountSat: any(named: 'amountSat'),
+          destination: any(named: 'destination'),
+        ),
+      ).called(1);
+    },
+  );
+  for (final destination in [Network.bitcoinTestnet, Network.liquidRegtest]) {
+    test(
+      'regtest Transfer refuses a concrete $destination destination before native create',
+      () async {
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
+        when(
+          () => detectBitcoin.execute(
+            data: 'destination',
+            environment: NetworkEnv.regtest,
+          ),
+        ).thenAnswer(
+          (_) async => PaymentRequest.bip21(
+            network: destination,
+            uri: 'public-fixture',
+            address: 'public-fixture',
+          ),
+        );
+        bloc.emit(
+          TransferState(
+            fromWallet: _liquidWallet().copyWith(
+              network: Network.liquidRegtest,
+              balanceSat: BigInt.from(100000),
+            ),
+            toWallet: _destinationWallet().copyWith(
+              network: Network.bitcoinRegtest,
+            ),
+            sendToExternal: true,
+            externalAddress: 'destination',
+            bitcoinUnit: BitcoinUnit.sats,
+            liquidNetworkFees: _feeOptions(),
+            bitcoinNetworkFees: _feeOptions(),
+            receiveExactAmount: false,
+          ),
+        );
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+        verify(
+          () => detectBitcoin.execute(
+            data: 'destination',
+            environment: NetworkEnv.regtest,
+          ),
+        ).called(1);
+        verifyZeroInteractions(createLiquidToBitcoin);
+        verifyZeroInteractions(createBitcoinToLiquid);
+        verifyZeroInteractions(createOrder);
+      },
+    );
+  }
 }
 
 OrderSwapRecord _prepared({
+  OrderSwapPurpose purpose = OrderSwapPurpose.transfer,
   OrderSwapLocalStatus status = OrderSwapLocalStatus.readyToBroadcast,
   String? transactionId,
   String payinStatus = 'In progress',
   OrderSwap? order,
 }) => OrderSwapRecord(
   localId: 'local-1',
-  purpose: OrderSwapPurpose.transfer,
+  purpose: purpose,
   environment: OrderSwapEnvironment.testnet,
   inNetwork: OrderSwapNetwork.liquid,
   outNetwork: OrderSwapNetwork.bitcoin,

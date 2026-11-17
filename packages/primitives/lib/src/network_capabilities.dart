@@ -41,9 +41,8 @@ abstract final class NetworkCapabilities {
           NetworkCapability.publicFeeEstimates => true,
         },
         BitcoinNetwork.regtest => switch (capability) {
-          NetworkCapability.softwareWallet => true,
+          NetworkCapability.softwareWallet || NetworkCapability.swaps => true,
           NetworkCapability.exchange ||
-          NetworkCapability.swaps ||
           NetworkCapability.payjoin ||
           NetworkCapability.hardwareWallet ||
           NetworkCapability.ark ||
@@ -51,7 +50,9 @@ abstract final class NetworkCapabilities {
           NetworkCapability.publicExplorer ||
           NetworkCapability.publicFeeEstimates => false,
         },
-        LiquidNetwork.regtest => capability == NetworkCapability.softwareWallet,
+        LiquidNetwork.regtest =>
+          capability == NetworkCapability.softwareWallet ||
+              capability == NetworkCapability.swaps,
         BitcoinNetwork.signet => false,
       };
 }

@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -31,12 +33,12 @@ void main() {
           rows: DriftSwapRowStore(swapDb),
           secrets: ReproKeychainBackend(),
         );
-        SwapEngineParts parts(bool isTestnet) => (
-          store: SwapStoreImpl(storage: storage, isTestnet: isTestnet),
+        SwapEngineParts parts(NetworkEnv environment) => (
+          store: SwapStoreImpl(storage: storage, environment: environment),
           boltz: BoltzSwapRepository.connect(
             url: 'http://127.0.0.1:1',
             storage: storage,
-            isTestnet: isTestnet,
+            environment: environment,
             electrum: ReproElectrumBackend(),
             lockupChain: ReproChainBackend(),
             newAddressFor: (_) async => throw StateError('No swap is created'),
@@ -45,14 +47,14 @@ void main() {
             fastestFee: ({
               required txSize,
               required isLiquid,
-              required isTestnet,
+              required environment,
             }) async => 1,
-            wallets: ({required isTestnet}) async => const [],
-            swapMasterKeySource: ({required isTestnet}) async => null,
+            wallets: ({required environment}) async => const [],
+            swapMasterKeySource: ({required environment}) async => null,
           ),
         );
-        final mainnet = parts(false);
-        final testnet = parts(true);
+        final mainnet = parts(NetworkEnv.mainnet);
+        final testnet = parts(NetworkEnv.testnet);
         final engine = SwitchableSwapEngine(mainnet);
         final watcher = SwapWatcher(
           store: engine,
@@ -65,13 +67,13 @@ void main() {
           settingsRepository: preferences,
           engine: engine,
           swapWatcher: watcher,
-          build: ({required isTestnet}) async {
-            if (isTestnet) {
+          build: ({required environment}) async {
+            if (environment == NetworkEnv.testnet) {
               if (!buildEntered.isCompleted) buildEntered.complete();
               await buildRelease.future;
             }
             if (!built.isCompleted) built.complete();
-            return isTestnet ? testnet : mainnet;
+            return environment == NetworkEnv.testnet ? testnet : mainnet;
           },
         );
         addTearDown(() async {

@@ -223,10 +223,14 @@ sealed class SwapModel with _$SwapModel {
     };
   }
 
-  Swap toEntity() {
+  Swap toEntity({Environment? environment}) {
     final swapType = SwapType.values.byName(type);
     final swapStatus = SwapStatus.values.byName(status);
-    final environment = isTestnet ? Environment.testnet : Environment.mainnet;
+    environment ??= isTestnet ? Environment.testnet : Environment.mainnet;
+    if (environment != Environment.regtest &&
+        isTestnet != (environment == Environment.testnet)) {
+      throw const FormatException('Stored swap belongs to another network');
+    }
     final creationDateTime = DateTime.fromMillisecondsSinceEpoch(creationTime);
 
     return switch (this) {
