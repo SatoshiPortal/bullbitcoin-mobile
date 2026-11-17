@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 import 'dart:io' show Platform;
@@ -26,7 +28,7 @@ import 'developer_network.dart';
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    await Bull.init();
+    requireSuccessfulBullInitialization(await Bull.init());
   }
 
   final walletRepository = locator<WalletRepository>();

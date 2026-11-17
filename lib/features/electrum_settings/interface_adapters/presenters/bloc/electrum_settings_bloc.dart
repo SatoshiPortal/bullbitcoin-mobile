@@ -65,6 +65,10 @@ class ElectrumSettingsBloc
     emit(
       state.copyWith(
         isLiquid: event.isLiquid,
+        environment: null,
+        defaultServers: const [],
+        customServers: const [],
+        advancedOptions: null,
         isLoadingData: true,
         electrumServersError: null,
         advancedOptionsError: null,

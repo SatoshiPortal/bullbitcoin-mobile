@@ -34,9 +34,7 @@ void main() {
         final importer = _Xpub();
         when(settings.fetch).thenAnswer(
           (_) async => SettingsEntity(
-            environment: labelCorrection
-                ? Environment.testnet
-                : Environment.regtest,
+            environment: Environment.testnet,
             bitcoinUnit: BitcoinUnit.sats,
             currencyCode: 'USD',
           ),
@@ -58,6 +56,18 @@ void main() {
             home: ImportWatchOnlyScreen(watchOnlyWallet: wallet),
           ),
         );
+        await tester.pumpAndSettle();
+        // The form was captured on testnet; switch the live selection before
+        // submission to keep testing a real mismatch after regtest support.
+        if (!labelCorrection) {
+          when(settings.fetch).thenAnswer(
+            (_) async => const SettingsEntity(
+              environment: Environment.mainnet,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
+          );
+        }
         for (var attempt = 0; attempt < 2; attempt++) {
           final button = find.text(AppLocalizationsEn().importWatchOnlyImport);
           await tester.ensureVisible(button);

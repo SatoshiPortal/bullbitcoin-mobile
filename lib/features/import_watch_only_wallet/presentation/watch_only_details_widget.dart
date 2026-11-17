@@ -41,7 +41,10 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         .watch<ImportWatchOnlyCubit>()
         .state
         .watchOnlyWallet;
-    final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
+    if (watchOnlyWallet is! WatchOnlyDescriptorEntity) {
+      return const SizedBox.shrink();
+    }
+    final entity = watchOnlyWallet;
     final networkLabel = switch (entity.network) {
       Network.bitcoinMainnet =>
         context.loc.importWatchOnlyNetworkBitcoinMainnet,
@@ -72,7 +75,8 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           onChanged: null,
         ),
         const Gap(24),
-        if (entity.signerDevice == null)
+        if (entity.network != Network.bitcoinRegtest &&
+            entity.signerDevice == null)
           Row(
             children: [
               SizedBox(
@@ -100,12 +104,13 @@ class _DescriptorDetailsWidget extends StatelessWidget {
               ),
             ],
           ),
-        if (entity.signerDevice != null)
-          BullLabeledTextInput(
-            label: context.loc.importWatchOnlySigningDevice,
-            value: entity.signerDevice!.displayName,
-            onChanged: null,
-          ),
+        if (entity.network != Network.bitcoinRegtest)
+          if (entity.signerDevice case final device?)
+            BullLabeledTextInput(
+              label: context.loc.importWatchOnlySigningDevice,
+              value: device.displayName,
+              onChanged: null,
+            ),
         const Gap(24),
         BullLabeledTextInput(
           label: context.loc.importWatchOnlyLabel,
@@ -137,7 +142,8 @@ class _XpubDetailsWidget extends StatelessWidget {
         .watch<ImportWatchOnlyCubit>()
         .state
         .watchOnlyWallet;
-    final entity = watchOnlyWallet! as WatchOnlyXpubEntity;
+    if (watchOnlyWallet is! WatchOnlyXpubEntity) return const SizedBox.shrink();
+    final entity = watchOnlyWallet;
     final isXpub = entity.pubkey.startsWith('xpub');
 
     return Column(
@@ -156,10 +162,7 @@ class _XpubDetailsWidget extends StatelessWidget {
             style: context.font.titleMedium,
           ),
           const Gap(8),
-          BullText(
-            entity.watchOnlyXpub.extendedPubkey.xpub,
-            style: context.font.bodyMedium,
-          ),
+          BullText(entity.bip32Pubkey, style: context.font.bodyMedium),
           const Gap(24),
         ],
         BullText(

@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/import_mnemonic/domain/scan_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -168,6 +171,32 @@ void main() {
       // A scan before import stores nothing.
       expect(storage.entries, isEmpty);
     });
+  }
+
+  for (final script in [ScriptType.bip44, ScriptType.bip49]) {
+    test(
+      'real regtest $script scan preserves unsupported failure without IO',
+      () async {
+        environment(Environment.regtest);
+        final scans = ScanMnemonicUsecase(checkWalletStatus: usecase()).execute(
+          words: words,
+          language: bip39.Language.english,
+          passphrase: '',
+          scriptTypes: {script},
+        );
+        expect(
+          await scans[script],
+          isA<primitives.Err<Object, ImportMnemonicScanFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<ImportMnemonicScanUnsupportedFailure>(),
+          ),
+        );
+        expect(servers.networks, isEmpty);
+        verifyZeroInteractions(wallets);
+        expect(storage.entries, isEmpty);
+      },
+    );
   }
 
   test('invalid words never reach the wallet package', () async {

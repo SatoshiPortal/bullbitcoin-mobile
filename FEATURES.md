@@ -250,6 +250,7 @@ graph TB
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
+    SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM_SETTINGS
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
     SP -->|legacy: wallet repository via core barrel| WALLETS
@@ -455,7 +456,7 @@ The architecture test records source dependencies, including internal imports an
 
 | Source → owner | Provenance and reason retained | Observed import/export path |
 |---|---|---|
-| `app_startup → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart` |
+| `app_startup → settings` | Owner relocation and passive startup: retain the existing preferences consumer and validate the captured normalized selection through the public Settings bootstrap before Electrum storage preparation. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart`; `lib/features/app_startup/public/foreground_electrum_startup.dart -> lib/features/settings/public/settings_bootstrap.dart` |
 | `autobuy → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/autobuy/autobuy_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
 | `autobuy → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/autobuy/ui/screens/autobuy_screen.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `autoswap → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/autoswap/autoswap_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
@@ -510,3 +511,12 @@ Develop also removes the price chart’s shell locator import; its obsolete entr
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
 RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, status_check, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. App startup and onboarding consume the published mnemonic-language facade through their import_mnemonic dependencies.
+
+
+## Regtest Electrum storage and watch-only import
+
+Electrum Settings owns foreground preparation of its current-schema storage and exposes it through ElectrumSettingsFacade. Startup passes the single normalized Settings snapshot through SettingsBootstrap before awaiting this passive barrier; it performs no network IO. Regtest provisions both Bitcoin and Liquid rows in one idempotent transaction, preserves custom endpoints and options, and replaces only obsolete managed defaults. The regtest endpoint host comes from BULL_REGTEST_HOST at build time, with a loopback default, and is read only for a captured regtest selection. Mainnet/testnet preparation validates both production views for their existing hot switch and never creates fixture rows. Background entry points inspect readiness without seeding or repairing storage.
+
+Watch-only import captures the selected Bitcoin environment before parsing. Test-family public-key versions may represent testnet or regtest; the captured selection resolves that ambiguity while preserving the public key. Regtest accepts software BIP84 watch-only input, retains the original network identity and refuses hardware provenance or a mainnet key. The existing capability policy controls explorer actions and Lightning availability. Receive uses that same Lightning capability when choosing its initial Liquid/Lightning mode, so a regtest Liquid wallet opens a supported selection.
+
+Mnemonic scanning preserves the wallet owner's typed unsupported-script refusal. The import UI disables continuation for that result instead of offering an import that cannot succeed. These changes add no database revision and do not enable swaps or Payjoin on regtest by themselves.

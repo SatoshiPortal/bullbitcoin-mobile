@@ -1,3 +1,8 @@
+import 'package:primitives/primitives.dart' show Ok, Err;
+import 'package:drift/drift.dart' show Value;
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
+    show ElectrumFailure, ElectrumSaveFailure;
+
 import 'dart:io';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -64,7 +69,7 @@ void main() {
         await directory.delete(recursive: true);
       });
 
-      await AppLocator.setup(
+      final result = await AppLocator.setup(
         locator,
         database,
         payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
@@ -72,9 +77,61 @@ void main() {
         startOrderSwapWatcher: false,
         startAutoswapWatcher: false,
       );
+      expect(result, isA<Ok>());
       composed = true;
       expect(nativeTor.calls, 1);
       expect(locator<WalletRepository>(), isA<WalletRepository>());
     },
   );
+  test('regtest provisioning failure returns a typed Err before wallet runtime registration', () async {
+    final directory = await Directory.systemTemp.createTemp(
+      'app_locator_failure_',
+    );
+    final previousPaths = PathProviderPlatform.instance;
+    PathProviderPlatform.instance = _Paths(directory.path);
+    FakeSecureStoragePlatform().install();
+    SharedPreferences.setMockInitialValues({});
+    final database = SqliteDatabase(NativeDatabase.memory());
+    final locator = GetIt.asNewInstance();
+    locator.registerSingleton<TorNativeInitializer>(_NativeTor());
+    addTearDown(() async {
+      await locator.reset();
+      await database.close();
+      PathProviderPlatform.instance = previousPaths;
+      await directory.delete(recursive: true);
+    });
+    await database.select(database.settings).get();
+    await database
+        .update(database.settings)
+        .write(
+          const SettingsCompanion(
+            environment: Value('regtest'),
+            isSuperuser: Value(true),
+            isDevModeEnabled: Value(true),
+          ),
+        );
+    await database.delete(database.electrumSettings).go();
+    await database.delete(database.electrumServers).go();
+    await database.customStatement(
+      "CREATE TRIGGER fail_boot_regtest BEFORE INSERT ON electrum_servers WHEN NEW.network = 'liquidRegtest' BEGIN SELECT RAISE(ABORT, 'fixture provisioning failure'); END",
+    );
+    final result = await AppLocator.setup(
+      locator,
+      database,
+      payjoinDatabasePath: '${directory.path}/payjoin.sqlite',
+      startPayjoinRecovery: false,
+      startOrderSwapWatcher: false,
+      startAutoswapWatcher: false,
+    );
+    expect(result, isA<Err<void, ElectrumFailure>>());
+    expect(
+      (result as Err<void, ElectrumFailure>).failure,
+      isA<ElectrumSaveFailure>(),
+    );
+    expect(locator.isRegistered<WalletRepository>(), isFalse);
+    expect(locator.isRegistered<SyncCoordinator>(), isFalse);
+    expect(locator.isRegistered<SpTipWatcher>(), isFalse);
+    expect(await database.select(database.electrumServers).get(), isEmpty);
+    expect(await database.select(database.electrumSettings).get(), isEmpty);
+  });
 }

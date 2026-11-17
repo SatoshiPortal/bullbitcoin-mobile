@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'package:bb_mobile/core/utils/liquid_address.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -8,7 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    requireSuccessfulBullInitialization(await Bull.init());
+  }
 
   const btcAddress = 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq';
 

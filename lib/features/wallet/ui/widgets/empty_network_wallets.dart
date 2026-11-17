@@ -63,7 +63,12 @@ class EmptyNetworkWallets extends StatelessWidget {
                     NetworkEnv.regtest => context.loc.electrumRegtest,
                     NetworkEnv.signet => context.loc.networkFeatureUnavailable,
                   }, style: context.bullText.bodyMedium),
-                  if (options.network == NetworkEnv.regtest) ...[
+                  if (!NetworkCapabilities.supports(switch (options.network) {
+                    NetworkEnv.mainnet => LiquidNetwork.mainnet,
+                    NetworkEnv.testnet => LiquidNetwork.testnet,
+                    NetworkEnv.regtest => LiquidNetwork.regtest,
+                    NetworkEnv.signet => BitcoinNetwork.signet,
+                  }, NetworkCapability.softwareWallet)) ...[
                     const Gap(BullSpacing.sm),
                     BullText(
                       '${context.loc.receiveLiquid}: ${context.loc.networkFeatureUnavailable}',
