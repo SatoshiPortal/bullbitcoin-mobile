@@ -313,7 +313,7 @@ class BoltzDatasource {
     return stored.requireEnvironment(environment);
   }
 
-  /// Deletes the swap master key (and its index counter) for
+  /// Deletes the swap master key blob, retaining the shared high-water counter for
   /// [walletFingerprint]. Clears the in-memory binding when it pointed at this
   /// wallet so a subsequent read forces a fresh derive.
   Future<void> deleteSwapMasterKey({
