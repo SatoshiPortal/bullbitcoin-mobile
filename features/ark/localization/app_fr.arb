@@ -125,5 +125,10 @@
   "exitProgressEstimatedFee": "Frais estimés (sats)",
   "exitProgressReserveExposure": "Réserve confirmée exposée (sats)",
   "exitProgressReviewWarning": "Cette tentative unique au premier plan concerne tout le compte et peut exposer toute la réserve interne confirmée indiquée par le devis. Les frais sont estimatifs et le taux renvoyé par le devis ne constitue pas un plafond financier strict. Cela ne vaut pas autorisation permanente pour de futures tentatives ou de nouveaux dépôts.",
-  "exitProgressReviewIncomplete": "Cette revue de progression de sortie est incomplète ou incohérente. La confirmation est indisponible."
+  "exitProgressReviewIncomplete": "Cette revue de progression de sortie est incomplète ou incohérente. La confirmation est indisponible.",
+  "boardSourceWallet": "Portefeuille source",
+  "boardMinerFeeInSats": "Frais miniers (sats)",
+  "boardArkFeeInSats": "Frais d’entrée Ark (sats)",
+  "boardSourceDebitInSats": "Débit du portefeuille source (sats)",
+  "boardValidUntil": "Devis valable jusqu’à (UTC)"
 }

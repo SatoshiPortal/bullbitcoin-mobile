@@ -269,5 +269,15 @@
   "exitProgressReviewWarning": "This one foreground attempt is account-wide and may expose the entire quoted confirmed internal reserve. The fee is an estimate and the returned quote rate is not a strict financial cap. This is not standing consent for later attempts or new deposits.",
   "@exitProgressReviewWarning": {},
   "exitProgressReviewIncomplete": "This exit progression review is incomplete or mismatched. Confirmation is unavailable.",
-  "@exitProgressReviewIncomplete": {}
+  "@exitProgressReviewIncomplete": {},
+  "boardSourceWallet": "Source wallet",
+  "@boardSourceWallet": {},
+  "boardMinerFeeInSats": "Miner fee (sats)",
+  "@boardMinerFeeInSats": {},
+  "boardArkFeeInSats": "Ark board fee (sats)",
+  "@boardArkFeeInSats": {},
+  "boardSourceDebitInSats": "Source debit (sats)",
+  "@boardSourceDebitInSats": {},
+  "boardValidUntil": "Review valid until (UTC)",
+  "@boardValidUntil": {}
 }
