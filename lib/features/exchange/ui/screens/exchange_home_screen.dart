@@ -221,9 +221,12 @@ class ExchangeHomeScreen extends StatelessWidget {
                 centerTitle: true,
                 title: showChart ? null : const TopBarBullLogo(),
                 leading: Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
+                  // 48 dp targets keep the back arrow where it was at 16.
+                  padding: EdgeInsets.only(left: showChart ? 16.0 : 4.0),
                   child: showChart
                       ? IconButton(
+                          tooltip: MaterialLocalizations.of(context)
+                              .backButtonTooltip,
                           icon: Icon(
                             Icons.arrow_back,
                             color: context.appColors.onPrimary,
@@ -244,16 +247,12 @@ class ExchangeHomeScreen extends StatelessWidget {
                                 style: IconButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  visualDensity: VisualDensity.compact,
                                 ),
                               ),
-                              const Gap(8),
                               IconButton(
+                                tooltip: context.loc.priceChartShowTooltip,
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                visualDensity: VisualDensity.compact,
                                 icon: Icon(
                                   Icons.show_chart,
                                   color: context.appColors.onPrimary,
@@ -275,25 +274,27 @@ class ExchangeHomeScreen extends StatelessWidget {
                   color: context.appColors.onPrimary,
                   size: 24,
                 ),
-                actionsPadding: const EdgeInsets.only(right: 16),
+                // 8 + the 48 dp settings target keep its icon 16 from the edge.
+                actionsPadding: const EdgeInsets.only(right: 8),
                 actions: showChart
                     ? null
                     : [
                         IconButton(
+                          tooltip: context.loc.transactionHistoryTitle,
                           onPressed: () {
                             context.pushNamed(
                               TransactionsRoute.transactions.name,
                             );
                           },
-                          visualDensity: VisualDensity.compact,
                           color: context.appColors.onPrimary,
                           iconSize: 32,
                           icon: const Icon(Icons.history),
                         ),
-                        const Gap(16),
-                        InkWell(
-                          onTap: onOpenSettings,
-                          child: Image.asset(
+                        const Gap(8),
+                        IconButton(
+                          tooltip: context.loc.settingsScreenTitle,
+                          onPressed: onOpenSettings,
+                          icon: Image.asset(
                             Assets.icons.settingsLine.path,
                             width: 32,
                             height: 32,
