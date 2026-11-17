@@ -574,12 +574,10 @@ final class BarkArkClient implements ArkClient {
         .toSet();
     observed = await _classifyAbandonedBoards(store, observed, proofs);
     final barriers = syncFailures ?? _SyncFailures.load(store, account);
-    barriers.resolve(
-      {...successfulStages, if (syncFailures != null) 'observe'},
-      source,
-      observed.serverInfo?.publicKey,
-      store.get('server')?['key'],
-    );
+    barriers.resolve({
+      ...successfulStages,
+      if (syncFailures != null) 'observe',
+    }, source);
     if (barriers.candidate.isNotEmpty) {
       observed = copySnapshot(observed, stale: true);
     }
@@ -1606,7 +1604,7 @@ ArkSnapshot copySnapshot(
   vtxoCompleteness: vtxoCompleteness ?? value.vtxoCompleteness,
 );
 
-/// A deferred stage is scheduling debt; an opaque failure needs stronger proof.
+/// Matching stage completion is provisional until a complete sync commits.
 final class _SyncFailures {
   final ArkAccountId account;
   final List<Map<String, Object?>> causes;
@@ -1689,26 +1687,13 @@ final class _SyncFailures {
     store.put('sync-stage-failures', encode(causes));
   }
 
-  void resolve(
-    Set<String> completed,
-    Uri source,
-    String? serverKey,
-    Object? pinnedKey,
-  ) {
-    candidate = causes.where((cause) {
-      if (cause['source'] != source.toString() ||
-          !completed.contains(cause['stage'])) {
-        return true;
-      }
-      if (cause['kind'] == 'deferred') return false;
-      if (cause['stage'] == 'onchain') return false;
-      if (cause['stage'] == 'server' &&
-          serverKey != null &&
-          serverKey.isNotEmpty &&
-          (pinnedKey == null || pinnedKey == serverKey)) {
-        return false;
-      }
-      return true;
-    }).toList();
+  void resolve(Set<String> completed, Uri source) {
+    candidate = causes
+        .where(
+          (cause) =>
+              cause['source'] != source.toString() ||
+              !completed.contains(cause['stage']),
+        )
+        .toList();
   }
 }
