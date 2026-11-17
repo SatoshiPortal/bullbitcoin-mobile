@@ -5540,10 +5540,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "wordsDropdownSuffix": " words",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "emptyMnemonicWordsError": "Enter all words of your mnemonic",
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"
@@ -15423,10 +15419,6 @@
   "passphraseWordsIncompleteWarning": "These words alone cannot restore this wallet. Keep your passphrase separately.",
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
-  },
-  "passphraseOptionHelp": "Only if this wallet was created with one. Otherwise leave empty.",
-  "@passphraseOptionHelp": {
-    "description": "Advanced passphrase field help during recovery."
   },
   "settingsDarkModeTitle": "Dark mode",
   "@settingsDarkModeTitle": {

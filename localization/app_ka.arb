@@ -1942,7 +1942,6 @@
   "submitButton": "გაგზავნა",
   "optionalPassphraseHint": "საიდუმლო ფრაზა (არასავალდებულო)",
   "requiredHint": "სავალდებულო",
-  "wordsDropdownSuffix": " სიტყვა",
   "emptyMnemonicWordsError": "შეიყვანეთ თქვენი მნემონიკის ყველა სიტყვა",
   "tryAgainButton": "ხელახლა ცდა",
   "errorGenericTitle": "უპს! რაღაც ვერ მოხერხდა",

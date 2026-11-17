@@ -9856,10 +9856,6 @@
   "@networkFeesLabel": {
     "description": "Label for network transaction fees in onchain send"
   },
-  "wordsDropdownSuffix": " palavras",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "recoverYourWalletTitle": "Recupere sua carteira",
   "@recoverYourWalletTitle": {
     "description": "Title for recover wallet screen"

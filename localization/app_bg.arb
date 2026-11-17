@@ -4222,10 +4222,6 @@
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
   },
-  "wordsDropdownSuffix": " думи",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "receiveVerifyAddressOnLedger": "Потвърдете адреса на Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"

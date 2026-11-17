@@ -1707,7 +1707,6 @@
   "sellMxnBalance": "Saldo MXN",
   "fundExchangeWarningTactic4": "Ti chiedono di inviare Bitcoin ad un loro indirizzo",
   "fundExchangeSinpeDescription": "Colonne di trasferimento utilizzando SINPE",
-  "wordsDropdownSuffix": " parole",
   "receiveVerifyAddressOnLedger": "Verifica l'indirizzo su Ledger",
   "buyWaitForFreeWithdrawal": "Attendi l'invio gratuito",
   "sellSendPaymentCrcBalance": "Saldo CRC",

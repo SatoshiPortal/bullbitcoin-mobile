@@ -2498,10 +2498,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "wordsDropdownSuffix": " শব্দ",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "emptyMnemonicWordsError": "আপোনাৰ mnemonic-ৰ সকলো শব্দ লিখক",
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"

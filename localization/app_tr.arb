@@ -5438,10 +5438,6 @@
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
   },
-  "wordsDropdownSuffix": " kelimeler",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "receiveVerifyAddressOnLedger": "Adresi Ledger",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"

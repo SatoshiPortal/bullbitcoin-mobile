@@ -4381,10 +4381,6 @@
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
   },
-  "wordsDropdownSuffix": " words",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
-  },
   "emptyMnemonicWordsError": "Apne mnemonic ke saare words daalo",
   "@emptyMnemonicWordsError": {
     "description": "Error message when not all mnemonic words are filled in"

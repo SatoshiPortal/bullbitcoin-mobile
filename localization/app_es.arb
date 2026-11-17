@@ -1485,7 +1485,6 @@
   "submitButton": "Enviar",
   "optionalPassphraseHint": "Frase de contraseña opcional",
   "requiredHint": "Requerido",
-  "wordsDropdownSuffix": " palabras",
   "emptyMnemonicWordsError": "Ingrese todas las palabras de su mnemónico",
   "tryAgainButton": "Intentar de nuevo",
   "errorGenericTitle": "¡Ups! Algo salió mal",

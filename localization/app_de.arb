@@ -1664,7 +1664,6 @@
   "sellMxnBalance": "MXN-Guthaben",
   "fundExchangeWarningTactic4": "Sie bitten darum, Bitcoin an ihre Adresse zu senden.",
   "fundExchangeSinpeDescription": "Überweisen Sie Costa-Rica-Colón mit SINPE",
-  "wordsDropdownSuffix": " Wörter",
   "receiveVerifyAddressOnLedger": "Bitte überprüfen Sie die Adresse auf Ihrem Ledger.",
   "buyWaitForFreeWithdrawal": "Auf kostenlose Auszahlung warten",
   "sellSendPaymentCrcBalance": "CRC-Guthaben",
