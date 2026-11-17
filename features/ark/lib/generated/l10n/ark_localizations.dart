@@ -883,6 +883,12 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Review valid until (UTC)'**
   String get boardValidUntil;
+
+  /// No description provided for @exitMaximumClaimFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum claim fee (sats)'**
+  String get exitMaximumClaimFee;
 }
 
 class _ArkLocalizationsDelegate
