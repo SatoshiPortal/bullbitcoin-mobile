@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/recipients/ui/widgets/confidential_sepa_avail
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, Gap, BullTypographyX;
 
 enum RecipientsTab { newRecipient, recipientsList }
 
@@ -96,7 +97,7 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
               const Gap(16.0),
               Text(
                 context.loc.recipientsScreenSubtitle,
-                style: context.font.labelMedium?.copyWith(
+                style: context.bullType.caption.copyWith(
                   color: context.appColors.secondary,
                 ),
               ),

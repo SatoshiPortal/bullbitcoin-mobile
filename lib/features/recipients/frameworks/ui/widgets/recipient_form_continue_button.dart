@@ -1,9 +1,9 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecipientFormContinueButton extends StatelessWidget {
@@ -34,7 +34,7 @@ class RecipientFormContinueButton extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
               hookError!,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),
             ),
@@ -44,7 +44,7 @@ class RecipientFormContinueButton extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
               failedToAddRecipient.toTranslated(context),
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),
             ),

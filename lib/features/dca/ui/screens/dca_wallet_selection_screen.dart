@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/dca/ui/widgets/dca_wallet_radio_list.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, BullShapesX, Gap;
+    show BullButton, BullScrollableColumn, BullShapesX, Gap, BullTypographyX;
 
 class DcaWalletSelectionScreen extends StatefulWidget {
   const DcaWalletSelectionScreen({super.key});
@@ -51,7 +51,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 48),
                   child: Text(
                     context.loc.dcaWalletSelectionDescription,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: context.bullType.body,
                     textAlign: .center,
                   ),
                 ),

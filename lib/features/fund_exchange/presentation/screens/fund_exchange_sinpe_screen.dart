@@ -8,14 +8,13 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
 
 class FundExchangeSinpeScreen extends StatelessWidget {
   const FundExchangeSinpeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final details = context.select(
       (FundExchangeBloc bloc) => bloc.state.fundingDetails,
     );
@@ -37,19 +36,21 @@ class FundExchangeSinpeScreen extends StatelessWidget {
             children: [
               BBText(
                 context.loc.fundExchangeSinpeTitle,
-                style: theme.textTheme.displaySmall,
+                style: context.bullType.headline,
               ),
               const Gap(16.0),
               RichText(
                 text: TextSpan(
                   text: context.loc.fundExchangeSinpeDescription,
-                  style: theme.textTheme.headlineSmall,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                   children: [
                     TextSpan(
                       text: context.loc.fundExchangeSinpeDescriptionBold,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: .bold,
-                      ),
+                      style: context.bullType.subtitle
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(fontWeight: .bold),
                     ),
                   ],
                 ),
@@ -57,7 +58,9 @@ class FundExchangeSinpeScreen extends StatelessWidget {
               const Gap(24.0),
               BBText(
                 context.loc.fundExchangeSinpeAddedToBalance,
-                style: theme.textTheme.headlineSmall,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
               ),
               const Gap(24.0),
               Container(
@@ -96,7 +99,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                                     text: context
                                         .loc
                                         .fundExchangeSinpeWarningNoBitcoin,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                    style: context.bullType.body.copyWith(
                                       color: context.appColors.secondary,
                                       fontWeight: .bold,
                                     ),
@@ -105,12 +108,10 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                                         text: context
                                             .loc
                                             .fundExchangeSinpeWarningNoBitcoinDescription,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                              color:
-                                                  context.appColors.secondary,
-                                              fontWeight: .normal,
-                                            ),
+                                        style: context.bullType.body.copyWith(
+                                          color: context.appColors.secondary,
+                                          fontWeight: .normal,
+                                        ),
                                       ),
                                     ],
                                   ),

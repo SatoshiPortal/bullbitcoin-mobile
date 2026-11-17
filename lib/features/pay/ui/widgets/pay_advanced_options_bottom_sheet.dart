@@ -5,7 +5,13 @@ import 'package:bb_mobile/features/pay/ui/widgets/pay_coin_selection_bottom_shee
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullShapesX,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class PayAdvancedOptionsBottomSheet extends StatelessWidget {
@@ -33,7 +39,9 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
               Center(
                 child: BullText(
                   context.loc.payAdvancedOptions,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               Positioned(
@@ -52,7 +60,9 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
             children: [
               BullText(
                 context.loc.payRbfActivated,
-                style: context.font.headlineMedium,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               Switch(
                 value: isRBFEnabled,
@@ -68,7 +78,9 @@ class PayAdvancedOptionsBottomSheet extends StatelessWidget {
           ListTile(
             title: BullText(
               context.loc.paySelectCoinsManually,
-              style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(fontWeight: .w500),
             ),
             trailing: const Icon(Icons.arrow_forward),
             onTap: () {

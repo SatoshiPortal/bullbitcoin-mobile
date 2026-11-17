@@ -12,7 +12,13 @@ import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullErrorState, BullInfoCard, BullScrollableColumn, Gap;
+    show
+        BullButton,
+        BullErrorState,
+        BullInfoCard,
+        BullScrollableColumn,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class DcaScreen extends StatefulWidget {
@@ -97,7 +103,7 @@ class _DcaScreenState extends State<DcaScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 48),
                           child: Text(
                             context.loc.dcaSetupScheduleMessage,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                            style: context.bullType.body,
                             textAlign: .center,
                           ),
                         ),

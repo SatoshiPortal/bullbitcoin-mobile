@@ -13,7 +13,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullScrollableColumn,
         BullShimmerBox,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class DcaConfirmationScreen extends StatelessWidget {
   const DcaConfirmationScreen({super.key});
@@ -49,7 +50,7 @@ class DcaConfirmationScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Text(
                 context.loc.dcaConfirmAutoMessage,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: context.bullType.body,
                 textAlign: .center,
               ),
             ),
@@ -104,8 +105,9 @@ class DcaConfirmationScreen extends StatelessWidget {
             if (confirmationState.failure case final failure?) ...[
               Text(
                 failure.toTranslated(context),
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(color: context.appColors.error),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(color: context.appColors.error),
               ),
               const Gap(16),
             ],

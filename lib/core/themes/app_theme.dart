@@ -185,7 +185,6 @@ class AppTheme {
 
 extension ThemeEx on BuildContext {
   ThemeData get theme => Theme.of(this);
-  TextTheme get font => theme.textTheme;
   AppColors get appColors =>
       theme.brightness == .dark ? AppColors.dark : AppColors.light;
 }
@@ -200,7 +199,7 @@ class WidgetStyles {
       fillColor: context.appColors.surface,
       filled: true,
       hintText: hintText,
-      hintStyle: context.font.bodyMedium!.copyWith(
+      hintStyle: context.bullType.body.copyWith(
         color: context.appColors.textMuted,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),

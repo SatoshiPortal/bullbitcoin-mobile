@@ -56,12 +56,14 @@ class BBTextFormField extends StatelessWidget {
             labelText!,
             style:
                 labelStyle ??
-                context.font.bodyLarge?.copyWith(
-                  color: isDisabled
-                      ? context.appColors.outline
-                      : context.appColors.secondary,
-                  fontWeight: .w500,
-                ),
+                context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(
+                      color: isDisabled
+                          ? context.appColors.outline
+                          : context.appColors.secondary,
+                      fontWeight: .w500,
+                    ),
             textAlign: .left,
           ),
         const SizedBox(height: 8),
@@ -71,9 +73,14 @@ class BBTextFormField extends StatelessWidget {
           autofocus: autofocus ?? false,
           textInputAction: textInputAction,
           inputFormatters: inputFormatters,
-          style: (style ?? context.font.bodyLarge)?.copyWith(
-            color: isDisabled ? context.appColors.outline : null,
-          ),
+          style:
+              (style ??
+                      context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ))
+                  .copyWith(
+                    color: isDisabled ? context.appColors.outline : null,
+                  ),
           enabled: !isDisabled,
           decoration: InputDecoration(
             fillColor: isDisabled
@@ -102,7 +109,7 @@ class BBTextFormField extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
             hintText: hintText,
-            hintStyle: context.font.bodyMedium?.copyWith(
+            hintStyle: context.bullType.body.copyWith(
               color: context.appColors.outline,
             ),
             prefixIcon: prefixText != null
@@ -110,9 +117,16 @@ class BBTextFormField extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 16.0),
                     child: Text(
                       prefixText!,
-                      style: (style ?? context.font.bodyLarge)?.copyWith(
-                        color: isDisabled ? context.appColors.outline : null,
-                      ),
+                      style:
+                          (style ??
+                                  context.bullType.body.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ))
+                              .copyWith(
+                                color: isDisabled
+                                    ? context.appColors.outline
+                                    : null,
+                              ),
                     ),
                   )
                 : prefix,
@@ -124,9 +138,16 @@ class BBTextFormField extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 16.0),
                     child: Text(
                       suffixText!,
-                      style: (style ?? context.font.bodyLarge)?.copyWith(
-                        color: isDisabled ? context.appColors.outline : null,
-                      ),
+                      style:
+                          (style ??
+                                  context.bullType.body.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ))
+                              .copyWith(
+                                color: isDisabled
+                                    ? context.appColors.outline
+                                    : null,
+                              ),
                     ),
                   )
                 : suffix,

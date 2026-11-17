@@ -7,14 +7,13 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 
 class FundExchangeCanadaPostScreen extends StatelessWidget {
   const FundExchangeCanadaPostScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final details = context.select(
       (FundExchangeBloc bloc) => bloc.state.fundingDetails,
     );
@@ -35,7 +34,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
             children: [
               BBText(
                 context.loc.fundExchangeCanadaPostTitle,
-                style: theme.textTheme.displaySmall,
+                style: context.bullType.headline,
               ),
               const Gap(16.0),
               ...[
@@ -50,9 +49,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                 (step) => Row(
                   crossAxisAlignment: .start,
                   children: [
-                    Expanded(
-                      child: BBText(step, style: theme.textTheme.bodyMedium),
-                    ),
+                    Expanded(child: BBText(step, style: context.bullType.body)),
                   ],
                 ),
               ),
@@ -67,7 +64,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                     children: [
                       BBText(
                         context.loc.fundExchangeCanadaPostQrCodeLabel,
-                        style: theme.textTheme.bodyMedium,
+                        style: context.bullType.body,
                         textAlign: .center,
                       ),
                       const Gap(8.0),

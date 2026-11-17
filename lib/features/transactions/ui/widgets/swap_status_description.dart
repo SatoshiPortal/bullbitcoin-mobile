@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInfoCard, BullShapesX, BullText, Gap;
+    show BullInfoCard, BullShapesX, BullText, Gap, BullTypographyX;
 
 class SwapStatusDescription extends StatelessWidget {
   const SwapStatusDescription({required this.swap});
@@ -67,7 +67,7 @@ class SwapStatusDescription extends StatelessWidget {
                         : (swap.isChainSwap
                               ? context.loc.transactionSwapStatusTransferStatus
                               : context.loc.transactionSwapStatusSwapStatus),
-                    style: context.font.titleSmall?.copyWith(
+                    style: context.bullType.label.copyWith(
                       color:
                           swap.status == SwapStatus.failed ||
                               swap.status == SwapStatus.expired
@@ -81,26 +81,30 @@ class SwapStatusDescription extends StatelessWidget {
               const Gap(8),
               BullText(
                 _getSwapStatusDescription(context),
-                style: context.font.bodySmall?.copyWith(
-                  color:
-                      swap.status == SwapStatus.failed ||
-                          swap.status == SwapStatus.expired
-                      ? context.appColors.error
-                      : context.appColors.onSurfaceVariant,
-                ),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(
+                      color:
+                          swap.status == SwapStatus.failed ||
+                              swap.status == SwapStatus.expired
+                          ? context.appColors.error
+                          : context.appColors.onSurfaceVariant,
+                    ),
               ),
               if (_getAdditionalInfo(context).isNotEmpty) ...[
                 const Gap(12),
                 BullText(
                   _getAdditionalInfo(context),
-                  style: context.font.bodySmall?.copyWith(
-                    color:
-                        swap.status == SwapStatus.failed ||
-                            swap.status == SwapStatus.expired
-                        ? context.appColors.error.withValues(alpha: 0.8)
-                        : context.appColors.outline,
-                    fontStyle: .italic,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(
+                        color:
+                            swap.status == SwapStatus.failed ||
+                                swap.status == SwapStatus.expired
+                            ? context.appColors.error.withValues(alpha: 0.8)
+                            : context.appColors.outline,
+                        fontStyle: .italic,
+                      ),
                 ),
               ],
             ],

@@ -15,7 +15,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullLabeledTextInput,
         BullPickerItem,
         BullText,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:satoshifier/enums/derivation.dart' as satoshifier;
 
 class WatchOnlyDetailsWidget extends StatelessWidget {
@@ -61,7 +62,7 @@ class _DescriptorDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        BullText(networkLabel, style: context.font.bodyMedium),
+        BullText(networkLabel, style: context.bullType.body),
         const Gap(24),
         BullLabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
@@ -83,7 +84,9 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                 width: 120,
                 child: BullText(
                   context.loc.importWatchOnlySigningDevice,
-                  style: context.font.titleMedium,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               SizedBox(
@@ -151,29 +154,29 @@ class _XpubDetailsWidget extends StatelessWidget {
       children: [
         BullText(
           context.loc.importWatchOnlyExtendedPublicKey,
-          style: context.font.titleMedium,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
         const Gap(8),
-        BullText(entity.pubkey, style: context.font.bodyMedium),
+        BullText(entity.pubkey, style: context.bullType.body),
         const Gap(24),
         if (!isXpub) ...[
           BullText(
             context.loc.importWatchOnlyXpubLabel,
-            style: context.font.titleMedium,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           ),
           const Gap(8),
-          BullText(entity.bip32Pubkey, style: context.font.bodyMedium),
+          BullText(entity.bip32Pubkey, style: context.bullType.body),
           const Gap(24),
         ],
         BullText(
           context.loc.importWatchOnlyType,
-          style: context.font.titleMedium,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
         const Gap(8),
         if (!isXpub) ...[
           BullText(
             entity.extendedPubkey.derivation.label,
-            style: context.font.bodyMedium,
+            style: context.bullType.body,
           ),
           const Gap(24),
         ] else ...[
@@ -201,7 +204,7 @@ class _XpubDetailsWidget extends StatelessWidget {
         ],
         BullText(
           context.loc.importWatchOnlyLabel,
-          style: context.font.titleMedium,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
         const Gap(8),
         BullInputText(

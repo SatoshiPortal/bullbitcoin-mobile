@@ -25,7 +25,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullInfoCard,
         BullSwitch,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
@@ -188,7 +189,9 @@ class SwapPageState extends State<SwapPage> {
                   sendToExternal
                       ? context.loc.swapExternalTransferLabel
                       : context.loc.swapInternalTransferTitle,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 );
               },
             ),
@@ -320,7 +323,7 @@ class SwapPageState extends State<SwapPage> {
                   return Text(
                     message,
                     key: _errorKey,
-                    style: context.font.labelLarge?.copyWith(
+                    style: context.bullType.label.copyWith(
                       color: context.appColors.error,
                     ),
                     maxLines: 4,
@@ -347,7 +350,9 @@ class SwapPageState extends State<SwapPage> {
                           receiveExactAmount
                               ? context.loc.swapReceiveExactAmountLabel
                               : context.loc.swapSubtractFeesLabel,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         );
                       },
                     ),

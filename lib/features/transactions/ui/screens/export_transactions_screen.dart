@@ -12,7 +12,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullText,
         BullTopBar,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ExportTransactionsScreen extends StatefulWidget {
@@ -111,7 +112,9 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                         const Gap(20),
                         BullText(
                           context.loc.exportTransactionsDescription,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         const Gap(32),
@@ -192,7 +195,7 @@ class _DateField extends StatelessWidget {
         ),
         child: BullText(
           value ?? context.loc.exportTransactionsAnyDate,
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
       ),
     );

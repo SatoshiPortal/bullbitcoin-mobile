@@ -166,7 +166,9 @@ class _IntroStepState extends State<_IntroStep> {
                   Flexible(
                     child: BullText(
                       context.loc.recipientsVirtualIbanIntroTitle,
-                      style: context.bullText.headlineSmall,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                       color: colors.text,
                     ),
                   ),
@@ -182,7 +184,7 @@ class _IntroStepState extends State<_IntroStep> {
               const Gap(12),
               BullText(
                 context.loc.recipientsVirtualIbanIntroDescription,
-                style: context.bullText.bodyMedium,
+                style: context.bullType.body,
                 color: colors.text,
               ),
               const Gap(16),
@@ -199,7 +201,9 @@ class _IntroStepState extends State<_IntroStep> {
               const Gap(20),
               BullText(
                 context.loc.recipientsVirtualIbanAccountOwnerName,
-                style: context.bullText.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: colors.text,
               ),
               const Gap(8),
@@ -215,7 +219,9 @@ class _IntroStepState extends State<_IntroStep> {
                 ),
                 child: BullText(
                   state.accountOwnerName ?? '',
-                  style: context.bullText.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: colors.text,
                 ),
               ),
@@ -234,7 +240,7 @@ class _IntroStepState extends State<_IntroStep> {
                     Expanded(
                       child: BullText(
                         context.loc.recipientsVirtualIbanNameConfirmation,
-                        style: context.bullText.bodyMedium,
+                        style: context.bullType.body,
                         color: colors.text,
                       ),
                     ),
@@ -245,7 +251,7 @@ class _IntroStepState extends State<_IntroStep> {
                 const Gap(16),
                 BullText(
                   failure.toTranslated(context),
-                  style: context.bullText.bodyMedium,
+                  style: context.bullType.body,
                   color: colors.error,
                 ),
               ],
@@ -377,7 +383,9 @@ class _StatusLayout extends StatelessWidget {
               if (icon != null) ...[icon!, const Gap(16)],
               BullText(
                 title,
-                style: context.bullText.headlineSmall,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
                 color: colors.text,
                 textAlign: .center,
               ),
@@ -385,7 +393,7 @@ class _StatusLayout extends StatelessWidget {
                 const Gap(12),
                 BullText(
                   description!,
-                  style: context.bullText.bodyMedium,
+                  style: context.bullType.body,
                   color: colors.textMuted,
                   textAlign: .center,
                 ),
@@ -394,7 +402,7 @@ class _StatusLayout extends StatelessWidget {
                 const Gap(16),
                 BullText(
                   error!,
-                  style: context.bullText.bodyMedium,
+                  style: context.bullType.body,
                   color: colors.error,
                   textAlign: .center,
                 ),
@@ -437,12 +445,12 @@ class _Bullet extends StatelessWidget {
       child: Row(
         crossAxisAlignment: .start,
         children: [
-          BullText('•', style: context.bullText.bodyMedium, color: colors.text),
+          BullText('•', style: context.bullType.body, color: colors.text),
           const Gap(8),
           Expanded(
             child: BullText(
               text,
-              style: context.bullText.bodyMedium,
+              style: context.bullType.body,
               color: colors.text,
             ),
           ),

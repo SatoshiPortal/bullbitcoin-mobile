@@ -5,7 +5,13 @@ import 'package:bb_mobile/features/send/ui/widgets/coin_selection_bottom_sheet.d
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullShapesX,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class AdvancedOptionsBottomSheet extends StatelessWidget {
@@ -37,7 +43,9 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               Center(
                 child: BullText(
                   context.loc.sendAdvancedOptions,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.secondary,
                 ),
               ),
@@ -58,7 +66,9 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               children: [
                 BullText(
                   context.loc.sendReplaceByFeeActivated,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.secondary,
                 ),
                 Switch(
@@ -74,7 +84,9 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             ListTile(
               title: BullText(
                 context.loc.sendSelectCoinsManually,
-                style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(fontWeight: .w500),
                 color: context.appColors.secondary,
               ),
               trailing: Icon(

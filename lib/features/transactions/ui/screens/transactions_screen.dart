@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullPullableBody, BullText, BullTopBar, Gap;
+    show BullPullableBody, BullText, BullTopBar, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class TransactionsScreen extends StatelessWidget {
@@ -65,7 +65,9 @@ class _Screen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: BullText(
                 failure.toTranslated(context),
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.error,
               ),
             ),

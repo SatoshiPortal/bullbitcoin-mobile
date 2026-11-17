@@ -95,7 +95,7 @@ class _EditorContent extends StatelessWidget {
           children: [
             BullText(
               error.toTranslated(context),
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),
             ),
@@ -121,7 +121,7 @@ class _EditorContent extends StatelessWidget {
               if (showDescription ?? true) ...[
                 BullText(
                   context.loc.exchangeBitcoinWalletsDescription,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.outline,
                   ),
                 ),
@@ -209,9 +209,9 @@ class _WalletAddressFieldState extends State<_WalletAddressField> {
                     : () => cubit.deleteWallet(type),
                 child: BullText(
                   context.loc.delete,
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.error,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(color: context.appColors.error),
                 ),
               ),
           ],

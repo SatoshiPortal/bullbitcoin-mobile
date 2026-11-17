@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/settings_search_bar.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,8 +32,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
   );
 
   Widget _build(BuildContext context, ExchangeAccess access) {
-    final theme = Theme.of(context);
-
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
@@ -93,7 +91,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   title: Center(
                     child: Text(
                       '${context.loc.settingsAppVersionLabel}$appVersion',
-                      style: theme.textTheme.labelMedium?.copyWith(
+                      style: context.bullType.caption.copyWith(
                         color: context.appColors.onSurface,
                       ),
                     ),

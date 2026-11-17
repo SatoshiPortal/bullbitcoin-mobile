@@ -62,9 +62,9 @@ class CopyInput extends StatelessWidget {
                     ? const BullShimmerLine()
                     : Text(
                         text,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.secondary,
-                        ),
+                        style: context.bullType.body
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(color: context.appColors.secondary),
                         maxLines: maxLines,
                         overflow: overflow,
                       ),
@@ -104,7 +104,6 @@ class CopyInput extends StatelessWidget {
   }
 
   void _onShowValueModal(BuildContext context, {required bool canCopy}) {
-    final theme = Theme.of(context);
     BullDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -131,25 +130,33 @@ class CopyInput extends StatelessWidget {
             TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: context.appColors.secondary,
-                textStyle: theme.textTheme.bodyLarge,
+                textStyle: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: clipboardText ?? text));
               },
               child: Text(
                 context.loc.copyDialogButton,
-                style: theme.textTheme.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           TextButton(
             style: TextButton.styleFrom(
               foregroundColor: context.appColors.primary,
-              textStyle: theme.textTheme.bodyLarge,
+              textStyle: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
             onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(
               context.loc.closeDialogButton,
-              style: theme.textTheme.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

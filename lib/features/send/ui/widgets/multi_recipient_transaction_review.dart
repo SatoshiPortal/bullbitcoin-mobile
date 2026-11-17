@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/widgets/send_info_row.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 class MultiRecipientTransactionReview extends StatelessWidget {
@@ -46,7 +46,9 @@ class MultiRecipientTransactionReview extends StatelessWidget {
             title: context.loc.coreScreensFromLabel,
             details: BullText(
               walletLabel,
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.secondary,
               textAlign: TextAlign.end,
             ),
@@ -57,7 +59,9 @@ class MultiRecipientTransactionReview extends StatelessWidget {
               title: context.loc.sendToRecipientNumber(index + 1),
               details: AddressViewer(
                 recipients[index].address,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
               ),
             ),
@@ -70,7 +74,9 @@ class MultiRecipientTransactionReview extends StatelessWidget {
                     ? amountBuilder(recipientAmountsSat[index])
                     : BullText(
                         '…',
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         color: context.appColors.secondary,
                       ),
               ),
@@ -82,7 +88,9 @@ class MultiRecipientTransactionReview extends StatelessWidget {
               title: context.loc.receiveNote,
               details: BullText(
                 label,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
                 textAlign: TextAlign.end,
               ),
@@ -97,7 +105,9 @@ class MultiRecipientTransactionReview extends StatelessWidget {
             title: context.loc.coreScreensNetworkFeesLabel,
             details: BullText(
               formattedAbsoluteFees,
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.secondary,
               textAlign: TextAlign.end,
             ),
@@ -112,7 +122,9 @@ class MultiRecipientTransactionReview extends StatelessWidget {
                 children: [
                   BullText(
                     feePriorityTitle,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.primary,
                   ),
                   const Gap(4),

@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 
 class TransactionDetailsStatusLabel extends StatelessWidget {
   const TransactionDetailsStatusLabel({super.key});
@@ -82,14 +82,16 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
 
     return BullText(
       label,
-      style: context.font.headlineLarge?.copyWith(
-        color: failedOrExpired
-            ? (orderSwap?.localStatus == OrderSwapLocalStatus.failed ||
-                      swap?.status == SwapStatus.failed
-                  ? context.appColors.error
-                  : context.appColors.error.withValues(alpha: 0.7))
-            : null,
-      ),
+      style: context.bullType.subtitle
+          .copyWith(fontWeight: FontWeight.w700)
+          .copyWith(
+            color: failedOrExpired
+                ? (orderSwap?.localStatus == OrderSwapLocalStatus.failed ||
+                          swap?.status == SwapStatus.failed
+                      ? context.appColors.error
+                      : context.appColors.error.withValues(alpha: 0.7))
+                : null,
+          ),
     );
   }
 }

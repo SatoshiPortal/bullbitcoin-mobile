@@ -65,9 +65,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           children: [
             BullText(
               state.failure!.toTranslated(context),
-              style: context.bullText.bodyMedium?.copyWith(
-                color: context.bull.error,
-              ),
+              style: context.bullType.body.copyWith(color: context.bull.error),
             ),
             const Gap(BullSpacing.md),
             BullButton.big(
@@ -85,9 +83,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       return Center(
         child: BullText(
           context.loc.exchangeStatisticsNoData,
-          style: context.bullText.bodyMedium?.copyWith(
-            color: context.bull.outline,
-          ),
+          style: context.bullType.body.copyWith(color: context.bull.outline),
         ),
       );
     }
@@ -104,9 +100,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   context.loc.exchangeStatisticsAsOf(
                     DateFormat('MMM d, yyyy HH:mm').format(state.asOf!),
                   ),
-                  style: context.bullText.bodySmall?.copyWith(
-                    color: context.bull.outline,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(color: context.bull.outline),
                 ),
                 const Gap(BullSpacing.md),
               ],
@@ -152,10 +148,12 @@ class _OrderStatsSection extends StatelessWidget {
       children: [
         BullText(
           context.loc.exchangeStatisticsOrderStats,
-          style: context.bullText.headlineMedium?.copyWith(
-            color: context.bull.onSurface,
-            fontWeight: FontWeight.w600,
-          ),
+          style: context.bullType.subtitle
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(
+                color: context.bull.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const Gap(BullSpacing.md),
         _MultiValueStatCard(
@@ -271,7 +269,7 @@ class _StatRow extends StatelessWidget {
               children: [
                 BullText(
                   label,
-                  style: context.bullText.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.bull.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
@@ -295,7 +293,7 @@ class _StatRow extends StatelessWidget {
                 .map(
                   (value) => BullText(
                     value,
-                    style: context.bullText.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.bull.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
@@ -343,18 +341,20 @@ class _MultiValueStatCard extends StatelessWidget {
               children: [
                 BullText(
                   title,
-                  style: context.bullText.bodySmall?.copyWith(
-                    color: context.bull.textMuted,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(color: context.bull.textMuted),
                 ),
                 const Gap(BullSpacing.xxs),
                 ...values.map(
                   (value) => BullText(
                     value,
-                    style: context.bullText.headlineSmall?.copyWith(
-                      color: context.bull.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: context.bullType.subtitle
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(
+                          color: context.bull.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
                 if (description != null) ...[
@@ -400,7 +400,7 @@ class _StatSectionCard extends StatelessWidget {
               const Gap(BullSpacing.xs),
               BullText(
                 title,
-                style: context.bullText.labelLarge?.copyWith(
+                style: context.bullType.label.copyWith(
                   color: context.bull.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
@@ -432,17 +432,19 @@ class _BillerStatsSection extends StatelessWidget {
       children: [
         BullText(
           context.loc.exchangeStatisticsBillerStats,
-          style: context.bullText.headlineMedium?.copyWith(
-            color: context.bull.onSurface,
-            fontWeight: FontWeight.w600,
-          ),
+          style: context.bullType.subtitle
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(
+                color: context.bull.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
         ),
         if (billerStats.currency.isNotEmpty)
           BullText(
             context.loc.exchangeStatisticsCurrency(billerStats.currency),
-            style: context.bullText.bodySmall?.copyWith(
-              color: context.bull.textMuted,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.bull.textMuted),
           ),
         const Gap(BullSpacing.md),
         ...state.formattedBillerStats.map(
@@ -467,7 +469,7 @@ class _BillerStatCard extends StatelessWidget {
         children: [
           BullText(
             stat.displayName,
-            style: context.bullText.labelLarge?.copyWith(
+            style: context.bullType.label.copyWith(
               color: context.bull.onSurface,
               fontWeight: FontWeight.w600,
             ),
@@ -502,14 +504,14 @@ class _BillerStatCard extends StatelessWidget {
       children: [
         BullText(
           label,
-          style: context.bullText.bodySmall?.copyWith(
-            color: context.bull.textMuted,
-          ),
+          style: context.bullType.label
+              .copyWith(fontWeight: FontWeight.w400)
+              .copyWith(color: context.bull.textMuted),
         ),
         const Gap(BullSpacing.xxs),
         BullText(
           value,
-          style: context.bullText.bodyMedium?.copyWith(
+          style: context.bullType.body.copyWith(
             color: context.bull.onSurface,
             fontWeight: FontWeight.w500,
           ),

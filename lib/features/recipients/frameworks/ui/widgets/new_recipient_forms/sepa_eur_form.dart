@@ -295,9 +295,9 @@ class _AccountOwnerNameFieldState extends State<_AccountOwnerNameField> {
         const Gap(8.0),
         Text(
           context.loc.recipientsConfidentialSepaNameMustMatchHint,
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.outline,
-          ),
+          style: context.bullType.label
+              .copyWith(fontWeight: FontWeight.w400)
+              .copyWith(color: context.appColors.outline),
         ),
       ],
     );

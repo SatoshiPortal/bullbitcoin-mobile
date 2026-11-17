@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 
 class SwapFeesRow extends StatelessWidget {
   const SwapFeesRow({super.key, required this.amountSat});
@@ -29,12 +29,12 @@ class SwapFeesRow extends StatelessWidget {
       children: [
         Text(
           context.loc.swapTotalFees,
-          style: context.font.labelLarge?.copyWith(
+          style: context.bullType.label.copyWith(
             color: context.appColors.surface,
           ),
         ),
         const Gap(4),
-        Text(estimatedFees, style: context.font.labelLarge),
+        Text(estimatedFees, style: context.bullType.label),
       ],
     );
   }

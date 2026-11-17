@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_failur
 import 'package:bb_mobile/features/settings/ui/widgets/address_card.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSegmented, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSegmented, Gap, BullTypographyX;
 
 class AddressesScreen extends StatefulWidget {
   const AddressesScreen({super.key, required this.walletId});
@@ -119,7 +119,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                     return Center(
                       child: Text(
                         failure.toTranslated(context),
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           color: context.appColors.error,
                         ),
                         textAlign: TextAlign.center,
@@ -131,7 +131,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                         showChangeAddresses && isLiquid
                             ? context.loc.addressViewChangeAddressesComingSoon
                             : context.loc.addressViewNoAddressesFound,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           color: context.appColors.onSurface,
                         ),
                       ),
@@ -160,7 +160,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                             return Center(
                               child: Text(
                                 failure.toTranslated(context),
-                                style: context.font.bodyMedium?.copyWith(
+                                style: context.bullType.body.copyWith(
                                   color: context.appColors.error,
                                 ),
                                 textAlign: TextAlign.center,

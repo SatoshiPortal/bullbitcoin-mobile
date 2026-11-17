@@ -27,7 +27,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullShimmerBox,
         BullShimmerLine,
         BullText,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -58,7 +59,12 @@ class WalletDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: walletName.isEmpty
             ? const BullShimmerLine(width: 150)
-            : BullText(walletName, style: context.font.headlineMedium),
+            : BullText(
+                walletName,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
         actions: [
           IconButton(
             tooltip: context.loc.settingsWalletSettingsTitle,
@@ -105,8 +111,9 @@ class WalletDetailScreen extends StatelessWidget {
                         signer: wallet.signer,
                         balanceText: CurrencyText(
                           balanceSat.toInt(),
-                          style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(color: context.appColors.onPrimary),
+                          style: context.bullType.headline.copyWith(
+                            color: context.appColors.onPrimary,
+                          ),
                           showFiat: false,
                         ),
                         eyeToggle: const EyeToggle(),
@@ -278,15 +285,15 @@ class _CoinsEntryTileState extends State<_CoinsEntryTile> {
                               children: [
                                 BullText(
                                   context.loc.walletButtonCoins,
-                                  style: context.font.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: context.bullType.body
+                                      .copyWith(fontWeight: FontWeight.w500)
+                                      .copyWith(fontWeight: FontWeight.w600),
                                 ),
                                 if (subtitle != null) ...[
                                   const Gap(2),
                                   BullText(
                                     subtitle,
-                                    style: context.font.labelMedium?.copyWith(
+                                    style: context.bullType.caption.copyWith(
                                       color: context.appColors.textMuted,
                                     ),
                                   ),

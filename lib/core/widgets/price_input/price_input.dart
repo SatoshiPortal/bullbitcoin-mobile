@@ -41,11 +41,13 @@ class PriceInput extends StatelessWidget {
       children: [
         Text(
           error ?? '',
-          style: context.font.bodyLarge?.copyWith(
-            color: error != null
-                ? context.appColors.error
-                : context.appColors.transparent,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(
+                color: error != null
+                    ? context.appColors.error
+                    : context.appColors.transparent,
+              ),
           maxLines: 2,
         ),
         const Gap(8),
@@ -104,7 +106,7 @@ class PriceInput extends StatelessWidget {
                     const Gap(8),
                     Text(
                       currency,
-                      style: context.font.displaySmall?.copyWith(
+                      style: context.bullType.headline.copyWith(
                         color: context.appColors.secondary,
                       ),
                       maxLines: 1,
@@ -140,9 +142,9 @@ class PriceInput extends StatelessWidget {
         Text(
           // No equivalent (no price): a lone "~" would read as a value.
           amountEquivalent.isEmpty ? '' : '~$amountEquivalent',
-          style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.onSurfaceVariant,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.onSurfaceVariant),
         ),
       ],
     );

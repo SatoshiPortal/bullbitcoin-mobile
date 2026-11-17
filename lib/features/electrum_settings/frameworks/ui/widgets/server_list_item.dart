@@ -57,7 +57,7 @@ class ServerListItem extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 server.displayName,
-                                style: context.font.bodyMedium?.copyWith(
+                                style: context.bullType.body.copyWith(
                                   color: context.appColors.onSurface,
                                   decoration: disabled
                                       ? TextDecoration.lineThrough
@@ -92,12 +92,14 @@ class ServerListItem extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           context.loc.electrumServerNotUsed,
-                          style: context.font.bodySmall?.copyWith(
-                            color: context.appColors.onSurface.withValues(
-                              alpha: 153,
-                            ),
-                            fontStyle: .italic,
-                          ),
+                          style: context.bullType.label
+                              .copyWith(fontWeight: FontWeight.w400)
+                              .copyWith(
+                                color: context.appColors.onSurface.withValues(
+                                  alpha: 153,
+                                ),
+                                fontStyle: .italic,
+                              ),
                         ),
                       ],
                     ],
@@ -154,9 +156,9 @@ class ServerListItem extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.onSurface,
-          ),
+          style: context.bullType.label
+              .copyWith(fontWeight: FontWeight.w400)
+              .copyWith(color: context.appColors.onSurface),
         ),
       ],
     );

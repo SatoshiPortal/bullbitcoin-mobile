@@ -1,5 +1,4 @@
 import 'package:swaps/swaps.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit.dart';
@@ -53,7 +52,7 @@ class _SwapRestoreBody extends StatelessWidget {
             child: BullText(
               state.error?.toTranslated(context) ??
                   context.loc.swapRestoreFailed,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.bull.textMuted,
               textAlign: .center,
             ),
@@ -64,7 +63,7 @@ class _SwapRestoreBody extends StatelessWidget {
           return Center(
             child: BullText(
               context.loc.swapRestoreNoSwaps,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.bull.textMuted,
             ),
           );
@@ -78,7 +77,9 @@ class _SwapRestoreBody extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: BullText(
                 context.loc.swapRestoreActionable(state.actionableCount),
-                style: context.font.bodySmall,
+                style: context.bullType.label.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
                 color: context.bull.textMuted,
               ),
             ),
@@ -108,7 +109,7 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: BullText(
         label.toUpperCase(),
-        style: context.font.labelSmall,
+        style: context.bullType.caption,
         color: context.bull.textMuted,
       ),
     );
@@ -162,12 +163,12 @@ class _SwapRow extends StatelessWidget {
               children: [
                 BullText(
                   _kindLabel(context),
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   color: context.bull.text,
                 ),
                 BullText(
                   shortId,
-                  style: context.font.labelSmall,
+                  style: context.bullType.caption,
                   color: context.bull.textMuted,
                 ),
                 const Gap(2),
@@ -176,7 +177,7 @@ class _SwapRow extends StatelessWidget {
                       ? '${FormatAmount.sats(restorable.swap.amountSat)} · '
                             '${_formatDate(restorable.swap.createdAt)}'
                       : _formatDate(restorable.swap.createdAt),
-                  style: context.font.labelSmall,
+                  style: context.bullType.caption,
                   color: context.bull.textMuted,
                 ),
               ],

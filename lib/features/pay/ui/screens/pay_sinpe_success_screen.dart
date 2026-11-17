@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_card.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, Gap;
+    show BullButton, BullScrollableColumn, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class PaySinpeSuccessScreen extends StatefulWidget {
@@ -71,9 +71,9 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
         appBar: AppBar(
           title: Text(
             context.loc.payOrderDetails,
-            style: context.font.headlineMedium?.copyWith(
-              color: context.appColors.outline,
-            ),
+            style: context.bullType.subtitle
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(color: context.appColors.outline),
           ),
           backgroundColor: context.appColors.transparent,
           elevation: 0,

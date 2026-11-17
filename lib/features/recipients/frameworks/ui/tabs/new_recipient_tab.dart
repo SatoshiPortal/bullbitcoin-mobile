@@ -22,7 +22,8 @@ import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullScrollableColumn, Gap, BullTypographyX;
 
 class NewRecipientTab extends StatefulWidget {
   const NewRecipientTab({this.hookError, super.key});
@@ -102,10 +103,9 @@ class NewRecipientTabState extends State<NewRecipientTab> {
         const Gap(16.0),
         Text(
           context.loc.recipientsPayoutMethod,
-          style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.secondary,
-            fontWeight: .w500,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.secondary, fontWeight: .w500),
         ),
         const Gap(12),
         RecipientTypeSelector(
@@ -117,7 +117,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           const Gap(8),
           Text(
             context.loc.recipientsTypeConfidentialSepaDescription,
-            style: context.font.bodyMedium,
+            style: context.bullType.body,
           ),
         ],
         const Gap(16.0),

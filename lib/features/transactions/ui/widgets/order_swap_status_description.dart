@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInfoCard, BullShapesX, BullText, Gap;
+    show BullInfoCard, BullShapesX, BullText, Gap, BullTypographyX;
 
 class OrderSwapStatusDescription extends StatelessWidget {
   final OrderSwapRecord orderSwap;
@@ -57,7 +57,7 @@ class OrderSwapStatusDescription extends StatelessWidget {
                     isChainSwap
                         ? context.loc.transactionSwapStatusTransferStatus
                         : context.loc.transactionSwapStatusSwapStatus,
-                    style: context.font.titleSmall?.copyWith(
+                    style: context.bullType.label.copyWith(
                       color: failedOrExpired
                           ? context.appColors.error
                           : context.appColors.secondary,
@@ -69,11 +69,13 @@ class OrderSwapStatusDescription extends StatelessWidget {
               const Gap(8),
               BullText(
                 _description(context, isChainSwap: isChainSwap),
-                style: context.font.bodySmall?.copyWith(
-                  color: failedOrExpired
-                      ? context.appColors.error
-                      : context.appColors.onSurfaceVariant,
-                ),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(
+                      color: failedOrExpired
+                          ? context.appColors.error
+                          : context.appColors.onSurfaceVariant,
+                    ),
               ),
             ],
           ),

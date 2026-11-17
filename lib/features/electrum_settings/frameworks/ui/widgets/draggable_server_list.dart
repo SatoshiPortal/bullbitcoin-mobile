@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/serve
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullConfirmDialog, BullInfoCard, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullConfirmDialog, BullInfoCard, Gap, BullTypographyX;
 
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
@@ -29,7 +30,7 @@ class DraggableServerList extends StatelessWidget {
       children: [
         Text(
           context.loc.electrumDefaultServers,
-          style: context.font.titleSmall?.copyWith(
+          style: context.bullType.label.copyWith(
             color: context.appColors.onSurface.withValues(alpha: 0.7),
           ),
         ),
@@ -55,16 +56,18 @@ class DraggableServerList extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             context.loc.electrumCustomServers,
-            style: context.font.titleSmall?.copyWith(
+            style: context.bullType.label.copyWith(
               color: context.appColors.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             context.loc.electrumDragToReorder,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.onSurface.withValues(alpha: 0.5),
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(
+                  color: context.appColors.onSurface.withValues(alpha: 0.5),
+                ),
           ),
           const SizedBox(height: 8),
           ReorderableListView(
@@ -136,7 +139,7 @@ class DraggableServerList extends StatelessWidget {
           ),
           label: Text(
             context.loc.electrumAddCustomServer,
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.primary,
             ),
           ),

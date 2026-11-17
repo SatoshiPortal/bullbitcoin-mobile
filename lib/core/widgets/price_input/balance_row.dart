@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSwitch, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSwitch, BullText, Gap, BullTypographyX;
 
 class BalanceRow extends StatelessWidget {
   final String title;
@@ -35,13 +36,13 @@ class BalanceRow extends StatelessWidget {
                 RichText(
                   text: TextSpan(
                     text: 'Wallet: ',
-                    style: context.font.labelLarge?.copyWith(
+                    style: context.bullType.label.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
                     children: [
                       TextSpan(
                         text: walletLabel,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullType.caption.copyWith(
                           color: context.appColors.secondary,
                         ),
                       ),
@@ -53,13 +54,13 @@ class BalanceRow extends StatelessWidget {
               RichText(
                 text: TextSpan(
                   text: '$title: ',
-                  style: context.font.labelLarge?.copyWith(
+                  style: context.bullType.label.copyWith(
                     color: context.appColors.onSurfaceVariant,
                   ),
                   children: [
                     TextSpan(
                       text: '$balance $currencyCode',
-                      style: context.font.labelMedium?.copyWith(
+                      style: context.bullType.caption.copyWith(
                         color: context.appColors.secondary,
                       ),
                     ),
@@ -74,7 +75,7 @@ class BalanceRow extends StatelessWidget {
             children: [
               BullText(
                 context.loc.swapMax,
-                style: context.font.labelLarge,
+                style: context.bullType.label,
                 color: context.appColors.secondary,
               ),
               const Gap(8),

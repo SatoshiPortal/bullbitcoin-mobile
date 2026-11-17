@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/recipients/presentation/models/cop_document_t
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, Gap, BullTypographyX;
 
 class NequiCopForm extends StatefulWidget {
   const NequiCopForm({super.key, this.hookError});
@@ -83,10 +84,12 @@ class NequiCopFormState extends State<NequiCopForm> {
           const Gap(12.0), // Account Type Dropdown
           Text(
             context.loc.recipientsFieldDocumentType,
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.secondary,
-              fontWeight: .w500,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  color: context.appColors.secondary,
+                  fontWeight: .w500,
+                ),
             textAlign: .left,
           ),
           const Gap(8.0),

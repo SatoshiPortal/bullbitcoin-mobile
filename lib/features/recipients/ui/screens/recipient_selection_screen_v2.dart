@@ -184,7 +184,7 @@ class _RecipientSelectionViewV2State extends State<_RecipientSelectionViewV2> {
                   Text(
                     const RecipientsVirtualIbanNotAvailableFailure()
                         .toTranslated(context),
-                    style: context.bullText.bodyMedium,
+                    style: context.bullType.body,
                   ),
                 if (_isNew)
                   Expanded(
@@ -236,7 +236,7 @@ class _RecipientSelectionViewV2State extends State<_RecipientSelectionViewV2> {
                           if (recipients.isEmpty && !state.isLoading)
                             Text(
                               context.loc.recipientsListEmpty,
-                              style: context.bullText.bodyMedium,
+                              style: context.bullType.body,
                             ),
                           for (final recipient in recipients) ...[
                             BullBorderedTile(
@@ -251,17 +251,21 @@ class _RecipientSelectionViewV2State extends State<_RecipientSelectionViewV2> {
                                 children: [
                                   Text(
                                     recipient.displayName ?? '',
-                                    style: context.bullText.bodyLarge,
+                                    style: context.bullType.body.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                   const Gap(8),
                                   Text(
                                     recipient.iban ?? '',
-                                    style: context.bullText.bodyMedium,
+                                    style: context.bullType.body,
                                   ),
                                   if (recipient.label case final label?)
                                     Text(
                                       label,
-                                      style: context.bullText.bodySmall,
+                                      style: context.bullType.label.copyWith(
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                 ],
                               ),
@@ -275,7 +279,7 @@ class _RecipientSelectionViewV2State extends State<_RecipientSelectionViewV2> {
                   if (selectionFailure case final failure?)
                     Text(
                       failure.toTranslated(context),
-                      style: context.bullText.bodyMedium,
+                      style: context.bullType.body,
                     ),
                   BullButton.big(
                     label: context.loc.recipientsContinue,

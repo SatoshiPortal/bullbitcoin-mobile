@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_ro
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInfoCard, BullText, Gap;
+    show BullButton, BullInfoCard, BullText, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ImportQrDevicePage extends StatelessWidget {
@@ -35,7 +35,9 @@ class ImportQrDevicePage extends StatelessWidget {
           children: [
             BullText(
               context.loc.importQrDeviceScanPrompt(deviceName),
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: .center,
               maxLines: 2,
             ),

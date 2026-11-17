@@ -66,7 +66,9 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         title: BullText(
           context.loc.recoverbullSettingsTitle,
-          style: context.bullText.headlineMedium,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
           color: context.bull.onSurface,
         ),
       ),
@@ -97,7 +99,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     children: [
                       BullText(
                         context.loc.recoverbullSettingsKeyServerUrl,
-                        style: context.bullText.titleMedium,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         color: context.bull.onSurface,
                       ),
                       if (!_isEditing)
@@ -120,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       validator: _validateUrl,
                       maxLines: null,
                       autofocus: true,
-                      style: context.bullText.bodyMedium,
+                      style: context.bullType.body,
                       decoration: InputDecoration(
                         hintText: context.loc.recoverbullSettingsUrlHint,
                         border: OutlineInputBorder(
@@ -143,7 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       child: BullText(
                         url,
-                        style: context.bullText.bodyMedium,
+                        style: context.bullType.body,
                         color: context.bull.onSurface,
                       ),
                     ),
@@ -162,7 +166,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Expanded(
                           child: BullText(
                             context.loc.recoverbullMonitoringTitle,
-                            style: context.bullText.bodyMedium,
+                            style: context.bullType.body,
                           ),
                         ),
                       ],
@@ -172,7 +176,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     const Gap(12),
                     BullText(
                       failure.toTranslated(context),
-                      style: context.bullText.bodyMedium?.copyWith(
+                      style: context.bullType.body.copyWith(
                         color: context.bull.error,
                       ),
                       maxLines: 4,
@@ -217,7 +221,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         const Gap(8),
                         BullText(
                           context.loc.recoverbullLearnMore,
-                          style: context.bullText.bodyMedium,
+                          style: context.bullType.body,
                           color: context.bull.primary,
                         ),
                       ],

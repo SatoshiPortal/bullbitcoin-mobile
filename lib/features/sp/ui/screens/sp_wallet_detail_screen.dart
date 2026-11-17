@@ -21,7 +21,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullPullableBody, BullShapesX, Gap, bullTimeAgo;
+    show BullPullableBody, BullShapesX, Gap, bullTimeAgo, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -49,7 +49,9 @@ class SpWalletDetailScreen extends StatelessWidget {
         leading: BackButton(onPressed: () => context.go(exitRedirectPath)),
         title: Text(
           context.loc.spWalletDetailTitle,
-          style: context.font.headlineMedium,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
         actions: [
           IconButton(
@@ -73,8 +75,9 @@ class SpWalletDetailScreen extends StatelessWidget {
                 signer: SignerEntity.local,
                 balanceText: CurrencyText(
                   state.totalBalance.value.toInt(),
-                  style: Theme.of(context).textTheme.displaySmall
-                      ?.copyWith(color: context.appColors.onPrimary),
+                  style: context.bullType.headline.copyWith(
+                    color: context.appColors.onPrimary,
+                  ),
                   showFiat: false,
                 ),
                 eyeToggle: const EyeToggle(),
@@ -194,7 +197,7 @@ class _HeaderValidationCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             _title(context),
-                            style: context.font.bodyMedium?.copyWith(
+                            style: context.bullType.body.copyWith(
                               color: failed ? context.appColors.error : null,
                               fontWeight: FontWeight.w600,
                             ),
@@ -203,9 +206,9 @@ class _HeaderValidationCard extends StatelessWidget {
                         if (!failed)
                           Text(
                             context.loc.spScanPercent('$percent'),
-                            style: context.font.bodySmall?.copyWith(
-                              color: context.appColors.textMuted,
-                            ),
+                            style: context.bullType.label
+                                .copyWith(fontWeight: FontWeight.w400)
+                                .copyWith(color: context.appColors.textMuted),
                           ),
                       ],
                     ),
@@ -213,9 +216,9 @@ class _HeaderValidationCard extends StatelessWidget {
                       const Gap(4),
                       Text(
                         context.loc.spHeaderValidationInvalidChainDetail,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.error,
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(color: context.appColors.error),
                       ),
                     ],
                     if (!failed) ...[
@@ -230,9 +233,9 @@ class _HeaderValidationCard extends StatelessWidget {
                       const Gap(4),
                       Text(
                         _progressLabel(context),
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(color: context.appColors.textMuted),
                       ),
                     ],
                   ],
@@ -297,9 +300,9 @@ class _SpScanStatusStrip extends StatelessWidget {
                 '${state.scanCurrent ?? state.scanFrom}',
                 '${state.scanTo}',
               ),
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.textMuted,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: context.appColors.textMuted),
             ),
           ],
         ),
@@ -367,7 +370,7 @@ class _SpScanNudgeCardState extends State<_SpScanNudgeCard> {
                   // onSurface, not outline: the card sits on a grey surface and
                   // the muted colour disappeared into it. This reads near-white
                   // in dark and dark in light, unlike a hardcoded white.
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.onSurface,
                   ),
                 ),
@@ -383,7 +386,7 @@ class _SpScanNudgeCardState extends State<_SpScanNudgeCard> {
                 onPressed: () => context.read<SpCubit>().scan(),
                 bgColor: context.appColors.primary,
                 textColor: context.appColors.onPrimary,
-                textStyle: context.font.labelLarge,
+                textStyle: context.bullType.label,
               ),
             ],
           ),
@@ -416,7 +419,7 @@ class _SpActivitySection extends StatelessWidget {
                 const Gap(8),
                 Text(
                   context.loc.spActivityEmpty,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.textMuted,
                   ),
                   textAlign: TextAlign.center,

@@ -16,7 +16,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullScrollableColumn,
         BullShimmerLine,
         BullSwitch,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class BuyInputScreen extends StatefulWidget {
@@ -91,7 +92,7 @@ class _BuyInputScreenState extends State<BuyInputScreen> {
                     Expanded(
                       child: Text(
                         context.loc.payjoinUseToggle,
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                       ),
                     ),
                     BullSwitch(

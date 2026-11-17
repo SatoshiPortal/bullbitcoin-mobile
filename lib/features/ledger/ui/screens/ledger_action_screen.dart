@@ -156,14 +156,14 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         BullText(
           _getMainTextForState(context, state),
           textAlign: .center,
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
         const Gap(16),
         BullText(
           _getSubTextForState(context, state),
           textAlign: .center,
           color: context.appColors.textMuted,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
         ),
         if (widget.action is VerifyAddressLedgerAction && state.isProcessing)
           Padding(
@@ -270,7 +270,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       children: [
         BullText(
           context.loc.ledgerVerifyAddressLabel,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: context.appColors.textMuted,
         ),
         const Gap(8),
@@ -301,7 +301,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       children: [
         BullText(
           context.loc.ledgerWalletTypeLabel,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: context.appColors.textMuted,
         ),
         const Gap(12),
@@ -328,9 +328,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
                     Expanded(
                       child: BullText(
                         _getScriptTypeDisplayName(context, _selectedScriptType),
-                        style: context.font.bodyLarge?.copyWith(
-                          fontWeight: .w500,
-                        ),
+                        style: context.bullType.body
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(fontWeight: .w500),
                       ),
                     ),
                     Icon(
@@ -396,7 +396,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
                 const Gap(16),
                 BullText(
                   context.loc.ledgerWalletTypeSelectTitle,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const Gap(16),
                 BullSelectableList(

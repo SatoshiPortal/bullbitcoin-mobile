@@ -223,10 +223,9 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                   child: BullText(
                                     description,
                                     textAlign: .center,
-                                    style: context.bullText.labelMedium
-                                        ?.copyWith(
-                                          color: context.bull.textMuted,
-                                        ),
+                                    style: context.bullType.caption.copyWith(
+                                      color: context.bull.textMuted,
+                                    ),
                                     maxLines: 3,
                                   ),
                                 ),
@@ -239,7 +238,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                       )
                                     : inputTypeString,
                                 textAlign: .start,
-                                style: context.bullText.labelSmall?.copyWith(
+                                style: context.bullType.caption.copyWith(
                                   color: context.bull.textMuted,
                                 ),
                               ),
@@ -258,8 +257,9 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                     textAlignVertical: TextAlignVertical.center,
                                     autovalidateMode:
                                         AutovalidateMode.onUserInteraction,
-                                    style: context.bullText.headlineSmall
-                                        ?.copyWith(
+                                    style: context.bullType.subtitle
+                                        .copyWith(fontWeight: FontWeight.w400)
+                                        .copyWith(
                                           color: context.bull.onSurface,
                                         ),
                                     validator: (value) {
@@ -328,7 +328,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                   label: context.loc.recoverbullGoBackEdit,
                                   bgColor: context.bull.transparent,
                                   textColor: context.bull.info,
-                                  textStyle: context.bullText.labelSmall,
+                                  textStyle: context.bullType.caption,
                                   onPressed: () => setState(() {
                                     _validatedPassword = '';
                                     _inputController.clear();
@@ -348,7 +348,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                                   .recoverbullSwitchToPIN,
                                         bgColor: context.bull.transparent,
                                         textColor: context.bull.info,
-                                        textStyle: context.bullText.labelSmall,
+                                        textStyle: context.bullType.caption,
                                         onPressed: () => _switchTo(
                                           _inputType == InputType.pin
                                               ? InputType.password
@@ -365,8 +365,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                               .recoverbullEnterVaultKeyInstead,
                                           bgColor: context.bull.transparent,
                                           textColor: context.bull.info,
-                                          textStyle:
-                                              context.bullText.labelSmall,
+                                          textStyle: context.bullType.caption,
                                           onPressed: () =>
                                               _switchTo(InputType.vaultKey),
                                         ),
@@ -379,7 +378,9 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                   context
                                       .loc
                                       .recoverbullVaultPassphraseNotIncluded,
-                                  style: context.bullText.bodySmall,
+                                  style: context.bullType.label.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                   maxLines: 4,
                                 ),
                                 Row(
@@ -395,7 +396,9 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                         context
                                             .loc
                                             .recoverbullPassphraseAcknowledgement,
-                                        style: context.bullText.bodySmall,
+                                        style: context.bullType.label.copyWith(
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                         maxLines: 4,
                                       ),
                                     ),
@@ -435,7 +438,9 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                           label: confirming
                               ? context.loc.recoverbullConfirm
                               : context.loc.recoverbullContinue,
-                          textStyle: context.bullText.headlineLarge,
+                          textStyle: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                           bgColor: context.bull.onSurface,
                           textColor: context.bull.surface,
                           disabled:
@@ -472,7 +477,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
             children: [
               BullText(
                 context.loc.recoverbullUnexpectedError,
-                style: context.bullText.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.bull.error,
                 ),
                 textAlign: .center,
@@ -503,7 +508,7 @@ class _PendingBackup extends StatelessWidget {
         children: [
           BullText(
             context.loc.recoverbullPendingProviderSave,
-            style: context.bullText.bodyMedium,
+            style: context.bullType.body,
             maxLines: 6,
           ),
           const Gap(24),

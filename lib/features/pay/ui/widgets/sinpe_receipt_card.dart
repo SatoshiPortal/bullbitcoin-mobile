@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:gif/gif.dart';
 
 String formatSinpePhoneNumber(String? phoneNumber, String fallback) {
@@ -62,31 +62,32 @@ class SinpeReceiptCard extends StatelessWidget {
               ),
               Text(
                 context.loc.paySinpeEnviado,
-                style: context.font.headlineLarge?.copyWith(
-                  color: context.appColors.secondary,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: context.bullType.subtitle
+                    .copyWith(fontWeight: FontWeight.w700)
+                    .copyWith(
+                      color: context.appColors.secondary,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const Gap(16),
             ],
-            Text(context.loc.paySinpeMonto, style: context.font.bodyMedium),
+            Text(context.loc.paySinpeMonto, style: context.bullType.body),
             const Gap(4),
             Text(
               '${order.payoutAmount.toStringAsFixed(2)} ${order.payoutCurrency}',
-              style: context.font.headlineSmall?.copyWith(
-                color: context.appColors.secondary,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const Gap(8),
-            Text(
-              context.loc.paySinpeNumeroOrden,
-              style: context.font.bodyMedium,
-            ),
+            Text(context.loc.paySinpeNumeroOrden, style: context.bullType.body),
             const Gap(4),
             Text(
               order.orderNumber.toString(),
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.secondary,
                 fontWeight: FontWeight.bold,
               ),
@@ -94,28 +95,32 @@ class SinpeReceiptCard extends StatelessWidget {
             const Gap(8),
             Text(
               context.loc.paySinpeNumeroComprobante,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
             ),
             const Gap(4),
             Text(
               order.referenceNumber ?? context.loc.payNotAvailable,
-              style: context.font.headlineSmall?.copyWith(
-                color: context.appColors.secondary,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const Gap(8),
             Text(
               context.loc.paySinpeBeneficiario,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
             ),
             const Gap(4),
             Text(
               order.beneficiaryName ?? context.loc.payNotAvailable,
-              style: context.font.headlineSmall?.copyWith(
-                color: context.appColors.secondary,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const Gap(4),
             Text(
@@ -123,28 +128,34 @@ class SinpeReceiptCard extends StatelessWidget {
                 order.beneficiaryAccountNumber,
                 context.loc.payNotAvailable,
               ),
-              style: context.font.headlineSmall?.copyWith(
-                color: context.appColors.secondary,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const Gap(8),
-            Text(context.loc.paySinpeOrigen, style: context.font.bodyMedium),
+            Text(context.loc.paySinpeOrigen, style: context.bullType.body),
             const Gap(4),
             Text(
               order.originName ?? context.loc.payNotAvailable,
-              style: context.font.headlineSmall?.copyWith(
-                color: context.appColors.secondary,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const Gap(4),
             Text(
               order.originCedula ?? context.loc.payNotAvailable,
-              style: context.font.headlineSmall?.copyWith(
-                color: context.appColors.secondary,
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ],
         ),

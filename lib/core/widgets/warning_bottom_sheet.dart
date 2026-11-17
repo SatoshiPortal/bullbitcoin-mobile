@@ -1,7 +1,13 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullShapesX,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class WarningBottomSheet extends StatelessWidget {
@@ -53,13 +59,15 @@ class WarningBottomSheet extends StatelessWidget {
             children: [
               BullText(
                 title,
-                style: context.font.headlineMedium,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.onSurface,
               ),
               const Gap(16),
               BullText(
                 message,
-                style: context.font.bodyMedium,
+                style: context.bullType.body,
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.center,
               ),

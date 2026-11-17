@@ -75,9 +75,9 @@ class ExchangeSecurityScreen extends StatelessWidget {
                   children: [
                     BBText(
                       context.loc.exchangeSecurityManage2FAPasswordLabel,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(color: context.appColors.textMuted),
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
