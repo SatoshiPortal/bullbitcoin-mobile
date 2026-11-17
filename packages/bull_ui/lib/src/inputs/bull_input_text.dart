@@ -209,9 +209,7 @@ class _BullInputTextState extends State<BullInputText> {
       maxLines: effectiveMaxLines,
       style:
           widget.style ??
-          context.bullType.subtitle
-              .copyWith(fontWeight: FontWeight.w400)
-              .copyWith(fontWeight: FontWeight.w400, color: colors.onSurface),
+          context.bullType.body.copyWith(color: colors.onSurface),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
       textAlign: TextAlign.left,
