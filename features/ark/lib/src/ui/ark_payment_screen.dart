@@ -131,7 +131,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
             rendered is! ArkPaymentUncertain)) {
       return;
     }
-    widget.onReconcile();
+    unawaited(owner.reconcile());
   }
 
   @override
@@ -260,6 +260,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
                 ),
                 BullButton.big(
                   label: l10n.refresh,
+                  disabled: !owner.canReconcile,
                   onPressed: () => _reconcile(owner, account, state),
                   bgColor: context.bull.surface,
                   textColor: context.bull.text,

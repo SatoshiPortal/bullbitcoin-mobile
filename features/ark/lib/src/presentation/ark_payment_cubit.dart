@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/ark_failure.dart';
 import '../domain/usecases/review_ark_payment_usecase.dart';
+import '../domain/usecases/read_ark_usecase.dart';
 import '../domain/usecases/confirm_ark_operation_usecase.dart';
 
 sealed class ArkPaymentState {
@@ -44,12 +45,15 @@ final class ArkPaymentCubit extends Cubit<ArkPaymentState> {
   final ReviewArkPaymentUsecase _review;
   final ConfirmArkOperationUsecase _confirm;
   final String Function() _operationId;
+  final SynchronizeArkUsecase? synchronize;
+  bool _reconciling = false;
   int _epoch = 0;
   ArkPaymentCubit(
     this._review,
     this._confirm,
     this._operationId, {
     required this.account,
+    this.synchronize,
   }) : super(const ArkPaymentEditing());
 
   void edit() {
@@ -98,6 +102,33 @@ final class ArkPaymentCubit extends Cubit<ArkPaymentState> {
         emit(ArkPaymentUncertain(operationId));
       case Err(:final failure):
         emit(ArkPaymentEditing(failure));
+    }
+  }
+
+  bool get canReconcile => synchronize != null;
+
+  Future<void> reconcile() async {
+    final current = state;
+    final id = switch (current) {
+      ArkPaymentSubmitted(:final operation) => operation.id,
+      ArkPaymentUncertain(:final operationId) => operationId,
+      _ => null,
+    };
+    final synchronize = this.synchronize;
+    if (id == null || synchronize == null || _reconciling || isClosed) return;
+    _reconciling = true;
+    try {
+      final result = await synchronize.execute(account, renew: false);
+      if (isClosed || !identical(state, current)) return;
+      if (result case Ok(:final value)) {
+        final matches = value.snapshot.operations.where(
+          (operation) =>
+              operation.id == id && operation.kind == ArkOperationKind.payment,
+        );
+        if (matches.length == 1) emit(ArkPaymentSubmitted(matches.single));
+      }
+    } finally {
+      _reconciling = false;
     }
   }
 }
