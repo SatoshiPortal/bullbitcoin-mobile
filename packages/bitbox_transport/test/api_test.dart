@@ -1,5 +1,5 @@
 import 'package:bitbox_transport/bitbox_transport.dart';
-import 'package:rust_bindings/src/rust/frb_generated.dart';
+import 'package:rust_bindings/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

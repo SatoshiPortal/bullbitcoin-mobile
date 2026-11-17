@@ -1,6 +1,6 @@
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:rust_bindings/bwk.dart';
-import 'package:rust_bindings/src/rust/frb_generated.dart';
+import 'package:rust_bindings/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

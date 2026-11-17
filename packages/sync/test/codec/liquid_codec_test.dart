@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:rust_bindings/lwk.dart' as lwk;
-import 'package:rust_bindings/src/rust/frb_generated.dart'
-    show BullSdk, BullSdkApi;
+import 'package:rust_bindings/testing.dart' show BullSdk, BullSdkApi;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
