@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart' show BullIcon;
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -93,5 +94,36 @@ void main() {
     await _pumpScreen(tester, isDefault: false);
 
     expect(find.byTooltip('Delete Wallet'), findsOneWidget);
+  });
+
+  testWidgets('confirms a copied public key with a toast', (tester) async {
+    final copied = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') copied.add(call.arguments);
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    await _pumpScreen(tester, isDefault: false);
+
+    await tester.tap(find.byIcon(Icons.copy_sharp).first);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(copied, [
+      {'text': 'xpub-test'},
+    ]);
+    expect(find.text('Copied to clipboard'), findsOneWidget);
+
+    // The toast dismisses itself on a timer; let it run out.
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
   });
 }
