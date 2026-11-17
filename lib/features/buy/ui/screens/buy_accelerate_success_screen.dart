@@ -5,10 +5,10 @@ import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_failure_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullSuccessScreen, Gap;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:material_ui/material_ui.dart';
 
 class BuyAccelerateSuccessScreen extends StatelessWidget {
   const BuyAccelerateSuccessScreen({super.key});
@@ -23,84 +23,35 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
       (BuyBloc bloc) => bloc.state.accelerateFailure,
     );
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return; // Don't allow back navigation
-
-        // Navigate to the wallet home screen when the user wants to exit the
-        // buy success screen.
-        context.goNamed(WalletRoute.walletHome.name);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.buyConfirmTitle),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+    return BullSuccessScreen(
+      title: context.loc.buyConfirmTitle,
+      headline: context.loc.buyBitcoinSent,
+      message: Text(context.loc.buyThatWasFast),
+      onClose: () => context.goNamed(WalletRoute.walletHome.name),
+      actions: [
+        if (accelerateFailure != null) ...[
+          Text(
+            accelerateFailure.toTranslated(context),
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.error,
             ),
-          ],
-        ),
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: .center,
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 100,
-                  color: context.appColors.success,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  context.loc.buyBitcoinSent,
-                  style: context.font.titleLarge,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  context.loc.buyThatWasFast,
-                  style: context.font.bodyMedium,
-                  textAlign: .center,
-                ),
-              ],
-            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: .min,
-              children: [
-                if (accelerateFailure != null) ...[
-                  Text(
-                    accelerateFailure.toTranslated(context),
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.error,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (buyOrder != null)
-                  BullButton.big(
-                    label: context.loc.buyViewDetails,
-                    onPressed: () {
-                      context.pushNamed(
-                        TransactionsRoute.orderTransactionDetails.name,
-                        pathParameters: {'orderId': buyOrder.orderId},
-                      );
-                    },
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
-                  ),
-              ],
-            ),
+          const Gap(16),
+        ],
+        if (buyOrder != null)
+          BullButton.big(
+            label: context.loc.buyViewDetails,
+            onPressed: () {
+              context.pushNamed(
+                TransactionsRoute.orderTransactionDetails.name,
+                pathParameters: {'orderId': buyOrder.orderId},
+              );
+            },
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
-        ),
-      ),
+      ],
     );
   }
 }
