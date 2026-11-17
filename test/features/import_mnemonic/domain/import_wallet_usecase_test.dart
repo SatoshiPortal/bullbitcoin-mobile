@@ -61,6 +61,11 @@ void main() {
   late _MockMetadata metadata;
 
   setUpAll(() async {
+    // `Secret` is final and cannot be mocked, so mocktail's fallback for `any(named: 'secret')` is a real one, made here and used for nothing else.
+    FakeSecureStoragePlatform().install();
+    final fallback = await Secrets(scratchDirectory: () async => '/tmp')
+        .import(words: words, language: bip39.Language.english);
+    registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(_Admission());
     registerFallbackValue(Network.bitcoinMainnet);
@@ -86,6 +91,7 @@ void main() {
       () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
+        language: bip39.Language.english,
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(() => checkDuplicate.isReferenced(any(), any()))
@@ -180,6 +186,7 @@ void main() {
       final result = await usecase.execute(
         mnemonicWords: words,
         label: 'My Wallet',
+        language: bip39.Language.english,
       );
 
       expect((result as Ok).value, wallet);
@@ -192,14 +199,23 @@ void main() {
     test('#2634 retries an orphan secret without replacing custody', () async {
       final wallet = _MockWallet();
       stubCreateWallet(() async => throw Exception('catalog write failed'));
-      expect(await usecase.execute(mnemonicWords: words), isA<Err>());
+      expect(
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
+        isA<Err>(),
+      );
       final keys = storage.entries.keys
           .where((k) => k.startsWith('seed_'))
           .toList();
       expect(keys, hasLength(1));
       stubCreateWallet(() async => wallet);
       expect(
-        await usecase.execute(mnemonicWords: words),
+        await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        ),
         isA<Ok<Wallet, ImportMnemonicFailure>>(),
       );
       expect(storage.entries.keys.where((k) => k.startsWith('seed_')), keys);
@@ -210,10 +226,14 @@ void main() {
         () => checkDuplicate.execute(
           mnemonicWords: any(named: 'mnemonicWords'),
           passphrase: any(named: 'passphrase'),
+          language: bip39.Language.english,
         ),
       ).thenAnswer((_) async => const Err(ImportMnemonicDuplicateFailure()));
 
-      final result = await usecase.execute(mnemonicWords: words);
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        language: bip39.Language.english,
+      );
 
       expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
       verifyNever(() => settingsRepository.fetch());
@@ -225,7 +245,10 @@ void main() {
       () async {
         stubCreateWallet(() async => throw Exception('wallet creation failed'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect((result as Err).failure, isA<ImportMnemonicUnexpectedFailure>());
         expect(
@@ -244,11 +267,14 @@ void main() {
         // The mocked preflight says the words are new, as it can after a stale
         // read or a concurrent storage operation. Import still rejects them.
         expect(
-          await secrets.import(words: words),
+          await secrets.import(words: words, language: bip39.Language.english),
           isA<Ok<Secret, SecretFailure>>(),
         );
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect((result as Err).failure, isA<ImportMnemonicDuplicateFailure>());
         verifyNever(
@@ -282,8 +308,14 @@ void main() {
         });
 
         final results = await Future.wait([
-          usecase.execute(mnemonicWords: words),
-          usecase.execute(mnemonicWords: words),
+          usecase.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ),
+          usecase.execute(
+            mnemonicWords: words,
+            language: bip39.Language.english,
+          ),
         ]);
 
         expect((results.first as Ok).value, wallet);
@@ -316,7 +348,10 @@ void main() {
           throw Exception('wallet creation failed after storing its reference');
         });
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect((result as Err).failure, isA<ImportMnemonicUnexpectedFailure>());
         expect(
@@ -333,7 +368,10 @@ void main() {
         when(() => walletRepository.getWallets())
             .thenThrow(Exception('wallet lookup failed'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect((result as Err).failure, isA<ImportMnemonicUnexpectedFailure>());
         expect(

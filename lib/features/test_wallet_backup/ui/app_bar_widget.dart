@@ -6,7 +6,7 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullText, Gap;
+    show BullBottomSheet, BullButton, BullText, BullTypographyX, Gap;
 import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatelessWidget {
@@ -98,9 +98,8 @@ Future<String?> _showWalletPicker({
                         wallet.isDefault
                             ? context.loc.testBackupDefaultWallets
                             : wallet.displayLabel(context),
-                        style: context.font.bodyLarge?.copyWith(
-                          fontWeight: .w600,
-                          fontSize: 18,
+                        style: context.bullType.subtitle.copyWith(
+                          fontWeight: FontWeight.w700,
                           color: context.appColors.secondary,
                         ),
                       ),

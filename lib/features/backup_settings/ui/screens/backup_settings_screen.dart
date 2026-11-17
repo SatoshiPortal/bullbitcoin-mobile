@@ -130,10 +130,9 @@ class _BackupTestStatusWidget extends StatelessWidget {
             _StatusRow(
               label: context.loc.backupSettingsEncryptedVault,
               isTested: state.isDefaultEncryptedBackupTested,
-              unknown: !state.isDefaultEncryptedBackupTested,
+              unknown: state.isDefaultEncryptedBackupHistorical,
             ),
-            if (!state.isDefaultEncryptedBackupTested &&
-                state.lastEncryptedBackup != null)
+            if (state.isDefaultEncryptedBackupHistorical)
               const RecoverBullHistoricalWarning(),
           ],
         );

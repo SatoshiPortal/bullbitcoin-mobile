@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "خريطة",
   "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
   "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
   "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
@@ -1270,7 +1269,7 @@
   "@sendOutputTooSmall": {
     "description": "Error for tiny output amount"
   },
-  "torSettingsStatusConnected": "Connected",
+  "torSettingsStatusConnected": "جاهز",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -5078,10 +5077,6 @@
   "fundExchangeSinpeDescription": "Colones using SINPE",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " الكلمات",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Verify Address on Ledger",
   "@receiveVerifyAddressOnLedger": {
@@ -11279,5 +11274,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "لم نتمكن من التأكد من بث معاملتك. تحقق من مستكشف الكتل قبل المحاولة مرة أخرى.",
   "broadcastSignedTxErrorNetworkNotEnabled": "البث على هذه الشبكة غير مفعّل في الإعدادات الحالية.",
   "settingsDarkModeTitle": "الوضع الداكن",
-  "settingsSourceCodeTitle": "الشيفرة المصدرية"
+  "settingsSourceCodeTitle": "الشيفرة المصدرية",
+  "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
+  "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ."
 }

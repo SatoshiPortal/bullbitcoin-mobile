@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Mapa",
   "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
   "backupWarningLoseReasonLostPhone": "Perder o telefone",
   "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
@@ -440,7 +439,7 @@
   "autoswapWarningOkButton": "ESTÁ BEM",
   "swapTitle": "Swap interno",
   "sendOutputTooSmall": "Saída abaixo do limite de poeira",
-  "torSettingsStatusConnected": "Conectado",
+  "torSettingsStatusConnected": "Pronto",
   "receiveNote": "Nota",
   "payLightningNetwork": "Rede de relâmpago",
   "ledgerSuccessVerifyTitle": "Verificando endereço no Ledger...",
@@ -1703,7 +1702,6 @@
   "sellMxnBalance": "MXN Balanço",
   "fundExchangeWarningTactic4": "Eles pedem para enviar Bitcoin para seu endereço",
   "fundExchangeSinpeDescription": "Transferir Colones usando SINPE",
-  "wordsDropdownSuffix": " palavras",
   "receiveVerifyAddressOnLedger": "Verificar endereço no Ledger",
   "buyWaitForFreeWithdrawal": "Aguarde a retirada livre",
   "sellSendPaymentCrcBalance": "CRC Balanço",
@@ -4659,5 +4657,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Não foi possível confirmar que a sua transação foi transmitida. Verifique num explorador de blocos antes de tentar novamente.",
   "broadcastSignedTxErrorNetworkNotEnabled": "A transmissão nesta rede não está ativada nas definições atuais.",
   "settingsDarkModeTitle": "Modo escuro",
-  "settingsSourceCodeTitle": "Código-fonte"
+  "settingsSourceCodeTitle": "Código-fonte",
+  "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
+  "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu ligar-se ao proxy SOCKS5 configurado."
 }

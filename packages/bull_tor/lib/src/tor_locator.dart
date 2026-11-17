@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:get_it/get_it.dart';
 
+import 'data/connectivity_network_presence.dart';
 import 'data/dart_io_socket_adapter.dart';
 import 'data/external_socks_tor_backend.dart';
 import 'data/onion_tor_backend.dart';
@@ -8,6 +11,7 @@ import 'data/tor_logger.dart';
 import 'data/tor_repository_impl.dart';
 import 'domain/ports/embedded_tor_port.dart';
 import 'domain/ports/external_tor_port.dart';
+import 'domain/ports/network_presence_port.dart';
 import 'domain/ports/socket_port.dart';
 import 'domain/entities/tor_transport.dart';
 import 'domain/tor_repository.dart';
@@ -54,6 +58,15 @@ final class TorLocator {
     await locator<TorNativeInitializer>().initialize();
     locator.registerSingleton<TorLogger>(logger);
     locator.registerLazySingleton<SocketPort>(DartIoSocketAdapter.new);
+    // connectivity_plus answers on the mobile platforms the app ships to. On
+    // Linux it calls NetworkManager over D-Bus and fails unhandled where none
+    // runs, as on CI; without a probe, presence stays unknown and an offline
+    // verdict stays offline.
+    if (Platform.isAndroid || Platform.isIOS) {
+      locator.registerLazySingleton<NetworkPresencePort>(
+        ConnectivityNetworkPresence.new,
+      );
+    }
     locator.registerLazySingleton<EmbeddedTorPort>(
       () => OnionTorBackend(locator<TorLogger>()),
     );
@@ -78,6 +91,9 @@ final class TorLocator {
         initialMode: initialMode,
         lastSuccessfulTransport: lastSuccessfulTransport,
         onSuccessfulTransport: onSuccessfulTransport,
+        network: locator.isRegistered<NetworkPresencePort>()
+            ? locator<NetworkPresencePort>()
+            : null,
       ),
     );
   }

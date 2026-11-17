@@ -33,6 +33,17 @@ class TorConnectionStatusCard extends StatelessWidget {
     _ => false,
   };
 
+  /// Tor gets nowhere through a network the device has: no internet access, or a network that blocks Tor.
+  bool get _noInternetOrBlocked => switch (connection) {
+    TorConnecting(diagnostic: TorDiagnostic.noInternetOrBlocked) ||
+    TorUnavailable(
+      failure: TorBootstrapFailure(
+        diagnostic: TorDiagnostic.noInternetOrBlocked,
+      ),
+    ) => true,
+    _ => false,
+  };
+
   _VisualStatus get _status => switch (connection) {
     TorReady() => _VisualStatus.online,
     TorConnecting() => _VisualStatus.connecting,
@@ -120,6 +131,9 @@ class TorConnectionStatusCard extends StatelessWidget {
       };
     }
     if (_looksCensored) return context.loc.torSettingsStatusCensored;
+    if (_noInternetOrBlocked) {
+      return context.loc.torSettingsStatusNoInternetOrBlocked;
+    }
     final progress = switch (connection) {
       TorConnecting(:final progress) => progress,
       _ => null,
@@ -153,6 +167,9 @@ class TorConnectionStatusCard extends StatelessWidget {
       };
     }
     if (_looksCensored) return context.loc.torSettingsDescCensored;
+    if (_noInternetOrBlocked) {
+      return context.loc.torSettingsDescNoInternetOrBlocked;
+    }
     switch (_status) {
       case _VisualStatus.online:
         return context.loc.torSettingsDescConnected;

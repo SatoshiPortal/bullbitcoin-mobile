@@ -16,7 +16,6 @@ class SettingsConstants {
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
   static const exchangeTermsAndConditionsLink =
       'https://www.bullbitcoin.com/terms';
-  static const btcMapUrl = 'https://btcmap.org/map';
   static const recoverbullUrl =
       'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }
@@ -81,6 +80,7 @@ class ApiServiceConstants {
 
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';
+  static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
   static const boltzReferralId = 'BULL';
 
   // BullBitcoin API
@@ -105,7 +105,6 @@ class LocatorInstanceNameConstants {
   static const secureStorageDatasource = 'secureStorageDatasource';
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
-  static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
   static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';
   static const String labelsHiveStorageDatasourceInstanceName =
       'labelsHiveStorageDatasource';

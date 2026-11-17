@@ -116,11 +116,26 @@ graph TB
     LOGS --> PRIMITIVES
     LOGS --> BULL_UI
     SETTINGS --> LOGS
+    MERCHANT_MAP[BTC Map<br/>Workspace Feature: merchants, cache, map, list and search]
+    MERCHANT_MAP --> BULL_LOGGER
+    MERCHANT_MAP --> PRIMITIVES
+    MERCHANT_MAP --> BULL_UI
     CORE --> BULL_PAYJOIN
     BULL_PAYJOIN --> PRIMITIVES
     CORE --> BULL_PRICER
     BULL_PRICER --> PRIMITIVES
     BTC_PRICE --> BULL_PRICER
+    SWAPS_PKG[Swaps Package<br/>Swap engine: store, resolver, Boltz provider]
+    SWAPS_PKG --> PRIMITIVES
+    SWAPS --> SWAPS_PKG
+    SEND --> SWAPS_PKG
+    RECEIVE --> SWAPS_PKG
+    AUTOSWAP --> SWAPS_PKG
+    TX_HISTORY --> SWAPS_PKG
+    WALLETS --> SWAPS_PKG
+    SETTINGS --> SWAPS_PKG
+    ALL_SEED_VIEW --> SWAPS_PKG
+    APP_STARTUP --> SWAPS_PKG
     BUY --> BULL_PRICER
     PAY --> BULL_PRICER
     RECEIVE --> BULL_PRICER
@@ -246,6 +261,7 @@ graph TB
     SWAPS --> EXCHANGE
     SWAPS --> LABELS
     SETTINGS --> SP
+    SETTINGS -->|await foreground regtest provisioning before selection| ELECTRUM_SETTINGS
     %% SP receives a foreground flag; swap owns the scheduling port implemented by wallet.
     WALLETS -->|public wallet/scan capabilities| SP
     SP -->|legacy: wallet repository via core barrel| WALLETS
@@ -332,8 +348,8 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
-    class IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP featureStyle
+    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE,SWAPS_PKG packageStyle
+    class IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP featureStyle
 ```
 
 ## About Package Dependency Diagrams
@@ -403,6 +419,7 @@ The pre-existing reverse source edges remain: SP uses the wallet repository via 
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
 - **Secrets** (workspace package): Used by Wallets, BIP85, App Startup, All Seed View, RecoverBull, Swaps, Silent Payments
 - **Settings**: Used by Wallets, BIP85, Bitcoin Price
+- **Swaps** (workspace package `packages/swaps`): the swap engine behind one provider-neutral surface — `SwapStore` (reads), `SwapResolver` (claim, refund, recovery; one per provider) and per-provider create methods (`BoltzSwaps`). Used by Swaps, Send, Receive, Autoswap, Transaction History, Wallets, Settings, All Seed View, App Startup
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
 
@@ -437,7 +454,7 @@ To verify no cyclic dependencies exist, you can:
 
 `exchange` owns access, authentication, policy and cleanup behind its public facade. Its repository serializes credential and socket operations, publishes a sealed access state, and invalidates stale work with one internal epoch. The installation-wide exchange_access preference contains only enabled and signOutPending; session is derived from environment-scoped credentials. A current server 401 expires the captured environment while keeping exchange enabled. Explicit sign-out journals cleanup and attempts both keys and cookies; unreadable preferences never prevent Reset. Wizard choices apply only before a newer explicit decision. iOS platform restrictions hide activation and trading, while support authentication and authenticated account management remain available. Initial unresolved access stays hidden on Home; reconciliation keeps the resolved view and the trading guard waits for the lifecycle queue. Inferred activation and 401 expiration persist enabled=true before credential loss. No Drift migration is added.
 
-`features/quick_actions` owns the catalogue, defaults, Home/More layout, drag editor and a shared QuickActionsCubit. Thin Load/Save/Reset use cases separate the cubit from persistence, and the module composition constructs their repository. Settings supplies its storage adapter and an exchangeVisible stream derived from the public exchange availability policy and platform changes. Wallet and the settings editor share that cubit and receive navigation callbacks from the shell. The package depends on bull_ui, primitives and the existing bloc library; it imports no exchange, settings or routing implementation. Home contains at most three actions plus More whenever another available action is hidden, with Settings as a display-only fallback. Immediate writes are serialized, failures restore the draft, and Restore defaults offers revision-scoped Undo. Known unavailable choices remain stored. Only the unversioned {home, more} preference format is read and written, under quick_actions; intermediate debug formats are not migrated. Bull components own button, stream-value and drag-list presentation. The exchange identifier is displayed as Trade. Public price history remains independent; WalletHome has no bottom tabs or top action buttons.
+`features/quick_actions` owns the catalogue, defaults, Home/More layout, drag editor and a shared QuickActionsCubit. Thin Load/Save/Reset use cases separate the cubit from persistence, and the module composition constructs their repository. Settings supplies its storage adapter, the platform's default row (iosDefaults on iOS, defaults elsewhere, both owned by the package) and an exchangeVisible stream derived from the public exchange availability policy and platform changes. Wallet and the settings editor share that cubit and receive navigation callbacks from the shell. The package depends on bull_ui, primitives and the existing bloc library; it imports no exchange, settings or routing implementation. Home contains at most three actions plus More whenever another available action is hidden, with Settings as a display-only fallback. Immediate writes are serialized, failures restore the draft, and Restore defaults offers revision-scoped Undo. Known unavailable choices remain stored. Only the unversioned {home, more} preference format is read and written, under quick_actions; intermediate debug formats are not migrated. Bull components own button, stream-value and drag-list presentation. The exchange identifier is displayed as Trade. Public price history remains independent; WalletHome has no bottom tabs or top action buttons.
 
 The mnemonic import feature currently imports Wallets internals. Replace that dependency with the Wallets public facade in a scoped follow-up; the graph records the existing dependency rather than implying facade compliance.
 
@@ -451,7 +468,7 @@ The architecture test records source dependencies, including internal imports an
 
 | Source → owner | Provenance and reason retained | Observed import/export path |
 |---|---|---|
-| `app_startup → settings` | Owner relocation: Keep the existing environment/preferences consumer attached to the relocated settings owner. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart` |
+| `app_startup → settings` | Owner relocation and passive startup: retain the existing preferences consumer and validate the captured normalized selection through the public Settings bootstrap before Electrum storage preparation. | `lib/features/app_startup/data/wallet_startup_adapter.dart -> lib/features/settings/domain/settings_entity.dart`; `lib/features/app_startup/public/foreground_electrum_startup.dart -> lib/features/settings/public/settings_bootstrap.dart` |
 | `autobuy → exchange` | Owner relocation: Keep existing account/default-wallet operations attached to the relocated exchange owner. | `lib/features/autobuy/autobuy_locator.dart -> lib/features/exchange/domain/usecases/get_exchange_user_summary_usecase.dart` |
 | `autobuy → wallet` | Owner relocation: Keep existing wallet identity, catalog, metadata or address presentation attached to its relocated owner. | `lib/features/autobuy/ui/screens/autobuy_screen.dart -> lib/features/wallet/ui/widgets/address_viewer.dart` |
 | `autoswap → send` | Owner relocation: Keep existing transaction broadcast orchestration attached to the relocated send owner. | `lib/features/autoswap/autoswap_locator.dart -> lib/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart` |
@@ -506,3 +523,12 @@ Develop also removes the price chart’s shell locator import; its obsolete entr
 ## RecoverBull public navigation and owner edges (2026-11-13)
 
 RecoverBull navigation is a public, stateless module entry point; onboarding, backup options and settings do not fetch the root locator. Composition substitutes native initialization through TorNativeInitializer while retaining the real Tor registrations. The source graph records published RecoverBull facade dependencies from app_startup, status_check, test_wallet_backup and wallet. Retired RecoverBull/Google Drive and autoswap-to-settings edges are removed; architecture guards retain their assertions. App startup and onboarding consume the published mnemonic-language facade through their import_mnemonic dependencies.
+
+
+## Regtest Electrum storage and watch-only import
+
+Electrum Settings owns foreground preparation of its current-schema storage and exposes it through ElectrumSettingsFacade. Startup passes the single normalized Settings snapshot through SettingsBootstrap before awaiting this passive barrier; it performs no network IO. Regtest provisions both Bitcoin and Liquid rows in one idempotent transaction, preserves custom endpoints and options, and replaces only obsolete managed defaults. The regtest endpoint host comes from BULL_REGTEST_HOST at build time, with a loopback default, and is read only for a captured regtest selection. Mainnet/testnet preparation validates both production views for their existing hot switch and never creates fixture rows. Background entry points inspect readiness without seeding or repairing storage.
+
+Watch-only import captures the selected Bitcoin environment before parsing. Test-family public-key versions may represent testnet or regtest; the captured selection resolves that ambiguity while preserving the public key. Regtest accepts software BIP84 watch-only input, retains the original network identity and refuses hardware provenance or a mainnet key. The existing capability policy controls explorer actions and Lightning availability. Receive uses that same Lightning capability when choosing its initial Liquid/Lightning mode, so a regtest Liquid wallet opens a supported selection.
+
+Mnemonic scanning preserves the wallet owner's typed unsupported-script refusal. The import UI disables continuation for that result instead of offering an import that cannot succeed. These changes add no database revision and do not enable swaps or Payjoin on regtest by themselves.

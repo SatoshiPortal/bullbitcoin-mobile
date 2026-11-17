@@ -6,8 +6,8 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:swaps/swaps.dart' hide Environment;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
@@ -30,7 +30,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -81,7 +81,7 @@ List<Transaction> unwrap(bb.Result<List<Transaction>, TransactionFailure> r) =>
 void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
-  late _MockBoltzSwapRepository boltzSwapRepository;
+  late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
   late _MockExchangeOrderRepository mainnetOrderRepository;
   late _MockExchangeOrderRepository testnetOrderRepository;
@@ -109,7 +109,7 @@ void main() {
   setUp(() {
     settingsRepository = _MockSettingsRepository();
     walletTransactionRepository = _MockWalletTransactionRepository();
-    boltzSwapRepository = _MockBoltzSwapRepository();
+    swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
     mainnetOrderRepository = _MockExchangeOrderRepository();
     testnetOrderRepository = _MockExchangeOrderRepository();
@@ -131,9 +131,8 @@ void main() {
         environment: any(named: 'environment'),
       ),
     ).thenAnswer((_) async => []);
-    when(
-      () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => []);
+    when(() => swapStore.all(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const bb.Ok([]));
     when(() => mainnetOrderRepository.getOrders())
         .thenAnswer((_) async => Ok(orders));
     when(() => labelExchangeOrdersUsecase.execute(orders: orders))
@@ -146,7 +145,7 @@ void main() {
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
       walletTransactionRepository: walletTransactionRepository,
-      boltzSwapRepository: boltzSwapRepository,
+      swapStore: swapStore,
       payjoinSessions: payjoinSessions,
       mainnetExchangeOrderRepository: mainnetOrderRepository,
       testnetExchangeOrderRepository: testnetOrderRepository,
@@ -181,7 +180,7 @@ void main() {
     verifyZeroInteractions(mainnetOrderRepository);
     verifyZeroInteractions(testnetOrderRepository);
     verifyZeroInteractions(payjoinSessions);
-    verifyZeroInteractions(boltzSwapRepository);
+    verifyZeroInteractions(swapStore);
     verifyZeroInteractions(getOrderSwaps);
   });
 

@@ -8,6 +8,7 @@ import 'package:secrets/testing.dart';
 import 'package:unorm_dart/unorm_dart.dart';
 
 import 'result_helpers.dart';
+import 'read_budget.dart';
 
 void main() {
   const style = TextStyle(inherit: false, fontSize: 14);
@@ -47,7 +48,7 @@ void main() {
 
   Future<void> settle(WidgetTester tester) async {
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 500)),
+      () => Future<void>.delayed(const Duration(milliseconds: readBudgetMs)),
     );
     await tester.pumpAndSettle();
   }

@@ -120,8 +120,8 @@ class UtxoTile extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         hideAmounts ? '••••' : fiat,
-                        style: context.bullText.labelLarge?.copyWith(
-                          fontSize: 12,
+                        style: context.bullType.caption.copyWith(
+                          fontWeight: FontWeight.w500,
                           color: colors.textMuted,
                           fontFeatures: const [FontFeature.tabularFigures()],
                         ),
@@ -169,9 +169,8 @@ class UtxoTile extends StatelessWidget {
             hideAmounts ? '••••••' : amount,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: context.bullText.titleMedium?.copyWith(
-              fontSize: 15.5,
-              fontWeight: FontWeight.w600,
+            style: context.bullType.body.copyWith(
+              fontWeight: FontWeight.w700,
               color: colors.text,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
@@ -230,8 +229,7 @@ class UtxoTile extends StatelessWidget {
               : utxo is LiquidWalletUtxo
               ? context.loc.coreWalletTransactionStatusConfirmed
               : context.loc.coinsConfsCount(utxo.confirmations),
-          style: context.bullText.labelLarge?.copyWith(
-            fontSize: 11,
+          style: context.bullType.caption.copyWith(
             fontWeight: pending ? FontWeight.w500 : FontWeight.w400,
             color: pending ? colors.warning : colors.textMuted,
           ),

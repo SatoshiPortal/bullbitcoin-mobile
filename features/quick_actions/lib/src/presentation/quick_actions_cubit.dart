@@ -12,6 +12,7 @@ import '../domain/usecases/save_quick_actions_usecase.dart';
 final class QuickActionsState {
   const QuickActionsState({
     required this.available,
+    this.defaults = QuickActionsLayout.defaults,
     this.selection,
     this.initialized = false,
     this.saving = false,
@@ -19,6 +20,9 @@ final class QuickActionsState {
     this.revision = 0,
   });
   final Set<QuickAction> available;
+
+  /// The Home row shown while no selection is saved.
+  final List<QuickAction> defaults;
   final QuickActionSelection? selection;
   final bool initialized;
   final bool saving;
@@ -33,7 +37,11 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
     required this._reset,
     required this._warning,
     required Stream<bool> exchangeVisible,
-  }) : super(QuickActionsState(available: _available(false))) {
+    List<QuickAction> defaults = QuickActionsLayout.defaults,
+  }) : _defaults = defaults,
+       super(
+         QuickActionsState(available: _available(false), defaults: defaults),
+       ) {
     _visibility = exchangeVisible.listen(
       (visible) {
         _applyVisibility(visible);
@@ -56,6 +64,7 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
     emit(
       QuickActionsState(
         available: _available(visible),
+        defaults: _defaults,
         selection: state.selection,
         initialized: state.initialized,
         saving: state.saving,
@@ -66,6 +75,7 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
   }
 
   final _firstVisibility = Completer<void>();
+  final List<QuickAction> _defaults;
   final LoadQuickActionsUsecase _load;
   final SaveQuickActionsUsecase _save;
   final ResetQuickActionsUsecase _reset;
@@ -108,9 +118,10 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
     emit(
       QuickActionsState(
         available: state.available,
+        defaults: _defaults,
         selection: selection,
         initialized: true,
-        draft: selection ?? QuickActionSelection(QuickActionsLayout.defaults),
+        draft: selection ?? QuickActionSelection(_defaults),
         revision: state.revision,
       ),
     );
@@ -133,11 +144,11 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
         emit(
           QuickActionsState(
             available: state.available,
+            defaults: _defaults,
             selection: state.selection,
             initialized: state.initialized,
             saving: true,
-            draft:
-                selection ?? QuickActionSelection(QuickActionsLayout.defaults),
+            draft: selection ?? QuickActionSelection(_defaults),
             revision: state.revision,
           ),
         );
@@ -148,11 +159,11 @@ final class QuickActionsCubit extends Cubit<QuickActionsState> {
         emit(
           QuickActionsState(
             available: state.available,
+            defaults: _defaults,
             selection: succeeded ? selection : state.selection,
             initialized: succeeded || state.initialized,
             draft: succeeded
-                ? (selection ??
-                      QuickActionSelection(QuickActionsLayout.defaults))
+                ? (selection ?? QuickActionSelection(_defaults))
                 : previous,
             revision: state.revision + (succeeded ? 1 : 0),
           ),

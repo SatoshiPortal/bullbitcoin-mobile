@@ -9,5 +9,6 @@ abstract interface class KeyServerSessionRepository {
   Future<Result<KeyServerRepository, RecoverBullFailure>> open(
     Uri server, {
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   });
 }

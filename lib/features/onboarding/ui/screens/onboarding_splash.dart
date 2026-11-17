@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
@@ -7,13 +6,12 @@ import 'package:bb_mobile/features/onboarding/ui/screens/advanced_options.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
-import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypography, Gap;
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({super.key, this.loading = false});
@@ -41,8 +39,9 @@ class OnboardingSplash extends StatelessWidget {
                   const Gap(36),
                   BullText(
                     context.loc.onboardingBullBitcoin,
-                    style: AppFonts.textTitleTheme.textStyle.copyWith(
-                      fontSize: 54,
+                    style: TextStyle(
+                      fontFamily: BullTypography.brandFamily,
+                      fontSize: 54, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
                       fontWeight: .w500,
                       color: context.appColors.onPrimaryFixed,
                       height: 1,
@@ -50,8 +49,9 @@ class OnboardingSplash extends StatelessWidget {
                   ),
                   BullText(
                     context.loc.onboardingOwnYourMoney,
-                    style: AppFonts.textTitleTheme.textStyle.copyWith(
-                      fontSize: 40,
+                    style: TextStyle(
+                      fontFamily: BullTypography.brandFamily,
+                      fontSize: 40, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
                       fontWeight: .w500,
                       color: context.appColors.secondaryFixed,
                       height: 1,
@@ -126,9 +126,6 @@ class _Actions extends StatelessWidget {
                             ..add(
                               const ElectrumSettingsLoaded(isLiquid: false),
                             ),
-                        ),
-                        BlocProvider(
-                          create: (_) => locator<TorSettingsCubit>(),
                         ),
                       ],
                       child: const AdvancedOptions(),

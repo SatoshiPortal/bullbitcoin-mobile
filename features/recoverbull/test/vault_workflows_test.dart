@@ -24,7 +24,7 @@ void main() {
   setUp(() async {
     storage = FakeSecureStoragePlatform().install();
     secrets = custody.Secrets(scratchDirectory: () async => '.');
-    _ok(await secrets.import(words: words));
+    _ok(await secrets.import(words: words, language: custody.Language.english));
     repository = SecretsVaultRepository(secrets);
     wallets = _Wallets(context);
     facade = RecoverBullFeature.create(
@@ -60,7 +60,11 @@ void main() {
     'a passphrase default can be sealed without storing its passphrase',
     () async {
       final protected = _ok(
-        await secrets.import(words: words, passphrase: 'synthetic-passphrase'),
+        await secrets.import(
+          words: words,
+          passphrase: 'synthetic-passphrase',
+          language: custody.Language.english,
+        ),
       );
       final protectedContext = VaultContext(
         fingerprint: protected.id,
@@ -109,12 +113,14 @@ void main() {
     }
     final before = Map.of(storage.entries);
     final result = await repository.restore(backup.vault, VaultKey('00' * 32));
+    // A key that does not open the vault is a decryption failure, as in 6.15,
+    // not an invalid file.
     expect(
       result,
       isA<Err<Fingerprint, RecoverBullFailure>>().having(
         (r) => r.failure,
         'failure',
-        isA<VaultInvalidFailure>(),
+        isA<VaultDecryptionFailure>(),
       ),
     );
     expect(storage.entries, before);

@@ -290,6 +290,13 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'Secrets', 'Secret', 'SecretEntry', 'UnreadableSecret', 'RestoredVault',
       // exhaustive custody references supplied by seed owners
       'SeedReferencePort', 'SeedReferencesUnavailable',
+      // host exclusion between publishing obligations and deleting a parent
+      'ParentCustodyAdmissionPort', 'ParentCustodyState', 'ParentCustodyLease',
+      'ParentCustodyFailure', 'ParentCustodyBusyFailure',
+      'ParentCustodyStorageFailure', 'ParentCustodyStateFailure',
+      'ParentCustodyMetadataFailure', 'ParentCustodySeedUnavailableFailure',
+      'ParentCustodyReferencedFailure', 'ParentCustodyInventoryFailure',
+      'ParentCustodyDeletionFailure',
       // the grouped spelling: forwards, holds nothing
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
       'SecretSigning', 'SecretBackup', 'SecretVerification',

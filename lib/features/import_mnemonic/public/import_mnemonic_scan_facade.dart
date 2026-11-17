@@ -17,11 +17,12 @@ class ImportMnemonicScanFacade {
   @useResult
   Future<Result<bool, ImportMnemonicScanFailure>> hasBitcoinHistory({
     required List<String> words,
+    required Language language,
     required String passphrase,
   }) async {
     final scan = _scan.execute(
       words: words,
-      language: Language.english,
+      language: language,
       passphrase: passphrase,
       scriptTypes: {ScriptType.bip84},
     )[ScriptType.bip84];

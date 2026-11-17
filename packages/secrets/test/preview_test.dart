@@ -59,7 +59,11 @@ void main() {
                 scriptType: scriptType,
               );
               final secret = ok(
-                await secrets.import(words: words, passphrase: passphrase),
+                await secrets.import(
+                  words: words,
+                  passphrase: passphrase,
+                  language: Language.english,
+                ),
               );
               final stored = ok(
                 await secret.derive.descriptors.bitcoin(
@@ -165,12 +169,17 @@ void main() {
               passphrase: passphrase,
               network: network,
               scriptTypes: ScriptType.values.toSet(),
+              language: Language.english,
             ),
           );
           expect(previewed.keys, ScriptType.values);
           // Each pair equals the one previewed alone and the one the stored words derive.
           final secret = ok(
-            await secrets.import(words: words, passphrase: passphrase),
+            await secrets.import(
+              words: words,
+              passphrase: passphrase,
+              language: Language.english,
+            ),
           );
           for (final scriptType in ScriptType.values) {
             final alone = await preview(
@@ -199,6 +208,7 @@ void main() {
             words: [...words.take(11), 'abandon'],
             network: BitcoinNetwork.mainnet,
             scriptTypes: ScriptType.values.toSet(),
+            language: Language.english,
           ),
         ),
         isA<InvalidMnemonicFailure>(),
@@ -264,6 +274,7 @@ void main() {
             passphrase: passphrase,
             network: BitcoinNetwork.mainnet,
             scriptTypes: {ScriptType.bip84},
+            language: Language.english,
           ),
         ),
         isA<InvalidMnemonicFailure>(),
@@ -277,6 +288,7 @@ void main() {
         words: [...words.take(11), 'abandon'],
         network: BitcoinNetwork.mainnet,
         scriptTypes: {ScriptType.bip84},
+        language: Language.english,
       ),
     );
     expect(failure, isA<InvalidMnemonicFailure>());

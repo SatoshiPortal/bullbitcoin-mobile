@@ -1,5 +1,8 @@
+import 'initialization_result.dart';
+
 import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, Err, Ok, Result;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:primitives/primitives.dart' as primitives show Network;
 
 import 'dart:io';
@@ -44,7 +47,9 @@ import 'developer_network.dart';
 // Run via `make integration-test` (auto-aggregated by tools/gen_all_test.dart).
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    requireSuccessfulBullInitialization(await Bull.init());
+  }
 
   final frozenDatasource = locator<SyncFreezesDatasource>();
   final utxoRepository = locator<WalletUtxoRepository>();
@@ -160,6 +165,7 @@ Future<void> main({bool isInitialized = false}) async {
         await selectDeveloperNetwork(Environment.testnet);
         final secret = switch (await locator<Secrets>().import(
           words: mnemonic!.split(' '),
+          language: bip39.Language.english,
         )) {
           Ok(:final value) => value,
           Err(:final failure) => fail('import failed: ${failure.runtimeType}'),

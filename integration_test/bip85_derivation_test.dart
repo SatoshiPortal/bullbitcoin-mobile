@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
@@ -20,7 +22,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    requireSuccessfulBullInitialization(await Bull.init());
+  }
 
   final sqlite = locator<SqliteDatabase>();
   final secrets = locator<Secrets>();
@@ -58,7 +62,10 @@ Future<void> main({bool isInitialized = false}) async {
     await sqlite.managers.bip85Derivations.delete();
     await sqlite.managers.walletMetadatas.delete();
 
-    final imported = await secrets.import(words: mnemonic.words);
+    final imported = await secrets.import(
+      words: mnemonic.words,
+      language: Language.english,
+    );
     final Secret secret;
     switch (imported) {
       case Ok(:final value):

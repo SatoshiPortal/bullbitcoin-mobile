@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 class SnackBarUtils {
@@ -18,7 +18,10 @@ class SnackBarUtils {
       Text(
         context.loc.copiedToClipboard,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 14, color: context.appColors.surface),
+        style: context.bullType.label.copyWith(
+          fontWeight: FontWeight.w400,
+          color: context.appColors.surface,
+        ),
       ),
     );
   }
@@ -29,7 +32,10 @@ class SnackBarUtils {
       Text(
         message,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 14, color: context.appColors.surface),
+        style: context.bullType.label.copyWith(
+          fontWeight: FontWeight.w400,
+          color: context.appColors.surface,
+        ),
       ),
     );
   }
@@ -50,8 +56,8 @@ class SnackBarUtils {
       Text(
         message,
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
+        style: overlay.context.bullType.label.copyWith(
+          fontWeight: FontWeight.w400,
           color: overlay.context.appColors.surface,
         ),
       ),

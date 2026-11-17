@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "地图",
   "backupWarningDescription": "如果没有备份，在以下情况下您将无法访问您的比特币：",
   "backupWarningLoseReasonLostPhone": "您丢失手机",
   "backupWarningLoseReasonDeletedApp": "您删除应用程序",
@@ -442,7 +441,7 @@
   "autoswapWarningOkButton": "OK",
   "swapTitle": "内部 Swap",
   "sendOutputTooSmall": "低于灰尘限制的产出",
-  "torSettingsStatusConnected": "连接",
+  "torSettingsStatusConnected": "就绪",
   "receiveNote": "说明",
   "payLightningNetwork": "照明网络",
   "ledgerSuccessVerifyTitle": "更正Ledger.",
@@ -1707,7 +1706,6 @@
   "sellMxnBalance": "MXN 结余",
   "fundExchangeWarningTactic4": "他们要求将比特币发送到他们的地址",
   "fundExchangeSinpeDescription": "使用SINPE的转移殖民地",
-  "wordsDropdownSuffix": " 说 明",
   "receiveVerifyAddressOnLedger": "更正",
   "buyWaitForFreeWithdrawal": "退出",
   "sellSendPaymentCrcBalance": "CRC 结余",
@@ -4613,7 +4611,13 @@
   "sellPayoutSepaDescription": "提款显示为由 Leonod 发送",
   "sellPayoutTitle": "选择收件人",
   "sellPayoutNewBadge": "新增",
+  "swapsFailureMasterKeyUnavailable": "此钱包无法恢复 Swap：没有可用于派生 Swap 密钥的比特币种子。",
+  "swapsFailureNotRestorable": "无法从服务器重建此 Swap。请携带您的 Swap ID 联系客服。",
+  "swapsFailureRefundNotFinal": "退款尚不可花费（时间锁）。请稍后重试。",
+  "swapsFailureNetwork": "无法连接任何服务器。请检查网络连接后重试。",
+  "swapsFailureUnexpected": "Swap 出现问题，请重试。",
   "coreScreensOutputsExceedInputs": "输出超过输入：此交易无效，网络将拒绝它。",
+  "swapServerBusyError": "请先完成进行中的兑换，再更换兑换服务器。",
   "swapUnderReviewTitle": "Swap 审核中",
   "swapUnderReviewDescription": "此 Swap 需要人工审核。请联系客服获取帮助。如果您没有客服账户，只需创建一个即可，无需 KYC。",
   "swapUnderReviewSupportMessage": "Swap 审核中\n订单 ID：{orderId}\n请求 ID：{requestId}\n订单号：{orderNumber}",
@@ -4623,5 +4627,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "无法确认您的交易是否已广播。请在区块浏览器中查看后再重试。",
   "broadcastSignedTxErrorNetworkNotEnabled": "当前设置未启用在此网络上广播。",
   "settingsDarkModeTitle": "深色模式",
-  "settingsSourceCodeTitle": "源代码"
+  "settingsSourceCodeTitle": "源代码",
+  "torSettingsStatusNoInternetOrBlocked": "无法连接互联网或网络受审查",
+  "torSettingsDescNoInternetOrBlocked": "此网络无法访问互联网，或屏蔽了 Tor。",
+  "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。"
 }

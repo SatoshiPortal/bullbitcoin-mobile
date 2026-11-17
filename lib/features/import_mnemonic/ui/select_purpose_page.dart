@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
@@ -38,6 +39,13 @@ class SelectScriptTypePage extends StatelessWidget {
         builder: (context, state) {
           final cubit = context.read<ImportMnemonicCubit>();
           final scriptType = state.scriptType;
+          final selectedUnsupported = switch (state.scanOf(scriptType)) {
+            ScriptTypeScanFailed(
+              failure: ImportMnemonicScanUnsupportedFailure(),
+            ) =>
+              true,
+            _ => false,
+          };
 
           return SingleChildScrollView(
             child: Padding(
@@ -87,7 +95,7 @@ class SelectScriptTypePage extends StatelessWidget {
                     onPressed: cubit.import,
                     bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,
-                    disabled: state.isLoading,
+                    disabled: state.isLoading || selectedUnsupported,
                   ),
                 ],
               ),
@@ -131,8 +139,13 @@ class _WalletTypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final unsupported = switch (scan) {
+      ScriptTypeScanFailed(failure: ImportMnemonicScanUnsupportedFailure()) =>
+        true,
+      _ => false,
+    };
     return GestureDetector(
-      onTap: onTap,
+      onTap: unsupported ? null : onTap,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -166,6 +179,16 @@ class _WalletTypeCard extends StatelessWidget {
                     ScriptTypeScanFound(:final satoshis, :final transactions) =>
                       _summary(context, satoshis, transactions),
                     ScriptTypeScanEmpty() => _summary(context, BigInt.zero, 0),
+                    ScriptTypeScanFailed(
+                      failure: final ImportMnemonicScanUnsupportedFailure
+                      failure,
+                    ) =>
+                      [
+                        BullText(
+                          failure.toTranslated(context),
+                          style: _mutedStyle(context),
+                        ),
+                      ],
                     ScriptTypeScanFailed(:final failure) => [
                       BullText(
                         failure.toTranslated(context),

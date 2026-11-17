@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -24,7 +26,9 @@ import '../packages/secrets/test/fixtures/liquid_signing_fixture.dart';
 /// Offline signatures cover successful Liquid finalization here and successful Bitcoin finalization in the package unit suite. Refusal cases keep storage failures separate and drop library messages.
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    requireSuccessfulBullInitialization(await Bull.init());
+  }
 
   // The published BIP39 vector for entropy ffff…ff. Public, so no funds and
   // nothing to leak.
@@ -64,14 +68,17 @@ Future<void> main({bool isInitialized = false}) async {
   Future<Secret> importFixture(
     List<String> words, {
     String? passphrase,
-  }) async =>
-      switch (await secrets.import(words: words, passphrase: passphrase)) {
-        Ok(:final value) => value,
-        Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
-          await secrets.fetch(id),
-        ),
-        Err(:final failure) => fail('import: ${failure.runtimeType}'),
-      };
+  }) async => switch (await secrets.import(
+    words: words,
+    passphrase: passphrase,
+    language: Language.english,
+  )) {
+    Ok(:final value) => value,
+    Err(failure: SecretAlreadyExistsFailure(:final id)) => unwrap(
+      await secrets.fetch(id),
+    ),
+    Err(:final failure) => fail('import: ${failure.runtimeType}'),
+  };
 
   Future<Secret> importWords({String? passphrase}) async {
     final key = passphrase ?? '';
@@ -351,6 +358,7 @@ Future<void> main({bool isInitialized = false}) async {
           await secret.derive.bip85.mnemonic(
             wordCount: MnemonicLength.words12,
             index: 11811,
+            language: Language.english,
           ),
         );
         expect(ark, referenceChild(11811));
@@ -405,6 +413,7 @@ Future<void> main({bool isInitialized = false}) async {
             await secret.derive.bip85.mnemonic(
               wordCount: MnemonicLength.words12,
               index: 26589,
+              language: Language.english,
             ),
           );
 
@@ -493,6 +502,7 @@ Future<void> main({bool isInitialized = false}) async {
             await secret.derive.bip85.mnemonic(
               wordCount: MnemonicLength.words12,
               index: 26589,
+              language: Language.english,
             ),
           );
           expect(key.mnemonic, child.join(' '));

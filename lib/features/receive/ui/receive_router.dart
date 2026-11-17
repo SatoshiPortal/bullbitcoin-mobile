@@ -99,8 +99,8 @@ class ReceiveRouter {
               ),
               BlocListener<ReceiveBloc, ReceiveState>(
                 listenWhen: (previous, current) =>
-                    previous.hasTerminalOrderSwapFailure != true &&
-                    current.hasTerminalOrderSwapFailure,
+                    previous.hasTerminalLightningSwapFailure != true &&
+                    current.hasTerminalLightningSwapFailure,
                 listener: (context, state) {
                   context.goNamed(ReceiveRoute.receiveLightning.name);
                 },
@@ -351,7 +351,7 @@ class TabAScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: .min,
           children: [
-            Text('Counter A: $count', style: const TextStyle(fontSize: 24)),
+            Text('Counter A: $count', style: context.bullType.title),
             ElevatedButton(
               onPressed: () => context.read<CounterBloc>().increment(),
               child: const Text('Increment A'),
@@ -393,7 +393,7 @@ class TabBScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: .min,
           children: [
-            Text('Counter B: $count', style: const TextStyle(fontSize: 24)),
+            Text('Counter B: $count', style: context.bullType.title),
             ElevatedButton(
               onPressed: () => context.read<CounterBloc>().increment(),
               child: const Text('Increment B'),

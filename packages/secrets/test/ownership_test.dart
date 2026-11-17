@@ -68,7 +68,10 @@ void main() {
       final storage = FakeSecureStoragePlatform()..install();
       final input = [...a];
 
-      final pending = SecretRepository().store(words: input);
+      final pending = SecretRepository().store(
+        words: input,
+        language: Language.english,
+      );
       input.setAll(0, b); // the caller reuses its buffer
       final info = ok(await pending);
 
@@ -90,7 +93,7 @@ void main() {
       final secrets = Secrets(scratchDirectory: () async => '/tmp');
       final input = [...a];
 
-      final pending = secrets.import(words: input);
+      final pending = secrets.import(words: input, language: Language.english);
       input.setAll(0, b);
       final imported = pending;
 
@@ -109,7 +112,10 @@ void main() {
       // What B's xpub would be, imported on its own.
       FakeSecureStoragePlatform().install();
       final other = Secrets(scratchDirectory: () async => '/tmp');
-      final secretB = switch (await other.import(words: [...b])) {
+      final secretB = switch (await other.import(
+        words: [...b],
+        language: Language.english,
+      )) {
         Ok(:final value) => value,
         Err(:final failure) => fail('import failed: ${failure.runtimeType}'),
       };

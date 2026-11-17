@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bull_ui/bull_ui.dart' show BullQuickAction;
+import 'package:bull_ui/bull_ui.dart' show BullQuickAction, BullQuickActionBar;
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,7 +82,7 @@ void main() {
     );
     await mount(tester, facade);
     final before = tester.getSize(find.byType(QuickActionsRow));
-    expect(before.height, BullQuickAction.height);
+    expect(before.height, BullQuickActionBar.height);
     expect(
       tester
           .widget<BullQuickAction>(find.byType(BullQuickAction).first)

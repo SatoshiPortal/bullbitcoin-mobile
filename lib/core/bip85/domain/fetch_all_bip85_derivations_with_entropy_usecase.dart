@@ -124,6 +124,8 @@ class FetchAllBip85DerivationsWithEntropyUsecase {
           final wordCount? => (await secret.derive.bip85.mnemonic(
             wordCount: wordCount,
             index: index,
+            // Language code 0 in the path is English.
+            language: Language.english,
           )).map((words) => words.join(' ')),
           null => null,
         },

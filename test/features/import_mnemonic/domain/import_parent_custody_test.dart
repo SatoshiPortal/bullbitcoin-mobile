@@ -5,12 +5,13 @@ import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_u
 import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failure.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
+    hide Language;
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
@@ -34,7 +35,7 @@ import 'package:sync/sync.dart' show SyncReason;
 
 class _Settings extends Mock implements SettingsRepository {}
 
-class _Swaps extends Mock implements BoltzSwapRepository {}
+class _Swaps extends Mock implements SwapStore {}
 
 class _Bdk extends Fake implements BdkWalletDatasource {}
 
@@ -168,11 +169,11 @@ void main() {
     );
     references = SeedReferences(repository, admission: admission);
     final swaps = _Swaps();
-    when(() => swaps.getOngoingSwaps(walletId: any(named: 'walletId')))
-        .thenAnswer((_) async => []);
+    when(() => swaps.ongoing(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const Ok([]));
     delete = DeleteWalletUsecase(
       walletRepository: repository,
-      swapRepository: swaps,
+      swapStore: swaps,
       secrets: secrets,
       seedReferences: references,
     );
@@ -186,11 +187,17 @@ void main() {
   test(
     'delete reimport delete removes the seed through production usecases',
     () async {
-      final first = await importer.execute(mnemonicWords: words);
+      final first = await importer.execute(
+        mnemonicWords: words,
+        language: Language.english,
+      );
       expect(first, isA<Ok<Wallet, ImportMnemonicFailure>>());
       expect(await delete.execute(walletId: (first as Ok).value.id), isA<Ok>());
       expect((await secrets.exists(parent) as Ok).value, isFalse);
-      final second = await importer.execute(mnemonicWords: words);
+      final second = await importer.execute(
+        mnemonicWords: words,
+        language: Language.english,
+      );
       expect(second, isA<Ok<Wallet, ImportMnemonicFailure>>());
       expect(
         await delete.execute(walletId: (second as Ok).value.id),
@@ -208,7 +215,13 @@ void main() {
         parent,
         (lease) async => lease.markDeleting(),
       );
-      expect(await importer.execute(mnemonicWords: words), isA<Ok>());
+      expect(
+        await importer.execute(
+          mnemonicWords: words,
+          language: Language.english,
+        ),
+        isA<Ok>(),
+      );
       expect(await metadata.fetchAll(), hasLength(1));
       final result = await admission.runExclusive<ParentCustodyState>(
         parent,
@@ -240,7 +253,10 @@ void main() {
         entered.complete();
         await finish.future;
       };
-      final importing = importer.execute(mnemonicWords: words);
+      final importing = importer.execute(
+        mnemonicWords: words,
+        language: Language.english,
+      );
       try {
         await entered.future;
         final deletion = await references.deleteUnreferenced(secrets, parent);
@@ -262,7 +278,7 @@ void main() {
     'deletion blocked in inventory cannot race catalog publication',
     () async {
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
       final entered = Completer<void>();
@@ -275,7 +291,7 @@ void main() {
         _BeforeAdmission(admission, () async {
           attempted.complete();
         }),
-      ).execute(mnemonicWords: words);
+      ).execute(mnemonicWords: words, language: Language.english);
       await attempted.future;
       expect(native.creates, 0);
       expect(await metadata.fetchAll(), isEmpty);
@@ -294,7 +310,7 @@ void main() {
         _BeforeAdmission(admission, () async {
           expect(await secrets.trash(parent), isA<Ok<void, SecretFailure>>());
         }),
-      ).execute(mnemonicWords: words);
+      ).execute(mnemonicWords: words, language: Language.english);
       expect(result, isA<Err>());
       expect(native.creates, 0);
       expect(await metadata.fetchAll(), isEmpty);
@@ -312,7 +328,13 @@ void main() {
           (lease) async => lease.readState(),
         );
       };
-      expect(await importer.execute(mnemonicWords: words), isA<Ok>());
+      expect(
+        await importer.execute(
+          mnemonicWords: words,
+          language: Language.english,
+        ),
+        isA<Ok>(),
+      );
       expect(atBalance, isA<Ok<ParentCustodyState, ParentCustodyFailure>>());
       expect((atBalance as Ok).value, ParentCustodyState.ready);
     },
@@ -321,6 +343,7 @@ void main() {
   test('real passphrase import cannot become a default wallet', () async {
     final result = await importer.execute(
       mnemonicWords: words,
+      language: Language.english,
       passphrase: 'TREZOR',
     );
     expect(result, isA<Ok<Wallet, ImportMnemonicFailure>>());
@@ -341,7 +364,10 @@ void main() {
         } else {
           state.deleteSync();
         }
-        final result = await importer.execute(mnemonicWords: words);
+        final result = await importer.execute(
+          mnemonicWords: words,
+          language: Language.english,
+        );
         expect(
           (result as Err).failure,
           isA<ImportMnemonicCustodyMetadataFailure>(),
@@ -363,7 +389,10 @@ void main() {
   }
 
   test('orphan cleanup reports a tombstone refusal distinctly', () async {
-    final imported = await importer.execute(mnemonicWords: words);
+    final imported = await importer.execute(
+      mnemonicWords: words,
+      language: Language.english,
+    );
     expect(imported, isA<Ok>());
     expect(
       await admission.runExclusive<void>(

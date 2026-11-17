@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Карта",
   "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
   "buyConfirmPayoutWallet": "Портфейл за изплащане",
   "buyPayoutMethodLiquid": "L-BTC в Liquid",
@@ -4221,10 +4220,6 @@
   "fundExchangeSinpeDescription": "Прехвърляне на колони чрез SINPE",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " думи",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "Потвърдете адреса на Ledger",
   "@receiveVerifyAddressOnLedger": {
@@ -8991,7 +8986,7 @@
   "torSettingsPortValidationRange": "Портът трябва да бъде между 1 и 65535",
   "torSettingsSaveButton": "Запази",
   "torSettingsConnectionStatus": "Статус на връзката",
-  "torSettingsStatusConnected": "Свързан",
+  "torSettingsStatusConnected": "Готово",
   "torSettingsStatusConnecting": "Свързване...",
   "torSettingsStatusDisconnected": "Изключен",
   "torSettingsStatusUnknown": "Неизвестен статус",
@@ -9395,5 +9390,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Не успяхме да потвърдим, че транзакцията ви е излъчена. Проверете в блок експлорър, преди да опитате отново.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Излъчването в тази мрежа не е разрешено в текущите настройки.",
   "settingsDarkModeTitle": "Тъмен режим",
-  "settingsSourceCodeTitle": "Изходен код"
+  "settingsSourceCodeTitle": "Изходен код",
+  "torSettingsStatusNoInternetOrBlocked": "Няма интернет или мрежата е цензурирана",
+  "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси."
 }

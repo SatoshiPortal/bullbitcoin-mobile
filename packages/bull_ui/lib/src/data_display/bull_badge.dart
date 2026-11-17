@@ -1,5 +1,6 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A generic small pill: background + foreground + optional leading icon +
@@ -60,16 +61,11 @@ class BullBadge extends StatelessWidget {
           ],
           Text(
             uppercase ? label.toUpperCase() : label,
-            style:
-                (uppercase
-                        ? Theme.of(context).textTheme.labelSmall
-                        : Theme.of(context).textTheme.labelLarge)
-                    ?.copyWith(
-                      fontSize: uppercase ? 10.5 : 11,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: uppercase ? 0.2 : null,
-                      color: foreground,
-                    ),
+            style: context.bullType.caption.copyWith(
+              fontWeight: FontWeight.w700,
+              letterSpacing: uppercase ? 0.2 : null,
+              color: foreground,
+            ),
           ),
         ],
       ),

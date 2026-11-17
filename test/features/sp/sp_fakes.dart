@@ -52,6 +52,7 @@ Future<Secret> spSecret() async {
   final secrets = Secrets(scratchDirectory: () async => '/tmp');
   final imported = await secrets.import(
     words: [...List.filled(11, 'abandon'), 'about'],
+    language: Language.english,
   );
   return (imported as Ok<Secret, SecretFailure>).value;
 }

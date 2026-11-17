@@ -41,6 +41,25 @@ void main() {
       expect(selected, isNull);
     });
 
+    testWidgets('every segment reads at the label role size', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullSegmented(
+            items: const {'All', 'Frozen', 'Spent'},
+            initialValue: 'All',
+            disabledItems: const {'Spent'},
+            onSelected: (_) {},
+          ),
+        ),
+      );
+
+      final label = BullTypography.standard.label.fontSize;
+      for (final item in ['All', 'Frozen', 'Spent']) {
+        final text = tester.widget<Text>(find.text(item));
+        expect(text.style?.fontSize, label, reason: item);
+      }
+    });
+
     // Regression: the copy rounded every corner to 4px, doubling the
     // radius of the original and making the control visibly rounder than the
     // rest of the design system.

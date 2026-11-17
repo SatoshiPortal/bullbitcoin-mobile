@@ -145,7 +145,7 @@ class _FundExchangeMethodSelectionScreenState
                     const BullShimmerLine(height: 56)
                   else
                     FundExchangeJurisdictionDropdown(
-                      initialValue: jurisdiction!,
+                      value: jurisdiction!,
                       onChanged: (value) {
                         context.read<FundExchangeBloc>().add(
                           const FundExchangeEvent.fundingDetailsErrorCleared(

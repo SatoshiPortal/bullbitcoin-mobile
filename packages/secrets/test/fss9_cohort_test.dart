@@ -145,7 +145,7 @@ void main() {
       final secrets = secretsWith(storage);
 
       expect(
-        err(await secrets.import(words: words)),
+        err(await secrets.import(words: words, language: Language.english)),
         isA<StoreSecretFailure>(),
         reason: 'an empty value under that key is occupied, not absent',
       );
@@ -169,7 +169,7 @@ void main() {
     // An unreadable entry under the very key the import will use: the write
     // must refuse rather than destroy what might still be recoverable.
     expect(
-      err(await secrets.import(words: words)),
+      err(await secrets.import(words: words, language: Language.english)),
       isA<StoreSecretFailure>(),
       reason: 'a foreign value under that key is never overwritten',
     );
@@ -178,6 +178,9 @@ void main() {
     // On a clean device — the reinstall the cohort was told to do — the same
     // words restore the same wallet.
     final fresh = secretsWith(FakeSecureStoragePlatform());
-    expect(ok(await fresh.import(words: words)).id.hex, fingerprint);
+    expect(
+      ok(await fresh.import(words: words, language: Language.english)).id.hex,
+      fingerprint,
+    );
   });
 }

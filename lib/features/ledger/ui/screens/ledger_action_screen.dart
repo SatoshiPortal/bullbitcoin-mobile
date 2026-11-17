@@ -36,6 +36,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullText,
         BullTopBar,
+        BullTypographyX,
         Gap;
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -288,7 +289,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
                   (match) => '${match.group(0)} ',
                 )
                 .trim(),
-            style: context.font.bodyLarge?.copyWith(fontSize: 18),
+            style: context.bullType.subtitle,
           ),
         ),
       ],

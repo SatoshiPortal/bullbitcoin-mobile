@@ -21,18 +21,25 @@ class ImportWatchOnlyXpubUsecase {
     required WatchOnlyXpubEntity watchOnlyXpub,
   }) async {
     try {
+      final validated = watchOnlyXpub.captureNetwork(watchOnlyXpub.network);
+      if (validated is! WatchOnlyXpubEntity) {
+        return const Err(InvalidFormatFailure());
+      }
       final wallet = await _wallet.importWatchOnlyXpub(
-        xpub: watchOnlyXpub.pubkey,
-        network: watchOnlyXpub.network,
-        scriptType: watchOnlyXpub.scriptType,
-        label: watchOnlyXpub.label,
+        xpub: validated.pubkey,
+        network: validated.network,
+        scriptType: validated.scriptType,
+        label: validated.label,
       );
       return Ok(wallet);
-    } catch (e, st) {
-      // Keep the raw xpub/BDK rejection reason in the logs; the UI shows a
-      // generic localized message. A rejected xpub is an expected user-facing
-      // condition (malformed input), so this is a warning.
-      log.warning('Failed to import watch-only xpub', error: e, trace: st);
+    } on WatchOnlyNetworkMismatchException {
+      return const Err(NetworkMismatchFailure());
+    } on FormatException {
+      return const Err(InvalidFormatFailure());
+    } catch (e) {
+      if (e is Error) rethrow;
+      // Do not log imported material or a foreign exception containing it.
+      log.warning('Failed to import watch-only xpub');
       return switch (e) {
         WalletAlreadyExistsException() => const Err(
           WalletAlreadyExistsFailure(),

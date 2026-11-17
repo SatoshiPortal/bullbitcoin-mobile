@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
+    show Network;
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
@@ -22,6 +24,8 @@ class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
 Future<_MockImportWatchOnlyCubit> _pumpDetails(
   WidgetTester tester, {
   required satoshifier.Network network,
+  Network? selectedNetwork,
+  bool missing = false,
 }) async {
   final descriptor = _MockDescriptor();
   when(() => descriptor.network).thenReturn(network);
@@ -33,11 +37,17 @@ Future<_MockImportWatchOnlyCubit> _pumpDetails(
 
   final wallet = WatchOnlyWalletEntity.descriptor(
     watchOnlyDescriptor: watchOnlyDescriptor,
-    signerDevice: SignerDeviceEntity.seedsigner,
+    selectedNetwork: selectedNetwork,
+    signerDevice: selectedNetwork == Network.bitcoinRegtest
+        ? null
+        : SignerDeviceEntity.seedsigner,
   );
   final cubit = _MockImportWatchOnlyCubit();
-  when(() => cubit.state)
-      .thenReturn(ImportWatchOnlyState(watchOnlyWallet: wallet));
+  when(() => cubit.state).thenReturn(
+    missing
+        ? const ImportWatchOnlyState()
+        : ImportWatchOnlyState(watchOnlyWallet: wallet),
+  );
   when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
   when(() => cubit.import()).thenAnswer((_) async {});
 
@@ -96,6 +106,35 @@ void main() {
     await tester.tap(find.text('Import'));
     verify(() => cubit.import()).called(1);
   });
+
+  testWidgets('regtest software descriptor has no signing-device selector', (
+    tester,
+  ) async {
+    await _pumpDetails(
+      tester,
+      network: satoshifier.Network.bitcoinTestnet,
+      selectedNetwork: Network.bitcoinRegtest,
+    );
+    expect(find.text('Regtest'), findsOneWidget);
+    expect(find.text('Signing Device'), findsNothing);
+    expect(
+      find.byType(DropdownButtonFormField<SignerDeviceEntity?>),
+      findsNothing,
+    );
+  });
+
+  testWidgets(
+    'a removed descriptor during review has no stale-value assertion',
+    (tester) async {
+      await _pumpDetails(
+        tester,
+        network: satoshifier.Network.bitcoinTestnet,
+        missing: true,
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('Signing Device'), findsNothing);
+    },
+  );
 
   for (final (network, label) in [
     (satoshifier.Network.bitcoinTestnet, 'Network: Bitcoin Testnet'),

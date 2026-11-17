@@ -37,7 +37,11 @@ void main() {
 
         for (final passphrase in [null, '']) {
           final failure = err(
-            await secrets.import(words: words, passphrase: passphrase),
+            await secrets.import(
+              words: words,
+              passphrase: passphrase,
+              language: Language.english,
+            ),
           );
           expect(
             failure,
@@ -60,8 +64,8 @@ void main() {
         final second = Secrets(scratchDirectory: () async => '/tmp');
 
         final results = await Future.wait([
-          first.import(words: words),
-          second.import(words: words),
+          first.import(words: words, language: Language.english),
+          second.import(words: words, language: Language.english),
         ]);
 
         final created = results
@@ -102,7 +106,7 @@ void main() {
       final secrets = service(storage);
 
       expect(
-        err(await secrets.contains(words: words)),
+        err(await secrets.contains(words: words, language: Language.english)),
         isA<FetchSecretFailure>(),
       );
       expect(storage.entries, {'seed_${id.hex}': corrupt});
@@ -113,7 +117,12 @@ void main() {
       final secrets = service(storage);
 
       expect(
-        err(await secrets.contains(words: List.filled(12, 'abandon'))),
+        err(
+          await secrets.contains(
+            words: List.filled(12, 'abandon'),
+            language: Language.english,
+          ),
+        ),
         isA<InvalidMnemonicFailure>(),
       );
       expect(storage.reads, 0);
@@ -126,9 +135,18 @@ void main() {
       );
       final secrets = service(storage);
 
-      expect(ok(await secrets.contains(words: words)), isTrue);
       expect(
-        ok(await secrets.contains(words: words, passphrase: 'TREZOR')),
+        ok(await secrets.contains(words: words, language: Language.english)),
+        isTrue,
+      );
+      expect(
+        ok(
+          await secrets.contains(
+            words: words,
+            passphrase: 'TREZOR',
+            language: Language.english,
+          ),
+        ),
         isFalse,
       );
       expect(storage.entries, {'seed_${id.hex}': entry});
@@ -145,7 +163,10 @@ void main() {
       );
       final secrets = service(storage);
 
-      expect(ok(await secrets.contains(words: words)), isFalse);
+      expect(
+        ok(await secrets.contains(words: words, language: Language.english)),
+        isFalse,
+      );
       expect(storage.entries, {'seed_${id.hex}': stored});
     });
   });
@@ -297,6 +318,7 @@ void main() {
           () => secret.derive.bip85.mnemonic(
             wordCount: MnemonicLength.words12,
             index: index,
+            language: Language.english,
           ),
           throwsArgumentError,
         );

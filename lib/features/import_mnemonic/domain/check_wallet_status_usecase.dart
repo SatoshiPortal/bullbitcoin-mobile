@@ -136,7 +136,11 @@ class CheckWalletStatusUsecase {
       log.warning(
         'Import scan failed $context reason=$reason duration_ms=${timer.elapsedMilliseconds}',
       );
-      if (e is ElectrumFallbackException || e is TimeoutException) rethrow;
+      if (e is ElectrumFallbackException ||
+          e is TimeoutException ||
+          e is UnsupportedNetworkException) {
+        rethrow;
+      }
       throw CheckWalletStatusException('Scan failed: ${e.runtimeType}');
     }
   }

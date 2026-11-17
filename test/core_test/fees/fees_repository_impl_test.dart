@@ -18,6 +18,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _RegtestPort extends ElectrumServersPort {
+  @override
+  Future<bool> hasCustomServers({
+    required ElectrumServerNetwork network,
+  }) async => false;
+
   ElectrumServerNetwork? selected;
   @override
   Future<T> runWithFallback<T>({

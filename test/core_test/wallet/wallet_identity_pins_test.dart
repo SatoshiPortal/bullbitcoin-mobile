@@ -146,7 +146,7 @@ void main() {
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
     secret = switch (await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words)) {
+        .import(words: words, language: Language.english)) {
       p.Ok(:final value) => value,
       p.Err(:final failure) => fail('import: ${failure.runtimeType}'),
     };

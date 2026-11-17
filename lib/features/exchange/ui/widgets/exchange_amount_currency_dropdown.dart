@@ -4,7 +4,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, BullShimmerLine, Gap;
 
 class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   const ExchangeAmountCurrencyDropdown({
@@ -24,6 +25,19 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
   final ValueChanged<String> onCurrencyChanged;
   final List<UserBalance>? balances;
 
+  String _label(FiatCurrency currency) {
+    final balance = balances
+        ?.where((b) => b.currencyCode == currency.code)
+        .firstOrNull;
+    if (balance == null) return '${currency.symbol} ${currency.code}';
+    final amount = FormatAmount.fiat(
+      balance.amount,
+      currency.code,
+      simpleFormat: true,
+    );
+    return '${currency.symbol} ${currency.code} - $amount';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -34,54 +48,23 @@ class ExchangeAmountCurrencyDropdown extends StatelessWidget {
           style: context.font.bodyMedium,
         ),
         const Gap(4.0),
-        SizedBox(
-          height: 56,
-          child: Material(
-            elevation: 4,
-            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-            child: Center(
-              child: isLoading
-                  ? const BullShimmerLine()
-                  : DropdownButtonFormField<String>(
-                      initialValue: selectedCurrency ?? initialCurrency?.code,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                      ),
-                      dropdownColor: context.appColors.surface,
-                      icon: Icon(
-                        Icons.keyboard_arrow_down,
-                        color: context.appColors.onSurface,
-                      ),
-                      items: currencies.map((currency) {
-                        final balance = balances
-                            ?.where((b) => b.currencyCode == currency.code)
-                            .firstOrNull;
-                        return DropdownMenuItem<String>(
-                          value: currency.code,
-                          child: Text(
-                            '${currency.symbol} ${currency.code} ${balance != null ? '- ${FormatAmount.fiat(balance.amount, currency.code, simpleFormat: true)}' : ''}',
-                            style: context.font.headlineSmall,
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          onCurrencyChanged(value);
-                        }
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return context.loc.exchangeCurrencyDropdownValidation;
-                        }
-                        return null;
-                      },
-                    ),
-            ),
+        if (isLoading)
+          const SizedBox(height: 56, child: Center(child: BullShimmerLine()))
+        else
+          BullDropdown<String>(
+            value: selectedCurrency ?? initialCurrency?.code,
+            items: [
+              for (final currency in currencies)
+                BullPickerItem(value: currency.code, label: _label(currency)),
+            ],
+            onChanged: onCurrencyChanged,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return context.loc.exchangeCurrencyDropdownValidation;
+              }
+              return null;
+            },
           ),
-        ),
       ],
     );
   }

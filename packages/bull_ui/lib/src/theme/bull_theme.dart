@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 /// The `bull_ui` colour palette, injected by the app as a [ThemeExtension].
 ///
-/// `bull_ui` is brightness-agnostic: it never hardcodes a colour. The app
+/// [BullTheme] is brightness-agnostic: it never hardcodes a colour. The app
 /// builds one [BullTheme] from its light palette and another from its dark
 /// palette, and registers each on the matching [ThemeData] via `extensions:`.
 /// Components read colours through [BullThemeX.bull] (e.g.
@@ -11,7 +11,7 @@ import 'package:material_ui/material_ui.dart';
 ///
 /// The fields are a 1:1 mirror of the app's `AppColors` palette — same names,
 /// same meaning — so the app can wire every field through without translation.
-/// This declares only the **shape**; no values live here.
+/// This declares only the **shape**; no values live here (the keypad values `bull_ui` owns live in `BullKeypadColors`).
 @immutable
 class BullTheme extends ThemeExtension<BullTheme> {
   const BullTheme({

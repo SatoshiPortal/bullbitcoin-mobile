@@ -1,11 +1,10 @@
-import 'package:bb_mobile/core/swaps/domain/usecases/delete_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_master_key_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_mnemonic_usecase.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/get_all_secrets_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/separate_secrets_usecase.dart';
+import 'package:bb_mobile/features/all_seed_view/domain/all_seed_view_failure.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/public/app_unlock_facade.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
@@ -64,10 +63,12 @@ void main() {
     return grant!;
   }
 
+  late _MockDeleteSwapMasterKeyUsecase deleteSwapMasterKeyUsecase;
+
   setUp(() async {
     FakeSecureStoragePlatform().install();
     final stored = await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words);
+        .import(words: words, language: Language.english);
     aSecret = (stored as Ok<Secret, SecretFailure>).value;
 
     getAllSecretsUsecase = _MockGetAllSecretsUsecase();
@@ -77,7 +78,8 @@ void main() {
     when(() => getAllSecretsUsecase.execute())
         .thenAnswer((_) async => Ok([aSecret]));
     when(() => getWalletsUsecase.execute()).thenAnswer((_) async => Ok([]));
-    when(() => getSwapMasterKeyUsecase.execute()).thenAnswer((_) async => null);
+    when(() => getSwapMasterKeyUsecase.execute())
+        .thenAnswer((_) async => const Ok(null));
 
     cubit = AllSeedViewCubit(
       getAllSecretsUsecase: getAllSecretsUsecase,
@@ -87,7 +89,8 @@ void main() {
       separateSecretsUsecase: const SeparateSecretsUsecase(),
       getSwapMasterKeyUsecase: getSwapMasterKeyUsecase,
       getSwapMnemonicUsecase: getSwapMnemonicUsecase,
-      deleteSwapMasterKeyUsecase: _MockDeleteSwapMasterKeyUsecase(),
+      deleteSwapMasterKeyUsecase: deleteSwapMasterKeyUsecase =
+          _MockDeleteSwapMasterKeyUsecase(),
     );
   });
 
@@ -164,5 +167,15 @@ void main() {
       expect(cubit.state.oldWallets, [aSecret]);
       expect(cubit.state.existingWallets, isEmpty);
     });
+  });
+
+  test('a swap key the keychain failed to delete is reported', () async {
+    when(() => deleteSwapMasterKeyUsecase.execute()).thenAnswer(
+      (_) async => const Err(SwapsUnexpectedFailure('keychain write failed')),
+    );
+
+    await cubit.deleteSwapMnemonic();
+
+    expect(cubit.state.failure, isA<AllSeedViewDeleteFailure>());
   });
 }

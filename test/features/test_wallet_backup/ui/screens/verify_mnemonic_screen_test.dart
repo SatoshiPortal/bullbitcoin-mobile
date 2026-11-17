@@ -145,9 +145,11 @@ void main() {
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     _secretA = ((await secrets.import(
       words: _wordsA,
+      language: Language.english,
     )) as Ok<Secret, SecretFailure>).value;
     _secretB = ((await secrets.import(
       words: _wordsB,
+      language: Language.english,
     )) as Ok<Secret, SecretFailure>).value;
     _walletA = _wallet(_secretA.id.hex);
     _walletB = _wallet(_secretB.id.hex);
@@ -250,7 +252,11 @@ void main() {
   ) async {
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     final result = await tester.runAsync(
-      () => secrets.import(words: _wordsA, passphrase: ' Mixed '),
+      () => secrets.import(
+        words: _wordsA,
+        passphrase: ' Mixed ',
+        language: Language.english,
+      ),
     );
     final secret = (result as Ok<Secret, SecretFailure>).value;
     final wallet = _wallet(secret.id.hex);
@@ -296,7 +302,11 @@ void main() {
     Device.screen = const Size(800, 600);
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     final result = await tester.runAsync(
-      () => secrets.import(words: _wordsA, passphrase: ' Mixed '),
+      () => secrets.import(
+        words: _wordsA,
+        passphrase: ' Mixed ',
+        language: Language.english,
+      ),
     );
     final secret = (result as Ok<Secret, SecretFailure>).value;
     final wallet = _wallet(secret.id.hex);
@@ -383,7 +393,11 @@ void main() {
     (tester) async {
       final secrets = Secrets(scratchDirectory: () async => '/tmp');
       final result = await tester.runAsync(
-        () => secrets.import(words: _wordsA, passphrase: ' Mixed '),
+        () => secrets.import(
+          words: _wordsA,
+          passphrase: ' Mixed ',
+          language: Language.english,
+        ),
       );
       final secret = (result as Ok<Secret, SecretFailure>).value;
       final cubit = _AllCubit();

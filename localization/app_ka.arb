@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "რუკა",
   "buyUnexpectedError": "თქვენი შეკვეთის შექმნა ამჟამად ვერ მოხერხდა. სცადეთ ხელახლა ან დაუკავშირდით მხარდაჭერას.",
   "buyConfirmPayoutWallet": "გადახდის საფულე",
   "buyPayoutMethodLiquid": "L-BTC Liquid-ზე",
@@ -1942,7 +1941,6 @@
   "submitButton": "გაგზავნა",
   "optionalPassphraseHint": "საიდუმლო ფრაზა (არასავალდებულო)",
   "requiredHint": "სავალდებულო",
-  "wordsDropdownSuffix": " სიტყვა",
   "emptyMnemonicWordsError": "შეიყვანეთ თქვენი მნემონიკის ყველა სიტყვა",
   "tryAgainButton": "ხელახლა ცდა",
   "errorGenericTitle": "უპს! რაღაც ვერ მოხერხდა",
@@ -3124,7 +3122,7 @@
   "torSettingsPortValidationInvalid": "გთხოვთ, შეიყვანოთ სწორი რიცხვი",
   "torSettingsPortValidationRange": "პორტი უნდა იყოს 1-დან 65535-მდე",
   "torSettingsConnectionStatus": "კავშირის სტატუსი",
-  "torSettingsStatusConnected": "დაკავშირებულია",
+  "torSettingsStatusConnected": "მზადაა",
   "torSettingsStatusConnecting": "მიმდინარეობს დაკავშირება...",
   "torSettingsStatusDisconnected": "კავშირი გაწყვეტილია",
   "torSettingsStatusUnknown": "სტატუსი უცნობია",
@@ -3637,5 +3635,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "ვერ დავადასტურეთ, რომ თქვენი ტრანზაქცია გავრცელდა. ხელახლა ცდამდე შეამოწმეთ ბლოკების მიმოხილველში.",
   "broadcastSignedTxErrorNetworkNotEnabled": "ამ ქსელში გავრცელება მიმდინარე პარამეტრებში ჩართული არ არის.",
   "settingsDarkModeTitle": "მუქი რეჟიმი",
-  "settingsSourceCodeTitle": "საწყისი კოდი"
+  "settingsSourceCodeTitle": "საწყისი კოდი",
+  "torSettingsStatusNoInternetOrBlocked": "ინტერნეტი არ არის ან ქსელი ცენზურირებულია",
+  "torSettingsDescNoInternetOrBlocked": "ამ ქსელს არ აქვს ინტერნეტთან წვდომა, ან ის ბლოკავს Tor-ს.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის."
 }

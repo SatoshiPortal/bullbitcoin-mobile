@@ -8,6 +8,7 @@ import 'package:primitives/primitives.dart';
 import '../../domain/ports/wallet_connection_port.dart';
 import '../../domain/sync_failure.dart';
 import '../bitcoin_transaction_decoder.dart';
+import '../codec/liquid_codec.dart';
 import 'broadcast_replies.dart';
 
 /// Sends a signed Bitcoin transaction through the servers the owner's
@@ -151,6 +152,47 @@ Future<Result<bool, SyncFailure>> bitcoinTransactionKnown(
     return const Err(SyncConnectionFailure());
   }
 });
+
+/// Whether the Liquid server behind [connection] knows [txid], in its mempool
+/// or in a block, with one `blockchain.transaction.get` round trip.
+///
+/// Same contract as [bitcoinTransactionKnown]: `false` only on the server's
+/// explicit "unknown transaction" reply, and bytes that do not decode to
+/// [txid] are [SyncInvalidTransactionFailure].
+Future<Result<bool, SyncFailure>> liquidTransactionKnown(
+  String txid,
+  WalletConnection connection,
+) async {
+  final fetched = await Isolate.run<Result<Uint8List?, SyncFailure>>(() {
+    try {
+      final client = _connect(connection);
+      try {
+        final id = bdk.Txid.fromString(hex: txid);
+        try {
+          return Ok(client.transactionGetRaw(txid: id));
+        } finally {
+          id.dispose();
+        }
+      } finally {
+        client.dispose();
+      }
+    } on bdk.ProtocolElectrumException catch (error) {
+      return isUnknownTransactionReply(error.errorMessage)
+          ? const Ok(null)
+          : const Err(SyncUnrecognizedReplyFailure());
+    } on Exception {
+      return const Err(SyncConnectionFailure());
+    }
+  });
+  return switch (fetched) {
+    Err(:final failure) => Err(failure),
+    Ok(value: null) => const Ok(false),
+    Ok(value: final raw?) => switch (decodeLiquidTransaction(raw)) {
+      Ok(:final value) when value.txid == txid.toLowerCase() => const Ok(true),
+      _ => const Err(SyncInvalidTransactionFailure()),
+    },
+  };
+}
 
 /// Proves the server behind [connection] speaks Electrum for Bitcoin: a
 /// header subscription, then [knownTxid] fetched when one is given.

@@ -41,7 +41,7 @@ class Bip85Datasource {
     required bip39.MnemonicLength length,
     required int index,
     String? alias,
-    bip39.Language language = bip39.Language.english,
+    required bip39.Language language,
   }) async {
     try {
       const application = Bip85ApplicationColumn.bip39;

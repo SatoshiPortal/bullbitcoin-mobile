@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_tor/tor.dart' show TorConnectFailure;
 import 'package:convert/convert.dart' show hex;
 import 'package:primitives/primitives.dart';
 import 'package:recoverbull/recoverbull.dart' as client;
@@ -20,8 +21,9 @@ final class KeyServerRepositoryImpl implements KeyServerRepository {
   final client.KeyServer _server;
   final HttpClient _transport;
   final Future<void> Function() _releaseRoute;
-  final KeyServerFailureKind? Function()? _takeConnectFailure;
-  final Duration timeout;
+  final TorConnectFailure? Function()? _takeConnectFailure;
+  @override
+  final Duration operationTimeout;
   Future<void>? _closing;
 
   KeyServerRepositoryImpl({
@@ -29,7 +31,7 @@ final class KeyServerRepositoryImpl implements KeyServerRepository {
     required HttpClient transport,
     required this._releaseRoute,
     this._takeConnectFailure,
-    this.timeout = const Duration(seconds: 75),
+    required this.operationTimeout,
   }) : _server = client.KeyServer(address: server, client: transport),
        _transport = transport;
 
@@ -131,34 +133,100 @@ final class KeyServerRepositoryImpl implements KeyServerRepository {
     if (_closing != null) return const Err(VaultCancelledFailure());
     _takeConnectFailure?.call();
     try {
-      final value = await operation().timeout(timeout);
+      final value = await operation().timeout(operationTimeout);
       log.fine('recoverbull.server.operation.completed');
       return Ok(value);
     } on client.KeyServerException catch (error) {
       // infos() wraps parsing and transport exceptions in a code-less client
       // exception. Preserve the SOCKS cause first, then classify a received
       // malformed /info response as badResponse (the develop contract).
-      final kind =
-          _takeConnectFailure?.call() ??
-          switch (error.code) {
-            401 => KeyServerFailureKind.credentials,
-            429 when targeted => KeyServerFailureKind.locked,
-            429 => KeyServerFailureKind.unavailable,
-            final int status when status >= 400 && status < 500 =>
-              KeyServerFailureKind.rejected,
-            null when probe => KeyServerFailureKind.badResponse,
-            _ => KeyServerFailureKind.unavailable,
-          };
-      log.warning('recoverbull.server.operation.failed category=${kind.name}');
-      return Err(KeyServerFailure(kind, retryAfter: error.retryAfter));
+      final status = error.code;
+      final failure = switch (_takeConnectFailure?.call()) {
+        final connect? => _connectFailure(connect),
+        null => switch (status) {
+          401 => const KeyServerFailure(KeyServerFailureKind.credentials),
+          429 when targeted => KeyServerFailure(
+            KeyServerFailureKind.locked,
+            retryAfter: error.retryAfter,
+          ),
+          final int status
+              when status >= 400 && status < 500 && status != 429 =>
+            const KeyServerFailure(KeyServerFailureKind.rejected),
+          final int status => KeyServerFailure(
+            KeyServerFailureKind.unavailable,
+            retryAfter: error.retryAfter,
+            cause: KeyServerUnreachableCause.httpError,
+            httpStatus: status,
+          ),
+          null => KeyServerFailure(
+            probe
+                ? KeyServerFailureKind.badResponse
+                : KeyServerFailureKind.unavailable,
+            cause: KeyServerUnreachableCause.badResponse,
+          ),
+        },
+      };
+      _logFailure(failure);
+      return Err(failure);
     } on TimeoutException {
-      return const Err(KeyServerFailure(KeyServerFailureKind.timeout));
+      final failure = switch (_takeConnectFailure?.call()) {
+        final connect? => _connectFailure(connect),
+        null => const KeyServerFailure(
+          KeyServerFailureKind.timeout,
+          cause: KeyServerUnreachableCause.circuitTimeout,
+        ),
+      };
+      _logFailure(failure);
+      return Err(failure);
     } on FormatException {
-      return const Err(KeyServerFailure(KeyServerFailureKind.badResponse));
+      const failure = KeyServerFailure(
+        KeyServerFailureKind.badResponse,
+        cause: KeyServerUnreachableCause.badResponse,
+      );
+      _logFailure(failure);
+      return const Err(failure);
     } on Exception {
-      return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
+      final failure = switch (_takeConnectFailure?.call()) {
+        final connect? => _connectFailure(connect),
+        null => const KeyServerFailure(KeyServerFailureKind.unavailable),
+      };
+      _logFailure(failure);
+      return Err(failure);
     }
   }
+
+  static KeyServerFailure _connectFailure(TorConnectFailure failure) =>
+      switch (failure) {
+        TorConnectFailure.timeout => const KeyServerFailure(
+          KeyServerFailureKind.timeout,
+          cause: KeyServerUnreachableCause.circuitTimeout,
+        ),
+        TorConnectFailure.torNetworkUnreachable => const KeyServerFailure(
+          KeyServerFailureKind.unavailable,
+          cause: KeyServerUnreachableCause.torNetworkUnreachable,
+        ),
+        TorConnectFailure.hostUnreachable => const KeyServerFailure(
+          KeyServerFailureKind.unavailable,
+          cause: KeyServerUnreachableCause.onionUnreachable,
+        ),
+        TorConnectFailure.refused => const KeyServerFailure(
+          KeyServerFailureKind.unavailable,
+          cause: KeyServerUnreachableCause.connectionRefused,
+        ),
+        TorConnectFailure.proxyUnreachable => const KeyServerFailure(
+          KeyServerFailureKind.unavailable,
+          cause: KeyServerUnreachableCause.proxyGone,
+        ),
+        TorConnectFailure.other => const KeyServerFailure(
+          KeyServerFailureKind.unavailable,
+        ),
+      };
+
+  static void _logFailure(KeyServerFailure failure) => log.warning(
+    'recoverbull.server.operation.failed category=${failure.kind.name}'
+    ' cause=${failure.cause?.name ?? 'unknown'}'
+    '${failure.httpStatus == null ? '' : ' status=${failure.httpStatus}'}',
+  );
 
   @override
   Future<void> close() => _closing ??= _close();

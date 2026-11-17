@@ -10,7 +10,9 @@ void main() {
     final shapes = BullShapes.standard.copyWith(button: 9);
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(extensions: [testBullTheme, shapes]),
+        theme: ThemeData(
+          extensions: [testBullTheme, shapes, BullTypography.standard],
+        ),
         home: Scaffold(
           body: BullQuickAction(
             label: 'Transfer',

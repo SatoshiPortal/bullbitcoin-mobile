@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
+    show ElectrumFailure;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
@@ -19,6 +21,7 @@ import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:btc_map/btc_map.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +29,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class Bull {
-  static Future<void> init() async {
+  static Future<Result<void, ElectrumFailure>> init() async {
     final bullDirectory = await getApplicationDocumentsDirectory();
     final payjoinDatabasePath = p.join(
       bullDirectory.path,
@@ -55,13 +58,16 @@ class Bull {
       databasePath: p.join(bullDirectory.path, 'pricer.sqlite'),
     );
 
+    await BtcMapFeature.initialize();
+
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
-    await AppLocator.setup(
+    final setup = await AppLocator.setup(
       locator,
       SqliteDatabase(),
       payjoinDatabasePath: payjoinDatabasePath,
     );
+    if (setup case Err()) return setup;
     await initializeWalletRuntime(locator);
     Bloc.observer = AppBlocObserver();
 
@@ -84,5 +90,6 @@ class Bull {
     await configureBackgroundTasks();
 
     await Report.recordMigration();
+    return const Ok(null);
   }
 }

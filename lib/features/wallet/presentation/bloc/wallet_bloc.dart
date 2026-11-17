@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 
 import 'dart:async';
 
@@ -35,6 +36,7 @@ part 'wallet_state.dart';
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
+    this._retrySwapsOnRefreshUsecase,
     required this._getWalletsUsecase,
     required this._readWalletUsecase,
     required this._checkWalletSyncingUsecase,
@@ -73,6 +75,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
   final WatchWalletSyncEventsUsecase _watchWalletSyncEventsUsecase;
   final SyncWalletsUsecase _syncWalletsUsecase;
+  final RetrySwapsOnRefreshUsecase? _retrySwapsOnRefreshUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
@@ -290,6 +293,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   /// RefreshIndicator callback must not complete with an error.
   Future<void> refresh() async {
     add(const WalletRefreshed(trigger: SyncTrigger.user));
+    final retrySwaps = _retrySwapsOnRefreshUsecase;
+    if (retrySwaps != null) unawaited(retrySwaps.execute());
     // The result is dropped here because the event dispatched above runs the
     // same sync and puts its failure into WalletState; this await exists only
     // to hold the RefreshIndicator spinner, and its callback must not complete

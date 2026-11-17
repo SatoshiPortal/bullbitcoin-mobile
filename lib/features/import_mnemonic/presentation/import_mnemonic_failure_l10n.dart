@@ -17,6 +17,8 @@ extension ImportMnemonicFailureL10n on ImportMnemonicFailure {
     ImportMnemonicScanTimeoutFailure() => context.loc.importMnemonicScanTimeout,
     ImportMnemonicScanInvalidMnemonicFailure() =>
       context.loc.importMnemonicScanInvalidMnemonic,
+    ImportMnemonicScanUnsupportedFailure() =>
+      context.loc.importMnemonicUnsupportedScript,
     ImportMnemonicScanUnexpectedFailure() =>
       context.loc.importMnemonicScanUnavailable,
   };

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:btc_map/btc_map.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
@@ -43,6 +44,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
+import 'package:bb_mobile/features/tor_settings/public/tor_settings_facade.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
@@ -82,7 +84,7 @@ class AppRouter {
   static void _openQuickAction(BuildContext context, QuickAction action) {
     switch (action) {
       case QuickAction.map:
-        context.pushNamed(SettingsRoute.btcMap.name);
+        context.pushNamed(BtcMapFeature.routeName);
       case QuickAction.transfer:
         context.pushNamed(SwapRoute.swap.name);
       case QuickAction.history:
@@ -209,6 +211,7 @@ class AppRouter {
         ),
       ),
       SwapRouter.route,
+      SwapRouter.settingsRoute,
       ...BuyRouter.routes,
       ...FundExchangeRouter.routes,
       SellRouter.route,
@@ -242,9 +245,16 @@ class AppRouter {
           WalletRecoverBullBindings.recovered(context);
           router.goNamed(WalletRoute.walletHome.name);
         },
+        onTested: (context) {
+          WalletRecoverBullBindings.tested(context);
+          router.goNamed(WalletRoute.walletHome.name);
+        },
+        onOpenTorSettings: (context) =>
+            context.pushNamed(const TorSettingsFacade().settingsRouteName),
       ),
       LabelsRouter.route,
       StatusCheckRouter.route,
+      BtcMapFeature.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

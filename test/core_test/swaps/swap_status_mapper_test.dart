@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
-import 'package:bb_mobile/features/swap/data/swap_status_mapper.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -32,6 +31,7 @@ void main() {
     String type = 'liquidToLightning',
     String? sendTxid,
     String? refundTxid,
+    String? preimage,
     int? creationTime,
   }) => LnSendSwapModel(
     id: 'snd123456789',
@@ -45,6 +45,7 @@ void main() {
     paymentAmount: 10000,
     sendTxid: sendTxid,
     refundTxid: refundTxid,
+    preimage: preimage,
   );
 
   ChainSwapModel chain({
@@ -133,14 +134,14 @@ void main() {
   });
 
   group('MRH direct payments', () {
-    test('transaction.direct with txid completes and marks direct', () {
+    test('transaction.direct with txid holds at paid with the candidate', () {
       final result = map(
         lnReceive(),
         boltz.SwapStatus.txnDirect,
         txid: 'direct-tx',
       );
       final updated = (result as SwapUpdated).swap as LnReceiveSwapModel;
-      expect(updated.status, 'completed');
+      expect(updated.status, 'paid');
       expect(updated.receiveTxid, 'direct-tx');
       expect(updated.wasDirectPayment, isTrue);
     });
@@ -201,12 +202,29 @@ void main() {
       expect(statusOf(result), 'canCoop');
     });
 
-    test('transaction claimed completes the send swap', () {
+    test('transaction claimed completes a send with its proven preimage', () {
       final result = map(
-        lnSend(status: 'canCoop', sendTxid: 'tx'),
+        lnSend(status: 'canCoop', sendTxid: 'tx', preimage: 'proof'),
         boltz.SwapStatus.txnClaimed,
       );
       expect(statusOf(result), 'completed');
+    });
+
+    test('transaction claimed without a preimage does not complete', () {
+      expect(
+        map(
+          lnSend(status: 'paid', sendTxid: 'tx'),
+          boltz.SwapStatus.txnClaimed,
+        ),
+        isA<SwapUnchanged>(),
+      );
+      expect(
+        map(
+          lnSend(status: 'canCoop', sendTxid: 'tx'),
+          boltz.SwapStatus.txnClaimed,
+        ),
+        isA<SwapUnchanged>(),
+      );
     });
 
     test('failed invoice with locked funds becomes refundable', () {

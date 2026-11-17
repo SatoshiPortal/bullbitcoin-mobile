@@ -47,7 +47,7 @@ void main() {
   group('GetAllSecretsUsecase', () {
     test('returns the stored secrets as handles', () async {
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
 
@@ -73,7 +73,7 @@ void main() {
       secrets = Secrets(scratchDirectory: () async => '/tmp');
       usecase = GetAllSecretsUsecase(secrets: secrets);
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
 

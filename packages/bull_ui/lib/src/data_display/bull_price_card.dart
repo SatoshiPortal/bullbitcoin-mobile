@@ -1,5 +1,6 @@
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Hero price display — duplicated from `core/widgets/cards/price_card.dart`.
@@ -15,11 +16,6 @@ class BullPriceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    return BullText(
-      text,
-      style: Theme.of(context).textTheme.headlineMedium
-          ?.copyWith(fontSize: 43, fontWeight: FontWeight.w500),
-      color: colors.onPrimary,
-    );
+    return BullText(text, role: BullTextRole.display, color: colors.onPrimary);
   }
 }

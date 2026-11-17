@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullIcon, BullIcons, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullIcon, BullIcons, BullTypographyX, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
@@ -209,9 +210,9 @@ class _CopyField extends StatelessWidget {
                 children: [
                   BBText(
                     copyLabel,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w400,
                       color: context.appColors.primary,
-                      fontSize: 14,
                     ),
                   ),
                   const Gap(4),

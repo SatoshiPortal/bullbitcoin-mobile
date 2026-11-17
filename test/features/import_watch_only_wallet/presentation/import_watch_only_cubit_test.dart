@@ -29,11 +29,19 @@ class _MockDescriptor extends Mock implements satoshifier.Descriptor {}
 
 void main() {
   test('successful parsing clears a previous validation failure', () async {
+    final settings = _MockSettingsRepository();
+    when(() => settings.fetch()).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'USD',
+      ),
+    );
     final cubit = ImportWatchOnlyCubit(
       importWatchOnlyDescriptorUsecase: _MockImportWatchOnlyDescriptorUsecase(),
       importWatchOnlyXpubUsecase: _MockImportWatchOnlyXpubUsecase(),
       parseWatchOnlyInputUsecase: ParseWatchOnlyInputUsecase(),
-      settingsRepository: _MockSettingsRepository(),
+      settingsRepository: settings,
     );
     addTearDown(cubit.close);
     await cubit.import();

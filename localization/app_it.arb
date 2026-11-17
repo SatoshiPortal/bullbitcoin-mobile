@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Mappa esercenti",
   "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se:",
   "backupWarningLoseReasonLostPhone": "Perdi il telefono",
   "backupWarningLoseReasonDeletedApp": "Elimini l'app",
@@ -442,7 +441,7 @@
   "autoswapWarningOkButton": "OK",
   "swapTitle": "Swap interno",
   "sendOutputTooSmall": "Importo troppo basso (sotto la soglia di dust)",
-  "torSettingsStatusConnected": "Collegato",
+  "torSettingsStatusConnected": "Pronto",
   "receiveNote": "Nota",
   "payLightningNetwork": "Rete Lightning",
   "ledgerSuccessVerifyTitle": "Indirizzo di verifica su Ledger...",
@@ -1707,7 +1706,6 @@
   "sellMxnBalance": "Saldo MXN",
   "fundExchangeWarningTactic4": "Ti chiedono di inviare Bitcoin ad un loro indirizzo",
   "fundExchangeSinpeDescription": "Colonne di trasferimento utilizzando SINPE",
-  "wordsDropdownSuffix": " parole",
   "receiveVerifyAddressOnLedger": "Verifica l'indirizzo su Ledger",
   "buyWaitForFreeWithdrawal": "Attendi l'invio gratuito",
   "sellSendPaymentCrcBalance": "Saldo CRC",
@@ -4776,5 +4774,11 @@
   "broadcastSignedTxErrorNetworkNotEnabled": "La trasmissione su questa rete non è abilitata nelle impostazioni attuali.",
   "coreScreensOutputsExceedInputs": "Le uscite superano gli ingressi: questa transazione non è valida e la rete la rifiuterà.",
   "settingsDarkModeTitle": "Modalità scura",
-  "settingsSourceCodeTitle": "Codice sorgente"
+  "settingsSourceCodeTitle": "Codice sorgente",
+  "torSettingsStatusNoInternetOrBlocked": "Nessuna connessione internet o rete censurata",
+  "torSettingsDescNoInternetOrBlocked": "Questa rete non ha accesso a internet oppure blocca Tor.",
+  "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco",
+  "mnemonicWordCountLabel": "Parole",
+  "passphraseOptionOffSubtitle": "Parola aggiuntiva facoltativa (BIP39)",
+  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata"
 }
