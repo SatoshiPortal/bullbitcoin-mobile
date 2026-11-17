@@ -87,6 +87,7 @@ final class FakeOpener implements ArkNativeOpener {
   int executes = 0;
   int broadcasts = 0;
   int registrations = 0;
+  int fundings = 0;
   int tip = 100;
   bool failExecute = false;
   bool requireBoardServerInfo = false;
@@ -330,14 +331,15 @@ final class FakeSession implements ArkNativeSession {
   Future<String> reserveAddress() =>
       stages.run('reserve-address', () async => 'reserve-address');
   @override
-  Future<ArkBoardFundingDetails> boardFunding() => stages.run(
-    'funding',
-    () async => ArkBoardFundingDetails(
-      address: 'funding-address',
-      keypairIndex: 4,
-      expiryHeight: 2000,
-    ),
-  );
+  Future<ArkBoardFundingDetails> boardFunding() =>
+      stages.run('funding', () async {
+        owner.fundings++;
+        return ArkBoardFundingDetails(
+          address: 'funding-address',
+          keypairIndex: 4,
+          expiryHeight: 2000,
+        );
+      });
   @override
   Future<String> registerBoard(ArkRegisterBoard submission) =>
       stages.run('register', () async {
