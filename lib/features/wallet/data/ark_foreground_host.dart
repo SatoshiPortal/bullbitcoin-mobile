@@ -46,6 +46,8 @@ final class ArkForegroundHost {
   final ArkBoardFundingBinding Function() _boardFunding;
   ArkForegroundRuntime? _runtime;
   Future<Result<ArkForegroundRuntime, ArkFailure>>? _pending;
+  int _pendingGeneration = 0;
+  final _retired = <Future<(Object, StackTrace)?>>{};
   int _generation = 0;
   bool _closed = false;
 
@@ -108,35 +110,90 @@ final class ArkForegroundHost {
   }
 
   /// The runtime matching the current selection, opening one if needed.
-  Future<Result<ArkForegroundRuntime, ArkFailure>> current() =>
-      _pending ??= _current().whenComplete(() => _pending = null);
+  ///
+  /// A new runtime is opened only after every retired runtime has drained.
+  Future<Result<ArkForegroundRuntime, ArkFailure>> current() {
+    final pending = _pending;
+    if (pending != null && _pendingGeneration == _generation) return pending;
+    final generation = _generation;
+    late final Future<Result<ArkForegroundRuntime, ArkFailure>> next;
+    next =
+        () async {
+          // An invalidated open must finish before the next one starts.
+          if (pending != null) {
+            try {
+              await pending;
+            } catch (_) {
+              // Its own caller observes that failure.
+            }
+          }
+          return _current(generation);
+        }().whenComplete(() {
+          if (identical(_pending, next)) _pending = null;
+        });
+    _pending = next;
+    _pendingGeneration = generation;
+    return next;
+  }
 
   /// Synchronously retires the current runtime and its mounted pages.
   ///
-  /// Call when the app context Ark depends on changes, such as the active
-  /// network. A runtime still opening is closed instead of published.
+  /// Call before or when the app context Ark depends on changes, such as the
+  /// active network. A runtime still opening is closed instead of published.
   void invalidate() {
     ++_generation;
     final runtime = _runtime;
     _runtime = null;
-    if (runtime == null) return;
-    runtime.invalidate();
-    unawaited(
-      runtime.close().catchError((Object error, StackTrace stack) {
-        log.warning('Ark runtime close failed', error: error, trace: stack);
-      }),
-    );
+    if (runtime != null) _retire(runtime);
   }
 
-  Future<Result<ArkForegroundRuntime, ArkFailure>> _current() async {
-    if (_closed) return const Err(ArkServiceUnavailableFailure());
-    final generation = _generation;
+  /// Invalidates [runtime] and records its close until it has drained.
+  void _retire(ArkForegroundRuntime runtime) {
+    runtime.invalidate();
+    late final Future<(Object, StackTrace)?> closing;
+    closing = runtime
+        .close()
+        .then<(Object, StackTrace)?>(
+          (_) => null,
+          onError: (Object error, StackTrace stack) => (error, stack),
+        )
+        .whenComplete(() => _retired.remove(closing));
+    _retired.add(closing);
+  }
+
+  /// Waits for every retired runtime and returns the first close failure.
+  Future<(Object, StackTrace)?> _drain() async {
+    (Object, StackTrace)? first;
+    while (_retired.isNotEmpty) {
+      for (final failure in await Future.wait(List.of(_retired))) {
+        if (failure == null) continue;
+        log.warning('Ark runtime close failed', error: failure.$1);
+        first ??= failure;
+      }
+    }
+    return first;
+  }
+
+  Future<Result<ArkForegroundRuntime, ArkFailure>> _current(
+    int generation,
+  ) async {
+    if (_closed || generation != _generation) {
+      return const Err(ArkServiceUnavailableFailure());
+    }
     final existing = _runtime;
     if (existing != null) {
       if (await existing.isCurrent()) return Ok(existing);
-      _runtime = null;
-      existing.invalidate();
-      await existing.close();
+      if (identical(_runtime, existing)) {
+        _runtime = null;
+        _retire(existing);
+      }
+    }
+    // The replacement opens the same storage: the retired client goes first.
+    if (await _drain() != null) {
+      return const Err(ArkServiceUnavailableFailure());
+    }
+    if (_closed || generation != _generation) {
+      return const Err(ArkServiceUnavailableFailure());
     }
     final opened = await openArkForeground(
       _locator,
@@ -148,7 +205,7 @@ final class ArkForegroundHost {
     );
     if (opened case Ok(:final value)) {
       if (_closed || generation != _generation) {
-        await value.close();
+        _retire(value);
         return const Err(ArkServiceUnavailableFailure());
       }
       _runtime = value;
@@ -156,13 +213,30 @@ final class ArkForegroundHost {
     return opened;
   }
 
+  /// Closes the current, opening and retired runtimes; rethrows the first
+  /// close failure after all of them have drained.
   Future<void> close() async {
     _closed = true;
+    ++_generation;
+    Object? openError;
+    StackTrace? openTrace;
     final pending = _pending;
-    if (pending != null) await pending;
+    if (pending != null) {
+      try {
+        await pending;
+      } catch (error, stack) {
+        openError = error;
+        openTrace = stack;
+      }
+    }
     final runtime = _runtime;
     _runtime = null;
-    await runtime?.close();
+    if (runtime != null) _retire(runtime);
+    final failure = await _drain();
+    if (failure != null) Error.throwWithStackTrace(failure.$1, failure.$2);
+    if (openError != null && openTrace != null) {
+      Error.throwWithStackTrace(openError, openTrace);
+    }
   }
 
   /// Routes that delegate to the current runtime's feature routes.
