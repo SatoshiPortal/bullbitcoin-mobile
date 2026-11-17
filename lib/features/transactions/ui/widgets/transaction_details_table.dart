@@ -17,7 +17,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dar
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDetailsTable, BullDetailsTableItem, BullText, Gap;
+    show BullDetailsTable, BullDetailsTableItem, BullText, Gap, bullDateLocale;
 import 'package:intl/intl.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -28,7 +28,7 @@ class TransactionDetailsTable extends StatelessWidget {
   Widget build(BuildContext context) {
     // Keep the copy confirmation at the top, like the rest of this screen.
     void showCopied() => SnackBarUtils.showCopiedSnackBar(context);
-    final dateTime = DateFormat.yMMMd(context.loc.localeName).add_jm();
+    final dateTime = DateFormat.yMMMd(bullDateLocale(context)).add_jm();
     final transaction = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );

@@ -19,7 +19,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInputText, BullShapesX, Gap, bullDateLocale;
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
@@ -275,7 +276,7 @@ class _MessageBubble extends StatelessWidget {
   String _formatTime(DateTime dateTime, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
-    final locale = context.loc.localeName;
+    final locale = bullDateLocale(context);
 
     if (difference.inDays == 0) {
       return DateFormat.jm(locale).format(dateTime);

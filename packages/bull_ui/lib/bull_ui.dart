@@ -191,6 +191,7 @@ export 'src/data_display/bull_address_text.dart';
 export 'src/data_display/bull_backup_option_card.dart';
 export 'src/data_display/bull_badge.dart';
 export 'src/data_display/bull_bordered_tile.dart';
+export 'src/data_display/bull_date_locale.dart';
 export 'src/data_display/bull_details_table.dart';
 export 'src/data_display/bull_info_bar.dart';
 export 'src/data_display/bull_info_card.dart';

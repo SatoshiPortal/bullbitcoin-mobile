@@ -2,7 +2,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullText, BullTypographyX, Gap, bullDateLocale;
 import 'package:material_ui/material_ui.dart';
 
 /// Items grouped by day, each group under its day label.
@@ -160,6 +161,6 @@ String _transactionDayLabel(BuildContext context, DateTime date) {
     return context.loc.transactionListYesterday;
   }
   return date.year == now.year
-      ? DateFormat.MMMMd(context.loc.localeName).format(date)
-      : DateFormat.yMMMMd(context.loc.localeName).format(date);
+      ? DateFormat.MMMMd(bullDateLocale(context)).format(date)
+      : DateFormat.yMMMMd(bullDateLocale(context)).format(date);
 }
