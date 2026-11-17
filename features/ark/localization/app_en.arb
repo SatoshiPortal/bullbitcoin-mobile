@@ -247,5 +247,19 @@
   "boardFeeReview": "The actual miner fee and source debit are determined in the future funding review.",
   "@boardFeeReview": {},
   "boardAmountInvalid": "Enter a positive whole amount in sats within the Bitcoin supply limit.",
-  "@boardAmountInvalid": {}
+  "@boardAmountInvalid": {},
+  "exitProgressAccount": "Exit progression account: {account}",
+  "@exitProgressAccount": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "exitProgressFeeRate": "Fee rate (sat/vB)",
+  "@exitProgressFeeRate": {},
+  "exitProgressReserveNotice": "Progress may expose the account-wide confirmed exit reserve. A future review must show the actual fee and reserve at risk.",
+  "@exitProgressReserveNotice": {},
+  "exitProgressRateInvalid": "Enter a positive whole rate in sat/vB within the supported exact-integer input range.",
+  "@exitProgressRateInvalid": {}
 }

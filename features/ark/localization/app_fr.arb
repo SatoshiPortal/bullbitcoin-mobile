@@ -117,5 +117,9 @@
   "boardDestination": "Compte Ark à alimenter : {account}",
   "boardFastPolicy": "Politique de frais FAST uniquement. Aucun choix de vitesse.",
   "boardFeeReview": "Les frais miniers réels et le débit du portefeuille source seront déterminés lors de la future revue du financement.",
-  "boardAmountInvalid": "Saisissez un montant entier positif en sats, dans la limite de l’offre de bitcoins."
+  "boardAmountInvalid": "Saisissez un montant entier positif en sats, dans la limite de l’offre de bitcoins.",
+  "exitProgressAccount": "Compte Ark pour la progression de sortie : {account}",
+  "exitProgressFeeRate": "Taux de frais (sat/vB)",
+  "exitProgressReserveNotice": "La progression peut exposer la réserve de sortie confirmée de tout le compte. Une future revue devra présenter les frais réels et la réserve exposée.",
+  "exitProgressRateInvalid": "Saisissez un taux entier positif en sat/vB, dans la plage de saisie à représentation entière exacte."
 }
