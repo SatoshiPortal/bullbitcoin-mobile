@@ -20,6 +20,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -259,6 +260,19 @@ void main() {
           'feeRate=${prepared.feeRate} txid=${prepared.unsignedTxid} '
           'expiry=${prepared.expiryHeight}',
         );
+        // Source BTC left after this Board, apart from Bark's own reserve.
+        final before = await locator<WalletRepository>().getWalletBalances(
+          walletId: source.id,
+        );
+        final sourceAfter =
+            before.confirmedSat - prepared.sourceDebit.value.toInt();
+        _report(
+          'source confirmed=${before.confirmedSat} '
+          'debit=${prepared.sourceDebit} sourceAfterBoard=$sourceAfter',
+        );
+        if (sourceAfter < 10000) {
+          throw StateError('source reserve after Board below 10000 sat');
+        }
         final review = _ok(
           await facade.reviewBoard(account, prepared.operationId),
           'review',
@@ -274,9 +288,17 @@ void main() {
       }
 
       final snapshot = _ok(await facade.read(account), 'read');
+      final balances = await locator<WalletRepository>().getWalletBalances(
+        walletId: source.id,
+      );
       _report(
-        'snapshot spendable=${snapshot.spendable} pending=${snapshot.pending} '
-        'reserve=${snapshot.confirmedReserve} tip=${snapshot.tipHeight} '
+        'source BTC wallet (last sync) confirmed=${balances.confirmedSat} '
+        'pending=${balances.trustedPendingSat + balances.untrustedPendingSat}',
+      );
+      _report(
+        'ark spendable=${snapshot.spendable} pending=${snapshot.pending} '
+        'barkNativeReserve=${snapshot.confirmedReserve} '
+        'tip=${snapshot.tipHeight} '
         'boards=${snapshot.pendingBoards.length} '
         'vtxos=${snapshot.vtxos.map((v) => '${v.amount}/${v.state}').toList()}',
       );
