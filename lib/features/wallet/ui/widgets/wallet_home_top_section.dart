@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullQuickActionBar, BullShapesX, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -27,11 +27,19 @@ class WalletHomeTopSection extends StatelessWidget {
   /// Distance from the top of the dark area down to the balance.
   static const double _balanceTopSpacing = 96;
 
+  /// How far the quick actions card hangs below the background: half of it
+  /// straddles the bottom edge, while the balance above is never covered.
+  static const double _actionsOverhang = BullQuickActionBar.height / 2;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: _actionsOverhang,
           child: Image.asset(
             Assets.backgrounds.bgRed.path,
             fit: BoxFit.cover,
@@ -48,7 +56,7 @@ class WalletHomeTopSection extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.fromLTRB(13.0, 0, 13.0, 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 13.0),
               child: actions,
             ),
           ],

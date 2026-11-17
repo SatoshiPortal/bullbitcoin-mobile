@@ -11,15 +11,15 @@ class QuickActionsRow extends StatefulWidget {
     required this.cubit,
     required this.onAction,
     required this.onCustomize,
-    this.tone = BullQuickActionTone.surface,
+    this.bar = false,
   });
 
   final QuickActionsCubit cubit;
   final ValueChanged<QuickAction> onAction;
   final VoidCallback onCustomize;
 
-  /// The backdrop the row sits on; Home draws it on its dark hero.
-  final BullQuickActionTone tone;
+  /// Draw the actions as one [BullQuickActionBar] card instead of free discs.
+  final bool bar;
 
   @override
   State<QuickActionsRow> createState() => _QuickActionsRowState();
@@ -71,7 +71,6 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
           semanticLabel: action.fullLabel(l10n),
           icon: action.icon,
           disabled: loading,
-          tone: widget.tone,
           onPressed: () => widget.onAction(action),
           onLongPress: widget.onCustomize,
         ),
@@ -81,11 +80,11 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
           icon: BullIcons.moreHoriz,
           outlined: true,
           disabled: loading,
-          tone: widget.tone,
           onPressed: _showMore,
           onLongPress: widget.onCustomize,
         ),
     ];
+    if (widget.bar) return BullQuickActionBar(children: controls);
     return BullQuickActionRow(children: controls);
   }
 

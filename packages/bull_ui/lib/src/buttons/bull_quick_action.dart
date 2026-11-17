@@ -7,19 +7,9 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
-/// The backdrop a [BullQuickAction] is drawn on, which picks its palette.
-enum BullQuickActionTone {
-  /// A themed surface: the icon disc is [BullTheme.surfaceContainerHighest]
-  /// and the label [BullTheme.text].
-  surface,
-
-  /// A dark hero that stays dark in both themes: a translucent
-  /// [BullTheme.onPrimary] disc and label, the same in light and dark mode.
-  inverse,
-}
-
-/// A compact, accessible shortcut: a round icon disc over a one-line label,
-/// with no box around it, at a stable height across text scales.
+/// A compact, accessible shortcut at a stable height across text scales: a
+/// round icon disc over a one-line label on its own, or icon over label with
+/// no disc as one cell of a [BullQuickActionBar].
 class BullQuickAction extends StatelessWidget {
   const BullQuickAction({
     required this.label,
@@ -29,11 +19,10 @@ class BullQuickAction extends StatelessWidget {
     this.semanticLabel,
     this.outlined = false,
     this.disabled = false,
-    this.tone = BullQuickActionTone.surface,
     super.key,
   });
 
-  static const double height = 108;
+  static const double height = 116;
 
   /// Diameter of the icon disc.
   static const double _disc = 52;
@@ -48,9 +37,6 @@ class BullQuickAction extends StatelessWidget {
   final bool outlined;
   final bool disabled;
 
-  /// The backdrop this action sits on.
-  final BullQuickActionTone tone;
-
   void _activate(VoidCallback callback) {
     unawaited(HapticFeedback.selectionClick());
     callback();
@@ -59,14 +45,10 @@ class BullQuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final inverse = tone == BullQuickActionTone.inverse;
-    final foreground = inverse ? colors.onPrimary : colors.text;
-    final fill = inverse
-        ? colors.onPrimary.withValues(alpha: 0.18)
-        : colors.surfaceContainerHighest;
-    final ring = inverse
-        ? colors.onPrimary.withValues(alpha: 0.5)
-        : colors.border;
+    final flat = BullQuickActionBar.of(context);
+    final foreground = colors.text;
+    final fill = colors.surfaceContainerHighest;
+    final ring = colors.border;
     final tap = disabled ? null : () => _activate(onPressed);
     final longPressCallback = onLongPress;
     final longPress = disabled || longPressCallback == null
@@ -86,7 +68,7 @@ class BullQuickAction extends StatelessWidget {
               ? TooltipTriggerMode.longPress
               : TooltipTriggerMode.manual,
           child: SizedBox(
-            height: height,
+            height: flat ? BullQuickActionBar.height : height,
             child: Opacity(
               opacity: disabled ? 0.4 : 1,
               child: Material(
@@ -108,31 +90,41 @@ class BullQuickAction extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          width: _disc,
-                          height: _disc,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: outlined ? colors.transparent : fill,
-                            border: outlined
-                                ? Border.all(color: ring, width: 1.5)
-                                : null,
+                        if (flat)
+                          BullIcon(icon, size: 26, color: foreground)
+                        else
+                          Container(
+                            width: _disc,
+                            height: _disc,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: outlined ? colors.transparent : fill,
+                              border: outlined
+                                  ? Border.all(color: ring, width: 1.5)
+                                  : null,
+                            ),
+                            child: Center(
+                              child: BullIcon(
+                                icon,
+                                size: 24,
+                                color: foreground,
+                              ),
+                            ),
                           ),
-                          child: Center(
-                            child: BullIcon(icon, size: 24, color: foreground),
-                          ),
-                        ),
                         const SizedBox(height: BullSpacing.xs),
                         Text(
                           label,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: foreground,
-                              ),
+                          style:
+                              (flat
+                                      ? Theme.of(context).textTheme.labelLarge
+                                      : Theme.of(context).textTheme.titleMedium)
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: foreground,
+                                  ),
                         ),
                       ],
                     ),
@@ -145,6 +137,70 @@ class BullQuickAction extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A card of [BullQuickAction]s split by hairline dividers, icon over label
+/// with no disc: the strip that straddles the bottom edge of a hero.
+class BullQuickActionBar extends StatelessWidget {
+  const BullQuickActionBar({super.key, required this.children});
+
+  /// The actions, left to right.
+  final List<Widget> children;
+
+  /// Height of the card.
+  static const double height = 88;
+
+  /// Whether [context] sits inside a [BullQuickActionBar].
+  static bool of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_BullQuickActionBarScope>() !=
+      null;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.bull;
+    final radius = BorderRadius.circular(context.bullShapes.card);
+    return _BullQuickActionBarScope(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          boxShadow: [
+            BoxShadow(
+              color: colors.scrim,
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: colors.onSecondary,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: radius,
+            side: BorderSide(color: colors.outlineVariant),
+          ),
+          child: SizedBox(
+            height: height,
+            child: Row(
+              children: [
+                for (final (index, child) in children.indexed) ...[
+                  if (index > 0)
+                    Container(width: 1, color: colors.outlineVariant),
+                  Expanded(child: child),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BullQuickActionBarScope extends InheritedWidget {
+  const _BullQuickActionBarScope({required super.child});
+
+  @override
+  bool updateShouldNotify(_BullQuickActionBarScope oldWidget) => false;
 }
 
 /// A row of up to four [BullQuickAction]s sharing the width equally, at

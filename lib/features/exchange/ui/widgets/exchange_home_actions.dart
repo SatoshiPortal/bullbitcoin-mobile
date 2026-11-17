@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullIcons, BullQuickAction, BullQuickActionRow, BullQuickActionTone;
+    show BullIcons, BullQuickAction, BullQuickActionBar;
 import 'package:material_ui/material_ui.dart';
 
 enum ExchangeHomeAction { buy, sell, pay, transfer }
 
-/// The exchange's shortcuts, the same tiles as Home's quick actions, drawn on
-/// the dark balance area.
+/// The exchange's shortcuts, the same card as Home's quick actions, straddling
+/// the bottom edge of the dark balance area.
 class ExchangeHomeActions extends StatelessWidget {
   const ExchangeHomeActions({required this.onAction, super.key});
 
@@ -32,13 +32,12 @@ class ExchangeHomeActions extends StatelessWidget {
         BullIcons.swapHoriz,
       ),
     ];
-    return BullQuickActionRow(
+    return BullQuickActionBar(
       children: [
         for (final (action, label, icon) in actions)
           BullQuickAction(
             label: label,
             icon: icon,
-            tone: BullQuickActionTone.inverse,
             onPressed: () => onAction(action),
           ),
       ],
