@@ -110,20 +110,21 @@ void main() {
     expect(failureOf(result), isNull);
   });
 
+  Swap openSwap(DateTime creationTime) => Swap.lnReceive(
+    id: 'open-1',
+    keyIndex: 0,
+    type: SwapType.lightningToLiquid,
+    status: SwapStatus.pending,
+    environment: SwapEnvironment.mainnet,
+    creationTime: creationTime,
+    receiveWalletId: 'w',
+    invoice: 'lnbc1',
+  );
+
   test('refuses a change while swaps on the current server are open', () async {
     when(() => swaps.ongoing()).thenAnswer(
-      (_) async => Ok([
-        Swap.lnReceive(
-          id: 'open-1',
-          keyIndex: 0,
-          type: SwapType.lightningToLiquid,
-          status: SwapStatus.pending,
-          environment: SwapEnvironment.mainnet,
-          creationTime: DateTime.utc(2026),
-          receiveWalletId: 'w',
-          invoice: 'lnbc1',
-        ),
-      ]),
+      (_) async =>
+          Ok([openSwap(DateTime.now().subtract(const Duration(hours: 2)))]),
     );
 
     final result = await usecase.execute('boltz.example.com/v2');
@@ -133,6 +134,18 @@ void main() {
       () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
     );
     verifyNever(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')));
+  });
+
+  test('a swap older than a day does not pin the server', () async {
+    when(() => swaps.ongoing()).thenAnswer(
+      (_) async =>
+          Ok([openSwap(DateTime.now().subtract(const Duration(days: 2)))]),
+    );
+
+    final result = await usecase.execute('boltz.example.com/v2');
+
+    expect(failureOf(result), isNull);
+    verify(() => switcher.rebuild(isTestnet: false)).called(1);
   });
 
   test('a failed write is a storage failure and leaves the engine', () async {

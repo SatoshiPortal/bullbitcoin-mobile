@@ -350,6 +350,27 @@ sealed class Swap with _$Swap {
           : SwapAction.none,
   };
 
+  /// Our lockup is in while the swap still waits on the provider. Should the
+  /// provider never finish it, only the script-path refund recovers the
+  /// funds once the timelock passes; the chain itself refuses the refund
+  /// until then, so attempting is safe.
+  bool awaitsTimeoutRefund(DateTime now) =>
+      status == SwapStatus.paid &&
+      now.difference(creationTime) >= const Duration(hours: 1) &&
+      switch (this) {
+        LnSendSwap(:final sendTxid, :final refundTxid) =>
+          sendTxid != null && refundTxid == null,
+        ChainSwap(:final sendTxid, :final refundTxid, :final receiveTxid) =>
+          sendTxid != null && refundTxid == null && receiveTxid == null,
+        LnReceiveSwap() => false,
+      };
+
+  /// Whether the provider may still be needed to finish this swap. Older
+  /// swaps resolve without it (script-path claims and refunds over the
+  /// user's own electrum), so they never pin the provider in place.
+  bool mayStillNeedProvider(DateTime now) =>
+      now.difference(creationTime) < const Duration(hours: 24);
+
   bool get requiresAction => switch (this) {
     LnReceiveSwap(:final status) => status == SwapStatus.claimable,
     LnSendSwap(:final status) =>

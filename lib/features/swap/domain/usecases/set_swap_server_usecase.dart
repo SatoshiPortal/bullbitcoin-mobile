@@ -44,8 +44,10 @@ class SetSwapServerUsecase {
           ),
         );
       }
+      final now = DateTime.now();
       switch (await _swapStore.ongoing()) {
-        case Ok(value: final open) when open.isNotEmpty:
+        case Ok(value: final open)
+            when open.any((swap) => swap.mayStillNeedProvider(now)):
           return const Err(SwapServerBusyFailure());
         case Err():
           return const Err(SwapStorageFailure());

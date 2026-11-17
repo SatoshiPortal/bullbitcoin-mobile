@@ -1676,7 +1676,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       case SwapAction.coopSign:
         await coopSign(current);
       case SwapAction.none:
-        return current;
+        if (!current.awaitsTimeoutRefund(DateTime.now())) return current;
+        await refund(current, scriptPathOnly: true);
     }
     return getSwap(swapId: current.id);
   });
@@ -1689,6 +1690,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           case SwapAction.claim:
             await claim(current, scriptPathOnly: true);
           case SwapAction.refund:
+            await refund(current, scriptPathOnly: true);
+          case SwapAction.none when current.awaitsTimeoutRefund(DateTime.now()):
             await refund(current, scriptPathOnly: true);
           case SwapAction.coopSign || SwapAction.none:
             return current;
@@ -2178,19 +2181,20 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
       );
       return txid;
     } catch (e) {
-      swapsLog.severe(
-        'SWAPS: refund failed for ${swap.id}: ${_errorMessage(e)}',
-        error: e,
-      );
       // A non-final rejection means the timelock has not passed — nothing of
       // ours can be on-chain, so the outspend recovery must not get the
-      // chance to match an unrelated spend.
+      // chance to match an unrelated spend. It is expected while a swap
+      // waits out its timeout, so it is not reported as an error.
       if (_isNonFinalError(e)) {
-        await swapsLog.flush();
+        swapsLog.fine('SWAPS: refund for ${swap.id} waits for its timelock');
         throw SwapsException(
           'refund for ${swap.id} is not yet final (timelock); retry later',
         );
       }
+      swapsLog.severe(
+        'SWAPS: refund failed for ${swap.id}: ${_errorMessage(e)}',
+        error: e,
+      );
       // The script-path-only (zero-Boltz) retry must not fall back to the
       // outspend recovery, which queries the Boltz API. Surface the failure.
       if (scriptPathOnly) {

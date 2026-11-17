@@ -30,6 +30,7 @@ class SwapWatcher {
   final Map<String, ({int attempts, DateTime nextAttemptAt})> _retrySchedule =
       {};
   static const _maxRetryDelay = Duration(minutes: 30);
+  static const _timelockRetryDelay = Duration(hours: 1);
 
   SwapWatcher({
     required this._store,
@@ -208,6 +209,15 @@ class SwapWatcher {
     switch (await resolve(swap)) {
       case Ok():
         _clearRetries(swap.id);
+      case Err(failure: SwapsRefundNotFinalFailure()):
+        _retrySchedule[swap.id] = (
+          attempts: 0,
+          nextAttemptAt: DateTime.now().add(_timelockRetryDelay),
+        );
+        swapsLog.fine(
+          'SWAPS: ${swap.id} refund waits for its timelock; '
+          'next try after $_timelockRetryDelay',
+        );
       case Err(:final failure):
         _recordFailure(swap.id);
         swapsLog.warning(

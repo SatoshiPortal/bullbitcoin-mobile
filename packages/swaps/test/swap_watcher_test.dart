@@ -103,6 +103,18 @@ void main() {
     verify(() => resolver.resolve(any())).called(1);
   });
 
+  test('a refund waiting for its timelock is not retried at once', () async {
+    when(() => resolver.resolve(any())).thenAnswer(
+      (_) async => const Err(SwapsRefundNotFinalFailure('timelock')),
+    );
+    final swap = chainSwap(SwapStatus.paid);
+
+    await watcher.processSwap(swap);
+    await watcher.processSwap(swap);
+
+    verify(() => resolver.resolve(any())).called(1);
+  });
+
   test(
     'heartbeat retries resolution even when the Boltz backend is down',
     () async {

@@ -165,4 +165,78 @@ void main() {
       expect(chain(SwapStatus.expired).nextAction, SwapAction.none);
     });
   });
+
+  group('timeout refund', () {
+    final created = DateTime.utc(2026);
+    final later = created.add(const Duration(hours: 2));
+
+    test('a paid swap holding our lockup awaits the timeout refund', () {
+      expect(
+        submarine(
+          SwapStatus.paid,
+          sendTxid: 'lockup',
+        ).awaitsTimeoutRefund(later),
+        isTrue,
+      );
+      expect(
+        chain(SwapStatus.paid, sendTxid: 'lockup').awaitsTimeoutRefund(later),
+        isTrue,
+      );
+    });
+
+    test('nothing is attempted in the first hour', () {
+      expect(
+        submarine(
+          SwapStatus.paid,
+          sendTxid: 'lockup',
+        ).awaitsTimeoutRefund(created.add(const Duration(minutes: 30))),
+        isFalse,
+      );
+    });
+
+    test('nothing is attempted without a lockup or once resolved', () {
+      expect(submarine(SwapStatus.paid).awaitsTimeoutRefund(later), isFalse);
+      expect(
+        submarine(
+          SwapStatus.paid,
+          sendTxid: 'lockup',
+          refundTxid: 'refund',
+        ).awaitsTimeoutRefund(later),
+        isFalse,
+      );
+      expect(
+        chain(
+          SwapStatus.paid,
+          sendTxid: 'lockup',
+          receiveTxid: 'claim',
+        ).awaitsTimeoutRefund(later),
+        isFalse,
+      );
+      expect(reverse(SwapStatus.paid).awaitsTimeoutRefund(later), isFalse);
+    });
+
+    test('only a paid swap waits on the timeout', () {
+      expect(
+        chain(
+          SwapStatus.claimable,
+          sendTxid: 'lockup',
+        ).awaitsTimeoutRefund(later),
+        isFalse,
+      );
+    });
+  });
+
+  test('a swap pins the provider for its first day only', () {
+    final swap = submarine(SwapStatus.pending);
+    final created = DateTime.utc(2026);
+
+    expect(
+      swap.mayStillNeedProvider(created.add(const Duration(hours: 23))),
+      isTrue,
+    );
+    expect(
+      swap.mayStillNeedProvider(created.add(const Duration(hours: 25))),
+      isFalse,
+    );
+  });
 }
