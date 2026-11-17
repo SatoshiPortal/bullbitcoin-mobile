@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
+    show SqliteArkFundingReservations;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
 import 'data/frozen_utxos_freeze_store.dart';
@@ -156,6 +158,10 @@ class WalletLocator {
             (await getApplicationDocumentsDirectory()).path,
         freezes: FrozenUtxosFreezeStore(sqlite: locator<SqliteDatabase>()),
         connections: locator<WalletConnectionPort>(),
+        fundingReservations:
+            locator.isRegistered<SqliteArkFundingReservations>()
+            ? locator<SqliteArkFundingReservations>()
+            : null,
       ),
     );
     locator.registerLazySingleton<BdkWalletDatasource>(
@@ -260,12 +266,17 @@ class WalletLocator {
         mayCreate: true,
       ),
     );
-    locator.registerLazySingleton<SeedReferences>(
-      () => SeedReferences(
+    locator.registerLazySingleton<SeedReferences>(() {
+      final references = SeedReferences(
         locator<WalletRepository>(),
         admission: locator<ParentCustodyAdmissionPort>(),
-      ),
-    );
+      );
+      // Ark funding holds keep their source seed referenced.
+      if (locator.isRegistered<SqliteArkFundingReservations>()) {
+        references.register(locator<SqliteArkFundingReservations>());
+      }
+      return references;
+    });
     locator.registerFactory<core.DeleteWalletUsecase>(
       () => core.DeleteWalletUsecase(
         walletRepository: locator<WalletRepository>(),

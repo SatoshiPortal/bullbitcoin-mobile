@@ -67,6 +67,8 @@ class Bull {
       locator,
       SqliteDatabase(),
       payjoinDatabasePath: payjoinDatabasePath,
+      arkFundingDatabasePath: p.join(bullDirectory.path, 'ark-funding.sqlite'),
+      initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
     );
     if (setup case Err()) return setup;
     await initializeWalletRuntime(locator);
@@ -100,20 +102,23 @@ class Bull {
 /// Explicit regtest Ark profile supplied at build time. Builds without both
 /// endpoints keep the unavailable Ark routes and open no Ark storage.
 /// BULL_ARK_REGTEST_INITIALIZE_NEW authorizes creating the account registry
-/// of a fresh, controlled regtest profile; it is never inferred from files.
+/// and funding authority of a fresh, controlled regtest profile; it is never
+/// inferred from files.
+const _arkUrl = String.fromEnvironment('BULL_ARK_REGTEST_URL');
+const _arkEsploraUrl = String.fromEnvironment('BULL_ARK_REGTEST_ESPLORA_URL');
+const _arkInitializeNew = bool.fromEnvironment(
+  'BULL_ARK_REGTEST_INITIALIZE_NEW',
+);
+const _arkProfileAdmitted = _arkUrl != '' && _arkEsploraUrl != '';
+
 Future<void> _setupArkRegtestProfile() async {
-  const ark = String.fromEnvironment('BULL_ARK_REGTEST_URL');
-  const esplora = String.fromEnvironment('BULL_ARK_REGTEST_ESPLORA_URL');
-  const initializeNew = bool.fromEnvironment('BULL_ARK_REGTEST_INITIALIZE_NEW');
-  final arkUrl = Uri.tryParse(ark);
-  final esploraUrl = Uri.tryParse(esplora);
-  if (ark.isEmpty || esplora.isEmpty || arkUrl == null || esploraUrl == null) {
-    return;
-  }
+  final arkUrl = Uri.tryParse(_arkUrl);
+  final esploraUrl = Uri.tryParse(_arkEsploraUrl);
+  if (!_arkProfileAdmitted || arkUrl == null || esploraUrl == null) return;
   await ArkForegroundHost.setup(
     locator,
     arkUrl: arkUrl,
     primaryEsploraUrl: esploraUrl,
-    initializeNew: initializeNew,
+    initializeNew: _arkInitializeNew,
   );
 }

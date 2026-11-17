@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
@@ -65,6 +66,7 @@ import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart' show SyncFailure, SyncStorageFailure;
 
 final GetIt locator = GetIt.instance;
 
@@ -100,6 +102,8 @@ class AppLocator {
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
+    String? arkFundingDatabasePath,
+    bool initializeArkFunding = false,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -111,6 +115,28 @@ class AppLocator {
         scratchDirectory: () async => (await getTemporaryDirectory()).path,
       ),
     );
+
+    // One Ark funding authority for the app, opened before any repository:
+    // Sync, ordinary signing and Ark Board funding must share this instance.
+    // Without it the guard refuses signing on networks where Ark is admitted.
+    final arkFunding = arkFundingDatabasePath == null
+        ? const Err<SqliteArkFundingReservations, SyncFailure>(
+            SyncStorageFailure(),
+          )
+        : SqliteArkFundingReservations.open(
+            arkFundingDatabasePath,
+            foreground: true,
+            initializeNew: initializeArkFunding,
+          );
+    locator.registerSingleton<ArkFundingSigningGuard>(
+      ArkFundingSigningGuard(arkFunding),
+    );
+    if (arkFunding case Ok(:final value)) {
+      locator.registerSingleton<SqliteArkFundingReservations>(
+        value,
+        dispose: (authority) => authority.close(),
+      );
+    }
 
     // Register core dependencies first
     CoreLocator.register(locator, database);
