@@ -26,6 +26,7 @@ class _Engine {
   _Engine({required bool isTestnet}) {
     when(() => boltz.isTestnet).thenReturn(isTestnet);
     when(() => boltz.updates).thenAnswer((_) => updates.stream);
+    when(() => boltz.close()).thenAnswer((_) async => boltz.dispose());
     when(() => store.ongoing()).thenAnswer((_) async => const Ok([]));
   }
 
@@ -92,7 +93,9 @@ void main() {
       builds = [];
       when(() => settingsRepository.environmentChangeStream)
           .thenAnswer((_) => environments.stream);
-      when(() => watcher.stop()).thenAnswer((_) async {});
+      when(() => watcher.stop()).thenAnswer((_) async => const Ok(null));
+      when(() => watcher.drained).thenAnswer((_) => Future.value());
+      when(() => watcher.isRunning).thenReturn(true);
       when(() => watcher.start()).thenAnswer((_) async {});
       switcher = SwapEngineSwitcher(
         settingsRepository: settingsRepository,
@@ -128,18 +131,18 @@ void main() {
       verifyNever(() => watcher.stop());
     });
 
-    test('rebuilds run one after another', () async {
+    test('queued rebuilds skip targets superseded before admission', () async {
       await Future.wait([
         switcher.rebuild(isTestnet: true),
         switcher.rebuild(isTestnet: false),
       ]);
 
-      expect(builds, [true, false]);
+      expect(builds, [false]);
       expect(repository.isTestnet, isFalse);
     });
 
     test(
-      'a failed build keeps the old engine and the watcher running',
+      'a failed build keeps the old engine suspended without restarting',
       () async {
         final failing = SwapEngineSwitcher(
           settingsRepository: settingsRepository,
@@ -148,10 +151,18 @@ void main() {
           build: ({required isTestnet}) async => throw Exception('boom'),
         );
 
-        await failing.rebuild(isTestnet: true);
+        final result = await failing.rebuild(isTestnet: true);
 
+        expect(result, isA<Err<void, SwapsFailure>>());
         expect(repository.isTestnet, isFalse);
-        verify(() => watcher.start()).called(1);
+        verifyNever(() => watcher.start());
+        expect(
+          await repository.createBitcoinToLightningSwap(
+            walletId: 'unused',
+            invoice: 'unused',
+          ),
+          isA<Err<LnSendSwap, SwapsFailure>>(),
+        );
       },
     );
   });

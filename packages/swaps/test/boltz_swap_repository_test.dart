@@ -72,7 +72,9 @@ class _FakeLockupChain implements LockupChain {
     required String signedTx,
     required bool isLiquid,
     required bool isTestnet,
+    void Function()? requireAdmission,
   }) async {
+    requireAdmission?.call();
     broadcasts.add(signedTx);
     return outcome;
   }

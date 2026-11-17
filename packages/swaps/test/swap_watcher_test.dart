@@ -64,6 +64,35 @@ void main() {
   });
 
   test(
+    'stop budget includes subscription cancellation and retains ownership',
+    () async {
+      final cancelled = Completer<void>();
+      final release = Completer<void>();
+      final heldUpdates = StreamController<Swap>(
+        onCancel: () {
+          cancelled.complete();
+          return release.future;
+        },
+      );
+      when(() => resolver.updates).thenAnswer((_) => heldUpdates.stream);
+      watcher.ensureRunning();
+      final stopping = watcher.stop();
+      await cancelled.future;
+      expect(await stopping, isA<Err<void, SwapsFailure>>());
+      var drained = false;
+      unawaited(watcher.drained.then((_) => drained = true));
+      watcher.ensureRunning();
+      await watcher.start();
+      expect(watcher.isRunning, isFalse);
+      expect(drained, isFalse);
+      release.complete();
+      await watcher.drained;
+      expect(drained, isTrue);
+      await heldUpdates.close();
+    },
+  );
+
+  test(
     'start verifies completions, then resolves every ongoing swap',
     () async {
       when(() => store.ongoing()).thenAnswer(
@@ -204,23 +233,34 @@ void main() {
       verifyNever(() => resolver.resolve(any()));
     });
 
-    test('waits for an action already in flight for the swap', () async {
-      final resolution = Completer<Result<Swap, SwapsFailure>>();
-      when(() => resolver.resolve(any())).thenAnswer((_) => resolution.future);
-      final swap = chainSwap(SwapStatus.refundable);
-      unawaited(watcher.processSwap(swap));
-      await Future<void>.delayed(Duration.zero);
+    test(
+      'reports busy without queuing beside an action already in flight',
+      () async {
+        final resolution = Completer<Result<Swap, SwapsFailure>>();
+        when(() => resolver.resolve(any()))
+            .thenAnswer((_) => resolution.future);
+        final swap = chainSwap(SwapStatus.refundable);
+        final running = watcher.processSwap(swap);
+        await Future<void>.delayed(Duration.zero);
 
-      var retried = false;
-      final retrying = watcher.retry(swap).then((_) => retried = true);
-      await Future<void>.delayed(Duration.zero);
-      expect(retried, isFalse);
-      verifyNever(() => resolver.resolveScriptPath(any()));
+        final result = await watcher.retry(swap);
+        expect(
+          result,
+          isA<Err<Swap, SwapsFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SwapsBusyFailure>(),
+          ),
+        );
+        verifyNever(() => resolver.resolveScriptPath(any()));
 
-      resolution.complete(Ok(swap));
-      await retrying;
-      verify(() => resolver.resolveScriptPath(swap)).called(1);
-    });
+        resolution.complete(Ok(swap));
+        await running;
+        verifyNever(() => resolver.resolveScriptPath(any()));
+        await watcher.retry(swap);
+        verify(() => resolver.resolveScriptPath(swap)).called(1);
+      },
+    );
 
     test('a successful retry clears the backoff', () async {
       when(
