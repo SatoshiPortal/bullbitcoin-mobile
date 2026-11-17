@@ -41,6 +41,16 @@ final class RecoverBullSettingsAdapter
                 settings.isDevModeEnabled == true));
   }
 
+  Future<bool> _runtimeIsCurrent() async {
+    if (_closed) return false;
+    try {
+      final settings = await _settings.fetch();
+      return !_closed && _matchesRuntime(settings);
+    } on Exception {
+      return false;
+    }
+  }
+
   @override
   Future<Result<BitcoinNetwork, RecoverBullFailure>> currentNetwork() async {
     try {
@@ -137,7 +147,7 @@ final class RecoverBullSettingsAdapter
       if (profile != null) {
         _publish(const TorConnecting(source: TorSource.external));
         final ready = await _tor.external.verify(profile.endpoint);
-        if (_closed || !_matchesRuntime(await _settings.fetch())) {
+        if (!await _runtimeIsCurrent()) {
           return const Err(VaultContextChangedFailure());
         }
         _publish(ready);
@@ -156,7 +166,11 @@ final class RecoverBullSettingsAdapter
         } on ArgumentError {
           return const Err(ExternalTorProxyUnavailableFailure());
         }
-        return switch (await _tor.external.verify(endpoint)) {
+        final ready = await _tor.external.verify(endpoint);
+        if (!await _runtimeIsCurrent()) {
+          return const Err(VaultContextChangedFailure());
+        }
+        return switch (ready) {
           TorReady(:final route) => Ok(RecoverBullRoute(route, () async {})),
           _ => const Err(ExternalTorProxyUnavailableFailure()),
         };
@@ -166,10 +180,17 @@ final class RecoverBullSettingsAdapter
       final ready = restartEmbedded || viaSnowflake
           ? await _embedded.retry(snowflake: viaSnowflake)
           : await _embedded.ensureReady();
+      if (!await _runtimeIsCurrent()) {
+        return const Err(VaultContextChangedFailure());
+      }
       if (ready is! TorReady || ready.route.source != TorSource.embedded) {
         return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
       }
       final session = await _embedded.sessions.open();
+      if (!await _runtimeIsCurrent()) {
+        await session.close();
+        return const Err(VaultContextChangedFailure());
+      }
       return Ok(
         RecoverBullRoute(
           TorRoute(
