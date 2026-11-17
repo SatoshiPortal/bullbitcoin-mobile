@@ -311,6 +311,32 @@ void main() {
       expect(find.text('Enter all words of your mnemonic'), findsOneWidget);
     });
 
+    testWidgets('a refused long phrase scrolls its error into view', (
+      tester,
+    ) async {
+      tester.view
+        ..devicePixelRatio = 1
+        ..physicalSize = const Size(393, 760);
+      addTearDown(tester.view.reset);
+      await pumpWidget(
+        tester,
+        length: bip39.MnemonicLength.words24,
+        onSubmit: (_) {},
+      );
+
+      await submit(tester);
+      await tester.pumpAndSettle();
+
+      // The submit button is pinned under the scroll: the error at the end of
+      // the 24 fields must be brought on screen, not left below the fold.
+      final error = tester.getRect(
+        find.text('Enter all words of your mnemonic'),
+      );
+      final viewport = tester.getRect(find.byType(SingleChildScrollView));
+      expect(error.top, greaterThanOrEqualTo(viewport.top));
+      expect(error.bottom, lessThanOrEqualTo(viewport.bottom));
+    });
+
     testWidgets('renders a caller-owned external error above the button', (
       tester,
     ) async {
