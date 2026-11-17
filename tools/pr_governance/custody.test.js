@@ -34,6 +34,7 @@ test('the bindings packages may not reach package:secrets, in Dart or in their p
   assert.deepEqual(rules(reviewFiles([file('packages/onion/lib/custom.dart', [line])])), ['bindings-secrets']);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/pubspec.yaml', ['+  secrets:'])])), ['bindings-secrets-dependency']);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/a.dart', ['+  f(secrets: x);'])])), []);
+  assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/src/rust/custom.dart', ["+import '../../../../secrets/lib/secrets.dart';"])])), ['bindings-secrets']);
   assert.deepEqual(rules(reviewFiles([file('packages/sync/lib/x.dart', [line])])), []);
 });
 
