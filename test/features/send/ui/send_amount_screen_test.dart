@@ -17,6 +17,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmountUnitToggle,
         BullBitcoinAmountInput,
         BullButton,
+        BullDropdown,
         bullUiLocalizationsDelegate;
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
@@ -168,7 +169,7 @@ void main() {
       tester.widget<BalanceRow>(find.byType(BalanceRow)).title,
       'Selected coins',
     );
-    expect(find.byType(DropdownButtonFormField<String>), findsNothing);
+    expect(find.byType(BullDropdown<String>), findsNothing);
 
     await tester.tap(find.byType(Switch));
     verify(() => cubit.amountChanged(amount: null, isMax: true)).called(1);
@@ -342,10 +343,8 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(
       tester
-          .widget<DropdownButtonFormField<String>>(
-            find.byType(DropdownButtonFormField<String>),
-          )
-          .initialValue,
+          .widget<BullDropdown<String>>(find.byType(BullDropdown<String>))
+          .value,
       selectedWallet.id,
     );
     expect(tester.widget<BalanceRow>(find.byType(BalanceRow)).title, 'Balance');

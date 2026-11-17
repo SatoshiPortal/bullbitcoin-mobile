@@ -12,16 +12,21 @@ import 'package:meta/meta.dart';
 class ParseWatchOnlyInputUsecase {
   @useResult
   Future<Result<WatchOnlyWalletEntity, ImportWatchOnlyFailure>> execute(
-    String input,
-  ) async {
+    String input, {
+    required NetworkEnv environment,
+  }) async {
     try {
-      final entity = await WatchOnlyWalletEntity.parse(input);
+      final entity = await WatchOnlyWalletEntity.parse(
+        input,
+        environment: environment,
+      );
       return Ok(entity);
-    } catch (e, st) {
-      // Keep the raw parse reason in the logs; the UI shows a generic
-      // localized message. Malformed input is an expected user-facing
-      // condition, so this is a warning.
-      log.warning('Failed to parse watch-only input', error: e, trace: st);
+    } on WatchOnlyNetworkMismatchException {
+      return const Err(NetworkMismatchFailure());
+    } catch (error) {
+      if (error is Error) rethrow;
+      // Do not log pasted input or a foreign exception containing it.
+      log.warning('Failed to parse watch-only input');
       return const Err(InvalidFormatFailure());
     }
   }

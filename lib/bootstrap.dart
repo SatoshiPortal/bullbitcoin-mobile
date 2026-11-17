@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show Err;
+
 import 'dart:async';
 
 import 'package:bb_mobile/app.dart';
@@ -15,7 +17,21 @@ Future<void> startApp() async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
         await runStartupWizard();
-        await Bull.init();
+        if (await Bull.init() case Err(:final failure)) {
+          log.severe(
+            message: 'App Init Error',
+            error: failure,
+            trace: StackTrace.current,
+          );
+          runApp(
+            BullSupportScope(
+              onContactSupport: SupportFacade.contactSupport,
+              child: AppInitErrorScreen(error: failure),
+            ),
+          );
+          _refreshDiagnosticContextAfterFirstFrame();
+          return;
+        }
       } catch (error, stackTrace) {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
         runApp(

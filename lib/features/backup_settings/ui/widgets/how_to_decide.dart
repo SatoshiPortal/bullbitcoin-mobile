@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullText, BullTypographyX, Gap;
 
 class HowToDecideBackupOption extends StatelessWidget {
   const HowToDecideBackupOption({super.key});
@@ -53,19 +54,13 @@ class HowToDecideBackupOption extends StatelessWidget {
                     children: [
                       BullText(
                         context.loc.backupWalletHowToDecideBackupLosePhysical,
-                        style: context.font.labelMedium?.copyWith(
-                          height: 1.5,
-                          fontSize: 14,
-                        ),
+                        style: context.bullType.label.copyWith(height: 1.5),
                         maxLines: 8,
                       ),
                       const Gap(32),
                       BullText(
                         context.loc.backupWalletHowToDecideBackupEncryptedVault,
-                        style: context.font.labelMedium?.copyWith(
-                          height: 1.5,
-                          fontSize: 14,
-                        ),
+                        style: context.bullType.label.copyWith(height: 1.5),
                         maxLines: 16,
                       ),
                       const Gap(12),
@@ -115,10 +110,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                       const Gap(12),
                       BullText(
                         context.loc.backupWalletHowToDecideBackupMoreInfo,
-                        style: context.font.labelMedium?.copyWith(
-                          height: 1.5,
-                          fontSize: 14,
-                        ),
+                        style: context.bullType.label.copyWith(height: 1.5),
                       ),
                       const Gap(20),
                     ],

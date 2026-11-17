@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_ty
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, BullShapesX, Gap;
 
 class RecipientTypeSelector extends StatelessWidget {
   const RecipientTypeSelector({
@@ -66,37 +67,16 @@ class RecipientTypeSelector extends StatelessWidget {
         ),
       );
     } else {
-      return Material(
-        elevation: 4,
-        color: context.appColors.onSecondary,
-        borderRadius: BorderRadius.circular(context.bullShapes.input),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: DropdownButton<RecipientType>(
-            isExpanded: true,
-            alignment: Alignment.centerLeft,
-            underline: const SizedBox.shrink(),
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: context.appColors.secondary,
+      return BullDropdown<RecipientType>(
+        items: [
+          for (final type in options)
+            BullPickerItem(
+              value: type,
+              label: recipientTypeLabel(context, type),
             ),
-            items: options
-                .map(
-                  (type) => DropdownMenuItem<RecipientType>(
-                    value: type,
-                    child: RecipientTypeText(recipientType: type),
-                  ),
-                )
-                .toList(),
-            value: selectedType,
-            onChanged: (value) {
-              if (value != null) {
-                onTypeSelected(value);
-              }
-            },
-          ),
-        ),
+        ],
+        value: selectedType,
+        onChanged: onTypeSelected,
       );
     }
   }

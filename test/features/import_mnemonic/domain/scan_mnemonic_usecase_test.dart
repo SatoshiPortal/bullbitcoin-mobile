@@ -11,7 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show ScriptType;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    show ScriptType, UnsupportedNetworkException;
 
 class _MockCheckWalletStatusUsecase extends Mock
     implements CheckWalletStatusUsecase {}
@@ -102,6 +103,11 @@ void main() {
           'every server timing out',
           AllElectrumServersFailedException([timedOut]),
           isA<ImportMnemonicScanTimeoutFailure>(),
+        ),
+        (
+          'an unsupported wallet script',
+          const UnsupportedNetworkException(),
+          isA<ImportMnemonicScanUnsupportedFailure>(),
         ),
         (
           'a timeout',

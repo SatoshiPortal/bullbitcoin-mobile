@@ -213,8 +213,8 @@ class KeyServerStatusWidget extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: context.loc.recoverbullKeyServer,
-                    style: context.bullText.labelLarge?.copyWith(
-                      fontSize: 12,
+                    style: context.bullType.caption.copyWith(
+                      fontWeight: FontWeight.w500,
                       color: context.bull.onSurface,
                     ),
                   ),

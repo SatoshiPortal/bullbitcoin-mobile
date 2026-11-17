@@ -59,10 +59,14 @@ Duration? trafficReadyTimeoutFor(TorTransport transport) => switch (transport) {
   TorTransport.snowflake => null,
 };
 
-/// How long readiness is withheld after Arti first reports `readyForTraffic`.
+/// How long readiness is withheld after Arti first reports `readyForTraffic`, applied once per bootstrap.
 ///
-/// Arti says it can carry traffic before a first onion connection actually succeeds, so announcing it at once sent requests into a client that failed them. The hold is applied once per bootstrap, not on directory-refresh republications.
-const defaultReadinessHold = Duration(seconds: 5);
+/// Through Snowflake, Arti reports it can carry traffic before a first onion connection succeeds: measured on devices, the first key-server contact took 70 s without a hold (median of 11) and 12 s with 5 s (median of 20). A direct client showed no such gap, so it is announced at once.
+@visibleForTesting
+Duration readinessHoldFor(TorTransport transport) => switch (transport) {
+  TorTransport.direct => Duration.zero,
+  TorTransport.snowflake => const Duration(seconds: 5),
+};
 
 /// Platform adapter for the embedded Arti client shipped by `package:onion`.
 final class OnionTorBackend implements EmbeddedTorPort {
@@ -77,7 +81,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
   String? _lastReadinessLog;
   Completer<void> _trafficReady = _pendingTrafficReady();
   Completer<void> _holdRelease = Completer<void>();
-  final Duration _readinessHold;
+  final Duration Function(TorTransport) _readinessHold;
   final Future<void> Function(Duration) _wait;
 
   /// Whether this bootstrap has served its readiness hold; until then Arti's readiness is republished as full progress, not as ready.
@@ -90,7 +94,7 @@ final class OnionTorBackend implements EmbeddedTorPort {
 
   OnionTorBackend(
     this._log, {
-    this._readinessHold = defaultReadinessHold,
+    this._readinessHold = readinessHoldFor,
     Future<void> Function(Duration)? wait,
   }) : _wait = wait ?? Future<void>.delayed;
 
@@ -184,9 +188,12 @@ final class OnionTorBackend implements EmbeddedTorPort {
         },
       );
 
-      await service.bootstrap();
+      // No SDK deadline: the repository's per-transport budget stops the
+      // attempt, and Snowflake bootstraps outlast the SDK's default 120 s
+      // while Arti is still progressing.
+      await service.bootstrapWithTimeout(timeoutMs: null);
       if (generation != _generation) throw _cancelled();
-      // `bootstrap()` returns once the directory is usable, before Arti
+      // Bootstrap returns once the directory is usable, before Arti
       // reports `readyForTraffic`; announcing readiness then sent the first
       // request into a client that was not ready yet.
       await waitForTraffic(trafficReadyTimeoutFor(transport));
@@ -194,9 +201,9 @@ final class OnionTorBackend implements EmbeddedTorPort {
       _log.fine(
         'Embedded Tor reports ready after '
         '${DateTime.now().difference(startedAt).inSeconds}s; holding readiness '
-        'for ${_readinessHold.inSeconds}s',
+        'for ${_readinessHold(transport).inSeconds}s',
       );
-      await holdReadiness();
+      await holdReadiness(transport);
       if (generation != _generation) throw _cancelled();
       await _applyDormancy(service);
       if (!await service.proxyIsAlive()) {
@@ -257,11 +264,11 @@ final class OnionTorBackend implements EmbeddedTorPort {
           ),
         );
 
-  /// Waits out [_readinessHold]; [stop] ends the wait early so a restart does not queue behind it.
+  /// Waits out the [transport]'s readiness hold; [stop] ends the wait early so a restart does not queue behind it.
   @visibleForTesting
-  Future<void> holdReadiness() {
+  Future<void> holdReadiness(TorTransport transport) {
     final release = _holdRelease = Completer<void>();
-    return Future.any([_wait(_readinessHold), release.future]);
+    return Future.any([_wait(_readinessHold(transport)), release.future]);
   }
 
   @visibleForTesting

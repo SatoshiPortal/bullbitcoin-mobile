@@ -1,6 +1,6 @@
 import 'package:flutter_localizations/flutter_localizations.dart'
     show GlobalWidgetsLocalizations;
-import 'package:bull_ui/bull_ui.dart' show BullLabeledTextInput;
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullLabeledTextInput;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
@@ -99,10 +99,7 @@ void main() {
 
       await tester.pumpWidget(_buildPage(cubit));
 
-      expect(
-        find.byType(DropdownButtonFormField<BitcoinNetwork>),
-        findsOneWidget,
-      );
+      expect(find.byType(BullDropdown<BitcoinNetwork>), findsOneWidget);
     });
 
     testWidgets('shows Fetch defaults button for regtest network', (
@@ -379,11 +376,8 @@ void main() {
 
       await tester.pumpWidget(buildMockPage(cubit));
 
-      expect(
-        find.byType(DropdownButtonFormField<BitcoinNetwork>),
-        findsOneWidget,
-      );
-      await tester.tap(find.byType(DropdownButtonFormField<BitcoinNetwork>));
+      expect(find.byType(BullDropdown<BitcoinNetwork>), findsOneWidget);
+      await tester.tap(find.byType(BullDropdown<BitcoinNetwork>));
       await tester.pumpAndSettle();
 
       // The dropdown menu lists every network; pick one that differs from

@@ -44,6 +44,47 @@ void main() {
     );
   }
 
+  testWidgets('unsupported script is not offered as an importable wallet', (
+    tester,
+  ) async {
+    await host(
+      tester,
+      const ImportMnemonicState(
+        bip84Scan: ScriptTypeScan.empty(),
+        bip49Scan: ScriptTypeScan.empty(),
+        bip44Scan: ScriptTypeScan.failed(
+          ImportMnemonicScanUnsupportedFailure(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(loc.importMnemonicUnsupportedScript), findsOneWidget);
+    await tester.ensureVisible(find.text(loc.importMnemonicLegacy));
+    await tester.tap(find.text(loc.importMnemonicLegacy), warnIfMissed: false);
+    verifyNever(() => cubit.updateBip39Purpose(ScriptType.bip44));
+    expect(find.text(loc.retry), findsNothing);
+  });
+
+  testWidgets('an unsupported selected script cannot continue to import', (
+    tester,
+  ) async {
+    await host(
+      tester,
+      const ImportMnemonicState(
+        scriptType: ScriptType.bip44,
+        bip84Scan: ScriptTypeScan.empty(),
+        bip49Scan: ScriptTypeScan.empty(),
+        bip44Scan: ScriptTypeScan.failed(
+          ImportMnemonicScanUnsupportedFailure(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text(loc.importMnemonicContinue));
+    await tester.tap(find.text(loc.importMnemonicContinue));
+    verifyNever(() => cubit.import());
+  });
+
   testWidgets(
     'a failed scan shows its reason and a retry, the others their result',
     (tester) async {

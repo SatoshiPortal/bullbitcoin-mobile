@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullShapesX, BullSwitch, Gap;
+    show BullDialog, BullShapesX, BullSwitch, BullTypographyX, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaListTile extends StatefulWidget {
@@ -71,8 +71,8 @@ class _DcaListTileState extends State<DcaListTile> {
                       _showSettings
                           ? context.loc.exchangeDcaHideSettings
                           : context.loc.exchangeDcaViewSettings,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
                         color: context.appColors.primary,
                         decoration: TextDecoration.underline,
                         decorationColor: context.appColors.primary,

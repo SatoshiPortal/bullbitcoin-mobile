@@ -50,6 +50,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 void main() {
   setUpAll(() {
+    registerFallbackValue(ElectrumServerNetwork.bitcoinMainnet);
     registerFallbackValue(
       AddCustomServerRequest(
         server: ElectrumServerDto(
@@ -312,4 +313,74 @@ void main() {
     expect(bloc.state.customServers, isEmpty);
     loadResult.complete(Ok(oldResponse));
   });
+  test(
+    'a failing Liquid tab never retains Bitcoin servers or options',
+    () async {
+      final load = _MockLoadElectrumServerDataUsecase();
+      final settings = _MockSettingsRepository();
+      final servers = _MockElectrumServerRepository();
+      when(() => settings.fetch()).thenAnswer(
+        (_) async => const SettingsEntity(
+          environment: Environment.regtest,
+          bitcoinUnit: BitcoinUnit.sats,
+          currencyCode: 'USD',
+        ),
+      );
+      when(() => servers.fetchActiveServers(network: any(named: 'network')))
+          .thenAnswer((_) async => const Ok([]));
+      when(() => load.execute(any(), onUpdate: any(named: 'onUpdate')))
+          .thenAnswer((invocation) async {
+            final request =
+                invocation.positionalArguments.single
+                    as LoadElectrumServerDataRequest;
+            if (request.isLiquid) return const Err(core.ElectrumLoadFailure());
+            return Ok(
+              LoadElectrumServerDataResponse(
+                servers: [
+                  ElectrumServerDto(
+                    url: 'tcp://127.0.0.1:50000',
+                    network: ElectrumServerNetwork.bitcoinRegtest,
+                    isCustom: false,
+                    priority: 0,
+                  ),
+                ],
+                serverStatuses: {},
+                settings: ElectrumSettingsDto(
+                  stopGap: 20,
+                  timeout: 5,
+                  retry: 5,
+                  validateDomain: true,
+                  network: ElectrumServerNetwork.bitcoinRegtest,
+                ),
+              ),
+            );
+          });
+      final bloc = ElectrumSettingsBloc(
+        loadElectrumServerDataUsecase: load,
+        addCustomServerUsecase: _MockAddCustomServerUsecase(),
+        setCustomServersPriorityUsecase: _MockSetCustomServersPriorityUsecase(),
+        deleteCustomServerUsecase: _MockDeleteCustomServerUsecase(),
+        setAdvancedElectrumOptionsUsecase:
+            _MockSetAdvancedElectrumOptionsUsecase(),
+        hasActiveCustomBitcoinOnionServerUsecase:
+            HasActiveCustomBitcoinOnionServerUsecase(servers, settings),
+      );
+      addTearDown(bloc.close);
+      final bitcoinLoaded = bloc.stream.firstWhere(
+        (state) => !state.isLoadingData && state.defaultServers.isNotEmpty,
+      );
+      bloc.add(const ElectrumSettingsLoaded(isLiquid: false));
+      await bitcoinLoaded;
+      final failed = bloc.stream.firstWhere(
+        (state) => state.electrumServersError != null,
+      );
+      bloc.add(const ElectrumSettingsLoaded(isLiquid: true));
+      final state = await failed;
+      expect(state.isLiquid, isTrue);
+      expect(state.defaultServers, isEmpty);
+      expect(state.customServers, isEmpty);
+      expect(state.advancedOptions, isNull);
+      expect(state.environment, isNull);
+    },
+  );
 }

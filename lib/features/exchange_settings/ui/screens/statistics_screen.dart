@@ -280,9 +280,8 @@ class _StatRow extends StatelessWidget {
                   const Gap(2),
                   BullText(
                     description!,
-                    style: context.bullText.bodySmall?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: context.bull.textMuted,
-                      fontSize: 11,
                     ),
                   ),
                 ],
@@ -362,9 +361,8 @@ class _MultiValueStatCard extends StatelessWidget {
                   const Gap(6),
                   BullText(
                     description!,
-                    style: context.bullText.bodySmall?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: context.bull.textMuted,
-                      fontSize: 11,
                     ),
                   ),
                 ],

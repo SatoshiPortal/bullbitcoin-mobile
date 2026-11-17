@@ -7,6 +7,7 @@ import '../data_display/bull_amount.dart';
 import '../data_display/bull_amount_scope.dart';
 import '../theme/bull_theme.dart';
 import '../theme/bull_tokens.dart';
+import '../theme/bull_typography.dart';
 import 'bull_amount_input_formatter.dart';
 import 'bull_bitcoin_amount_text.dart';
 
@@ -221,8 +222,7 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final style = theme.textTheme.displaySmall?.copyWith(
-      fontSize: 36,
+    final style = context.bullType.display.copyWith(
       color: theme.colorScheme.secondary,
     );
     return Column(

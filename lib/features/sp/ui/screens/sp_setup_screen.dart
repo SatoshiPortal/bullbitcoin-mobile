@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_scan_start_selector.dart';
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem, Gap;
 import 'package:primitives/primitives.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,21 +59,23 @@ class SpSetupScreen extends StatelessWidget {
                     onTestBlindbit: cubit.testBlindbit,
                     onElectrumChanged: cubit.setElectrumUrl,
                     onTestElectrum: cubit.testElectrum,
-                    networkField: DropdownButtonFormField<BitcoinNetwork>(
-                      key: ValueKey('network_${state.network.name}'),
-                      initialValue: state.network,
-                      decoration: InputDecoration(
-                        labelText: context.loc.spNetworkLabel,
-                      ),
-                      items: BitcoinNetwork.values
-                          .map(
-                            (n) =>
-                                DropdownMenuItem(value: n, child: Text(n.name)),
-                          )
-                          .toList(),
-                      onChanged: (n) {
-                        if (n != null) cubit.setNetwork(n);
-                      },
+                    networkField: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.loc.spNetworkLabel,
+                          style: context.font.bodyMedium,
+                        ),
+                        const Gap(4),
+                        BullDropdown<BitcoinNetwork>(
+                          value: state.network,
+                          items: [
+                            for (final n in BitcoinNetwork.values)
+                              BullPickerItem(value: n, label: n.name),
+                          ],
+                          onChanged: cubit.setNetwork,
+                        ),
+                      ],
                     ),
                     extraFields: SpScanStartSelector(
                       scanStart: state.scanStart,

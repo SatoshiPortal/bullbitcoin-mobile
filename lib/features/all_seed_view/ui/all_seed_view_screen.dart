@@ -20,6 +20,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         BullSnackBar,
         BullText,
+        BullTypographyX,
         Gap;
 
 class AllSeedViewScreen extends StatefulWidget {
@@ -128,7 +129,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
             appBar: AppBar(
               title: BullText(
                 context.loc.allSeedViewTitle,
-                style: const TextStyle(fontWeight: .bold, fontSize: 20),
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(3),

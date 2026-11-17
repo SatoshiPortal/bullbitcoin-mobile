@@ -18,9 +18,9 @@ void main() {
         home: Scaffold(body: ExchangeHomeActions(onAction: selected.add)),
       ),
     );
-    expect(find.byType(BullToolButton), findsNWidgets(4));
+    expect(find.byType(BullQuickAction), findsNWidgets(4));
     for (var i = 0; i < ExchangeHomeAction.values.length; i++) {
-      await tester.tap(find.byType(BullToolButton).at(i));
+      await tester.tap(find.byType(BullQuickAction).at(i));
     }
     expect(selected, ExchangeHomeAction.values);
   });

@@ -106,12 +106,7 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:material_ui/material_ui.dart'
-    show
-        DropdownMenuItem,
-        FormFieldValidator,
-        RefreshCallback,
-        RefreshIndicatorState,
-        TextTheme;
+    show FormFieldValidator, RefreshCallback, RefreshIndicatorState, TextTheme;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 
@@ -148,11 +143,13 @@ export 'src/inputs/bull_amount_input_formatter.dart';
 export 'src/inputs/bull_checkbox.dart';
 export 'src/inputs/bull_copy_field.dart';
 export 'src/inputs/bull_dropdown.dart';
+export 'src/inputs/bull_dropdown_menu.dart' show showBullDropdownMenu;
 export 'src/inputs/bull_filter_chip.dart';
 export 'src/inputs/bull_input_text.dart';
 export 'src/inputs/bull_keypad.dart' show BullKeyScramble;
 export 'src/inputs/bull_language_picker.dart';
 export 'src/inputs/bull_picker_chip.dart';
+export 'src/inputs/bull_picker_item.dart';
 export 'src/inputs/bull_labeled_text_input.dart';
 export 'src/inputs/bull_lowercase_input_formatter.dart';
 export 'src/inputs/bull_mnemonic_keyboard.dart';

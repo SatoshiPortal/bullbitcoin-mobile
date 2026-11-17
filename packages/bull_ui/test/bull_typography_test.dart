@@ -57,6 +57,42 @@ void main() {
     });
   });
 
+  group('toTextTheme', () {
+    const t = BullTypography.standard;
+    final theme = t.toTextTheme();
+
+    void expectSlot(TextStyle? slot, TextStyle role, FontWeight weight) {
+      expect(slot, isNotNull);
+      expect(slot?.fontFamily, BullTypography.fontFamily);
+      expect(slot?.fontSize, role.fontSize);
+      expect(slot?.height, role.height);
+      expect(slot?.fontWeight, weight);
+    }
+
+    test('fills every Material slot from a role', () {
+      expectSlot(theme.displayLarge, t.display, FontWeight.w500);
+      expectSlot(theme.displayMedium, t.display, FontWeight.w500);
+      expectSlot(theme.displaySmall, t.headline, FontWeight.w500);
+      expectSlot(theme.headlineLarge, t.subtitle, FontWeight.w700);
+      expectSlot(theme.headlineMedium, t.subtitle, FontWeight.w500);
+      expectSlot(theme.headlineSmall, t.subtitle, FontWeight.w400);
+      expectSlot(theme.titleLarge, t.title, FontWeight.w500);
+      expectSlot(theme.titleMedium, t.body, FontWeight.w500);
+      expectSlot(theme.titleSmall, t.label, FontWeight.w500);
+      expectSlot(theme.bodyLarge, t.body, FontWeight.w500);
+      expectSlot(theme.bodyMedium, t.body, FontWeight.w400);
+      expectSlot(theme.bodySmall, t.label, FontWeight.w400);
+      expectSlot(theme.labelLarge, t.label, FontWeight.w500);
+      expectSlot(theme.labelMedium, t.caption, FontWeight.w400);
+      expectSlot(theme.labelSmall, t.caption, FontWeight.w400);
+    });
+
+    test('follows an overridden role', () {
+      final custom = t.copyWith(body: t.body.copyWith(fontSize: 17));
+      expect(custom.toTextTheme().bodyMedium?.fontSize, 17);
+    });
+  });
+
   group('copyWith', () {
     test('replaces only the given roles', () {
       const big = TextStyle(fontSize: 40);

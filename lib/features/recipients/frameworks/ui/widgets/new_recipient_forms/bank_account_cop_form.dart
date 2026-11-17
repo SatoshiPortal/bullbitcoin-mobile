@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/recipients/presentation/models/cop_document_t
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem, Gap;
 
 class BankAccountCopForm extends StatefulWidget {
   const BankAccountCopForm({super.key, this.hookError});
@@ -84,51 +84,30 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             textAlign: .left,
           ),
           const Gap(8.0),
-          Material(
-            elevation: 4,
-            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButtonFormField<CopBankInstitution?>(
-                isExpanded: true,
-                alignment: Alignment.centerLeft,
-                borderRadius: BorderRadius.circular(context.bullShapes.input),
-                dropdownColor: context.appColors.surface,
-                decoration: const InputDecoration(border: InputBorder.none),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.onSurface,
-                ),
-                initialValue: _institutionNumber,
-                onChanged: (value) {
-                  setState(() {
-                    _institutionNumber = value;
-                  });
-                },
-                validator: (v) => (v == null)
-                    ? context.loc.recipientsValidationBankInstitution
-                    : null,
-                items: [
-                  DropdownMenuItem<CopBankInstitution?>(
-                    value: null,
-                    child: Text(
-                      context.loc.recipientsFieldBankInstitutionPlaceholder,
-                    ),
-                  ),
-                  ...CopBankInstitution.values.map((institution) {
-                    return DropdownMenuItem<CopBankInstitution>(
-                      value: institution,
-                      child: Text(switch (institution) {
-                        CopBankInstitution.bancolombia =>
-                          'Bancolombia (${institution.code})',
-                      }),
-                    );
-                  }),
-                ],
+          BullDropdown<CopBankInstitution?>(
+            value: _institutionNumber,
+            onChanged: (value) {
+              setState(() {
+                _institutionNumber = value;
+              });
+            },
+            validator: (v) => (v == null)
+                ? context.loc.recipientsValidationBankInstitution
+                : null,
+            items: [
+              BullPickerItem<CopBankInstitution?>(
+                value: null,
+                label: context.loc.recipientsFieldBankInstitutionPlaceholder,
               ),
-            ),
+              for (final institution in CopBankInstitution.values)
+                BullPickerItem<CopBankInstitution?>(
+                  value: institution,
+                  label: switch (institution) {
+                    CopBankInstitution.bancolombia =>
+                      'Bancolombia (${institution.code})',
+                  },
+                ),
+            ],
           ),
           const Gap(12.0),
           // Account Type Dropdown
@@ -141,45 +120,25 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             textAlign: .left,
           ),
           const Gap(8.0),
-          Material(
-            elevation: 4,
-            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<CopBankAccountType>(
-                isExpanded: true,
-                alignment: Alignment.centerLeft,
-                underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(context.bullShapes.input),
-                dropdownColor: context.appColors.surface,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.onSurface,
+          BullDropdown<CopBankAccountType>(
+            value: _accountType,
+            onChanged: (value) {
+              setState(() {
+                _accountType = value;
+              });
+            },
+            items: [
+              for (final type in CopBankAccountType.values)
+                BullPickerItem(
+                  value: type,
+                  label: switch (type) {
+                    CopBankAccountType.savings =>
+                      context.loc.recipientsAccountTypeSavings,
+                    CopBankAccountType.checking =>
+                      context.loc.recipientsAccountTypeChecking,
+                  },
                 ),
-                value: _accountType,
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _accountType = value;
-                  });
-                },
-                items: [
-                  ...CopBankAccountType.values.map((type) {
-                    return DropdownMenuItem<CopBankAccountType>(
-                      value: type,
-                      child: Text(switch (type) {
-                        CopBankAccountType.savings =>
-                          context.loc.recipientsAccountTypeSavings,
-                        CopBankAccountType.checking =>
-                          context.loc.recipientsAccountTypeChecking,
-                      }),
-                    );
-                  }),
-                ],
-              ),
-            ),
+            ],
           ),
           const Gap(12.0),
           BBTextFormField(
@@ -208,40 +167,20 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             textAlign: .left,
           ),
           const Gap(8.0),
-          Material(
-            elevation: 4,
-            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<CopDocumentType>(
-                isExpanded: true,
-                alignment: Alignment.centerLeft,
-                underline: const SizedBox.shrink(),
-                borderRadius: BorderRadius.circular(context.bullShapes.input),
-                dropdownColor: context.appColors.surface,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.onSurface,
+          BullDropdown<CopDocumentType>(
+            value: _documentType,
+            onChanged: (value) {
+              setState(() {
+                _documentType = value;
+              });
+            },
+            items: [
+              for (final type in CopDocumentType.values)
+                BullPickerItem(
+                  value: type,
+                  label: copDocumentTypeLabel(context, type),
                 ),
-                value: _documentType,
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _documentType = value;
-                  });
-                },
-                items: [
-                  ...CopDocumentType.values.map((type) {
-                    return DropdownMenuItem<CopDocumentType>(
-                      value: type,
-                      child: Text(copDocumentTypeLabel(context, type)),
-                    );
-                  }),
-                ],
-              ),
-            ),
+            ],
           ),
           const Gap(12.0),
           BBTextFormField(

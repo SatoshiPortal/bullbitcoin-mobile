@@ -500,9 +500,9 @@ m.Widget bullDropdownClosedUseCase(m.BuildContext context) {
       child: BullDropdown<String>(
         value: 'Mainnet',
         items: const [
-          m.DropdownMenuItem(value: 'Mainnet', child: m.Text('Mainnet')),
-          m.DropdownMenuItem(value: 'Testnet', child: m.Text('Testnet')),
-          m.DropdownMenuItem(value: 'Signet', child: m.Text('Signet')),
+          BullPickerItem(value: 'Mainnet', label: 'Mainnet'),
+          BullPickerItem(value: 'Testnet', label: 'Testnet'),
+          BullPickerItem(value: 'Signet', label: 'Signet'),
         ],
         onChanged: (_) {},
       ),
@@ -517,12 +517,12 @@ m.Widget bullDropdownOpenUseCase(m.BuildContext context) {
     m.SizedBox(
       width: 320,
       child: BullDropdown<int>(
-        hint: const m.Text('Choose fee priority'),
+        hint: 'Choose fee priority',
         value: null,
         items: const [
-          m.DropdownMenuItem(value: 1, child: m.Text('Slow')),
-          m.DropdownMenuItem(value: 2, child: m.Text('Medium')),
-          m.DropdownMenuItem(value: 3, child: m.Text('Fast')),
+          BullPickerItem(value: 1, label: 'Slow'),
+          BullPickerItem(value: 2, label: 'Medium'),
+          BullPickerItem(value: 3, label: 'Fast'),
         ],
         onChanged: (_) {},
       ),

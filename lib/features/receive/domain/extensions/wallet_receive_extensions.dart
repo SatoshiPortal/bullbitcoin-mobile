@@ -23,7 +23,8 @@ extension WalletReceiveExtension on Wallet {
 
   ReceiveNetworkType get defaultReceiveNetwork {
     if (isLiquid) {
-      return signsLocally
+      return signsLocally &&
+              ReceiveNetworkType.lightning.supportsNetwork(network.shared)
           ? ReceiveNetworkType.lightning
           : ReceiveNetworkType.liquid;
     }

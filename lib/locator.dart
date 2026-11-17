@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
+    show ElectrumFailure;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/status_check/status_core_locator.dart';
@@ -91,7 +93,7 @@ class AppLocator {
   }
 
   /// Call this in the `main` function **before** `runApp()`
-  static Future<void> setup(
+  static Future<Result<void, ElectrumFailure>> setup(
     GetIt locator,
     SqliteDatabase database, {
     required String payjoinDatabasePath,
@@ -113,12 +115,15 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
+    // Lazy registrations only; storage is prepared before network repositories.
+    ElectrumSettingsLocator.setup(locator);
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports
     // The proper solution is to refactor the code to remove this dependency
     CoreLocator.registerPorts(locator);
-    await CoreLocator.registerRepositories(locator);
+    final repositories = await CoreLocator.registerRepositories(locator);
+    if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
     CoreLocator.registerFrameworks(locator);
@@ -133,7 +138,6 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
-    ElectrumSettingsLocator.setup(locator);
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
@@ -207,5 +211,6 @@ class AppLocator {
     // watcher has started yet: the engine must match the network the first
     // swap is created on. A switch stops and relaunches the watcher.
     locator<SwapEngineSwitcher>().start();
+    return const Ok(null);
   }
 }

@@ -130,14 +130,17 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       onPopInvokedWithResult: (didPop, _) {},
       child: Stack(
         children: [
-          // Black background visible only during iOS top overscroll
+          // Black background visible only during iOS top overscroll. It stops
+          // where the header image does, so it never shows below it.
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: ColoredBox(
               color: AppColors.dark.background,
-              child: const SizedBox(height: 300),
+              child: const SizedBox(
+                height: WalletHomeTopSection.minBackgroundHeight,
+              ),
             ),
           ),
           WalletRefreshBody(

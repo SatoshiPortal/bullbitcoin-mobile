@@ -1,3 +1,8 @@
+import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
+import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
+import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/receive/domain/usecases/poll_receive_wallet_usecase.dart';
@@ -34,6 +39,107 @@ class _ReceiveBloc extends MockBloc<ReceiveEvent, ReceiveState>
     implements ReceiveBloc {}
 
 void main() {
+  for (final network in Network.values) {
+    for (final signer in [SignerEntity.local, SignerEntity.none]) {
+      test('default Receive mode is available for $network / $signer', () {
+        final selected = wallet(network, signer: signer);
+        final expected = switch ((network, signer)) {
+          (
+            Network.liquidMainnet || Network.liquidTestnet,
+            SignerEntity.local,
+          ) =>
+            ReceiveNetworkType.lightning,
+          (
+            Network.liquidMainnet ||
+                Network.liquidTestnet ||
+                Network.liquidRegtest,
+            _,
+          ) =>
+            ReceiveNetworkType.liquid,
+          _ => ReceiveNetworkType.bitcoin,
+        };
+        expect(selected.defaultReceiveNetwork, expected);
+        expect(
+          selected.availableReceiveNetworks,
+          contains(selected.defaultReceiveNetwork),
+        );
+      });
+    }
+  }
+
+  testWidgets('Liquid regtest selector has a supported initial selection', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.light),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: ReceiveNetworkSelection(wallet: wallet(Network.liquidRegtest)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    final loc = AppLocalizations.of(
+      tester.element(find.byType(ReceiveNetworkSelection)),
+    );
+    final selector = tester.widget<BullSegmented>(find.byType(BullSegmented));
+    expect(selector.items, {loc.receiveLiquid});
+    expect(selector.initialValue, loc.receiveLiquid);
+    expect(find.text(loc.receiveLightning), findsNothing);
+  });
+
+  testWidgets(
+    'Liquid regtest Receive button opens the Liquid route with its wallet',
+    (tester) async {
+      final selected = wallet(Network.liquidRegtest);
+      Object? received;
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) =>
+                Scaffold(body: WalletBottomButtons(wallet: selected)),
+          ),
+          GoRoute(
+            path: '/liquid',
+            name: ReceiveRoute.receiveLiquid.name,
+            builder: (_, state) {
+              received = state.extra;
+              return const Scaffold(body: Text('Liquid route'));
+            },
+          ),
+          GoRoute(
+            path: '/lightning',
+            name: ReceiveRoute.receiveLightning.name,
+            builder: (_, _) =>
+                const Scaffold(body: Text('Wrong Lightning route')),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      await tester.pumpAndSettle();
+      final loc = AppLocalizations.of(
+        tester.element(find.byType(WalletBottomButtons)),
+      );
+      await tester.tap(find.text(loc.walletButtonReceive));
+      await tester.pumpAndSettle();
+      expect(find.text('Liquid route'), findsOneWidget);
+      expect(received, same(selected));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   for (final network in [
     Network.bitcoinMainnet,
     Network.bitcoinTestnet,

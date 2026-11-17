@@ -28,7 +28,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullShapesX, BullShimmerLine, Gap;
+    show
+        BullBorderedTile,
+        BullDropdown,
+        BullPickerItem,
+        BullShapesX,
+        BullShimmerLine,
+        Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
@@ -150,39 +156,17 @@ class ReceiveQRDetails extends StatelessWidget {
               isBitcoin &&
               selectedWallet != null &&
               selectedWallet.isBitcoin)
-            BullBorderedTile(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: DropdownButtonFormField<Wallet>(
-                alignment: Alignment.centerLeft,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
-                ),
-                iconSize: 24,
-                dropdownColor: context.appColors.onSecondary,
-                initialValue: selectedWallet,
-                items: wallets.map((w) {
-                  return DropdownMenuItem(
-                    value: w,
-                    child: Text(
-                      w.displayLabel(context),
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.appColors.secondary,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    context.read<ReceiveBloc>().add(
-                      ReceiveEvent.receiveBitcoinStarted(value),
-                    );
-                  }
-                },
+            BullDropdown<Wallet>(
+              value: selectedWallet,
+              items: [
+                for (final wallet in wallets)
+                  BullPickerItem(
+                    value: wallet,
+                    label: wallet.displayLabel(context),
+                  ),
+              ],
+              onChanged: (wallet) => context.read<ReceiveBloc>().add(
+                ReceiveEvent.receiveBitcoinStarted(wallet),
               ),
             ),
           Gap(gap),

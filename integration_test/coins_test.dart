@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, Err, Ok, Result;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -45,7 +47,9 @@ import 'developer_network.dart';
 // Run via `make integration-test` (auto-aggregated by tools/gen_all_test.dart).
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    requireSuccessfulBullInitialization(await Bull.init());
+  }
 
   final frozenDatasource = locator<SyncFreezesDatasource>();
   final utxoRepository = locator<WalletUtxoRepository>();

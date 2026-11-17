@@ -14,6 +14,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         BullSnackBar,
         BullSupportButton,
+        BullTypographyX,
         Gap;
 
 class AppInitErrorScreen extends StatefulWidget {
@@ -274,7 +275,7 @@ class _ErrorDetailsState extends State<_ErrorDetails> {
             ),
             child: SelectableText(
               widget.error.toString(),
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+              style: context.bullType.caption.copyWith(fontFamily: 'monospace'),
             ),
           ),
         ],

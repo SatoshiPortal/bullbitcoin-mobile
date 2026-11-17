@@ -146,27 +146,16 @@ class _WalletSelector extends StatelessWidget {
         const Gap(8),
         BullDropdown<Wallet>(
           value: selected,
-          hint: BullText(
-            context.loc.swapRescueWalletHint,
-            style: context.font.bodyMedium,
-            color: context.bull.textMuted,
-          ),
-          items: state.wallets
-              .map(
-                (wallet) => DropdownMenuItem<Wallet>(
-                  value: wallet,
-                  child: BullText(
-                    wallet.displayLabel(context),
-                    style: context.font.bodyMedium,
-                  ),
-                ),
-              )
-              .toList(),
-          onChanged: (wallet) {
-            if (wallet != null) {
-              context.read<SwapRescueCubit>().selectWallet(wallet.id);
-            }
-          },
+          hint: context.loc.swapRescueWalletHint,
+          items: [
+            for (final wallet in state.wallets)
+              BullPickerItem(
+                value: wallet,
+                label: wallet.displayLabel(context),
+              ),
+          ],
+          onChanged: (wallet) =>
+              context.read<SwapRescueCubit>().selectWallet(wallet.id),
         ),
       ],
     );
