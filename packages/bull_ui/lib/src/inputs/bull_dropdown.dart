@@ -49,9 +49,10 @@ class BullDropdown<T> extends StatelessWidget {
     final labelColor = !enabled || selected == null
         ? colors.textMuted
         : colors.text;
+    final validate = validator;
     return FormField<T>(
       initialValue: value,
-      validator: validator == null ? null : (_) => validator!(value),
+      validator: validate == null ? null : (_) => validate(value),
       builder: (field) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

@@ -20,9 +20,9 @@ Future<int?> showBullDropdownMenu<T>({
 }) {
   final colors = anchor.bull;
   final shapes = anchor.bullShapes;
-  final box = anchor.findRenderObject()! as RenderBox;
-  final overlay =
-      Navigator.of(anchor).overlay!.context.findRenderObject()! as RenderBox;
+  final box = anchor.findRenderObject();
+  final overlay = Navigator.of(anchor).overlay?.context.findRenderObject();
+  if (box is! RenderBox || overlay is! RenderBox) return Future.value();
   final position = RelativeRect.fromRect(
     Rect.fromPoints(
       box.localToGlobal(Offset(0, box.size.height), ancestor: overlay),
