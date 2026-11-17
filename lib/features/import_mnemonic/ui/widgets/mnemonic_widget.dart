@@ -124,6 +124,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
   bool _languageConfirmed = false;
   bool _needsLanguageChoice = false;
   final _languageNoticeKey = GlobalKey();
+  final _errorKey = GlobalKey();
   late List<TextEditingController> _controllers;
 
   /// The texts last seen per field, so a caret-only notification does not
@@ -189,6 +190,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
     if (words.any((word) => word.isEmpty)) {
       log.warning('Mnemonic submit refused reason=incomplete');
       setState(() => _failure = const MnemonicEntryIncompleteFailure());
+      _showError();
       return;
     }
 
@@ -218,6 +220,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
             selected: _language,
           ),
         );
+        _showError();
         return;
       }
     }
@@ -258,6 +261,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
           _ => MnemonicEntryUnexpectedFailure('${e.runtimeType}'),
         },
       );
+      _showError();
     }
   }
 
@@ -311,6 +315,26 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
       if (noticeContext == null) return;
       Scrollable.ensureVisible(noticeContext, alignment: 0);
     });
+  }
+
+  /// The error sits at the end of the scroll while the submit button is pinned
+  /// under it, so a long phrase would leave it below the fold.
+  void _showError() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final errorContext = _errorKey.currentContext;
+      if (errorContext == null) return;
+      Scrollable.ensureVisible(errorContext, alignment: 1);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant MnemonicWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.externalError != null &&
+        widget.externalError != oldWidget.externalError) {
+      _showError();
+    }
   }
 
   /// The keyboard's language key. Words written in another wordlist belong
@@ -603,6 +627,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                   if (errorMessage != null) ...[
                     const Gap(16),
                     BullText(
+                      key: _errorKey,
                       errorMessage,
                       style: context.font.bodyMedium,
                       color: context.appColors.error,
