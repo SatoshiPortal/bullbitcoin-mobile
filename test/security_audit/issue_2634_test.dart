@@ -20,10 +20,11 @@ void main() {
       ).readAsStringSync();
 
       // A committed catalog entry may already refer to the imported secret.
-      expect(
-        source.indexOf('_secrets.import'),
-        lessThan(source.indexOf('createWallet')),
-      );
+      final persistSeed = source.indexOf('_secrets.import(');
+      final importWallet = source.indexOf('_wallet.importWallet(');
+      expect(persistSeed, greaterThanOrEqualTo(0));
+      expect(importWallet, greaterThanOrEqualTo(0));
+      expect(persistSeed, lessThan(importWallet));
       expect(source, isNot(contains('_secrets.trash')));
     });
 
