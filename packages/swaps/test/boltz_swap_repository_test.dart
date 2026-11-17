@@ -178,6 +178,9 @@ void main() {
     when(() => storage.mutate<void>(any(), any())).thenAnswer(
       (inv) => (inv.positionalArguments[1] as Future<void> Function())(),
     );
+    when(() => storage.mutate<SwapModel>(any(), any())).thenAnswer(
+      (inv) => (inv.positionalArguments[1] as Future<SwapModel> Function())(),
+    );
     when(
       () => boltz.getChainRefundTxSize(
         swapId: any(named: 'swapId'),
@@ -332,6 +335,42 @@ void main() {
       );
 
       verifyNever(() => storage.store(any()));
+    });
+  });
+
+  group('rescue merge', () {
+    test('a rescued swap keeps the claim and status the row recorded', () {
+      final merged = mergeRescuedSwap(
+        chainModel(status: 'completed', receiveTxid: 'claim-txid'),
+        chainModel(status: 'refundable', sendTxid: 'lockup-txid'),
+      ) as ChainSwapModel;
+
+      expect(merged.receiveTxid, 'claim-txid');
+      expect(merged.status, 'completed');
+    });
+
+    test('a rescue fills what the row never recorded', () {
+      final merged = mergeRescuedSwap(
+        chainModel(status: 'pending', sendTxid: null),
+        chainModel(status: 'refundable', sendTxid: 'lockup-txid'),
+      ) as ChainSwapModel;
+
+      expect(merged.sendTxid, 'lockup-txid');
+      expect(merged.status, 'refundable');
+    });
+
+    test('a pending lockup survives the rescue', () {
+      final merged = mergeRescuedSwap(
+        chainModel(
+          status: 'pending',
+          sendTxid: null,
+          pendingLockupTx: 'signed',
+          pendingLockupTxid: 'pend',
+        ),
+        chainModel(status: 'refundable', sendTxid: null),
+      ) as ChainSwapModel;
+
+      expect(merged.pendingLockupTx, 'signed');
     });
   });
 

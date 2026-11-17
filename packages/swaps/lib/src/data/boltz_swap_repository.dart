@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart' show visibleForTesting;
+
 import 'dart:async';
 
 import 'package:swaps/src/util.dart';
@@ -1337,12 +1339,20 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     }
 
     // Same per-swap lock as every other writer, so this store can't land in
-    // the middle of a concurrent fetch-merge-store of the same swap.
-    await _boltz.storage.mutate(model.id, () => _boltz.storage.store(model));
+    // the middle of a concurrent fetch-merge-store of the same swap. An
+    // existing row keeps what it recorded; the rescue only fills the rest.
+    final stored = await _boltz.storage.mutate(model.id, () async {
+      final existing = await _boltz.storage.fetch(model.id);
+      final merged = existing == null
+          ? model
+          : mergeRescuedSwap(existing, model);
+      await _boltz.storage.store(merged);
+      return merged;
+    });
     subscribeToSwaps([id]);
     await reconcileSwaps([id]);
-    swapsLog.fine('SWAP_RESTORE: rescued $id as ${model.runtimeType}');
-    return model.toEntity();
+    swapsLog.fine('SWAP_RESTORE: rescued $id as ${stored.runtimeType}');
+    return stored.toEntity();
   }
 
   void _logSkippedRestores(List<boltz.SkippedRestoreSwap> skipped) {
@@ -2983,3 +2993,42 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     }
   }
 }
+
+/// A rescued swap written over [existing]: what the row already recorded
+/// (txids, addresses, a pending lockup, a settled status) is kept; the rescue
+/// only fills the rest.
+@visibleForTesting
+SwapModel mergeRescuedSwap(SwapModel existing, SwapModel rescued) => switch ((
+  existing,
+  rescued,
+)) {
+  (final ChainSwapModel e, final ChainSwapModel r) => r.copyWith(
+    status: e.receiveTxid != null || e.refundTxid != null ? e.status : r.status,
+    sendTxid: e.sendTxid ?? r.sendTxid,
+    receiveTxid: e.receiveTxid,
+    refundTxid: e.refundTxid,
+    receiveAddress: e.receiveAddress ?? r.receiveAddress,
+    refundAddress: e.refundAddress ?? r.refundAddress,
+    pendingLockupTx: e.pendingLockupTx,
+    pendingLockupTxid: e.pendingLockupTxid,
+    completionTime: e.completionTime,
+  ),
+  (final LnSendSwapModel e, final LnSendSwapModel r) => r.copyWith(
+    status: e.refundTxid != null ? e.status : r.status,
+    sendTxid: e.sendTxid ?? r.sendTxid,
+    refundTxid: e.refundTxid,
+    refundAddress: e.refundAddress ?? r.refundAddress,
+    preimage: e.preimage ?? r.preimage,
+    pendingLockupTx: e.pendingLockupTx,
+    pendingLockupTxid: e.pendingLockupTxid,
+    completionTime: e.completionTime,
+  ),
+  (final LnReceiveSwapModel e, final LnReceiveSwapModel r) => r.copyWith(
+    status: e.receiveTxid != null ? e.status : r.status,
+    receiveTxid: e.receiveTxid,
+    receiveAddress: e.receiveAddress ?? r.receiveAddress,
+    wasDirectPayment: e.wasDirectPayment,
+    completionTime: e.completionTime,
+  ),
+  _ => rescued,
+};
