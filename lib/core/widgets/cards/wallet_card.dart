@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullShapesX, BullText, Gap;
+    show BullFadingLinearProgress, BullShapesX, Gap;
 
 class WalletCard extends StatelessWidget {
   const WalletCard({
@@ -26,6 +26,10 @@ class WalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bodyLarge = context.font.bodyLarge;
+    final label = context.font.labelMedium;
+    final accent = context.appColors.secondary;
+    final muted = context.appColors.onSurfaceVariant;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: InkWell(
@@ -37,7 +41,7 @@ class WalletCard extends StatelessWidget {
           color: context.appColors.background,
           borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: Container(
-            height: 90,
+            constraints: const BoxConstraints(minHeight: 90),
             decoration: BoxDecoration(
               color: context.appColors.background,
               border: Border(left: BorderSide(color: tagColor, width: 4)),
@@ -58,42 +62,9 @@ class WalletCard extends StatelessWidget {
                           crossAxisAlignment: .start,
                           mainAxisAlignment: .center,
                           children: [
-                            Row(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                BullText(
-                                  title,
-                                  style: context.font.bodyLarge,
-                                  color: context.appColors.secondary,
-                                ),
-                                const Gap(4),
-                                CurrencyText(
-                                  balanceSat,
-                                  showFiat: false,
-                                  style: context.font.bodyLarge,
-                                  color: context.appColors.secondary,
-                                ),
-                              ],
-                            ),
+                            _line(title, bodyLarge, accent, false),
                             const Gap(4),
-                            Row(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                BullText(
-                                  description,
-                                  style: context.font.labelMedium,
-                                  color: context.appColors.onSurfaceVariant,
-                                ),
-                                const Gap(4),
-                                CurrencyText(
-                                  balanceSat,
-                                  showFiat: true,
-                                  fiatCurrency: fiatCurrency,
-                                  style: context.font.labelMedium,
-                                  color: context.appColors.onSurfaceVariant,
-                                ),
-                              ],
-                            ),
+                            _line(description, label, muted, true),
                           ],
                         ),
                       ),
@@ -124,4 +95,27 @@ class WalletCard extends StatelessWidget {
       ),
     );
   }
+
+  // A long label gives way to the balance instead of overflowing the card.
+  Widget _line(String text, TextStyle? style, Color color, bool showFiat) =>
+      Row(
+        children: [
+          Expanded(
+            child: Text(
+              text,
+              style: style?.copyWith(color: color),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const Gap(4),
+          CurrencyText(
+            balanceSat,
+            showFiat: showFiat,
+            fiatCurrency: fiatCurrency,
+            style: style,
+            color: color,
+          ),
+        ],
+      );
 }
