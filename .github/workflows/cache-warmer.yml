@@ -98,4 +98,4 @@ jobs:
             .dart_tool/hooks_runner/*/*/hook.dill.d
             .dart_tool/hooks_runner/shared/*/build/*/target/*/release/*.so
             .dart_tool/hooks_runner/shared/*/build/download-*/*.so
-          key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+          key: hooks-${{ hashFiles('.github/actions/flutter-setup/action.yml') }}-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}-${{ github.sha }}
