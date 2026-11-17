@@ -10,13 +10,14 @@ import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_payment_method_l10n.dart';
 import 'package:bb_mobile/features/transactions/presentation/order_swap_status_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDetailsTable, BullDetailsTableItem, BullText, Gap;
+    show BullDetailsTable, BullDetailsTableItem, BullText, Gap, bullDateLocale;
 import 'package:intl/intl.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -27,6 +28,7 @@ class TransactionDetailsTable extends StatelessWidget {
   Widget build(BuildContext context) {
     // Keep the copy confirmation at the top, like the rest of this screen.
     void showCopied() => SnackBarUtils.showCopiedSnackBar(context);
+    final dateTime = DateFormat.yMMMd(bullDateLocale(context)).add_jm();
     final transaction = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );
@@ -209,8 +211,9 @@ class TransactionDetailsTable extends StatelessWidget {
           if (walletTransaction.confirmationTime != null)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelConfirmationTime,
-              displayValue: DateFormat('MMM d, y, h:mm a')
-                  .format(walletTransaction.confirmationTime!),
+              displayValue: dateTime.format(
+                walletTransaction.confirmationTime!,
+              ),
             ),
         ],
         if (orderSwap != null) ...[
@@ -285,7 +288,7 @@ class TransactionDetailsTable extends StatelessWidget {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -353,26 +356,24 @@ class TransactionDetailsTable extends StatelessWidget {
 
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is SellOrder) {
@@ -380,7 +381,7 @@ class TransactionDetailsTable extends StatelessWidget {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -421,33 +422,31 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is FiatPaymentOrder) {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -504,33 +503,31 @@ class TransactionDetailsTable extends StatelessWidget {
                   ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is FundingOrder) {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -557,33 +554,31 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is WithdrawOrder) {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -617,33 +612,31 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is RewardOrder) {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -710,33 +703,31 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is RefundOrder) {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -803,33 +794,31 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else if (order is BalanceAdjustmentOrder) {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order.orderType.value,
+                  displayValue: order.typeLabel(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderNumber,
@@ -863,26 +852,24 @@ class TransactionDetailsTable extends StatelessWidget {
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinStatus,
-                  displayValue: order.payinStatus.value,
+                  displayValue: order.payinStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderStatus,
-                  displayValue: order.orderStatus.value,
+                  displayValue: order.orderStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutStatus,
-                  displayValue: order.payoutStatus.value,
+                  displayValue: order.payoutStatus.toTranslated(context),
                 ),
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelCreatedAt,
-                  displayValue: DateFormat('MMM d, y, h:mm a')
-                      .format(order.createdAt.toLocal()),
+                  displayValue: dateTime.format(order.createdAt.toLocal()),
                 ),
                 if (order.completedAt != null)
                   BullDetailsTableItem(
                     label: context.loc.transactionDetailLabelCompletedAt,
-                    displayValue: DateFormat('MMM d, y, h:mm a')
-                        .format(order.completedAt!.toLocal()),
+                    displayValue: dateTime.format(order.completedAt!.toLocal()),
                   ),
               ];
             } else {
@@ -891,7 +878,7 @@ class TransactionDetailsTable extends StatelessWidget {
               return [
                 BullDetailsTableItem(
                   label: context.loc.transactionDetailLabelOrderType,
-                  displayValue: order?.orderTypeLabel,
+                  displayValue: order?.typeLabel(context),
                 ),
               ];
             }
@@ -1170,14 +1157,12 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelCreatedAt,
-            displayValue: DateFormat('MMM d, y, h:mm a')
-                .format(swap.creationTime),
+            displayValue: dateTime.format(swap.creationTime),
           ),
           if (swap.completionTime != null)
             BullDetailsTableItem(
               label: context.loc.transactionDetailLabelCompletedAt,
-              displayValue: DateFormat('MMM d, y, h:mm a')
-                  .format(swap.completionTime!),
+              displayValue: dateTime.format(swap.completionTime!),
             ),
         ],
         if (payjoin != null) ...[
@@ -1203,8 +1188,7 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
           BullDetailsTableItem(
             label: context.loc.transactionDetailLabelPayjoinCreationTime,
-            displayValue: DateFormat('MMM d, y, h:mm a')
-                .format(payjoin.createdAt),
+            displayValue: dateTime.format(payjoin.createdAt),
           ),
           if (transaction.payjoinFeeContributionSat case final feeContribution?)
             BullDetailsTableItem(

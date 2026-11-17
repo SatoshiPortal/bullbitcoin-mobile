@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
+import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_failure_l10n.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -33,8 +34,8 @@ class DefaultWalletsEditor extends StatelessWidget {
           (!previous.saveSuccess && current.saveSuccess) ||
           (previous.saveError == null && current.saveError != null),
       listener: (context, state) {
-        if (state.saveError != null) {
-          BullSnackBar.show(context, message: state.saveError!);
+        if (state.saveError case final error?) {
+          BullSnackBar.show(context, message: error.toTranslated(context));
         } else if (state.saveSuccess) {
           BullSnackBar.show(
             context,
@@ -87,13 +88,13 @@ class _EditorContent extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    if (state.loadError != null) {
+    if (state.loadError case final error?) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BullText(
-              state.loadError!,
+              error.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),

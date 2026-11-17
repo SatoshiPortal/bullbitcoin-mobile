@@ -15539,5 +15539,57 @@
   "importMnemonicUnsupportedScript": "This wallet type is not supported on the selected Bitcoin network.",
   "@importMnemonicUnsupportedScript": {
     "description": "Shown when the selected Bitcoin network does not support this wallet script type; retrying the scan cannot enable it."
+  },
+  "transactionOrderTypeSellUsdt": "Sell USDT",
+  "@transactionOrderTypeSellUsdt": {
+    "description": "Order type of an exchange order selling USDT, shown in the transaction list and details"
+  },
+  "transactionOrderTypeFiatPayment": "Fiat Payment",
+  "@transactionOrderTypeFiatPayment": {
+    "description": "Order type of an exchange order paying a fiat recipient"
+  },
+  "transactionOrderTypeBalanceAdjustment": "Balance Adjustment",
+  "@transactionOrderTypeBalanceAdjustment": {
+    "description": "Order type of an exchange balance adjustment"
+  },
+  "walletTypeBitcoinNetwork": "Bitcoin network",
+  "@walletTypeBitcoinNetwork": {
+    "description": "Subtitle of a wallet card on the home screen: a Bitcoin wallet"
+  },
+  "walletTypeLiquidAndLightning": "Liquid and Lightning",
+  "@walletTypeLiquidAndLightning": {
+    "description": "Subtitle of a wallet card on the home screen: a Liquid wallet, which also pays Lightning"
+  },
+  "walletTypeWatchOnly": "Watch-Only",
+  "@walletTypeWatchOnly": {
+    "description": "Subtitle of a wallet card on the home screen: a wallet without signing keys"
+  },
+  "walletTypeWatchSigner": "Watch-Signer",
+  "@walletTypeWatchSigner": {
+    "description": "Subtitle of a wallet card on the home screen: a wallet signed by an external signer"
+  },
+  "swapErrorInvalidBitcoinAddress": "Please enter a valid Bitcoin address",
+  "@swapErrorInvalidBitcoinAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Bitcoin"
+  },
+  "swapErrorInvalidLiquidAddress": "Please enter a valid Liquid address",
+  "@swapErrorInvalidLiquidAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Liquid"
+  },
+  "exchangeBitcoinWalletsLoadFailed": "Failed to load default wallets",
+  "@exchangeBitcoinWalletsLoadFailed": {
+    "description": "Error shown when the default Bitcoin wallets of the exchange account cannot be loaded"
+  },
+  "exchangeBitcoinWalletsAddressEmpty": "Address cannot be empty",
+  "@exchangeBitcoinWalletsAddressEmpty": {
+    "description": "Error shown when saving an empty default wallet address"
+  },
+  "exchangeBitcoinWalletsSaveFailed": "Failed to save wallet address",
+  "@exchangeBitcoinWalletsSaveFailed": {
+    "description": "Error shown when a default wallet address cannot be saved"
+  },
+  "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
+  "@exchangeBitcoinWalletsDeleteFailed": {
+    "description": "Error shown when a default wallet address cannot be deleted"
   }
 }

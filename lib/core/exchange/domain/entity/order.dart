@@ -686,13 +686,6 @@ sealed class Order with _$Order {
       orderStatus == OrderStatus.orderExpired;
   bool isPending() => orderStatus == OrderStatus.awaitingConfirmation;
 
-  /// Label for the order type. A [GenericOrder] reports the server-sent string,
-  /// so a type this build doesn't know still reads correctly in the UI.
-  String get orderTypeLabel => switch (this) {
-    final GenericOrder order => order.orderTypeName,
-    _ => orderType.value,
-  };
-
   /// Whether [amountAndCurrencyToDisplay] returns a fiat amount rather than sats.
   bool get displaysFiatAmount => amountAndCurrencyToDisplay().$2 != 'sats';
 

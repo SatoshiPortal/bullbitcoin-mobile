@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +16,7 @@ class SwapExternalAddressInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context
-        .select<TransferBloc, ({String address, String? error})>(
+        .select<TransferBloc, ({String address, SwapFailure? error})>(
           (bloc) => (
             address: bloc.state.externalAddress,
             error: bloc.state.externalAddressError,
@@ -86,11 +88,11 @@ class SwapExternalAddressInput extends StatelessWidget {
             ],
           ),
         ),
-        if (state.error != null)
+        if (state.error case final error?)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: BullText(
-              state.error!,
+              error.toTranslated(context),
               style: context.font.labelSmall,
               color: context.appColors.error,
             ),

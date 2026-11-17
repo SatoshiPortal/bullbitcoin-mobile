@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_card.dart';
 import 'package:bb_mobile/features/sp/public/sp_facade.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/wallet_type_l10n.dart';
 import 'package:bull_ui/bull_ui.dart' show Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,7 +75,7 @@ class WalletCards extends StatelessWidget {
               WalletCard(
                 tagColor: cardDetails(context, w),
                 title: w.displayLabel(context),
-                description: w.walletTypeString,
+                description: w.typeLabel(context),
                 balanceSat: balance.toInt(),
                 isSyncing: syncStatus[w.id] ?? false,
                 fiatCurrency: fiatCurrency,

@@ -4793,5 +4793,18 @@
   "passphraseOptionOffSubtitle": "Mot supplémentaire facultatif (BIP39)",
   "passphraseOptionOnSubtitle": "Saisie ci-dessous, jamais affichée",
   "networkWalletReuseNoRecoveryPhrase": "Ce portefeuille n'a pas de phrase de récupération, il ne peut donc pas être réutilisé ici. Importez une phrase de récupération ou créez un nouveau portefeuille.",
-  "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné."
+  "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné.",
+  "transactionOrderTypeSellUsdt": "Vendre des USDT",
+  "transactionOrderTypeFiatPayment": "Paiement fiat",
+  "transactionOrderTypeBalanceAdjustment": "Ajustement de solde",
+  "walletTypeBitcoinNetwork": "Réseau Bitcoin",
+  "walletTypeLiquidAndLightning": "Liquid et Lightning",
+  "walletTypeWatchOnly": "Lecture seule",
+  "walletTypeWatchSigner": "Signataire externe",
+  "swapErrorInvalidBitcoinAddress": "Veuillez entrer une adresse Bitcoin valide",
+  "swapErrorInvalidLiquidAddress": "Veuillez entrer une adresse Liquid valide",
+  "exchangeBitcoinWalletsLoadFailed": "Impossible de charger les portefeuilles par défaut",
+  "exchangeBitcoinWalletsAddressEmpty": "L'adresse ne peut pas être vide",
+  "exchangeBitcoinWalletsSaveFailed": "Impossible d'enregistrer l'adresse du portefeuille",
+  "exchangeBitcoinWalletsDeleteFailed": "Impossible de supprimer l'adresse du portefeuille"
 }

@@ -401,6 +401,33 @@ void main() {
     },
   );
 
+  test(
+    'an external address before a source wallet is a typed failure',
+    () async {
+      bloc.emit(const TransferState(sendToExternal: true));
+      bloc.add(const TransferEvent.externalAddressChanged('bc1qaddress'));
+      await pumpEventQueue();
+      expect(
+        bloc.state.externalAddressError,
+        isA<SwapSourceWalletMissingFailure>(),
+      );
+    },
+  );
+
+  test('an unreadable external address asks for the payout network', () async {
+    bloc.emit(TransferState(fromWallet: _wallet(), sendToExternal: true));
+    bloc.add(const TransferEvent.externalAddressChanged('not an address'));
+    await pumpEventQueue();
+    expect(
+      bloc.state.externalAddressError,
+      isA<SwapInvalidExternalAddressFailure>().having(
+        (f) => f.expectsBitcoin,
+        'expectsBitcoin',
+        false,
+      ),
+    );
+  });
+
   for (final sameChain in [true, false]) {
     test(
       'accepted ${sameChain ? "same-chain" : "order-swap"} transfer broadcasts through the source wallet facade',
@@ -2368,7 +2395,7 @@ void main() {
     });
 
     group('to an external address', () {
-      TransferState external({String? error}) => crossChain().copyWith(
+      TransferState external({SwapFailure? error}) => crossChain().copyWith(
         sendToExternal: true,
         externalAddress: 'destination',
         externalAddressError: error,
@@ -2404,7 +2431,13 @@ void main() {
         stubDetected(
           const PaymentRequest.liquid(address: 'destination', isTestnet: true),
         );
-        bloc.emit(external(error: 'Please enter a valid Liquid address'));
+        bloc.emit(
+          external(
+            error: const SwapInvalidExternalAddressFailure(
+              expectsBitcoin: false,
+            ),
+          ),
+        );
 
         bloc.add(const TransferEvent.swapCreated('1000'));
         await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
