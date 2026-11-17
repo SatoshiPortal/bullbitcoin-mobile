@@ -125,6 +125,9 @@ abstract class SendState with _$SendState {
     @Default(false) bool payjoinOptedOut,
     @Default('') String amount,
     @Default([]) List<SendRecipientDraft> recipientDrafts,
+    @Default({}) Map<int, Wallet> internalRecipientWallets,
+    @Default({}) Set<int> qrAmountRecipientIds,
+    @Default(false) bool addingInternalRecipient,
     @Default([]) List<int> recipientAmountsSat,
     int? confirmedAmountSat,
     BitcoinUnit? bitcoinUnit,
@@ -233,6 +236,11 @@ abstract class SendState with _$SendState {
     return resolved.length != requiredInputOutpoints.length ||
         !resolved.containsAll(requiredInputOutpoints);
   }
+
+  bool get hasFixedRequestAmount => switch (paymentRequest) {
+    Bip21PaymentRequest(:final amountSat) => (amountSat ?? 0) > 0,
+    _ => false,
+  };
 
   bool get hasMultipleRecipients => recipientDrafts.length > 1;
 
