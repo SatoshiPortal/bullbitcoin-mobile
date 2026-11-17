@@ -1,6 +1,7 @@
 import 'package:swaps/src/data/db/boltz_swaps_database.dart';
 import 'package:swaps/src/data/db/drift_swap_row_store.dart';
 import 'package:swaps/src/data/models/swap_model.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:test/test.dart';
 
@@ -27,6 +28,19 @@ void main() {
   });
 
   tearDown(() => db.close());
+
+  test('a damaged row is skipped; every other swap still loads', () async {
+    await rows.store(chain('AAAAAAAAAAAA'));
+    await rows.store(chain('BBBBBBBBBBBB'));
+    await db.managers.swaps
+        .filter((f) => f.id('BBBBBBBBBBBB'))
+        .update((o) => o(sendWalletId: const Value(null)));
+
+    final all = await rows.fetchAll();
+
+    expect(all.map((s) => s.id), ['AAAAAAAAAAAA']);
+    expect(await rows.fetch('BBBBBBBBBBBB'), isNull);
+  });
 
   test('a txid recorded on two rows is found, never thrown on', () async {
     await rows.store(chain('AAAAAAAAAAAA', refundTxid: 'shared'));

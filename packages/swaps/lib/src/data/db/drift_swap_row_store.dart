@@ -1,3 +1,4 @@
+import 'package:swaps/src/log.dart';
 import 'package:swaps/src/data/db/boltz_swaps_database.dart';
 import 'package:swaps/src/data/models/swap_model.dart';
 import 'package:swaps/src/data/swap_storage.dart';
@@ -36,8 +37,9 @@ class DriftSwapRowStore implements SwapRowStore {
   Stream<SwapModel> watch(String swapId) => _db.managers.swaps
       .filter((f) => f.id(swapId))
       .watchSingleOrNull()
-      .where((row) => row != null)
-      .map((row) => SwapRowMapper.fromSqlite(row!));
+      .map((row) => row == null ? null : SwapRowMapper.fromSqlite(row))
+      .where((model) => model != null)
+      .cast<SwapModel>();
 
   @override
   Future<List<SwapModel>> fetchAll({String? walletId, bool? isTestnet}) async {
@@ -54,7 +56,7 @@ class DriftSwapRowStore implements SwapRowStore {
       }
       return expr;
     }).get();
-    return all.map(SwapRowMapper.fromSqlite).toList();
+    return [for (final row in all) ?SwapRowMapper.fromSqlite(row)];
   }
 
   @override
@@ -67,8 +69,10 @@ class DriftSwapRowStore implements SwapRowStore {
               f.refundTxid.equals(txId),
         )
         .get();
-    if (row.isEmpty) return null;
-    return SwapRowMapper.fromSqlite(row.first);
+    for (final candidate in row) {
+      if (SwapRowMapper.fromSqlite(candidate) case final model?) return model;
+    }
+    return null;
   }
 
   @override
@@ -90,9 +94,21 @@ class SwapRowMapper {
     return swap.status;
   }
 
-  static SwapModel fromSqlite(SwapRow swap) {
+  /// Null for a row missing a field its swap type requires; such a row is
+  /// skipped (and logged) so one damaged row never stops every other swap.
+  static SwapModel? fromSqlite(SwapRow swap) {
+    final model = _fromSqlite(swap);
+    if (model == null) {
+      swapsLog.warning('SWAPS: swap row ${swap.id} is incomplete — skipped');
+    }
+    return model;
+  }
+
+  static SwapModel? _fromSqlite(SwapRow swap) {
     switch (swap.direction) {
       case SwapRowDirection.receive:
+        final (receiveWalletId, invoice) = (swap.receiveWalletId, swap.invoice);
+        if (receiveWalletId == null || invoice == null) return null;
         return SwapModel.lnReceive(
           id: swap.id,
           type: swap.type,
@@ -100,7 +116,7 @@ class SwapRowMapper {
           isTestnet: swap.isTestnet,
           keyIndex: swap.keyIndex,
           creationTime: swap.creationTime,
-          receiveWalletId: swap.receiveWalletId!,
+          receiveWalletId: receiveWalletId,
           receiveAddress: swap.receiveAddress,
           receiveTxid: swap.receiveTxid,
           wasDirectPayment: swap.wasDirectPayment,
@@ -108,11 +124,23 @@ class SwapRowMapper {
           boltzFees: swap.boltzFees,
           lockupFees: swap.lockupFees,
           claimFees: swap.claimFees,
-          invoice: swap.invoice!,
+          invoice: invoice,
           recovered: swap.recovered,
           provider: swap.provider,
         );
       case SwapRowDirection.send:
+        final (sendWalletId, paymentAddress, paymentAmount, invoice) = (
+          swap.sendWalletId,
+          swap.paymentAddress,
+          swap.paymentAmount,
+          swap.invoice,
+        );
+        if (sendWalletId == null ||
+            paymentAddress == null ||
+            paymentAmount == null ||
+            invoice == null) {
+          return null;
+        }
         return SwapModel.lnSend(
           id: swap.id,
           type: swap.type,
@@ -120,11 +148,11 @@ class SwapRowMapper {
           isTestnet: swap.isTestnet,
           keyIndex: swap.keyIndex,
           creationTime: swap.creationTime,
-          sendWalletId: swap.sendWalletId!,
-          paymentAddress: swap.paymentAddress!,
-          paymentAmount: swap.paymentAmount!,
+          sendWalletId: sendWalletId,
+          paymentAddress: paymentAddress,
+          paymentAmount: paymentAmount,
           completionTime: swap.completionTime,
-          invoice: swap.invoice!,
+          invoice: invoice,
           sendTxid: swap.sendTxid,
           pendingLockupTx: swap.pendingLockupTx,
           pendingLockupTxid: swap.pendingLockupTxid,
@@ -139,6 +167,16 @@ class SwapRowMapper {
           provider: swap.provider,
         );
       case SwapRowDirection.onchain:
+        final (sendWalletId, paymentAddress, paymentAmount) = (
+          swap.sendWalletId,
+          swap.paymentAddress,
+          swap.paymentAmount,
+        );
+        if (sendWalletId == null ||
+            paymentAddress == null ||
+            paymentAmount == null) {
+          return null;
+        }
         return SwapModel.chain(
           id: swap.id,
           type: swap.type,
@@ -148,9 +186,9 @@ class SwapRowMapper {
           creationTime: swap.creationTime,
           completionTime: swap.completionTime,
           receiveWalletId: swap.receiveWalletId,
-          sendWalletId: swap.sendWalletId!,
-          paymentAddress: swap.paymentAddress!,
-          paymentAmount: swap.paymentAmount!,
+          sendWalletId: sendWalletId,
+          paymentAddress: paymentAddress,
+          paymentAmount: paymentAmount,
           receiveAddress: swap.receiveAddress,
           receiveTxid: swap.receiveTxid,
           sendTxid: swap.sendTxid,
