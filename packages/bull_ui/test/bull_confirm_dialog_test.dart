@@ -49,6 +49,29 @@ void main() {
       expect(find.text('Delete server?'), findsNothing);
     });
 
+    testWidgets('announces itself as a route named by its title', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await open(tester);
+
+      final title = find.semantics.byPredicate(
+        (node) =>
+            node.label == 'Delete server?' && node.flagsCollection.namesRoute,
+      );
+      expect(title, findsOne);
+      expect(
+        find.semantics.ancestor(
+          of: title,
+          matching: find.semantics.byPredicate(
+            (node) => node.flagsCollection.scopesRoute,
+          ),
+        ),
+        findsAtLeast(1),
+      );
+      semantics.dispose();
+    });
+
     testWidgets('completes with false when cancelled', (tester) async {
       final result = await open(tester);
 
