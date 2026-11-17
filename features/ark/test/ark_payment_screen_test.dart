@@ -72,6 +72,35 @@ void main() {
     },
   );
   testWidgets(
+    'stale Refresh cannot synchronize a replacement or disposed owner',
+    (tester) async {
+      final first = PaymentRig(reconciliation: true);
+      first.cubit.emit(const ArkPaymentUncertain('original'));
+      await tester.pumpWidget(app(page(first)));
+      await frame(tester);
+      final originalRefresh = action(tester, 'Refresh').onPressed;
+
+      first.cubit.emit(const ArkPaymentUncertain('replacement'));
+      await frame(tester);
+      originalRefresh();
+      expect(first.client.calls, isEmpty);
+
+      final replacementRefresh = action(tester, 'Refresh').onPressed;
+      final second = PaymentRig(reconciliation: true);
+      second.cubit.emit(const ArkPaymentUncertain('second-owner'));
+      await tester.pumpWidget(app(page(second)));
+      await frame(tester);
+      replacementRefresh();
+      expect(first.client.calls, isEmpty);
+      expect(second.client.calls, isEmpty);
+
+      final disposedRefresh = action(tester, 'Refresh').onPressed;
+      await tester.pumpWidget(app(const SizedBox.shrink()));
+      disposedRefresh();
+      expect(second.client.calls, isEmpty);
+    },
+  );
+  testWidgets(
     'initial destination and edits never quote; explicit Review captures current locals',
     (tester) async {
       final r = PaymentRig();
