@@ -33,6 +33,7 @@ const arkHostPaths = [
   '/ark/claim-recovery',
   '/ark/board',
   '/ark/exit-progress',
+  '/ark/exit-request',
 ];
 
 /// Root composition of the foreground Ark runtime for an admitted profile.
