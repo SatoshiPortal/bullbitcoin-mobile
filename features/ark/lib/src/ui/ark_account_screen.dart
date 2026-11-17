@@ -6,6 +6,7 @@ import 'package:bull_ui/bull_ui.dart';
 import '../presentation/ark_l10n.dart';
 import '../presentation/ark_cubit.dart';
 import '../presentation/ark_failure_l10n.dart';
+import '../presentation/ark_movement_l10n.dart';
 import 'ark_attention.dart';
 
 enum _AccountAction { send, receive, board, vtxos, exits, info }
@@ -155,6 +156,7 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                     ),
                   ],
                 ),
+                _activity(context, snapshot),
               ],
               const Gap(BullSpacing.md),
               _button(context, l10n.refresh, () => _refresh(owner, account)),
@@ -196,6 +198,56 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  // Observations have no history-completeness evidence, including empty lists.
+  Widget _activity(BuildContext context, ArkSnapshot snapshot) {
+    final l10n = arkLocalizationsOf(context);
+    String text(String? value) =>
+        value == null || value.trim().isEmpty ? l10n.unknown : value;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Gap(BullSpacing.md),
+        BullText(l10n.observedActivity, style: null),
+        if (snapshot.movements.isEmpty)
+          BullInfoBar(message: l10n.activityObservationsUnavailable),
+        for (final movement in snapshot.movements) ...[
+          const Gap(BullSpacing.xs),
+          BullText(movement.kind.toTranslated(context), style: null),
+          BullDetailsTable(
+            items: [
+              BullDetailsTableItem(
+                label: l10n.id,
+                displayValue: text(movement.id),
+              ),
+              BullDetailsTableItem(
+                label: l10n.state,
+                displayValue: movement.status.toTranslated(context),
+              ),
+              BullDetailsTableItem(
+                label: l10n.amount,
+                displayValue: movement.amount?.value.toString() ?? l10n.unknown,
+              ),
+              BullDetailsTableItem(
+                label: l10n.feeInSats,
+                displayValue: movement.fee?.value.toString() ?? l10n.unknown,
+              ),
+              BullDetailsTableItem(
+                label: l10n.observedTimeUtc,
+                displayValue:
+                    movement.createdAt?.toUtc().toIso8601String() ??
+                    l10n.unknown,
+              ),
+              BullDetailsTableItem(
+                label: l10n.transactionId,
+                displayValue: text(movement.transactionId),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 
