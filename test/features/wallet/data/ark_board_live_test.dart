@@ -12,6 +12,7 @@
 /// Phases, each run once and in order:
 /// - setup: create the default regtest wallets and print the address to fund.
 /// - board: enable Ark, prepare and confirm one Board; never repeated.
+/// - confirm: confirm the prepared Board BULL_ARK_LIVE_BOARD_OPERATION once.
 /// - observe: synchronize Ark and print the VTXOs and balance.
 library;
 
@@ -287,6 +288,50 @@ void main() {
         );
         final operation = await facade.confirmBoard(account, review);
         _report('confirm result=$operation');
+        _ok(operation, 'confirm');
+      } else if (phase == 'confirm') {
+        // Confirms an already prepared Board once, as the review screen does.
+        final operationId = environment['BULL_ARK_LIVE_BOARD_OPERATION'];
+        final confirmFile = File('${directory.path}/board-confirm.json');
+        if (operationId == null) throw StateError('operation id required');
+        if (confirmFile.existsSync()) {
+          throw StateError('this Board was already confirmed; reconcile only');
+        }
+        _report(
+          'synchronize=${await facade.synchronize(account, renew: false)}',
+        );
+        final review = _ok(
+          await facade.reviewBoard(account, operationId),
+          'review',
+        );
+        final prepared = review.details;
+        _report(
+          'review operation=${prepared.operationId} '
+          'funding=${prepared.fundingAmount} minerFee=${prepared.minerFee} '
+          'arkFee=${prepared.arkFee} net=${prepared.net} '
+          'feeRate=${prepared.feeRate} txid=${prepared.unsignedTxid} '
+          'expiry=${prepared.expiryHeight}',
+        );
+        final before = await locator<WalletRepository>().getWalletBalances(
+          walletId: source.id,
+        );
+        final sourceAfter =
+            before.confirmedSat - prepared.sourceDebit.value.toInt();
+        _report(
+          'source confirmed=${before.confirmedSat} '
+          'debit=${prepared.sourceDebit} sourceAfterBoard=$sourceAfter',
+        );
+        if (sourceAfter < 10000) {
+          throw StateError('source reserve after Board below 10000 sat');
+        }
+        _writePrivate(confirmFile, jsonEncode({'operationId': operationId}));
+        final operation = await facade.confirmBoard(account, review);
+        _report(
+          'confirm result=${switch (operation) {
+            Ok(:final value) => 'Ok ${value.id} ${value.status}',
+            Err(:final failure) => 'Err ${failure.runtimeType}',
+          }}',
+        );
         _ok(operation, 'confirm');
       } else if (phase == 'observe') {
         final synchronized = await facade.synchronize(account, renew: false);
