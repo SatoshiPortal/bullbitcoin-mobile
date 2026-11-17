@@ -113,5 +113,9 @@
   "movementLightningReceipt": "Réception Lightning",
   "observedTimeUtc": "Heure observée (UTC)",
   "transactionId": "Identifiant de transaction",
-  "share": "Partager"
+  "share": "Partager",
+  "boardDestination": "Compte Ark à alimenter : {account}",
+  "boardFastPolicy": "Politique de frais FAST uniquement. Aucun choix de vitesse.",
+  "boardFeeReview": "Les frais miniers réels et le débit du portefeuille source seront déterminés lors de la future revue du financement.",
+  "boardAmountInvalid": "Saisissez un montant entier positif en sats, dans la limite de l’offre de bitcoins."
 }

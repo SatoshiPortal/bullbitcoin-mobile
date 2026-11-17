@@ -233,5 +233,19 @@
   "transactionId": "Transaction ID",
   "@transactionId": {},
   "share": "Share",
-  "@share": {}
+  "@share": {},
+  "boardDestination": "Board destination: {account}",
+  "@boardDestination": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "boardFastPolicy": "FAST fee policy only. No fee speed selection.",
+  "@boardFastPolicy": {},
+  "boardFeeReview": "The actual miner fee and source debit are determined in the future funding review.",
+  "@boardFeeReview": {},
+  "boardAmountInvalid": "Enter a positive whole amount in sats within the Bitcoin supply limit.",
+  "@boardAmountInvalid": {}
 }
