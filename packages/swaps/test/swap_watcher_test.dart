@@ -103,6 +103,26 @@ void main() {
     verify(() => resolver.resolve(any())).called(1);
   });
 
+  test('a restart while stopped drives nothing', () async {
+    await watcher.stop();
+
+    await watcher.restart();
+
+    verifyNever(() => store.ongoing());
+  });
+
+  test('a restart clears backoffs so the next sweep acts at once', () async {
+    when(() => resolver.resolve(any()))
+        .thenAnswer((_) async => const Err(SwapsUnexpectedFailure('electrum')));
+    final swap = chainSwap(SwapStatus.refundable);
+    when(() => store.ongoing()).thenAnswer((_) async => Ok([swap]));
+    await watcher.processSwap(swap);
+
+    await watcher.restart();
+
+    verify(() => resolver.resolve(any())).called(2);
+  });
+
   test('a refund waiting for its timelock is not retried at once', () async {
     when(() => resolver.resolve(any())).thenAnswer(
       (_) async => const Err(SwapsRefundNotFinalFailure('timelock')),

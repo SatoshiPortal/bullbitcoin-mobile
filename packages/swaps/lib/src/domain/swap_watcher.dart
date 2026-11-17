@@ -96,7 +96,9 @@ class SwapWatcher {
   /// Explicit "look now": clears backoffs (a user-triggered sync is a retry
   /// lever, not an event replay to be suppressed) and re-sweeps.
   Future<void> restart() async {
+    if (_stopped) return;
     _retrySchedule.clear();
+    if (_sweeping) return;
     await _sweep();
   }
 
