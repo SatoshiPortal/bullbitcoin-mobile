@@ -40,6 +40,7 @@ import '../ui/ark_receive_screen.dart';
 import '../ui/ark_vtxos_screen.dart';
 import '../ui/ark_information_screen.dart';
 import '../ui/ark_exits_screen.dart';
+import '../ui/ark_exit_request_screen.dart';
 import '../ui/ark_operation_review_screen.dart';
 import '../ui/ark_snapshot_page.dart';
 import '../ui/ark_unavailable_screen.dart';
@@ -59,6 +60,7 @@ enum _Kind {
   review,
   board,
   progressFee,
+  exitRequest,
 }
 
 const _paths = {
@@ -72,6 +74,7 @@ const _paths = {
   _Kind.review: '/ark/review',
   _Kind.board: '/ark/board',
   _Kind.progressFee: '/ark/exit-progress',
+  _Kind.exitRequest: '/ark/exit-request',
 };
 Object _configuration(ArkAccountConfig c) => (
   c.id,
@@ -198,8 +201,16 @@ final class _Entry {
   final _Kind kind;
   final _Origin origin;
   final ArkQuoteRequest? request;
+  final List<String>? claimIds;
   bool consumed = false;
-  _Entry(this.feature, this.config, this.kind, this.origin, {this.request});
+  _Entry(
+    this.feature,
+    this.config,
+    this.kind,
+    this.origin, {
+    this.request,
+    this.claimIds,
+  });
 }
 
 class _ArkPage extends StatefulWidget {
@@ -396,6 +407,7 @@ class _ArkPageState extends State<_ArkPage> {
     BlocBase<Object?> owner,
     _Kind kind, {
     ArkQuoteRequest? request,
+    List<String>? claimIds,
     ArkSettingsState? publication,
   }) {
     if (!_live(owner)) return;
@@ -422,6 +434,7 @@ class _ArkPageState extends State<_ArkPage> {
       kind,
       origin,
       request: request,
+      claimIds: claimIds == null ? null : List.unmodifiable(claimIds),
     );
     final path = _paths[kind];
     if (path != null) unawaited(context.push(path, extra: entry));
@@ -444,21 +457,28 @@ class _ArkPageState extends State<_ArkPage> {
           }
         },
       ),
+      _Kind.exitRequest => ArkExitRequestScreen(
+        snapshot: snapshot,
+        claimIds: switch (widget.entry) {
+          _Entry(:final claimIds) => claimIds,
+          _ => null,
+        },
+        onReview: (request) => _open(owner, _Kind.review, request: request),
+      ),
       _Kind.info => ArkInformationScreen(
         snapshot: snapshot,
         config: widget.feature._config,
       ),
       _ => ArkExitsScreen(
         snapshot: snapshot,
-        onReviewExit: () => _unavailable(owner),
+        onRefresh: () {
+          if (_live(owner)) unawaited(owner.refresh());
+        },
+        onReviewExit: () => _open(owner, _Kind.exitRequest),
         onReviewProgress: () => _open(owner, _Kind.progressFee),
-        onReviewClaim: (_) => _unavailable(owner),
+        onReviewClaim: (ids) => _open(owner, _Kind.exitRequest, claimIds: ids),
       ),
     };
-  }
-
-  void _unavailable(BlocBase<Object?> owner) {
-    if (_live(owner)) unawaited(context.push('/ark/unavailable'));
   }
 
   @override
@@ -489,7 +509,14 @@ class _ArkPageState extends State<_ArkPage> {
       ),
       ArkOperationCubit() => ArkOperationReviewScreen(
         cubit: owner,
-        onReconcile: () => _open(owner, _Kind.vtxos),
+        onReconcile: () => _open(
+          owner,
+          owner.request is ArkEmergencyExitQuoteRequest ||
+                  owner.request is ArkExitProgressQuoteRequest ||
+                  owner.request is ArkClaimQuoteRequest
+              ? _Kind.exits
+              : _Kind.vtxos,
+        ),
       ),
       ArkCubit() when widget.kind == _Kind.account => ArkAccountScreen(
         cubit: owner,

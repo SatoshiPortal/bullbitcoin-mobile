@@ -7,12 +7,14 @@ import '../presentation/ark_l10n.dart';
 class ArkExitsScreen extends StatefulWidget {
   final ArkSnapshot snapshot;
   final VoidCallback onReviewExit;
+  final VoidCallback? onRefresh;
   final VoidCallback onReviewProgress;
   final ValueChanged<List<String>> onReviewClaim;
   const ArkExitsScreen({
     super.key,
     required this.snapshot,
     required this.onReviewExit,
+    this.onRefresh,
     required this.onReviewProgress,
     required this.onReviewClaim,
   });
@@ -138,6 +140,10 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                     disabled: !_claimable(exit.id),
                   ),
               ],
+              if (widget.onRefresh case final refresh?)
+                _button(context, l10n.refresh, () {
+                  if (mounted && widget.snapshot.account == account) refresh();
+                }, disabled: false),
               _button(
                 context,
                 l10n.exits,

@@ -68,12 +68,29 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
       owner.request is ArkExitProgressQuoteRequest ||
       quote.kind == ArkOperationKind.exitProgress;
 
-  bool _hasReviewFacts(ArkOperationCubit owner, ArkQuote quote) =>
-      !_exitProgress(owner, quote) ||
-      (owner.request is ArkExitProgressQuoteRequest &&
-          quote.kind == ArkOperationKind.exitProgress &&
-          quote.feeRate != null &&
-          quote.confirmedReserveExposure != null);
+  bool _hasReviewFacts(ArkOperationCubit owner, ArkQuote quote) {
+    if (owner.request case ArkEmergencyExitQuoteRequest request) {
+      return quote.kind == ArkOperationKind.emergencyExit &&
+          quote.destination == request.destination &&
+          quote.feeRate == request.feeRate &&
+          quote.maxClaimFee == request.maxClaimFee &&
+          quote.confirmedReserveExposure != null &&
+          quote.selectedIds.toSet().containsAll(request.ids) &&
+          request.ids.toSet().containsAll(quote.selectedIds);
+    }
+    if (owner.request case ArkClaimQuoteRequest request) {
+      return quote.kind == ArkOperationKind.claim &&
+          quote.destination == request.destination &&
+          quote.maxClaimFee == request.maxFee &&
+          quote.selectedIds.toSet().containsAll(request.ids) &&
+          request.ids.toSet().containsAll(quote.selectedIds);
+    }
+    return !_exitProgress(owner, quote) ||
+        (owner.request is ArkExitProgressQuoteRequest &&
+            quote.kind == ArkOperationKind.exitProgress &&
+            quote.feeRate != null &&
+            quote.confirmedReserveExposure != null);
+  }
 
   void _confirm(
     ArkOperationCubit owner,
@@ -147,7 +164,8 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                 if (reviewed.quote.account != account)
                   BullInfoBar(message: l10n.unavailable),
                 if (reviewed.quote.account == account) ...[
-                  if (_exitProgress(owner, reviewed.quote))
+                  if (_exitProgress(owner, reviewed.quote) ||
+                      owner.request is ArkEmergencyExitQuoteRequest)
                     BullInfoBar(
                       message: l10n.exitProgressReviewWarning,
                       tone: BullInfoTone.warning,
@@ -166,7 +184,8 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                             : l10n.feeInSats,
                         displayValue: reviewed.quote.fee.value.toString(),
                       ),
-                      if (_exitProgress(owner, reviewed.quote)) ...[
+                      if (_exitProgress(owner, reviewed.quote) ||
+                          owner.request is ArkEmergencyExitQuoteRequest) ...[
                         BullDetailsTableItem(
                           label: l10n.exitProgressFeeRate,
                           displayValue:
@@ -181,6 +200,11 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                               l10n.unknown,
                         ),
                       ],
+                      if (reviewed.quote.maxClaimFee case final maximum?)
+                        BullDetailsTableItem(
+                          label: l10n.exitMaximumClaimFee,
+                          displayValue: maximum.value.toString(),
+                        ),
                       BullDetailsTableItem(
                         label: l10n.netInSats,
                         displayValue: reviewed.quote.net.value.toString(),

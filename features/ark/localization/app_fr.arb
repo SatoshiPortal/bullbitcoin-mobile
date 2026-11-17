@@ -130,5 +130,7 @@
   "boardMinerFeeInSats": "Frais miniers (sats)",
   "boardArkFeeInSats": "Frais d’entrée Ark (sats)",
   "boardSourceDebitInSats": "Débit du portefeuille source (sats)",
-  "boardValidUntil": "Devis valable jusqu’à (UTC)"
+  "boardValidUntil": "Devis valable jusqu’à (UTC)",
+  "exitMaximumClaimFee": "Frais maximaux de réclamation (sats)",
+  "@exitMaximumClaimFee": {}
 }
