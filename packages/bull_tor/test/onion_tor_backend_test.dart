@@ -148,6 +148,19 @@ void main() {
       expect(waited, [const Duration(seconds: 15)]);
     });
 
+    test('only Snowflake withholds readiness by default', () async {
+      final waited = <Duration>[];
+      final backend = OnionTorBackend(
+        const TorLogger(),
+        wait: (duration) async => waited.add(duration),
+      );
+
+      await backend.holdReadiness(TorTransport.direct);
+      await backend.holdReadiness(TorTransport.snowflake);
+
+      expect(waited, [Duration.zero, const Duration(seconds: 5)]);
+    });
+
     test(
       'stop ends the hold instead of queueing a restart behind it',
       () async {
