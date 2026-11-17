@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_notification_console_text.dart';
@@ -13,7 +12,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullSettingsEntryItem, BullShapesX, Gap;
+    show BullDialog, BullSettingsEntryItem, BullShapesX, Gap, BullSnackBar;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -238,7 +237,7 @@ class _WalletManagementSection extends StatelessWidget {
                               context,
                             ) ??
                             context.loc.oopsSomethingWentWrong;
-                  SnackBarUtils.showSnackBar(context, message);
+                  BullSnackBar.show(context, message: message);
                 },
         ),
         BullSettingsEntryItem(
@@ -264,7 +263,7 @@ class _WalletManagementSection extends StatelessWidget {
                           context,
                         ) ??
                         context.loc.oopsSomethingWentWrong;
-                    SnackBarUtils.showSnackBar(context, message);
+                    BullSnackBar.show(context, message: message);
                     return;
                   }
                   context.go(exitRedirectPath);

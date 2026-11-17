@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
@@ -9,7 +8,8 @@ import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, BullSwitch, BullSnackBar;
 
 /// Payjoin on/off toggle row for the bitcoin receive screen, shown under the
 /// receive address (product decision 2026-07-25 — previously a TopBar chip).
@@ -47,9 +47,9 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
           current.failure is ReceivePayjoinSettingFailure &&
           previous.failure != current.failure,
       listener: (context, state) {
-        SnackBarUtils.showSnackBar(
+        BullSnackBar.show(
           context,
-          state.failure!.toTranslated(context),
+          message: state.failure!.toTranslated(context),
         );
       },
       child: Padding(
