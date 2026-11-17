@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -8,7 +7,8 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support_chat_facade.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInputText, BullShapesX, Gap, BullSnackBar;
 import 'package:go_router/go_router.dart';
 
 class ExchangeSupportLoginScreen extends StatefulWidget {
@@ -39,7 +39,7 @@ class _ExchangeSupportLoginScreenState
           extra: widget.draft,
         );
       case Err(:final failure):
-        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+        BullSnackBar.show(context, message: failure.toTranslated(context));
     }
   }
 

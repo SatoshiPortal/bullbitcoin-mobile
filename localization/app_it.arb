@@ -362,7 +362,6 @@
   "payPayoutMethod": "Metodo di accredito",
   "ledgerVerifyButton": "Verifica l'indirizzo",
   "sendErrorSwapFeesNotLoaded": "Impossibile caricare le commissioni di swap",
-  "walletDetailsCopyButton": "Copia",
   "backupWalletGoogleDrivePrivacyMessage3": "lasciare il telefono ed è ",
   "backupCompletedDescription": "Ora verifichiamo il backup per assicurarci che tutto sia stato fatto correttamente.",
   "sendErrorInsufficientFundsForFees": "Non ci sono abbastanza fondi per coprire l'importo e le commissioni",

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_logger/bull_logger.dart' show log;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -8,10 +7,9 @@ import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_sheet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullIcon, BullIcons, BullTypographyX, Gap;
+    show BullCopyField, BullIcon, BullIcons, Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
@@ -85,13 +83,11 @@ class WalletDetailsScreen extends StatelessWidget {
                   _CopyField(
                     label: context.loc.walletDetailsPubkeyLabel,
                     value: wallet.xpub,
-                    copyLabel: context.loc.walletDetailsCopyButton,
                   ),
                   const SizedBox(height: 18),
                   _CopyField(
                     label: context.loc.walletDetailsDescriptorLabel,
                     value: wallet.externalPublicDescriptor,
-                    copyLabel: context.loc.walletDetailsCopyButton,
                   ),
                   const SizedBox(height: 18),
                   _InfoField(
@@ -171,12 +167,7 @@ class _InfoField extends StatelessWidget {
 class _CopyField extends StatelessWidget {
   final String label;
   final String value;
-  final String copyLabel;
-  const _CopyField({
-    required this.label,
-    required this.value,
-    required this.copyLabel,
-  });
+  const _CopyField({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -190,38 +181,10 @@ class _CopyField extends StatelessWidget {
           ),
         ),
         const Gap(4),
-        Wrap(
-          spacing: 4,
-          runSpacing: 4,
-          children: [
-            BBText(
-              value,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-              ),
-            ),
-
-            InkWell(
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: value));
-                log.info('Copied $label to clipboard');
-              },
-              child: Row(
-                mainAxisSize: .min,
-                children: [
-                  BBText(
-                    copyLabel,
-                    style: context.bullType.label.copyWith(
-                      fontWeight: FontWeight.w400,
-                      color: context.appColors.primary,
-                    ),
-                  ),
-                  const Gap(4),
-                  Icon(Icons.copy, size: 16, color: context.appColors.primary),
-                ],
-              ),
-            ),
-          ],
+        BullCopyField(
+          text: value,
+          copiedMessage: context.loc.copiedToClipboard,
+          copyLabel: context.loc.copyDialogButton,
         ),
       ],
     );

@@ -168,6 +168,7 @@ export 'src/controls/bull_switch.dart';
 // Feedback.
 export 'src/feedback/bull_screen_privacy_gate.dart';
 export 'src/feedback/bull_countdown.dart';
+export 'src/feedback/bull_error_state.dart';
 export 'src/feedback/bull_async_status.dart';
 export 'src/feedback/bull_fading_linear_progress.dart';
 export 'src/feedback/bull_reference_notice.dart';
@@ -210,6 +211,7 @@ export 'src/support/bull_support_scope.dart';
 
 // Overlays.
 export 'src/overlays/bull_bottom_sheet.dart';
+export 'src/overlays/bull_confirm_dialog.dart';
 export 'src/overlays/bull_dialog.dart';
 export 'src/overlays/bull_instructions_sheet.dart';
 export 'src/overlays/bull_picker_sheet.dart';

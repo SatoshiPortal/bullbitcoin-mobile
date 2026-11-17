@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/error_retry.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -21,12 +20,13 @@ class ConfidentialSepaAvailabilityStatus extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: BBErrorRetry(
+      child: BullErrorState(
         message: currentFailure is RecipientsNetworkFailure
             ? '${context.loc.oopsSomethingWentWrong}\n'
                   '${currentFailure.toTranslated(context)}'
             : context.loc.oopsSomethingWentWrong,
         onRetry: onRetry,
+        retryLabel: context.loc.retry,
       ),
     );
   }

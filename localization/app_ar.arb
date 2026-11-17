@@ -1032,10 +1032,6 @@
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
-  "walletDetailsCopyButton": "نسخ",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "backupWalletGoogleDrivePrivacyMessage3": "اترك هاتفك ",
   "@backupWalletGoogleDrivePrivacyMessage3": {
     "description": "Third part of privacy message"

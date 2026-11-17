@@ -8,14 +8,16 @@ import 'package:flutter/services.dart';
 /// A read-only value with a copy button — the kit's take on
 /// `core/widgets/inputs/copy_input.dart`, without its value modal.
 ///
-/// The kit has no localisation, so [copiedMessage] (shown in a [BullSnackBar]
-/// after a copy) comes translated from the caller. The copy button only
-/// appears when there is something to copy.
+/// [copiedMessage] (shown in a [BullSnackBar] after a copy) comes translated
+/// from the caller. The copy button is named by [copyLabel], or Material's
+/// translated "Copy" when null, and only appears when there is something to
+/// copy.
 class BullCopyField extends StatelessWidget {
   const BullCopyField({
     super.key,
     required this.text,
     required this.copiedMessage,
+    this.copyLabel,
     this.clipboardText,
     this.onCopy,
     this.maxLines,
@@ -27,6 +29,10 @@ class BullCopyField extends StatelessWidget {
 
   /// Toast shown once the value is on the clipboard.
   final String copiedMessage;
+
+  /// Accessible name and tooltip of the copy button; Material's translated
+  /// "Copy" when null.
+  final String? copyLabel;
 
   /// What goes to the clipboard when it differs from [text].
   final String? clipboardText;
@@ -68,6 +74,9 @@ class BullCopyField extends StatelessWidget {
             IconButton(
               visualDensity: VisualDensity.compact,
               iconSize: 20,
+              tooltip:
+                  copyLabel ??
+                  MaterialLocalizations.of(context).copyButtonLabel,
               icon: Icon(Icons.copy_sharp, color: colors.secondary),
               onPressed:
                   onCopy ??

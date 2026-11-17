@@ -1,5 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,9 +23,9 @@ class ScreenCaptureProtectionSwitch extends StatelessWidget {
           value,
         );
         if (!value && context.mounted) {
-          SnackBarUtils.showSnackBar(
+          BullSnackBar.show(
             context,
-            context.loc.settingsScreenPrivacyDisabledMessage,
+            message: context.loc.settingsScreenPrivacyDisabledMessage,
           );
         }
       },

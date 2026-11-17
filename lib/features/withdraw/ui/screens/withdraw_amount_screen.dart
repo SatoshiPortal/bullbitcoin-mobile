@@ -5,14 +5,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/withdraw/domain/withdraw_failure.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullErrorState, BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class WithdrawAmountScreen extends StatefulWidget {
@@ -143,26 +143,11 @@ class _LoadFailed extends StatelessWidget {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: .center,
-            children: [
-              BBText(
-                failure.toTranslated(context),
-                textAlign: TextAlign.center,
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.appColors.error,
-                ),
-              ),
-              const Gap(16),
-              BBButton.big(
-                label: context.loc.retry,
-                onPressed: () => context.read<WithdrawBloc>().add(
-                  const WithdrawEvent.started(),
-                ),
-                bgColor: context.appColors.onSurface,
-                textColor: context.appColors.surface,
-              ),
-            ],
+          child: BullErrorState(
+            message: failure.toTranslated(context),
+            retryLabel: context.loc.retry,
+            onRetry: () =>
+                context.read<WithdrawBloc>().add(const WithdrawEvent.started()),
           ),
         ),
       ),

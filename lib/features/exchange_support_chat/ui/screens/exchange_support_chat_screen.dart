@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_me
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
@@ -20,7 +19,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInputText, BullShapesX, Gap, bullDateLocale;
+    show BullInputText, BullShapesX, Gap, BullSnackBar, bullDateLocale;
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
@@ -129,9 +128,9 @@ class _ChatBodyState extends State<_ChatBody> {
                 listener: (context, state) {
                   final failure = state.failure;
                   if (failure != null) {
-                    SnackBarUtils.showSnackBar(
+                    BullSnackBar.show(
                       context,
-                      failure.toTranslated(context),
+                      message: failure.toTranslated(context),
                     );
                   }
                 },
