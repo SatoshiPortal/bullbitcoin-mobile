@@ -1683,6 +1683,30 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     return getSwap(swapId: current.id);
   });
 
+  /// The id of another stored swap that already records [txid], if any.
+  Future<String?> _swapRecordingTxid(
+    String txid, {
+    required String except,
+  }) async {
+    for (final swap in await getAllSwaps()) {
+      if (swap.id == except) continue;
+      final recorded = switch (swap) {
+        LnReceiveSwap(:final receiveTxid) => [receiveTxid],
+        LnSendSwap(:final sendTxid, :final refundTxid) => [
+          sendTxid,
+          refundTxid,
+        ],
+        ChainSwap(:final sendTxid, :final receiveTxid, :final refundTxid) => [
+          sendTxid,
+          receiveTxid,
+          refundTxid,
+        ],
+      };
+      if (recorded.contains(txid)) return swap.id;
+    }
+    return null;
+  }
+
   /// Completes a swap Boltz reported settled once our own evidence agrees: a
   /// send on a preimage that hashes to the invoice's payment hash, a direct
   /// payment on its incoming transaction in the receiving wallet (and on no
@@ -1725,11 +1749,14 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         final txs = await _walletTxs(receiveWalletId);
         final tx = txs.where((tx) => tx.txId == receiveTxid).firstOrNull;
         if (tx == null || !tx.isIncoming) return false;
-        final recordedOn = await _boltz.storage.fetchByTxId(receiveTxid);
-        if (recordedOn != null && recordedOn.id != swap.id) {
+        final recordedOn = await _swapRecordingTxid(
+          receiveTxid,
+          except: swap.id,
+        );
+        if (recordedOn != null) {
           swapsLog.warning(
             'SWAPS: ${swap.id} direct payment $receiveTxid already belongs '
-            'to swap ${recordedOn.id} — ignoring',
+            'to swap $recordedOn — ignoring',
           );
           return false;
         }
@@ -2634,11 +2661,11 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         // A txid already recorded on ANOTHER swap row can never be this
         // swap's settlement — rejects a backend replaying a historical
         // claim/refund of ours as evidence for a different swap.
-        final recordedOn = await _boltz.storage.fetchByTxId(txid);
-        if (recordedOn != null && recordedOn.id != swap.id) {
+        final recordedOn = await _swapRecordingTxid(txid, except: swap.id);
+        if (recordedOn != null) {
           swapsLog.warning(
             'SWAPS: ${swap.id} spender $txid already belongs to swap '
-            '${recordedOn.id} — ignoring',
+            '$recordedOn — ignoring',
           );
           continue;
         }

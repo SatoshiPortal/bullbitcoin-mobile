@@ -66,9 +66,9 @@ class DriftSwapRowStore implements SwapRowStore {
               f.receiveTxid.equals(txId) |
               f.refundTxid.equals(txId),
         )
-        .getSingleOrNull();
-    if (row == null) return null;
-    return SwapRowMapper.fromSqlite(row);
+        .get();
+    if (row.isEmpty) return null;
+    return SwapRowMapper.fromSqlite(row.first);
   }
 
   @override

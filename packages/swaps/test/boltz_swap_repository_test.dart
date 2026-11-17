@@ -189,6 +189,12 @@ void main() {
     when(() => boltz.unsubscribeToSwaps(any())).thenAnswer((_) {});
     when(() => boltz.subscribeToSwaps(any())).thenAnswer((_) {});
     when(() => storage.fetchByTxId(any())).thenAnswer((_) async => null);
+    when(
+      () => storage.fetchAll(
+        walletId: any(named: 'walletId'),
+        isTestnet: any(named: 'isTestnet'),
+      ),
+    ).thenAnswer((_) async => []);
   });
 
   setUpAll(() {
@@ -276,6 +282,37 @@ void main() {
 
       expect(stores.last.status, SwapStatus.completed.name);
     });
+
+    test(
+      'a direct payment already recorded on another swap stays paid',
+      () async {
+        walletTxs['direct-txid'] = const SwapWalletTx(
+          txId: 'direct-txid',
+          isIncoming: true,
+        );
+        final other = SwapModel.lnReceive(
+          id: 'receive-2',
+          type: SwapType.lightningToBitcoin.name,
+          status: 'completed',
+          keyIndex: 1,
+          creationTime: DateTime.now().millisecondsSinceEpoch,
+          receiveWalletId: 'w-btc',
+          invoice: invoice,
+          receiveTxid: 'direct-txid',
+          wasDirectPayment: true,
+        );
+        when(
+          () => storage.fetchAll(
+            walletId: any(named: 'walletId'),
+            isTestnet: any(named: 'isTestnet'),
+          ),
+        ).thenAnswer((_) async => [directReceive(), other]);
+
+        await resolve(directReceive());
+
+        verifyNever(() => storage.store(any()));
+      },
+    );
 
     test('a direct payment the wallet has not seen stays paid', () async {
       await resolve(directReceive());
@@ -1032,18 +1069,25 @@ void main() {
         isIncoming: true,
         spendsTxIds: ['lockup-txid'],
       );
-      when(() => storage.fetchByTxId('historical-claim')).thenAnswer(
-        (_) async => SwapModel.chain(
-          id: 'other-swap',
-          type: SwapType.liquidToBitcoin.name,
-          status: 'completed',
-          keyIndex: 9,
-          creationTime: DateTime(2026, 5).millisecondsSinceEpoch,
-          sendWalletId: 'w-liquid',
-          paymentAddress: 'lq1old',
-          paymentAmount: 50000,
-          receiveTxid: 'historical-claim',
+      when(
+        () => storage.fetchAll(
+          walletId: any(named: 'walletId'),
+          isTestnet: any(named: 'isTestnet'),
         ),
+      ).thenAnswer(
+        (_) async => [
+          SwapModel.chain(
+            id: 'other-swap',
+            type: SwapType.liquidToBitcoin.name,
+            status: 'completed',
+            keyIndex: 9,
+            creationTime: DateTime(2026, 5).millisecondsSinceEpoch,
+            sendWalletId: 'w-liquid',
+            paymentAddress: 'lq1old',
+            paymentAmount: 50000,
+            receiveTxid: 'historical-claim',
+          ),
+        ],
       );
 
       await expectLater(

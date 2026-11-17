@@ -28,6 +28,13 @@ void main() {
 
   tearDown(() => db.close());
 
+  test('a txid recorded on two rows is found, never thrown on', () async {
+    await rows.store(chain('AAAAAAAAAAAA', refundTxid: 'shared'));
+    await rows.store(chain('BBBBBBBBBBBB', refundTxid: 'shared'));
+
+    expect(await rows.fetchByTxId('shared'), isNotNull);
+  });
+
   test('import commits rows and marker atomically and only once', () async {
     await db.runDataMigration('test-import', () async {
       await rows.insertIfAbsent(chain('AAAAAAAAAAAA'));
