@@ -562,6 +562,38 @@ void main() {
       },
     );
 
+    test(
+      'a close failure completed before reopening keeps the host closed',
+      () async {
+        final failure = StateError('board close failed');
+        var opened = 0;
+        final subject = ArkForegroundHost(
+          locator,
+          arkUrl: Uri.parse('http://127.0.0.1:3535'),
+          primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+          initializeNew: true,
+          boardFunding: () {
+            opened++;
+            return (_Binding()..onClose = () async => throw failure).value;
+          },
+          preferences: _Preferences(),
+        );
+        final first =
+            (await subject.current() as Ok<ArkForegroundRuntime, ArkFailure>)
+                .value;
+        subject.invalidate();
+        expect(await first.isCurrent(), false);
+        // Let the retired close fail before anyone waits for it.
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        expect(
+          await subject.current(),
+          isA<Err<ArkForegroundRuntime, ArkFailure>>(),
+        );
+        expect(opened, 1);
+        await expectLater(subject.close(), throwsA(same(failure)));
+      },
+    );
+
     test('a wallet network change makes the runtime stale', () async {
       final result = await openArkForeground(
         locator,
