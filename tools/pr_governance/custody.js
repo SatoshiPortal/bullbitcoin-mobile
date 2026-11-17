@@ -48,7 +48,8 @@ const RULES = [
   {
     id: 'bindings-secrets',
     applies: (path) => inBindings(path) && isDart(path),
-    matches: (text) => /['"]package:secrets[/'"]/.test(text),
+    // A relative path into secrets/lib reaches the same library without naming the package.
+    matches: (text) => /['"](package:secrets[/'"]|[^'"]*\bsecrets\/lib\/)/.test(text),
     why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
   },
   {
