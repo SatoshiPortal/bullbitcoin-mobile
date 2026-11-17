@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' show Point;
 
 import 'package:bull_logger/bull_logger.dart';
@@ -10,6 +9,8 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:material_ui/material_ui.dart';
+
+import 'map_marker_index.dart';
 
 class BullMapController {
   _BullMapViewState? _view;
@@ -25,6 +26,7 @@ class BullMapView extends StatefulWidget {
     required this.onMerchantTap,
     required this.onViewportChanged,
     this.initialCenter,
+    this.onPreparingChanged,
   });
 
   final List<Merchant> merchants;
@@ -34,6 +36,7 @@ class BullMapView extends StatefulWidget {
   final GeoPoint? initialCenter;
 
   final ValueChanged<Merchant> onMerchantTap;
+  final ValueChanged<bool>? onPreparingChanged;
 
   /// Called with what the map shows each time the camera comes to rest.
   final ValueChanged<GeoBounds> onViewportChanged;
@@ -71,9 +74,13 @@ class _BullMapViewState extends State<BullMapView> {
 
   MapLibreMapController? _map;
 
-  /// [BullMapView.merchants] by id, for resolving a tapped pin. Rebuilt only
-  /// when the list itself changes.
-  late Map<int, Merchant> _byId = _index(widget.merchants);
+  MapMarkerIndex? _shownIndex;
+  List<Merchant> _shownMerchants = const [];
+  GeoBounds? _loadedBounds;
+  GeoBounds? _viewport;
+  GeoBounds? _pendingBounds;
+  int _styleRevision = 0;
+  bool _isPreparing = false;
 
   /// The style the merchant layers were added to. A theme change swaps the
   /// style, which drops every runtime layer, so they are added again once the
@@ -98,8 +105,7 @@ class _BullMapViewState extends State<BullMapView> {
       widget.controller._view = this;
     }
     if (!identical(oldWidget.merchants, widget.merchants)) {
-      _byId = _index(widget.merchants);
-      if (_layersReady) unawaited(_updateMerchants());
+      if (_viewport case final bounds? when _layersReady) _queuePins(bounds);
     }
     unawaited(_centerInitially());
   }
@@ -116,7 +122,12 @@ class _BullMapViewState extends State<BullMapView> {
     final styleUrl = _styleUrlFor(context);
     // A theme change swaps the style, dropping every runtime layer: until
     // _onStyleLoaded adds them again, merchant updates must wait.
-    if (_styleUrl != null && _styleUrl != styleUrl) _layersReady = false;
+    if (_styleUrl != null && _styleUrl != styleUrl) {
+      _layersReady = false;
+      _styleRevision++;
+      _loadedBounds = null;
+      _shownIndex = null;
+    }
     _styleUrl = styleUrl;
   }
 
@@ -171,6 +182,8 @@ class _BullMapViewState extends State<BullMapView> {
   Future<void> _onStyleLoaded() async {
     final map = _map;
     if (map == null || !mounted) return;
+    final revision = _styleRevision;
+    bool currentStyle() => mounted && revision == _styleRevision;
     _layersReady = false;
     final colors = context.bull;
     try {
@@ -179,12 +192,13 @@ class _BullMapViewState extends State<BullMapView> {
         GeojsonSourceProperties(
           // Keep Android from parsing the complete dataset through Gson on
           // its UI thread. The JSON update below uses the native parser.
-          data: _featureCollection(const []),
+          data: const {'type': 'FeatureCollection', 'features': <Object>[]},
           cluster: true,
           clusterRadius: 50,
           clusterMaxZoom: 14,
         ),
       );
+      if (!currentStyle()) return;
       await map.addCircleLayer(
         _sourceId,
         _clusterLayerId,
@@ -205,6 +219,7 @@ class _BullMapViewState extends State<BullMapView> {
         filter: const ['has', 'point_count'],
         enableInteraction: false,
       );
+      if (!currentStyle()) return;
       await map.addSymbolLayer(
         _sourceId,
         _clusterCountLayerId,
@@ -219,6 +234,7 @@ class _BullMapViewState extends State<BullMapView> {
         filter: const ['has', 'point_count'],
         enableInteraction: false,
       );
+      if (!currentStyle()) return;
       await map.addCircleLayer(
         _sourceId,
         _merchantLayerId,
@@ -234,12 +250,10 @@ class _BullMapViewState extends State<BullMapView> {
         ],
         enableInteraction: false,
       );
-      if (!mounted) return;
+      if (!currentStyle()) return;
       _layersReady = true;
       // The list needs the first viewport even if the camera never moves.
       unawaited(_onCameraIdle());
-      // Also sends merchants that arrived while the layers were being added.
-      await _updateMerchants();
     } on PlatformException catch (error) {
       log.warning('Merchant map layers not added: ${error.code}');
     }
@@ -268,22 +282,74 @@ class _BullMapViewState extends State<BullMapView> {
       // A degenerate region while the view is still being laid out.
       return;
     }
+    _viewport = bounds;
     widget.onViewportChanged(bounds);
+    if (_layersReady) _queuePins(bounds);
   }
 
-  Future<void> _updateMerchants() async {
-    final map = _map;
-    if (map == null) return;
+  void _queuePins(GeoBounds bounds) {
+    _pendingBounds = bounds;
+    if (!_isPreparing) unawaited(_updatePins());
+  }
+
+  Future<void> _updatePins() async {
+    _isPreparing = true;
+    _notifyPreparation();
     try {
-      final updated = await map.editGeoJsonSource(
-        _sourceId,
-        jsonEncode(_featureCollection(widget.merchants)),
-      );
-      if (!updated) log.warning('Merchant map source not updated');
-    } on PlatformException catch (error) {
-      log.warning('Merchant map source not updated: ${error.code}');
+      while (mounted && _layersReady) {
+        try {
+          final bounds = _pendingBounds;
+          final map = _map;
+          if (bounds == null || map == null) break;
+          _pendingBounds = null;
+          final merchants = widget.merchants;
+          final revision = _styleRevision;
+          final index = await MapMarkerIndex.forMerchants(merchants);
+          if (!mounted) return;
+          if (revision != _styleRevision ||
+              !identical(merchants, widget.merchants)) {
+            continue;
+          }
+          final loaded = _loadedBounds;
+          if (identical(index, _shownIndex) &&
+              loaded != null &&
+              MapMarkerIndex.canReuse(loaded, bounds)) {
+            continue;
+          }
+          final rendered = await index.render(bounds);
+          if (!mounted) return;
+          if (!_layersReady ||
+              revision != _styleRevision ||
+              !identical(merchants, widget.merchants)) {
+            continue;
+          }
+          final pending = _pendingBounds;
+          if (pending != null &&
+              !MapMarkerIndex.covers(rendered.bounds, pending)) {
+            continue;
+          }
+          final updated = await map.editGeoJsonSource(_sourceId, rendered.json);
+          if (!mounted) return;
+          if (updated && revision == _styleRevision) {
+            _shownIndex = index;
+            _shownMerchants = merchants;
+            _loadedBounds = rendered.bounds;
+          } else {
+            log.warning('Merchant map source not updated');
+          }
+        } on PlatformException catch (error) {
+          log.warning('Merchant map source not updated: ${error.code}');
+        }
+      }
+    } finally {
+      _isPreparing = false;
+      _notifyPreparation();
     }
   }
+
+  void _notifyPreparation() => scheduleMicrotask(() {
+    if (mounted) widget.onPreparingChanged?.call(_isPreparing);
+  });
 
   Future<void> _onMapClick(Point<double> point, LatLng _) async {
     final map = _map;
@@ -320,8 +386,8 @@ class _BullMapViewState extends State<BullMapView> {
       }
       final merchantId = properties[_merchantIdProperty];
       if (merchantId is! num) continue;
-      if (_byId[merchantId.toInt()] case final merchant?) {
-        widget.onMerchantTap(merchant);
+      if (_shownIndex?.positions[merchantId.toInt()] case final position?) {
+        widget.onMerchantTap(_shownMerchants[position]);
       }
       return;
     }
@@ -361,10 +427,6 @@ class _BullMapViewState extends State<BullMapView> {
       ? _darkStyleUrl
       : _lightStyleUrl;
 
-  static Map<int, Merchant> _index(List<Merchant> merchants) => {
-    for (final merchant in merchants) merchant.id: merchant,
-  };
-
   static LatLng? _coordinatesOf(Map<Object?, Object?> feature) {
     final geometry = feature['geometry'];
     if (geometry is! Map) return null;
@@ -374,25 +436,6 @@ class _BullMapViewState extends State<BullMapView> {
     if (latitude is! num || longitude is! num) return null;
     return LatLng(latitude.toDouble(), longitude.toDouble());
   }
-
-  static Map<String, Object> _featureCollection(List<Merchant> merchants) => {
-    'type': 'FeatureCollection',
-    'features': [
-      for (final merchant in merchants)
-        {
-          'type': 'Feature',
-          'id': merchant.id,
-          'properties': {_merchantIdProperty: merchant.id},
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [
-              merchant.location.longitude,
-              merchant.location.latitude,
-            ],
-          },
-        },
-    ],
-  };
 
   /// MapLibre style colours are CSS strings; these come from the theme.
   static String _hex(Color color) =>

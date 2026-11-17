@@ -27,6 +27,8 @@ class MapCubit extends Cubit<MapState> {
 
   /// Shows the device copy at once, then brings it up to date.
   Future<void> start() async {
+    if (isClosed || state.isSyncing) return;
+    emit(state.copyWith(isSyncing: true));
     final initialCenter = _initialCenter;
     if (!_didLocate && initialCenter != null) {
       _didLocate = true;
@@ -36,7 +38,7 @@ class MapCubit extends Cubit<MapState> {
       if (isClosed) return;
       _emitMerchants(merchants);
     }
-    await refresh();
+    await _syncMerchants();
   }
 
   Future<void> _locate(GetInitialMapCenterUsecase initialCenter) async {
@@ -51,6 +53,10 @@ class MapCubit extends Cubit<MapState> {
   Future<void> refresh() async {
     if (state.isSyncing || isClosed) return;
     emit(state.copyWith(isSyncing: true));
+    await _syncMerchants();
+  }
+
+  Future<void> _syncMerchants() async {
     final result = await _sync.execute();
     if (isClosed) return;
     switch (result) {
