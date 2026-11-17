@@ -1,7 +1,5 @@
 'use strict';
 
-const { posix } = require('node:path');
-
 // Changes that touch the boundary around users' seeds, and why each is flagged.
 //
 // One policy, two uses: `custody-check.js` fails `make custody-ci-check` on the whole tree, and the
@@ -27,9 +25,19 @@ const inBindings = (path) => /^packages\/(rust_bindings|onion)\//.test(path);
 const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
 
-const packageRoot = (path) => path.split('/').slice(0, 2).join('/') + '/';
-const leavesPackage = (text, path) => [...text.matchAll(/['"]([^'":]*\.dart)['"]/g)].some(([, uri]) =>
-  !posix.normalize(posix.join(posix.dirname(path), uri)).startsWith(packageRoot(path)));
+// A directive line (`import`, `export`, `part`, a conditional alternative) or the URI line of a
+// directive split across lines; code strings and comments are not imports.
+const directiveUris = (text) => {
+  const line = text.trim();
+  if (line.startsWith('//') || !/^(import|export|part|if\s*\(|['"])/.test(line)) return [];
+  return [...line.matchAll(/['"]([^'"]+)['"]/g)].map(([, uri]) => uri);
+};
+// Resolved as Dart resolves it (percent-decoding, absolute paths, file: URIs), against the file.
+const leavesPackage = (text, path) => directiveUris(text).some((uri) => {
+  if (/^(package|dart):/.test(uri)) return false;
+  const root = new URL(`file:///${path.split('/').slice(0, 2).join('/')}/`);
+  return !new URL(uri, `file:///${path}`).href.startsWith(root.href);
+});
 
 const RULES = [
   {
