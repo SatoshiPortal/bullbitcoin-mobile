@@ -30,5 +30,52 @@ void main() {
       expect(find.text('Logo'), findsOneWidget);
       expect(find.text('Import'), findsNothing);
     });
+
+    testWidgets('names its back and close buttons', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullTopBar(title: 'Import', onBack: () {}, onAction: () {}),
+        ),
+      );
+
+      expect(find.byTooltip('Back'), findsOneWidget);
+      expect(find.byTooltip('Close'), findsOneWidget);
+    });
+
+    testWidgets('names a custom trailing action with its tooltip', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullTopBar(
+            title: 'Coins',
+            onAction: () {},
+            actionIcon: BullIcons.tune,
+            actionTooltip: 'Sort & Filter',
+          ),
+        ),
+      );
+
+      expect(find.byTooltip('Sort & Filter'), findsOneWidget);
+    });
+
+    testWidgets('keeps a long title on one ellipsized header line', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      const title = 'A very long localized screen title that cannot fit';
+      await tester.pumpWidget(
+        wrapWithTheme(BullTopBar(title: title, onBack: () {})),
+      );
+
+      final text = tester.widget<Text>(find.text(title));
+      expect(text.maxLines, 1);
+      expect(text.overflow, TextOverflow.ellipsis);
+      expect(
+        tester.getSemantics(find.text(title)),
+        matchesSemantics(label: title, isHeader: true),
+      );
+      semantics.dispose();
+    });
   });
 }
