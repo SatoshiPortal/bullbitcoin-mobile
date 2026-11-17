@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
+import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -119,7 +120,7 @@ void main() {
     build: buildCubit,
     act: (cubit) => cubit.saveWallet(WalletAddressType.bitcoin),
     expect: () => const [
-      DefaultWalletsState(saveError: 'Address cannot be empty'),
+      DefaultWalletsState(saveError: DefaultWalletsEmptyAddressFailure()),
     ],
     verify: (_) {
       verifyNever(

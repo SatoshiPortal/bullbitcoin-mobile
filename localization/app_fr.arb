@@ -4802,5 +4802,9 @@
   "walletTypeWatchOnly": "Lecture seule",
   "walletTypeWatchSigner": "Signataire externe",
   "swapErrorInvalidBitcoinAddress": "Veuillez entrer une adresse Bitcoin valide",
-  "swapErrorInvalidLiquidAddress": "Veuillez entrer une adresse Liquid valide"
+  "swapErrorInvalidLiquidAddress": "Veuillez entrer une adresse Liquid valide",
+  "exchangeBitcoinWalletsLoadFailed": "Impossible de charger les portefeuilles par défaut",
+  "exchangeBitcoinWalletsAddressEmpty": "L'adresse ne peut pas être vide",
+  "exchangeBitcoinWalletsSaveFailed": "Impossible d'enregistrer l'adresse du portefeuille",
+  "exchangeBitcoinWalletsDeleteFailed": "Impossible de supprimer l'adresse du portefeuille"
 }

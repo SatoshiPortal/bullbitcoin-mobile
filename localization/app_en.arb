@@ -15575,5 +15575,21 @@
   "swapErrorInvalidLiquidAddress": "Please enter a valid Liquid address",
   "@swapErrorInvalidLiquidAddress": {
     "description": "Error under the external address field of a transfer that pays out on Liquid"
+  },
+  "exchangeBitcoinWalletsLoadFailed": "Failed to load default wallets",
+  "@exchangeBitcoinWalletsLoadFailed": {
+    "description": "Error shown when the default Bitcoin wallets of the exchange account cannot be loaded"
+  },
+  "exchangeBitcoinWalletsAddressEmpty": "Address cannot be empty",
+  "@exchangeBitcoinWalletsAddressEmpty": {
+    "description": "Error shown when saving an empty default wallet address"
+  },
+  "exchangeBitcoinWalletsSaveFailed": "Failed to save wallet address",
+  "@exchangeBitcoinWalletsSaveFailed": {
+    "description": "Error shown when a default wallet address cannot be saved"
+  },
+  "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
+  "@exchangeBitcoinWalletsDeleteFailed": {
+    "description": "Error shown when a default wallet address cannot be deleted"
   }
 }
