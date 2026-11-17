@@ -619,6 +619,66 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Some older Ark reminders remain unresolved. New VTXO reminders can still be scheduled. Open Ark regularly.'**
   String get reminderMigrationPending;
+
+  /// No description provided for @exitStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown exit state'**
+  String get exitStatusUnknown;
+
+  /// No description provided for @exitStatusNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No exit observed'**
+  String get exitStatusNone;
+
+  /// No description provided for @exitStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit pending'**
+  String get exitStatusPending;
+
+  /// No description provided for @exitStatusClaimable.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit claimable'**
+  String get exitStatusClaimable;
+
+  /// No description provided for @exitStatusSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim submitted'**
+  String get exitStatusSubmitted;
+
+  /// No description provided for @exitStatusClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit claimed'**
+  String get exitStatusClaimed;
+
+  /// No description provided for @exitStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit needs attention'**
+  String get exitStatusFailed;
+
+  /// No description provided for @spendableInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'Spendable (sats)'**
+  String get spendableInSats;
+
+  /// No description provided for @pendingInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending (sats)'**
+  String get pendingInSats;
+
+  /// No description provided for @reserveInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'On-chain fee reserve (sats)'**
+  String get reserveInSats;
 }
 
 class _ArkLocalizationsDelegate

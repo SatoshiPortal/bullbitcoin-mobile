@@ -288,4 +288,34 @@ class ArkLocalizationsEn extends ArkLocalizations {
   @override
   String get reminderMigrationPending =>
       'Some older Ark reminders remain unresolved. New VTXO reminders can still be scheduled. Open Ark regularly.';
+
+  @override
+  String get exitStatusUnknown => 'Unknown exit state';
+
+  @override
+  String get exitStatusNone => 'No exit observed';
+
+  @override
+  String get exitStatusPending => 'Exit pending';
+
+  @override
+  String get exitStatusClaimable => 'Exit claimable';
+
+  @override
+  String get exitStatusSubmitted => 'Claim submitted';
+
+  @override
+  String get exitStatusClaimed => 'Exit claimed';
+
+  @override
+  String get exitStatusFailed => 'Exit needs attention';
+
+  @override
+  String get spendableInSats => 'Spendable (sats)';
+
+  @override
+  String get pendingInSats => 'Pending (sats)';
+
+  @override
+  String get reserveInSats => 'On-chain fee reserve (sats)';
 }
