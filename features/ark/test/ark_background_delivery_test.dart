@@ -5,7 +5,9 @@ import 'dart:io';
 
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart' show ArkStageBudget;
+import 'package:bull_ark/ark_maintenance_setup.dart';
 import 'package:bull_ark/src/data/ark_repository_impl.dart';
+import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:bull_ark/src/data/sqlite_ark_account_registry.dart';
 import 'package:bull_ark/src/data/create_ark_facade.dart';
 import 'package:bull_ark/src/domain/usecases/read_ark_usecase.dart';
@@ -115,6 +117,50 @@ void main() {
   tearDown(() {
     registry.close();
     directory.deleteSync(recursive: true);
+  });
+
+  test('foreground delivers saved claims before keyed renewal', () async {
+    final maintenance = ArkMaintenance(
+      client: client,
+      reminders: Reminders(),
+      accounts: registry,
+      budget: budget,
+    );
+    expect(await maintenance.runForeground(account()), isA<Ok>());
+    expect(client.calls, ['read', 'submit', 'renew']);
+  });
+
+  test('foreground renewal still runs after saved delivery fails', () async {
+    client.submitted = const Err(ArkStorageFailure());
+    final maintenance = ArkMaintenance(
+      client: client,
+      reminders: Reminders(),
+      accounts: registry,
+      budget: budget,
+    );
+    expect(await maintenance.runForeground(account()), isA<Err>());
+    expect(client.calls, ['read', 'submit', 'renew']);
+  });
+
+  test('foreground reports delivery failure when both stages fail', () async {
+    client.submitted = const Err(ArkStorageFailure());
+    client.keyedSyncFails = true;
+    final maintenance = ArkMaintenance(
+      client: client,
+      reminders: Reminders(),
+      accounts: registry,
+      budget: budget,
+    );
+    final result = await maintenance.runForeground(account());
+    expect(
+      result,
+      isA<Err<void, ArkFailure>>().having(
+        (result) => result.failure,
+        'first failure',
+        isA<ArkFeatureStorageFailure>(),
+      ),
+    );
+    expect(client.calls, ['read', 'submit', 'renew']);
   });
 
   test('persisted protected funded-off account delivers original claim before keyed sync failure', () async {
