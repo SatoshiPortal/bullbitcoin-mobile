@@ -14,7 +14,7 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 418d7fbe81baaefe52bf353ed3ee4dd65d054456
+      ref: e8ed5875299694f4d9315835cdedbad09a02c0aa
       path: packages/bull_sdk
   sqlite3: ^3.5.2
   bull_logger:
