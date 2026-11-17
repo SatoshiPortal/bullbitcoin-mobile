@@ -19,11 +19,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  # ^20.1.1, not the ^21 that `flutter create` picked: flutter_rust_bridge
-  # 2.12.0 drove ffigen to emit frb_generated.io.dart, and with ffigen 21 it
-  # produced a function body with no signature (an orphaned
-  # `) => $allocator<WireSyncRust2DartSse>()`), which does not parse. Same pin
-  # as lwk-dart and bull_sdk.
+  # ^23, the first range that resolves with melos (cli_util). With
+  # flutter_rust_bridge 2.12, ffigen 21 emitted an orphaned
+  # `) => $allocator<WireSyncRust2DartSse>()` that did not parse; with 2.13 and
+  # ffigen 23 the same lines are complete `$allocate` helpers.
   ffigen: ^23.0.0
 
 flutter:
