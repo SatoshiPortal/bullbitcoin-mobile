@@ -999,6 +999,23 @@ m.Widget bullShimmerLineUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullErrorState)
+m.Widget bullErrorStateUseCase(m.BuildContext context) {
+  return _frame(
+    context,
+    BullErrorState(
+      message: context.knobs.string(
+        label: 'message',
+        initialValue: 'Could not load your recipients.',
+      ),
+      retryLabel: 'Retry',
+      onRetry: context.knobs.boolean(label: 'enabled', initialValue: true)
+          ? () {}
+          : null,
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Show (tap)', type: BullSnackBar)
 m.Widget bullSnackBarUseCase(m.BuildContext context) {
   final withAction = context.knobs.boolean(

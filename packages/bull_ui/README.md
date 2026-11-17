@@ -64,7 +64,8 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 
 **Feedback** — `BullRefreshIndicator`, `BullShimmerBox`/`BullShimmerLine`,
 `BullSnackBar`, `BullCountdown`, `BullFadingLinearProgress`, `BullLoader`
-(`.large()` on a progress screen, `.small()` inline; its GIF ships in this package's `assets/`).
+(`.large()` on a progress screen, `.small()` inline; its GIF ships in this package's `assets/`),
+`BullErrorState` (`BBErrorRetry`).
 
 **Layout** — `BullScrollableColumn` (`ScrollableColumn`), `BullStackedPage`
 (`StackedPage`), `BullPullableBody` (`BBPullableBody`).
