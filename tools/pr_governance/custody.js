@@ -18,26 +18,13 @@ const FSS_IMPORTERS_ALLOWED = new Set([
 
 const inSecrets = (path) => path.startsWith('packages/secrets/');
 const isDart = (path) => path.endsWith('.dart');
-// The bindings packages must never reach package:secrets (`bindings-secrets` below). That keeps the
+// The bindings packages must never reach package:secrets (`bindings-secrets` below, enforced on resolved
+// libraries by packages/secrets/tool/key_material_gate.dart). That keeps the
 // suppression flutter_rust_bridge writes into every file it generates, for its own runtime's internal
 // members, unable to silence the seal; hand-written files there stay checked.
 const inBindings = (path) => /^packages\/(rust_bindings|onion)\//.test(path);
 const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
-
-// A directive line (`import`, `export`, `part`, a conditional alternative) or the URI line of a
-// directive split across lines; code strings and comments are not imports.
-const directiveUris = (text) => {
-  const line = text.trim();
-  if (line.startsWith('//') || !/^(import|export|part|if\s*\(|['"])/.test(line)) return [];
-  return [...line.matchAll(/['"]([^'"]+)['"]/g)].map(([, uri]) => uri);
-};
-// Resolved as Dart resolves it (percent-decoding, absolute paths, file: URIs), against the file.
-const leavesPackage = (text, path) => directiveUris(text).some((uri) => {
-  if (/^(package|dart):/.test(uri)) return false;
-  const root = new URL(`file:///${path.split('/').slice(0, 2).join('/')}/`);
-  return !new URL(uri, `file:///${path}`).href.startsWith(root.href);
-});
 
 const RULES = [
   {
@@ -62,9 +49,9 @@ const RULES = [
   {
     id: 'bindings-secrets',
     applies: (path) => inBindings(path) && isDart(path),
-    // A relative URI is resolved against the importing file: any path that leaves the package, in
-    // whatever spelling, could reach secrets without naming it, so only package: imports may.
-    matches: (text, path) => /['"]package:secrets[/'"]/.test(text) || leavesPackage(text, path),
+    // Comments the plain spelling on a pull request. `make custody-check` enforces the boundary on
+    // resolved libraries, so relative or encoded spellings and inferred types are caught there.
+    matches: (text) => /['"]package:secrets[/'"]/.test(text),
     why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
   },
   {
@@ -84,7 +71,7 @@ const RULES = [
 const relevant = (path) => RULES.some((rule) => rule.applies(path));
 
 function check(path, line, text) {
-  return RULES.filter((rule) => rule.applies(path) && rule.matches(text, path)).map((rule) => ({ rule: rule.id, path, line, text: text.trim(), why: rule.why }));
+  return RULES.filter((rule) => rule.applies(path) && rule.matches(text)).map((rule) => ({ rule: rule.id, path, line, text: text.trim(), why: rule.why }));
 }
 
 // Added lines of a pull request, from the REST `pulls.listFiles` entries ({ filename, status, patch }).
