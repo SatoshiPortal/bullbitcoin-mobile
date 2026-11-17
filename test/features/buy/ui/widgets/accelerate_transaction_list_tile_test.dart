@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
-import 'package:bb_mobile/features/buy/ui/widgets/buy_cubes_loader.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_ui/bull_ui.dart' show BullLoader;
 import 'package:gif/gif.dart';
 
 void main() {
@@ -31,7 +31,10 @@ void main() {
         );
         await tester.pump();
         expect(find.byType(CircularProgressIndicator), findsNothing);
-        expect(tester.getSize(find.byType(BuyCubesLoader)), const Size(36, 36));
+        expect(
+          tester.getSize(find.byType(BullLoader)),
+          const Size.square(BullLoader.smallSize),
+        );
         expect(find.byType(Gif), reducedMotion ? findsNothing : findsOneWidget);
         expect(
           find.byIcon(Icons.schedule),
