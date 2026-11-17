@@ -433,11 +433,29 @@ void main() {
             );
             addTearDown(bloc.close);
             if (warm) {
+              when(
+                () => receiveWithPayjoin.execute(
+                  walletId: selected.id,
+                  network: BitcoinNetwork.regtest,
+                  address: any(named: 'address'),
+                ),
+              ).thenAnswer(
+                (_) async => const Err(
+                  ReceivePayjoinUnavailableFailure('fixture trust unavailable'),
+                ),
+              );
               final ready = bloc.stream.firstWhere(
                 (s) => s.bitcoinUnit != null && s.payjoinAttemptSettled,
               );
               bloc.add(const ReceiveBitcoinStarted(null));
               await ready;
+              verify(
+                () => receiveWithPayjoin.execute(
+                  walletId: selected.id,
+                  network: BitcoinNetwork.regtest,
+                  address: any(named: 'address'),
+                ),
+              ).called(1);
             }
             final refused = bloc.stream.firstWhere(
               (s) => s.failure is ReceiveUnsupportedNetworkFailure,
@@ -448,6 +466,14 @@ void main() {
                   : const ReceiveLiquidStarted(),
             );
             await refused;
+            verifyNever(
+              () => receiveWithPayjoin.execute(
+                walletId: selected.id,
+                network: BitcoinNetwork.regtest,
+                address: any(named: 'address'),
+              ),
+            );
+            verifyNoMoreInteractions(receiveWithPayjoin);
             expect(bloc.state.revealedAddressGeneration, isNull);
             expect(bloc.state.canConfirmAmount, isFalse);
             for (final event in <ReceiveEvent>[
