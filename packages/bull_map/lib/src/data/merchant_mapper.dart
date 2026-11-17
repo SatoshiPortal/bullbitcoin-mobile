@@ -8,7 +8,9 @@ extension MerchantMapper on MerchantModel {
   Merchant? toDomain() {
     final latitude = lat;
     final longitude = lon;
-    if (isDeleted || latitude == null || longitude == null) return null;
+    if (id <= 0 || isDeleted || latitude == null || longitude == null) {
+      return null;
+    }
     if (!GeoPoint.isValid(latitude: latitude, longitude: longitude)) {
       return null;
     }
