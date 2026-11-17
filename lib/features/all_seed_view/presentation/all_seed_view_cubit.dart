@@ -143,8 +143,17 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
 
   Future<void> deleteSwapMnemonic() async {
     try {
-      await _deleteSwapMasterKeyUsecase.execute();
-      emit(state.copyWith(swapMasterKey: null));
+      switch (await _deleteSwapMasterKeyUsecase.execute()) {
+        case Ok():
+          emit(state.copyWith(swapMasterKey: null));
+        case Err(:final failure):
+          log.warning('deleteSwapMnemonic failed (${failure.runtimeType})');
+          emit(
+            state.copyWith(
+              failure: AllSeedViewDeleteFailure(failure.runtimeType.toString()),
+            ),
+          );
+      }
     } catch (e, st) {
       // Raw reason to logs only; the UI translates the typed failure.
       log.severe(message: 'deleteSwapMnemonic failed', error: e, trace: st);

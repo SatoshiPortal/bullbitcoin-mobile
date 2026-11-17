@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:swaps/src/domain/boltz_swaps.dart';
 import 'package:swaps/src/domain/entities/swap_failure.dart';
@@ -8,5 +9,6 @@ class DeleteSwapMasterKeyUsecase {
 
   const DeleteSwapMasterKeyUsecase(this._boltz);
 
+  @useResult
   Future<Result<void, SwapsFailure>> execute() => _boltz.deleteMasterKey();
 }
