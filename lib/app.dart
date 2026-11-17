@@ -86,6 +86,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     if (locator.isRegistered<PayjoinLifecycle>()) {
       resumePayjoinsOnAppResume(state, locator<PayjoinLifecycle>());
     }
+    if (state == AppLifecycleState.resumed &&
+        locator.isRegistered<ArkForegroundHost>()) {
+      unawaited(locator<ArkForegroundHost>().resume());
+    }
     // iOS lifecycle is `active → inactive → hidden → paused`. The user can
     // force-quit from the app switcher during `inactive` and skip both the
     // `hidden` and `paused` flushes, so flush there too.

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:background_tasks/background_tasks.dart';
+
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
 import 'package:bb_mobile/features/wallet/data/foreground_wallet_sync.dart';
@@ -43,6 +45,7 @@ final class ArkForegroundHost {
   final Uri _esplora;
   final bool _initialize;
   final ArkPreferencesRepository? _preferences;
+  final BackgroundTaskDispatcher? dispatcher;
   final ArkBoardFundingBinding Function() _boardFunding;
   ArkForegroundRuntime? _runtime;
   Future<Result<ArkForegroundRuntime, ArkFailure>>? _pending;
@@ -59,6 +62,7 @@ final class ArkForegroundHost {
     required bool initializeNew,
     required this._boardFunding,
     this._preferences,
+    this.dispatcher,
   }) : _ark = arkUrl,
        _esplora = primaryEsploraUrl,
        _initialize = initializeNew;
@@ -74,6 +78,7 @@ final class ArkForegroundHost {
     required Uri primaryEsploraUrl,
     required bool initializeNew,
     ArkPreferencesRepository? preferences,
+    BackgroundTaskDispatcher? dispatcher,
   }) async {
     final host = ArkForegroundHost(
       locator,
@@ -81,6 +86,7 @@ final class ArkForegroundHost {
       primaryEsploraUrl: primaryEsploraUrl,
       initializeNew: initializeNew,
       preferences: preferences,
+      dispatcher: dispatcher,
       boardFunding: () {
         final factory = WalletArkFundingFactory(
           authority: locator<SqliteArkFundingReservations>(),
@@ -109,6 +115,12 @@ final class ArkForegroundHost {
     );
     if (result case Err(:final failure)) {
       log.warning('Ark custody references unavailable: ${failure.runtimeType}');
+      return;
+    }
+    final dispatcher = this.dispatcher;
+    if (dispatcher != null &&
+        await prepareArkMaintenanceSchedule(_locator, dispatcher)) {
+      await current();
     }
   }
 
@@ -137,6 +149,12 @@ final class ArkForegroundHost {
     _pending = next;
     _pendingGeneration = generation;
     return next;
+  }
+
+  /// Renew when the app returns to the foreground, if a runtime is open.
+  Future<void> resume() async {
+    final runtime = _runtime;
+    if (!_closed && runtime != null) await runtime.maintain();
   }
 
   /// Synchronously retires the current runtime and its mounted pages.
@@ -214,6 +232,7 @@ final class ArkForegroundHost {
       initializeNew: _initialize,
       boardFunding: _boardFunding(),
       preferences: _preferences,
+      dispatcher: dispatcher,
     );
     if (opened case Ok(:final value)) {
       if (_closed || generation != _generation) {

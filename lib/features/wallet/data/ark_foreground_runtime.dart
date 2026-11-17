@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart' as native;
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -12,8 +15,12 @@ import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bull_ark/ark_setup.dart';
+import 'package:bull_ark/ark_foreground_maintenance_setup.dart';
+import 'package:bull_ark/ark_maintenance_setup.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_ark/bull_ark.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
@@ -41,15 +48,18 @@ final class ArkForegroundRuntime {
   final ArkClient _client;
   final Future<void> Function() _closeBoardFunding;
   final _ForegroundPolicy _policy;
+  final ArkForegroundMaintenance _maintenance;
   final _WalletArkSelection _selection;
   final ArkAccountConfig _config;
   Future<void>? _closing;
+  Future<void>? _maintaining;
 
   ArkForegroundRuntime._(
     this.feature,
     this._client,
     this._closeBoardFunding,
     this._policy,
+    this._maintenance,
     this._selection,
     this._config,
   );
@@ -71,6 +81,19 @@ final class ArkForegroundRuntime {
         _policy.active;
   }
 
+  /// Coalesce foreground resume events while a protective pass is in flight.
+  Future<void> maintain() => _maintaining ??= _maintain().whenComplete(() {
+    _maintaining = null;
+  });
+
+  Future<void> _maintain() async {
+    if (!await isCurrent()) return;
+    final result = await _maintenance.run(_config.id);
+    if (result case Err(:final failure)) {
+      log.warning('Ark foreground maintenance failed: ${failure.runtimeType}');
+    }
+  }
+
   /// Synchronously prevents further native stages and invalidates the UI.
   void invalidate() {
     _policy.active = false;
@@ -88,6 +111,12 @@ final class ArkForegroundRuntime {
     } catch (failure, stack) {
       error = failure;
       trace = stack;
+    }
+    try {
+      await _maintenance.close();
+    } catch (failure, stack) {
+      error ??= failure;
+      trace ??= stack;
     }
     try {
       await _closeBoardFunding();
@@ -136,6 +165,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   required bool initializeNew,
   required ArkBoardFundingBinding boardFunding,
   ArkPreferencesRepository? preferences,
+  BackgroundTaskDispatcher? dispatcher,
 }) async {
   try {
     final selection = _WalletArkSelection(
@@ -172,7 +202,29 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
       executionMode: native.ArkExecutionMode.foreground,
       stageBudget: const native.ArkUnlimitedStageBudget(),
     );
+    ArkForegroundMaintenance? maintenance;
     try {
+      final locale =
+          (await locator<SettingsRepository>().fetch()).language?.locale ??
+          const Locale('en');
+      final openedMaintenance = await openArkForegroundMaintenance(
+        path: '${directory.path}/reminders.sqlite',
+        locale: locale,
+        client: client,
+        accounts: registry,
+        initializeNew: initializeNew,
+      );
+      if (openedMaintenance case Err(:final failure)) {
+        throw _SelectionFailure(failure);
+      }
+      maintenance =
+          (openedMaintenance as Ok<ArkForegroundMaintenance, ArkFailure>).value;
+      if (!maintenance.remindersReady) {
+        log.warning('Ark expiry reminders unavailable');
+      }
+      final managedRegistry = dispatcher == null
+          ? registry
+          : _ScheduledArkRegistry(registry, dispatcher);
       final board = boardFunding.bind(client, selection.sourceWalletId);
       final feature = ArkFeature(
         selection,
@@ -182,26 +234,34 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         provisioning: ArkCustodyProvisioner(
           locator<ParentCustodyAdmissionPort>(),
           SecretsArkParentPresence(secrets),
-          registry,
+          managedRegistry,
           ArkDerivationCollision(locator<Bip85Repository>()),
         ),
-        registry: registry,
+        registry: managedRegistry,
         boardFunding: board,
       );
-      return Ok(
-        ArkForegroundRuntime._(
-          feature,
-          client,
-          boardFunding.close,
-          policy,
-          selection,
-          config,
-        ),
+      final runtime = ArkForegroundRuntime._(
+        feature,
+        client,
+        boardFunding.close,
+        policy,
+        maintenance,
+        selection,
+        config,
       );
+      final inventory = await registry.list();
+      if (inventory case Ok(:final value)
+          when value.any((item) => item.id == config.id)) {
+        unawaited(runtime.maintain());
+      }
+      return Ok(runtime);
     } catch (failure, stack) {
       // The binding may hold this client, so its admitted work must drain
       // before the client, even if construction fails. Preserve the failure.
       policy.active = false;
+      try {
+        await maintenance?.close();
+      } catch (_) {}
       try {
         await boardFunding.close();
       } catch (_) {}
@@ -216,6 +276,68 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
     return const Err(ArkFeatureStorageFailure());
   }
 }
+
+/// Reschedule from durable custody inventory; failed reads never cancel work.
+Future<bool> prepareArkMaintenanceSchedule(
+  GetIt locator,
+  BackgroundTaskDispatcher dispatcher, {
+  BackgroundTaskSchedulerPort? scheduler,
+}) async {
+  final registry = _referenceOwnerFor(locator).registry;
+  if (registry == null) return false;
+  final scheduled = await scheduleArkMaintenance(
+    accounts: registry,
+    dispatcher: dispatcher,
+    scheduler: scheduler,
+  );
+  if (scheduled case Err(:final failure)) {
+    log.warning('Ark maintenance scheduling failed: ${failure.runtimeType}');
+  }
+  return switch (await registry.list()) {
+    Ok(:final value) => value.isNotEmpty,
+    Err() => false,
+  };
+}
+
+/// Publication is durable before scheduling; failure never erases the account.
+final class _ScheduledArkRegistry implements ArkAccountRegistryRepository {
+  final ArkAccountRegistryRepository _delegate;
+  final BackgroundTaskDispatcher _dispatcher;
+  final BackgroundTaskSchedulerPort? scheduler;
+  const _ScheduledArkRegistry(
+    this._delegate,
+    this._dispatcher, {
+    this.scheduler,
+  });
+
+  @override
+  Future<Result<List<ArkAccountConfig>, ArkFailure>> list() => _delegate.list();
+
+  @override
+  Future<Result<void, ArkFailure>> publish(ArkAccountConfig config) async {
+    final result = await _delegate.publish(config);
+    if (result is Ok) {
+      final scheduled = await scheduleArkMaintenance(
+        accounts: _delegate,
+        dispatcher: _dispatcher,
+        scheduler: scheduler,
+      );
+      if (scheduled case Err(:final failure)) {
+        log.warning(
+          'Ark maintenance scheduling failed: ${failure.runtimeType}',
+        );
+      }
+    }
+    return result;
+  }
+}
+
+@visibleForTesting
+ArkAccountRegistryRepository scheduledArkRegistryForTesting(
+  ArkAccountRegistryRepository registry,
+  BackgroundTaskDispatcher dispatcher,
+  BackgroundTaskSchedulerPort scheduler,
+) => _ScheduledArkRegistry(registry, dispatcher, scheduler: scheduler);
 
 final class _SelectionFailure implements Exception {
   final ArkFailure failure;
