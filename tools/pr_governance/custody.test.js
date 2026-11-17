@@ -34,11 +34,14 @@ test('the bindings packages may not reach package:secrets, in Dart or in their p
   assert.deepEqual(rules(reviewFiles([file('packages/onion/lib/custom.dart', [line])])), ['bindings-secrets']);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/pubspec.yaml', ['+  secrets:'])])), ['bindings-secrets-dependency']);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/a.dart', ['+  f(secrets: x);'])])), []);
-  for (const uri of ['../../../../secrets/lib/secrets.dart', '../../../../secrets/./lib/secrets.dart', '../../../../bull_tor/lib/tor.dart']) {
+  for (const uri of ['../../../../secrets/lib/secrets.dart', '../../../../secrets/./lib/secrets.dart', '%2e%2e/%2e%2e/%2e%2e/%2e%2e/secrets/lib/secrets.dart', '/packages/secrets/lib/secrets.dart', 'file:///home/x/packages/secrets/lib/secrets.dart', '../../../../bull_tor/lib/tor.dart']) {
     assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/src/rust/custom.dart', [`+import '${uri}';`])])), ['bindings-secrets'], uri);
   }
   assert.deepEqual(rules(reviewFiles([file('packages/onion/lib/src/rust/api/client.dart', ["+    '../../../../../secrets/lib/secrets.dart';"])])), ['bindings-secrets']);
   assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/src/rust/third_party/bbqr/join.dart', ["+import '../../frb_generated.dart';"])])), []);
+  for (const line of ["+const fixture = '../../../../fixtures/sample.dart';", "+// see ../../../../secrets/lib/secrets.dart"]) {
+    assert.deepEqual(rules(reviewFiles([file('packages/rust_bindings/lib/src/a.dart', [line])])), [], line);
+  }
   assert.deepEqual(rules(reviewFiles([file('packages/sync/lib/x.dart', [line])])), []);
 });
 
