@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, BullShapesX, Gap;
 
 class BuyDestinationInputFields extends StatefulWidget {
   const BuyDestinationInputFields({super.key});
@@ -57,70 +58,33 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
       children: [
         Text(context.loc.buySelectWallet, style: context.font.bodyMedium),
         const Gap(4.0),
-        SizedBox(
-          height: 56,
-          child: Material(
-            elevation: 4,
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-            child: Center(
-              child: DropdownButtonFormField<String>(
-                alignment: Alignment.centerLeft,
-                // The default wallet labels carry a network suffix, which is
-                // wide enough to overflow the field on narrow screens.
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.onSurface,
-                ),
-                initialValue: selectedWallet?.id,
-                items: [
-                  ...wallets.map((w) {
-                    // Default wallets carry a network suffix here so the user
-                    // can tell the two apart; externally added wallets keep
-                    // their custom name untouched.
-                    final label = w.isDefault
-                        ? '${w.displayLabel(context)} '
-                              '(${buyPayoutMethodLabel(context, isLiquid: w.network.isLiquid)})'
-                        : w.displayLabel(context);
-                    return DropdownMenuItem(
-                      value: w.id,
-                      child: Text(
-                        label,
-                        maxLines: 1,
-                        overflow: .ellipsis,
-                        style: context.font.headlineSmall?.copyWith(
-                          color: context.appColors.secondary,
-                        ),
-                      ),
-                    );
-                  }),
-                  DropdownMenuItem(
-                    child: Text(
-                      !isStarted ? '' : externalBitcoinWalletLabel,
-                      maxLines: 1,
-                      overflow: .ellipsis,
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.appColors.secondary,
-                      ),
-                    ),
-                  ),
-                ],
-                onChanged: (value) {
-                  final selectedWallet = wallets
-                      .where((w) => w.id == value)
-                      .firstOrNull;
-                  context.read<BuyBloc>().add(
-                    BuyEvent.selectedWalletChanged(selectedWallet),
-                  );
-                },
+        BullDropdown<String?>(
+          value: selectedWallet?.id,
+          items: [
+            // Default wallets carry a network suffix here so the user can tell
+            // the two apart; externally added wallets keep their custom name
+            // untouched.
+            for (final w in wallets)
+              BullPickerItem<String?>(
+                value: w.id,
+                label: w.isDefault
+                    ? '${w.displayLabel(context)} '
+                          '(${buyPayoutMethodLabel(context, isLiquid: w.network.isLiquid)})'
+                    : w.displayLabel(context),
               ),
+            BullPickerItem<String?>(
+              value: null,
+              label: !isStarted ? '' : externalBitcoinWalletLabel,
             ),
-          ),
+          ],
+          onChanged: (value) {
+            final selectedWallet = wallets
+                .where((w) => w.id == value)
+                .firstOrNull;
+            context.read<BuyBloc>().add(
+              BuyEvent.selectedWalletChanged(selectedWallet),
+            );
+          },
         ),
         // If no wallet is selected and all data has been loaded, no wallet may
         // have been available for some reason, so let the user enter a

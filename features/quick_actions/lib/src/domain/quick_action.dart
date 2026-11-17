@@ -42,6 +42,13 @@ final class QuickActionsLayout {
     QuickAction.history,
   ];
 
+  /// The Home row on iOS, where the exchange stays hidden.
+  static const iosDefaults = [
+    QuickAction.settings,
+    QuickAction.history,
+    QuickAction.transfer,
+  ];
+
   static const int maximumCells = 4;
   static const int maximumHomeActions = 3;
 
@@ -64,6 +71,7 @@ final class QuickActionsLayout {
   factory QuickActionsLayout.resolve({
     required Set<QuickAction> available,
     QuickActionSelection? selection,
+    List<QuickAction> defaults = QuickActionsLayout.defaults,
   }) {
     final requested = selection?.actions ?? defaults;
     final selected = <QuickAction>[];

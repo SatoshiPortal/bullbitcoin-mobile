@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, BullShapesX, BullShimmerLine, Gap;
 import 'package:intl/intl.dart';
 
 class BuyAmountInputFields extends StatefulWidget {
@@ -205,48 +206,18 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
         const Gap(16.0),
         Text(context.loc.buyPaymentMethod, style: context.font.bodyMedium),
         const Gap(4.0),
-        SizedBox(
-          height: 56,
-          child: Material(
-            elevation: 4,
-            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-            child: Center(
-              child: DropdownButtonFormField<String>(
-                initialValue: currency?.code,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                dropdownColor: context.appColors.surface,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.appColors.onSurface,
-                ),
-                items: balances.keys
-                    .map(
-                      (currencyCode) => DropdownMenuItem<String>(
-                        value: currencyCode,
-                        child: Text(
-                          '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
-                          style: context.font.headlineSmall?.copyWith(
-                            color: context.appColors.secondary,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    context.read<BuyBloc>().add(
-                      BuyEvent.currencyInputChanged(value),
-                    );
-                  }
-                },
+        BullDropdown<String>(
+          value: currency?.code,
+          items: [
+            for (final currencyCode in balances.keys)
+              BullPickerItem(
+                value: currencyCode,
+                label:
+                    '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
               ),
-            ),
-          ),
+          ],
+          onChanged: (value) =>
+              context.read<BuyBloc>().add(BuyEvent.currencyInputChanged(value)),
         ),
       ],
     );

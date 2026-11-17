@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bull_ui/bull_ui.dart' show BullPickerChip, BullPickerItem;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,27 +16,24 @@ class TestnetModeSwitch extends StatelessWidget {
         settings.isDevModeEnabled != true) {
       return const SizedBox.shrink();
     }
-    return DropdownButton<Environment>(
+    return BullPickerChip<Environment>(
       value: settings.environment,
       items: [
-        DropdownMenuItem(
+        BullPickerItem(
           value: Environment.mainnet,
-          child: Text(context.loc.electrumMainnet),
+          label: context.loc.electrumMainnet,
         ),
-        DropdownMenuItem(
+        BullPickerItem(
           value: Environment.testnet,
-          child: Text(context.loc.electrumTestnet),
+          label: context.loc.electrumTestnet,
         ),
-        DropdownMenuItem(
+        BullPickerItem(
           value: Environment.regtest,
-          child: Text(context.loc.electrumRegtest),
+          label: context.loc.electrumRegtest,
         ),
       ],
-      onChanged: (environment) {
-        if (environment != null) {
-          context.read<SettingsCubit>().selectNetwork(environment);
-        }
-      },
+      onChanged: (environment) =>
+          context.read<SettingsCubit>().selectNetwork(environment),
     );
   }
 }

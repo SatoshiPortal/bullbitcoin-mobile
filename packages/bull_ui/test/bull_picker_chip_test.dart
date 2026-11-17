@@ -1,5 +1,7 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'test_app.dart';
 
@@ -31,6 +33,21 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(picked, 'b');
+    });
+
+    testWidgets('reads in primary with a chevron', (tester) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          BullPickerChip<String>(
+            value: 'a',
+            onChanged: (_) {},
+            items: const [BullPickerItem(value: 'a', label: 'Apple')],
+          ),
+        ),
+      );
+      final label = tester.widget<Text>(find.text('Apple'));
+      expect(label.style?.color, testBullTheme.primary);
+      expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
     });
   });
 

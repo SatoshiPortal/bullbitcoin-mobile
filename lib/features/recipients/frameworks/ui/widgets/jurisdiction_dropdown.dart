@@ -1,5 +1,4 @@
-import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -26,48 +25,29 @@ class JurisdictionsDropdown extends StatelessWidget {
         .map((type) => type.jurisdictionCode)
         .toSet();
 
-    return Material(
-      elevation: 4,
-      shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
-      color: context.appColors.surface,
-      borderRadius: BorderRadius.circular(context.bullShapes.input),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: DropdownButton<String?>(
-          isExpanded: true,
-          alignment: Alignment.centerLeft,
-          underline: const SizedBox.shrink(),
-          borderRadius: BorderRadius.circular(context.bullShapes.input),
-          dropdownColor: context.appColors.surface,
-          icon: Icon(
-            Icons.keyboard_arrow_down,
-            color: context.appColors.onSurface,
+    return BullDropdown<String?>(
+      value: selectedJurisdiction,
+      onChanged: onChanged,
+      items: [
+        if (includeAllOption && jurisdictions.length > 1)
+          BullPickerItem<String?>(
+            value: null,
+            label: context.loc.recipientsJurisdictionAll,
           ),
-          value: selectedJurisdiction,
-          onChanged: onChanged,
-          items: [
-            if (includeAllOption && jurisdictions.length > 1)
-              DropdownMenuItem<String?>(
-                value: null,
-                child: Text(context.loc.recipientsJurisdictionAll),
-              ),
-            ...jurisdictions.map((jurisdiction) {
-              return DropdownMenuItem<String?>(
-                value: jurisdiction,
-                child: Text(switch (jurisdiction) {
-                  'CA' => context.loc.recipientsJurisdictionCanada,
-                  'EU' => context.loc.recipientsJurisdictionEurope,
-                  'MX' => context.loc.recipientsJurisdictionMexico,
-                  'CR' => context.loc.recipientsJurisdictionCostaRica,
-                  'AR' => context.loc.recipientsJurisdictionArgentina,
-                  'CO' => context.loc.recipientsJurisdictionColombia,
-                  _ => jurisdiction,
-                }),
-              );
-            }),
-          ],
-        ),
-      ),
+        for (final jurisdiction in jurisdictions)
+          BullPickerItem<String?>(
+            value: jurisdiction,
+            label: switch (jurisdiction) {
+              'CA' => context.loc.recipientsJurisdictionCanada,
+              'EU' => context.loc.recipientsJurisdictionEurope,
+              'MX' => context.loc.recipientsJurisdictionMexico,
+              'CR' => context.loc.recipientsJurisdictionCostaRica,
+              'AR' => context.loc.recipientsJurisdictionArgentina,
+              'CO' => context.loc.recipientsJurisdictionColombia,
+              _ => jurisdiction,
+            },
+          ),
+      ],
     );
   }
 }

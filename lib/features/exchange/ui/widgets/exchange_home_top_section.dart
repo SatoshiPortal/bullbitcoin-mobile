@@ -6,12 +6,19 @@ import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullQuickActionBar, Gap;
 
 class ExchangeHomeTopSection extends StatelessWidget {
   const ExchangeHomeTopSection({required this.onAction, super.key});
 
   final void Function(ExchangeHomeAction) onAction;
+
+  /// Height of the dark balance area.
+  static const double _balanceAreaHeight = 264 + 78;
+
+  /// How far the actions card hangs below the dark area: half of it straddles
+  /// the bottom edge.
+  static const double _actionsOverhang = BullQuickActionBar.height / 2;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +41,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 264 + 78 + 46,
+      height: _balanceAreaHeight + _actionsOverhang,
       child: Stack(
         children: [
           Column(
@@ -42,7 +49,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
             children: [
               Container(
                 color: context.appColors.secondaryFixed,
-                height: 264 + 78,
+                height: _balanceAreaHeight,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [

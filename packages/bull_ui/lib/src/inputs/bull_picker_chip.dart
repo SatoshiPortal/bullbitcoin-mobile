@@ -1,22 +1,15 @@
+import 'package:bull_ui/src/inputs/bull_dropdown_menu.dart';
+import 'package:bull_ui/src/inputs/bull_picker_item.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// One choice of a [BullPickerMenu] or [BullPickerChip].
-class BullPickerItem<T> {
-  const BullPickerItem({required this.value, required this.label});
-
-  /// The value reported to `onChanged`.
-  final T value;
-
-  /// The text shown in the menu, and in a chip once selected.
-  final String label;
-}
-
-/// Opens a menu of [items] when [child] is tapped, the selected one in bold.
+/// Opens the Bull menu ([showBullDropdownMenu]) of [items] under [child] when
+/// it is tapped, the selected one tinted and in bold.
 ///
 /// The menu of every inline picker (language, currency), whatever [child]
-/// looks like; [BullPickerChip] is the bordered default.
+/// looks like; [BullPickerChip] is the text-and-chevron default.
 class BullPickerMenu<T> extends StatelessWidget {
   const BullPickerMenu({
     super.key,
@@ -44,37 +37,33 @@ class BullPickerMenu<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.bodyMedium;
-    return PopupMenuButton<T>(
-      initialValue: value,
-      tooltip: tooltip,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.5,
+    final button = Material(
+      type: MaterialType.transparency,
+      child: Builder(
+        builder: (anchor) => InkWell(
+          borderRadius: BorderRadius.circular(context.bullShapes.input),
+          onTap: () => _open(anchor),
+          child: child,
+        ),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(context.bullShapes.card),
-      ),
-      itemBuilder: (context) => [
-        for (final item in items)
-          PopupMenuItem<T>(
-            value: item.value,
-            child: Text(
-              item.label,
-              style: textStyle?.copyWith(
-                fontWeight: item.value == value
-                    ? FontWeight.w600
-                    : FontWeight.w400,
-              ),
-            ),
-          ),
-      ],
-      onSelected: onChanged,
-      child: child,
     );
+    if (tooltip case final message?) {
+      return Tooltip(message: message, child: button);
+    }
+    return button;
+  }
+
+  Future<void> _open(BuildContext anchor) async {
+    final index = await showBullDropdownMenu<T>(
+      anchor: anchor,
+      items: items,
+      value: value,
+    );
+    if (index != null) onChanged(items[index].value);
   }
 }
 
-/// A borderless chip that shows the selected choice and opens a
+/// The selected choice as [BullTheme.primary] text with a chevron, opening a
 /// [BullPickerMenu]: the inline picker of a settings row, flush with its
 /// trailing edge.
 class BullPickerChip<T> extends StatelessWidget {
@@ -105,7 +94,9 @@ class BullPickerChip<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final textStyle = Theme.of(context).textTheme.bodyMedium;
+    final textStyle = context.bullText.bodyMedium?.copyWith(
+      color: colors.primary,
+    );
     final selected = items.where((item) => item.value == value).firstOrNull;
     return BullPickerMenu<T>(
       items: items,
@@ -113,13 +104,17 @@ class BullPickerChip<T> extends StatelessWidget {
       onChanged: onChanged,
       tooltip: tooltip,
       child: Padding(
-        padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+        padding: const EdgeInsets.only(
+          left: BullSpacing.md,
+          top: BullSpacing.xs,
+          bottom: BullSpacing.xs,
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon case final glyph?) ...[
-              Icon(glyph, size: 18, color: colors.onSurface),
-              const SizedBox(width: 8),
+              Icon(glyph, size: 18, color: colors.primary),
+              const SizedBox(width: BullSpacing.xs),
             ],
             ConstrainedBox(
               constraints: BoxConstraints(
@@ -129,11 +124,11 @@ class BullPickerChip<T> extends StatelessWidget {
                 selected?.label ?? '',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: textStyle?.copyWith(color: colors.onSurface),
+                style: textStyle,
               ),
             ),
-            const SizedBox(width: 4),
-            Icon(Icons.arrow_drop_down, color: colors.onSurface),
+            const SizedBox(width: BullSpacing.xxs),
+            Icon(Icons.keyboard_arrow_down, size: 20, color: colors.primary),
           ],
         ),
       ),

@@ -47,6 +47,9 @@ class SettingsLocator {
       () => createQuickActionsCubit(
         storage: SettingsQuickActionsStorage(),
         warning: log.warning,
+        defaults: Platform.isIOS
+            ? QuickActionsLayout.iosDefaults
+            : QuickActionsLayout.defaults,
         exchangeVisible: WatchQuickActionsVisibilityUsecase(
           exchange: locator<ExchangeFacade>(),
           settings: locator<SettingsRepository>(),
