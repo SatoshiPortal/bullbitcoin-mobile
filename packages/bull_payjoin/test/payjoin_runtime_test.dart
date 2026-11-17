@@ -151,11 +151,13 @@ void main() {
     bool offline = false,
     PayjoinWalletPort? wallet,
     PayjoinRegtestProfile? profile,
+    RegtestHostProfile? host,
     PayjoinLegacyDataPort? legacy,
     Future<bool> Function()? isCurrent,
   }) {
     return openPayjoin(
       regtestProfile: profile,
+      regtestHostProfile: host,
       isCurrent: isCurrent,
       codec: const TestPayjoinCodec(),
       databasePath: '${directory.path}/payjoin.sqlite',
@@ -243,6 +245,92 @@ void main() {
       }
     } finally {
       await lifecycle.dispose();
+    }
+  });
+
+  test('without usable fixture trust coin selection works and Payjoin is typed unavailable', () async {
+    final production = File('${directory.path}/payjoin.sqlite');
+    final legacy = _CountingLegacy();
+    final runtime = switch (await open(
+      host: fixture.profile.hostProfile,
+      legacy: legacy,
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    final resumed = await runtime.resume();
+    expect(resumed, isA<Err<void, PayjoinFailure>>());
+    expect(
+      (resumed as Err<void, PayjoinFailure>).failure,
+      isA<PayjoinUnavailableFailure>(),
+    );
+    final empty = await runtime.payjoin.sessions.inputReservations();
+    expect(
+      (empty as Ok<List<PayjoinInputReservation>, PayjoinFailure>).value,
+      isEmpty,
+    );
+    final result = await runtime.payjoin.receiver.start(
+      StartPayjoinReceiver(
+        walletId: 'wallet',
+        network: BitcoinNetwork.regtest,
+        address: 'bcrt1fixture',
+      ),
+    );
+    expect(
+      (result as Err<PayjoinReceiverSession, PayjoinFailure>).failure,
+      isA<PayjoinUnavailableFailure>(),
+    );
+    expect(
+      (await runtime.payjoin.diagnostics.relayHealth()
+              as Err<PayjoinRelayHealth, PayjoinFailure>)
+          .failure,
+      isA<PayjoinUnavailableFailure>(),
+    );
+    await runtime.dispose();
+    expect(legacy.reads, 0);
+    expect(await production.exists(), isFalse);
+    final database = PayjoinDatabase.open(
+      '${directory.path}/payjoin-regtest.sqlite',
+    );
+    // Existing public synthetic PSBT: one input whose txid is 0x11 repeated.
+    const psbt =
+        'cHNidP8BAFICAAAAARERERERERERERERERERERERERERERERERERERERERERAAAAAAD9////'
+        'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
+        'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+    await LocalPayjoinDatasource(db: database).storeSender(
+      PayjoinSenderModel(
+        uri: 'bitcoin:bcrt1fixture?pj=https://localhost:8040/session',
+        isTestnet: true,
+        sender: '[]',
+        walletId: 'regtest-wallet',
+        originalPsbt: psbt,
+        originalTxId: 'original',
+        amountSat: 10000,
+        createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        expireAfterSec: 3600,
+      ),
+    );
+    await database.close();
+    final reopened = switch (await open(
+      host: fixture.profile.hostProfile,
+      legacy: legacy,
+    )) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    try {
+      final held = await reopened.payjoin.sessions.inputReservations();
+      final reservations =
+          (held as Ok<List<PayjoinInputReservation>, PayjoinFailure>).value;
+      expect(reservations, hasLength(1));
+      expect(reservations.single.network, BitcoinNetwork.regtest);
+      expect(reservations.single.outpoint, (txId: '11' * 32, vout: 0));
+      expect(
+        await reopened.payjoin.sessions.reservedOutpoints(),
+        isA<Ok<Set<Outpoint>, PayjoinFailure>>(),
+      );
+    } finally {
+      await reopened.dispose();
     }
   });
 
