@@ -59,6 +59,23 @@ void main() {
     await subject.close();
   });
 
+  test('closing during a failed cache read does not start a sync', () async {
+    final cache = Completer<Result<List<Merchant>, BullMapFailure>>();
+    var syncCalls = 0;
+    final subject = MapCubit(
+      LoadCachedMerchantsUsecase(() => cache.future),
+      SyncMerchantsUsecase(() async {
+        syncCalls++;
+        return const Ok([]);
+      }),
+    );
+    final starting = subject.start();
+    await subject.close();
+    cache.complete(const Err(BullMapUnexpectedFailure()));
+    await starting;
+    expect(syncCalls, 0);
+  });
+
   test('shows cached merchants, then the synced ones', () async {
     repository.cachedResult = Ok([_merchant(1, 'Old')]);
     repository.syncResult = Ok([_merchant(1, 'Old'), _merchant(2, 'New')]);
