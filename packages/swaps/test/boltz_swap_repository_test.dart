@@ -624,6 +624,53 @@ void main() {
     });
 
     test(
+      'a lockup not on the server yet makes no script-path attempt',
+      () async {
+        when(
+          () => boltz.getChainClaimTxSize(
+            swapId: any(named: 'swapId'),
+            claimAddress: any(named: 'claimAddress'),
+            isCooperative: any(named: 'isCooperative'),
+            electrum: any(named: 'electrum'),
+          ),
+        ).thenAnswer((_) async => 200);
+        when(
+          () => boltz.claimLbtcToBtcChainSwap(
+            swapId: any(named: 'swapId'),
+            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+            absoluteFees: any(named: 'absoluteFees'),
+            tryCooperate: any(named: 'tryCooperate'),
+            electrum: any(named: 'electrum'),
+          ),
+        ).thenThrow(Exception('No Bitcoin UTXO detected for this script'));
+        when(
+          () => boltz.checkLockupOutspends(
+            swapId: any(named: 'swapId'),
+            swapType: any(named: 'swapType'),
+            network: any(named: 'network'),
+            swapDirection: any(named: 'swapDirection'),
+            isClaim: any(named: 'isClaim'),
+          ),
+        ).thenAnswer((_) async => []);
+
+        await expectLater(
+          repo(fastest: 1).claim(chainSwap(status: 'claimable')),
+          throwsA(isA<SwapsException>()),
+        );
+
+        verifyNever(
+          () => boltz.claimLbtcToBtcChainSwap(
+            swapId: any(named: 'swapId'),
+            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+            absoluteFees: any(named: 'absoluteFees'),
+            tryCooperate: false,
+            electrum: any(named: 'electrum'),
+          ),
+        );
+      },
+    );
+
+    test(
       'falls back to the stored fee when the claim cannot be sized',
       () async {
         when(

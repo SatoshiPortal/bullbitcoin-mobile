@@ -2191,6 +2191,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
                 electrum: connection,
               );
             } catch (e) {
+              if (_isLockupNotVisible(e)) rethrow;
               swapsLog.severe(
                 'SWAPS: coop claim failed for ${swap.id} '
                 '(${_errorMessage(e)}); trying script path',
@@ -2225,6 +2226,11 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         },
       );
     } catch (e) {
+      if (_isLockupNotVisible(e)) {
+        swapsLog.fine(
+          'SWAPS: claim for ${swap.id} found no lockup on the electrum server',
+        );
+      }
       // The script-path-only (zero-Boltz) retry must not fall back to the
       // outspend recovery or re-subscribe over the Boltz websocket, both of
       // which contact the Boltz API. Surface the failure.
@@ -2719,6 +2725,12 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   // skips outspend recovery and retries later; an unmatched server failure
   // just skips the extra server walk. Typed error codes from bull_sdk are
   // the eventual fix.
+  bool _isLockupNotVisible(Object error) {
+    final message = _errorMessage(error).toLowerCase();
+    return message.contains('not yet visible to the chain client') ||
+        message.contains('no bitcoin utxo detected');
+  }
+
   bool _isNonFinalError(Object error) {
     final message = _errorMessage(error).toLowerCase();
     return message.contains('non-final') ||
