@@ -96,26 +96,36 @@ class WalletCard extends StatelessWidget {
     );
   }
 
-  // A long label gives way to the balance instead of overflowing the card.
+  // A long label gives way to the balance, and a balance too wide for the
+  // card scales down rather than overflowing it.
   Widget _line(String text, TextStyle? style, Color color, bool showFiat) =>
-      Row(
-        children: [
-          Expanded(
-            child: Text(
-              text,
-              style: style?.copyWith(color: color),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+      LayoutBuilder(
+        builder: (context, constraints) => Row(
+          children: [
+            Expanded(
+              child: Text(
+                text,
+                style: style?.copyWith(color: color),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          const Gap(4),
-          CurrencyText(
-            balanceSat,
-            showFiat: showFiat,
-            fiatCurrency: fiatCurrency,
-            style: style,
-            color: color,
-          ),
-        ],
+            const Gap(4),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.7),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: CurrencyText(
+                  balanceSat,
+                  showFiat: showFiat,
+                  fiatCurrency: fiatCurrency,
+                  style: style,
+                  color: color,
+                ),
+              ),
+            ),
+          ],
+        ),
       );
 }
