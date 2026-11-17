@@ -22,7 +22,13 @@ class CustomServerInput {
   final String url;
   final bool enableSsl;
 
-  CustomServerInput({required this.url, required this.enableSsl});
+  final bool validateDomain;
+
+  CustomServerInput({
+    required this.url,
+    required this.enableSsl,
+    required this.validateDomain,
+  });
 }
 
 bool isOnionCustomServerInput(String input) {
@@ -59,6 +65,7 @@ class _AddCustomServerBottomSheetState
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   bool _enableSsl = true;
+  bool _validateDomain = false;
   bool _sslAutoDetected = false;
   bool _isOnion = false;
 
@@ -99,12 +106,18 @@ class _AddCustomServerBottomSheetState
   }
 
   void _submit() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       // Unfocus to close keyboard before popping (optional, just looks nicer)
       FocusScope.of(context).unfocus();
 
+      final enableSsl =
+          context.read<ElectrumSettingsBloc>().state.isLiquid || _enableSsl;
       Navigator.of(context).pop(
-        CustomServerInput(url: _controller.text.trim(), enableSsl: _enableSsl),
+        CustomServerInput(
+          url: _controller.text.trim(),
+          enableSsl: enableSsl,
+          validateDomain: enableSsl && _validateDomain,
+        ),
       );
     }
   }
@@ -135,7 +148,7 @@ class _AddCustomServerBottomSheetState
           padding: EdgeInsets.only(bottom: bottomInset),
           child: Form(
             key: _formKey,
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Column(
                 crossAxisAlignment: .start,
@@ -262,6 +275,19 @@ class _AddCustomServerBottomSheetState
                                 },
                         ),
                       ],
+                    ),
+                    const Gap(8),
+                  ],
+                  if (isLiquid || _enableSsl) ...[
+                    SwitchListTile.adaptive(
+                      title: Text(
+                        context.loc.electrumValidateDomain,
+                        style: context.font.bodyMedium,
+                      ),
+                      contentPadding: EdgeInsets.zero,
+                      value: _validateDomain,
+                      onChanged: (value) =>
+                          setState(() => _validateDomain = value),
                     ),
                     const Gap(8),
                   ],

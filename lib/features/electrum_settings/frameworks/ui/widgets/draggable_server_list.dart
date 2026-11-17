@@ -126,6 +126,7 @@ class DraggableServerList extends StatelessWidget {
                 ElectrumCustomServerAdded(
                   url: result.url,
                   enableSsl: result.enableSsl,
+                  validateDomain: result.validateDomain,
                 ),
               );
             }

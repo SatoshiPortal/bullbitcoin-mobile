@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_server_dto.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/electrum_settings_dto.dart';
-import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/add_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/requests/load_electrum_server_data_request.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/delete_custom_server_request.dart';
 import 'package:bb_mobile/core/electrum/application/dtos/responses/load_electrum_server_data_response.dart';

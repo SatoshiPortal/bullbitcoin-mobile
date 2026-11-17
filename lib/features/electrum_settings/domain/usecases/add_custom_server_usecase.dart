@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/application/dtos/requests/add_custom_server_request.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/add_custom_server_request.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entities/electrum_settings.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_failure.dart';
@@ -57,9 +57,6 @@ class AddCustomServerUsecase {
         return const Err(ElectrumServerAlreadyExistsFailure());
       }
 
-      // Probe with the user's own validateDomain setting: accepting a
-      // certificate the sync would refuse saves a server that can never be
-      // used, and the failure only surfaces later as a broken sync.
       final ElectrumSettings electrumSettings;
       switch (await _electrumSettingsRepository.fetchByNetwork(
         server.network,
@@ -103,7 +100,7 @@ class AddCustomServerUsecase {
         final protocolStatus = await _serverStatusPort.checkElectrum(
           url: server.url,
           network: server.network,
-          validateDomain: electrumSettings.validateDomain,
+          validateDomain: request.validateDomain,
           timeout: effectiveTimeout,
           retry: electrumSettings.retry,
           proxyEndpoint: route?.endpoint,
@@ -115,8 +112,10 @@ class AddCustomServerUsecase {
         await route?.close();
       }
 
-      // Both checks passed — persist the server.
-      final saveResult = await _electrumServerRepository.save(server);
+      final saveResult = await _electrumServerRepository.saveCustom(
+        server,
+        validateDomain: request.validateDomain,
+      );
       return saveResult.map((_) => ElectrumServerStatus.online);
     } on OnionServerWithoutTorException {
       log.warning('Electrum custom server probe unavailable category=tor');

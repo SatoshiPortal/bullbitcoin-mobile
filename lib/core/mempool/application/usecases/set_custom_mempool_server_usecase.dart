@@ -45,6 +45,7 @@ class SetCustomMempoolServerUsecase {
       url: request.url,
       network: network,
       enableSsl: request.enableSsl,
+      validateDomain: request.validateDomain,
     )) {
       case Ok(:final value):
         server = value;
@@ -75,6 +76,7 @@ class SetCustomMempoolServerUsecase {
         url: request.url,
         network: network,
         enableSsl: request.enableSsl,
+        validateDomain: request.validateDomain,
       );
       if (validation case Err(:final failure)) {
         return Err(failure);

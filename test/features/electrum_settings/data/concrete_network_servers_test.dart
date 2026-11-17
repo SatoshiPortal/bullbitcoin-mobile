@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/electrum_settings/data/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/features/electrum_settings/data/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/features/electrum_settings/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/electrum_server.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -90,6 +91,57 @@ void main() {
       expect(servers.single.network, ElectrumServerNetwork.liquidRegtest);
     }, (failure) => fail('Unexpected ${failure.runtimeType}'));
   });
+
+  test('stores validation on the selected Electrum network', () async {
+    const network = ElectrumServerNetwork.bitcoinMainnet;
+    final server = ElectrumServer.createCustom(
+      host: 'electrum.example.com',
+      port: 50002,
+      network: network,
+      priority: 0,
+    );
+    final mainnet = database.managers.electrumSettings.filter(
+      (row) => row.network(network),
+    );
+    final testnet = database.managers.electrumSettings.filter(
+      (row) => row.network(ElectrumServerNetwork.bitcoinTestnet),
+    );
+
+    for (final validateDomain in [false, true]) {
+      expect(
+        await repository.saveCustom(server, validateDomain: validateDomain),
+        isA<Ok>(),
+      );
+      expect((await mainnet.getSingle()).validateDomain, validateDomain);
+      expect((await testnet.getSingle()).validateDomain, isTrue);
+      expect(
+        await datasource.fetchByUrl(server.url, network: network),
+        isNotNull,
+      );
+    }
+  });
+
+  test(
+    'rolls back the custom server if its settings cannot be saved',
+    () async {
+      const network = ElectrumServerNetwork.bitcoinMainnet;
+      final server = ElectrumServer.createCustom(
+        host: 'electrum.example.com',
+        port: 50002,
+        network: network,
+        priority: 0,
+      );
+      await database.managers.electrumSettings
+          .filter((row) => row.network(network))
+          .delete();
+
+      expect(
+        await repository.saveCustom(server, validateDomain: true),
+        isA<Err>(),
+      );
+      expect(await datasource.fetchByUrl(server.url, network: network), isNull);
+    },
+  );
 
   test('primitive mapping never aliases regtest or signet to testnet', () {
     expect(

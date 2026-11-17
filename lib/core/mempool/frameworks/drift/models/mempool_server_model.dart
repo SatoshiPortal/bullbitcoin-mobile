@@ -8,6 +8,7 @@ class MempoolServerModel {
   final bool isLiquid;
   final bool isCustom;
   final bool enableSsl;
+  final bool validateDomain;
 
   MempoolServerModel({
     required this.url,
@@ -15,6 +16,7 @@ class MempoolServerModel {
     required this.isLiquid,
     required this.isCustom,
     this.enableSsl = true,
+    this.validateDomain = true,
   });
 
   factory MempoolServerModel.fromSqlite(MempoolServerRow row) {
@@ -24,6 +26,7 @@ class MempoolServerModel {
       isLiquid: row.isLiquid,
       isCustom: row.isCustom,
       enableSsl: row.enableSsl,
+      validateDomain: row.validateDomain,
     );
   }
 
@@ -34,6 +37,7 @@ class MempoolServerModel {
       isLiquid: isLiquid,
       isCustom: isCustom,
       enableSsl: enableSsl,
+      validateDomain: validateDomain,
     );
   }
 
@@ -44,6 +48,7 @@ class MempoolServerModel {
       isLiquid: entity.isLiquid,
       isCustom: entity.isCustom,
       enableSsl: entity.enableSsl,
+      validateDomain: entity.validateDomain,
     );
   }
 
@@ -58,6 +63,7 @@ class MempoolServerModel {
       network: network,
       isCustom: isCustom,
       enableSsl: enableSsl,
+      validateDomain: validateDomain,
     );
   }
 
@@ -70,7 +76,8 @@ class MempoolServerModel {
           isTestnet == other.isTestnet &&
           isLiquid == other.isLiquid &&
           isCustom == other.isCustom &&
-          enableSsl == other.enableSsl;
+          enableSsl == other.enableSsl &&
+          validateDomain == other.validateDomain;
 
   @override
   int get hashCode =>
@@ -78,9 +85,10 @@ class MempoolServerModel {
       isTestnet.hashCode ^
       isLiquid.hashCode ^
       isCustom.hashCode ^
-      enableSsl.hashCode;
+      enableSsl.hashCode ^
+      validateDomain.hashCode;
 
   @override
   String toString() =>
-      'MempoolServerModel(url: $url, isTestnet: $isTestnet, isLiquid: $isLiquid, isCustom: $isCustom, enableSsl: $enableSsl)';
+      'MempoolServerModel(url: $url, isTestnet: $isTestnet, isLiquid: $isLiquid, isCustom: $isCustom, enableSsl: $enableSsl, validateDomain: $validateDomain)';
 }

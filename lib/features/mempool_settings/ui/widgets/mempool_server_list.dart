@@ -69,6 +69,7 @@ class MempoolServerList extends StatelessWidget {
                   context,
                   customServer.url,
                   customServer.enableSsl,
+                  customServer.validateDomain,
                 ),
               ),
             ],
@@ -103,11 +104,13 @@ class MempoolServerList extends StatelessWidget {
     BuildContext context,
     String currentUrl,
     bool enableSsl,
+    bool validateDomain,
   ) {
     SetCustomServerBottomSheet.show(
       context,
       initialUrl: currentUrl,
       initialEnableSsl: enableSsl,
+      initialValidateDomain: validateDomain,
     );
   }
 

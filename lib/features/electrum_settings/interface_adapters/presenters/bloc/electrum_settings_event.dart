@@ -14,7 +14,13 @@ class ElectrumCustomServerAdded extends ElectrumSettingsEvent {
   final String url;
   final bool enableSsl;
 
-  const ElectrumCustomServerAdded({required this.url, this.enableSsl = true});
+  final bool validateDomain;
+
+  const ElectrumCustomServerAdded({
+    required this.url,
+    this.enableSsl = true,
+    this.validateDomain = false,
+  });
 }
 
 class ElectrumCustomServersPrioritized extends ElectrumSettingsEvent {

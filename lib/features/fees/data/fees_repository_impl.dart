@@ -40,10 +40,12 @@ class FeesRepositoryImpl implements FeesRepository {
       }
     }
     if (network.isBitcoin) {
+      final server = await _resolveBitcoinMempoolServer(
+        isTestnet: network.requireHistoricalTestnet(),
+      );
       final fees = await _feesDatasource.fetchBitcoinNetworkFees(
-        baseUrl: await _resolveBitcoinMempoolUrl(
-          isTestnet: network.requireHistoricalTestnet(),
-        ),
+        baseUrl: server.baseUrl,
+        validateDomain: server.validateDomain,
       );
       return MempoolFeesMapper.toFeeOptions(fees);
     }
@@ -60,7 +62,9 @@ class FeesRepositoryImpl implements FeesRepository {
     );
   }
 
-  Future<String> _resolveBitcoinMempoolUrl({required bool isTestnet}) async {
+  Future<({String baseUrl, bool validateDomain})> _resolveBitcoinMempoolServer({
+    required bool isTestnet,
+  }) async {
     final network = MempoolServerNetwork.fromEnvironment(
       isTestnet: isTestnet,
       isLiquid: false,
@@ -73,7 +77,10 @@ class FeesRepositoryImpl implements FeesRepository {
       Err() => throw MempoolFeesException('Failed to fetch mempool settings'),
     };
     if (!settings.useForFeeEstimation) {
-      return _bbMempoolUrl(isTestnet: isTestnet);
+      return (
+        baseUrl: _bbMempoolUrl(isTestnet: isTestnet),
+        validateDomain: true,
+      );
     }
 
     final customResult = await _mempoolServerRepository.fetchCustomServer(
@@ -85,7 +92,12 @@ class FeesRepositoryImpl implements FeesRepository {
         'Failed to fetch custom mempool server',
       ),
     };
-    if (customServer != null) return customServer.fullUrl;
+    if (customServer != null) {
+      return (
+        baseUrl: customServer.fullUrl,
+        validateDomain: customServer.validateDomain,
+      );
+    }
 
     final defaultResult = await _mempoolServerRepository.fetchDefaultServer(
       network,
@@ -96,7 +108,10 @@ class FeesRepositoryImpl implements FeesRepository {
         'Failed to fetch default mempool server',
       ),
     };
-    return defaultServer.fullUrl;
+    return (
+      baseUrl: defaultServer.fullUrl,
+      validateDomain: defaultServer.validateDomain,
+    );
   }
 
   String _bbMempoolUrl({required bool isTestnet}) => isTestnet
