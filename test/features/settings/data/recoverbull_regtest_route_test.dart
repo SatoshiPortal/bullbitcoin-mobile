@@ -21,20 +21,25 @@ class _Embedded extends Mock implements EmbeddedTor {}
 
 class _External extends Mock implements ExternalTor {}
 
+class _Sessions extends Mock implements TorSessions {}
+
 class _Tor extends Mock implements Tor {}
 
 class _UnreadDatabase extends Mock implements SqliteDatabase {}
 
-SettingsEntity _selected(Environment environment, {bool enabled = true}) =>
-    SettingsEntity(
-      environment: environment,
-      bitcoinUnit: BitcoinUnit.btc,
-      currencyCode: 'USD',
-      isSuperuser: true,
-      isDevModeEnabled: enabled,
-      useTorProxy: true,
-      torProxyPort: 9151,
-    );
+SettingsEntity _selected(
+  Environment environment, {
+  bool enabled = true,
+  bool useProxy = true,
+}) => SettingsEntity(
+  environment: environment,
+  bitcoinUnit: BitcoinUnit.btc,
+  currencyCode: 'USD',
+  isSuperuser: true,
+  isDevModeEnabled: enabled,
+  useTorProxy: useProxy,
+  torProxyPort: 9151,
+);
 
 RegtestRecoverBullProfile _profile() => RegtestRecoverBullProfile(
   RegtestHostProfile.forNetwork(NetworkEnv.regtest, host: 'stack.example') ??
@@ -158,6 +163,77 @@ void main() {
           verifyZeroInteractions(unreadDatabase);
           verifyZeroInteractions(external);
           verifyZeroInteractions(embedded);
+        },
+      );
+    }
+  }
+
+  for (final production in [Environment.mainnet, Environment.testnet]) {
+    for (final stage in [
+      'external',
+      'bootstrap',
+      'session',
+      'session settings failure',
+    ]) {
+      test(
+        'late production $production refuses regtest after $stage await',
+        () async {
+          selected = _selected(production, useProxy: stage == 'external');
+          final pendingReady = Completer<TorConnectionState>();
+          final pendingSession = Completer<TorSession>();
+          final sessions = _Sessions();
+          var sessionCloses = 0;
+          final endpoint = TorProxyEndpoint(host: '127.0.0.1', port: 12345);
+          final session = TorSession(endpoint, TorTransport.direct, () async {
+            sessionCloses += 1;
+          });
+          final embeddedReady = TorReady(
+            TorRoute(
+              source: TorSource.embedded,
+              endpoint: endpoint,
+              evidence: TorReadinessEvidence.embeddedBootstrap,
+              transport: TorTransport.direct,
+            ),
+          );
+          when(() => embedded.sessions).thenReturn(sessions);
+          when(sessions.open).thenAnswer((_) async => session);
+          if (stage == 'external') {
+            when(() => external.verify(any()))
+                .thenAnswer((_) => pendingReady.future);
+          } else if (stage == 'bootstrap') {
+            when(embedded.ensureReady).thenAnswer((_) => pendingReady.future);
+          } else {
+            when(embedded.ensureReady).thenAnswer((_) async => embeddedReady);
+            when(sessions.open).thenAnswer((_) => pendingSession.future);
+          }
+          final result = adapter(regtest: false).open();
+          await pumpEventQueue();
+          selected = _selected(Environment.regtest);
+          if (stage.startsWith('session')) {
+            if (stage == 'session settings failure') {
+              when(settings.fetch).thenThrow(Exception('Settings unavailable'));
+            }
+            pendingSession.complete(session);
+          } else {
+            pendingReady.complete(
+              stage == 'external' ? _ready(endpoint) : embeddedReady,
+            );
+          }
+          expect(
+            await result,
+            isA<Err<RecoverBullRoute, RecoverBullFailure>>().having(
+              (result) => result.failure,
+              'failure',
+              isA<VaultContextChangedFailure>(),
+            ),
+          );
+          if (stage.startsWith('session')) {
+            verify(sessions.open).called(1);
+            expect(sessionCloses, 1);
+          } else {
+            verifyNever(sessions.open);
+            expect(sessionCloses, 0);
+          }
         },
       );
     }
