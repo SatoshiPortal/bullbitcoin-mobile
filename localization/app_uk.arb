@@ -141,7 +141,6 @@
   "walletDetailsAddressTypeLabel": "Тип адреси",
   "walletDetailsNetworkLabel": "Мережа",
   "walletDetailsDerivationPathLabel": "Деприація шлях",
-  "walletDetailsCopyButton": "Партнерство",
   "walletSettingsImportWalletTitle": "Імпорт Гаманець",
   "bitcoinSettingsBroadcastTransactionTitle": "Трансмісія",
   "bitcoinSettingsTestnetModeTitle": "Режим тестування",

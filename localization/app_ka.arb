@@ -817,7 +817,6 @@
   "walletDetailsSignerLabel": "ხელმომწერი",
   "walletDetailsSignerDeviceLabel": "ხელმომწერი მოწყობილობა",
   "walletDetailsSignerDeviceNotSupported": "მხარდაუჭერელია",
-  "walletDetailsCopyButton": "კოპირება",
   "mempoolSettingsTitle": "Mempool სერვერი",
   "mempoolSettingsDescription": "მოირგეთ საკუთარი mempool სერვერები სხვადასხვა ქსელისთვის. თითოეულ ქსელს შეუძლია გამოიყენოს საკუთარი სერვერი ბლოკების ექსპლორერისა და საკომისიოს შეფასებისთვის.",
   "mempoolSettingsDefaultServer": "ნაგულისხმევი სერვერი",

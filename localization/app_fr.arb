@@ -119,7 +119,6 @@
   "walletDetailsSignerLabel": "Signataire",
   "walletDetailsSignerDeviceLabel": "Dispositif signataire",
   "walletDetailsSignerDeviceNotSupported": "Non pris en charge",
-  "walletDetailsCopyButton": "Copier",
   "mempoolSettingsTitle": "Mempool Server",
   "mempoolSettingsDescription": "Configurez des serveurs mempool personnalisés pour différents réseaux. Chaque réseau peut utiliser son propre serveur pour l'explorateur de blocs et l'estimation des frais.",
   "mempoolSettingsDefaultServer": "Default Server",

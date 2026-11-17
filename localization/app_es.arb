@@ -119,7 +119,6 @@
   "walletDetailsSignerLabel": "Firmante",
   "walletDetailsSignerDeviceLabel": "Dispositivo firmante",
   "walletDetailsSignerDeviceNotSupported": "No compatible",
-  "walletDetailsCopyButton": "Copia",
   "mempoolSettingsTitle": "Servidor Mempool",
   "mempoolSettingsDescription": "Configure servidores de mempool adaptados para diferentes redes. Cada red puede utilizar su propio servidor para bloquear explorador y estimación de comisión.",
   "mempoolSettingsDefaultServer": "Default Server",
