@@ -54,7 +54,10 @@ class SetSwapServerUsecase {
         case Ok():
       }
       await _swapServerSettingRepository.save(server, isTestnet: isTestnet);
-      return switch (await _swapEngineSwitcher.rebuild(isTestnet: isTestnet)) {
+      return switch (await _swapEngineSwitcher.rebuild(
+        isTestnet: isTestnet,
+        waitForCompletion: true,
+      )) {
         Ok() => Ok(server),
         Err(failure: SwapsBusyFailure()) => const Err(SwapServerBusyFailure()),
         Err() => const Err(SwapStorageFailure()),
