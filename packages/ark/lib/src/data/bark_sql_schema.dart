@@ -21,7 +21,7 @@ final class BarkSqlSchema {
       'bark@303682063ed7559b06dcf37c5cb37bb7037b943f/schema42';
   // SHA256 of canonical [table_xinfo,foreign_key_list,[index_list,index_xinfo]].
   // Source bark/schema.sql SHA256 8e434dedbaee82808563f3af8b5cafd83c261d7e6851700d70326d02554c7665.
-  // Complete tuples/fixture provenance: SQL-OBSERVER-CONSTRUCTION-ASTRA-REVIEW.
+  // Layouts cover the pinned Bark 0.8.1/schema42 tables and indexes.
   static const layouts = {
     'migrations':
         '8e6d4bbefdcececc963ffb0872e8efd834409b294792342e8392d6b1e5a2cb0c',
