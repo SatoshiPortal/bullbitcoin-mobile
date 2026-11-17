@@ -740,6 +740,9 @@ final class BarkArkClient implements ArkClient {
       return const Err(ArkUnavailableFailure());
     }
     return _session(store, path, account, (session, source, stages) async {
+      if (request is ArkBoardQuoteRequest) {
+        await session.synchronizeStage('server');
+      }
       final snapshot = await _observe(store, session, account, source);
       if (request is! ArkEmergencyExitQuoteRequest &&
           request is! ArkExitProgressQuoteRequest &&
@@ -1054,6 +1057,9 @@ final class BarkArkClient implements ArkClient {
         previous.revision != quote.generation ||
         !quote.validUntil.isAfter(now())) {
       throw const ArkBoundaryException(ArkStaleQuoteFailure());
+    }
+    if (quote.kind == ArkOperationKind.board) {
+      await session.synchronizeStage('server');
     }
     final fresh = await session.observe(
       account: quote.account,
