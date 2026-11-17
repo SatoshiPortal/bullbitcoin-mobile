@@ -416,4 +416,19 @@ class ArkLocalizationsEn extends ArkLocalizations {
   @override
   String get exitProgressReviewIncomplete =>
       'This exit progression review is incomplete or mismatched. Confirmation is unavailable.';
+
+  @override
+  String get boardSourceWallet => 'Source wallet';
+
+  @override
+  String get boardMinerFeeInSats => 'Miner fee (sats)';
+
+  @override
+  String get boardArkFeeInSats => 'Ark board fee (sats)';
+
+  @override
+  String get boardSourceDebitInSats => 'Source debit (sats)';
+
+  @override
+  String get boardValidUntil => 'Review valid until (UTC)';
 }

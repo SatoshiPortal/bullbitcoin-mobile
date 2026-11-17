@@ -420,4 +420,19 @@ class ArkLocalizationsFr extends ArkLocalizations {
   @override
   String get exitProgressReviewIncomplete =>
       'Cette revue de progression de sortie est incomplète ou incohérente. La confirmation est indisponible.';
+
+  @override
+  String get boardSourceWallet => 'Portefeuille source';
+
+  @override
+  String get boardMinerFeeInSats => 'Frais miniers (sats)';
+
+  @override
+  String get boardArkFeeInSats => 'Frais d’entrée Ark (sats)';
+
+  @override
+  String get boardSourceDebitInSats => 'Débit du portefeuille source (sats)';
+
+  @override
+  String get boardValidUntil => 'Devis valable jusqu’à (UTC)';
 }

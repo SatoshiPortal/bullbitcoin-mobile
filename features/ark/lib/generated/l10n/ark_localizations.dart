@@ -853,6 +853,36 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'This exit progression review is incomplete or mismatched. Confirmation is unavailable.'**
   String get exitProgressReviewIncomplete;
+
+  /// No description provided for @boardSourceWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Source wallet'**
+  String get boardSourceWallet;
+
+  /// No description provided for @boardMinerFeeInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'Miner fee (sats)'**
+  String get boardMinerFeeInSats;
+
+  /// No description provided for @boardArkFeeInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'Ark board fee (sats)'**
+  String get boardArkFeeInSats;
+
+  /// No description provided for @boardSourceDebitInSats.
+  ///
+  /// In en, this message translates to:
+  /// **'Source debit (sats)'**
+  String get boardSourceDebitInSats;
+
+  /// No description provided for @boardValidUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Review valid until (UTC)'**
+  String get boardValidUntil;
 }
 
 class _ArkLocalizationsDelegate
