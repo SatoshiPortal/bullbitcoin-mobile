@@ -34,7 +34,7 @@ class VerifyChainSwapAmountSendUsecase {
 
       if (actualAmount != lockupAmount) {
         final error = SwapCreationException(
-          'Amount mismatch: expected $lockupAmount sats, but transaction sends $actualAmount sats to swap address',
+          'Amount mismatch: the transaction does not pay the swap lockup amount',
         );
         log.severe(
           message: 'Swap amount verification failed: Amount mismatch',
@@ -45,7 +45,9 @@ class VerifyChainSwapAmountSendUsecase {
       }
     } catch (e) {
       if (e is SwapCreationException) rethrow;
-      final error = SwapCreationException('Failed to verify swap amount: $e');
+      final error = SwapCreationException(
+        'Failed to verify swap amount (${e.runtimeType})',
+      );
       log.severe(
         message: 'Failed to verify swap amount',
         error: error,

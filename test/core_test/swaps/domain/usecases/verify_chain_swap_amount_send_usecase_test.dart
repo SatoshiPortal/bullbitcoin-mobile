@@ -52,6 +52,21 @@ void main() {
     );
   });
 
+  test('a refusal names no amount', () async {
+    stubSent(50999);
+
+    await expectLater(
+      usecase.execute(psbtOrPset: 'psbt', swap: _lnSend, walletId: 'w'),
+      throwsA(
+        isA<SwapCreationException>().having(
+          (e) => e.toString(),
+          'message',
+          allOf(isNot(contains('51000')), isNot(contains('50999'))),
+        ),
+      ),
+    );
+  });
+
   test('refuses a receive swap, which has no lockup of ours', () async {
     final receive = Swap.lnReceive(
       id: 'lnReceive001',
