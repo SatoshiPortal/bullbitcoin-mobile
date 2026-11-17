@@ -20,7 +20,7 @@ LIBRARIES = {
 
 
 class VerifyRustcPinsTest(unittest.TestCase):
-    def check_apk(self, *, abis=("arm64-v8a",), changed=None, expected_abis=None, require_bark=False):
+    def check_apk(self, *, abis=("arm64-v8a",), changed=None, expected_abis=None, require_bark=False, via_make=False):
         files = {
             f"lib/{abi}/{name}": f"rustc version {version}\n".encode()
             for abi in abis
@@ -33,13 +33,30 @@ class VerifyRustcPinsTest(unittest.TestCase):
                 for path, content in files.items():
                     if content is not None:
                         archive.writestr(path, content)
+            command = ["bash", str(SCRIPT), *(["--require-bark"] if require_bark else []), str(apk), SDK_RUST, PAYJOIN_RUST, *(expected_abis or abis)]
+            if via_make:
+                container = Path(directory) / "container"
+                container.write_text('#!/bin/sh\nprintf "rustc %s (fixture)\\n" "$6"\n')
+                container.chmod(0o700)
+                command = ["make", "--no-print-directory", "verify-rustc-pins", f"CONTAINER={container}", f"APK={apk}"]
             result = subprocess.run(
-                ["bash", str(SCRIPT), *(["--require-bark"] if require_bark else []), str(apk), SDK_RUST, PAYJOIN_RUST, *(expected_abis or abis)],
+                command,
                 text=True,
                 capture_output=True,
                 check=False,
             )
         return result
+
+    def test_android_verification_accepts_app_without_bark_dependency(self):
+        root = SCRIPT.parents[1]
+        plan = subprocess.run(
+            ["make", "-n", "android", "release"], cwd=root,
+            text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(plan.returncode, 0, plan.stderr)
+        self.assertIn('verify-rustc-pins APK=', plan.stdout)
+        result = self.check_apk(via_make=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_accepts_arm64_only_when_requested(self):
         self.assertEqual(self.check_apk().returncode, 0)
