@@ -86,5 +86,15 @@
   "skippedVtxos": "VTXO ignorés",
   "netInSats": "Montant net (sats)",
   "feeInSats": "Frais (sats)",
-  "reminderMigrationPending": "Certains anciens rappels Ark restent non résolus. De nouveaux rappels VTXO peuvent encore être programmés. Ouvrez Ark régulièrement."
+  "reminderMigrationPending": "Certains anciens rappels Ark restent non résolus. De nouveaux rappels VTXO peuvent encore être programmés. Ouvrez Ark régulièrement.",
+  "exitStatusUnknown": "État de sortie inconnu",
+  "exitStatusNone": "Aucune sortie observée",
+  "exitStatusPending": "Sortie en attente",
+  "exitStatusClaimable": "Sortie récupérable",
+  "exitStatusSubmitted": "Récupération soumise",
+  "exitStatusClaimed": "Sortie récupérée",
+  "exitStatusFailed": "Sortie à vérifier",
+  "spendableInSats": "Disponible (sats)",
+  "pendingInSats": "En attente (sats)",
+  "reserveInSats": "Réserve de frais sur la chaîne (sats)"
 }
