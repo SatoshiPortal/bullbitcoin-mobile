@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
@@ -80,8 +81,9 @@ class BullTopBar extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(color: colors.text),
+                      style: context.bullType.subtitle
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(color: colors.text),
                     ),
                   ),
             ),

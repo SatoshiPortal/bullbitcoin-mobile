@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/buttons/bull_button.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/layout/gap.dart';
@@ -54,8 +55,9 @@ class BullScreenPrivacyGate extends StatelessWidget {
                   BullText(
                     unavailableMessage,
                     textAlign: .center,
-                    style: Theme.of(context).textTheme.bodyLarge
-                        ?.copyWith(color: context.bull.error),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: context.bull.error),
                   ),
                   const Gap(BullSpacing.md),
                   BullButton.small(

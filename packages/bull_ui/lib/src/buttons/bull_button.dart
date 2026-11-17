@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:material_ui/material_ui.dart';
@@ -108,7 +109,9 @@ class BullButton extends StatelessWidget {
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: textStyle ?? Theme.of(context).textTheme.headlineLarge,
+        style:
+            textStyle ??
+            context.bullType.subtitle.copyWith(fontWeight: FontWeight.w700),
         color: textColor,
       ),
     );

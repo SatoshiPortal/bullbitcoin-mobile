@@ -34,7 +34,7 @@ class BullText extends StatelessWidget {
   /// The role of the type scale, read from `context.bullType`.
   final BullTextRole? role;
 
-  /// The base text style when no [role] fits yet (typically a `Theme.of(context).textTheme` role).
+  /// The base text style, typically a `context.bullType` role with explicit overrides.
   final TextStyle? style;
 
   /// Overrides the style colour.

@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -45,7 +46,12 @@ class BullTabMenuVerticalButton extends StatelessWidget {
             children: [
               ?icon,
               const Gap(8),
-              BullText(title, style: Theme.of(context).textTheme.headlineLarge),
+              BullText(
+                title,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
         ),

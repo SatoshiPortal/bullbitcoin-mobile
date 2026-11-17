@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/chrome/bull_scaffold.dart';
 import 'package:bull_ui/src/chrome/bull_top_bar.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
@@ -30,7 +31,7 @@ class BullSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.bullType;
     final colors = context.bull;
 
     return PopScope(
@@ -62,27 +63,23 @@ class BullSuccessScreen extends StatelessWidget {
                         const SizedBox(height: BullSpacing.lg),
                         Text(
                           headline,
-                          style: textTheme.titleLarge?.copyWith(
-                            color: colors.text,
-                          ),
+                          style: textTheme.title.copyWith(color: colors.text),
                           textAlign: TextAlign.center,
                         ),
                         if (amountLine != null) ...[
                           const SizedBox(height: BullSpacing.xs),
                           Text(
                             amountLine!,
-                            style: textTheme.bodyLarge?.copyWith(
-                              color: colors.text,
-                            ),
+                            style: textTheme.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: colors.text),
                             textAlign: TextAlign.center,
                           ),
                         ],
                         if (message != null) ...[
                           const SizedBox(height: BullSpacing.sm),
                           DefaultTextStyle.merge(
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colors.text,
-                            ),
+                            style: textTheme.body.copyWith(color: colors.text),
                             textAlign: TextAlign.center,
                             child: message!,
                           ),
