@@ -50,7 +50,11 @@ Future<KeyMaterialReport> checkKeyMaterial(String rootPath) async {
         .getResolvedUnit(path);
     if (result is ResolvedUnitResult) {
       violations.addAll(
-        checkSecretsReach(result.unit, path.substring(root.length + 1)),
+        checkSecretsReach(
+          result.unit,
+          path.substring(root.length + 1),
+          root: root,
+        ),
       );
     }
   }
@@ -125,17 +129,29 @@ bool _isGeneratedBridge(String root, File file) =>
 /// can reach package:secrets, whatever the import spelling or header.
 List<String> bindingsDartFiles(String root) => [
   for (final package in ['rust_bindings', 'onion'])
-    if (Directory('$root/packages/$package/lib').existsSync())
+    if (Directory('$root/packages/$package').existsSync())
       for (final file in Directory(
-        '$root/packages/$package/lib',
+        '$root/packages/$package',
       ).listSync(recursive: true, followLinks: false))
-        if (file is File && file.path.endsWith('.dart')) file.path,
+        if (file is File &&
+            file.path.endsWith('.dart') &&
+            !file.path
+                .split(Platform.pathSeparator)
+                .any(
+                  (part) => {'build', '.dart_tool', 'target'}.contains(part),
+                ))
+          file.path,
 ]..sort();
 
 /// Rejects any directive or element of [unit] that resolves into
 /// package:secrets, judged on the resolved library, not on the URI text.
-List<String> checkSecretsReach(CompilationUnit unit, String relativePath) {
-  final visitor = _SecretsReachVisitor(relativePath);
+List<String> checkSecretsReach(
+  CompilationUnit unit,
+  String relativePath, {
+  required String root,
+}) {
+  final package = relativePath.split('/').take(2).join('/');
+  final visitor = _SecretsReachVisitor(relativePath, '$root/$package/');
   unit.accept(visitor);
   return visitor.violations.toList()..sort();
 }
@@ -149,9 +165,10 @@ bool _isSecretsLibrary(LibraryElement? library) {
 
 class _SecretsReachVisitor extends RecursiveAstVisitor<void> {
   final String path;
+  final String packageDirectory;
   final Set<String> violations = {};
 
-  _SecretsReachVisitor(this.path);
+  _SecretsReachVisitor(this.path, this.packageDirectory);
 
   void _report(LibraryElement? library) {
     if (_isSecretsLibrary(library)) {
@@ -159,16 +176,44 @@ class _SecretsReachVisitor extends RecursiveAstVisitor<void> {
     }
   }
 
+  /// A resolved directive URI, whichever conditional alternative it is.
+  void _reportUri(DirectiveUri? uri) {
+    if (uri is DirectiveUriWithLibrary) _report(uri.library);
+    if (uri is DirectiveUriWithSource &&
+        uri.source.fullName.contains('/packages/secrets/')) {
+      violations.add(
+        '$path: reaches ${uri.source.fullName} (bindings boundary)',
+      );
+    }
+  }
+
   @override
   void visitImportDirective(ImportDirective node) {
     _report(node.libraryImport?.importedLibrary);
+    for (final configuration in node.configurations) {
+      _reportUri(configuration.resolvedUri);
+    }
     super.visitImportDirective(node);
   }
 
   @override
   void visitExportDirective(ExportDirective node) {
     _report(node.libraryExport?.exportedLibrary);
+    for (final configuration in node.configurations) {
+      _reportUri(configuration.resolvedUri);
+    }
     super.visitExportDirective(node);
+  }
+
+  /// A part outside the package would be compiled in without being scanned.
+  @override
+  void visitPartDirective(PartDirective node) {
+    final uri = node.partInclude?.uri;
+    if (uri is DirectiveUriWithSource &&
+        !uri.source.fullName.startsWith(packageDirectory)) {
+      violations.add('$path: part outside its package (bindings boundary)');
+    }
+    super.visitPartDirective(node);
   }
 
   @override
