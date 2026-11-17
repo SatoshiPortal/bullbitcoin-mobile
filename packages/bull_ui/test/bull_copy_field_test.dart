@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart' show Icons, Scaffold;
+import 'package:material_ui/material_ui.dart' show IconButton, Icons, Scaffold;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -82,6 +82,44 @@ void main() {
 
       // Let the toast's auto-dismiss timer run out before the tree goes.
       await tester.pump(const Duration(minutes: 1));
+    });
+
+    testWidgets('names its copy button with the translated Copy by default', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const Scaffold(
+            body: BullCopyField(text: 'value', copiedMessage: 'Copied'),
+          ),
+        ),
+      );
+      expect(
+        tester.getSemantics(find.byType(IconButton)),
+        isSemantics(tooltip: 'Copy', isButton: true),
+      );
+      semantics.dispose();
+    });
+
+    testWidgets('names its copy button with a caller label', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await tester.pumpWidget(
+        wrapWithTheme(
+          const Scaffold(
+            body: BullCopyField(
+              text: 'value',
+              copiedMessage: 'Copied',
+              copyLabel: 'Copy key',
+            ),
+          ),
+        ),
+      );
+      expect(
+        tester.getSemantics(find.byType(IconButton)),
+        isSemantics(tooltip: 'Copy key', isButton: true),
+      );
+      semantics.dispose();
     });
 
     testWidgets('hides the copy button when there is nothing to copy', (
