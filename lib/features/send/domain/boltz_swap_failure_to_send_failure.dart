@@ -16,6 +16,7 @@ extension BoltzSwapFailureToSendFailure on SwapsFailure {
     SwapsBoltzRejectedFailure() ||
     SwapsNetworkFailure() ||
     SwapsBusyFailure() ||
+    SwapsAuthorizationFailure() ||
     SwapsMasterKeyUnavailableFailure() ||
     SwapsNotRestorableFailure() ||
     SwapsRefundNotFinalFailure() => SendSwapCreationFailure(logMessage),

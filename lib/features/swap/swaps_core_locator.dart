@@ -137,7 +137,10 @@ class SwapsLocator {
       storage: locator<SwapStorage>(),
       isTestnet: isTestnet,
       electrum: AppElectrumRunner(locator<ElectrumServersPort>()),
-      lockupChain: AppLockupChain(locator<WalletConnectionPort>()),
+      lockupChain: AppLockupChain(
+        locator<WalletConnectionPort>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
       newAddressFor: (walletId) async =>
           (await addresses.generateNewReceiveAddress(walletId: walletId))
               .address,

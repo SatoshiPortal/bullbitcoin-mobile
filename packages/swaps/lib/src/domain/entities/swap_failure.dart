@@ -15,6 +15,11 @@ final class SwapsBusyFailure extends SwapsFailure {
   const SwapsBusyFailure([super.logMessage]);
 }
 
+/// Current application policy refused a recovery broadcast.
+final class SwapsAuthorizationFailure extends SwapsFailure {
+  const SwapsAuthorizationFailure([super.logMessage]);
+}
+
 /// No default bitcoin wallet seed is available to derive the swap master
 /// key (watch-only, hardware-only or pre-onboarding wallet) — restore and
 /// rescue cannot run.

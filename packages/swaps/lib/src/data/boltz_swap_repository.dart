@@ -743,7 +743,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           return swap;
       }
     } catch (e) {
-      if (e is SwapsBusyFailure) rethrow;
+      if (e is SwapsBusyFailure || e is SwapsAuthorizationFailure) rethrow;
       swapsLog.warning(
         'SWAPS: ${swap.id} pending lockup not settled (${e.runtimeType})',
       );
