@@ -54,6 +54,8 @@ format-check:
 	@echo "🎨 dart format should have nothing to change"
 	@bash -c 'set -o pipefail; git ls-files "*.dart" | grep -vE "\.(g|freezed|gr|config|mocks|steps)\.dart$$|/generated/" | while IFS= read -r file; do if [ -f "$$file" ]; then printf "%s\n" "$$file"; fi; done | xargs -r -n 100 fvm dart format --output=none --set-exit-if-changed'
 
+# The only typed-in font sizes outside BullTypography.standard: the Bebas Neue brand wordmarks, sized by their splash layout and marked "Brand wordmark" at the call site.
+FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|lib/features/wizard/ui/widgets/welcome_step|lib/features/exchange/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
 BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/bull_ui/lib/src/inputs/bull_mnemonic_keyboard.dart packages/bull_ui/lib/src/inputs/bull_pin_pad.dart
 
 bull-ui-check:
@@ -61,8 +63,9 @@ bull-ui-check:
 	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
 	@if grep -rnE "Radius\.circular\( *[0-9]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^lib/core/themes/app_theme.dart:"; then echo "Read a corner radius from context.bullShapes.<role>; the numbers live only in BullShapes.standard"; exit 1; fi
-	@echo "🧱 keypad text sizes and colours (typography roles and BullKeypadColors, never a typed-in size or colour)"
-	@if grep -nE "fontSize: *[0-9.]" $(BULL_KEYPAD_FILES) lib/features/import_mnemonic/ui/widgets/mnemonic_widget.dart; then echo "Read a text size from context.bullType.<role>, or size a glyph from BullKeypadMetrics.glyphSize; the numbers live only in BullTypography.standard"; exit 1; fi
+	@echo "🧱 text sizes (typography roles, never a typed-in font size)"
+	@if grep -rnE "fontSize: *([^,?]*\? *)?[0-9.]" lib features packages --include='*.dart' | grep -v "/test/" | grep -v "^packages/bull_ui/lib/src/theme/bull_typography.dart:" | grep -vE "$(FONT_SIZE_ALLOWLIST)"; then echo "Read a text size from context.bullType.<role> (or BullText(role: ...)), changing only its weight or colour; size a keypad glyph from BullKeypadMetrics.glyphSize. The numbers live only in BullTypography.standard"; exit 1; fi
+	@echo "🧱 keypad colours (BullKeypadColors, never a typed-in colour)"
 	@if grep -n "Color(0x" $(BULL_KEYPAD_FILES); then echo "Read a keypad colour from context.bullKeypad.<role>; the values live only in BullKeypadColors"; exit 1; fi
 
 # Resolved-symbol custody policy, available locally with the pinned Dart SDK.
