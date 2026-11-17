@@ -6,12 +6,18 @@ import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullQuickAction, Gap;
 
 class ExchangeHomeTopSection extends StatelessWidget {
   const ExchangeHomeTopSection({required this.onAction, super.key});
 
   final void Function(ExchangeHomeAction) onAction;
+
+  /// Height of the dark balance area the actions sit at the bottom of.
+  static const double _height = 264 + 78 + 46;
+
+  /// Space between the actions and the bottom edge of the dark area.
+  static const double _actionsBottomSpacing = 12;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +40,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 264 + 78 + 46,
+      height: _height,
       child: Stack(
         children: [
           Column(
@@ -42,43 +48,43 @@ class ExchangeHomeTopSection extends StatelessWidget {
             children: [
               Container(
                 color: context.appColors.secondaryFixed,
-                height: 264 + 78,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (child, animation) {
-                        return SlideTransition(
-                          position:
-                              Tween<Offset>(
-                                begin: const Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(
-                                CurvedAnimation(
-                                  parent: animation,
-                                  curve: Curves.easeInOut,
-                                ),
+                height: _height,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: BullQuickAction.height + _actionsBottomSpacing,
+                  ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) {
+                      return SlideTransition(
+                        position:
+                            Tween<Offset>(
+                              begin: const Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(
+                              CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
                               ),
-                          child: child,
-                        );
-                      },
-                      child: showChart
-                          ? const _ChartView(key: ValueKey('chart'))
-                          : _BalancesView(
-                              key: const ValueKey('balances'),
-                              balances: balances,
-                              balanceTextStyle: balanceTextStyle,
-                              topGap: topGap,
                             ),
-                    ),
-                  ],
+                        child: child,
+                      );
+                    },
+                    child: showChart
+                        ? const _ChartView(key: ValueKey('chart'))
+                        : _BalancesView(
+                            key: const ValueKey('balances'),
+                            balances: balances,
+                            balanceTextStyle: balanceTextStyle,
+                            topGap: topGap,
+                          ),
+                  ),
                 ),
               ),
             ],
           ),
           Positioned(
-            bottom: 0,
+            bottom: _actionsBottomSpacing,
             left: 0,
             right: 0,
             child: Padding(

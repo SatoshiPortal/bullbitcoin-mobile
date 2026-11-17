@@ -27,20 +27,16 @@ class WalletHomeTopSection extends StatelessWidget {
   /// Distance from the top of the dark area down to the balance.
   static const double _balanceTopSpacing = 96;
 
-  /// How far the quick actions hang below the background: the rest of the row
-  /// straddles its bottom edge, while the balance above is never covered.
-  static const double _actionsOverhang = 56;
-
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: _actionsOverhang,
-          child: Image.asset(Assets.backgrounds.bgRed.path, fit: BoxFit.fill),
+        Positioned.fill(
+          child: Image.asset(
+            Assets.backgrounds.bgRed.path,
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+          ),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -52,7 +48,7 @@ class WalletHomeTopSection extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13.0),
+              padding: const EdgeInsets.fromLTRB(13.0, 0, 13.0, 16.0),
               child: actions,
             ),
           ],

@@ -3,10 +3,23 @@ import 'dart:async';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
-/// A compact, accessible shortcut with a stable height across text scales.
+/// The backdrop a [BullQuickAction] is drawn on, which picks its palette.
+enum BullQuickActionTone {
+  /// A themed surface: the icon disc is [BullTheme.surfaceContainerHighest]
+  /// and the label [BullTheme.text].
+  surface,
+
+  /// A dark hero that stays dark in both themes: a translucent
+  /// [BullTheme.onPrimary] disc and label, the same in light and dark mode.
+  inverse,
+}
+
+/// A compact, accessible shortcut: a round icon disc over a one-line label,
+/// with no box around it, at a stable height across text scales.
 class BullQuickAction extends StatelessWidget {
   const BullQuickAction({
     required this.label,
@@ -16,18 +29,27 @@ class BullQuickAction extends StatelessWidget {
     this.semanticLabel,
     this.outlined = false,
     this.disabled = false,
+    this.tone = BullQuickActionTone.surface,
     super.key,
   });
 
-  static const double height = 100;
+  static const double height = 108;
+
+  /// Diameter of the icon disc.
+  static const double _disc = 52;
 
   final String label;
   final String? semanticLabel;
   final IconData icon;
   final VoidCallback onPressed;
   final VoidCallback? onLongPress;
+
+  /// A hollow disc with a ring instead of a fill: the More cell.
   final bool outlined;
   final bool disabled;
+
+  /// The backdrop this action sits on.
+  final BullQuickActionTone tone;
 
   void _activate(VoidCallback callback) {
     unawaited(HapticFeedback.selectionClick());
@@ -37,6 +59,14 @@ class BullQuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final inverse = tone == BullQuickActionTone.inverse;
+    final foreground = inverse ? colors.onPrimary : colors.text;
+    final fill = inverse
+        ? colors.onPrimary.withValues(alpha: 0.18)
+        : colors.surfaceContainerHighest;
+    final ring = inverse
+        ? colors.onPrimary.withValues(alpha: 0.5)
+        : colors.border;
     final tap = disabled ? null : () => _activate(onPressed);
     final longPressCallback = onLongPress;
     final longPress = disabled || longPressCallback == null
@@ -60,49 +90,48 @@ class BullQuickAction extends StatelessWidget {
             child: Opacity(
               opacity: disabled ? 0.4 : 1,
               child: Material(
-                color: colors.surface,
+                color: colors.transparent,
                 borderRadius: BorderRadius.circular(context.bullShapes.button),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(
                     context.bullShapes.button,
                   ),
+                  splashColor: foreground.withValues(alpha: 0.08),
+                  highlightColor: foreground.withValues(alpha: 0.04),
                   onTap: tap,
                   onLongPress: longPress,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 2,
-                      vertical: 4,
+                      horizontal: BullSpacing.xxs,
+                      vertical: BullSpacing.xxs,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 48,
-                          height: 48,
+                          width: _disc,
+                          height: _disc,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: outlined
-                                ? colors.transparent
-                                : colors.surfaceContainerHighest,
+                            color: outlined ? colors.transparent : fill,
                             border: outlined
-                                ? Border.all(color: colors.border)
+                                ? Border.all(color: ring, width: 1.5)
                                 : null,
                           ),
                           child: Center(
-                            child: BullIcon(icon, size: 24, color: colors.text),
+                            child: BullIcon(icon, size: 24, color: foreground),
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: BullSpacing.xs),
                         Text(
                           label,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.labelLarge
+                          style: Theme.of(context).textTheme.titleSmall
                               ?.copyWith(
-                                fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
-                                color: colors.text,
+                                color: foreground,
                               ),
                         ),
                       ],
@@ -116,4 +145,61 @@ class BullQuickAction extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A row of up to four [BullQuickAction]s sharing the width equally, at
+/// [BullQuickAction.height]: Home's and the exchange's shortcut strip.
+class BullQuickActionRow extends StatelessWidget {
+  const BullQuickActionRow({super.key, required this.children});
+
+  /// The actions, left to right.
+  final List<Widget> children;
+
+  /// Gap between two cells.
+  static const double spacing = BullSpacing.xs;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: BullQuickAction.height,
+    child: Row(
+      children: [
+        for (final (index, child) in children.indexed) ...[
+          if (index > 0) const SizedBox(width: spacing),
+          Expanded(child: child),
+        ],
+      ],
+    ),
+  );
+}
+
+/// [BullQuickAction]s wrapped into rows of [columns] cells as wide as one
+/// [BullQuickActionRow] cell: the More sheet and the editor.
+class BullQuickActionGrid extends StatelessWidget {
+  const BullQuickActionGrid({
+    super.key,
+    required this.children,
+    this.columns = 4,
+  });
+
+  /// The actions, in reading order.
+  final List<Widget> children;
+
+  /// Cells per row.
+  final int columns;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final width =
+          (constraints.maxWidth - BullQuickActionRow.spacing * (columns - 1)) /
+          columns;
+      return Wrap(
+        spacing: BullQuickActionRow.spacing,
+        runSpacing: BullQuickActionRow.spacing,
+        children: [
+          for (final child in children) SizedBox(width: width, child: child),
+        ],
+      );
+    },
+  );
 }

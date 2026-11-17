@@ -11,11 +11,15 @@ class QuickActionsRow extends StatefulWidget {
     required this.cubit,
     required this.onAction,
     required this.onCustomize,
+    this.tone = BullQuickActionTone.surface,
   });
 
   final QuickActionsCubit cubit;
   final ValueChanged<QuickAction> onAction;
   final VoidCallback onCustomize;
+
+  /// The backdrop the row sits on; Home draws it on its dark hero.
+  final BullQuickActionTone tone;
 
   @override
   State<QuickActionsRow> createState() => _QuickActionsRowState();
@@ -57,8 +61,8 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
     final loading = widget.cubit.state.initialized == false;
     final layout = QuickActionsLayout.resolve(
       available: widget.cubit.state.available,
-
       selection: widget.cubit.state.selection,
+      defaults: widget.cubit.state.defaults,
     );
     final controls = <Widget>[
       for (final action in layout.primary)
@@ -67,6 +71,7 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
           semanticLabel: action.fullLabel(l10n),
           icon: action.icon,
           disabled: loading,
+          tone: widget.tone,
           onPressed: () => widget.onAction(action),
           onLongPress: widget.onCustomize,
         ),
@@ -76,21 +81,12 @@ class _QuickActionsRowState extends State<QuickActionsRow> {
           icon: BullIcons.moreHoriz,
           outlined: true,
           disabled: loading,
+          tone: widget.tone,
           onPressed: _showMore,
           onLongPress: widget.onCustomize,
         ),
     ];
-    return SizedBox(
-      height: BullQuickAction.height,
-      child: Row(
-        children: [
-          for (var index = 0; index < controls.length; index++) ...[
-            if (index > 0) const SizedBox(width: 8),
-            Expanded(child: controls[index]),
-          ],
-        ],
-      ),
-    );
+    return BullQuickActionRow(children: controls);
   }
 
   Future<void> _showMore() async {
@@ -123,95 +119,82 @@ class _MoreSheet extends StatelessWidget {
   final QuickActionsCubit cubit;
 
   @override
-  Widget build(BuildContext context) =>
-      BullStreamValueBuilder<QuickActionsState>(
-        stream: cubit.stream,
-        initialValue: cubit.state,
-        builder: (context, value) {
-          final l10n = QuickActionsLocalizations.of(context);
-          final actions = QuickActionsLayout.resolve(
-            available: value.available,
+  Widget build(
+    BuildContext context,
+  ) => BullStreamValueBuilder<QuickActionsState>(
+    stream: cubit.stream,
+    initialValue: cubit.state,
+    builder: (context, value) {
+      final l10n = QuickActionsLocalizations.of(context);
+      final actions = QuickActionsLayout.resolve(
+        available: value.available,
 
-            selection: value.selection,
-          ).more;
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 32,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: context.bull.border,
-                          borderRadius: BorderRadius.circular(
-                            context.bullShapes.badge,
-                          ),
-                        ),
+        selection: value.selection,
+      ).more;
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 32,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: context.bull.border,
+                      borderRadius: BorderRadius.circular(
+                        context.bullShapes.badge,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: BullText(
-                            l10n.more,
-                            style: context.bullText.titleLarge,
-                          ),
-                        ),
-                        BullInlineTextButton(
-                          onPressed: () =>
-                              Navigator.pop(context, const _MoreChoice.edit()),
-                          child: BullText(
-                            l10n.edit,
-                            style: context.bullText.labelLarge,
-                          ),
-                        ),
-                        BullInlineIconButton(
-                          tooltip: l10n.close,
-                          onPressed: () => Navigator.pop(context),
-                          icon: const BullIcon(BullIcons.close),
-                        ),
-                      ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: BullText(
+                        l10n.more,
+                        style: context.bullText.titleLarge,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final width = (constraints.maxWidth - 24) / 4;
-                        return Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final action in actions)
-                              SizedBox(
-                                width: width,
-                                child: BullQuickAction(
-                                  label: action.label(l10n),
-                                  semanticLabel: action.fullLabel(l10n),
-                                  icon: action.icon,
-                                  onPressed: () => Navigator.pop(
-                                    context,
-                                    _MoreChoice.action(action),
-                                  ),
-                                  onLongPress: () => Navigator.pop(
-                                    context,
-                                    const _MoreChoice.edit(),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        );
-                      },
+                    BullInlineTextButton(
+                      onPressed: () =>
+                          Navigator.pop(context, const _MoreChoice.edit()),
+                      child: BullText(
+                        l10n.edit,
+                        style: context.bullText.labelLarge,
+                      ),
+                    ),
+                    BullInlineIconButton(
+                      tooltip: l10n.close,
+                      onPressed: () => Navigator.pop(context),
+                      icon: const BullIcon(BullIcons.close),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 8),
+                BullQuickActionGrid(
+                  children: [
+                    for (final action in actions)
+                      BullQuickAction(
+                        label: action.label(l10n),
+                        semanticLabel: action.fullLabel(l10n),
+                        icon: action.icon,
+                        onPressed: () =>
+                            Navigator.pop(context, _MoreChoice.action(action)),
+                        onLongPress: () =>
+                            Navigator.pop(context, const _MoreChoice.edit()),
+                      ),
+                  ],
+                ),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       );
+    },
+  );
 }

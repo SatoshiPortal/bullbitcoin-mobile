@@ -64,6 +64,7 @@ final class QuickActionsLayout {
   factory QuickActionsLayout.resolve({
     required Set<QuickAction> available,
     QuickActionSelection? selection,
+    List<QuickAction> defaults = QuickActionsLayout.defaults,
   }) {
     final requested = selection?.actions ?? defaults;
     final selected = <QuickAction>[];
