@@ -721,6 +721,60 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Conflicting transaction observed'**
   String get operationConflicted;
+
+  /// No description provided for @observedActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed activity'**
+  String get observedActivity;
+
+  /// No description provided for @activityObservationsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity observations unavailable'**
+  String get activityObservationsUnavailable;
+
+  /// No description provided for @movementBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Board funding'**
+  String get movementBoard;
+
+  /// No description provided for @movementPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get movementPayment;
+
+  /// No description provided for @movementRenewal.
+  ///
+  /// In en, this message translates to:
+  /// **'Renewal'**
+  String get movementRenewal;
+
+  /// No description provided for @movementExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get movementExit;
+
+  /// No description provided for @movementLightningReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning receipt'**
+  String get movementLightningReceipt;
+
+  /// No description provided for @observedTimeUtc.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed time (UTC)'**
+  String get observedTimeUtc;
+
+  /// No description provided for @transactionId.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get transactionId;
 }
 
 class _ArkLocalizationsDelegate

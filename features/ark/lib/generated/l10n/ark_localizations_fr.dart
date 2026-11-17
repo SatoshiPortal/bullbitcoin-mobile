@@ -342,4 +342,32 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get operationConflicted => 'Transaction conflictuelle observée';
+
+  @override
+  String get observedActivity => 'Activité observée';
+
+  @override
+  String get activityObservationsUnavailable =>
+      'Observations d’activité indisponibles';
+
+  @override
+  String get movementBoard => 'Financement Ark';
+
+  @override
+  String get movementPayment => 'Paiement';
+
+  @override
+  String get movementRenewal => 'Renouvellement';
+
+  @override
+  String get movementExit => 'Sortie';
+
+  @override
+  String get movementLightningReceipt => 'Réception Lightning';
+
+  @override
+  String get observedTimeUtc => 'Heure observée (UTC)';
+
+  @override
+  String get transactionId => 'Identifiant de transaction';
 }
