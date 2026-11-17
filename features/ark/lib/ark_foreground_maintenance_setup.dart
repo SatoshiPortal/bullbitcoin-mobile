@@ -5,7 +5,6 @@ import 'dart:ui';
 
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart';
-import 'package:notifications/notifications.dart';
 import 'package:primitives/primitives.dart';
 
 import 'ark_maintenance_setup.dart';
@@ -66,10 +65,7 @@ openArkForegroundMaintenance({
   final initialized = await initializeArkNotifications(locale);
   final notification = switch (initialized) {
     Ok(:final value) => value,
-    Err() => scheduledNotifications(
-      channelId: arkExpiryChannelId,
-      channelName: copy.title,
-    ),
+    Err() => unavailableArkNotifications(),
   };
   final opened = SqliteArkReminderRepository.open(
     path: path,

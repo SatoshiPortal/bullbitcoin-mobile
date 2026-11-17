@@ -43,3 +43,24 @@ initializeArkNotifications(Locale locale) async {
 
 Locale _supportedLocale(Locale locale) =>
     locale.languageCode == 'fr' ? const Locale('fr') : const Locale('en');
+
+/// Refuses platform effects when plugin initialization failed. Durable intent
+/// remains in the reminder ledger and the caller can retry after recovery.
+ScheduledNotificationPort unavailableArkNotifications() =>
+    const _UnavailableArkNotifications();
+
+final class _UnavailableArkNotifications implements ScheduledNotificationPort {
+  const _UnavailableArkNotifications();
+
+  @override
+  Future<Result<void, NotificationsFailure>> schedule(
+    LocalNotification notification, {
+    required int platformId,
+    required DateTime at,
+  }) async => const Err(NotificationsGatewayFailure());
+
+  @override
+  Future<Result<void, NotificationsFailure>> cancelScheduled(
+    int platformId,
+  ) async => const Err(NotificationsGatewayFailure());
+}

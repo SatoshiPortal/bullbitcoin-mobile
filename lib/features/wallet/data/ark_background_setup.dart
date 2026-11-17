@@ -12,7 +12,6 @@ import 'package:bull_ark/ark_maintenance_setup.dart';
 import 'package:bull_ark/ark_notification_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/bull_ark.dart';
-import 'package:notifications/notifications.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -50,10 +49,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   final initialized = await initializeArkNotifications(locale);
   final notification = switch (initialized) {
     Ok(:final value) => value,
-    Err() => scheduledNotifications(
-      channelId: arkExpiryChannelId,
-      channelName: copy.title,
-    ),
+    Err() => unavailableArkNotifications(),
   };
   final opened = SqliteArkReminderRepository.open(
     path: '$directory/reminders.sqlite',
