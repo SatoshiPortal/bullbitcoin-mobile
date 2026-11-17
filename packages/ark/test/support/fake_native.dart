@@ -186,6 +186,9 @@ final class FakeSession implements ArkNativeSession {
     required List<ArkOperation> operations,
     required ArkRecoveryStatus previousRecovery,
   }) => stages.run('observe', () async {
+    if (owner.failingStage == 'observe') {
+      throw Exception('observation unavailable');
+    }
     if (owner.requireBoardServerInfo) owner.boardServerEvents.add('observe');
     return ArkSnapshot(
       serverInfo: owner.requireBoardServerInfo && serverReady
