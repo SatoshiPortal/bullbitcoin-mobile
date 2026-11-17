@@ -630,10 +630,10 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   /// Settles a lockup whose broadcast outcome is unknown, from the user's own
   /// servers: a known txid is recorded; otherwise the identical signed
   /// transaction is rebroadcast, which can never create a second lockup. A
-  /// swap that already failed is never funded fresh on Bitcoin, where the
-  /// lookup can prove whether the lockup went out; on Liquid, which has no
-  /// lookup, it is rebroadcast anyway — either it was out already, or the
-  /// refund returns it. Boltz's own status events record the lockup too (see
+  /// swap that already failed is never funded fresh once the lookup proves
+  /// the lockup never went out; without a locally computed txid it is
+  /// rebroadcast anyway — either it was out already, or the refund returns
+  /// it. Boltz's own status events record the lockup too (see
   /// [SwapStatusMapper]).
   Future<Swap> resolvePendingLockup(Swap swap) async {
     final (pendingTx, pendingTxid, lockupTxid, isLiquid) = switch (swap) {
@@ -684,10 +684,10 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
 
       if (pendingTxid != null) {
         if (await known(pendingTxid)) return await record(pendingTxid);
-        // On Bitcoin the txid is our own: unknown means it never went out,
-        // and a swap that already failed is not funded fresh. A Liquid txid
-        // is only a candidate, so its absence proves nothing.
-        if (!isLiquid && swap.status.hasFailed) {
+        // The txid is computed from our own signed lockup: unknown means it
+        // never went out, and a swap that already failed is not funded
+        // fresh.
+        if (swap.status.hasFailed) {
           return await drop('never broadcast; swap ${swap.status.name}');
         }
       }

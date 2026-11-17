@@ -166,8 +166,8 @@ final class LockupOutcomeUnknown extends LockupBroadcast {
 /// The user's own chain backend (their Electrum servers), used to settle a
 /// lockup whose broadcast outcome is unknown. Never a third-party explorer.
 abstract class LockupChain {
-  /// The txid of our signed lockup before it is broadcast. Null when it
-  /// cannot be computed locally (Liquid).
+  /// The txid of our signed lockup before it is broadcast. Null when the
+  /// signed transaction cannot be decoded.
   Future<String?> txidOf({required String signedTx, required bool isLiquid});
 
   /// Whether the servers hold our signed lockup [signedTx] under [txid], in

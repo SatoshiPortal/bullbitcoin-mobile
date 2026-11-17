@@ -322,7 +322,7 @@ void main() {
       verifyNever(() => storage.store(any()));
     });
 
-    test('a Liquid candidate our server confirms is recorded', () async {
+    test('a Liquid lockup our server confirms is recorded', () async {
       lockupChain.known = true;
 
       await resolve(pending(type: SwapType.liquidToBitcoin));
@@ -331,12 +331,21 @@ void main() {
       expect(lockupChain.broadcasts, isEmpty);
     });
 
-    test('an unconfirmed Liquid candidate is not proof of absence', () async {
-      lockupChain
-        ..known = false
-        ..outcome = const LockupOutcomeUnknown();
+    test('a failed Liquid swap is never funded fresh either', () async {
+      lockupChain.known = false;
 
       await resolve(pending(status: 'expired', type: SwapType.liquidToBitcoin));
+
+      expect(stored().pendingLockupTx, isNull);
+      expect(lockupChain.broadcasts, isEmpty);
+    });
+
+    test('a lockup without a computed txid is rebroadcast', () async {
+      lockupChain.outcome = const LockupOutcomeUnknown();
+
+      await resolve(
+        pending(status: 'expired', txid: null, type: SwapType.liquidToBitcoin),
+      );
 
       expect(lockupChain.broadcasts, ['signed-pset']);
       verifyNever(() => storage.store(any()));
