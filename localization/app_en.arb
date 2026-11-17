@@ -15591,5 +15591,21 @@
   "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
   "@exchangeBitcoinWalletsDeleteFailed": {
     "description": "Error shown when a default wallet address cannot be deleted"
+  },
+  "walletShowAmountsTooltip": "Show amounts",
+  "@walletShowAmountsTooltip": {
+    "description": "Accessible name of the eye button that reveals hidden balances"
+  },
+  "walletHideAmountsTooltip": "Hide amounts",
+  "@walletHideAmountsTooltip": {
+    "description": "Accessible name of the eye button that hides balances"
+  },
+  "priceChartShowTooltip": "Show price chart",
+  "@priceChartShowTooltip": {
+    "description": "Accessible name of the Exchange home button that opens the price chart"
+  },
+  "swapReverseDirectionTooltip": "Reverse direction",
+  "@swapReverseDirectionTooltip": {
+    "description": "Accessible name of the Swap button that exchanges the source and destination wallets"
   }
 }

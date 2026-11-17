@@ -4806,5 +4806,9 @@
   "exchangeBitcoinWalletsLoadFailed": "Impossible de charger les portefeuilles par défaut",
   "exchangeBitcoinWalletsAddressEmpty": "L'adresse ne peut pas être vide",
   "exchangeBitcoinWalletsSaveFailed": "Impossible d'enregistrer l'adresse du portefeuille",
-  "exchangeBitcoinWalletsDeleteFailed": "Impossible de supprimer l'adresse du portefeuille"
+  "exchangeBitcoinWalletsDeleteFailed": "Impossible de supprimer l'adresse du portefeuille",
+  "walletShowAmountsTooltip": "Afficher les montants",
+  "walletHideAmountsTooltip": "Masquer les montants",
+  "priceChartShowTooltip": "Afficher le graphique des prix",
+  "swapReverseDirectionTooltip": "Inverser le sens"
 }
