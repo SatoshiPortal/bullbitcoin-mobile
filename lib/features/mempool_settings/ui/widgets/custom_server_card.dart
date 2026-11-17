@@ -8,7 +8,12 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullDialog, BullShapesX, BullSnackBar;
+    show
+        BullBottomSheet,
+        BullDialog,
+        BullShapesX,
+        BullSnackBar,
+        BullTypographyX;
 
 class CustomServerCard extends StatelessWidget {
   final MempoolServerDto? customServer;
@@ -79,8 +84,7 @@ class CustomServerCard extends StatelessWidget {
                               customServer!.enableSsl
                                   ? context.loc.mempoolCustomServerSsl
                                   : context.loc.mempoolCustomServerNoSsl,
-                              style: context.font.bodySmall?.copyWith(
-                                fontSize: 10,
+                              style: context.bullType.caption.copyWith(
                                 fontWeight: FontWeight.w500,
                                 color: customServer!.enableSsl
                                     ? context.appColors.success

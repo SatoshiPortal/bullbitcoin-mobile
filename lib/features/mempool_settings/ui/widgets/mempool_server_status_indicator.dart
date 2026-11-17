@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_statu
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show BullTypographyX;
 
 class MempoolServerStatusIndicator extends StatelessWidget {
   final MempoolServerStatus status;
@@ -37,10 +38,7 @@ class MempoolServerStatusIndicator extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: context.font.bodySmall?.copyWith(fontSize: 12, color: color),
-        ),
+        Text(label, style: context.bullType.caption.copyWith(color: color)),
       ],
     );
   }

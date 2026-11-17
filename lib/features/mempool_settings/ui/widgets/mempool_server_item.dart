@@ -82,10 +82,9 @@ class MempoolServerItem extends StatelessWidget {
                               ),
                               child: Text(
                                 context.loc.mempoolCustomServerLabel,
-                                style: context.font.bodySmall?.copyWith(
+                                style: context.bullType.caption.copyWith(
                                   color: context.appColors.tertiary,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
