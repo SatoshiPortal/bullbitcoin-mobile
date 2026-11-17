@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 import 'package:flutter/rendering.dart';
 
 import 'dart:async';
@@ -37,7 +38,11 @@ class _MockBuyOrder extends Mock implements BuyOrder {}
 class _MockExchangeFacade extends Mock implements ExchangeFacade {}
 
 void main() {
-  setUpAll(() => registerFallbackValue(const BuyEvent.confirmOrder()));
+  setUpAll(() async {
+    registerFallbackValue(const BuyEvent.confirmOrder());
+    await BullSdk.init();
+  });
+  tearDownAll(BullSdk.dispose);
 
   Future<({BuyBloc bloc, void Function(BuyState) update})> pumpScreen(
     WidgetTester tester,
@@ -185,7 +190,7 @@ void main() {
         currencyInput: 'CAD',
         exchangeRate: 100000,
         balances: {'CAD': 1000},
-        bitcoinAddressInput: 'tb1qtest',
+        bitcoinAddressInput: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
       );
       void update(BuyState next) {
         state = next;
@@ -247,10 +252,13 @@ void main() {
           ),
         ),
       );
-      await tester.pump();
-      await tester.tap(
-        find.byWidgetPredicate((w) => w is BullButton && w.label == 'Continue'),
+      await tester.pumpAndSettle();
+      final continueButton = find.byWidgetPredicate(
+        (w) => w is BullButton && w.label == 'Continue',
       );
+      await tester.ensureVisible(continueButton);
+      await tester.pumpAndSettle();
+      await tester.tap(continueButton);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       expect(find.byType(BuyConfirmScreen), findsOneWidget);
