@@ -41,48 +41,49 @@ class BullTypography extends ThemeExtension<BullTypography> {
     required this.caption,
   });
 
-  static const _family = 'Golos Text';
+  /// The family of every role, declared by the app's `pubspec.yaml`.
+  static const fontFamily = 'Golos Text';
 
   /// Bull's type scale: size and line height in logical px, in Golos Text, which ships only the 400, 500 and 700 weights.
   static const standard = BullTypography(
     display: TextStyle(
-      fontFamily: _family,
+      fontFamily: fontFamily,
       fontSize: 45,
       height: 52 / 45,
       fontWeight: FontWeight.w500,
     ),
     headline: TextStyle(
-      fontFamily: _family,
+      fontFamily: fontFamily,
       fontSize: 28,
       height: 36 / 28,
       fontWeight: FontWeight.w500,
     ),
     title: TextStyle(
-      fontFamily: _family,
+      fontFamily: fontFamily,
       fontSize: 22,
       height: 28 / 22,
       fontWeight: FontWeight.w500,
     ),
     subtitle: TextStyle(
-      fontFamily: _family,
+      fontFamily: fontFamily,
       fontSize: 18,
       height: 24 / 18,
       fontWeight: FontWeight.w500,
     ),
     body: TextStyle(
-      fontFamily: _family,
+      fontFamily: fontFamily,
       fontSize: 16,
       height: 24 / 16,
       fontWeight: FontWeight.w400,
     ),
     label: TextStyle(
-      fontFamily: _family,
+      fontFamily: fontFamily,
       fontSize: 14,
       height: 20 / 14,
       fontWeight: FontWeight.w500,
     ),
     caption: TextStyle(
-      fontFamily: _family,
+      fontFamily: fontFamily,
       fontSize: 12,
       height: 16 / 12,
       fontWeight: FontWeight.w400,
@@ -99,6 +100,25 @@ class BullTypography extends ThemeExtension<BullTypography> {
     BullTextRole.label => label,
     BullTextRole.caption => caption,
   };
+
+  /// Projects the roles onto Material's [TextTheme] slots, so widgets that read `Theme.of(context).textTheme` follow the same scale.
+  TextTheme toTextTheme() => TextTheme(
+    displayLarge: display,
+    displayMedium: display,
+    displaySmall: headline,
+    headlineLarge: subtitle.copyWith(fontWeight: FontWeight.w700),
+    headlineMedium: subtitle.copyWith(fontWeight: FontWeight.w500),
+    headlineSmall: subtitle.copyWith(fontWeight: FontWeight.w400),
+    titleLarge: title,
+    titleMedium: body.copyWith(fontWeight: FontWeight.w500),
+    titleSmall: label,
+    bodyLarge: body.copyWith(fontWeight: FontWeight.w500),
+    bodyMedium: body,
+    bodySmall: label.copyWith(fontWeight: FontWeight.w400),
+    labelLarge: label,
+    labelMedium: caption,
+    labelSmall: caption,
+  );
 
   @override
   BullTypography copyWith({
