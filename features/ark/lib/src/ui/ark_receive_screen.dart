@@ -1,15 +1,18 @@
 import 'dart:async';
 
-import 'package:ark/ark.dart' show ArkDestinationKind;
+import 'package:ark/ark.dart' show ArkDestinationKind, ArkAccountId;
 import 'package:bull_ui/bull_ui.dart';
 
 import '../presentation/ark_l10n.dart';
 import '../presentation/ark_receive_cubit.dart';
 import '../presentation/ark_failure_l10n.dart';
 
+/// A real host share handler is optional; absence stays visibly unavailable.
+/// Host replaces the owner for full configuration/context changes.
 class ArkReceiveScreen extends StatefulWidget {
   final ArkReceiveCubit cubit;
-  const ArkReceiveScreen({super.key, required this.cubit});
+  final ValueChanged<String>? onShare;
+  const ArkReceiveScreen({super.key, required this.cubit, this.onShare});
   @override
   State<ArkReceiveScreen> createState() => _ArkReceiveScreenState();
 }
@@ -48,7 +51,11 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = arkLocalizationsOf(context);
-    final state = widget.cubit.state;
+    final owner = widget.cubit;
+    final account = owner.account;
+    final state = owner.state;
+    final ready = state is ArkReceiveReady ? state : null;
+    final destination = ready?.destination;
     return BullScaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -96,7 +103,7 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
                 ),
               if (state is ArkReceiveLoading)
                 BullText(l10n.loading, style: null),
-              if (state case ArkReceiveReady(:final destination)) ...[
+              if (ready != null && destination != null) ...[
                 BullQrCode(
                   data: destination.value,
                   size: 280,
@@ -131,6 +138,17 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
                       ),
                   ],
                 ),
+                const Gap(BullSpacing.md),
+                BullButton.big(
+                  label: l10n.share,
+                  onPressed: () => _share(owner, account, ready),
+                  disabled: widget.onShare == null || !_shareable(ready),
+                  bgColor: context.bull.surface,
+                  textColor: context.bull.text,
+                ),
+                if (widget.onShare == null)
+                  BullInfoBar(message: l10n.nativeUnavailable),
+                if (!_shareable(ready)) BullInfoBar(message: l10n.unknown),
               ],
               const Gap(BullSpacing.md),
               BullButton.big(
@@ -148,6 +166,35 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
         ),
       ),
     );
+  }
+
+  bool _shareable(ArkReceiveReady ready) =>
+      ready.destination.value.trim().isNotEmpty &&
+      (ready.destination.kind == ArkDestinationKind.ark ||
+          ready.destination.kind == ArkDestinationKind.bolt11);
+
+  // Ready identity binds this intent to the currently published request epoch.
+  void _share(
+    ArkReceiveCubit owner,
+    ArkAccountId account,
+    ArkReceiveReady rendered,
+  ) {
+    if (!mounted || owner.isClosed) return;
+    if (!identical(widget.cubit, owner) || widget.cubit.account != account) {
+      return;
+    }
+    final current = owner.state;
+    if (current is! ArkReceiveReady ||
+        !identical(current, rendered) ||
+        !identical(current.destination, rendered.destination) ||
+        current.destination.kind != rendered.destination.kind ||
+        current.destination.value != rendered.destination.value ||
+        !_shareable(rendered)) {
+      return;
+    }
+    final callback = widget.onShare;
+    if (callback == null) return;
+    callback(rendered.destination.value);
   }
 
   String _destinationLabel(BuildContext context, ArkDestinationKind kind) {
