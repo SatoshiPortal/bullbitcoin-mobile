@@ -37,8 +37,14 @@ final class ArkMaintenance {
     UpdateArkExpiryWarningUsecase(reminders),
   );
 
-  Future<Result<void, ArkFailure>> runForeground(ArkAccountId account) =>
-      _renew.execute(account);
+  Future<Result<void, ArkFailure>> runForeground(ArkAccountId account) async {
+    final delivery = await RunArkSavedClaimsUsecase(
+      _repository,
+      budget,
+    ).execute(account);
+    final renewal = await _renew.execute(account);
+    return delivery is Err ? delivery : renewal;
+  }
 
   BackgroundTaskHandler backgroundHandler() => arkRenewalHandler(
     usecase: RunArkBackgroundTaskUsecase(
