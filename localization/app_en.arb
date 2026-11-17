@@ -15539,5 +15539,17 @@
   "importMnemonicUnsupportedScript": "This wallet type is not supported on the selected Bitcoin network.",
   "@importMnemonicUnsupportedScript": {
     "description": "Shown when the selected Bitcoin network does not support this wallet script type; retrying the scan cannot enable it."
+  },
+  "transactionOrderTypeSellUsdt": "Sell USDT",
+  "@transactionOrderTypeSellUsdt": {
+    "description": "Order type of an exchange order selling USDT, shown in the transaction list and details"
+  },
+  "transactionOrderTypeFiatPayment": "Fiat Payment",
+  "@transactionOrderTypeFiatPayment": {
+    "description": "Order type of an exchange order paying a fiat recipient"
+  },
+  "transactionOrderTypeBalanceAdjustment": "Balance Adjustment",
+  "@transactionOrderTypeBalanceAdjustment": {
+    "description": "Order type of an exchange balance adjustment"
   }
 }
