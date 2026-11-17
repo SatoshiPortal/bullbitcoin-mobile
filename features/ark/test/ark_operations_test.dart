@@ -1,3 +1,5 @@
+import 'fake_ark_board_funding.dart';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/data/create_ark_facade.dart';
 import 'package:bull_ark/src/domain/ark_provisioning_port.dart';
@@ -139,6 +141,7 @@ void main() {
         );
       final preferences = Preferences()..enabled = false;
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: preferences,
         provisioning: Provisioner(),

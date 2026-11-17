@@ -1,3 +1,7 @@
+import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
+
+import 'fake_ark_board_funding.dart';
+
 import 'dart:async';
 
 import 'package:ark/ark.dart';
@@ -101,6 +105,7 @@ class Owners extends BlocObserver {
 typedef _BuildMark = ({GoRouterWidgetBuilder source, GoRouterState state});
 
 class Rig {
+  final boardFunding = FakeArkBoardFunding();
   final builds = <String, List<_BuildMark>>{};
   final selection = Selection();
   final preferences = Preferences()..enabled = true;
@@ -119,6 +124,7 @@ class Rig {
   }
   ArkFeature make(ArkAccountConfig captured, Client native) => ArkFeature(
     selection,
+    boardFunding: boardFunding,
     config: captured,
     client: native,
     preferences: preferences,
@@ -616,13 +622,14 @@ void main() {
     },
   );
   testWidgets(
-    'Board new claim and Share remain unavailable, bare internal extras never read',
+    'Board uses its required host while claim and absent Share stay unavailable',
     (tester) async {
       final r = Rig();
       await accountPage(tester, r);
       button(tester, 'Add funds').onPressed();
       await frame(tester);
-      expect(find.byType(ArkUnavailableScreen), findsOneWidget);
+      expect(find.byType(ArkBoardAmountScreen), findsOneWidget);
+      expect(r.boardFunding.calls, isEmpty);
       r.router.pop();
       await frame(tester);
       button(tester, 'Receive').onPressed();
@@ -696,6 +703,46 @@ void main() {
       expect(nextClient.calls, ['read']);
       await tester.pumpWidget(const SizedBox.shrink());
       expect(b.isClosed, false);
+    },
+  );
+  testWidgets(
+    'Settings explicitly enables the injected client and reads its balance',
+    (tester) async {
+      final r = Rig();
+      r.preferences.enabled = false;
+      r.client.snapshot = Ok(
+        ArkSnapshot(
+          account: account(),
+          revision: 3,
+          observedAt: DateTime.utc(2026),
+          spendable: Sats.fromInt(1234),
+          stale: false,
+          tipHeight: 100,
+          recovery: ArkRecoveryStatus.complete,
+          vtxoCompleteness: ArkSectionCompleteness.complete,
+        ),
+      );
+      await tester.pumpWidget(r.app());
+      await frame(tester);
+      expect(r.client.calls, isEmpty);
+      final disabledEnable = button(tester, 'Enable Ark');
+      expect(disabledEnable.disabled, true);
+      disabledEnable.onPressed();
+      await frame(tester);
+      expect(r.client.calls, isEmpty);
+      button(tester, 'I understand the direct connection').onPressed();
+      await frame(tester);
+      final enable = button(tester, 'Enable Ark').onPressed;
+      enable();
+      enable();
+      await frame(tester);
+      expect(r.client.calls, ['create']);
+      expect(r.preferences.enabled, true);
+      button(tester, 'Ark').onPressed();
+      await frame(tester);
+      expect(find.byType(ArkAccountScreen), findsOneWidget);
+      expect(find.text('1234'), findsOneWidget);
+      expect(r.client.calls, ['create', 'read']);
     },
   );
 }

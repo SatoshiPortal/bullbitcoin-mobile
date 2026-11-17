@@ -1,3 +1,5 @@
+import 'fake_ark_board_funding.dart';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/data/create_ark_facade.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
@@ -43,6 +45,7 @@ void main() {
         ),
       ]);
     final facade = createArkFacade(
+      boardFunding: FakeArkBoardFunding(),
       client: client,
       preferences: preferences,
       provisioning: Provisioner(),
@@ -75,6 +78,7 @@ void main() {
       final registry = Registry()
         ..inventory = const Err(ArkFeatureStorageFailure());
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: Preferences(),
         provisioning: Provisioner(),
@@ -97,6 +101,7 @@ void main() {
       final registry = Registry();
       final client = FakeArkClient();
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: Preferences(),
         provisioning: Provisioner(),
@@ -116,6 +121,7 @@ void main() {
   test('missing configured inventory capability fails closed', () async {
     final client = FakeArkClient();
     final facade = createArkFacade(
+      boardFunding: FakeArkBoardFunding(),
       client: client,
       preferences: Preferences(),
       provisioning: Provisioner(),

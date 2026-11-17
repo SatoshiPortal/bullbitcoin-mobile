@@ -1,3 +1,5 @@
+import 'fake_ark_board_funding.dart';
+
 import 'dart:async';
 import 'dart:io';
 
@@ -118,6 +120,7 @@ void main() {
   test('persisted protected funded-off account delivers original claim before keyed sync failure', () async {
     final preferences = Preferences()..enabled = false;
     final facade = createArkFacade(
+      boardFunding: FakeArkBoardFunding(),
       client: client,
       preferences: preferences,
       provisioning: Provisioner(),

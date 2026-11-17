@@ -1,3 +1,5 @@
+import 'fake_ark_board_funding.dart';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ark/bull_ark.dart'
     show
@@ -71,6 +73,7 @@ void main() {
   test('off and stale unknown recovery can review immutable saved claim without a quote', () async {
     final client = FakeArkClient()..snapshot = Ok(journal());
     final facade = createArkFacade(
+      boardFunding: FakeArkBoardFunding(),
       client: client,
       preferences: Preferences()..enabled = false,
       provisioning: Provisioner(),
@@ -95,6 +98,7 @@ void main() {
         ..snapshot = Ok(journal())
         ..submitted = const Err(ArkUnavailableFailure());
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: Preferences()..enabled = false,
         provisioning: Provisioner(),
@@ -131,6 +135,7 @@ void main() {
     () async {
       final client = FakeArkClient()..snapshot = Ok(journal());
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: Preferences(),
         provisioning: Provisioner(),
@@ -157,6 +162,7 @@ void main() {
   test('saved claim review cannot enter generic quote confirmation', () async {
     final client = FakeArkClient()..snapshot = Ok(journal());
     final facade = createArkFacade(
+      boardFunding: FakeArkBoardFunding(),
       client: client,
       preferences: Preferences(),
       provisioning: Provisioner(),
@@ -179,6 +185,7 @@ void main() {
     () async {
       final client = FakeArkClient();
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: Preferences(),
         provisioning: Provisioner(),
@@ -206,6 +213,7 @@ void main() {
         final client = FakeArkClient()
           ..snapshot = Ok(journal(operations: [operation]));
         final facade = createArkFacade(
+          boardFunding: FakeArkBoardFunding(),
           client: client,
           preferences: Preferences(),
           provisioning: Provisioner(),
@@ -230,6 +238,7 @@ void main() {
     );
     final client = FakeArkClient()..snapshot = Ok(journal(id: other));
     final facade = createArkFacade(
+      boardFunding: FakeArkBoardFunding(),
       client: client,
       preferences: Preferences(),
       provisioning: Provisioner(),
@@ -245,6 +254,7 @@ void main() {
     () async {
       final client = FakeArkClient()..snapshot = Ok(journal(operations: []));
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: Preferences(),
         provisioning: Provisioner(),
@@ -266,6 +276,7 @@ void main() {
     () async {
       final client = Throwing()..snapshot = Ok(journal());
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: Preferences(),
         provisioning: Provisioner(),

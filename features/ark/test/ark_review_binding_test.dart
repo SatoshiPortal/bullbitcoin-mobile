@@ -1,3 +1,5 @@
+import 'fake_ark_board_funding.dart';
+
 import 'package:ark/ark.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkFailure, ArkDisabledFailure;
 import 'package:bull_ark/src/data/create_ark_facade.dart';
@@ -56,6 +58,7 @@ void main() {
       final client = JournalClient()..quoted = Ok(trusted);
       final preferences = Preferences();
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: preferences,
         provisioning: Provisioner(),
@@ -102,6 +105,7 @@ void main() {
       final client = JournalClient()..quoted = Ok(quote(id));
       final preferences = Preferences();
       final facade = createArkFacade(
+        boardFunding: FakeArkBoardFunding(),
         client: client,
         preferences: preferences,
         provisioning: Provisioner(),
