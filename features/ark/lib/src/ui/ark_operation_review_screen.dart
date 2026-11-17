@@ -64,6 +64,17 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     super.dispose();
   }
 
+  bool _exitProgress(ArkOperationCubit owner, ArkQuote quote) =>
+      owner.request is ArkExitProgressQuoteRequest ||
+      quote.kind == ArkOperationKind.exitProgress;
+
+  bool _hasReviewFacts(ArkOperationCubit owner, ArkQuote quote) =>
+      !_exitProgress(owner, quote) ||
+      (owner.request is ArkExitProgressQuoteRequest &&
+          quote.kind == ArkOperationKind.exitProgress &&
+          quote.feeRate != null &&
+          quote.confirmedReserveExposure != null);
+
   void _confirm(
     ArkOperationCubit owner,
     ArkAccountId account,
@@ -73,7 +84,8 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     final current = widget.cubit.state;
     if (current is! ArkOperationReview ||
         !identical(current.quote, rendered.quote) ||
-        current.quote.account != account) {
+        current.quote.account != account ||
+        !_hasReviewFacts(owner, current.quote)) {
       return;
     }
     unawaited(widget.cubit.confirm());
@@ -135,6 +147,13 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                 if (reviewed.quote.account != account)
                   BullInfoBar(message: l10n.unavailable),
                 if (reviewed.quote.account == account) ...[
+                  if (_exitProgress(owner, reviewed.quote))
+                    BullInfoBar(
+                      message: l10n.exitProgressReviewWarning,
+                      tone: BullInfoTone.warning,
+                    ),
+                  if (!_hasReviewFacts(owner, reviewed.quote))
+                    BullInfoBar(message: l10n.exitProgressReviewIncomplete),
                   BullDetailsTable(
                     items: [
                       BullDetailsTableItem(
@@ -142,9 +161,26 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                         displayValue: reviewed.quote.amount.value.toString(),
                       ),
                       BullDetailsTableItem(
-                        label: l10n.feeInSats,
+                        label: _exitProgress(owner, reviewed.quote)
+                            ? l10n.exitProgressEstimatedFee
+                            : l10n.feeInSats,
                         displayValue: reviewed.quote.fee.value.toString(),
                       ),
+                      if (_exitProgress(owner, reviewed.quote)) ...[
+                        BullDetailsTableItem(
+                          label: l10n.exitProgressFeeRate,
+                          displayValue:
+                              reviewed.quote.feeRate?.satsPerVbyte.toString() ??
+                              l10n.unknown,
+                        ),
+                        BullDetailsTableItem(
+                          label: l10n.exitProgressReserveExposure,
+                          displayValue:
+                              reviewed.quote.confirmedReserveExposure?.value
+                                  .toString() ??
+                              l10n.unknown,
+                        ),
+                      ],
                       BullDetailsTableItem(
                         label: l10n.netInSats,
                         displayValue: reviewed.quote.net.value.toString(),
@@ -163,6 +199,7 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                     l10n.confirm,
                     () => _confirm(owner, account, reviewed),
                     primary: true,
+                    disabled: !_hasReviewFacts(owner, reviewed.quote),
                   ),
                 ],
               ],
@@ -212,11 +249,13 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     String label,
     VoidCallback action, {
     bool primary = false,
+    bool disabled = false,
   }) => Padding(
     padding: const EdgeInsets.only(top: BullSpacing.md),
     child: BullButton.big(
       label: label,
       onPressed: action,
+      disabled: disabled,
       bgColor: primary ? context.bull.primary : context.bull.surface,
       textColor: primary ? context.bull.onPrimary : context.bull.text,
     ),
