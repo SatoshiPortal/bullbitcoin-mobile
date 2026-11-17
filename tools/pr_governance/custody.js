@@ -1,5 +1,7 @@
 'use strict';
 
+const { posix } = require('node:path');
+
 // Changes that touch the boundary around users' seeds, and why each is flagged.
 //
 // One policy, two uses: `custody-check.js` fails `make custody-ci-check` on the whole tree, and the
@@ -25,6 +27,10 @@ const inBindings = (path) => /^packages\/(rust_bindings|onion)\//.test(path);
 const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
 
+const packageRoot = (path) => path.split('/').slice(0, 2).join('/') + '/';
+const leavesPackage = (text, path) => [...text.matchAll(/['"]([^'":]*\.dart)['"]/g)].some(([, uri]) =>
+  !posix.normalize(posix.join(posix.dirname(path), uri)).startsWith(packageRoot(path)));
+
 const RULES = [
   {
     id: 'seal-ignore',
@@ -48,8 +54,9 @@ const RULES = [
   {
     id: 'bindings-secrets',
     applies: (path) => inBindings(path) && isDart(path),
-    // A relative path into secrets/lib reaches the same library without naming the package.
-    matches: (text) => /['"](package:secrets[/'"]|[^'"]*\bsecrets\/lib\/)/.test(text),
+    // A relative URI is resolved against the importing file: any path that leaves the package, in
+    // whatever spelling, could reach secrets without naming it, so only package: imports may.
+    matches: (text, path) => /['"]package:secrets[/'"]/.test(text) || leavesPackage(text, path),
     why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
   },
   {
@@ -69,7 +76,7 @@ const RULES = [
 const relevant = (path) => RULES.some((rule) => rule.applies(path));
 
 function check(path, line, text) {
-  return RULES.filter((rule) => rule.applies(path) && rule.matches(text)).map((rule) => ({ rule: rule.id, path, line, text: text.trim(), why: rule.why }));
+  return RULES.filter((rule) => rule.applies(path) && rule.matches(text, path)).map((rule) => ({ rule: rule.id, path, line, text: text.trim(), why: rule.why }));
 }
 
 // Added lines of a pull request, from the REST `pulls.listFiles` entries ({ filename, status, patch }).
