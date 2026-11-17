@@ -184,6 +184,7 @@ class _CopyField extends StatelessWidget {
         BullCopyField(
           text: value,
           copiedMessage: context.loc.copiedToClipboard,
+          copyLabel: context.loc.copyDialogButton,
         ),
       ],
     );
