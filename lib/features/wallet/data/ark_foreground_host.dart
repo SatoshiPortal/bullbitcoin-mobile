@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
+import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_ark/bull_ark.dart'
     show ArkFailure, ArkServiceUnavailableFailure;
@@ -33,8 +34,10 @@ final class ArkForegroundHost {
   final Uri _ark;
   final Uri _esplora;
   final bool _initialize;
+  final ArkPreferencesRepository? _preferences;
   ArkForegroundRuntime? _runtime;
   Future<Result<ArkForegroundRuntime, ArkFailure>>? _pending;
+  int _generation = 0;
   bool _closed = false;
 
   ArkForegroundHost(
@@ -42,6 +45,7 @@ final class ArkForegroundHost {
     required Uri arkUrl,
     required Uri primaryEsploraUrl,
     required bool initializeNew,
+    this._preferences,
   }) : _ark = arkUrl,
        _esplora = primaryEsploraUrl,
        _initialize = initializeNew;
@@ -82,8 +86,26 @@ final class ArkForegroundHost {
   Future<Result<ArkForegroundRuntime, ArkFailure>> current() =>
       _pending ??= _current().whenComplete(() => _pending = null);
 
+  /// Synchronously retires the current runtime and its mounted pages.
+  ///
+  /// Call when the app context Ark depends on changes, such as the active
+  /// network. A runtime still opening is closed instead of published.
+  void invalidate() {
+    ++_generation;
+    final runtime = _runtime;
+    _runtime = null;
+    if (runtime == null) return;
+    runtime.invalidate();
+    unawaited(
+      runtime.close().catchError((Object error, StackTrace stack) {
+        log.warning('Ark runtime close failed', error: error, trace: stack);
+      }),
+    );
+  }
+
   Future<Result<ArkForegroundRuntime, ArkFailure>> _current() async {
     if (_closed) return const Err(ArkServiceUnavailableFailure());
+    final generation = _generation;
     final existing = _runtime;
     if (existing != null) {
       if (await existing.isCurrent()) return Ok(existing);
@@ -96,9 +118,10 @@ final class ArkForegroundHost {
       arkUrl: _ark,
       primaryEsploraUrl: _esplora,
       initializeNew: _initialize,
+      preferences: _preferences,
     );
     if (opened case Ok(:final value)) {
-      if (_closed) {
+      if (_closed || generation != _generation) {
         await value.close();
         return const Err(ArkServiceUnavailableFailure());
       }

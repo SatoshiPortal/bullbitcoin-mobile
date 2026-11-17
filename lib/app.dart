@@ -21,6 +21,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.dart';
 import 'package:bb_mobile/localizations.dart';
+import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -135,6 +136,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   previous.environment != null &&
                   previous.environment != current.environment,
               listener: (context, settings) async {
+                // Ark pages must not act for the previous network's wallet.
+                if (locator.isRegistered<ArkForegroundHost>()) {
+                  locator<ArkForegroundHost>().invalidate();
+                }
                 context.read<WalletBloc>().add(const WalletStarted());
                 final _ = await locator<ExchangeFacade>().resolveAccess();
               },
