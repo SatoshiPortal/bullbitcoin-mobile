@@ -83,15 +83,15 @@ class BullQuickAction extends StatelessWidget {
                   onTap: tap,
                   onLongPress: longPress,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                       horizontal: BullSpacing.xxs,
-                      vertical: BullSpacing.xxs,
+                      vertical: flat ? BullSpacing.xxs / 2 : BullSpacing.xxs,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (flat)
-                          BullIcon(icon, size: 26, color: foreground)
+                          BullIcon(icon, size: 24, color: foreground)
                         else
                           Container(
                             width: _disc,
@@ -111,7 +111,9 @@ class BullQuickAction extends StatelessWidget {
                               ),
                             ),
                           ),
-                        const SizedBox(height: BullSpacing.xs),
+                        SizedBox(
+                          height: flat ? BullSpacing.xxs : BullSpacing.xs,
+                        ),
                         Text(
                           label,
                           maxLines: 1,
@@ -140,7 +142,9 @@ class BullQuickAction extends StatelessWidget {
 }
 
 /// A card of [BullQuickAction]s split by hairline dividers, icon over label
-/// with no disc: the strip that straddles the bottom edge of a hero.
+/// with no disc: the strip that straddles the bottom edge of a hero. White on
+/// the light palette ([BullTheme.surface]), black on the dark one
+/// ([BullTheme.background]).
 class BullQuickActionBar extends StatelessWidget {
   const BullQuickActionBar({super.key, required this.children});
 
@@ -148,7 +152,7 @@ class BullQuickActionBar extends StatelessWidget {
   final List<Widget> children;
 
   /// Height of the card.
-  static const double height = 88;
+  static const double height = 72;
 
   /// Whether [context] sits inside a [BullQuickActionBar].
   static bool of(BuildContext context) =>
@@ -159,6 +163,7 @@ class BullQuickActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final radius = BorderRadius.circular(context.bullShapes.card);
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return _BullQuickActionBarScope(
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -172,7 +177,7 @@ class BullQuickActionBar extends StatelessWidget {
           ],
         ),
         child: Material(
-          color: colors.onSecondary,
+          color: dark ? colors.background : colors.surface,
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: radius,
@@ -203,33 +208,8 @@ class _BullQuickActionBarScope extends InheritedWidget {
   bool updateShouldNotify(_BullQuickActionBarScope oldWidget) => false;
 }
 
-/// A row of up to four [BullQuickAction]s sharing the width equally, at
-/// [BullQuickAction.height]: Home's and the exchange's shortcut strip.
-class BullQuickActionRow extends StatelessWidget {
-  const BullQuickActionRow({super.key, required this.children});
-
-  /// The actions, left to right.
-  final List<Widget> children;
-
-  /// Gap between two cells.
-  static const double spacing = BullSpacing.xs;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    height: BullQuickAction.height,
-    child: Row(
-      children: [
-        for (final (index, child) in children.indexed) ...[
-          if (index > 0) const SizedBox(width: spacing),
-          Expanded(child: child),
-        ],
-      ],
-    ),
-  );
-}
-
-/// [BullQuickAction]s wrapped into rows of [columns] cells as wide as one
-/// [BullQuickActionRow] cell: the More sheet and the editor.
+/// [BullQuickAction]s wrapped into rows of [columns] equal cells: the More
+/// sheet and the editor.
 class BullQuickActionGrid extends StatelessWidget {
   const BullQuickActionGrid({
     super.key,
@@ -243,15 +223,16 @@ class BullQuickActionGrid extends StatelessWidget {
   /// Cells per row.
   final int columns;
 
+  /// Gap between two cells.
+  static const double spacing = BullSpacing.xs;
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final width =
-          (constraints.maxWidth - BullQuickActionRow.spacing * (columns - 1)) /
-          columns;
+      final width = (constraints.maxWidth - spacing * (columns - 1)) / columns;
       return Wrap(
-        spacing: BullQuickActionRow.spacing,
-        runSpacing: BullQuickActionRow.spacing,
+        spacing: spacing,
+        runSpacing: spacing,
         children: [
           for (final child in children) SizedBox(width: width, child: child),
         ],

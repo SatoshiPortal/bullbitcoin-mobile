@@ -27,6 +27,9 @@ class WalletHomeTopSection extends StatelessWidget {
   /// Distance from the top of the dark area down to the balance.
   static const double _balanceTopSpacing = 96;
 
+  /// Backdrop kept visible between the balance and the quick actions card.
+  static const double _actionsTopSpacing = 32;
+
   /// How far the quick actions card hangs below the background: half of it
   /// straddles the bottom edge, while the balance above is never covered.
   static const double _actionsOverhang = BullQuickActionBar.height / 2;
@@ -54,7 +57,7 @@ class WalletHomeTopSection extends StatelessWidget {
               constraints: const BoxConstraints(minHeight: _balanceAreaHeight),
               child: const _UI(),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: _actionsTopSpacing),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 13.0),
               child: actions,
