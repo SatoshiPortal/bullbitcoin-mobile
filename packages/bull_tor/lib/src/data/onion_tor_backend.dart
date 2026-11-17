@@ -184,9 +184,12 @@ final class OnionTorBackend implements EmbeddedTorPort {
         },
       );
 
-      await service.bootstrap();
+      // No SDK deadline: the repository's per-transport budget stops the
+      // attempt, and Snowflake bootstraps outlast the SDK's default 120 s
+      // while Arti is still progressing.
+      await service.bootstrapWithTimeout(timeoutMs: null);
       if (generation != _generation) throw _cancelled();
-      // `bootstrap()` returns once the directory is usable, before Arti
+      // Bootstrap returns once the directory is usable, before Arti
       // reports `readyForTraffic`; announcing readiness then sent the first
       // request into a client that was not ready yet.
       await waitForTraffic(trafficReadyTimeoutFor(transport));
