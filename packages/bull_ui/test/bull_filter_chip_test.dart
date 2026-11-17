@@ -18,6 +18,20 @@ void main() {
     expect(removed, isTrue);
   });
 
+  testWidgets('removable chip offers a named 48 dp remove target', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrapWithTheme(BullFilterChip(label: 'Date', onRemove: () {})),
+    );
+
+    final target = find.byTooltip('Delete');
+    expect(target, findsOneWidget);
+    final size = tester.getSize(target);
+    expect(size.width, greaterThanOrEqualTo(48));
+    expect(size.height, greaterThanOrEqualTo(48));
+  });
+
   testWidgets('selectable chip invokes whole-chip selection semantics', (
     tester,
   ) async {
