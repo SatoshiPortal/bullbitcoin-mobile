@@ -261,5 +261,13 @@
   "exitProgressReserveNotice": "Progress may expose the account-wide confirmed exit reserve. A future review must show the actual fee and reserve at risk.",
   "@exitProgressReserveNotice": {},
   "exitProgressRateInvalid": "Enter a positive whole rate in sat/vB within the supported exact-integer input range.",
-  "@exitProgressRateInvalid": {}
+  "@exitProgressRateInvalid": {},
+  "exitProgressEstimatedFee": "Estimated fee (sats)",
+  "@exitProgressEstimatedFee": {},
+  "exitProgressReserveExposure": "Confirmed reserve at risk (sats)",
+  "@exitProgressReserveExposure": {},
+  "exitProgressReviewWarning": "This one foreground attempt is account-wide and may expose the entire quoted confirmed internal reserve. The fee is an estimate and the returned quote rate is not a strict financial cap. This is not standing consent for later attempts or new deposits.",
+  "@exitProgressReviewWarning": {},
+  "exitProgressReviewIncomplete": "This exit progression review is incomplete or mismatched. Confirmation is unavailable.",
+  "@exitProgressReviewIncomplete": {}
 }

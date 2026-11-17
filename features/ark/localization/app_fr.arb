@@ -121,5 +121,9 @@
   "exitProgressAccount": "Compte Ark pour la progression de sortie : {account}",
   "exitProgressFeeRate": "Taux de frais (sat/vB)",
   "exitProgressReserveNotice": "La progression peut exposer la réserve de sortie confirmée de tout le compte. Une future revue devra présenter les frais réels et la réserve exposée.",
-  "exitProgressRateInvalid": "Saisissez un taux entier positif en sat/vB, dans la plage de saisie à représentation entière exacte."
+  "exitProgressRateInvalid": "Saisissez un taux entier positif en sat/vB, dans la plage de saisie à représentation entière exacte.",
+  "exitProgressEstimatedFee": "Frais estimés (sats)",
+  "exitProgressReserveExposure": "Réserve confirmée exposée (sats)",
+  "exitProgressReviewWarning": "Cette tentative unique au premier plan concerne tout le compte et peut exposer toute la réserve interne confirmée indiquée par le devis. Les frais sont estimatifs et le taux renvoyé par le devis ne constitue pas un plafond financier strict. Cela ne vaut pas autorisation permanente pour de futures tentatives ou de nouveaux dépôts.",
+  "exitProgressReviewIncomplete": "Cette revue de progression de sortie est incomplète ou incohérente. La confirmation est indisponible."
 }
