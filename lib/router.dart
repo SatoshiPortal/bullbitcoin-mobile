@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bb_mobile/features/map/ui/map_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 
@@ -83,7 +84,7 @@ class AppRouter {
   static void _openQuickAction(BuildContext context, QuickAction action) {
     switch (action) {
       case QuickAction.map:
-        context.pushNamed(SettingsRoute.btcMap.name);
+        context.pushNamed(MapRouter.name);
       case QuickAction.transfer:
         context.pushNamed(SwapRoute.swap.name);
       case QuickAction.history:
@@ -252,6 +253,7 @@ class AppRouter {
       ),
       LabelsRouter.route,
       StatusCheckRouter.route,
+      MapRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
