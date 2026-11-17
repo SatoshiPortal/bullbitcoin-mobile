@@ -182,14 +182,10 @@ fn wire__lwk__api__transaction__LiquidTransaction_from_bytes_impl(
         },
         move || {
             let api_tx_bytes = tx_bytes.cst_decode();
-            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                (move || {
-                    let output_ok =
-                        lwk::api::transaction::LiquidTransaction::from_bytes(api_tx_bytes)?;
-                    std::result::Result::Ok(output_ok)
-                })()
-                .map_err(FrbWrapper),
-            )
+            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                let output_ok = lwk::api::transaction::LiquidTransaction::from_bytes(api_tx_bytes)?;
+                std::result::Result::Ok(output_ok)
+            })().map_err(FrbWrapper))
         },
     )
 }
@@ -204,14 +200,11 @@ fn wire__lwk__api__transaction__LiquidTransaction_from_pset_impl(
         },
         move || {
             let api_pset_string = pset_string.cst_decode();
-            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                (move || {
-                    let output_ok =
-                        lwk::api::transaction::LiquidTransaction::from_pset(api_pset_string)?;
-                    std::result::Result::Ok(output_ok)
-                })()
-                .map_err(FrbWrapper),
-            )
+            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                let output_ok =
+                    lwk::api::transaction::LiquidTransaction::from_pset(api_pset_string)?;
+                std::result::Result::Ok(output_ok)
+            })().map_err(FrbWrapper))
         },
     )
 }
@@ -867,30 +860,27 @@ fn wire__lwk__api__transaction__PartiallySignedElementsTransaction_extract_tx_im
         },
         move || {
             let api_that = that.cst_decode();
-            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                (move || {
-                    let mut api_that_guard = None;
-                    let decode_indices_ =
-                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
-                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                &api_that, 0, false,
-                            ),
-                        ]);
-                    for i in decode_indices_ {
-                        match i {
-                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                            _ => unreachable!(),
-                        }
+            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                let mut api_that_guard = None;
+                let decode_indices_ =
+                    flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                        flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                            &api_that, 0, false,
+                        ),
+                    ]);
+                for i in decode_indices_ {
+                    match i {
+                        0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                        _ => unreachable!(),
                     }
-                    let api_that_guard = api_that_guard.unwrap();
-                    let output_ok =
-                        lwk::api::transaction::PartiallySignedElementsTransaction::extract_tx(
-                            &*api_that_guard,
-                        )?;
-                    std::result::Result::Ok(output_ok)
-                })()
-                .map_err(FrbWrapper),
-            )
+                }
+                let api_that_guard = api_that_guard.unwrap();
+                let output_ok =
+                    lwk::api::transaction::PartiallySignedElementsTransaction::extract_tx(
+                        &*api_that_guard,
+                    )?;
+                std::result::Result::Ok(output_ok)
+            })().map_err(FrbWrapper))
         },
     )
 }
@@ -905,16 +895,13 @@ fn wire__lwk__api__transaction__PartiallySignedElementsTransaction_from_string_i
         },
         move || {
             let api_pset_string = pset_string.cst_decode();
-            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                (move || {
-                    let output_ok =
-                        lwk::api::transaction::PartiallySignedElementsTransaction::from_string(
-                            api_pset_string,
-                        )?;
-                    std::result::Result::Ok(output_ok)
-                })()
-                .map_err(FrbWrapper),
-            )
+            transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                let output_ok =
+                    lwk::api::transaction::PartiallySignedElementsTransaction::from_string(
+                        api_pset_string,
+                    )?;
+                std::result::Result::Ok(output_ok)
+            })().map_err(FrbWrapper))
         },
     )
 }
@@ -2818,28 +2805,24 @@ fn wire__lwk__api__wallet__Wallet_address_impl(
             let api_that = that.cst_decode();
             let api_index = index.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok =
-                            lwk::api::wallet::Wallet::address(&*api_that_guard, api_index)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::address(&*api_that_guard, api_index)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -2857,28 +2840,25 @@ fn wire__lwk__api__wallet__Wallet_address_last_unused_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok =
-                            lwk::api::wallet::Wallet::address_last_unused(&*api_that_guard)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok =
+                        lwk::api::wallet::Wallet::address_last_unused(&*api_that_guard)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -2896,27 +2876,24 @@ fn wire__lwk__api__wallet__Wallet_balances_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::balances(&*api_that_guard)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::balances(&*api_that_guard)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -2934,27 +2911,24 @@ fn wire__lwk__api__wallet__Wallet_blinding_key_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::blinding_key(&*api_that_guard)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::blinding_key(&*api_that_guard)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -2980,33 +2954,30 @@ fn wire__lwk__api__wallet__Wallet_build_asset_tx_impl(
             let api_fee_rate = fee_rate.cst_decode();
             let api_asset = asset.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::build_asset_tx(
-                            &*api_that_guard,
-                            api_sats,
-                            api_out_address,
-                            api_fee_rate,
-                            api_asset,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::build_asset_tx(
+                        &*api_that_guard,
+                        api_sats,
+                        api_out_address,
+                        api_fee_rate,
+                        api_asset,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3032,33 +3003,30 @@ fn wire__lwk__api__wallet__Wallet_build_custom_tx_impl(
             let api_drain_to = drain_to.cst_decode();
             let api_fee_rate = fee_rate.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::build_custom_tx(
-                            &*api_that_guard,
-                            api_utxos,
-                            api_outputs,
-                            api_drain_to,
-                            api_fee_rate,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::build_custom_tx(
+                        &*api_that_guard,
+                        api_utxos,
+                        api_outputs,
+                        api_drain_to,
+                        api_fee_rate,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3084,33 +3052,30 @@ fn wire__lwk__api__wallet__Wallet_build_lbtc_tx_impl(
             let api_fee_rate = fee_rate.cst_decode();
             let api_drain = drain.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::build_lbtc_tx(
-                            &*api_that_guard,
-                            api_sats,
-                            api_out_address,
-                            api_fee_rate,
-                            api_drain,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::build_lbtc_tx(
+                        &*api_that_guard,
+                        api_sats,
+                        api_out_address,
+                        api_fee_rate,
+                        api_drain,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3134,32 +3099,29 @@ fn wire__lwk__api__wallet__Wallet_consolidate_impl(
             let api_high_utxo_threshold = high_utxo_threshold.cst_decode();
             let api_maximum_inputs = maximum_inputs.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::consolidate(
-                            &*api_that_guard,
-                            api_fee_rate,
-                            api_high_utxo_threshold,
-                            api_maximum_inputs,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::consolidate(
+                        &*api_that_guard,
+                        api_fee_rate,
+                        api_high_utxo_threshold,
+                        api_maximum_inputs,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3179,28 +3141,25 @@ fn wire__lwk__api__wallet__Wallet_decode_tx_impl(
             let api_that = that.cst_decode();
             let api_pset = pset.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok =
-                            lwk::api::wallet::Wallet::decode_tx(&*api_that_guard, api_pset)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok =
+                        lwk::api::wallet::Wallet::decode_tx(&*api_that_guard, api_pset)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3218,27 +3177,24 @@ fn wire__lwk__api__wallet__Wallet_descriptor_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::descriptor(&*api_that_guard)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::descriptor(&*api_that_guard)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3262,18 +3218,15 @@ fn wire__lwk__api__wallet__Wallet_init_impl(
             let api_descriptor = descriptor.cst_decode();
             let api_policy_asset = policy_asset.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::wallet::Wallet::init(
-                            api_network,
-                            api_dbpath,
-                            api_descriptor,
-                            api_policy_asset,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::wallet::Wallet::init(
+                        api_network,
+                        api_dbpath,
+                        api_descriptor,
+                        api_policy_asset,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3291,27 +3244,24 @@ fn wire__lwk__api__wallet__Wallet_policy_asset_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::policy_asset(&*api_that_guard)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::policy_asset(&*api_that_guard)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3335,32 +3285,29 @@ fn wire__lwk__api__wallet__Wallet_sign_tx_impl(
             let api_pset = pset.cst_decode();
             let api_mnemonic = mnemonic.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::sign_tx(
-                            &*api_that_guard,
-                            api_network,
-                            api_pset,
-                            api_mnemonic,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::sign_tx(
+                        &*api_that_guard,
+                        api_network,
+                        api_pset,
+                        api_mnemonic,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3384,32 +3331,29 @@ fn wire__lwk__api__wallet__Wallet_sign_tx_with_seed_impl(
             let api_pset = pset.cst_decode();
             let api_seed = seed.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::sign_tx_with_seed(
-                            &*api_that_guard,
-                            api_network,
-                            api_pset,
-                            api_seed,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::sign_tx_with_seed(
+                        &*api_that_guard,
+                        api_network,
+                        api_pset,
+                        api_seed,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3433,32 +3377,29 @@ fn wire__lwk__api__wallet__Wallet_signed_pset_with_extra_details_impl(
             let api_pset = pset.cst_decode();
             let api_mnemonic = mnemonic.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::signed_pset_with_extra_details(
-                            &*api_that_guard,
-                            api_network,
-                            api_pset,
-                            api_mnemonic,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::signed_pset_with_extra_details(
+                        &*api_that_guard,
+                        api_network,
+                        api_pset,
+                        api_mnemonic,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3482,33 +3423,30 @@ fn wire__lwk__api__wallet__Wallet_signed_pset_with_extra_details_with_seed_impl(
             let api_pset = pset.cst_decode();
             let api_seed = seed.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok =
-                            lwk::api::wallet::Wallet::signed_pset_with_extra_details_with_seed(
-                                &*api_that_guard,
-                                api_network,
-                                api_pset,
-                                api_seed,
-                            )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok =
+                        lwk::api::wallet::Wallet::signed_pset_with_extra_details_with_seed(
+                            &*api_that_guard,
+                            api_network,
+                            api_pset,
+                            api_seed,
+                        )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3534,33 +3472,30 @@ fn wire__lwk__api__wallet__Wallet_sync_impl(
             let api_stop_at_index = stop_at_index.cst_decode();
             let api_timeout = timeout.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::sync(
-                            &*api_that_guard,
-                            api_electrum_url,
-                            api_validate_domain,
-                            api_stop_at_index,
-                            api_timeout,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::sync(
+                        &*api_that_guard,
+                        api_electrum_url,
+                        api_validate_domain,
+                        api_stop_at_index,
+                        api_timeout,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3578,27 +3513,24 @@ fn wire__lwk__api__wallet__Wallet_txs_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::txs(&*api_that_guard)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::txs(&*api_that_guard)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3616,27 +3548,24 @@ fn wire__lwk__api__wallet__Wallet_utxos_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let mut api_that_guard = None;
-                        let decode_indices_ =
-                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
-                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
-                                    &api_that, 0, false,
-                                )],
-                            );
-                        for i in decode_indices_ {
-                            match i {
-                                0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
-                                _ => unreachable!(),
-                            }
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let mut api_that_guard = None;
+                    let decode_indices_ =
+                        flutter_rust_bridge::for_generated::lockable_compute_decode_order(vec![
+                            flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                &api_that, 0, false,
+                            ),
+                        ]);
+                    for i in decode_indices_ {
+                        match i {
+                            0 => api_that_guard = Some(api_that.lockable_decode_sync_ref()),
+                            _ => unreachable!(),
                         }
-                        let api_that_guard = api_that_guard.unwrap();
-                        let output_ok = lwk::api::wallet::Wallet::utxos(&*api_that_guard)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                    }
+                    let api_that_guard = api_that_guard.unwrap();
+                    let output_ok = lwk::api::wallet::Wallet::utxos(&*api_that_guard)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3658,17 +3587,14 @@ fn wire__lwk__api__types__address_address_from_script_impl(
             let api_script = script.cst_decode();
             let api_blinding_key = blinding_key.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::types::Address::address_from_script(
-                            api_network,
-                            api_script,
-                            api_blinding_key,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::types::Address::address_from_script(
+                        api_network,
+                        api_script,
+                        api_blinding_key,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3686,13 +3612,10 @@ fn wire__lwk__api__types__address_validate_impl(
         move || {
             let api_address_string = address_string.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::types::Address::validate(api_address_string)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::types::Address::validate(api_address_string)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3714,17 +3637,14 @@ fn wire__lwk__api__blockchain__blockchain_broadcast_signed_pset_impl(
             let api_electrum_url = electrum_url.cst_decode();
             let api_signed_pset = signed_pset.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::blockchain::Blockchain::broadcast_signed_pset(
-                            api_network,
-                            api_electrum_url,
-                            api_signed_pset,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::blockchain::Blockchain::broadcast_signed_pset(
+                        api_network,
+                        api_electrum_url,
+                        api_signed_pset,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3746,17 +3666,14 @@ fn wire__lwk__api__blockchain__blockchain_broadcast_tx_bytes_impl(
             let api_electrum_url = electrum_url.cst_decode();
             let api_tx_bytes = tx_bytes.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::blockchain::Blockchain::broadcast_tx_bytes(
-                            api_network,
-                            api_electrum_url,
-                            api_tx_bytes,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::blockchain::Blockchain::broadcast_tx_bytes(
+                        api_network,
+                        api_electrum_url,
+                        api_tx_bytes,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -3778,17 +3695,14 @@ fn wire__lwk__api__blockchain__blockchain_test_impl(
             let api_network = network.cst_decode();
             let api_electrum_url = electrum_url.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::blockchain::Blockchain::test(
-                            &api_that,
-                            api_network,
-                            api_electrum_url,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::blockchain::Blockchain::test(
+                        &api_that,
+                        api_network,
+                        api_electrum_url,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -4013,13 +3927,10 @@ fn wire__boltz__api__btc_ln__btc_ln_swap_from_json_impl(
         move || {
             let api_json_str = json_str.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
-                    (move || {
-                        let output_ok = boltz::api::btc_ln::BtcLnSwap::from_json(&api_json_str)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>((move || {
+                    let output_ok = boltz::api::btc_ln::BtcLnSwap::from_json(&api_json_str)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -4317,13 +4228,10 @@ fn wire__boltz__api__btc_ln__btc_ln_swap_to_json_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
-                    (move || {
-                        let output_ok = boltz::api::btc_ln::BtcLnSwap::to_json(&api_that)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>((move || {
+                    let output_ok = boltz::api::btc_ln::BtcLnSwap::to_json(&api_that)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -5071,16 +4979,13 @@ fn wire__lwk__api__descriptor__descriptor_new_confidential_impl(
             let api_network = network.cst_decode();
             let api_mnemonic = mnemonic.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::descriptor::Descriptor::new_confidential(
-                            api_network,
-                            api_mnemonic,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::descriptor::Descriptor::new_confidential(
+                        api_network,
+                        api_mnemonic,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -5100,17 +5005,13 @@ fn wire__lwk__api__descriptor__descriptor_new_confidential_from_seed_impl(
             let api_network = network.cst_decode();
             let api_seed = seed.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok =
-                            lwk::api::descriptor::Descriptor::new_confidential_from_seed(
-                                api_network,
-                                api_seed,
-                            )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::descriptor::Descriptor::new_confidential_from_seed(
+                        api_network,
+                        api_seed,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -5213,13 +5114,10 @@ fn wire__lwk__api__transaction__extract_tx_bytes_impl(
         move || {
             let api_pset = pset.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok = lwk::api::transaction::extract_tx_bytes(api_pset)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::transaction::extract_tx_bytes(api_pset)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -5586,14 +5484,10 @@ fn wire__lwk__api__transaction__get_size_and_absolute_fees_impl(
         move || {
             let api_pset = pset.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>(
-                    (move || {
-                        let output_ok =
-                            lwk::api::transaction::get_size_and_absolute_fees(api_pset)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<lwk::api::error::LwkError>>((move || {
+                    let output_ok = lwk::api::transaction::get_size_and_absolute_fees(api_pset)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -5927,13 +5821,10 @@ fn wire__boltz__api__lbtc_ln__lbtc_ln_swap_from_json_impl(
         move || {
             let api_json_str = json_str.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
-                    (move || {
-                        let output_ok = boltz::api::lbtc_ln::LbtcLnSwap::from_json(&api_json_str)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>((move || {
+                    let output_ok = boltz::api::lbtc_ln::LbtcLnSwap::from_json(&api_json_str)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -6234,13 +6125,10 @@ fn wire__boltz__api__lbtc_ln__lbtc_ln_swap_to_json_impl(
         move || {
             let api_that = that.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
-                    (move || {
-                        let output_ok = boltz::api::lbtc_ln::LbtcLnSwap::to_json(&api_that)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>((move || {
+                    let output_ok = boltz::api::lbtc_ln::LbtcLnSwap::to_json(&api_that)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -6379,14 +6267,10 @@ fn wire__boltz__api__secrets__pre_image_from_invoice_str_impl(
         move || {
             let api_invoice = invoice.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
-                    (move || {
-                        let output_ok =
-                            boltz::api::secrets::PreImage::from_invoice_str(&api_invoice)?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>((move || {
+                    let output_ok = boltz::api::secrets::PreImage::from_invoice_str(&api_invoice)?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -6796,17 +6680,14 @@ fn wire__boltz__api__secrets__swap_master_key_create_impl(
             let api_wallet_passphrase = wallet_passphrase.cst_decode();
             let api_network = network.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
-                    (move || {
-                        let output_ok = boltz::api::secrets::SwapMasterKey::create(
-                            api_wallet_mnemonic,
-                            api_wallet_passphrase,
-                            api_network,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>((move || {
+                    let output_ok = boltz::api::secrets::SwapMasterKey::create(
+                        api_wallet_mnemonic,
+                        api_wallet_passphrase,
+                        api_network,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -6826,16 +6707,13 @@ fn wire__boltz__api__secrets__swap_master_key_create_from_seed_impl(
             let api_seed = seed.cst_decode();
             let api_network = network.cst_decode();
             move |context| {
-                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>(
-                    (move || {
-                        let output_ok = boltz::api::secrets::SwapMasterKey::create_from_seed(
-                            api_seed,
-                            api_network,
-                        )?;
-                        std::result::Result::Ok(output_ok)
-                    })()
-                    .map_err(FrbWrapper),
-                )
+                transform_result_dco::<_, _, FrbWrapper<boltz::api::error::BoltzError>>((move || {
+                    let output_ok = boltz::api::secrets::SwapMasterKey::create_from_seed(
+                        api_seed,
+                        api_network,
+                    )?;
+                    std::result::Result::Ok(output_ok)
+                })().map_err(FrbWrapper))
             }
         },
     )
@@ -10087,10 +9965,7 @@ impl SseDecode for dart_bwk::api::types::TxSimulation {
         let mut var_changeDustThreshold = <Option<u64>>::sse_decode(deserializer);
         return dart_bwk::api::types::TxSimulation {
             inputs: var_inputs,
-            outputs: var_outputs
-                .into_iter()
-                .map(Into::into)
-                .collect::<Vec<dart_bwk::api::types::RecipientView>>(),
+            outputs: var_outputs.into_iter().map(Into::into).collect::<Vec<dart_bwk::api::types::RecipientView>>(),
             fee_sat: var_feeSat,
             change_sat: var_changeSat,
             change_dust_threshold: var_changeDustThreshold,
@@ -12305,13 +12180,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<dart_bwk::api::types::TxSimula
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.inputs.into_into_dart().into_dart(),
-            self.0
-                .outputs
-                .into_iter()
-                .map(|o| -> crate::api::simple::RecipientView { o.into() })
-                .collect::<Vec<_>>()
-                .into_into_dart()
-                .into_dart(),
+            self.0.outputs.into_iter().map(|o| -> crate::api::simple::RecipientView { o.into() }).collect::<Vec<_>>().into_into_dart().into_dart(),
             self.0.fee_sat.into_into_dart().into_dart(),
             self.0.change_sat.into_into_dart().into_dart(),
             self.0.change_dust_threshold.into_into_dart().into_dart(),
@@ -14160,10 +14029,7 @@ impl SseEncode for dart_bwk::api::types::TxSimulation {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<dart_bwk::api::types::UnifiedCoinView>>::sse_encode(self.inputs, serializer);
         <Vec<crate::api::simple::RecipientView>>::sse_encode(
-            self.outputs
-                .into_iter()
-                .map(Into::into)
-                .collect::<Vec<crate::api::simple::RecipientView>>(),
+            self.outputs.into_iter().map(Into::into).collect::<Vec<crate::api::simple::RecipientView>>(),
             serializer,
         );
         <u64>::sse_encode(self.fee_sat, serializer);
@@ -15842,12 +15708,7 @@ mod io {
         fn cst_decode(self) -> dart_bwk::api::types::TxSimulation {
             dart_bwk::api::types::TxSimulation {
                 inputs: self.inputs.cst_decode(),
-                outputs: {
-                    let __m: Vec<crate::api::simple::RecipientView> = self.outputs.cst_decode();
-                    __m.into_iter()
-                        .map(Into::into)
-                        .collect::<Vec<dart_bwk::api::types::RecipientView>>()
-                },
+                outputs: { let __m: Vec<crate::api::simple::RecipientView> = self.outputs.cst_decode(); __m.into_iter().map(Into::into).collect::<Vec<dart_bwk::api::types::RecipientView>>() },
                 fee_sat: self.fee_sat.cst_decode(),
                 change_sat: self.change_sat.cst_decode(),
                 change_dust_threshold: self.change_dust_threshold.cst_decode(),
@@ -16869,14 +16730,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__continuous_join__ContinuousJoiner_default(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__continuous_join__ContinuousJoiner_default(
         port_: i64,
     ) {
         wire__bbqr__continuous_join__ContinuousJoiner_default_impl(port_)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__continuous_join__ContinuousJoiner_frb_override_add_part(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__continuous_join__ContinuousJoiner_frb_override_add_part(
         port_: i64,
         that: usize,
         part: *mut wire_cst_list_prim_u_8_strict,
@@ -16885,35 +16746,35 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__continuous_join__ContinuousJoiner_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__continuous_join__ContinuousJoiner_new(
         port_: i64,
     ) {
         wire__bbqr__continuous_join__ContinuousJoiner_new_impl(port_)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_fee(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_fee(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_fee_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_from_bytes(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_from_bytes(
         tx_bytes: *mut wire_cst_list_prim_u_8_loose,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_from_bytes_impl(tx_bytes)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_from_pset(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_from_pset(
         pset_string: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_from_pset_impl(pset_string)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_input(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_input(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -16921,14 +16782,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_inputs(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_inputs(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_get_inputs_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_output(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_output(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -16936,7 +16797,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_output_asset(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_output_asset(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -16944,7 +16805,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_output_nonce(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_output_nonce(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -16952,7 +16813,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_output_script_pubkey(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_output_script_pubkey(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -16960,7 +16821,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_output_value(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_output_value(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -16968,84 +16829,84 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_get_outputs(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_get_outputs(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_get_outputs_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_input_count(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_input_count(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_input_count_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_is_coinbase(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_is_coinbase(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_is_coinbase_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_lock_time(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_lock_time(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_lock_time_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_output_count(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_output_count(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_output_count_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_to_bytes(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_to_bytes(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_to_bytes_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_txid(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_txid(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_txid_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_version(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_version(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_version_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_vsize(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_vsize(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_vsize_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__LiquidTransaction_weight(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__LiquidTransaction_weight(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__LiquidTransaction_weight_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_extract_tx(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_extract_tx(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_extract_tx_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_from_string(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_from_string(
         pset_string: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_from_string_impl(
@@ -17054,7 +16915,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17062,7 +16923,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input_utxo_amount(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input_utxo_amount(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17072,7 +16933,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input_utxo_asset(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input_utxo_asset(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17082,7 +16943,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input_utxo_script(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_input_utxo_script(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17092,14 +16953,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_inputs(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_inputs(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_inputs_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17107,7 +16968,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_amount(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_amount(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17117,7 +16978,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_asset(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_asset(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17127,7 +16988,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_blinding_key(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_blinding_key(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17137,7 +16998,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_script(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_output_script(
         that: usize,
         index: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17147,56 +17008,56 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_outputs(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_outputs(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_get_outputs_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_input_count(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_input_count(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_input_count_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_lock_time(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_lock_time(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_lock_time_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_output_count(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_output_count(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_output_count_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__PartiallySignedElementsTransaction_to_string(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__PartiallySignedElementsTransaction_to_string(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__transaction__PartiallySignedElementsTransaction_to_string_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_backend_online(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_backend_online(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_backend_online_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_block_height(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_block_height(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_block_height_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_broadcast(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_broadcast(
         port_: i64,
         that: usize,
         tx_hex: *mut wire_cst_list_prim_u_8_strict,
@@ -17205,7 +17066,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_clear_scan_state(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_clear_scan_state(
         port_: i64,
         that: usize,
     ) {
@@ -17213,21 +17074,21 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_coins(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_coins(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_coins_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_confirmed_balance(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_confirmed_balance(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_confirmed_balance_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_create_from_mnemonic(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_create_from_mnemonic(
         port_: i64,
         name: *mut wire_cst_list_prim_u_8_strict,
         network: i32,
@@ -17254,7 +17115,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_create_from_mnemonic_with_scan_runtime(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_create_from_mnemonic_with_scan_runtime(
         port_: i64,
         name: *mut wire_cst_list_prim_u_8_strict,
         network: i32,
@@ -17285,7 +17146,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_create_from_seed(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_create_from_seed(
         port_: i64,
         name: *mut wire_cst_list_prim_u_8_strict,
         network: i32,
@@ -17312,7 +17173,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_create_from_seed_with_scan_runtime(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_create_from_seed_with_scan_runtime(
         port_: i64,
         name: *mut wire_cst_list_prim_u_8_strict,
         network: i32,
@@ -17343,7 +17204,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_dispose(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_dispose(
         port_: i64,
         that: usize,
     ) {
@@ -17351,7 +17212,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_finalize_psbt(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_finalize_psbt(
         port_: i64,
         that: usize,
         simulation: *mut wire_cst_tx_simulation,
@@ -17360,7 +17221,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_init(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_init(
         that: usize,
         sink: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17368,21 +17229,21 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_is_scanning(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_is_scanning(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_is_scanning_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_last_scanned_height(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_last_scanned_height(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_last_scanned_height_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_load(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_load(
         port_: i64,
         name: *mut wire_cst_list_prim_u_8_strict,
         data_dir: *mut wire_cst_list_prim_u_8_strict,
@@ -17397,28 +17258,28 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_min_birthday_height(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_min_birthday_height(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_min_birthday_height_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_name(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_name(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_name_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_network(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_network(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_network_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_new_taproot_address(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_new_taproot_address(
         port_: i64,
         that: usize,
     ) {
@@ -17426,7 +17287,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_prepare_psbt(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_prepare_psbt(
         port_: i64,
         that: usize,
         recipients: *mut wire_cst_list_recipient_view,
@@ -17443,7 +17304,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_release(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_release(
         port_: i64,
         that: usize,
     ) {
@@ -17451,14 +17312,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_restamp_missing_timestamps(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_restamp_missing_timestamps(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_restamp_missing_timestamps_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_restart_electrum(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_restart_electrum(
         port_: i64,
         that: usize,
     ) {
@@ -17466,7 +17327,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_scan_once(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_scan_once(
         port_: i64,
         that: usize,
         start_height: *mut u32,
@@ -17475,7 +17336,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_set_blindbit_url(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_set_blindbit_url(
         that: usize,
         url: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17483,7 +17344,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_set_electrum_url(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_set_electrum_url(
         that: usize,
         url: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -17491,7 +17352,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_sign_psbt(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_sign_psbt(
         port_: i64,
         that: usize,
         psbt: *mut wire_cst_list_prim_u_8_loose,
@@ -17500,14 +17361,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_sp_address(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_sp_address(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_sp_address_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_start_electrum(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_start_electrum(
         port_: i64,
         that: usize,
     ) {
@@ -17515,7 +17376,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_stop_scan(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_stop_scan(
         port_: i64,
         that: usize,
     ) {
@@ -17523,14 +17384,14 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_unified_balance(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_unified_balance(
         that: usize,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__dart_bwk__api__sp_account__SpAccount_unified_balance_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_unified_coins(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_unified_coins(
         port_: i64,
         that: usize,
     ) {
@@ -17538,7 +17399,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__SpAccount_unified_history(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__SpAccount_unified_history(
         port_: i64,
         that: usize,
     ) {
@@ -17546,7 +17407,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_address(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_address(
         port_: i64,
         that: usize,
         index: u32,
@@ -17555,7 +17416,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_address_last_unused(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_address_last_unused(
         port_: i64,
         that: usize,
     ) {
@@ -17563,7 +17424,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_balances(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_balances(
         port_: i64,
         that: usize,
     ) {
@@ -17571,7 +17432,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_blinding_key(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_blinding_key(
         port_: i64,
         that: usize,
     ) {
@@ -17579,7 +17440,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_build_asset_tx(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_build_asset_tx(
         port_: i64,
         that: usize,
         sats: u64,
@@ -17598,7 +17459,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_build_custom_tx(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_build_custom_tx(
         port_: i64,
         that: usize,
         utxos: *mut wire_cst_list_out_point,
@@ -17612,7 +17473,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_build_lbtc_tx(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_build_lbtc_tx(
         port_: i64,
         that: usize,
         sats: u64,
@@ -17631,7 +17492,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_consolidate(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_consolidate(
         port_: i64,
         that: usize,
         fee_rate: f32,
@@ -17648,7 +17509,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_decode_tx(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_decode_tx(
         port_: i64,
         that: usize,
         pset: *mut wire_cst_list_prim_u_8_strict,
@@ -17657,7 +17518,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_descriptor(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_descriptor(
         port_: i64,
         that: usize,
     ) {
@@ -17665,7 +17526,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_init(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_init(
         port_: i64,
         network: i32,
         dbpath: *mut wire_cst_list_prim_u_8_strict,
@@ -17676,7 +17537,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_policy_asset(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_policy_asset(
         port_: i64,
         that: usize,
     ) {
@@ -17684,7 +17545,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_sign_tx(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_sign_tx(
         port_: i64,
         that: usize,
         network: i32,
@@ -17695,7 +17556,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_sign_tx_with_seed(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_sign_tx_with_seed(
         port_: i64,
         that: usize,
         network: i32,
@@ -17706,7 +17567,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_signed_pset_with_extra_details(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_signed_pset_with_extra_details(
         port_: i64,
         that: usize,
         network: i32,
@@ -17719,7 +17580,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_signed_pset_with_extra_details_with_seed(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_signed_pset_with_extra_details_with_seed(
         port_: i64,
         that: usize,
         network: i32,
@@ -17732,7 +17593,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_sync(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_sync(
         port_: i64,
         that: usize,
         electrum_url: *mut wire_cst_list_prim_u_8_strict,
@@ -17751,12 +17612,15 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_txs(port_: i64, that: usize) {
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_txs(
+        port_: i64,
+        that: usize,
+    ) {
         wire__lwk__api__wallet__Wallet_txs_impl(port_, that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__wallet__Wallet_utxos(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__wallet__Wallet_utxos(
         port_: i64,
         that: usize,
     ) {
@@ -17764,7 +17628,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__types__address_address_from_script(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__types__address_address_from_script(
         port_: i64,
         network: i32,
         script: *mut wire_cst_list_prim_u_8_strict,
@@ -17779,7 +17643,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__types__address_validate(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__types__address_validate(
         port_: i64,
         address_string: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -17787,7 +17651,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__blockchain__blockchain_broadcast_signed_pset(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__blockchain__blockchain_broadcast_signed_pset(
         port_: i64,
         network: i32,
         electrum_url: *mut wire_cst_list_prim_u_8_strict,
@@ -17802,7 +17666,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__blockchain__blockchain_broadcast_tx_bytes(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__blockchain__blockchain_broadcast_tx_bytes(
         port_: i64,
         network: i32,
         electrum_url: *mut wire_cst_list_prim_u_8_strict,
@@ -17817,7 +17681,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__blockchain__blockchain_test(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__blockchain__blockchain_test(
         port_: i64,
         that: *mut wire_cst_blockchain,
         network: i32,
@@ -17827,7 +17691,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__error__boltz_error_detail(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__error__boltz_error_detail(
         port_: i64,
         that: *mut wire_cst_boltz_error,
     ) {
@@ -17835,7 +17699,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__error__boltz_error_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__error__boltz_error_new(
         port_: i64,
         kind: *mut wire_cst_list_prim_u_8_strict,
         message: *mut wire_cst_list_prim_u_8_strict,
@@ -17844,7 +17708,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_broadcast_boltz(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_broadcast_boltz(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
         signed_hex: *mut wire_cst_list_prim_u_8_strict,
@@ -17853,7 +17717,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_broadcast_local(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_broadcast_local(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
         signed_hex: *mut wire_cst_list_prim_u_8_strict,
@@ -17868,7 +17732,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_claim(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_claim(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
         out_address: *mut wire_cst_list_prim_u_8_strict,
@@ -17887,7 +17751,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_claim_tx_size(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_claim_tx_size(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
         is_cooperative: bool,
@@ -17902,7 +17766,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_coop_close_submarine(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_coop_close_submarine(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
     ) {
@@ -17910,7 +17774,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_from_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_from_json(
         port_: i64,
         json_str: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -17918,7 +17782,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_get_completed_submarine_preimage(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_get_completed_submarine_preimage(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
     ) {
@@ -17926,7 +17790,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_get_preimage(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_get_preimage(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
     ) {
@@ -17934,7 +17798,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_new(
         port_: i64,
         id: *mut wire_cst_list_prim_u_8_strict,
         kind: i32,
@@ -17969,7 +17833,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_new_reverse(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_new_reverse(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         index: u64,
@@ -17996,7 +17860,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_new_submarine(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_new_submarine(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         index: u64,
@@ -18019,7 +17883,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_refund(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_refund(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
         out_address: *mut wire_cst_list_prim_u_8_strict,
@@ -18038,7 +17902,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_refund_tx_size(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_refund_tx_size(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
         is_cooperative: bool,
@@ -18053,7 +17917,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__btc_ln__btc_ln_swap_to_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__btc_ln__btc_ln_swap_to_json(
         port_: i64,
         that: *mut wire_cst_btc_ln_swap,
     ) {
@@ -18061,7 +17925,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__types__btc_swap_script_str_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__types__btc_swap_script_str_new(
         port_: i64,
         swap_type: i32,
         funding_addrs: *mut wire_cst_list_prim_u_8_strict,
@@ -18084,7 +17948,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__types__chain_is_testnet(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__types__chain_is_testnet(
         port_: i64,
         that: i32,
     ) {
@@ -18092,7 +17956,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_broadcast_boltz(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_broadcast_boltz(
         port_: i64,
         that: *mut wire_cst_chain_swap,
         signed_hex: *mut wire_cst_list_prim_u_8_strict,
@@ -18102,7 +17966,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_broadcast_local(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_broadcast_local(
         port_: i64,
         that: *mut wire_cst_chain_swap,
         signed_hex: *mut wire_cst_list_prim_u_8_strict,
@@ -18119,7 +17983,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_claim(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_claim(
         port_: i64,
         that: *mut wire_cst_chain_swap,
         out_address: *mut wire_cst_list_prim_u_8_strict,
@@ -18140,7 +18004,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_claim_tx_size(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_claim_tx_size(
         port_: i64,
         that: *mut wire_cst_chain_swap,
         out_address: *mut wire_cst_list_prim_u_8_strict,
@@ -18159,7 +18023,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_from_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_from_json(
         port_: i64,
         json_str: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18167,7 +18031,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_get_server_lockup(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_get_server_lockup(
         port_: i64,
         that: *mut wire_cst_chain_swap,
     ) {
@@ -18175,7 +18039,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_get_user_lockup(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_get_user_lockup(
         port_: i64,
         that: *mut wire_cst_chain_swap,
     ) {
@@ -18183,7 +18047,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_new(
         port_: i64,
         id: *mut wire_cst_list_prim_u_8_strict,
         network: i32,
@@ -18226,7 +18090,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_new_swap(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_new_swap(
         port_: i64,
         direction: i32,
         swap_master_key: *mut wire_cst_swap_master_key,
@@ -18253,7 +18117,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_refund(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_refund(
         port_: i64,
         that: *mut wire_cst_chain_swap,
         refund_address: *mut wire_cst_list_prim_u_8_strict,
@@ -18274,7 +18138,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_refund_tx_size(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_refund_tx_size(
         port_: i64,
         that: *mut wire_cst_chain_swap,
         refund_address: *mut wire_cst_list_prim_u_8_strict,
@@ -18293,7 +18157,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__chain_swap__chain_swap_to_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__chain_swap__chain_swap_to_json(
         port_: i64,
         that: *mut wire_cst_chain_swap,
     ) {
@@ -18301,7 +18165,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__transactions__check_lockup_outspends(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__transactions__check_lockup_outspends(
         port_: i64,
         swap_id: *mut wire_cst_list_prim_u_8_strict,
         swap_type: i32,
@@ -18324,7 +18188,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__transactions__check_vout_0_outspend(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__transactions__check_vout_0_outspend(
         port_: i64,
         swap_id: *mut wire_cst_list_prim_u_8_strict,
         swap_type: i32,
@@ -18345,7 +18209,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__close_device(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__close_device(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18353,7 +18217,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__close_usb_channel(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__close_usb_channel(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18361,7 +18225,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__confirm_pairing(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__confirm_pairing(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18369,7 +18233,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__invoice__decoded_invoice_from_string(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__invoice__decoded_invoice_from_string(
         port_: i64,
         s: *mut wire_cst_list_prim_u_8_strict,
         boltz_url: *mut wire_cst_list_prim_u_8_strict,
@@ -18378,7 +18242,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__derive_sp_address_from_seed(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__derive_sp_address_from_seed(
         port_: i64,
         seed: *mut wire_cst_list_prim_u_8_loose,
         network: i32,
@@ -18387,7 +18251,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__descriptor__descriptor_new_confidential(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__descriptor__descriptor_new_confidential(
         port_: i64,
         network: i32,
         mnemonic: *mut wire_cst_list_prim_u_8_strict,
@@ -18396,7 +18260,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__descriptor__descriptor_new_confidential_from_seed(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__descriptor__descriptor_new_confidential_from_seed(
         port_: i64,
         network: i32,
         seed: *mut wire_cst_list_prim_u_8_loose,
@@ -18405,17 +18269,23 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__encode__encoding_as_byte(port_: i64, that: i32) {
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__encode__encoding_as_byte(
+        port_: i64,
+        that: i32,
+    ) {
         wire__bbqr__encode__encoding_as_byte_impl(port_, that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__encode__encoding_from_byte(port_: i64, byte: u8) {
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__encode__encoding_from_byte(
+        port_: i64,
+        byte: u8,
+    ) {
         wire__bbqr__encode__encoding_from_byte_impl(port_, byte)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__encode__encoding_is_known_encoding(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__encode__encoding_is_known_encoding(
         port_: i64,
         byte: u8,
     ) {
@@ -18423,7 +18293,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__encode__encoding_split_mod(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__encode__encoding_split_mod(
         port_: i64,
         that: i32,
     ) {
@@ -18431,7 +18301,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__extract_tx_bytes(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__extract_tx_bytes(
         port_: i64,
         pset: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18439,7 +18309,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__fees__fees_chain(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__fees__fees_chain(
         port_: i64,
         that: *mut wire_cst_fees,
     ) {
@@ -18447,7 +18317,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__fees__fees_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__fees__fees_new(
         port_: i64,
         boltz_url: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18455,7 +18325,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__fees__fees_reverse(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__fees__fees_reverse(
         port_: i64,
         that: *mut wire_cst_fees,
     ) {
@@ -18463,7 +18333,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__fees__fees_submarine(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__fees__fees_submarine(
         port_: i64,
         that: *mut wire_cst_fees,
     ) {
@@ -18471,7 +18341,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__file_type__file_type_as_byte(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__file_type__file_type_as_byte(
         port_: i64,
         that: i32,
     ) {
@@ -18479,7 +18349,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__file_type__file_type_from_byte(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__file_type__file_type_from_byte(
         port_: i64,
         byte: u8,
     ) {
@@ -18487,7 +18357,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__file_type__file_type_is_known_filetype(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__file_type__file_type_is_known_filetype(
         port_: i64,
         byte: u8,
     ) {
@@ -18495,7 +18365,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__types__get_balance_by_asset_id(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__types__get_balance_by_asset_id(
         balances: *mut wire_cst_list_wallet_balance,
         asset_id: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -18503,7 +18373,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__get_btc_xpub(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__get_btc_xpub(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         keypath: *mut wire_cst_list_prim_u_8_strict,
@@ -18513,7 +18383,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__get_device_info(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__get_device_info(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18521,40 +18391,40 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__types__get_lbtc_asset_id(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__types__get_lbtc_asset_id(
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__types__get_lbtc_asset_id_impl()
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__types__get_lbtc_balance(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__types__get_lbtc_balance(
         balances: *mut wire_cst_list_wallet_balance,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__types__get_lbtc_balance_impl(balances)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__types__get_ltest_asset_id(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__types__get_ltest_asset_id(
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__types__get_ltest_asset_id_impl()
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__types__get_ltest_balance(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__types__get_ltest_balance(
         balances: *mut wire_cst_list_wallet_balance,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__lwk__api__types__get_ltest_balance_impl(balances)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__regtest__get_regtest_defaults(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__regtest__get_regtest_defaults(
         port_: i64,
     ) {
         wire__dart_bwk__api__regtest__get_regtest_defaults_impl(port_)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__get_root_fingerprint(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__get_root_fingerprint(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18562,7 +18432,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__lwk__api__transaction__get_size_and_absolute_fees(
+    pub extern "C" fn frbgen_rust_bindings_wire__lwk__api__transaction__get_size_and_absolute_fees(
         port_: i64,
         pset: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18570,24 +18440,24 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__get_usb_write_data_wrapper(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__get_usb_write_data_wrapper(
         serial_number: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__bitbox__api__get_usb_write_data_wrapper_impl(serial_number)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__init_app(port_: i64) {
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__init_app(port_: i64) {
         wire__bitbox__api__init_app_impl(port_)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__crate__api__simple__init_app(port_: i64) {
+    pub extern "C" fn frbgen_rust_bindings_wire__crate__api__simple__init_app(port_: i64) {
         wire__crate__api__simple__init_app_impl(port_)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__is_wallet_policy_registered(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__is_wallet_policy_registered(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         descriptor: *mut wire_cst_list_prim_u_8_strict,
@@ -18602,7 +18472,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__join__joined_frb_override_try_from_parts(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__join__joined_frb_override_try_from_parts(
         port_: i64,
         parts: *mut wire_cst_list_String,
     ) {
@@ -18610,7 +18480,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__types__l_btc_swap_script_str_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__types__l_btc_swap_script_str_new(
         port_: i64,
         swap_type: i32,
         funding_addrs: *mut wire_cst_list_prim_u_8_strict,
@@ -18635,7 +18505,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_broadcast_boltz(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_broadcast_boltz(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
         signed_hex: *mut wire_cst_list_prim_u_8_strict,
@@ -18644,7 +18514,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_broadcast_local(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_broadcast_local(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
         signed_hex: *mut wire_cst_list_prim_u_8_strict,
@@ -18659,7 +18529,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_claim(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_claim(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
         out_address: *mut wire_cst_list_prim_u_8_strict,
@@ -18678,7 +18548,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_claim_tx_size(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_claim_tx_size(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
         is_cooperative: bool,
@@ -18693,7 +18563,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_coop_close_submarine(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_coop_close_submarine(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
     ) {
@@ -18701,7 +18571,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_from_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_from_json(
         port_: i64,
         json_str: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18709,7 +18579,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_get_completed_submarine_preimage(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_get_completed_submarine_preimage(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
     ) {
@@ -18717,7 +18587,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_get_preimage(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_get_preimage(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
     ) {
@@ -18725,7 +18595,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_new(
         port_: i64,
         id: *mut wire_cst_list_prim_u_8_strict,
         kind: i32,
@@ -18762,7 +18632,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_new_reverse(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_new_reverse(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         index: u64,
@@ -18789,7 +18659,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_new_submarine(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_new_submarine(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         index: u64,
@@ -18812,7 +18682,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_refund(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_refund(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
         out_address: *mut wire_cst_list_prim_u_8_strict,
@@ -18831,7 +18701,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_refund_tx_size(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_refund_tx_size(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
         is_cooperative: bool,
@@ -18846,7 +18716,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lbtc_ln__lbtc_ln_swap_to_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lbtc_ln__lbtc_ln_swap_to_json(
         port_: i64,
         that: *mut wire_cst_lbtc_ln_swap,
     ) {
@@ -18854,7 +18724,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lnurl__lnurl_fetch_invoice(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_fetch_invoice(
         port_: i64,
         that: *mut wire_cst_lnurl,
         msats: u64,
@@ -18863,7 +18733,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lnurl__lnurl_get_voucher_max_amount(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_get_voucher_max_amount(
         port_: i64,
         that: *mut wire_cst_lnurl,
     ) {
@@ -18871,7 +18741,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lnurl__lnurl_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_new(
         port_: i64,
         value: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18879,7 +18749,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lnurl__lnurl_validate(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_validate(
         port_: i64,
         that: *mut wire_cst_lnurl,
     ) {
@@ -18887,7 +18757,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__lnurl__lnurl_withdraw(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__lnurl__lnurl_withdraw(
         port_: i64,
         that: *mut wire_cst_lnurl,
         invoice: *mut wire_cst_list_prim_u_8_strict,
@@ -18896,7 +18766,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__secrets__pre_image_from_invoice_str(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__secrets__pre_image_from_invoice_str(
         port_: i64,
         invoice: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -18904,7 +18774,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__secrets__pre_image_new(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__secrets__pre_image_new(
         port_: i64,
         value: *mut wire_cst_list_prim_u_8_strict,
         sha256: *mut wire_cst_list_prim_u_8_strict,
@@ -18914,7 +18784,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__register_wallet_policy(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__register_wallet_policy(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         descriptor: *mut wire_cst_list_prim_u_8_strict,
@@ -18931,7 +18801,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__restore__restore_chain_swaps(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__restore__restore_chain_swaps(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         btc_electrum_url: *mut wire_cst_list_prim_u_8_strict,
@@ -18948,7 +18818,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__restore__restore_ln_btc_swaps(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__restore__restore_ln_btc_swaps(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         electrum_url: *mut wire_cst_list_prim_u_8_strict,
@@ -18963,7 +18833,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__restore__restore_ln_lbtc_swaps(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__restore__restore_ln_lbtc_swaps(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         electrum_url: *mut wire_cst_list_prim_u_8_strict,
@@ -18978,7 +18848,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__restore__restore_swap_index(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__restore__restore_swap_index(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         boltz_url: *mut wire_cst_list_prim_u_8_strict,
@@ -18987,7 +18857,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__restore__restore_swap_summaries(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__restore__restore_swap_summaries(
         port_: i64,
         swap_master_key: *mut wire_cst_swap_master_key,
         boltz_url: *mut wire_cst_list_prim_u_8_strict,
@@ -18996,7 +18866,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__set_usb_read_data_wrapper(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__set_usb_read_data_wrapper(
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         data: *mut wire_cst_list_prim_u_8_loose,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
@@ -19004,7 +18874,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__sign_psbt(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__sign_psbt(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         psbt_str: *mut wire_cst_list_prim_u_8_strict,
@@ -19014,7 +18884,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__sign_wallet_psbt(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__sign_wallet_psbt(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         descriptor: *mut wire_cst_list_prim_u_8_strict,
@@ -19031,7 +18901,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__split__split_frb_override_try_from_data(
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__split__split_frb_override_try_from_data(
         port_: i64,
         bytes: *mut wire_cst_list_prim_u_8_loose,
         file_type: i32,
@@ -19041,12 +18911,12 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__split__split_options_default(port_: i64) {
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__split__split_options_default(port_: i64) {
         wire__bbqr__split__split_options_default_impl(port_)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__start_pairing(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__start_pairing(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -19054,7 +18924,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__secrets__swap_master_key_create(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__secrets__swap_master_key_create(
         port_: i64,
         wallet_mnemonic: *mut wire_cst_list_prim_u_8_strict,
         wallet_passphrase: *mut wire_cst_list_prim_u_8_strict,
@@ -19069,7 +18939,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__secrets__swap_master_key_create_from_seed(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__secrets__swap_master_key_create_from_seed(
         port_: i64,
         seed: *mut wire_cst_list_prim_u_8_loose,
         network: i32,
@@ -19078,63 +18948,63 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_status_as_string(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_status_as_string(
         that: i32,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_status_as_string_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_status_from_json_string(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_status_from_json_string(
         status: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_status_from_json_string_impl(status)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_status_is_resolved(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_status_is_resolved(
         that: i32,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_status_is_resolved_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_status_response_from_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_status_response_from_json(
         json: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_status_response_from_json_impl(json)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_status_response_to_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_status_response_to_json(
         that: *mut wire_cst_swap_status_response,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_status_response_to_json_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_status_to_json_string(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_status_to_json_string(
         that: i32,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_status_to_json_string_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_stream_status_from_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_stream_status_from_json(
         json: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_stream_status_from_json_impl(json)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__swap_stream_status_to_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__swap_stream_status_to_json(
         that: *mut wire_cst_swap_stream_status,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__swap_stream_status_to_json_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__test_blindbit_url(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__test_blindbit_url(
         port_: i64,
         url: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -19142,7 +19012,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__test_electrum_url(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__test_electrum_url(
         port_: i64,
         url: *mut wire_cst_list_prim_u_8_strict,
     ) {
@@ -19150,21 +19020,21 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__transaction_from_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__transaction_from_json(
         json: *mut wire_cst_list_prim_u_8_strict,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__transaction_from_json_impl(json)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__boltz__api__swap_status__transaction_to_json(
+    pub extern "C" fn frbgen_rust_bindings_wire__boltz__api__swap_status__transaction_to_json(
         that: *mut wire_cst_transaction,
     ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartDco {
         wire__boltz__api__swap_status__transaction_to_json_impl(that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__dart_bwk__api__sp_account__validate_recipient_address(
+    pub extern "C" fn frbgen_rust_bindings_wire__dart_bwk__api__sp_account__validate_recipient_address(
         port_: i64,
         address: *mut wire_cst_list_prim_u_8_strict,
         network: i32,
@@ -19173,7 +19043,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__verify_address(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__verify_address(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         keypath: *mut wire_cst_list_prim_u_8_strict,
@@ -19184,7 +19054,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__crate__api__verify_tx__verify_tx_input_signatures(
+    pub extern "C" fn frbgen_rust_bindings_wire__crate__api__verify_tx__verify_tx_input_signatures(
         port_: i64,
         tx_bytes: *mut wire_cst_list_prim_u_8_loose,
         inputs: *mut wire_cst_list_tx_input_to_verify,
@@ -19193,7 +19063,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bitbox__api__verify_wallet_address(
+    pub extern "C" fn frbgen_rust_bindings_wire__bitbox__api__verify_wallet_address(
         port_: i64,
         serial_number: *mut wire_cst_list_prim_u_8_strict,
         descriptor: *mut wire_cst_list_prim_u_8_strict,
@@ -19212,12 +19082,15 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_wire__bbqr__qr__version_data_capacity(port_: i64, that: i32) {
+    pub extern "C" fn frbgen_rust_bindings_wire__bbqr__qr__version_data_capacity(
+        port_: i64,
+        that: i32,
+    ) {
         wire__bbqr__qr__version_data_capacity_impl(port_, that)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoinResult(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoinResult(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19226,7 +19099,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoinResult(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoinResult(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19235,7 +19108,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoiner(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoiner(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19244,7 +19117,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoiner(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerContinuousJoiner(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19253,7 +19126,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLiquidTransaction(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLiquidTransaction(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19262,7 +19135,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLiquidTransaction(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLiquidTransaction(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19271,7 +19144,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPartiallySignedElementsTransaction(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPartiallySignedElementsTransaction(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19284,7 +19157,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPartiallySignedElementsTransaction(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerPartiallySignedElementsTransaction(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19297,7 +19170,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSpAccount(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSpAccount(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19306,7 +19179,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSpAccount(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerSpAccount(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19315,7 +19188,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_increment_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19324,7 +19197,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
+    pub extern "C" fn frbgen_rust_bindings_rust_arc_decrement_strong_count_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerWallet(
         ptr: *const std::ffi::c_void,
     ) {
         unsafe {
@@ -19333,30 +19206,31 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_blockchain() -> *mut wire_cst_blockchain {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_blockchain(
+    ) -> *mut wire_cst_blockchain {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_blockchain::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_boltz_error() -> *mut wire_cst_boltz_error
-    {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_boltz_error(
+    ) -> *mut wire_cst_boltz_error {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_boltz_error::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_btc_ln_swap() -> *mut wire_cst_btc_ln_swap
-    {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_btc_ln_swap(
+    ) -> *mut wire_cst_btc_ln_swap {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_btc_ln_swap::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_btc_swap_script_str(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_btc_swap_script_str(
     ) -> *mut wire_cst_btc_swap_script_str {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_btc_swap_script_str::new_with_null_ptr(),
@@ -19364,28 +19238,30 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_chain_swap() -> *mut wire_cst_chain_swap {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_chain_swap(
+    ) -> *mut wire_cst_chain_swap {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_chain_swap::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_chain_swap_direction(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_chain_swap_direction(
         value: i32,
     ) -> *mut i32 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_descriptor() -> *mut wire_cst_descriptor {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_descriptor(
+    ) -> *mut wire_cst_descriptor {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_descriptor::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_electrum_settings(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_electrum_settings(
     ) -> *mut wire_cst_electrum_settings {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_electrum_settings::new_with_null_ptr(),
@@ -19393,27 +19269,28 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_encoding(value: i32) -> *mut i32 {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_encoding(value: i32) -> *mut i32 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_fees() -> *mut wire_cst_fees {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_fees() -> *mut wire_cst_fees {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wire_cst_fees::new_with_null_ptr())
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_file_type(value: i32) -> *mut i32 {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_file_type(value: i32) -> *mut i32 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_key_pair() -> *mut wire_cst_key_pair {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_key_pair() -> *mut wire_cst_key_pair
+    {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wire_cst_key_pair::new_with_null_ptr())
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_l_btc_swap_script_str(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_l_btc_swap_script_str(
     ) -> *mut wire_cst_l_btc_swap_script_str {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_l_btc_swap_script_str::new_with_null_ptr(),
@@ -19421,7 +19298,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_lbtc_ln_swap(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_lbtc_ln_swap(
     ) -> *mut wire_cst_lbtc_ln_swap {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_lbtc_ln_swap::new_with_null_ptr(),
@@ -19429,37 +19306,39 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_lnurl() -> *mut wire_cst_lnurl {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_lnurl() -> *mut wire_cst_lnurl {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wire_cst_lnurl::new_with_null_ptr())
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_pre_image() -> *mut wire_cst_pre_image {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_pre_image() -> *mut wire_cst_pre_image
+    {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wire_cst_pre_image::new_with_null_ptr())
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_pset_input() -> *mut wire_cst_pset_input {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_pset_input(
+    ) -> *mut wire_cst_pset_input {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_pset_input::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_pset_output() -> *mut wire_cst_pset_output
-    {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_pset_output(
+    ) -> *mut wire_cst_pset_output {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_pset_output::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_side(value: i32) -> *mut i32 {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_side(value: i32) -> *mut i32 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_sp_header_checkpoint(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_sp_header_checkpoint(
     ) -> *mut wire_cst_sp_header_checkpoint {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_sp_header_checkpoint::new_with_null_ptr(),
@@ -19467,7 +19346,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_split_options(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_split_options(
     ) -> *mut wire_cst_split_options {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_split_options::new_with_null_ptr(),
@@ -19475,7 +19354,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_swap_master_key(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_swap_master_key(
     ) -> *mut wire_cst_swap_master_key {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_swap_master_key::new_with_null_ptr(),
@@ -19483,7 +19362,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_swap_status_response(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_swap_status_response(
     ) -> *mut wire_cst_swap_status_response {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_swap_status_response::new_with_null_ptr(),
@@ -19491,7 +19370,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_swap_stream_status(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_swap_stream_status(
     ) -> *mut wire_cst_swap_stream_status {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_swap_stream_status::new_with_null_ptr(),
@@ -19499,30 +19378,32 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_transaction() -> *mut wire_cst_transaction
-    {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_transaction(
+    ) -> *mut wire_cst_transaction {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_transaction::new_with_null_ptr(),
         )
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_tx_fee() -> *mut wire_cst_tx_fee {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_tx_fee() -> *mut wire_cst_tx_fee {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wire_cst_tx_fee::new_with_null_ptr())
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_tx_input() -> *mut wire_cst_tx_input {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_tx_input() -> *mut wire_cst_tx_input
+    {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wire_cst_tx_input::new_with_null_ptr())
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_tx_output() -> *mut wire_cst_tx_output {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_tx_output() -> *mut wire_cst_tx_output
+    {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(wire_cst_tx_output::new_with_null_ptr())
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_tx_simulation(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_tx_simulation(
     ) -> *mut wire_cst_tx_simulation {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(
             wire_cst_tx_simulation::new_with_null_ptr(),
@@ -19530,22 +19411,24 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_u_32(value: u32) -> *mut u32 {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_u_32(value: u32) -> *mut u32 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_u_64(value: u64) -> *mut u64 {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_u_64(value: u64) -> *mut u64 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_box_autoadd_u_8(value: u8) -> *mut u8 {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_box_autoadd_u_8(value: u8) -> *mut u8 {
         flutter_rust_bridge::for_generated::new_leak_box_ptr(value)
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_String(len: i32) -> *mut wire_cst_list_String {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_String(
+        len: i32,
+    ) -> *mut wire_cst_list_String {
         let wrap = wire_cst_list_String {
             ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
                 <*mut wire_cst_list_prim_u_8_strict>::new_with_null_ptr(),
@@ -19557,7 +19440,9 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_balance(len: i32) -> *mut wire_cst_list_balance {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_balance(
+        len: i32,
+    ) -> *mut wire_cst_list_balance {
         let wrap = wire_cst_list_balance {
             ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
                 <wire_cst_balance>::new_with_null_ptr(),
@@ -19569,7 +19454,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_btc_ln_swap(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_btc_ln_swap(
         len: i32,
     ) -> *mut wire_cst_list_btc_ln_swap {
         let wrap = wire_cst_list_btc_ln_swap {
@@ -19583,7 +19468,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_chain_swap(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_chain_swap(
         len: i32,
     ) -> *mut wire_cst_list_chain_swap {
         let wrap = wire_cst_list_chain_swap {
@@ -19597,7 +19482,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_lbtc_ln_swap(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_lbtc_ln_swap(
         len: i32,
     ) -> *mut wire_cst_list_lbtc_ln_swap {
         let wrap = wire_cst_list_lbtc_ln_swap {
@@ -19611,7 +19496,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_out_point(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_out_point(
         len: i32,
     ) -> *mut wire_cst_list_out_point {
         let wrap = wire_cst_list_out_point {
@@ -19625,7 +19510,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_prim_u_32_strict(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_prim_u_32_strict(
         len: i32,
     ) -> *mut wire_cst_list_prim_u_32_strict {
         let ans = wire_cst_list_prim_u_32_strict {
@@ -19636,7 +19521,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_prim_u_8_loose(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_prim_u_8_loose(
         len: i32,
     ) -> *mut wire_cst_list_prim_u_8_loose {
         let ans = wire_cst_list_prim_u_8_loose {
@@ -19647,7 +19532,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_prim_u_8_strict(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_prim_u_8_strict(
         len: i32,
     ) -> *mut wire_cst_list_prim_u_8_strict {
         let ans = wire_cst_list_prim_u_8_strict {
@@ -19658,7 +19543,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_pset_input(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_pset_input(
         len: i32,
     ) -> *mut wire_cst_list_pset_input {
         let wrap = wire_cst_list_pset_input {
@@ -19672,7 +19557,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_pset_output(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_pset_output(
         len: i32,
     ) -> *mut wire_cst_list_pset_output {
         let wrap = wire_cst_list_pset_output {
@@ -19686,7 +19571,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_recipient_view(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_recipient_view(
         len: i32,
     ) -> *mut wire_cst_list_recipient_view {
         let wrap = wire_cst_list_recipient_view {
@@ -19700,7 +19585,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_restored_swap_summary(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_restored_swap_summary(
         len: i32,
     ) -> *mut wire_cst_list_restored_swap_summary {
         let wrap = wire_cst_list_restored_swap_summary {
@@ -19714,7 +19599,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_skipped_restore_swap(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_skipped_restore_swap(
         len: i32,
     ) -> *mut wire_cst_list_skipped_restore_swap {
         let wrap = wire_cst_list_skipped_restore_swap {
@@ -19728,7 +19613,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_sp_coin_view(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_sp_coin_view(
         len: i32,
     ) -> *mut wire_cst_list_sp_coin_view {
         let wrap = wire_cst_list_sp_coin_view {
@@ -19742,7 +19627,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_sp_payment_view(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_sp_payment_view(
         len: i32,
     ) -> *mut wire_cst_list_sp_payment_view {
         let wrap = wire_cst_list_sp_payment_view {
@@ -19756,7 +19641,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_tx(len: i32) -> *mut wire_cst_list_tx {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_tx(len: i32) -> *mut wire_cst_list_tx {
         let wrap = wire_cst_list_tx {
             ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
                 <wire_cst_tx>::new_with_null_ptr(),
@@ -19768,7 +19653,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_tx_input(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_tx_input(
         len: i32,
     ) -> *mut wire_cst_list_tx_input {
         let wrap = wire_cst_list_tx_input {
@@ -19782,7 +19667,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_tx_input_to_verify(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_tx_input_to_verify(
         len: i32,
     ) -> *mut wire_cst_list_tx_input_to_verify {
         let wrap = wire_cst_list_tx_input_to_verify {
@@ -19796,7 +19681,9 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_tx_out(len: i32) -> *mut wire_cst_list_tx_out {
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_tx_out(
+        len: i32,
+    ) -> *mut wire_cst_list_tx_out {
         let wrap = wire_cst_list_tx_out {
             ptr: flutter_rust_bridge::for_generated::new_leak_vec_ptr(
                 <wire_cst_tx_out>::new_with_null_ptr(),
@@ -19808,7 +19695,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_tx_output(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_tx_output(
         len: i32,
     ) -> *mut wire_cst_list_tx_output {
         let wrap = wire_cst_list_tx_output {
@@ -19822,7 +19709,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_tx_output_spec(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_tx_output_spec(
         len: i32,
     ) -> *mut wire_cst_list_tx_output_spec {
         let wrap = wire_cst_list_tx_output_spec {
@@ -19836,7 +19723,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_unified_coin_view(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_unified_coin_view(
         len: i32,
     ) -> *mut wire_cst_list_unified_coin_view {
         let wrap = wire_cst_list_unified_coin_view {
@@ -19850,7 +19737,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_vout_outspend(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_vout_outspend(
         len: i32,
     ) -> *mut wire_cst_list_vout_outspend {
         let wrap = wire_cst_list_vout_outspend {
@@ -19864,7 +19751,7 @@ mod io {
     }
 
     #[unsafe(no_mangle)]
-    pub extern "C" fn frbgen_bull_sdk_cst_new_list_wallet_balance(
+    pub extern "C" fn frbgen_rust_bindings_cst_new_list_wallet_balance(
         len: i32,
     ) -> *mut wire_cst_list_wallet_balance {
         let wrap = wire_cst_list_wallet_balance {

@@ -9,8 +9,9 @@ import 'file_type.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `JoinError`
+// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `JoinError`, `ParsedPart`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `source`
+// These functions are ignored (category: IgnoreBecauseOwnerTyShouldIgnore): `try_from_str`
 
 /// Joined data structure, includes the encoding, file type, and raw data in bytes
 class Joined {
