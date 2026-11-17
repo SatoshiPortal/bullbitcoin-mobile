@@ -16,7 +16,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullPickerItem,
         BullText,
         Gap;
-import 'package:satoshifier/enums/derivation.dart' as satoshifier;
+import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
 class WatchOnlyDetailsWidget extends StatelessWidget {
   final WatchOnlyWalletEntity watchOnlyWallet;
