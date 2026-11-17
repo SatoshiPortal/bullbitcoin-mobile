@@ -57,6 +57,7 @@ class MapCubit extends Cubit<MapState> {
   }
 
   Future<void> _syncMerchants() async {
+    if (isClosed) return;
     final result = await _sync.execute();
     if (isClosed) return;
     switch (result) {
