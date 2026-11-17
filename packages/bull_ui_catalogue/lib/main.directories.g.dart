@@ -395,6 +395,21 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullLoader',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Large',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullLoaderLargeUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Small',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullLoaderSmallUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullReferenceNotice',
         useCases: [
           _widgetbook.WidgetbookUseCase(

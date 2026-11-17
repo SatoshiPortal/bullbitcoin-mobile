@@ -115,6 +115,7 @@ export 'src/layout/gap.dart' show Gap;
 // Theme.
 export 'src/theme/bull_icon.dart';
 export 'src/theme/bull_keypad_colors.dart';
+export 'src/theme/bull_loader_theme.dart';
 export 'src/theme/bull_shapes.dart';
 export 'src/theme/bull_theme.dart';
 export 'src/theme/bull_tokens.dart';
@@ -172,6 +173,7 @@ export 'src/feedback/bull_fading_linear_progress.dart';
 export 'src/feedback/bull_reference_notice.dart';
 export 'src/feedback/bull_refresh_indicator.dart';
 export 'src/feedback/bull_shimmer.dart';
+export 'src/feedback/bull_loader.dart';
 export 'src/feedback/bull_snack_bar.dart';
 
 // Layout.
