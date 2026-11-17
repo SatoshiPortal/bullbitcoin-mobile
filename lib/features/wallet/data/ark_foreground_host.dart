@@ -108,7 +108,7 @@ final class ArkForegroundHost {
       initializeNew: _initialize,
     );
     if (result case Err(:final failure)) {
-      log.warning('Ark custody references unavailable', error: failure);
+      log.warning('Ark custody references unavailable: ${failure.runtimeType}');
     }
   }
 
@@ -179,7 +179,7 @@ final class ArkForegroundHost {
       _retired.removeAll(batch);
       for (final failure in results) {
         if (failure == null) continue;
-        log.warning('Ark runtime close failed', error: failure.$1);
+        log.warning('Ark runtime close failed: ${failure.$1.runtimeType}');
         _closeFailure ??= failure;
       }
     }
@@ -293,7 +293,9 @@ class _ArkHostPageState extends State<_ArkHostPage> {
         builder: (context, snapshot) {
           final unavailable = createArkUnavailableRoutes().first.builder!;
           if (snapshot.hasError) {
-            log.warning('Ark runtime failed to open', error: snapshot.error);
+            log.warning(
+              'Ark runtime failed to open: ${snapshot.error.runtimeType}',
+            );
             return unavailable(context, widget.state);
           }
           switch (snapshot.data) {
@@ -302,7 +304,7 @@ class _ArkHostPageState extends State<_ArkHostPage> {
                 body: Center(child: CircularProgressIndicator()),
               );
             case Err(:final failure):
-              log.warning('Ark runtime unavailable', error: failure);
+              log.warning('Ark runtime unavailable: ${failure.runtimeType}');
               return unavailable(context, widget.state);
             case Ok(:final value):
               for (final route in value.feature.routes) {
