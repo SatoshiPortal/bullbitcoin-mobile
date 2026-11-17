@@ -275,15 +275,16 @@ class _MessageBubble extends StatelessWidget {
   String _formatTime(DateTime dateTime, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
+    final locale = context.loc.localeName;
 
     if (difference.inDays == 0) {
-      return DateFormat('HH:mm').format(dateTime);
+      return DateFormat.jm(locale).format(dateTime);
     } else if (difference.inDays == 1) {
-      return '${context.loc.exchangeSupportChatYesterday} ${DateFormat('HH:mm').format(dateTime)}';
+      return '${context.loc.exchangeSupportChatYesterday} ${DateFormat.jm(locale).format(dateTime)}';
     } else if (difference.inDays < 7) {
-      return DateFormat('EEE HH:mm').format(dateTime);
+      return DateFormat.E(locale).add_jm().format(dateTime);
     } else {
-      return DateFormat('MMM dd, HH:mm').format(dateTime);
+      return DateFormat.MMMd(locale).add_jm().format(dateTime);
     }
   }
 }

@@ -151,7 +151,7 @@ class _PriceDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final price = rate.fiatAmount;
-    final dateFormat = DateFormat('MMM d, yyyy HH:mm');
+    final dateFormat = DateFormat.yMMMd(context.loc.localeName).add_jm();
     final date = rate.time;
 
     final blocCurrencies = context.select(

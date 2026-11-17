@@ -160,6 +160,6 @@ String _transactionDayLabel(BuildContext context, DateTime date) {
     return context.loc.transactionListYesterday;
   }
   return date.year == now.year
-      ? DateFormat.MMMMd().format(date)
-      : DateFormat.yMMMMd().format(date);
+      ? DateFormat.MMMMd(context.loc.localeName).format(date)
+      : DateFormat.yMMMMd(context.loc.localeName).format(date);
 }
