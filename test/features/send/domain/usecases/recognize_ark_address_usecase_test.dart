@@ -19,6 +19,8 @@ class Preferences extends Mock implements ArkPreferencesRepository {}
 
 class Provisioning extends Mock implements ArkProvisioningPort {}
 
+class Board extends Mock implements ArkBoardFundingPort {}
+
 class Fixture {
   final client = Client();
   final registry = Registry();
@@ -28,6 +30,7 @@ class Fixture {
     preferences: preferences,
     registry: registry,
     provisioning: Provisioning(),
+    boardFunding: Board(),
   );
 }
 
