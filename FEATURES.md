@@ -47,7 +47,6 @@ graph TB
     BULL_LOGGER[Bull Logger Package<br/>Logger, diagnostics, log files]
     BULL_PAYJOIN[Bull Payjoin Package<br/>Public contract]
     BULL_PRICER[Bull Pricer Package<br/>Bitcoin price and history]
-    BULL_MAP[Bull Map Package<br/>BTC Map merchants, cache, listing and map view]
 
     %% Feature modules
     QUICK_ACTIONS[Quick Actions<br/>Workspace Feature]
@@ -117,11 +116,7 @@ graph TB
     LOGS --> PRIMITIVES
     LOGS --> BULL_UI
     SETTINGS --> LOGS
-    MERCHANT_MAP[Map<br/>Map screen, list sheet and search]
-    MERCHANT_MAP --> BULL_MAP
-    BULL_MAP --> PRIMITIVES
-    BULL_MAP --> BULL_UI
-    BULL_MAP --> BULL_LOGGER
+    MERCHANT_MAP[BTC Map<br/>Workspace Feature: merchants, cache, map, list and search]
     MERCHANT_MAP --> BULL_LOGGER
     MERCHANT_MAP --> PRIMITIVES
     MERCHANT_MAP --> BULL_UI
@@ -341,7 +336,7 @@ graph TB
     classDef featureStyle fill:#1a202c,stroke:#2d3748,stroke-width:2px,color:#e2e8f0
 
     class CORE coreStyle
-    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,BULL_MAP,TOR,SCREEN_AWAKE packageStyle
+    class SECRETS,PRIMITIVES,BULL_PAYJOIN,BULL_PRICER,TOR,SCREEN_AWAKE packageStyle
     class IMPORT_MNEMONIC,ONBOARDING,SETTINGS,PIN_CODE,LABELS,HW_WALLETS,BTC_PRICE,NETWORK,BIP85,FEES,WALLETS,EXCHANGE,EXCHANGE_SETTINGS,EXCHANGE_SUPPORT_CHAT,SUPPORT,APP_STARTUP,UTXO_MGMT,ADDRESS_MGMT,RECIPIENTS,FUNDING,BACKUPS,SWAPS,WITHDRAWAL,STATUS,SEND,RECEIVE,TRANSFER,TX_HISTORY,REPLACE_BY_FEE,BG_TASKS,AUTOSWAP,AUTOBUY,DCA,DEFAULT_WALLETS,LIMIT_ORDERS,SELL,PAY,BUY,COINS,ANNOUNCEMENTS,CONSOLIDATION,ALL_SEED_VIEW,APP_UNLOCK,SP,MERCHANT_MAP featureStyle
 ```
 

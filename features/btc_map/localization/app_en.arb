@@ -1,0 +1,225 @@
+{
+  "@@locale": "en",
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "oopsSomethingWentWrong": "Oops! Something went wrong",
+  "@oopsSomethingWentWrong": {
+    "description": "Error title when something goes wrong"
+  },
+  "merchantMapAccepts": "Accepts",
+  "@merchantMapAccepts": {
+    "description": "Merchant map details: label above the payment methods the place takes"
+  },
+  "merchantMapAddress": "Address",
+  "@merchantMapAddress": {
+    "description": "Label of the merchant address"
+  },
+  "merchantMapCategoryAll": "All",
+  "@merchantMapCategoryAll": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapCategoryAtms": "ATMs",
+  "@merchantMapCategoryAtms": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapCategoryBeauty": "Beauty",
+  "@merchantMapCategoryBeauty": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapCategoryCoffee": "Coffee",
+  "@merchantMapCategoryCoffee": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapCategoryGroceries": "Groceries",
+  "@merchantMapCategoryGroceries": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapCategoryHotels": "Hotels",
+  "@merchantMapCategoryHotels": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapCategoryRestaurants": "Restaurants",
+  "@merchantMapCategoryRestaurants": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapCategoryShopping": "Shopping",
+  "@merchantMapCategoryShopping": {
+    "description": "Merchant map category filter chip"
+  },
+  "merchantMapEmail": "Email",
+  "@merchantMapEmail": {
+    "description": "Merchant map details: email contact row"
+  },
+  "merchantMapListTruncated": "Showing {shown} of {total}",
+  "@merchantMapListTruncated": {
+    "description": "Merchant map list footer: only the first search results are listed",
+    "placeholders": {
+      "shown": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "250"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "1,204"
+      }
+    }
+  },
+  "merchantMapLoading": "Loading merchants…",
+  "@merchantMapLoading": {
+    "description": "Shown while the merchant list is downloaded for the first time"
+  },
+  "merchantMapNearbyCount": "Places nearby: {count}",
+  "@merchantMapNearbyCount": {
+    "description": "Merchant map list header: how many places are in the visible map area",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "128"
+      }
+    }
+  },
+  "merchantMapNetworkFailure": "Couldn't load merchants. Check your connection and try again.",
+  "@merchantMapNetworkFailure": {
+    "description": "Merchants could not be downloaded and none are saved on the device"
+  },
+  "merchantMapNeverVerified": "Not verified yet",
+  "@merchantMapNeverVerified": {
+    "description": "Merchant map details, next to a warning sign: nobody has confirmed the place accepts bitcoin"
+  },
+  "merchantMapNoPlacesInView": "No places here. Move the map or zoom out.",
+  "@merchantMapNoPlacesInView": {
+    "description": "Merchant map list: the visible map area has no places"
+  },
+  "merchantMapNoResults": "No merchants found",
+  "@merchantMapNoResults": {
+    "description": "Shown when no merchant matches the search"
+  },
+  "merchantMapNotVerified": "Not verified",
+  "@merchantMapNotVerified": {
+    "description": "Merchant map list badge: never confirmed"
+  },
+  "merchantMapOpeningHours": "Opening hours",
+  "@merchantMapOpeningHours": {
+    "description": "Label of the merchant opening hours"
+  },
+  "merchantMapOutdated": "Outdated",
+  "@merchantMapOutdated": {
+    "description": "Merchant map list badge: last confirmed more than a year ago"
+  },
+  "merchantMapPaymentLightning": "Lightning",
+  "@merchantMapPaymentLightning": {
+    "description": "Merchant map payment method: Lightning Network"
+  },
+  "merchantMapPaymentLightningContactless": "Lightning contactless",
+  "@merchantMapPaymentLightningContactless": {
+    "description": "Merchant map payment method: Lightning by tapping an NFC card"
+  },
+  "merchantMapPaymentOnchain": "On-chain",
+  "@merchantMapPaymentOnchain": {
+    "description": "Merchant map payment method: on-chain bitcoin"
+  },
+  "merchantMapPhone": "Phone",
+  "@merchantMapPhone": {
+    "description": "Label of the merchant phone number"
+  },
+  "merchantMapRequiredApp": "Paying here needs an extra app",
+  "@merchantMapRequiredApp": {
+    "description": "Merchant map details: the payment QR code needs a third-party app"
+  },
+  "merchantMapResultsCount": "Results: {count}",
+  "@merchantMapResultsCount": {
+    "description": "Merchant map list header: how many places match the search",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "128"
+      }
+    }
+  },
+  "merchantMapSearchClear": "Clear search",
+  "@merchantMapSearchClear": {
+    "description": "Merchant map: tooltip and accessible label of the button that empties the search field"
+  },
+  "merchantMapSearchHint": "Search places",
+  "@merchantMapSearchHint": {
+    "description": "Merchant map: hint of the search field docked at the bottom of the map"
+  },
+  "merchantMapShowingSavedData": "Couldn't update merchants. Showing saved data.",
+  "@merchantMapShowingSavedData": {
+    "description": "Snackbar: the update failed but merchants saved earlier are shown"
+  },
+  "merchantMapTitle": "Map",
+  "@merchantMapTitle": {
+    "description": "Title of the merchant map screen"
+  },
+  "merchantMapUnnamed": "Unnamed place",
+  "@merchantMapUnnamed": {
+    "description": "Name shown for a merchant without a name"
+  },
+  "merchantMapVerificationOutdated": "Last verified on {date}",
+  "@merchantMapVerificationOutdated": {
+    "description": "Merchant map details, next to a warning sign: last confirmation is more than a year old; date is the localized day",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 29, 2026"
+      }
+    }
+  },
+  "merchantMapVerified": "Verified",
+  "@merchantMapVerified": {
+    "description": "Merchant map list badge: confirmed within the last year"
+  },
+  "merchantMapVerifiedOn": "Verified on {date}",
+  "@merchantMapVerifiedOn": {
+    "description": "Merchant map details: the place was confirmed within the last year; date is the localized day",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 29, 2026"
+      }
+    }
+  },
+  "merchantMapViewOnBtcMap": "See more on BTC Map",
+  "@merchantMapViewOnBtcMap": {
+    "description": "Merchant map details: link to the place's page on btcmap.org"
+  },
+  "merchantMapViewOnBtcMapSubtitle": "Comments, photos and more",
+  "@merchantMapViewOnBtcMapSubtitle": {
+    "description": "Merchant map details: what the btcmap.org page has beyond this sheet"
+  },
+  "merchantMapWebsite": "Website",
+  "@merchantMapWebsite": {
+    "description": "Button that opens the merchant website"
+  },
+  "merchantMapZoomInForMore": "Showing the nearest {shown} of {total}. Zoom in to see the rest.",
+  "@merchantMapZoomInForMore": {
+    "description": "Merchant map list footer: only the nearest places in view are listed",
+    "placeholders": {
+      "shown": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "250"
+      },
+      "total": {
+        "type": "int",
+        "format": "decimalPattern",
+        "example": "1,204"
+      }
+    }
+  },
+  "merchantMapZoomInToSeeNearby": "Zoom in on the map to see places nearby",
+  "@merchantMapZoomInToSeeNearby": {
+    "description": "Merchant map list: the map shows too large an area to list nearby places"
+  },
+  "merchantMapLinkFailed": "Couldn't open this link",
+  "@merchantMapLinkFailed": {
+    "description": "Merchant map details: no app on the device could open the tapped phone, email or web link"
+  }
+}

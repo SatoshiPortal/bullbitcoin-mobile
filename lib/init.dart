@@ -19,7 +19,7 @@ import 'package:bb_mobile/native_libraries.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show payjoinDatabaseFilename;
 import 'package:bb_mobile/features/wizard/public/wizard_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_map/bull_map.dart';
+import 'package:bull_btc_map/bull_btc_map.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +56,7 @@ class Bull {
       databasePath: p.join(bullDirectory.path, 'pricer.sqlite'),
     );
 
-    BullMap.init(cacheDirectory: (await getApplicationCacheDirectory()).path);
+    await BtcMapFeature.initialize();
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
