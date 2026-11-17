@@ -15551,5 +15551,21 @@
   "transactionOrderTypeBalanceAdjustment": "Balance Adjustment",
   "@transactionOrderTypeBalanceAdjustment": {
     "description": "Order type of an exchange balance adjustment"
+  },
+  "walletTypeBitcoinNetwork": "Bitcoin network",
+  "@walletTypeBitcoinNetwork": {
+    "description": "Subtitle of a wallet card on the home screen: a Bitcoin wallet"
+  },
+  "walletTypeLiquidAndLightning": "Liquid and Lightning",
+  "@walletTypeLiquidAndLightning": {
+    "description": "Subtitle of a wallet card on the home screen: a Liquid wallet, which also pays Lightning"
+  },
+  "walletTypeWatchOnly": "Watch-Only",
+  "@walletTypeWatchOnly": {
+    "description": "Subtitle of a wallet card on the home screen: a wallet without signing keys"
+  },
+  "walletTypeWatchSigner": "Watch-Signer",
+  "@walletTypeWatchSigner": {
+    "description": "Subtitle of a wallet card on the home screen: a wallet signed by an external signer"
   }
 }

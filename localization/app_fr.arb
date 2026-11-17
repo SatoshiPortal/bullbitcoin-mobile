@@ -4796,5 +4796,9 @@
   "importMnemonicUnsupportedScript": "Ce type de portefeuille n’est pas pris en charge sur le réseau Bitcoin sélectionné.",
   "transactionOrderTypeSellUsdt": "Vendre des USDT",
   "transactionOrderTypeFiatPayment": "Paiement fiat",
-  "transactionOrderTypeBalanceAdjustment": "Ajustement de solde"
+  "transactionOrderTypeBalanceAdjustment": "Ajustement de solde",
+  "walletTypeBitcoinNetwork": "Réseau Bitcoin",
+  "walletTypeLiquidAndLightning": "Liquid et Lightning",
+  "walletTypeWatchOnly": "Lecture seule",
+  "walletTypeWatchSigner": "Signataire externe"
 }
