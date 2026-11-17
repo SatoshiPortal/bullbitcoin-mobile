@@ -26,6 +26,17 @@ void main() {
 
     expect(find.text('17 nov. 2026 17:08'), findsOneWidget);
   });
+
+  testWidgets('names the order type and statuses in the app language', (
+    tester,
+  ) async {
+    await _pumpInFrench(tester, Transaction(order: _buyOrder()));
+
+    expect(find.text('Acheter du Bitcoin'), findsOneWidget);
+    expect(find.text('En cours'), findsOneWidget);
+    expect(find.text('Terminé'), findsOneWidget);
+    expect(find.text('Non démarré'), findsOneWidget);
+  });
 }
 
 Future<void> _pumpInFrench(WidgetTester tester, Transaction transaction) async {
