@@ -18,13 +18,7 @@ import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullPullableBody,
-        BullSupportButton,
-        BullText,
-        BullThemeX,
-        Gap;
+    show BullErrorState, BullPullableBody, BullSupportButton, Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -78,24 +72,10 @@ class ExchangeHomeScreen extends StatelessWidget {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                BullText(
-                  getUserSummaryFailure.toTranslated(context),
-                  style: context.bullText.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const Gap(16),
-                BullButton.big(
-                  label: context.loc.retry,
-                  onPressed: () =>
-                      context.read<ExchangeCubit>().fetchUserSummary(),
-                  bgColor: context.bull.primary,
-                  textColor: context.bull.onPrimary,
-                ),
-              ],
+            child: BullErrorState(
+              message: getUserSummaryFailure.toTranslated(context),
+              retryLabel: context.loc.retry,
+              onRetry: () => context.read<ExchangeCubit>().fetchUserSummary(),
             ),
           ),
         ),
