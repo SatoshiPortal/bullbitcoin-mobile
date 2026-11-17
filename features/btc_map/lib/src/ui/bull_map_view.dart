@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' show Point;
 
 import 'package:bull_logger/bull_logger.dart';
@@ -172,12 +173,13 @@ class _BullMapViewState extends State<BullMapView> {
     if (map == null || !mounted) return;
     _layersReady = false;
     final colors = context.bull;
-    final shown = widget.merchants;
     try {
       await map.addSource(
         _sourceId,
         GeojsonSourceProperties(
-          data: _featureCollection(shown),
+          // Keep Android from parsing the complete dataset through Gson on
+          // its UI thread. The JSON update below uses the native parser.
+          data: _featureCollection(const []),
           cluster: true,
           clusterRadius: 50,
           clusterMaxZoom: 14,
@@ -236,10 +238,8 @@ class _BullMapViewState extends State<BullMapView> {
       _layersReady = true;
       // The list needs the first viewport even if the camera never moves.
       unawaited(_onCameraIdle());
-      // Merchants that arrived while the layers were being added.
-      if (mounted && !identical(shown, widget.merchants)) {
-        await _updateMerchants();
-      }
+      // Also sends merchants that arrived while the layers were being added.
+      await _updateMerchants();
     } on PlatformException catch (error) {
       log.warning('Merchant map layers not added: ${error.code}');
     }
@@ -275,10 +275,11 @@ class _BullMapViewState extends State<BullMapView> {
     final map = _map;
     if (map == null) return;
     try {
-      await map.setGeoJsonSource(
+      final updated = await map.editGeoJsonSource(
         _sourceId,
-        _featureCollection(widget.merchants),
+        jsonEncode(_featureCollection(widget.merchants)),
       );
+      if (!updated) log.warning('Merchant map source not updated');
     } on PlatformException catch (error) {
       log.warning('Merchant map source not updated: ${error.code}');
     }
