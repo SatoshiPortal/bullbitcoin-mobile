@@ -49,6 +49,7 @@ class SwapExternalAddressInput extends StatelessWidget {
             mainAxisSize: .min,
             children: [
               IconButton(
+                tooltip: context.loc.payScanQRCode,
                 icon: Icon(
                   Icons.qr_code_scanner,
                   color: context.appColors.onSurface,
@@ -66,6 +67,7 @@ class SwapExternalAddressInput extends StatelessWidget {
                 },
               ),
               IconButton(
+                tooltip: MaterialLocalizations.of(context).pasteButtonLabel,
                 icon: Icon(
                   Icons.paste_sharp,
                   color: context.appColors.onSurface,

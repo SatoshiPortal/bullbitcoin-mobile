@@ -177,6 +177,8 @@ class SwapPageState extends State<SwapPage> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: IconButton(
+                                    tooltip:
+                                        context.loc.swapReverseDirectionTooltip,
                                     icon: Icon(
                                       Icons.swap_vert,
                                       color: context.appColors.primary,
