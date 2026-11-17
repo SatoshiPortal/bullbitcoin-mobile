@@ -32,6 +32,11 @@ final class ArkPaymentInsufficientFundsFailure extends ArkFailure {
   const ArkPaymentInsufficientFundsFailure();
 }
 
+final class ArkBoardBelowMinimumFailure extends ArkFailure {
+  final Sats minimum;
+  const ArkBoardBelowMinimumFailure(this.minimum);
+}
+
 final class ArkDisabledFailure extends ArkFailure {
   const ArkDisabledFailure();
 }

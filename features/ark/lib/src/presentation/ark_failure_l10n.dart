@@ -13,6 +13,8 @@ extension ArkFailureL10n on ArkFailure {
       ArkOperationBusyFailure() => l10n.busy,
       ArkAccountRecoveryFailure() => l10n.recovery,
       ArkPaymentInsufficientFundsFailure() => l10n.insufficient,
+      ArkBoardBelowMinimumFailure(:final minimum) =>
+        '${l10n.minimumBoard}: ${minimum.value}',
       ArkSubmissionUncertainFailure() => l10n.uncertain,
       ArkPrivacyDisclosureFailure() => l10n.privacy,
       ArkReminderUnavailableFailure() => l10n.notificationsUnavailable,

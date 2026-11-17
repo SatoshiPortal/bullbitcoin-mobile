@@ -678,6 +678,14 @@ final class WalletArkBoardFunding implements ArkBoardFundingPort {
     Err(failure: ArkStaleQuoteFailure()) => throw const _HostFailure(
       ArkReviewExpiredFailure(),
     ),
+    Err(
+      failure: ArkValidationFailure(
+        reason: ArkFailureReason.belowMinimum,
+        minimum: final minimum?,
+      ),
+    )
+        when minimum.value > BigInt.zero =>
+      throw _HostFailure(ArkBoardBelowMinimumFailure(minimum)),
     Err() => throw const _HostFailure(ArkServiceUnavailableFailure()),
   };
   static T _secret<T>(Result<T, SecretFailure> result) => switch (result) {
