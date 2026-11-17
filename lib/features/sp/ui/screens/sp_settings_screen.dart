@@ -12,7 +12,12 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullSettingsEntryItem, BullShapesX, Gap, BullSnackBar;
+    show
+        BullConfirmDialog,
+        BullSettingsEntryItem,
+        BullShapesX,
+        Gap,
+        BullSnackBar;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -253,6 +258,7 @@ class _WalletManagementSection extends StatelessWidget {
                     title: context.loc.spDeleteWalletTitle,
                     content: context.loc.spDeleteWalletContent,
                     confirmLabel: context.loc.delete,
+                    destructive: true,
                   );
                   if (!confirmed || !context.mounted) return;
                   final deleted = await context.read<SpCubit>().revokeWallet();
@@ -350,42 +356,12 @@ Future<bool> _confirm(
   required String title,
   required String content,
   required String confirmLabel,
-}) async {
-  final result = await BullDialog.show<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(context.bullShapes.sheet),
-      ),
-      title: Text(title),
-      content: Text(content),
-      actions: [
-        Row(
-          children: [
-            Expanded(
-              child: BBButton.small(
-                label: context.loc.cancel,
-                onPressed: () => Navigator.of(context).pop(false),
-                bgColor: context.appColors.transparent,
-                textColor: context.appColors.secondary,
-                textStyle: context.font.headlineLarge,
-                outlined: true,
-              ),
-            ),
-            const Gap(12),
-            Expanded(
-              child: BBButton.small(
-                label: confirmLabel,
-                onPressed: () => Navigator.of(context).pop(true),
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-                textStyle: context.font.headlineLarge,
-              ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-  return result ?? false;
-}
+  bool destructive = false,
+}) => BullConfirmDialog.show(
+  context,
+  title: title,
+  message: content,
+  confirmLabel: confirmLabel,
+  cancelLabel: context.loc.cancel,
+  destructive: destructive,
+);
