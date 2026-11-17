@@ -18,9 +18,10 @@ const FSS_IMPORTERS_ALLOWED = new Set([
 
 const inSecrets = (path) => path.startsWith('packages/secrets/');
 const isDart = (path) => path.endsWith('.dart');
-// flutter_rust_bridge writes this suppression into every file it generates, for its own runtime's
-// internal members. Neither package depends on package:secrets, so the seal cannot be reached from
-// their generated bindings; hand-written files there stay checked.
+// The bindings packages must never reach package:secrets (`bindings-secrets` below). That keeps the
+// suppression flutter_rust_bridge writes into every file it generates, for its own runtime's internal
+// members, unable to silence the seal; hand-written files there stay checked.
+const inBindings = (path) => /^packages\/(rust_bindings|onion)\//.test(path);
 const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
 
@@ -43,6 +44,18 @@ const RULES = [
     applies: (path) => isDart(path) && !inSecrets(path),
     matches: (text) => /['"]package:secrets\/src\//.test(text),
     why: 'imports package:secrets internals instead of `package:secrets/secrets.dart`',
+  },
+  {
+    id: 'bindings-secrets',
+    applies: (path) => inBindings(path) && isDart(path),
+    matches: (text) => /['"]package:secrets[/'"]/.test(text),
+    why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
+  },
+  {
+    id: 'bindings-secrets-dependency',
+    applies: (path) => inBindings(path) && isPubspec(path),
+    matches: (text) => /^\s*secrets\s*:/.test(text),
+    why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
   },
   {
     id: 'fss-dependency',
