@@ -77,5 +77,16 @@ void main() {
       );
       semantics.dispose();
     });
+
+    test('refuses a custom action icon without a name', () {
+      expect(
+        () => BullTopBar(
+          title: 'Coins',
+          onAction: () {},
+          actionIcon: BullIcons.tune,
+        ),
+        throwsAssertionError,
+      );
+    });
   });
 }
