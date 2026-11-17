@@ -544,6 +544,7 @@ final class BarkArkClient implements ArkClient {
     ArkAccountId account,
     Uri source, {
     bool commit = true,
+    int? revision,
     bool authoritativePass = true,
     _SyncFailures? syncFailures,
     Set<String> successfulStages = const {},
@@ -551,7 +552,7 @@ final class BarkArkClient implements ArkClient {
     final previous = store.snapshot;
     var observed = await session.observe(
       account: account,
-      revision: (previous?.revision ?? 0) + 1,
+      revision: revision ?? (previous?.revision ?? 0) + 1,
       now: now().toUtc(),
       chainSource: source,
       operations: await _verifiedOperations(store, account),
@@ -1254,15 +1255,22 @@ final class BarkArkClient implements ArkClient {
     if (quote.kind == ArkOperationKind.board) {
       await session.synchronizeStage('server');
     }
-    final fresh = await session.observe(
-      account: quote.account,
+    final fresh = await _observe(
+      store,
+      session,
+      quote.account,
+      quote.chainSource,
+      commit: false,
       revision: quote.generation,
-      now: now(),
-      chainSource: quote.chainSource,
-      operations: store.operations,
-      previousRecovery: _storedRecovery(store, previous),
     );
+    final protective =
+        quote.kind == ArkOperationKind.emergencyExit ||
+        quote.kind == ArkOperationKind.exitProgress ||
+        quote.kind == ArkOperationKind.claim;
     if (fresh.stale ||
+        (!protective &&
+            (fresh.recovery != ArkRecoveryStatus.complete ||
+                !fresh.vtxoInventoryComplete)) ||
         fresh.tipHeight != quote.observedTip ||
         (previous.serverInfo?.publicKey != fresh.serverInfo?.publicKey)) {
       throw const ArkBoundaryException(ArkStaleQuoteFailure());
