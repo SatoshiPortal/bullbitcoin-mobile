@@ -74,10 +74,13 @@ class AppLocator {
     GetIt locator, {
     required String databasePath,
   }) async {
-    SettingsRecoverBullBindings.setup(locator);
+    final selectedDatabasePath = await SettingsRecoverBullBindings.setup(
+      locator,
+      databasePath: databasePath,
+    );
     WalletRecoverBullBindings.setup(locator);
     final feature = await RecoverBullFeature.mount(
-      databasePath: databasePath,
+      databasePath: selectedDatabasePath,
       secrets: locator<Secrets>(),
       wallets: locator<RecoverBullWalletPort>(),
       environment: locator<RecoverBullEnvironmentPort>(),
