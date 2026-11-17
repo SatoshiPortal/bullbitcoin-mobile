@@ -73,12 +73,14 @@ final class ArkForegroundHost {
     required Uri arkUrl,
     required Uri primaryEsploraUrl,
     required bool initializeNew,
+    ArkPreferencesRepository? preferences,
   }) async {
     final host = ArkForegroundHost(
       locator,
       arkUrl: arkUrl,
       primaryEsploraUrl: primaryEsploraUrl,
       initializeNew: initializeNew,
+      preferences: preferences,
       boardFunding: () {
         final factory = WalletArkFundingFactory(
           authority: locator<SqliteArkFundingReservations>(),
