@@ -1,3 +1,5 @@
+import '../initialization_result.dart';
+
 import 'dart:math';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -136,7 +138,7 @@ Future<void> _waitFor(WidgetTester tester, bool Function() done) async {
 
 Future<void> initializeDeviceTests({bool isInitialized = false}) async {
   if (!isInitialized) {
-    expect(await Bull.init(), isA<Ok>());
+    requireSuccessfulBullInitialization(await Bull.init());
   }
   final view = WidgetsBinding.instance.platformDispatcher.views.first;
   Device.screen = view.physicalSize / view.devicePixelRatio;

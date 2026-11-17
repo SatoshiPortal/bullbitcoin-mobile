@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -25,7 +27,7 @@ import '../packages/secrets/test/fixtures/liquid_signing_fixture.dart';
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    expect(await Bull.init(), isA<Ok>());
+    requireSuccessfulBullInitialization(await Bull.init());
   }
 
   // The published BIP39 vector for entropy ffff…ff. Public, so no funds and

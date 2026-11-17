@@ -44,8 +44,9 @@ void main() {
     )
     ..writeln('// Regenerated on every `make integration-test`.')
     ..writeln("import 'package:bb_mobile/init.dart';")
+    ..writeln("import 'package:bull_logger/bull_logger.dart';")
     ..writeln("import 'package:flutter_test/flutter_test.dart';")
-    ..writeln("import 'package:primitives/primitives.dart' show Ok;");
+    ..writeln("import 'initialization_result.dart';");
   for (final f in files) {
     b.writeln("import '$f' as ${alias[f]};");
   }
@@ -53,7 +54,8 @@ void main() {
     ..writeln()
     ..writeln('Future<void> main() async {')
     ..writeln('  TestWidgetsFlutterBinding.ensureInitialized();')
-    ..writeln('  expect(await Bull.init(), isA<Ok>());')
+    ..writeln('  requireSuccessfulBullInitialization(await Bull.init());')
+    ..writeln("  log.fine('Integration Bull.init returned Ok');")
     ..writeln();
   for (final f in files) {
     b.writeln('  await ${alias[f]}.main(isInitialized: true);');

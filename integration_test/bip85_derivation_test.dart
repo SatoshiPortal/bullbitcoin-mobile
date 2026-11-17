@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/bip85/data/bip85_datasource.dart';
@@ -21,7 +23,7 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    expect(await Bull.init(), isA<Ok>());
+    requireSuccessfulBullInitialization(await Bull.init());
   }
 
   final sqlite = locator<SqliteDatabase>();

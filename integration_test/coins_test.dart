@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'package:primitives/primitives.dart'
     show BitcoinTransactionRecipient, Err, Ok, Result;
 import 'package:primitives/primitives.dart' as primitives show Network;
@@ -45,7 +47,7 @@ import 'developer_network.dart';
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    expect(await Bull.init(), isA<Ok>());
+    requireSuccessfulBullInitialization(await Bull.init());
   }
 
   final frozenDatasource = locator<SyncFreezesDatasource>();

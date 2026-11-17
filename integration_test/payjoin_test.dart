@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
@@ -24,7 +26,7 @@ import 'developer_network.dart';
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    expect(await Bull.init(), isA<Ok>());
+    requireSuccessfulBullInitialization(await Bull.init());
   }
 
   final walletRepository = locator<WalletRepository>();

@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'package:bb_mobile/init.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:material_ui/material_ui.dart';
@@ -7,7 +9,7 @@ import 'package:primitives/primitives.dart';
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
-    expect(await Bull.init(), isA<Ok>());
+    requireSuccessfulBullInitialization(await Bull.init());
   }
 
   group('Exchange Rate Integration Tests', () {
