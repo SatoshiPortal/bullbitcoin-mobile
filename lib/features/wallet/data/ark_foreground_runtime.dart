@@ -24,7 +24,11 @@ import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:secrets/secrets.dart';
+
+import 'ark_board_abandonment.dart';
+import 'sqlite_ark_funding_reservations.dart';
 
 /// Constructs the wallet-owned Board actor over the runtime's single client.
 typedef ArkBoardFundingFactory = ArkBoardFundingPort Function(
@@ -198,6 +202,11 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
       storagePath: '${directory.path}/native',
       childProvider: SecretsArkChildProvider(secrets, registry),
       transactionVerifier: const ArkTransactionVerifier(),
+      boardAbandonment: WalletArkBoardAbandonment(
+        locator.isRegistered<SqliteArkFundingReservations>()
+            ? Ok(locator<SqliteArkFundingReservations>())
+            : const Err(SyncStorageFailure()),
+      ),
       executionPolicy: policy,
       executionMode: native.ArkExecutionMode.foreground,
       stageBudget: const native.ArkUnlimitedStageBudget(),

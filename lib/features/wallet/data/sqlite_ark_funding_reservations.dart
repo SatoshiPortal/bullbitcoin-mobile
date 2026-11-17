@@ -964,6 +964,116 @@ final class SqliteArkFundingReservations
     );
   });
 
+  /// Read-only evidence for one exact abandoned external Board. A terminal
+  /// label, missing row or unrelated closure never supplies this attestation.
+  @useResult
+  Future<Result<ArkNeverSignedBoardFacts?, SyncFailure>> readNeverSignedBoard({
+    required String accountIdentity,
+    required Fingerprint sourceParent,
+    required BitcoinNetwork network,
+    required String operationId,
+    required String fundingTxid,
+  }) async => _run(() {
+    if (network != BitcoinNetwork.regtest ||
+        operationId.isEmpty ||
+        operationId.length > 512 ||
+        !_txid.hasMatch(fundingTxid)) {
+      _refuse();
+    }
+    _inventory();
+    final rows = _db.select(
+      'SELECT * FROM ark_funding_operations WHERE operation=?',
+      [operationId],
+    );
+    if (rows.isEmpty) return null;
+    final row = rows.single;
+    if (row['account'] != accountIdentity ||
+        row['parent'] != sourceParent.hex ||
+        row['network'] != network.name ||
+        row['txid'] != fundingTxid) {
+      _refuse();
+    }
+    if (!_closedProof(row)) return null;
+    final raw = _authority(row)?['settlement'];
+    if (raw is! String) _storage();
+    final receipt = jsonDecode(raw);
+    if (receipt is! Map<String, dynamic> || receipt['kind'] != 'neverSigned') {
+      return null;
+    }
+    final binding = _binding(row);
+    final review = _boardReview(operationId);
+    if (review['phase'] != 'prepared' || row['signed_psbt'] != null) _storage();
+    final payload = jsonDecode(review['payload'] as String);
+    final context = jsonDecode(binding.context);
+    if (payload is! Map<String, dynamic> ||
+        context is! Map<String, dynamic> ||
+        payload['request'] != binding.context ||
+        context['version'] is! int ||
+        context['version'] != 1 ||
+        context['account'] != accountIdentity) {
+      _storage();
+    }
+    final address = payload['address'],
+        index = payload['keypairIndex'],
+        expiry = payload['expiryHeight'],
+        minerFee = payload['minerFee'];
+    if (address is! String ||
+        address.isEmpty ||
+        address.length > 512 ||
+        address.trim() != address ||
+        index is! int ||
+        index < 0 ||
+        index > 0xffffffff ||
+        expiry is! int ||
+        expiry < 0 ||
+        expiry > 0xffffffff ||
+        minerFee is! int ||
+        minerFee < 0) {
+      _storage();
+    }
+    final gross = _boardSats(context['amount']),
+        net = _boardSats(context['net']),
+        fee = _boardSats(context['arkFee']);
+    if (gross <= BigInt.zero || net <= BigInt.zero || gross != net + fee) {
+      _storage();
+    }
+    final facts = switch (inspectBitcoinPsbt(binding.unsignedPsbt)) {
+      Ok(:final value) => value,
+      Err() => _storage(),
+    };
+    if (facts.unsignedTxid != fundingTxid || facts.feeSat != minerFee) {
+      _storage();
+    }
+    var outputs = 0;
+    for (final output in facts.outputs) {
+      if (bitcoinScriptAddress(output.scriptPubkey, network)
+          case Ok(:final value) when value == address) {
+        if (BigInt.from(output.valueSat) != gross) _storage();
+        outputs++; // The exact funding vout must be unique, not guessed as zero.
+      }
+    }
+    if (outputs != 1) _storage();
+    return (
+      operationId: binding.operationId,
+      fundingTxid: binding.unsignedTxid,
+      address: address,
+      keypairIndex: index,
+      expiryHeight: expiry,
+      grossAmount: Sats(gross),
+      netAmount: Sats(net),
+    );
+  });
+
+  BigInt _boardSats(Object? value) {
+    final amount = value is String ? BigInt.tryParse(value) : null;
+    if (amount == null ||
+        amount < BigInt.zero ||
+        amount > BigInt.from(2100000000000000)) {
+      _storage();
+    }
+    return amount;
+  }
+
   /// A positive prepared/never-started journal plus an expired review, never
   /// an inference from native absence. The subsequent existing CAS rechecks the
   /// complete immutable binding and irreversible seal under source admission.
@@ -1541,4 +1651,15 @@ typedef ArkFundingRequest = ({
   WalletKey key,
   int generation,
   String context,
+});
+
+/// Wallet-data evidence only; neither PSBTs nor a source signing capability.
+typedef ArkNeverSignedBoardFacts = ({
+  String operationId,
+  String fundingTxid,
+  String address,
+  int keypairIndex,
+  int expiryHeight,
+  Sats grossAmount,
+  Sats netAmount,
 });

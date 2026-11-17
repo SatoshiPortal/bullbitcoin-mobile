@@ -16,6 +16,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 
+import 'ark_board_abandonment.dart';
+import 'sqlite_ark_funding_reservations.dart';
+
 /// Only existing stores are opened. Every resource remains alive until the
 /// admitted native work has completed and the runner closes its resources.
 Future<BackgroundTaskHandler> setupArkBackgroundTask(
@@ -71,10 +74,17 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   final secrets = Secrets(
     scratchDirectory: () async => (await getTemporaryDirectory()).path,
   );
+  // Headless work never provisions or migrates the source authority.
+  final sourceAuthority = SqliteArkFundingReservations.open(
+    '${documents.path}/ark-funding.sqlite',
+    foreground: false,
+  );
+  if (sourceAuthority case Ok(:final value)) resources.onClose(value.close);
   final client = createArkNativeClient(
     storagePath: '$directory/native',
     childProvider: SecretsArkChildProvider(secrets, registry),
     transactionVerifier: const ArkTransactionVerifier(),
+    boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
     executionPolicy: const _RegtestBackgroundPolicy(),
     executionMode: native.ArkExecutionMode.backgroundExisting,
     stageBudget: budget,
