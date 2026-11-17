@@ -118,6 +118,8 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                 ArkVtxoState.spent => l10n.spentState,
                                 ArkVtxoState.exited => l10n.exitedState,
                                 ArkVtxoState.unknown => l10n.unknownState,
+                                ArkVtxoState.abandonedBoard =>
+                                  l10n.abandonedBoardState,
                               },
                             ),
                           ],

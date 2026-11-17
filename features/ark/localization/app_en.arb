@@ -281,5 +281,7 @@
   "boardValidUntil": "Review valid until (UTC)",
   "@boardValidUntil": {},
   "exitMaximumClaimFee": "Maximum claim fee (sats)",
-  "@exitMaximumClaimFee": {}
+  "@exitMaximumClaimFee": {},
+  "abandonedBoardState": "Abandoned board (never signed)",
+  "@abandonedBoardState": {}
 }

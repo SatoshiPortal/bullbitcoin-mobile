@@ -132,5 +132,7 @@
   "boardSourceDebitInSats": "Débit du portefeuille source (sats)",
   "boardValidUntil": "Devis valable jusqu’à (UTC)",
   "exitMaximumClaimFee": "Frais maximaux de réclamation (sats)",
-  "@exitMaximumClaimFee": {}
+  "@exitMaximumClaimFee": {},
+  "abandonedBoardState": "Board abandonné (jamais signé)",
+  "@abandonedBoardState": {}
 }
