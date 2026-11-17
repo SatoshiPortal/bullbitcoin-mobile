@@ -100,13 +100,17 @@ final class SqliteArkFundingReservations
         db.execute('BEGIN IMMEDIATE');
         try {
           db.execute(_authorityDdl);
+          db.execute(_ordinaryDdl);
+          db.execute(_boardDdl);
           _checkAuthoritySchema(db);
+          _checkHostSchema(db);
           db.execute('COMMIT');
         } finally {
           if (!db.autocommit) db.execute('ROLLBACK');
         }
       } else {
         _checkAuthoritySchema(db);
+        _checkHostSchema(db);
       }
       if (!markerExists) {
         marker.writeAsStringSync('ark-funding:1\n', flush: true);
@@ -128,6 +132,42 @@ final class SqliteArkFundingReservations
     required WalletKey key,
     required int generation,
     required String context,
+  }) => _beginRequest(
+    operationId: operationId,
+    accountIdentity: accountIdentity,
+    sourceParent: sourceParent,
+    key: key,
+    generation: generation,
+    context: context,
+    exclusiveAccount: false,
+  );
+
+  @useResult
+  Future<Result<void, SyncFailure>> beginBoardRequest({
+    required String operationId,
+    required String accountIdentity,
+    required Fingerprint sourceParent,
+    required WalletKey key,
+    required int generation,
+    required String context,
+  }) => _beginRequest(
+    operationId: operationId,
+    accountIdentity: accountIdentity,
+    sourceParent: sourceParent,
+    key: key,
+    generation: generation,
+    context: context,
+    exclusiveAccount: true,
+  );
+
+  Future<Result<void, SyncFailure>> _beginRequest({
+    required String operationId,
+    required String accountIdentity,
+    required Fingerprint sourceParent,
+    required WalletKey key,
+    required int generation,
+    required String context,
+    required bool exclusiveAccount,
   }) async {
     if (_closed) return const Err(SyncClosedFailure());
     final network = key.network;
@@ -144,6 +184,15 @@ final class SqliteArkFundingReservations
     try {
       _db.execute('BEGIN IMMEDIATE');
       transaction = true;
+      if (exclusiveAccount) {
+        _inventory();
+        if (_db.select(
+          "SELECT 1 FROM ark_funding_operations WHERE account=? AND operation<>? AND state NOT IN ('confirmed','conflicted','tombstoned')",
+          [accountIdentity, operationId],
+        ).isNotEmpty) {
+          _refuse();
+        }
+      }
       final old = _db.select(
         'SELECT * FROM ark_funding_operations WHERE operation=?',
         [operationId],
@@ -236,6 +285,12 @@ final class SqliteArkFundingReservations
       _db.execute('BEGIN IMMEDIATE');
       transaction = true;
       _inventory();
+      if (_db.select(
+        'SELECT 1 FROM ark_ordinary_signing WHERE network=? AND txid=?',
+        [network.name, decoded.txid],
+      ).isNotEmpty) {
+        _refuse();
+      }
       final rows = _db.select(
         'SELECT * FROM ark_funding_operations WHERE operation=?',
         [owner.session],
@@ -409,6 +464,22 @@ final class SqliteArkFundingReservations
       _run(_inventory);
 
   List<InputReservation> _inventory() {
+    _checkHostSchema(_db);
+    for (final row in _db.select(
+      'SELECT network,txid FROM ark_ordinary_signing',
+    )) {
+      if (!BitcoinNetwork.values.any((n) => n.name == row['network']) ||
+          row['txid'] is! String ||
+          !_txid.hasMatch(row['txid'] as String)) {
+        _storage();
+      }
+    }
+    for (final row in _db.select('SELECT operation FROM ark_board_reviews')) {
+      final id = row['operation'];
+      if (id is! String || id.isEmpty) _storage();
+      _operation(id);
+      _boardReview(id);
+    }
     final held = <InputReservation>[];
     for (final row in _db.select('SELECT * FROM ark_funding_operations')) {
       final state = _state(row);
@@ -420,7 +491,11 @@ final class SqliteArkFundingReservations
       );
       if (_terminal.contains(state)) {
         if (inputs.isNotEmpty || (state == 'tombstoned' && !closed)) _storage();
-        _binding(row); // Corrupt terminal PSBT/txid cannot hide an old binding.
+        // Only a fully validated neverPrepared receipt can close without a
+        // prepared binding; NULL bytes alone never establish this exception.
+        if (!(state == 'tombstoned' && closed && row['psbt'] == null)) {
+          _binding(row);
+        }
         continue; // Legacy terminal pins are unresolved; never recreate holds.
       }
       if (closed || authority?['signing'] == 'tombstoned') _storage();
@@ -609,6 +684,118 @@ final class SqliteArkFundingReservations
     }, write: true);
   }
 
+  /// Data-local request facts, never a signing or absence capability.
+  @useResult
+  Future<Result<ArkFundingRequest?, SyncFailure>> readUnpreparedRequest(
+    String operationId,
+  ) async => _run(() {
+    _inventory();
+    final row = _operation(operationId);
+    if (_state(row) != 'requested') return null;
+    if (_authority(row)?['signing'] != 'never_started') _refuse();
+    return _requestFacts(row);
+  });
+
+  /// The actor supplies admission from the configured source gate. Both this
+  /// tombstone and reserve take BEGIN IMMEDIATE: a late reserve cannot win too.
+  @useResult
+  Future<Result<void, SyncFailure>> closeNeverPrepared({
+    required ArkFundingRequest expected,
+    required WalletRevision admittedRevision,
+  }) async => _run(() {
+    _inventory();
+    final row = _operation(expected.operationId);
+    if (_state(row) != 'requested' ||
+        _authority(row)?['signing'] != 'never_started' ||
+        _authority(row)?['settlement'] != null ||
+        _requestFacts(row) != expected ||
+        admittedRevision.key != expected.key ||
+        admittedRevision.generation != expected.generation ||
+        admittedRevision.revision < 0) {
+      _refuse();
+    }
+    final receipt = jsonEncode({
+      'version': 1,
+      'kind': 'neverPrepared',
+      'closed': true,
+      'request': _requestJson(expected),
+      'signingBefore': 'never_started',
+      'admitted': {
+        'wallet': admittedRevision.key.id,
+        'network': _networkName(admittedRevision.key),
+        'generation': admittedRevision.generation,
+        'revision': admittedRevision.revision,
+      },
+    });
+    _db.execute(
+      "UPDATE ark_funding_authority SET signing='tombstoned',settlement=? WHERE operation=?",
+      [receipt, expected.operationId],
+    );
+    _db.execute(
+      "UPDATE ark_funding_operations SET state='tombstoned' WHERE operation=?",
+      [expected.operationId],
+    );
+    // No input DELETE or immutable request-payload mutation: no hold was owned.
+    if (!_closedProof(_operation(expected.operationId))) _storage();
+  }, write: true);
+
+  ArkFundingRequest _requestFacts(Row row) {
+    final operation = row['operation'],
+        account = row['account'],
+        parent = row['parent'],
+        wallet = row['wallet'],
+        generation = row['generation'],
+        context = row['context'];
+    final parsedParent = parent is String ? Fingerprint.tryParse(parent) : null;
+    final network = row['network'] is String
+        ? BitcoinNetwork.tryFromName(row['network'] as String)
+        : null;
+    if (operation is! String ||
+        operation.isEmpty ||
+        operation.length > 512 ||
+        account is! String ||
+        account.isEmpty ||
+        parsedParent == null ||
+        wallet is! String ||
+        wallet.isEmpty ||
+        network == null ||
+        generation is! int ||
+        generation < 0 ||
+        context is! String ||
+        context.isEmpty ||
+        utf8.encode(context).length > 4096 ||
+        row['revision'] != null ||
+        row['psbt'] != null ||
+        row['txid'] != null ||
+        row['signed_psbt'] != null ||
+        _db.select('SELECT 1 FROM ark_funding_inputs WHERE operation=?', [
+          operation,
+        ]).isNotEmpty ||
+        _db.select('SELECT 1 FROM ark_board_reviews WHERE operation=?', [
+          operation,
+        ]).isNotEmpty) {
+      _storage();
+    }
+    return (
+      operationId: operation,
+      accountIdentity: account,
+      sourceParent: parsedParent,
+      key: WalletKey(id: wallet, network: network),
+      generation: generation,
+      context: context,
+    );
+  }
+
+  Map<String, Object> _requestJson(ArkFundingRequest request) => {
+    'operation': request.operationId,
+    'account': request.accountIdentity,
+    'parent': request.sourceParent.hex,
+    'wallet': request.key.id,
+    'network': _networkName(request.key),
+    'generation': request.generation,
+    'context': request.context,
+  };
+
   @useResult
   Future<Result<ArkFundingBinding, SyncFailure>> readBinding(
     String operationId,
@@ -623,7 +810,24 @@ final class SqliteArkFundingReservations
   Future<Result<ArkFundingBinding?, SyncFailure>> bindingForSigning({
     required WalletKey key,
     required String unsignedPsbt,
+  }) async => _run(() => _classifySigning(key, unsignedPsbt));
+
+  // Publishes irreversible possible signer handoff before Secrets. This is an
+  // EXACT network/unsigned-txid fence, not a blacklist of unrelated input reuse.
+  @useResult
+  Future<Result<void, SyncFailure>> admitOrdinarySigning({
+    required WalletKey key,
+    required String unsignedPsbt,
   }) async => _run(() {
+    if (_classifySigning(key, unsignedPsbt) != null) _refuse();
+    final decoded = decodeBitcoinPsbt(unsignedPsbt);
+    _db.execute(
+      'INSERT INTO ark_ordinary_signing(network,txid) VALUES(?,?) ON CONFLICT DO NOTHING',
+      [_networkName(key), decoded.txid],
+    );
+  }, write: true);
+
+  ArkFundingBinding? _classifySigning(WalletKey key, String unsignedPsbt) {
     if (key.network is! BitcoinNetwork) _refuse();
     final decoded = decodeBitcoinPsbt(unsignedPsbt);
     final held = _inventory();
@@ -645,7 +849,7 @@ final class SqliteArkFundingReservations
       _refuse();
     }
     return null;
-  });
+  }
 
   @useResult
   Future<Result<void, SyncFailure>> beginSigning({
@@ -687,6 +891,252 @@ final class SqliteArkFundingReservations
     ]);
     _closeSource(row, expected, admittedRevision, 'neverSigned');
   }, write: true);
+
+  @useResult
+  Future<Result<String?, SyncFailure>> pendingForAccount(
+    String account,
+  ) async => _run(() {
+    _inventory();
+    final rows = _db.select(
+      "SELECT operation FROM ark_funding_operations WHERE account=? AND state NOT IN ('confirmed','conflicted','tombstoned') ORDER BY operation",
+      [account],
+    );
+    if (rows.isEmpty) return null;
+    final id = rows.first['operation'];
+    if (id is! String || id.isEmpty) _storage();
+    return id;
+  });
+
+  /// Immutable review facts are separate from the untouched funding journal.
+  @useResult
+  Future<Result<void, SyncFailure>> saveBoardReview(
+    String operationId,
+    String payload,
+  ) async => _run(() {
+    _inventory();
+    if (payload.isEmpty || utf8.encode(payload).length > 8192) _refuse();
+    _reviewPayload(payload);
+    final row = _operation(operationId);
+    _binding(row);
+    if (_state(row) != 'reserved' ||
+        _authority(row)?['signing'] != 'never_started') {
+      _refuse();
+    }
+    final previous = _db.select(
+      'SELECT * FROM ark_board_reviews WHERE operation=?',
+      [operationId],
+    );
+    if (previous.isNotEmpty) {
+      if (previous.single['payload'] != payload ||
+          previous.single['phase'] != 'prepared') {
+        _refuse();
+      }
+      return;
+    }
+    _db.execute(
+      'INSERT INTO ark_board_reviews(operation,payload,phase) VALUES(?,?,?)',
+      [operationId, payload, 'prepared'],
+    );
+  }, write: true);
+
+  @useResult
+  Future<Result<ArkBoardJournalEntry, SyncFailure>> readBoardReview(
+    String operationId,
+  ) async => _run(() {
+    _inventory();
+    final row = _operation(operationId);
+    final review = _boardReview(operationId);
+    if (_terminal.contains(_state(row)) && review['phase'] != 'broadcast') {
+      _refuse();
+    }
+    if (review['phase'] == 'prepared' &&
+        (_state(row) != 'reserved' ||
+            _authority(row)?['signing'] != 'never_started')) {
+      _storage();
+    }
+    final signed = row['signed_psbt'];
+    if (signed != null && signed is! String) _storage();
+    return ArkBoardJournalEntry(
+      binding: _binding(row),
+      payload: review['payload'] as String,
+      phase: review['phase'] as String,
+      signedPsbt: signed is String ? signed : null,
+    );
+  });
+
+  /// A positive prepared/never-started journal plus an expired review, never
+  /// an inference from native absence. The subsequent existing CAS rechecks the
+  /// complete immutable binding and irreversible seal under source admission.
+  @useResult
+  Future<Result<bool, SyncFailure>> expiredUnsignedBoardReview(
+    String operationId,
+    DateTime now,
+  ) async => _run(() {
+    _inventory();
+    final row = _operation(operationId);
+    if (_state(row) != 'reserved' ||
+        _authority(row)?['signing'] != 'never_started' ||
+        row['signed_psbt'] != null) {
+      return false;
+    }
+    final reviews = _db.select(
+      'SELECT 1 FROM ark_board_reviews WHERE operation=?',
+      [operationId],
+    );
+    if (reviews.isEmpty) return false; // Legacy has no positive Board review.
+    final review = _boardReview(operationId);
+    if (review['phase'] != 'prepared') return false;
+    final binding = _binding(
+      row,
+    ); // Reapplies all unsigned/native-SegWit facts.
+    final request = jsonDecode(binding.context);
+    final payload = jsonDecode(review['payload'] as String);
+    if (request is! Map<String, dynamic> ||
+        payload is! Map<String, dynamic> ||
+        request['version'] is! int ||
+        request['version'] != 1 ||
+        request['account'] != binding.accountIdentity ||
+        payload['request'] != binding.context ||
+        request['validUntil'] is! String) {
+      _storage();
+    }
+    final until = DateTime.tryParse(request['validUntil'] as String);
+    if (until == null || !until.isUtc || !now.isUtc) _storage();
+    return !now.isBefore(until);
+  });
+
+  /// CAS claims the one signer, and seals the source in the SAME transaction.
+  @useResult
+  Future<Result<void, SyncFailure>> admitBoardSigning({
+    required ArkFundingBinding expected,
+    required WalletRevision admittedRevision,
+  }) async => _run(() {
+    final row = _match(expected, admittedRevision);
+    if (_state(row) != 'reserved' ||
+        _authority(row)?['signing'] != 'never_started' ||
+        _boardReview(expected.operationId)['phase'] != 'prepared') {
+      _refuse();
+    }
+    _db.execute(
+      "UPDATE ark_funding_authority SET signing='started' WHERE operation=?",
+      [expected.operationId],
+    );
+    _db.execute(
+      "UPDATE ark_board_reviews SET phase='signing' WHERE operation=?",
+      [expected.operationId],
+    );
+  }, write: true);
+
+  @useResult
+  Future<Result<void, SyncFailure>> advanceBoardDelivery(
+    String operationId, {
+    required String expectedPhase,
+    required String nextPhase,
+  }) async => _run(() {
+    _inventory();
+    final row = _operation(operationId);
+    _binding(row);
+    if (_state(row) != 'signed' ||
+        row['signed_psbt'] is! String ||
+        _authority(row)?['signing'] != 'started' ||
+        _boardReview(operationId)['phase'] != expectedPhase ||
+        !const {
+          ('signing', 'signed'),
+          ('signed', 'broadcasting'),
+        }.contains((expectedPhase, nextPhase))) {
+      _refuse();
+    }
+    _db.execute('UPDATE ark_board_reviews SET phase=? WHERE operation=?', [
+      nextPhase,
+      operationId,
+    ]);
+  }, write: true);
+
+  @useResult
+  Future<Result<void, SyncFailure>> finishBoardBroadcast(
+    String operationId,
+    SpendReceipt receipt,
+  ) async => _run(() {
+    _inventory();
+    final row = _operation(operationId),
+        binding = _binding(_operation(operationId));
+    final phase = _boardReview(operationId)['phase'];
+    if (!receipt.guarded ||
+        !receipt.durable ||
+        receipt.txid != binding.unsignedTxid ||
+        _state(row) != 'signed' ||
+        row['signed_psbt'] is! String ||
+        _authority(row)?['signing'] != 'started' ||
+        (phase != 'broadcasting' && phase != 'broadcast')) {
+      _refuse();
+    }
+    _db.execute(
+      "UPDATE ark_board_reviews SET phase='broadcast' WHERE operation=?",
+      [operationId],
+    );
+  }, write: true);
+
+  Row _boardReview(String operationId) {
+    final rows = _db.select(
+      'SELECT * FROM ark_board_reviews WHERE operation=?',
+      [operationId],
+    );
+    if (rows.length != 1) _refuse();
+    final row = rows.single;
+    final payload = row['payload'], phase = row['phase'];
+    if (payload is! String ||
+        payload.isEmpty ||
+        utf8.encode(payload).length > 8192 ||
+        !const [
+          'prepared',
+          'signing',
+          'signed',
+          'broadcasting',
+          'broadcast',
+        ].contains(phase)) {
+      _storage();
+    }
+    _reviewPayload(payload);
+    return row;
+  }
+
+  void _reviewPayload(String payload) {
+    try {
+      if (jsonDecode(payload) is! Map<String, dynamic>) _storage();
+    } on FormatException {
+      _storage();
+    }
+  }
+
+  static const _ordinaryDdl =
+      'CREATE TABLE IF NOT EXISTS ark_ordinary_signing(network TEXT NOT NULL,txid TEXT NOT NULL,PRIMARY KEY(network,txid))';
+  static const _boardDdl =
+      "CREATE TABLE IF NOT EXISTS ark_board_reviews(operation TEXT PRIMARY KEY REFERENCES ark_funding_operations(operation),payload TEXT NOT NULL,phase TEXT NOT NULL CHECK(phase IN ('prepared','signing','signed','broadcasting','broadcast')))";
+  static void _checkHostSchema(Database db) {
+    for (final spec in const {
+      'ark_ordinary_signing': [
+        ('network', 'TEXT', 1, 1),
+        ('txid', 'TEXT', 1, 2),
+      ],
+      'ark_board_reviews': [
+        ('operation', 'TEXT', 0, 1),
+        ('payload', 'TEXT', 1, 0),
+        ('phase', 'TEXT', 1, 0),
+      ],
+    }.entries) {
+      final columns = db.select('PRAGMA table_info(${spec.key})');
+      if (columns.length != spec.value.length) throw const FormatException();
+      for (var i = 0; i < columns.length; i++) {
+        final expected = spec.value[i], actual = columns[i];
+        if (actual['name'] != expected.$1 ||
+            actual['type'] != expected.$2 ||
+            actual['notnull'] != expected.$3 ||
+            actual['pk'] != expected.$4) {
+          throw const FormatException();
+        }
+      }
+    }
+  }
 
   Row _match(ArkFundingBinding expected, WalletRevision admitted) {
     _inventory();
@@ -899,6 +1349,9 @@ final class SqliteArkFundingReservations
     try {
       if (raw is! String) _storage();
       final value = jsonDecode(raw);
+      if (value is Map<String, dynamic> && value['kind'] == 'neverPrepared') {
+        return _neverPreparedProof(row, value);
+      }
       final b = _binding(row);
       if (value is! Map<String, dynamic> ||
           value.length != 8 ||
@@ -968,6 +1421,30 @@ final class SqliteArkFundingReservations
     } on Exception {
       _storage();
     }
+  }
+
+  bool _neverPreparedProof(Row row, Map<String, dynamic> receipt) {
+    final request = _requestFacts(row);
+    final admitted = receipt['admitted'];
+    if (_state(row) != 'tombstoned' ||
+        _authority(row)?['signing'] != 'tombstoned' ||
+        receipt.length != 6 ||
+        receipt['version'] is! int ||
+        receipt['version'] != 1 ||
+        receipt['closed'] != true ||
+        receipt['signingBefore'] != 'never_started' ||
+        jsonEncode(receipt['request']) != jsonEncode(_requestJson(request)) ||
+        admitted is! Map<String, dynamic> ||
+        admitted.length != 4 ||
+        admitted['wallet'] != request.key.id ||
+        admitted['network'] != _networkName(request.key) ||
+        admitted['generation'] is! int ||
+        admitted['generation'] != request.generation ||
+        admitted['revision'] is! int ||
+        (admitted['revision'] as int) < 0) {
+      _storage();
+    }
+    return true;
   }
 
   Result<T, SyncFailure> _run<T>(T Function() action, {bool write = false}) {
@@ -1040,3 +1517,28 @@ final class _FundingRefusal implements Exception {
   final SyncFailure failure;
   const _FundingRefusal(this.failure);
 }
+
+/// Wallet-data-only journal: never exported through the Ark feature port.
+final class ArkBoardJournalEntry {
+  final ArkFundingBinding binding;
+  final String payload;
+  final String phase;
+  final String? signedPsbt;
+  const ArkBoardJournalEntry({
+    required this.binding,
+    required this.payload,
+    required this.phase,
+    required this.signedPsbt,
+  });
+}
+
+/// Exact immutable request metadata; deliberately has no PSBT or unsigned txid.
+/// Its data equality is checked again under the source-admitted SQL CAS.
+typedef ArkFundingRequest = ({
+  String operationId,
+  String accountIdentity,
+  Fingerprint sourceParent,
+  WalletKey key,
+  int generation,
+  String context,
+});
