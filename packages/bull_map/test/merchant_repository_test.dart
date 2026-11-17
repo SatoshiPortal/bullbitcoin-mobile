@@ -21,6 +21,19 @@ class _FakeApi implements BtcMapApiDatasource {
   }
 }
 
+class _FailOnceCache extends MerchantCacheDatasource {
+  int writes = 0;
+
+  _FailOnceCache(super.directory);
+
+  @override
+  Future<void> write(List<MerchantModel> places, {DateTime? cursor}) async {
+    writes++;
+    if (writes == 1) throw const FileSystemException('disk full');
+    await super.write(places, cursor: cursor);
+  }
+}
+
 MerchantModel _place(
   int id, {
   required DateTime updatedAt,
@@ -88,6 +101,29 @@ void main() {
     expect(ids(await repo.sync()), [1, 3]);
     expect(api.requests.last, DateTime.utc(2026, 1, 2));
     expect(ids(await repository().cached()), [1, 3]);
+  });
+
+  test(
+    'retries a failed cache write even without new server changes',
+    () async {
+      final flakyCache = _FailOnceCache(directory);
+      final repo = MerchantRepository(api, flakyCache);
+      api.respond = (_) => [_place(1, updatedAt: DateTime.utc(2026))];
+      expect(ids(await repo.sync()), [1]);
+      api.respond = (_) => const [];
+      expect(ids(await repo.sync()), [1]);
+      expect(flakyCache.writes, 2);
+      expect(ids(await repository().cached()), [1]);
+    },
+  );
+
+  test('persists the cursor of a deletion absent from the snapshot', () async {
+    final initial = DateTime.utc(2026, 1, 1);
+    final deleted = DateTime.utc(2026, 2, 1);
+    await cache.write([_place(1, updatedAt: initial)], cursor: initial);
+    api.respond = (_) => [_place(2, updatedAt: deleted, deletedAt: deleted)];
+    expect(ids(await repository().sync()), [1]);
+    expect((await cache.read()).cursor, deleted);
   });
 
   test('a network error is a network failure and keeps the cache', () async {
