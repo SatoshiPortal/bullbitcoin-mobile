@@ -13,17 +13,20 @@ import 'package:primitives/primitives.dart';
 /// map.
 abstract final class BullMap {
   static Directory? _cacheDirectory;
+  static MerchantRepository? _repository;
 
-  static void init({required String cacheDirectory}) =>
-      _cacheDirectory = Directory(cacheDirectory);
+  static void init({required String cacheDirectory}) {
+    _cacheDirectory = Directory(cacheDirectory);
+    _repository = null;
+  }
 
-  /// A session for one open map. Its merchants live in memory as long as it
-  /// does, so a screen opens one and drops it when it closes.
+  /// Sessions reuse one repository, including decoded merchants, until init
+  /// changes the cache directory. Opening the map still requests a delta sync.
   static BullMapSession open() {
     final directory = _cacheDirectory;
     if (directory == null) throw StateError('BullMap.init was not called');
     return BullMapSession._(
-      MerchantRepositoryImpl(
+      _repository ??= MerchantRepositoryImpl(
         BtcMapApiDatasource(),
         MerchantCacheDatasource(directory),
       ),
