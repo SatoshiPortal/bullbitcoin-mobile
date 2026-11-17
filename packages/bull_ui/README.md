@@ -75,8 +75,9 @@ Duplicated from `lib/core/widgets/**` as dependency-clean `Bull*` copies (the
 `BullBackupOptionCard`, `BullBorderedTile`, `BullTransactionDirectionBadge`,
 `BullSettingsEntryItem`, `BullDetailsTable` + `BullDetailsTableItem`.
 
-**Overlays** — `BullBottomSheet`, `BullDialog`, `BullPickerSheet`
-(`BBPickerSheet`), `BullInstructionsSheet` (`InstructionsBottomSheet`).
+**Overlays** — `BullBottomSheet`, `BullDialog`, `BullConfirmDialog`,
+`BullPickerSheet` (`BBPickerSheet`), `BullInstructionsSheet`
+(`InstructionsBottomSheet`).
 
 **Chrome** — `BullScaffold`, `BullTopBar`, `BullSelectionActionBar`.
 
