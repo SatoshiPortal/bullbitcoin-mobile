@@ -151,6 +151,44 @@ void main() {
     });
   }
 
+  test(
+    'abandoned board leaves legacy deadline unclassified and unchanged',
+    () async {
+      final original = seed({hash('vtxo:abandoned'): oldAt});
+      final abandoned = ArkVtxo(
+        id: 'abandoned',
+        amount: Sats.fromInt(1000),
+        expiryHeight: 200,
+        state: ArkVtxoState.abandonedBoard,
+      );
+      final result = await apply(observed(vtxos: [abandoned]));
+      expect(result, isA<Err<void, ArkFailure>>());
+      final saved = rows();
+      expect(saved, hasLength(1));
+      expect(payload(saved.single)['original'], original);
+      expect(payload(saved.single)['vtxo'], isEmpty);
+      expect(payload(saved.single)['funding'], isEmpty);
+      expect(payload(saved.single)['intent'], 'hold');
+      expect(saved.single['scheduled_at'], oldAt);
+      expect(gateway.actions, isEmpty);
+    },
+  );
+
+  test('abandoned board cannot clear an existing VTXO reminder', () async {
+    expect(await apply(observed(vtxos: [vtxo('abandoned', 200)])), isA<Ok>());
+    final oldDeadline = rows().single['scheduled_at'];
+    gateway.actions.clear();
+    final abandoned = ArkVtxo(
+      id: 'abandoned',
+      amount: Sats.fromInt(1000),
+      expiryHeight: 200,
+      state: ArkVtxoState.abandonedBoard,
+    );
+    expect(await apply(observed(vtxos: [abandoned])), isA<Ok>());
+    expect(rows().single['scheduled_at'], oldDeadline);
+    expect(gateway.actions.where((a) => a.startsWith('cancel:')), isEmpty);
+  });
+
   test('unresolved legacy keeps evidence but cannot block a new earlier VTXO intent', () async {
     final oldAt = DateTime.utc(2026, 11, 20).microsecondsSinceEpoch;
     final original = jsonEncode({hash('not-identifiable'): oldAt});

@@ -75,6 +75,56 @@ ArkSnapshot observed({
 );
 
 void main() {
+  test('abandoned board presence cannot prove linked retirement', () {
+    final abandoned = ArkVtxo(
+      id: 'old',
+      amount: Sats.fromInt(1000),
+      expiryHeight: 200,
+      state: ArkVtxoState.abandonedBoard,
+    );
+    final warning = ArkExpiryWarning.fromSnapshot(
+      observed(
+        vtxos: [abandoned, vtxo('replacement', 500)],
+        movements: [
+          ArkMovement(
+            id: 'renewal',
+            kind: ArkMovementKind.renewal,
+            status: ArkMovementStatus.successful,
+            inputVtxoIds: ['old'],
+            outputVtxoIds: ['replacement'],
+          ),
+        ],
+      ),
+    );
+    expect(warning?.expiries, {'vtxo:replacement': 500});
+    expect(warning?.retiredKeys, isNot(contains('vtxo:old')));
+  });
+
+  test(
+    'abandoned board creates no deadline and is not empty evidence',
+    () async {
+      final abandoned = ArkVtxo(
+        id: 'abandoned',
+        amount: Sats.fromInt(1000),
+        expiryHeight: 200,
+        state: ArkVtxoState.abandonedBoard,
+      );
+      final snapshot = observed(vtxos: [abandoned]);
+      expect(ArkExpiryWarning.fromSnapshot(snapshot), isNull);
+      final repository = Reminders();
+      expect(
+        await UpdateArkExpiryWarningUsecase(repository).execute(snapshot),
+        isA<Ok>(),
+      );
+      expect(repository.calls.single.warning, isNull);
+      expect(repository.calls.single.empty, isFalse);
+      expect(
+        repository.calls.single.evidence?.vtxoKeys,
+        isNot(contains('vtxo:abandoned')),
+      );
+    },
+  );
+
   test(
     'earliest expiry schedules a24h margin from observed height and time',
     () {
