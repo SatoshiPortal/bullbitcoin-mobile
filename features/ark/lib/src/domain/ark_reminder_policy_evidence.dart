@@ -23,7 +23,8 @@ final class ArkReminderPolicyEvidence {
       snapshot.tipHeight,
       Set.unmodifiable({
         for (final v in snapshot.vtxos)
-          if (!pending.contains(v.id) || v.state == ArkVtxoState.spendable)
+          if (v.state != ArkVtxoState.abandonedBoard &&
+              (!pending.contains(v.id) || v.state == ArkVtxoState.spendable))
             'vtxo:${v.id}',
       }),
       Set.unmodifiable({

@@ -27,13 +27,18 @@ final class ArkExpiryWarning {
     bool admitsBound(ArkVtxo vtxo) =>
         !pendingBoards.contains(vtxo.id) ||
         vtxo.state == ArkVtxoState.spendable;
-    final live = snapshot.vtxos
+    final notRetired = snapshot.vtxos
         .where(
           (v) =>
               v.state != ArkVtxoState.spent && v.state != ArkVtxoState.exited,
         )
         .toList();
-    final liveIds = live.map((v) => v.id).toSet();
+    // An abandoned Board is not a new expiry obligation, but its presence
+    // cannot prove that an earlier obligation was retired by a renewal.
+    final liveIds = notRetired.map((v) => v.id).toSet();
+    final live = notRetired
+        .where((v) => v.state != ArkVtxoState.abandonedBoard)
+        .toList();
     final observedReplacementIds = live
         .where(
           (v) =>
