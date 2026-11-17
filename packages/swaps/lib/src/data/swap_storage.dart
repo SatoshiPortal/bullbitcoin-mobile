@@ -44,9 +44,27 @@ class SwapStorage {
   final SwapRowStore _rows;
   final SecretStore _secrets;
   final Map<String, Lock> _writeLocks = {};
-  final Map<String, Lock> _allocationLocks = {};
+  final Map<String, Lock> _allocationLocks;
+  final bool _regtest;
 
-  SwapStorage({required this._rows, required this._secrets});
+  SwapStorage({required this._rows, required this._secrets})
+    : _allocationLocks = {},
+      _regtest = false;
+
+  SwapStorage._regtestRows(SwapRowStore rows, SwapStorage canonical)
+    : _rows = rows,
+      _secrets = canonical._secrets,
+      _allocationLocks = canonical._allocationLocks,
+      _regtest = true;
+
+  /// A row/blob namespace with THE SAME allocation lock and fingerprint counter
+  /// as its injected canonical owner. It never creates another allocator map.
+  SwapStorage regtestView({required SwapRowStore rows}) =>
+      SwapStorage._regtestRows(rows, this);
+
+  bool get isRegtestStore => _regtest;
+  String _swapBlobKey(String id) =>
+      '${_regtest ? 'swap_regtest_' : _Keys.swap}$id';
 
   /// Serializes a fetch→merge→store critical section per swap, so the event
   /// pipeline and a repository writer can never interleave and drop each
@@ -95,7 +113,7 @@ class SwapStorage {
 
   Future<void> deleteFromSecureStorage(String swapId) async {
     try {
-      await _secrets.delete('${_Keys.swap}$swapId');
+      await _secrets.delete(_swapBlobKey(swapId));
     } catch (e) {
       swapsLog.fine('Error deleting swap from secure storage: $e');
     }
@@ -190,7 +208,7 @@ class SwapStorage {
     );
   }
 
-  /// Reserves a range within this storage instance before returning its start.
+  /// Reserves on the shared canonical fingerprint authority before returning.
   Future<int> reserveSwapKeyIndex(String fingerprint, int count, int floor) =>
       (_allocationLocks[fingerprint] ??= Lock()).synchronized(() async {
         final stored = await getSwapKeyIndex(fingerprint);
@@ -201,19 +219,19 @@ class SwapStorage {
 
   // SECURE STORAGE — BULL_SDK SWAP OBJECTS
   Future<void> storeBtcLnSwap(BtcLnSwap swap) async {
-    await _secrets.write('${_Keys.swap}${swap.id}', await swap.toJson());
+    await _secrets.write(_swapBlobKey(swap.id), await swap.toJson());
   }
 
   Future<void> storeLbtcLnSwap(LbtcLnSwap swap) async {
-    await _secrets.write('${_Keys.swap}${swap.id}', await swap.toJson());
+    await _secrets.write(_swapBlobKey(swap.id), await swap.toJson());
   }
 
   Future<void> storeChainSwap(ChainSwap swap) async {
-    await _secrets.write('${_Keys.swap}${swap.id}', await swap.toJson());
+    await _secrets.write(_swapBlobKey(swap.id), await swap.toJson());
   }
 
   Future<String> _readSwapBlob(String swapId) async {
-    final jsonSwap = await _secrets.read('${_Keys.swap}$swapId');
+    final jsonSwap = await _secrets.read(_swapBlobKey(swapId));
     if (jsonSwap == null) {
       throw SwapsException(
         'no secure-storage blob for swap $swapId — the row exists but its '
