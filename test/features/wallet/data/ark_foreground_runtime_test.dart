@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
+
+import 'package:background_tasks/background_tasks.dart';
 
 import 'package:bb_mobile/features/wallet/data/ark_foreground_host.dart';
 import 'package:bb_mobile/core/bip85/data/bip85_repository.dart';
@@ -13,6 +16,7 @@ import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart';
 import 'package:bull_ark/ark_setup.dart';
+import 'package:bull_ark/ark_notification_setup.dart';
 import 'package:ark/ark.dart' show ArkClient;
 import 'package:bull_ark/bull_ark.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,6 +64,35 @@ final class _Binding {
       await onClose?.call();
     },
   );
+}
+
+void _dispatcher() {}
+
+final class _Scheduler implements BackgroundTaskSchedulerPort {
+  final calls = <String>[];
+  bool fail = false;
+
+  @override
+  Future<void> initialize(BackgroundTaskDispatcher dispatcher) async {
+    if (fail) throw Exception('scheduler unavailable');
+    calls.add('initialize');
+  }
+
+  @override
+  Future<void> cancelByUniqueName(String uniqueName) async {
+    calls.add('cancel:$uniqueName');
+  }
+
+  @override
+  Future<void> registerPeriodic({
+    required String uniqueName,
+    required String taskName,
+    required Duration frequency,
+    required bool requiresNetwork,
+    Duration? initialDelay,
+  }) async {
+    calls.add('register:$uniqueName');
+  }
 }
 
 class _WalletCatalog implements SeedReferencePort {
@@ -374,6 +407,120 @@ void main() {
       network: BitcoinNetwork.regtest,
       serverIdentity: 'http://100.64.0.9:3535',
     );
+
+    test('unsupported notification locale uses English copy', () {
+      expect(
+        arkExpiryCopy(const Locale('es')),
+        arkExpiryCopy(const Locale('en')),
+      );
+      expect(
+        arkExpiryCopy(const Locale('fr')).title,
+        isNot(arkExpiryCopy(const Locale('en')).title),
+      );
+    });
+
+    test('runtime creates and reopens the durable reminder ledger', () async {
+      final first = await openArkForeground(
+        locator,
+        arkUrl: Uri.parse('http://100.64.0.9:3535'),
+        primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
+        initializeNew: true,
+        boardFunding: _Binding().value,
+        preferences: _Preferences(),
+      );
+      expect(first, isA<Ok<ArkForegroundRuntime, ArkFailure>>());
+      expect(
+        File('${directory.path}/ark/reminders.sqlite.initialized').existsSync(),
+        isTrue,
+      );
+      await (first as Ok<ArkForegroundRuntime, ArkFailure>).value.close();
+      final reopened = await openArkForeground(
+        locator,
+        arkUrl: Uri.parse('http://100.64.0.9:3535'),
+        primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
+        initializeNew: false,
+        boardFunding: _Binding().value,
+        preferences: _Preferences(),
+      );
+      expect(reopened, isA<Ok<ArkForegroundRuntime, ArkFailure>>());
+      await (reopened as Ok<ArkForegroundRuntime, ArkFailure>).value.close();
+    });
+
+    test('publishing a protected account registers maintenance', () async {
+      final opened = SqliteArkAccountRegistry.open(
+        '${directory.path}/schedule.sqlite',
+        foreground: true,
+        initializeNew: true,
+      );
+      final registry =
+          (opened as Ok<SqliteArkAccountRegistry, ArkFailure>).value;
+      addTearDown(registry.close);
+      final scheduler = _Scheduler();
+      final managed = scheduledArkRegistryForTesting(
+        registry,
+        _dispatcher,
+        scheduler,
+      );
+      final result = await managed.publish(
+        ArkAccountConfig(
+          id: account,
+          arkUrl: Uri.parse('http://100.64.0.9:3535'),
+          primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
+        ),
+      );
+      expect(result, isA<Ok>());
+      expect(scheduler.calls, [
+        'initialize',
+        'register:${BackgroundTask.arkRenewal.id}',
+      ]);
+      scheduler.fail = true;
+      expect(
+        await managed.publish(
+          ArkAccountConfig(
+            id: account,
+            arkUrl: Uri.parse('http://100.64.0.9:3535'),
+            primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
+          ),
+        ),
+        isA<Ok>(),
+      );
+      expect(
+        (await registry.list() as Ok<List<ArkAccountConfig>, ArkFailure>).value,
+        hasLength(1),
+      );
+    });
+
+    test('scheduler failure does not suppress startup protection', () async {
+      expect(
+        await prepareArkCustodyReferences(locator, initializeNew: true),
+        isA<Ok>(),
+      );
+      final opened = SqliteArkAccountRegistry.open(
+        '${directory.path}/ark/accounts.sqlite',
+        foreground: false,
+      );
+      final registry =
+          (opened as Ok<SqliteArkAccountRegistry, ArkFailure>).value;
+      expect(
+        await registry.publish(
+          ArkAccountConfig(
+            id: account,
+            arkUrl: Uri.parse('http://100.64.0.9:3535'),
+            primaryEsploraUrl: Uri.parse('http://100.64.0.9:3000'),
+          ),
+        ),
+        isA<Ok>(),
+      );
+      registry.close();
+      expect(
+        await prepareArkMaintenanceSchedule(
+          locator,
+          _dispatcher,
+          scheduler: _Scheduler()..fail = true,
+        ),
+        isTrue,
+      );
+    });
 
     test('a closed runtime refuses further native reads', () async {
       final result = await openArkForeground(
