@@ -15,7 +15,10 @@ class BullTopBar extends StatelessWidget {
     this.actionTooltip,
     this.color,
     this.titleWidget,
-  });
+  }) : assert(
+         actionIcon == null || actionTooltip != null,
+         'A custom actionIcon needs an actionTooltip naming it for screen readers',
+       );
 
   /// The centered title text. Ignored when [titleWidget] is supplied.
   final String title;
@@ -34,7 +37,7 @@ class BullTopBar extends StatelessWidget {
   final bool actionBadge;
 
   /// Accessible name of the trailing action. Defaults to the localized
-  /// "Close" when [actionIcon] is null.
+  /// "Close" when [actionIcon] is null; required with a custom [actionIcon].
   final String? actionTooltip;
 
   /// Optional background colour. Transparent when null.
