@@ -7,6 +7,7 @@ import 'package:bull_ark/src/domain/usecases/confirm_ark_operation_usecase.dart'
 import 'package:bull_ark/src/domain/usecases/parse_ark_destination_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/quote_ark_operation_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/review_ark_payment_usecase.dart';
+import 'package:bull_ark/src/domain/usecases/read_ark_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_payment_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -76,7 +77,7 @@ class PaymentRig {
   final preferences = Preferences();
   late final ArkPaymentCubit cubit;
   int ids = 0;
-  PaymentRig({ArkAccountId? owner}) {
+  PaymentRig({ArkAccountId? owner, bool reconciliation = false}) {
     final repository = ArkRepositoryImpl(client);
     cubit = ArkPaymentCubit(
       ReviewArkPaymentUsecase(
@@ -86,6 +87,7 @@ class PaymentRig {
       ConfirmArkOperationUsecase(repository, preferences),
       () => 'payment-${++ids}',
       account: owner ?? account(),
+      synchronize: reconciliation ? SynchronizeArkUsecase(repository) : null,
     );
     addTearDown(() async {
       if (!cubit.isClosed) await cubit.close();
@@ -98,6 +100,78 @@ class PaymentRig {
 }
 
 void main() {
+  test('reconcile keeps the original payment and never resubmits', () async {
+    final r = PaymentRig(reconciliation: true);
+    await r.ready();
+    final pending = ArkOperation(
+      id: 'payment-1',
+      kind: ArkOperationKind.payment,
+      status: ArkOperationStatus.pending,
+      chainSource: Uri.parse('http://localhost:3000'),
+      configGeneration: 1,
+    );
+    r.client.submitted = Ok(pending);
+    await r.cubit.confirm();
+    r.client.pass = Ok(
+      ArkPassOutcome(
+        snapshot: ArkSnapshot(
+          account: r.cubit.account,
+          revision: 3,
+          observedAt: DateTime.utc(2026),
+          operations: [pending],
+        ),
+      ),
+    );
+    await r.cubit.reconcile();
+    expect(
+      (r.cubit.state as ArkPaymentSubmitted).operation.status,
+      ArkOperationStatus.pending,
+    );
+    final succeeded = ArkOperation(
+      id: 'payment-1',
+      kind: ArkOperationKind.payment,
+      status: ArkOperationStatus.succeeded,
+      chainSource: Uri.parse('http://localhost:3000'),
+      configGeneration: 1,
+    );
+    r.client.pass = Ok(
+      ArkPassOutcome(
+        snapshot: ArkSnapshot(
+          account: r.cubit.account,
+          revision: 4,
+          observedAt: DateTime.utc(2026),
+          operations: [succeeded],
+        ),
+      ),
+    );
+    await r.cubit.reconcile();
+    expect(
+      (r.cubit.state as ArkPaymentSubmitted).operation.status,
+      ArkOperationStatus.succeeded,
+    );
+    expect(r.client.calls, ['quote', 'submit', 'sync', 'sync']);
+  });
+  test(
+    'uncertain submission stays uncertain when operation is absent',
+    () async {
+      final r = PaymentRig(reconciliation: true);
+      await r.ready();
+      await r.cubit.confirm();
+      expect(r.cubit.state, isA<ArkPaymentUncertain>());
+      r.client.pass = Ok(
+        ArkPassOutcome(
+          snapshot: ArkSnapshot(
+            account: r.cubit.account,
+            revision: 3,
+            observedAt: DateTime.utc(2026),
+          ),
+        ),
+      );
+      await r.cubit.reconcile();
+      expect(r.cubit.state, isA<ArkPaymentUncertain>());
+      expect(r.client.calls, ['quote', 'submit', 'sync']);
+    },
+  );
   test(
     'explicit review alone captures payment request; editing never quotes',
     () async {

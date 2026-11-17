@@ -39,6 +39,39 @@ ArkPaymentScreen page(
 
 void main() {
   testWidgets(
+    'Refresh reconciles the displayed payment without another submit',
+    (tester) async {
+      final r = PaymentRig(reconciliation: true);
+      r.cubit.emit(const ArkPaymentUncertain('original'));
+      final pending = ArkOperation(
+        id: 'original',
+        kind: ArkOperationKind.payment,
+        status: ArkOperationStatus.pending,
+        chainSource: Uri.parse('http://localhost:3000'),
+        configGeneration: 1,
+      );
+      r.client.pass = Ok(
+        ArkPassOutcome(
+          snapshot: ArkSnapshot(
+            account: r.cubit.account,
+            revision: 1,
+            observedAt: DateTime.utc(2026),
+            operations: [pending],
+          ),
+        ),
+      );
+      await tester.pumpWidget(app(page(r)));
+      await frame(tester);
+      action(tester, 'Refresh').onPressed();
+      await frame(tester);
+      expect(
+        (r.cubit.state as ArkPaymentSubmitted).operation.status,
+        ArkOperationStatus.pending,
+      );
+      expect(r.client.calls, ['sync']);
+    },
+  );
+  testWidgets(
     'initial destination and edits never quote; explicit Review captures current locals',
     (tester) async {
       final r = PaymentRig();
@@ -248,28 +281,6 @@ void main() {
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentUncertain>());
       expect(r.client.calls, ['quote', 'quote', 'submit']);
-    },
-  );
-  testWidgets(
-    'reconcile uses current handler and exact displayed original state',
-    (tester) async {
-      final r = PaymentRig();
-      var old = 0, current = 0;
-      r.cubit.emit(const ArkPaymentUncertain('original'));
-      await tester.pumpWidget(app(page(r, reconcile: () => old++)));
-      await frame(tester);
-      final refresh = action(tester, 'Refresh').onPressed;
-      await tester.pumpWidget(app(page(r, reconcile: () => current++)));
-      await frame(tester);
-      refresh();
-      expect(current, 1);
-      expect(old, 0);
-      r.cubit.emit(const ArkPaymentUncertain('replacement'));
-      await frame(tester);
-      refresh();
-      expect(current, 1);
-      expect(r.client.calls, isEmpty);
-      expect(r.ids, 0);
     },
   );
   testWidgets(
