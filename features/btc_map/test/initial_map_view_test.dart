@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:btc_map/src/domain/entities/geo_point.dart';
+import 'package:btc_map/src/domain/entities/merchant.dart';
 import 'package:btc_map/src/ui/bull_map_view.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:flutter/foundation.dart' show Factory;
@@ -10,6 +13,8 @@ import 'package:material_ui/material_ui.dart';
 class _MapPlatform extends MapLibrePlatform {
   final moves = <Object>[];
   final focuses = <Object>[];
+  final sources = <SourceProperties>[];
+  final jsonUpdates = <String>[];
   OnPlatformViewCreatedCallback? created;
 
   @override
@@ -46,8 +51,28 @@ class _MapPlatform extends MapLibrePlatform {
   }
 
   @override
+  Future<void> addSource(String id, SourceProperties properties) async {
+    sources.add(properties);
+  }
+
+  @override
+  Future<bool> editGeoJsonSource(String id, String data) async {
+    jsonUpdates.add(data);
+    return true;
+  }
+
+  @override
+  Future<LatLngBounds> getVisibleRegion() async => LatLngBounds(
+    southwest: const LatLng(-1, -1),
+    northeast: const LatLng(1, 1),
+  );
+
+  @override
   dynamic noSuchMethod(Invocation invocation) =>
-      throw UnimplementedError('${invocation.memberName}');
+      invocation.memberName == #addCircleLayer ||
+          invocation.memberName == #addSymbolLayer
+      ? Future<void>.value()
+      : throw UnimplementedError('${invocation.memberName}');
 }
 
 void main() {
@@ -74,6 +99,48 @@ void main() {
       ),
     ),
   );
+
+  testWidgets('loads merchant data through the native JSON path', (
+    tester,
+  ) async {
+    final merchants = [Merchant(id: 7, location: region, name: 'Shop')];
+    Future<void> show(List<Merchant> places) => tester.pumpWidget(
+      wrapWithTheme(
+        BullMapView(
+          merchants: places,
+          controller: controller,
+          onMerchantTap: (_) {},
+          onViewportChanged: (_) {},
+        ),
+      ),
+    );
+    await show(merchants);
+    platform.created?.call(0);
+    await tester.pump();
+    tester
+        .widget<MapLibreMap>(find.byType(MapLibreMap))
+        .onStyleLoadedCallback
+        ?.call();
+    await tester.pump();
+    final source = platform.sources.single as GeojsonSourceProperties;
+    expect((source.data as Map)['features'], isEmpty);
+    expect(source.cluster, isTrue);
+    expect(jsonDecode(platform.jsonUpdates.single)['features'], [
+      {
+        'type': 'Feature',
+        'id': 7,
+        'properties': {'merchantId': 7},
+        'geometry': {
+          'type': 'Point',
+          'coordinates': [-73.6, 45.5],
+        },
+      },
+    ]);
+    await show(const []);
+    await tester.pump();
+    expect(jsonDecode(platform.jsonUpdates.last)['features'], isEmpty);
+    expect(platform.jsonUpdates, hasLength(2));
+  });
 
   testWidgets('centers once when the location arrives after the native map', (
     tester,
