@@ -7,15 +7,11 @@ import 'package:material_ui/material_ui.dart';
 
 /// Every theme extension `bull_ui` components read, for a [ThemeData] of [brightness] whose palette is [colors].
 ///
-/// Register the whole list in `ThemeData.extensions`, so a new extension reaches the app, the catalogue and the tests at once.
+/// Register the whole list in `ThemeData.extensions`, so a new extension reaches the app, the catalogue and the tests at once. [shapes], [typography] and [loader] default to Bull's values.
 List<ThemeExtension<dynamic>> bullUiExtensions({
   required BullTheme colors,
   required Brightness brightness,
+  BullShapes shapes = BullShapes.standard,
+  BullTypography typography = BullTypography.standard,
   BullLoaderTheme loader = BullLoaderTheme.standard,
-}) => [
-  colors,
-  BullShapes.standard,
-  BullTypography.standard,
-  BullKeypadColors.of(brightness),
-  loader,
-];
+}) => [colors, shapes, typography, BullKeypadColors.of(brightness), loader];
