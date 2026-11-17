@@ -72,6 +72,9 @@ class _BullMapViewState extends State<BullMapView> {
   /// new style has loaded.
   bool _layersReady = false;
 
+  /// The style the map was last given, to notice a theme change.
+  String? _styleUrl;
+
   @override
   void initState() {
     super.initState();
@@ -98,13 +101,21 @@ class _BullMapViewState extends State<BullMapView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final styleUrl = _styleUrlFor(context);
+    // A theme change swaps the style, dropping every runtime layer: until
+    // _onStyleLoaded adds them again, merchant updates must wait.
+    if (_styleUrl != null && _styleUrl != styleUrl) _layersReady = false;
+    _styleUrl = styleUrl;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final styleUrl = isDark ? _darkStyleUrl : _lightStyleUrl;
     return MapLibreMap(
       // A theme change swaps the style in place; _onStyleLoaded then adds the
       // merchant layers again, in the new theme's colours.
-      styleString: styleUrl,
+      styleString: _styleUrlFor(context),
       initialCameraPosition: _initialCamera,
       onMapCreated: (controller) => _map = controller,
       onStyleLoadedCallback: _onStyleLoaded,
@@ -186,6 +197,7 @@ class _BullMapViewState extends State<BullMapView> {
         ],
         enableInteraction: false,
       );
+      if (!mounted) return;
       _layersReady = true;
       // The list needs the first viewport even if the camera never moves.
       unawaited(_onCameraIdle());
@@ -240,13 +252,18 @@ class _BullMapViewState extends State<BullMapView> {
   Future<void> _onMapClick(Point<double> point, LatLng _) async {
     final map = _map;
     if (map == null || !_layersReady) return;
+    // MapLibre on Android reports the tap, and reads the query rectangle, in
+    // physical pixels; iOS uses points. The tolerance is in logical pixels.
+    final tolerance = Theme.of(context).platform == TargetPlatform.android
+        ? _tapTolerance * MediaQuery.devicePixelRatioOf(context)
+        : _tapTolerance;
     final List<Object?> features;
     try {
       features = await map.queryRenderedFeaturesInRect(
         Rect.fromCenter(
           center: Offset(point.x, point.y),
-          width: _tapTolerance,
-          height: _tapTolerance,
+          width: tolerance,
+          height: tolerance,
         ),
         const [_clusterLayerId, _merchantLayerId],
         null,
@@ -289,13 +306,23 @@ class _BullMapViewState extends State<BullMapView> {
   }
 
   Future<void> _focus(GeoPoint location) async {
-    await _map?.animateCamera(
-      CameraUpdate.newLatLngZoom(
-        LatLng(location.latitude, location.longitude),
-        _merchantZoom,
-      ),
-    );
+    try {
+      await _map?.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(location.latitude, location.longitude),
+          _merchantZoom,
+        ),
+      );
+    } on PlatformException catch (error) {
+      // The caller goes on (opening the place's details) either way.
+      log.warning('Merchant map camera not moved: ${error.code}');
+    }
   }
+
+  static String _styleUrlFor(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+      ? _darkStyleUrl
+      : _lightStyleUrl;
 
   static Map<int, Merchant> _index(List<Merchant> merchants) => {
     for (final merchant in merchants) merchant.id: merchant,

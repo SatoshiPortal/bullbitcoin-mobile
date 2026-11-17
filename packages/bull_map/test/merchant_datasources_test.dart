@@ -72,7 +72,7 @@ void main() {
     tearDown(() => directory.delete(recursive: true));
 
     test('is empty before the first write', () async {
-      expect(await cache.read(), isEmpty);
+      expect((await cache.read()).places, isEmpty);
     });
 
     test(
@@ -89,7 +89,7 @@ void main() {
           ]),
         ]);
 
-        final stored = await cache.read();
+        final stored = (await cache.read()).places;
         expect(stored, anyOf(hasLength(1), hasLength(2)));
         final leftovers = directory.listSync().where(
           (entry) => entry.path.endsWith('.tmp'),
@@ -97,5 +97,31 @@ void main() {
         expect(leftovers, isEmpty);
       },
     );
+
+    test('keeps the cursor next to the places', () async {
+      await cache.write([
+        MerchantModel.fromJson({'id': 1}),
+      ], cursor: DateTime.utc(2026, 3, 1));
+      final stored = await cache.read();
+      expect(stored.places.single.id, 1);
+      expect(stored.cursor, DateTime.utc(2026, 3, 1));
+    });
+
+    test('a write sweeps temporary files a killed write left', () async {
+      final stale = File('${directory.path}/btc_map_places.json.1.tmp')
+        ..writeAsStringSync('partial');
+      stale.setLastModifiedSync(
+        DateTime.now().subtract(const Duration(hours: 1)),
+      );
+      final fresh = File('${directory.path}/btc_map_places.json.2.tmp')
+        ..writeAsStringSync('another write in progress');
+
+      await cache.write([
+        MerchantModel.fromJson({'id': 1}),
+      ]);
+
+      expect(stale.existsSync(), isFalse);
+      expect(fresh.existsSync(), isTrue);
+    });
   });
 }

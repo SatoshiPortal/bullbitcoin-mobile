@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bull_map/src/data/datasources/btc_map_api_datasource.dart';
 import 'package:bull_map/src/data/datasources/merchant_cache_datasource.dart';
 import 'package:bull_map/src/data/merchant_mapper.dart';
@@ -10,6 +8,9 @@ import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+/// The one place exceptions are caught: everything leaving it is a
+/// [BullMapFailure], so a caller is never left waiting on a sync that threw.
+/// Programming errors ([Error]) still surface.
 final class MerchantRepository {
   final BtcMapApiDatasource _api;
   final MerchantCacheDatasource _cache;
@@ -17,6 +18,14 @@ final class MerchantRepository {
   /// The cache contents by id, once read. Kept so a sync merges into memory
   /// instead of decoding the file again.
   Map<int, MerchantModel>? _snapshot;
+
+  /// The `updated_at` the next sync starts after: the newest change seen,
+  /// deletions included, so an evicted place is not fetched again.
+  DateTime? _cursor;
+
+  /// The merchants last returned. Handed back as is when a sync brings no
+  /// change, so the map does not re-upload identical pins.
+  List<Merchant>? _merchants;
 
   /// A sync already running, which a second caller joins instead of starting
   /// another download.
@@ -29,10 +38,9 @@ final class MerchantRepository {
   @useResult
   Future<Result<List<Merchant>, BullMapFailure>> cached() async {
     try {
-      return Ok(_toDomain(await _loadSnapshot()));
-    } on FileSystemException catch (error) {
-      return Err(BullMapUnexpectedFailure('${error.runtimeType}'));
-    } on FormatException catch (error) {
+      await _loadSnapshot();
+      return Ok(_currentMerchants());
+    } on Exception catch (error) {
       return Err(BullMapUnexpectedFailure('${error.runtimeType}'));
     }
   }
@@ -40,70 +48,94 @@ final class MerchantRepository {
   /// Brings the device copy up to date with BTC Map and returns all of it.
   ///
   /// The first sync downloads every place; later ones fetch only what changed
-  /// since the newest place already stored, deleted places included.
+  /// after the cursor, deleted places included.
   @useResult
   Future<Result<List<Merchant>, BullMapFailure>> sync() =>
       _syncInFlight ??= _sync().whenComplete(() => _syncInFlight = null);
 
   Future<Result<List<Merchant>, BullMapFailure>> _sync() async {
-    final snapshot = await _snapshotOrEmpty();
-    final since = _newestUpdate(snapshot.values);
-
-    final List<MerchantModel> changes;
     try {
-      changes = await _api.fetchPlaces(updatedSince: since);
-    } on DioException catch (error) {
-      return Err(BullMapNetworkFailure(error.type.name));
-    } on FormatException catch (error) {
-      return Err(BullMapUnexpectedFailure('${error.runtimeType}'));
-    }
-
-    for (final place in changes) {
-      if (place.isDeleted) {
-        snapshot.remove(place.id);
-      } else {
-        snapshot[place.id] = place;
-      }
-    }
-
-    if (changes.isNotEmpty) {
+      final snapshot = await _snapshotOrEmpty();
+      final List<MerchantModel> fetched;
       try {
-        await _cache.write(snapshot.values.toList(growable: false));
-      } on FileSystemException {
+        fetched = await _api.fetchPlaces(updatedSince: _cursor);
+      } on DioException catch (error) {
+        return Err(BullMapNetworkFailure(error.type.name));
+      }
+      _cursor = _newest(_cursor, fetched.map((place) => place.updatedAt));
+      // BTC Map's `updated_since` is exclusive today; dropping what is already
+      // stored keeps an inclusive server from rewriting the cache every time.
+      final changes = [
+        for (final place in fetched)
+          if (_changes(snapshot, place)) place,
+      ];
+      if (changes.isEmpty) return Ok(_currentMerchants());
+
+      for (final place in changes) {
+        if (place.isDeleted) {
+          snapshot.remove(place.id);
+        } else {
+          snapshot[place.id] = place;
+        }
+      }
+      _merchants = null;
+
+      try {
+        await _cache.write(
+          snapshot.values.toList(growable: false),
+          cursor: _cursor,
+        );
+      } on Exception {
         // The map can still show what was just downloaded; the next sync
         // starts from the older cache and fetches these changes again.
       }
+      return Ok(_currentMerchants());
+    } on Exception catch (error) {
+      return Err(BullMapUnexpectedFailure('${error.runtimeType}'));
     }
-    return Ok(_toDomain(snapshot));
   }
 
-  Future<Map<int, MerchantModel>> _loadSnapshot() async =>
-      _snapshot ??= {for (final place in await _cache.read()) place.id: place};
+  Future<Map<int, MerchantModel>> _loadSnapshot() async {
+    final loaded = _snapshot;
+    if (loaded != null) return loaded;
+    final content = await _cache.read();
+    final snapshot = {for (final place in content.places) place.id: place};
+    // A cache written before the cursor was stored falls back to its newest
+    // place.
+    _cursor =
+        content.cursor ??
+        _newest(null, content.places.map((place) => place.updatedAt));
+    return _snapshot = snapshot;
+  }
 
   /// A cache that cannot be read is rebuilt by a full sync rather than
   /// blocking the map forever.
   Future<Map<int, MerchantModel>> _snapshotOrEmpty() async {
     try {
       return await _loadSnapshot();
-    } on FileSystemException {
-      return _snapshot = {};
-    } on FormatException {
+    } on Exception {
+      _cursor = null;
       return _snapshot = {};
     }
   }
 
-  static DateTime? _newestUpdate(Iterable<MerchantModel> places) {
-    DateTime? newest;
-    for (final place in places) {
-      final updatedAt = place.updatedAt;
-      if (updatedAt != null && (newest == null || updatedAt.isAfter(newest))) {
-        newest = updatedAt;
-      }
+  List<Merchant> _currentMerchants() => _merchants ??= [
+    for (final place in _snapshot?.values ?? const <MerchantModel>[])
+      ?place.toDomain(),
+  ];
+
+  /// Whether [place] differs from what [snapshot] already holds.
+  static bool _changes(Map<int, MerchantModel> snapshot, MerchantModel place) {
+    final stored = snapshot[place.id];
+    if (place.isDeleted) return stored != null;
+    return stored == null || stored.updatedAt != place.updatedAt;
+  }
+
+  static DateTime? _newest(DateTime? start, Iterable<DateTime?> moments) {
+    var newest = start;
+    for (final moment in moments.nonNulls) {
+      if (newest == null || moment.isAfter(newest)) newest = moment;
     }
     return newest;
   }
-
-  static List<Merchant> _toDomain(Map<int, MerchantModel> snapshot) => [
-    for (final place in snapshot.values) ?place.toDomain(),
-  ];
 }

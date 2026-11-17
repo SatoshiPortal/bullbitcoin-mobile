@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:bull_map/bull_map.dart';
 import 'package:bull_map/src/data/datasources/btc_map_api_datasource.dart';
@@ -148,5 +149,79 @@ void main() {
     final repo = repository();
     await Future.wait([repo.sync(), repo.sync()]);
     expect(api.requests, hasLength(1));
+  });
+
+  test('the cursor moves past a deletion, even after a restart', () async {
+    api.respond = (_) => [_place(1, updatedAt: DateTime.utc(2026, 1, 1))];
+    expect(ids(await repository().sync()), [1]);
+
+    // The newest change is a deletion: the place leaves the cache, but the
+    // next sync must not ask for it again.
+    api.respond = (_) => [
+      _place(
+        1,
+        updatedAt: DateTime.utc(2026, 2, 1),
+        deletedAt: DateTime.utc(2026, 2, 1),
+      ),
+    ];
+    final repo = repository();
+    expect(ids(await repo.sync()), isEmpty);
+
+    api.respond = (_) => const [];
+    expect(ids(await repo.sync()), isEmpty);
+    expect(await repository().sync(), isA<Ok<List<Object>, BullMapFailure>>());
+    expect(api.requests.sublist(2), [
+      DateTime.utc(2026, 2, 1),
+      DateTime.utc(2026, 2, 1),
+    ]);
+  });
+
+  test('a sync with no change returns the same list', () async {
+    api.respond = (_) => [_place(1, updatedAt: DateTime.utc(2026))];
+    final repo = repository();
+    final first = await repo.sync();
+    api.respond = (_) => const [];
+    final second = await repo.sync();
+
+    expect(
+      identical(
+        (first as Ok<List<Object>, BullMapFailure>).value,
+        (second as Ok<List<Object>, BullMapFailure>).value,
+      ),
+      isTrue,
+    );
+  });
+
+  test('an unexpected exception is a failure, not a hang', () async {
+    api.respond = (_) => throw IsolateSpawnException('no isolate');
+    expect(
+      await repository().sync(),
+      isA<Err<Object, BullMapFailure>>().having(
+        (e) => e.failure,
+        'failure',
+        isA<BullMapUnexpectedFailure>(),
+      ),
+    );
+  });
+
+  test('places the server sends again unchanged are not a change', () async {
+    final place = _place(1, updatedAt: DateTime.utc(2026, 1, 1));
+    // An inclusive `updated_since` would hand back the newest place again.
+    api.respond = (_) => [place];
+    final repo = repository();
+    final first = await repo.sync();
+    final cacheFile = File('${directory.path}/btc_map_places.json');
+    final writtenAt = cacheFile.lastModifiedSync();
+
+    final second = await repo.sync();
+
+    expect(
+      identical(
+        (first as Ok<List<Object>, BullMapFailure>).value,
+        (second as Ok<List<Object>, BullMapFailure>).value,
+      ),
+      isTrue,
+    );
+    expect(cacheFile.lastModifiedSync(), writtenAt);
   });
 }
