@@ -406,4 +406,18 @@ class ArkLocalizationsFr extends ArkLocalizations {
   @override
   String get exitProgressRateInvalid =>
       'Saisissez un taux entier positif en sat/vB, dans la plage de saisie à représentation entière exacte.';
+
+  @override
+  String get exitProgressEstimatedFee => 'Frais estimés (sats)';
+
+  @override
+  String get exitProgressReserveExposure => 'Réserve confirmée exposée (sats)';
+
+  @override
+  String get exitProgressReviewWarning =>
+      'Cette tentative unique au premier plan concerne tout le compte et peut exposer toute la réserve interne confirmée indiquée par le devis. Les frais sont estimatifs et le taux renvoyé par le devis ne constitue pas un plafond financier strict. Cela ne vaut pas autorisation permanente pour de futures tentatives ou de nouveaux dépôts.';
+
+  @override
+  String get exitProgressReviewIncomplete =>
+      'Cette revue de progression de sortie est incomplète ou incohérente. La confirmation est indisponible.';
 }

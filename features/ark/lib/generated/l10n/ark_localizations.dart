@@ -829,6 +829,30 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Enter a positive whole rate in sat/vB within the supported exact-integer input range.'**
   String get exitProgressRateInvalid;
+
+  /// No description provided for @exitProgressEstimatedFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated fee (sats)'**
+  String get exitProgressEstimatedFee;
+
+  /// No description provided for @exitProgressReserveExposure.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed reserve at risk (sats)'**
+  String get exitProgressReserveExposure;
+
+  /// No description provided for @exitProgressReviewWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This one foreground attempt is account-wide and may expose the entire quoted confirmed internal reserve. The fee is an estimate and the returned quote rate is not a strict financial cap. This is not standing consent for later attempts or new deposits.'**
+  String get exitProgressReviewWarning;
+
+  /// No description provided for @exitProgressReviewIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'This exit progression review is incomplete or mismatched. Confirmation is unavailable.'**
+  String get exitProgressReviewIncomplete;
 }
 
 class _ArkLocalizationsDelegate

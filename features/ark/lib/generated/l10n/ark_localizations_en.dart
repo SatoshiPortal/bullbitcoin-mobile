@@ -402,4 +402,18 @@ class ArkLocalizationsEn extends ArkLocalizations {
   @override
   String get exitProgressRateInvalid =>
       'Enter a positive whole rate in sat/vB within the supported exact-integer input range.';
+
+  @override
+  String get exitProgressEstimatedFee => 'Estimated fee (sats)';
+
+  @override
+  String get exitProgressReserveExposure => 'Confirmed reserve at risk (sats)';
+
+  @override
+  String get exitProgressReviewWarning =>
+      'This one foreground attempt is account-wide and may expose the entire quoted confirmed internal reserve. The fee is an estimate and the returned quote rate is not a strict financial cap. This is not standing consent for later attempts or new deposits.';
+
+  @override
+  String get exitProgressReviewIncomplete =>
+      'This exit progression review is incomplete or mismatched. Confirmation is unavailable.';
 }
