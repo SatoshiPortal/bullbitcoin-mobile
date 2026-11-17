@@ -231,11 +231,12 @@ class ExtendedPubkey {
     },
   );
 
-  test('rust_bindings is a provider, its consumers are scanned', () {
+  test('only the generated bridge of rust_bindings is left unscanned', () {
     final root = Directory.systemTemp.createTempSync('key_material_roots_');
     addTearDown(() => root.deleteSync(recursive: true));
     for (final path in [
-      'packages/rust_bindings/lib/a.dart',
+      'packages/rust_bindings/lib/src/rust/frb_generated.dart',
+      'packages/rust_bindings/lib/src/lwk_consolidate.dart',
       'packages/secrets/lib/b.dart',
       'packages/sync/lib/c.dart',
       'lib/d.dart',
@@ -246,8 +247,67 @@ class ExtendedPubkey {
     }
     final files = productionDartFiles(root.path)
         .map((f) => f.substring(root.path.length + 1));
-    expect(files, unorderedEquals(['packages/sync/lib/c.dart', 'lib/d.dart']));
+    expect(
+      files,
+      unorderedEquals([
+        'packages/rust_bindings/lib/src/lwk_consolidate.dart',
+        'packages/sync/lib/c.dart',
+        'lib/d.dart',
+      ]),
+    );
   });
+
+  test('a consumer of the word-signing helper is checked', () async {
+    expect(
+      await inspect('batch_sign_consumer', '''
+import 'package:rust_bindings/lwk.dart' as lwk;
+Future<List<String>> sign(lwk.Wallet wallet) => lwk.batchSign(
+  wallet,
+  psets: const [],
+  network: lwk.LiquidNetwork.mainnet,
+  mnemonic: '',
+);
+'''),
+      contains(endsWith('batchSign')),
+    );
+  });
+
+  test('the word-signing helper may sign only inside batchSign', () async {
+    const path = 'packages/rust_bindings/lib/src/lwk_consolidate.dart';
+    const source = '''
+import 'package:rust_bindings/lwk.dart';
+Future<String> batchSign(Wallet wallet) => wallet.signTx(
+  network: LiquidNetwork.mainnet,
+  pset: '',
+  mnemonic: '',
+);
+''';
+    expect(
+      await inspect('batch_sign_helper', source, policyPath: path),
+      isEmpty,
+    );
+    expect(
+      await inspect(
+        'other_helper',
+        source.replaceAll('batchSign', 'other'),
+        policyPath: path,
+      ),
+      contains(endsWith('Wallet.signTx')),
+    );
+  });
+
+  test(
+    'production code may not import the rust_bindings test bridge',
+    () async {
+      expect(
+        await inspect('bridge_test_support', '''
+import 'package:rust_bindings/testing.dart' as testing;
+Object? api(testing.BullSdkApi a) => a;
+'''),
+        contains(contains('test-only library')),
+      );
+    },
+  );
 
   test('test keystore aliases and re-exports retain identity', () async {
     final violations = await inspect('fake_keystore', '''
