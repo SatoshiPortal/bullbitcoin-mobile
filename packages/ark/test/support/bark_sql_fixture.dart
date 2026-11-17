@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ark/ark.dart';
-import 'package:ark/src/data/exit_archive/bark_sql_schema.dart';
+import 'package:ark/src/data/bark_sql_schema.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
