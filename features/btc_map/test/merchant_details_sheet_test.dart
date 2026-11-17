@@ -1,7 +1,7 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:bull_btc_map/src/ui/widgets/merchant_details_sheet.dart';
-import 'package:bull_btc_map/generated/l10n/btc_map_localizations.dart';
+import 'package:btc_map/src/ui/widgets/merchant_details_sheet.dart';
+import 'package:btc_map/generated/l10n/btc_map_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 

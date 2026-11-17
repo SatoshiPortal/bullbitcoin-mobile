@@ -3,7 +3,7 @@ import 'dart:isolate';
 
 import 'package:dio/dio.dart';
 
-import 'package:bull_btc_map/src/data/models/merchant_model.dart';
+import 'package:btc_map/src/data/models/merchant_model.dart';
 
 /// BTC Map's chronological places sync (REST v4, `GET /v4/places`).
 class BtcMapApiDatasource {

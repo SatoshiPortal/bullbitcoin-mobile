@@ -1,10 +1,10 @@
-import 'package:bull_btc_map/src/domain/usecases/load_cached_merchants_usecase.dart';
-import 'package:bull_btc_map/src/domain/usecases/sync_merchants_usecase.dart';
+import 'package:btc_map/src/domain/usecases/load_cached_merchants_usecase.dart';
+import 'package:btc_map/src/domain/usecases/sync_merchants_usecase.dart';
 
 import '../domain/entities/geo_bounds.dart';
 import '../domain/entities/merchant.dart';
 
-import 'package:bull_btc_map/src/presentation/map_state.dart';
+import 'package:btc_map/src/presentation/map_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 

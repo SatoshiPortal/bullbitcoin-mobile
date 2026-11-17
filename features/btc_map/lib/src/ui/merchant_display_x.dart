@@ -1,7 +1,7 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/bull_ui.dart';
 
-import 'package:bull_btc_map/src/presentation/map_localizations_x.dart';
+import 'package:btc_map/src/presentation/map_localizations_x.dart';
 
 /// The verified badge for a recent confirmation, a warning sign otherwise.
 extension MerchantVerificationDisplay on MerchantVerification {

@@ -1,12 +1,12 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:bull_btc_map/src/presentation/map_localizations_x.dart';
-import 'package:bull_btc_map/src/ui/merchant_display_x.dart';
+import 'package:btc_map/src/presentation/map_localizations_x.dart';
+import 'package:btc_map/src/ui/merchant_display_x.dart';
 
 Future<void> showMerchantDetailsSheet(
   BuildContext context,

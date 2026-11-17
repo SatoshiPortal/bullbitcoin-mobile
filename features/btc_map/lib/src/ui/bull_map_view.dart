@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math' show Point;
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_btc_map/src/domain/entities/geo_bounds.dart';
-import 'package:bull_btc_map/src/domain/entities/geo_point.dart';
-import 'package:bull_btc_map/src/domain/entities/merchant.dart';
+import 'package:btc_map/src/domain/entities/geo_bounds.dart';
+import 'package:btc_map/src/domain/entities/geo_point.dart';
+import 'package:btc_map/src/domain/entities/merchant.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:maplibre_gl/maplibre_gl.dart';

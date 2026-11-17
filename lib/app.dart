@@ -1,4 +1,4 @@
-import 'package:bull_btc_map/bull_btc_map.dart';
+import 'package:btc_map/btc_map.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart'
     show SettingsFacade;

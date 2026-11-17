@@ -1,12 +1,12 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'package:bull_btc_map/src/presentation/map_localizations_x.dart';
-import 'package:bull_btc_map/src/presentation/map_cubit.dart';
-import 'package:bull_btc_map/src/presentation/map_state.dart';
-import 'package:bull_btc_map/src/ui/merchant_display_x.dart';
+import 'package:btc_map/src/presentation/map_localizations_x.dart';
+import 'package:btc_map/src/presentation/map_cubit.dart';
+import 'package:btc_map/src/presentation/map_state.dart';
+import 'package:btc_map/src/ui/merchant_display_x.dart';
 
 /// The top of the list sheet: drag handle and search bar, then, once the sheet
 /// is pulled up, the category chips and how many places the list holds.

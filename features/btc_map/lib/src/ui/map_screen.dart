@@ -1,15 +1,15 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'package:bull_btc_map/src/presentation/map_localizations_x.dart';
-import 'package:bull_btc_map/src/presentation/map_cubit.dart';
-import 'package:bull_btc_map/src/presentation/map_failure_l10n.dart';
-import 'package:bull_btc_map/src/presentation/map_state.dart';
-import 'package:bull_btc_map/src/ui/widgets/merchant_details_sheet.dart';
-import 'package:bull_btc_map/src/ui/widgets/merchant_list_sheet.dart';
+import 'package:btc_map/src/presentation/map_localizations_x.dart';
+import 'package:btc_map/src/presentation/map_cubit.dart';
+import 'package:btc_map/src/presentation/map_failure_l10n.dart';
+import 'package:btc_map/src/presentation/map_state.dart';
+import 'package:btc_map/src/ui/widgets/merchant_details_sheet.dart';
+import 'package:btc_map/src/ui/widgets/merchant_list_sheet.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});

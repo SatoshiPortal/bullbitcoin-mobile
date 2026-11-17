@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
-import 'package:bull_btc_map/src/domain/entities/geo_bounds.dart';
-import 'package:bull_btc_map/src/domain/entities/merchant.dart';
+import 'package:btc_map/src/domain/entities/geo_bounds.dart';
+import 'package:btc_map/src/domain/entities/merchant.dart';
 
 /// What the list under the map shows: the first places, how many matched in
 /// all, and which categories they cover.

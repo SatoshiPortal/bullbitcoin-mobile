@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:bull_btc_map/src/data/models/merchant_model.dart';
+import 'package:btc_map/src/data/models/merchant_model.dart';
 
 /// What the cache holds: the places, and the `updated_at` the next
 /// incremental sync starts after.

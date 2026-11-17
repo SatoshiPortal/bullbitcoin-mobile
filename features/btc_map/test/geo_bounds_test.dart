@@ -1,4 +1,4 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 GeoPoint _point(double latitude, double longitude) =>

@@ -1,4 +1,4 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Merchant _merchant({int id = 1, String? name, String? address}) => Merchant(

@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:bull_btc_map/src/data/datasources/btc_map_api_datasource.dart';
-import 'package:bull_btc_map/src/data/datasources/merchant_cache_datasource.dart';
-import 'package:bull_btc_map/src/data/merchant_repository_impl.dart';
-import 'package:bull_btc_map/src/domain/bull_map_failure.dart';
-import 'package:bull_btc_map/src/domain/entities/merchant.dart';
-import 'package:bull_btc_map/src/domain/merchant_repository.dart';
+import 'package:btc_map/src/data/datasources/btc_map_api_datasource.dart';
+import 'package:btc_map/src/data/datasources/merchant_cache_datasource.dart';
+import 'package:btc_map/src/data/merchant_repository_impl.dart';
+import 'package:btc_map/src/domain/bull_map_failure.dart';
+import 'package:btc_map/src/domain/entities/merchant.dart';
+import 'package:btc_map/src/domain/merchant_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 

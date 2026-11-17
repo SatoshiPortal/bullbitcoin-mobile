@@ -1,7 +1,7 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:bull_btc_map/src/presentation/map_localizations_x.dart';
+import 'package:btc_map/src/presentation/map_localizations_x.dart';
 
 extension BullMapFailureL10n on BullMapFailure {
   String toTranslated(BuildContext context) => switch (this) {

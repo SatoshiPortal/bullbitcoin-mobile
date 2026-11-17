@@ -1,10 +1,10 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/testing.dart';
-import 'package:bull_btc_map/src/domain/usecases/load_cached_merchants_usecase.dart';
-import 'package:bull_btc_map/src/domain/usecases/sync_merchants_usecase.dart';
-import 'package:bull_btc_map/src/presentation/map_cubit.dart';
-import 'package:bull_btc_map/src/ui/widgets/merchant_list_sheet.dart';
-import 'package:bull_btc_map/generated/l10n/btc_map_localizations.dart';
+import 'package:btc_map/src/domain/usecases/load_cached_merchants_usecase.dart';
+import 'package:btc_map/src/domain/usecases/sync_merchants_usecase.dart';
+import 'package:btc_map/src/presentation/map_cubit.dart';
+import 'package:btc_map/src/ui/widgets/merchant_list_sheet.dart';
+import 'package:btc_map/generated/l10n/btc_map_localizations.dart';
 
 import 'dart:async';
 

@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'package:bull_btc_map/src/presentation/map_cubit.dart';
-import 'package:bull_btc_map/src/presentation/map_state.dart';
-import 'package:bull_btc_map/src/ui/widgets/merchant_list_header.dart';
-import 'package:bull_btc_map/src/ui/widgets/merchant_list_places.dart';
+import 'package:btc_map/src/presentation/map_cubit.dart';
+import 'package:btc_map/src/presentation/map_state.dart';
+import 'package:btc_map/src/ui/widgets/merchant_list_header.dart';
+import 'package:btc_map/src/ui/widgets/merchant_list_places.dart';
 
 /// The panel over the bottom of the map, as on btcmap.org: collapsed it shows
 /// only the search field; pulled up, the category filters, how many places

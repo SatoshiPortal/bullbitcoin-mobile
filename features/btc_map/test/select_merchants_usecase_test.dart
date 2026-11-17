@@ -1,5 +1,5 @@
-import 'package:bull_btc_map/src/domain/usecases/select_merchants_usecase.dart';
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/domain/usecases/select_merchants_usecase.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

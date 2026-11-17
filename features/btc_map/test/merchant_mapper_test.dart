@@ -1,6 +1,6 @@
-import 'package:bull_btc_map/src/map_types.dart';
-import 'package:bull_btc_map/src/data/models/merchant_model.dart';
-import 'package:bull_btc_map/src/data/merchant_mapper.dart';
+import 'package:btc_map/src/map_types.dart';
+import 'package:btc_map/src/data/models/merchant_model.dart';
+import 'package:btc_map/src/data/merchant_mapper.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

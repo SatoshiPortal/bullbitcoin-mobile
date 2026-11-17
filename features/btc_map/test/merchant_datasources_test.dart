@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:bull_btc_map/src/data/datasources/btc_map_api_datasource.dart';
-import 'package:bull_btc_map/src/data/datasources/merchant_cache_datasource.dart';
-import 'package:bull_btc_map/src/data/models/merchant_model.dart';
+import 'package:btc_map/src/data/datasources/btc_map_api_datasource.dart';
+import 'package:btc_map/src/data/datasources/merchant_cache_datasource.dart';
+import 'package:btc_map/src/data/models/merchant_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 

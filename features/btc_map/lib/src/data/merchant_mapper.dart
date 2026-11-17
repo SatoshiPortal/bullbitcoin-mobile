@@ -1,6 +1,6 @@
-import 'package:bull_btc_map/src/domain/entities/geo_point.dart';
-import 'package:bull_btc_map/src/domain/entities/merchant.dart';
-import 'package:bull_btc_map/src/data/models/merchant_model.dart';
+import 'package:btc_map/src/domain/entities/geo_point.dart';
+import 'package:btc_map/src/domain/entities/merchant.dart';
+import 'package:btc_map/src/data/models/merchant_model.dart';
 
 extension MerchantMapper on MerchantModel {
   /// The entity, or null for a place the map cannot show: deleted, or without

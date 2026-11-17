@@ -1,9 +1,9 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'package:bull_btc_map/src/presentation/map_localizations_x.dart';
-import 'package:bull_btc_map/src/ui/merchant_display_x.dart';
+import 'package:btc_map/src/presentation/map_localizations_x.dart';
+import 'package:btc_map/src/ui/merchant_display_x.dart';
 
 /// One place in the list: what kind it is, its name and address, and whether
 /// it was verified recently.

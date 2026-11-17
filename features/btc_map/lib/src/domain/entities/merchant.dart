@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'package:bull_btc_map/src/domain/entities/geo_point.dart';
+import 'package:btc_map/src/domain/entities/geo_point.dart';
 
 /// The kinds of place the map lets a user filter by, the same set btcmap.org
 /// offers. A place outside all of them is still listed under "all".

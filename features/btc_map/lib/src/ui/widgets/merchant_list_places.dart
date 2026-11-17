@@ -1,10 +1,10 @@
-import 'package:bull_btc_map/src/map_types.dart';
+import 'package:btc_map/src/map_types.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'package:bull_btc_map/src/presentation/map_localizations_x.dart';
-import 'package:bull_btc_map/src/presentation/map_state.dart';
-import 'package:bull_btc_map/src/ui/widgets/merchant_list_tile.dart';
+import 'package:btc_map/src/presentation/map_localizations_x.dart';
+import 'package:btc_map/src/presentation/map_state.dart';
+import 'package:btc_map/src/ui/widgets/merchant_list_tile.dart';
 
 /// The places under the list sheet's header, as slivers: the rows, or why
 /// there are none, and a note when the list is capped.

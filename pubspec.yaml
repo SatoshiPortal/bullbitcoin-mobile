@@ -40,7 +40,7 @@ dependencies:
   bull_payjoin:
   bull_pricer:
   novlang:
-  bull_btc_map:
+  btc_map:
   bull_ui:
   primitives:
   background_tasks:

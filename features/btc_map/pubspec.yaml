@@ -1,4 +1,4 @@
-name: bull_btc_map
+name: btc_map
 description: Places that accept bitcoin, from BTC Map, synced and cached on the device and drawn on an OpenStreetMap map in the bull_ui theme, for Bull Bitcoin.
 publish_to: "none"
 version: 0.1.0

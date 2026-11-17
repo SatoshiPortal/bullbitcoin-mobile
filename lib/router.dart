@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/bitcoin_price/public/bitcoin_price_facade.dart';
 import 'package:bb_mobile/features/support/public/support_facade.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
-import 'package:bull_btc_map/bull_btc_map.dart';
+import 'package:btc_map/btc_map.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 

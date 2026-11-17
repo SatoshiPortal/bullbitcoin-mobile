@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'package:bull_btc_map/src/domain/entities/geo_point.dart';
+import 'package:btc_map/src/domain/entities/geo_point.dart';
 
 /// The part of the world the map shows. [west] is greater than [east] when the
 /// area crosses the antimeridian.

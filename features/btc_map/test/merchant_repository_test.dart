@@ -1,13 +1,13 @@
-import 'package:bull_btc_map/src/domain/merchant_repository.dart';
+import 'package:btc_map/src/domain/merchant_repository.dart';
 
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:bull_btc_map/src/map_types.dart';
-import 'package:bull_btc_map/src/data/datasources/btc_map_api_datasource.dart';
-import 'package:bull_btc_map/src/data/datasources/merchant_cache_datasource.dart';
-import 'package:bull_btc_map/src/data/models/merchant_model.dart';
-import 'package:bull_btc_map/src/data/merchant_repository_impl.dart';
+import 'package:btc_map/src/map_types.dart';
+import 'package:btc_map/src/data/datasources/btc_map_api_datasource.dart';
+import 'package:btc_map/src/data/datasources/merchant_cache_datasource.dart';
+import 'package:btc_map/src/data/models/merchant_model.dart';
+import 'package:btc_map/src/data/merchant_repository_impl.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
