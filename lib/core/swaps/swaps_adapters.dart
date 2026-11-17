@@ -58,21 +58,33 @@ class AppSwapsLog implements swaps.SwapsLog {
   Future<void> flush() => log.flush();
 }
 
-/// Platform secure storage behind the engine's secret-store contract.
+/// Platform secure storage behind the engine's secret-store contract,
+/// limited to the engine's own `swap_` entries: the shared keychain also
+/// holds wallet seeds, the PIN and exchange credentials, none of which the
+/// engine may read.
 class SecureSecretStore implements swaps.SecretStore {
   final KeyValueStorageDatasource<String> _secure;
 
   SecureSecretStore(this._secure);
 
+  static const _prefix = 'swap_';
+
+  String _scoped(String key) {
+    if (!key.startsWith(_prefix)) {
+      throw ArgumentError.value(key, 'key', 'outside the swap secret scope');
+    }
+    return key;
+  }
+
   @override
   Future<void> write(String key, String value) =>
-      _secure.saveValue(key: key, value: value);
+      _secure.saveValue(key: _scoped(key), value: value);
 
   @override
-  Future<String?> read(String key) async => _secure.getValue(key);
+  Future<String?> read(String key) async => _secure.getValue(_scoped(key));
 
   @override
-  Future<void> delete(String key) => _secure.deleteValue(key);
+  Future<void> delete(String key) => _secure.deleteValue(_scoped(key));
 }
 
 /// The app's electrum selection/fallback seam, unchanged: custom-if-set else
