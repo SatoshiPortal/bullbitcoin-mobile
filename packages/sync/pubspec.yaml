@@ -12,10 +12,6 @@ dependencies:
   flutter:
     sdk: flutter
   bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/bull_sdk
   sqlite3: ^3.5.2
   bull_logger:
   primitives:

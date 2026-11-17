@@ -118,6 +118,8 @@ build-runner:
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
 	@(cd packages/swaps && fvm dart run build_runner build --force-jit)
+	@(cd packages/rust_bindings && fvm dart run build_runner build --force-jit)
+	@(cd packages/satoshifier && fvm dart run build_runner build --force-jit)
 	@$(MAKE) recoverbull-build-runner
 	@$(MAKE) btc-map-build-runner
 

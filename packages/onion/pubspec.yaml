@@ -1,0 +1,36 @@
+name: onion
+description: "Embedded Tor client and loopback SOCKS5 proxy, built on Arti. Not an official Tor Project product."
+version: 0.1.0
+repository: https://github.com/SatoshiPortal/bull_sdk
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_rust_bridge: 2.13.0
+  flutter_rust_bridge_hooks: 2.13.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  # ^20.1.1, not the ^21 that `flutter create` picked: flutter_rust_bridge
+  # 2.12.0 drove ffigen to emit frb_generated.io.dart, and with ffigen 21 it
+  # produced a function body with no signature (an orphaned
+  # `) => $allocator<WireSyncRust2DartSse>()`), which does not parse. Same pin
+  # as lwk-dart and bull_sdk.
+  ffigen: ^23.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.bullbitcoin.onion
+        pluginClass: OnionPlugin
+      ios:
+        pluginClass: OnionPlugin

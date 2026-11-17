@@ -1,0 +1,7 @@
+rust_input: rust/src/api/**/*.rs
+rust_root: rust/
+dart_output: lib/src/rust
+dart_entrypoint_class_name: OnionCore
+full_dep: true
+enable_lifetime: true
+web: false

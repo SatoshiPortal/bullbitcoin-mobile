@@ -31,6 +31,11 @@ workspace:
   - features/logs
   - features/quick_actions
   - features/recoverbull
+  - packages/rust_bindings
+  - packages/onion
+  - packages/boltz_stream
+  - packages/bitbox_transport
+  - packages/satoshifier
 
 dependencies:
   cupertino_ui: ^1.1.6
@@ -74,20 +79,8 @@ dependencies:
   image_picker: ^1.1.2
   file_picker: ^13.3.3
   bull_sdk:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/bull_sdk
   boltz_stream:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/boltz-stream
   bitbox_transport:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/bitbox-transport
   universal_ble: ^3.3.0
   auto_size_text: ^3.0.0
   freezed_annotation: ^3.1.0
@@ -130,10 +123,6 @@ dependencies:
       url: https://github.com/fusion44/dart_bolt11_decoder
       ref: f5deec21fb0ac2ee507de1f683344b03f8cc92a3
   satoshifier:
-    git:
-      url: https://github.com/SatoshiPortal/bull_sdk
-      ref: 78200eaee009a77a47450f04e9aa24bd3b37d587
-      path: packages/satoshifier
   flutter_nfc_kit: ^3.6.1
   ndef: ^0.4.0
   ledger_bitcoin:
