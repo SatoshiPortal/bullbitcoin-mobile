@@ -1625,7 +1625,9 @@ class SendCubit extends Cubit<SendState>
     final paymentRequest = state.paymentRequest;
     if (paymentRequest == null ||
         destinationAddress.isEmpty ||
-        paymentRequest.isTestnet == wallet.network.isMainnet) {
+        (paymentRequest is Bip21PaymentRequest
+            ? paymentRequest.network.environment != wallet.network.environment
+            : paymentRequest.isTestnet == wallet.network.isMainnet)) {
       emit(
         state.copyWith(
           amountConfirmedClicked: false,
