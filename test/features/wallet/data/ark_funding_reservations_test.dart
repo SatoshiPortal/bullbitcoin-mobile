@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -91,6 +93,73 @@ String twoInputPsbt({
   ]);
 }
 
+// Public generator point and synthetic DER-shaped r/s, from Sync codec tests.
+// Signature PRESENCE only; neither fixture proves a cryptographically valid sig.
+String withPartial(String encoded) {
+  const pubkey =
+      '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
+  final key = [
+    2,
+    for (var i = 0; i < pubkey.length; i += 2)
+      int.parse(pubkey.substring(i, i + 2), radix: 16),
+  ];
+  final signature = [
+    0x30,
+    0x44,
+    2,
+    0x20,
+    ...List.filled(32, 1),
+    2,
+    0x20,
+    ...List.filled(32, 2),
+    1,
+  ];
+  final bytes = base64Decode(encoded);
+  return base64Encode([
+    ...bytes.take(bytes.length - 2),
+    key.length,
+    ...key,
+    signature.length,
+    ...signature,
+    0,
+    0,
+  ]);
+}
+
+// Two independent SQLite connections/isolate lifetimes. No native wallet or keys.
+Future<void> raceAuthority((String, bool, SendPort) args) async {
+  final (path, seal, parent) = args;
+  final control = ReceivePort();
+  SqliteArkFundingReservations? connection;
+  parent.send(['control', seal, control.sendPort]);
+  try {
+    final opened = ok(
+      SqliteArkFundingReservations.open(path, foreground: false),
+    );
+    connection = opened;
+    final binding = ok(await opened.readBinding('op'));
+    parent.send(['ready', seal]);
+    final command = await control.first;
+    if (command == 'go') {
+      final result = seal
+          ? await opened.beginSigning(
+              expected: binding,
+              admittedRevision: binding.revision,
+            )
+          : await opened.tombstoneNeverSigned(
+              expected: binding,
+              admittedRevision: binding.revision,
+            );
+      parent.send(['done', seal, result is Ok]);
+    }
+  } on Exception catch (failure) {
+    parent.send(['failed', seal, failure.runtimeType.toString()]);
+  } finally {
+    connection?.close();
+    control.close();
+  }
+}
+
 void main() {
   late Directory dir;
   late SqliteArkFundingReservations store;
@@ -134,6 +203,79 @@ void main() {
     store.close();
     dir.deleteSync(recursive: true);
   });
+  Future<void> legacyTerminal() async {
+    ok(await begin('legacy'));
+    ok(
+      await store.reserve(
+        key: key,
+        spend: spend('legacy'),
+        context: 'public-context',
+      ),
+    );
+    final db = sqlite3.open('${dir.path}/store');
+    try {
+      db.execute("UPDATE ark_funding_operations SET state='confirmed'");
+      db.execute('DELETE FROM ark_funding_inputs');
+      if (db
+          .select(
+            "SELECT 1 FROM sqlite_master WHERE name='ark_funding_authority'",
+          )
+          .isNotEmpty) {
+        db.execute('DELETE FROM ark_funding_authority');
+      }
+    } finally {
+      db.close();
+    }
+  }
+
+  test('signatures require an irreversible signing-start seal', () async {
+    ok(await begin('op'));
+    ok(
+      await store.reserve(
+        key: key,
+        spend: spend('op'),
+        context: 'public-context',
+      ),
+    );
+    expect(await store.recordSigned('op', withWitness(psbt)), isA<Err>());
+  });
+  test(
+    'terminal legacy operation cannot be reopened by identical begin',
+    () async {
+      await legacyTerminal();
+      expect(await begin('legacy'), isA<Err>());
+    },
+  );
+  test(
+    'terminal transaction cannot be reauthorized under a different owner',
+    () async {
+      await legacyTerminal();
+      ok(await begin('new-owner'));
+      expect(
+        await store.reserve(
+          key: key,
+          spend: spend('new-owner'),
+          context: 'public-context',
+        ),
+        isA<Err>(),
+      );
+    },
+  );
+  test(
+    'legacy terminal label alone cannot retire its source seed pin',
+    () async {
+      await legacyTerminal();
+      final refs = await store.getCustodyFingerprints();
+      expect(
+        refs,
+        isA<Ok<Set<Fingerprint>, Failure>>().having(
+          (r) => r.value,
+          'unproven source parents',
+          {parent},
+        ),
+      );
+    },
+  );
   test('existing-only missing store fails without creating a file', () {
     final path = '${dir.path}/missing';
     expect(
@@ -312,6 +454,7 @@ void main() {
       await store.observe(
         key,
         WalletTransactions.ready(ChainTransactionList([]), stamp(revision: 3)),
+        admittedRevision: stamp(revision: 3),
       ),
       isA<Ok>(),
     );
@@ -335,6 +478,7 @@ void main() {
           ChainTransactionList([tx(null)]),
           stamp(revision: 3),
         ),
+        admittedRevision: stamp(revision: 3),
       ),
       isA<Ok>(),
     );
@@ -346,6 +490,7 @@ void main() {
           ChainTransactionList([tx(1700000000)]),
           stamp(revision: 3),
         ),
+        admittedRevision: stamp(revision: 3),
       ),
       isA<Err>(),
     );
@@ -357,6 +502,7 @@ void main() {
           ChainTransactionList([tx(1700000000)]),
           stamp(revision: 3),
         ),
+        admittedRevision: stamp(revision: 3),
       ),
       isA<Ok>(),
     );
@@ -411,6 +557,12 @@ void main() {
       context: 'public-context',
     );
     expect(await store.recordSigned('op', psbt), isA<Err>());
+    ok(
+      await store.beginSigning(
+        expected: ok(await store.readBinding('op')),
+        admittedRevision: stamp(),
+      ),
+    );
     final signed = withWitness(psbt);
     final tampered = base64Decode(signed);
     final offset = List.generate(tampered.length - 2, (i) => i).firstWhere(
@@ -485,6 +637,7 @@ void main() {
           ChainTransactionList([conflict(null)]),
           stamp(revision: 3),
         ),
+        admittedRevision: stamp(revision: 3),
       ),
       isA<Ok>(),
     );
@@ -496,6 +649,7 @@ void main() {
           ChainTransactionList([conflict(1700000000)]),
           stamp(revision: 3),
         ),
+        admittedRevision: stamp(revision: 3),
       ),
       isA<Err>(),
     );
@@ -507,6 +661,7 @@ void main() {
           ChainTransactionList([conflict(1700000000)]),
           stamp(revision: 3),
         ),
+        admittedRevision: stamp(revision: 3),
       ),
       isA<Ok>(),
     );
@@ -532,5 +687,737 @@ void main() {
       isA<Ok>(),
     );
     expect(ok(await store.reservations()).single.session, 'next');
+  });
+  Future<ArkFundingBinding> prepared({String encoded = psbt}) async {
+    ok(await begin('op'));
+    ok(
+      await store.reserve(
+        key: key,
+        spend: spend('op', encoded: encoded),
+        context: 'public-context',
+      ),
+    );
+    return ok(await store.readBinding('op'));
+  }
+
+  Future<Set<Fingerprint>> pins() async {
+    return switch (await store.getCustodyFingerprints()) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw StateError(
+        'Unexpected ${failure.runtimeType}',
+      ),
+    };
+  }
+
+  void edit(String sql, [List<Object?> parameters = const []]) {
+    final db = sqlite3.open('${dir.path}/store');
+    try {
+      db.execute(sql, parameters);
+    } finally {
+      db.close();
+    }
+  }
+
+  ArkFundingBinding changed(ArkFundingBinding b, String field) {
+    final otherKey = WalletKey(id: 'alias', network: BitcoinNetwork.regtest);
+    return ArkFundingBinding(
+      operationId: field == 'operation' ? 'another' : b.operationId,
+      accountIdentity: field == 'account' ? 'another' : b.accountIdentity,
+      sourceParent: field == 'parent'
+          ? Fingerprint('aabbccdd')
+          : b.sourceParent,
+      key: field == 'key' ? otherKey : b.key,
+      revision: WalletRevision(
+        key: field == 'revisionKey' ? otherKey : b.key,
+        generation: field == 'generation' ? 2 : b.revision.generation,
+        revision: field == 'revision' ? 99 : b.revision.revision,
+      ),
+      context: field == 'context' ? 'changed' : b.context,
+      unsignedPsbt: field == 'psbt'
+          ? twoInputPsbt(outputSat: 99999)
+          : b.unsignedPsbt,
+      unsignedTxid: field == 'txid'
+          ? List.filled(64, 'a').join()
+          : b.unsignedTxid,
+      inputs: field == 'inputs' ? b.inputs.reversed.toList() : b.inputs,
+    );
+  }
+
+  test('seal is durable and cannot become never-signed after reopen', () async {
+    final binding = await prepared();
+    ok(await store.beginSigning(expected: binding, admittedRevision: stamp()));
+    store.close();
+    store = ok(
+      SqliteArkFundingReservations.open('${dir.path}/store', foreground: false),
+    );
+    ok(
+      await store.beginSigning(
+        expected: binding,
+        admittedRevision: stamp(revision: 3),
+      ),
+    );
+    expect(
+      await store.tombstoneNeverSigned(
+        expected: binding,
+        admittedRevision: stamp(),
+      ),
+      isA<Err>(),
+    );
+    expect(ok(await store.reservations()).length, 1);
+    expect(await pins(), {parent});
+  });
+  test(
+    'tombstone is durable idempotent and ends only its source pin',
+    () async {
+      final binding = await prepared();
+      ok(
+        await store.tombstoneNeverSigned(
+          expected: binding,
+          admittedRevision: stamp(),
+        ),
+      );
+      store.close();
+      store = ok(
+        SqliteArkFundingReservations.open(
+          '${dir.path}/store',
+          foreground: false,
+        ),
+      );
+      ok(
+        await store.tombstoneNeverSigned(
+          expected: binding,
+          admittedRevision: stamp(),
+        ),
+      );
+      expect(
+        await store.beginSigning(expected: binding, admittedRevision: stamp()),
+        isA<Err>(),
+      );
+      expect(await store.recordSigned('op', withWitness(psbt)), isA<Err>());
+      expect(await begin('op'), isA<Err>());
+      expect(
+        await store.reserve(
+          key: key,
+          spend: spend('op'),
+          context: 'public-context',
+        ),
+        isA<Err>(),
+      );
+      expect(ok(await store.reservations()), isEmpty);
+      expect(await pins(), isEmpty);
+      final retained = ok(await store.readBinding('op'));
+      expect(retained.unsignedPsbt, psbt);
+      expect(retained.sourceParent, parent);
+      ok(await begin('other-obligation'));
+      expect(await pins(), {parent});
+    },
+  );
+  for (final field in [
+    'operation',
+    'account',
+    'parent',
+    'key',
+    'generation',
+    'revision',
+    'revisionKey',
+    'context',
+    'psbt',
+    'txid',
+    'inputs',
+  ]) {
+    test('CAS refuses exact immutable binding mismatch $field', () async {
+      final binding = await prepared(encoded: twoInputPsbt());
+      final wrong = changed(binding, field);
+      expect(
+        await store.beginSigning(expected: wrong, admittedRevision: stamp()),
+        isA<Err>(),
+      );
+      expect(
+        await store.tombstoneNeverSigned(
+          expected: wrong,
+          admittedRevision: stamp(),
+        ),
+        isA<Err>(),
+      );
+      expect(ok(await store.reservations()).length, 2);
+      expect(await pins(), {parent});
+    });
+  }
+  test(
+    'CAS refuses wrong current admission without changing ownership',
+    () async {
+      final binding = await prepared();
+      for (final revision in [
+        stamp(generation: 2),
+        stamp(revision: 1),
+        WalletRevision(
+          key: WalletKey(id: 'alias', network: BitcoinNetwork.regtest),
+          generation: 1,
+          revision: 2,
+        ),
+      ]) {
+        expect(
+          await store.beginSigning(
+            expected: binding,
+            admittedRevision: revision,
+          ),
+          isA<Err>(),
+        );
+        expect(
+          await store.tombstoneNeverSigned(
+            expected: binding,
+            admittedRevision: revision,
+          ),
+          isA<Err>(),
+        );
+      }
+      expect(ok(await store.reservations()).length, 1);
+    },
+  );
+  test('classification is network-wide and validates missing ownership before negative lookup', () async {
+    final binding = await prepared(encoded: twoInputPsbt());
+    expect(
+      ok(
+        await store.bindingForSigning(
+          key: key,
+          unsignedPsbt: binding.unsignedPsbt,
+        ),
+      )?.operationId,
+      'op',
+    );
+    final alias = WalletKey(id: 'alias', network: BitcoinNetwork.regtest);
+    expect(
+      await store.bindingForSigning(
+        key: alias,
+        unsignedPsbt: binding.unsignedPsbt,
+      ),
+      isA<Err>(),
+    );
+    final overlap = twoInputPsbt(inputBytes: [0x11], outputSat: 50000);
+    expect(
+      await store.bindingForSigning(key: alias, unsignedPsbt: overlap),
+      isA<Err>(),
+    );
+    final unrelated = twoInputPsbt(inputBytes: [0x44], outputSat: 50000);
+    expect(
+      ok(await store.bindingForSigning(key: alias, unsignedPsbt: unrelated)),
+      isNull,
+    );
+    edit('DELETE FROM ark_funding_inputs WHERE txid=?', [
+      binding.inputs.first.txId,
+    ]);
+    expect(
+      await store.bindingForSigning(key: alias, unsignedPsbt: overlap),
+      isA<Err>(),
+    );
+    expect(
+      await store.bindingForSigning(key: alias, unsignedPsbt: unrelated),
+      isA<Err>(),
+    );
+  });
+  test(
+    'terminal txid classification refuses an alias even without active inputs',
+    () async {
+      final binding = await prepared();
+      ok(
+        await store.tombstoneNeverSigned(
+          expected: binding,
+          admittedRevision: stamp(),
+        ),
+      );
+      expect(
+        await store.bindingForSigning(
+          key: WalletKey(id: 'alias', network: key.network),
+          unsignedPsbt: psbt,
+        ),
+        isA<Err>(),
+      );
+    },
+  );
+  test(
+    'legacy active rows remain held and cannot acquire a retrospective seal',
+    () async {
+      final binding = await prepared();
+      edit('DELETE FROM ark_funding_authority');
+      ok(await begin('op'));
+      expect(
+        await store.beginSigning(expected: binding, admittedRevision: stamp()),
+        isA<Err>(),
+      );
+      expect(
+        await store.tombstoneNeverSigned(
+          expected: binding,
+          admittedRevision: stamp(),
+        ),
+        isA<Err>(),
+      );
+      expect(ok(await store.reservations()).length, 1);
+      expect(await pins(), {parent});
+    },
+  );
+  test('fresh admitted positive history certifies a legacy terminal source closure', () async {
+    await legacyTerminal();
+    final binding = ok(await store.readBinding('legacy'));
+    BitcoinTransaction tx() => BitcoinTransaction(
+      txid: binding.unsignedTxid,
+      feeSat: 200,
+      vsize: 100,
+      confirmationTime: 1700000000,
+      inputs: [],
+      outputs: [],
+      sentSat: 100200,
+      receivedSat: 0,
+      isExplicitlyRbf: false,
+    );
+    final history = WalletTransactions.ready(
+      ChainTransactionList([tx()]),
+      stamp(revision: 3),
+    );
+    expect(
+      await store.observe(key, history, admittedRevision: stamp(revision: 4)),
+      isA<Err>(),
+    );
+    expect(await pins(), {parent});
+    ok(await store.observe(key, history, admittedRevision: stamp(revision: 3)));
+    expect(await pins(), isEmpty);
+    expect(ok(await store.reservations()), isEmpty);
+    expect(ok(await store.readBinding('legacy')).unsignedPsbt, psbt);
+    final db = sqlite3.open('${dir.path}/store');
+    try {
+      expect(
+        db
+            .select('SELECT signing FROM ark_funding_authority')
+            .single['signing'],
+        'unknown',
+      );
+    } finally {
+      db.close();
+    }
+  });
+  test(
+    'failed seal and tombstone input deletion roll back all ownership changes',
+    () async {
+      final binding = await prepared();
+      edit(
+        "CREATE TRIGGER fail_seal BEFORE UPDATE ON ark_funding_authority BEGIN SELECT RAISE(ABORT,'fixture'); END",
+      );
+      expect(
+        await store.beginSigning(expected: binding, admittedRevision: stamp()),
+        isA<Err>(),
+      );
+      edit('DROP TRIGGER fail_seal');
+      edit(
+        "CREATE TRIGGER fail_release BEFORE DELETE ON ark_funding_inputs BEGIN SELECT RAISE(ABORT,'fixture'); END",
+      );
+      expect(
+        await store.tombstoneNeverSigned(
+          expected: binding,
+          admittedRevision: stamp(),
+        ),
+        isA<Err>(),
+      );
+      expect(ok(await store.reservations()).length, 1);
+      expect(await pins(), {parent});
+      edit('DROP TRIGGER fail_release');
+      ok(
+        await store.beginSigning(expected: binding, admittedRevision: stamp()),
+      );
+    },
+  );
+  for (final field in [
+    'version',
+    'kind',
+    'closed',
+    'binding',
+    'admitted',
+    'observedTxid',
+    'confirmationTime',
+    'matchedInput',
+  ]) {
+    test(
+      'corrupt closure $field never retires a source pin as empty inventory',
+      () async {
+        final binding = await prepared();
+        ok(
+          await store.tombstoneNeverSigned(
+            expected: binding,
+            admittedRevision: stamp(),
+          ),
+        );
+        final db = sqlite3.open('${dir.path}/store');
+        try {
+          final proof = jsonDecode(
+            db
+                    .select('SELECT settlement FROM ark_funding_authority')
+                    .single['settlement']
+                as String,
+          ) as Map<String, dynamic>;
+          proof[field] = switch (field) {
+            'version' => 2,
+            'kind' => 'unknown',
+            'closed' => false,
+            'binding' || 'admitted' => <String, dynamic>{},
+            'observedTxid' => binding.unsignedTxid,
+            'confirmationTime' => 1700000000,
+            _ => [binding.inputs.first.txId, 0],
+          };
+          db.execute('UPDATE ark_funding_authority SET settlement=?', [
+            jsonEncode(proof),
+          ]);
+        } finally {
+          db.close();
+        }
+        expect(await store.getCustodyFingerprints(), isA<Err>());
+        expect(await store.reservations(), isA<Err>());
+        expect(
+          await store.tombstoneNeverSigned(
+            expected: binding,
+            admittedRevision: stamp(),
+          ),
+          isA<Err>(),
+        );
+      },
+    );
+  }
+  test(
+    'BEGIN IMMEDIATE contention refuses without partial seal or release',
+    () async {
+      final binding = await prepared();
+      final blocker = sqlite3.open('${dir.path}/store');
+      try {
+        blocker.execute('BEGIN IMMEDIATE');
+        expect(
+          await store.beginSigning(
+            expected: binding,
+            admittedRevision: stamp(),
+          ),
+          isA<Err>(),
+        );
+        expect(
+          await store.tombstoneNeverSigned(
+            expected: binding,
+            admittedRevision: stamp(),
+          ),
+          isA<Err>(),
+        );
+      } finally {
+        blocker.execute('ROLLBACK');
+        blocker.close();
+      }
+      expect(ok(await store.reservations()).length, 1);
+      ok(
+        await store.tombstoneNeverSigned(
+          expected: binding,
+          admittedRevision: stamp(),
+        ),
+      );
+    },
+  );
+  test('real independent isolates race seal against tombstone with exactly one winner', () async {
+    await prepared();
+    final messages = ReceivePort();
+    final exits = [ReceivePort(), ReceivePort()];
+    final stream = StreamIterator<dynamic>(messages);
+    final controls = <SendPort>[];
+    final wins = <bool>[];
+    await Isolate.spawn(
+      raceAuthority,
+      ('${dir.path}/store', true, messages.sendPort),
+      onExit: exits[0].sendPort,
+      onError: messages.sendPort,
+    );
+    await Isolate.spawn(
+      raceAuthority,
+      ('${dir.path}/store', false, messages.sendPort),
+      onExit: exits[1].sendPort,
+      onError: messages.sendPort,
+    );
+    try {
+      var ready = 0;
+      var failed = false;
+      while (controls.length < 2 || (ready < 2 && !failed)) {
+        expect(await stream.moveNext(), true);
+        final event = stream.current as List;
+        if (event[0] == 'control') {
+          controls.add(event[2] as SendPort);
+        } else if (event[0] == 'ready') {
+          ready++;
+        } else {
+          failed = true; // Report worker failure without exposing foreign text.
+        }
+      }
+      expect(failed, false, reason: 'A race worker could not initialize');
+      for (final control in controls) {
+        control.send('go');
+      }
+      while (wins.length < 2) {
+        expect(await stream.moveNext(), true);
+        final event = stream.current as List;
+        expect(event[0], 'done');
+        wins.add(event[2] as bool);
+      }
+      expect(wins.where((w) => w).length, 1);
+    } finally {
+      for (final control in controls) {
+        control.send('stop');
+      }
+      await Future.wait(exits.map((port) => port.first));
+      for (final exit in exits) {
+        exit.close();
+      }
+      await stream.cancel();
+      messages.close();
+    }
+    store.close();
+    store = ok(
+      SqliteArkFundingReservations.open('${dir.path}/store', foreground: false),
+    );
+    final binding = ok(await store.readBinding('op'));
+    final held = ok(await store.reservations());
+    expect(held.length, anyOf(0, 1));
+    final result = held.isEmpty
+        ? await store.beginSigning(expected: binding, admittedRevision: stamp())
+        : await store.tombstoneNeverSigned(
+            expected: binding,
+            admittedRevision: stamp(),
+          );
+    expect(result, isA<Err>());
+  });
+  for (final column in ['txid', 'vout']) {
+    test(
+      'bad SQLite reservation runtime kind $column is a typed refusal',
+      () async {
+        await prepared();
+        edit('UPDATE ark_funding_inputs SET $column=?', [
+          column == 'txid' ? Uint8List.fromList([1, 2, 3]) : 0.5,
+        ]);
+        expect(await store.reservations(), isA<Err>());
+        expect(await store.getCustodyFingerprints(), isA<Err>());
+        expect(
+          await store.bindingForSigning(
+            key: key,
+            unsignedPsbt: twoInputPsbt(inputBytes: [0x44], outputSat: 50000),
+          ),
+          isA<Err>(),
+        );
+      },
+    );
+  }
+  group('persisted original prepared facts and authority schema', () {
+    Future<ArkFundingBinding> prepare() async {
+      ok(
+        await store.begin(
+          operationId: 'f1',
+          accountIdentity: 'public-fixture',
+          sourceParent: Fingerprint('00112233'),
+          key: key,
+          generation: 1,
+          context: 'public-f1-context',
+        ),
+      );
+      ok(
+        await store.reserve(
+          key: key,
+          context: 'public-f1-context',
+          spend: UnsignedSpend(
+            revision: stamp(),
+            encoded: psbt,
+            inputs: decodeBitcoinPsbt(psbt).inputs,
+            owner: SpendOwner(protocol: 'ark', session: 'f1'),
+          ),
+        ),
+      );
+      return ok(await store.readBinding('f1'));
+    }
+
+    void mutateOriginal(String encoded) {
+      final db = sqlite3.open('${dir.path}/store');
+      try {
+        db.execute('UPDATE ark_funding_operations SET psbt=?', [encoded]);
+      } finally {
+        db.close();
+      }
+    }
+
+    for (final kind in ['finalWitness', 'partialSignature']) {
+      for (final api in [
+        'readBinding',
+        'inventory',
+        'pins',
+        'classifier',
+        'tombstone',
+      ]) {
+        test('F1 signed original $kind refuses $api without release', () async {
+          final original = await prepare();
+          final encoded = kind == 'finalWitness'
+              ? withWitness(psbt)
+              : withPartial(psbt);
+          final facts = ok(inspectBitcoinPsbt(encoded));
+          expect(facts.unsignedTxid, original.unsignedTxid);
+          expect(decodeBitcoinPsbt(encoded).txid, original.unsignedTxid);
+          expect(
+            kind == 'finalWitness'
+                ? facts.inputs.single.hasFinalFields
+                : facts.inputs.single.hasPartialSignatures,
+            isTrue,
+          );
+          mutateOriginal(encoded);
+          final tampered = ArkFundingBinding(
+            operationId: original.operationId,
+            accountIdentity: original.accountIdentity,
+            sourceParent: original.sourceParent,
+            key: original.key,
+            revision: original.revision,
+            context: original.context,
+            unsignedPsbt: encoded,
+            unsignedTxid: original.unsignedTxid,
+            inputs: original.inputs,
+          );
+          final Result<dynamic, Failure> result;
+          switch (api) {
+            case 'readBinding':
+              result = await store.readBinding('f1');
+            case 'inventory':
+              result = await store.reservations();
+            case 'pins':
+              result = await store.getCustodyFingerprints();
+            case 'classifier':
+              result = await store.bindingForSigning(
+                key: key,
+                unsignedPsbt: twoInputPsbt(
+                  inputBytes: [0x44],
+                  outputSat: 50000,
+                ),
+              );
+            case 'tombstone':
+              result = await store.tombstoneNeverSigned(
+                expected: tampered,
+                admittedRevision: stamp(),
+              );
+            default:
+              throw StateError('Unknown fixture API');
+          }
+          expect(result, isA<Err<dynamic, Failure>>());
+          final db = sqlite3.open('${dir.path}/store');
+          try {
+            expect(
+              db
+                  .select('SELECT COUNT(*) AS n FROM ark_funding_inputs')
+                  .single['n'],
+              1,
+            );
+            expect(
+              db
+                  .select('SELECT settlement FROM ark_funding_authority')
+                  .single['settlement'],
+              isNull,
+            );
+            expect(
+              db
+                  .select('SELECT signed_psbt FROM ark_funding_operations')
+                  .single['signed_psbt'],
+              isNull,
+            );
+          } finally {
+            db.close();
+          }
+        });
+      }
+    }
+
+    test(
+      'authority migration is foreground-only and never backfills a seal',
+      () async {
+        final binding = await prepare();
+        store.close();
+        final db = sqlite3.open('${dir.path}/store');
+        try {
+          db.execute('DROP TABLE ark_funding_authority');
+        } finally {
+          db.close();
+        }
+        expect(
+          SqliteArkFundingReservations.open(
+            '${dir.path}/store',
+            foreground: false,
+          ),
+          isA<Err>(),
+        );
+        store = ok(
+          SqliteArkFundingReservations.open(
+            '${dir.path}/store',
+            foreground: true,
+          ),
+        );
+        expect(ok(await store.reservations()).length, 1);
+        expect(
+          await store.beginSigning(
+            expected: binding,
+            admittedRevision: stamp(),
+          ),
+          isA<Err>(),
+        );
+        expect(
+          await store.tombstoneNeverSigned(
+            expected: binding,
+            admittedRevision: stamp(),
+          ),
+          isA<Err>(),
+        );
+        store.close();
+        store = ok(
+          SqliteArkFundingReservations.open(
+            '${dir.path}/store',
+            foreground: false,
+          ),
+        );
+        expect(ok(await store.reservations()).length, 1);
+      },
+    );
+
+    test(
+      'incompatible authority schema refuses without resetting operations',
+      () async {
+        await prepare();
+        store.close();
+        final db = sqlite3.open('${dir.path}/store');
+        try {
+          db.execute('DROP TABLE ark_funding_authority');
+          db.execute(
+            'CREATE TABLE ark_funding_authority(operation TEXT PRIMARY KEY,protocol TEXT NOT NULL,signing TEXT NOT NULL,settlement TEXT)',
+          );
+        } finally {
+          db.close();
+        }
+        expect(
+          SqliteArkFundingReservations.open(
+            '${dir.path}/store',
+            foreground: false,
+          ),
+          isA<Err>(),
+        );
+        expect(
+          SqliteArkFundingReservations.open(
+            '${dir.path}/store',
+            foreground: true,
+          ),
+          isA<Err>(),
+        );
+        final retained = sqlite3.open(
+          '${dir.path}/store',
+          mode: OpenMode.readOnly,
+        );
+        try {
+          expect(
+            retained
+                .select('SELECT psbt FROM ark_funding_operations')
+                .single['psbt'],
+            psbt,
+          );
+        } finally {
+          retained.close();
+        }
+      },
+    );
   });
 }
