@@ -93,6 +93,17 @@ class BullTypography extends ThemeExtension<BullTypography> {
     ),
   );
 
+  /// This scale set in [family]: every size, line height and weight stays.
+  BullTypography withFamily(String family) => BullTypography(
+    display: display.copyWith(fontFamily: family),
+    headline: headline.copyWith(fontFamily: family),
+    title: title.copyWith(fontFamily: family),
+    subtitle: subtitle.copyWith(fontFamily: family),
+    body: body.copyWith(fontFamily: family),
+    label: label.copyWith(fontFamily: family),
+    caption: caption.copyWith(fontFamily: family),
+  );
+
   /// The style of [role].
   TextStyle of(BullTextRole role) => switch (role) {
     BullTextRole.display => display,

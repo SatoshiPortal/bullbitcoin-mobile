@@ -55,6 +55,9 @@ BullTheme _bullThemeFrom(AppColors colors) {
 }
 
 class AppTheme {
+  static const shapes = BullShapes.standard;
+  static const typography = BullTypography.standard;
+
   static ThemeData themeData(AppThemeType themeType) {
     final colors = themeType == AppThemeType.dark
         ? AppColors.dark
@@ -62,15 +65,18 @@ class AppTheme {
     final brightness = themeType == AppThemeType.dark
         ? Brightness.dark
         : Brightness.light;
-    const type = BullTypography.standard;
-    const shapes = BullShapes.standard;
 
     final bullTheme = _bullThemeFrom(colors);
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      extensions: bullUiExtensions(colors: bullTheme, brightness: brightness),
+      extensions: bullUiExtensions(
+        colors: bullTheme,
+        brightness: brightness,
+        shapes: shapes,
+        typography: typography,
+      ),
       // Material widgets read Bull's colours, so nothing is derived from the red seed. Roles without a Bull colour use the nearest one.
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.primary,
@@ -116,8 +122,8 @@ class AppTheme {
       ),
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
-      fontFamily: BullTypography.fontFamily,
-      textTheme: type.toTextTheme().apply(
+      fontFamily: typography.body.fontFamily,
+      textTheme: typography.toTextTheme().apply(
         bodyColor: colors.text,
         displayColor: colors.text,
       ),
@@ -155,7 +161,7 @@ class AppTheme {
             : SystemUiOverlayStyle.dark,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: type.subtitle.copyWith(color: colors.text),
+        titleTextStyle: typography.subtitle.copyWith(color: colors.text),
         centerTitle: true,
         iconTheme: IconThemeData(color: colors.text),
         actionsIconTheme: IconThemeData(color: colors.text),
@@ -190,9 +196,11 @@ class AppTheme {
           side: BorderSide(color: colors.border),
         ),
         textColor: colors.text,
-        titleTextStyle: type.subtitle.copyWith(fontWeight: .w400),
-        subtitleTextStyle: type.caption.copyWith(color: colors.textMuted),
-        leadingAndTrailingTextStyle: type.label.copyWith(color: colors.text),
+        titleTextStyle: typography.subtitle.copyWith(fontWeight: .w400),
+        subtitleTextStyle: typography.caption.copyWith(color: colors.textMuted),
+        leadingAndTrailingTextStyle: typography.label.copyWith(
+          color: colors.text,
+        ),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         refreshBackgroundColor: colors.text,

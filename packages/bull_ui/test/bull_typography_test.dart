@@ -93,6 +93,21 @@ void main() {
     });
   });
 
+  group('withFamily', () {
+    test('swaps the family of every role and keeps the scale', () {
+      const standard = BullTypography.standard;
+      final custom = standard.withFamily('DM Sans');
+      for (final role in BullTextRole.values) {
+        final before = standard.of(role);
+        final after = custom.of(role);
+        expect(after.fontFamily, 'DM Sans', reason: '$role');
+        expect(after.fontSize, before.fontSize, reason: '$role');
+        expect(after.height, before.height, reason: '$role');
+        expect(after.fontWeight, before.fontWeight, reason: '$role');
+      }
+    });
+  });
+
   group('copyWith', () {
     test('replaces only the given roles', () {
       const big = TextStyle(fontSize: 40);
