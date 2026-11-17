@@ -23,16 +23,16 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 ```text
 Secrets
 |-- generate([wordCount: MnemonicLength.words12]) -> Secret
-|-- import(words:, [language: Language.english], [passphrase:], [acceptOnly:]) -> Secret
+|-- import(words:, language:, [passphrase:], [acceptOnly:]) -> Secret
 |-- fetch(id) -> Secret
 |-- list() -> List<SecretEntry>
 |-- trash(id) -> void
 |-- exists(id) -> bool
-|-- contains(words:, [language: Language.english], [passphrase:]) -> bool
-|-- find(words:, [language: Language.english], [passphrase:]) -> Secret?
+|-- contains(words:, language:, [passphrase:]) -> bool
+|-- find(words:, language:, [passphrase:]) -> Secret?
 |-- preview
-|   |-- bitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
-|   `-- matchesBitcoinDescriptors(words:, [language: Language.english], [passphrase:], network:, scriptType:, expected:) -> bool
+|   |-- bitcoinDescriptors(words:, language:, [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
+|   `-- matchesBitcoinDescriptors(words:, language:, [passphrase:], network:, scriptType:, expected:) -> bool
 |-- recoverbull
 |   |-- restore(vault:, key:, [passphrase:], [allowUnverified: false]) -> RestoredVault
 |   `-- fingerprint(vault:, key:, [passphrase:]) -> Fingerprint
@@ -52,7 +52,7 @@ Secret
 |   |   `-- liquid(network:) -> String
 |   |-- bip85
 |   |   |-- hex(numBytes:, index:) -> String
-|   |   `-- mnemonic(wordCount:, index:, [language: Language.english]) -> List<String>
+|   |   `-- mnemonic(wordCount:, index:, language:) -> List<String>
 |   |-- xpub(network:, scriptType:, [accountIndex: 0]) -> String
 |   `-- swapKey(network:) -> SwapMasterKey
 |-- sign
@@ -118,7 +118,7 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 
 ## Lifecycle and listing
 
-`generate` and `import` return a `Secret`. Importing an existing secret returns a dedicated duplicate failure; it never overwrites the existing entry. `contains(words:, language:, passphrase:)` and `exists(id)` are preliminary checks, not proof that a later import or read will succeed. `preview.bitcoinDescriptors(words:, language:, passphrase:, network:, scriptTypes:)` derives the public account-0 descriptors of words that are not stored, one pair per requested script type from a single seed derivation, for a chain scan before import: it reads and writes nothing, keeps nothing, and only descriptor strings leave the isolate that derives and wipes the seed. The words are read in `language`, English by default, so a non-English mnemonic previews its own seed and the descriptors match those an import of the same words in the same language derives. `trash(id)` deletes the secret; checking whether a wallet still needs it belongs to the application.
+`generate` and `import` return a `Secret`. Importing an existing secret returns a dedicated duplicate failure; it never overwrites the existing entry. `contains(words:, language:, passphrase:)` and `exists(id)` are preliminary checks, not proof that a later import or read will succeed. `preview.bitcoinDescriptors(words:, language:, passphrase:, network:, scriptTypes:)` derives the public account-0 descriptors of words that are not stored, one pair per requested script type from a single seed derivation, for a chain scan before import: it reads and writes nothing, keeps nothing, and only descriptor strings leave the isolate that derives and wipes the seed. The words are read in the `language` the caller states, so every mnemonic previews its own seed and the descriptors match those an import of the same words in the same language derives. `trash(id)` deletes the secret; checking whether a wallet still needs it belongs to the application.
 
 `list()` returns `List<SecretEntry>`. The sealed family contains usable `Secret` handles and `UnreadableSecret` entries carrying their failure and, when recoverable, their fingerprint. A failure to read the store as a whole remains an `Err`; it must not be interpreted as an empty store or a lost seed. On Android, the platform's `readAll` may fail because of an entry in any namespace. Fetching an individual secret avoids that global read.
 
@@ -146,7 +146,7 @@ The stored words, passphrase, seed and master xprv have no public getter. The gr
 
 Account xpub derivation accepts the shared `Network`, either `BitcoinNetwork` or `LiquidNetwork`. Descriptors and signatures remain chain-specific. `accountIndex` defaults to zero and selects the same Bitcoin account for xpub derivation, descriptors and signing. Mnemonic generation and BIP85 mnemonic derivation both use `MnemonicLength` through `wordCount`. BIP85 is independent of the network; the application allocates child indices.
 
-Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and swap credentials honor the stored passphrase. Legacy passphrase-less Liquid defaults keep the seed lwk's word-based signer derived. A Liquid-network xpub does not necessarily describe the keys in the Liquid descriptor, for example with a different script type. Stored mnemonics support all ten BIP39 languages. Import and word verification normalize words with NFKD; seed derivation normalizes the sentence and passphrase with NFKD. Bitcoin signing constructs its BDK key from the master xprv derived in Dart from that seed. BIP85 takes the child language independently of the parent; the default remains English. Silent Payments derives from the full BIP39 seed and honours the stored language and passphrase. The application still selects the default Bitcoin wallet. Default-wallet recovery must retain a passphrase independently from the vault.
+Account xpub derivation, Bitcoin signing, Liquid descriptors and signatures, BIP85 and swap credentials honor the stored passphrase. Legacy passphrase-less Liquid defaults keep the seed lwk's word-based signer derived. A Liquid-network xpub does not necessarily describe the keys in the Liquid descriptor, for example with a different script type. Stored mnemonics support all ten BIP39 languages. Import and word verification normalize words with NFKD; seed derivation normalizes the sentence and passphrase with NFKD. Bitcoin signing constructs its BDK key from the master xprv derived in Dart from that seed. BIP85 takes the child language independently of the parent; the caller states it, and the app's application paths use English children. Silent Payments derives from the full BIP39 seed and honours the stored language and passphrase. The application still selects the default Bitcoin wallet. Default-wallet recovery must retain a passphrase independently from the vault.
 
 Signing takes and returns base64 PSBT/PSET strings. Both chains refuse inputs asking for anything other than `SIGHASH_ALL`. A successful Bitcoin signing call may return a partially signed PSBT, as required by payjoin; success does not imply finalization or readiness to broadcast. The caller supplies required key-origin information and decides whether outputs, fees and inputs are acceptable.
 
@@ -156,11 +156,11 @@ Historical seed-only entries support xpub, Bitcoin descriptor and BIP85 derivati
 
 ## Language persistence and native capabilities
 
-`import(words:, language:, passphrase:)` and `contains` use the explicitly supplied BIP39 language, English by default. `SecretInfo.language` exposes it as metadata; it is null for a historical raw seed. Storage adds the optional `language` key only for non-English mnemonics. Existing and newly imported English entries retain the original JSON shape and bytes. Unknown stored languages are unreadable entries, never an English fallback. Duplicate detection compares the complete seeds when words, languages or passphrases differ, including equivalent Unicode spellings and shared Chinese words. ⚠️ Words are stored NFKD-decomposed, so Japanese and Korean entries differ from their composed spelling: consumers normalise to NFKD before comparing.
+`import(words:, language:, passphrase:)` and `contains` require the BIP39 language of the words; no word-reading API defaults to English. `SecretInfo.language` exposes it as metadata; it is null for a historical raw seed. Storage adds the optional `language` key only for non-English mnemonics. Existing and newly imported English entries retain the original JSON shape and bytes. Unknown stored languages are unreadable entries, never an English fallback. Duplicate detection compares the complete seeds when words, languages or passphrases differ, including equivalent Unicode spellings and shared Chinese words. ⚠️ Words are stored NFKD-decomposed, so Japanese and Korean entries differ from their composed spelling: consumers normalise to NFKD before comparing.
 
 Liquid descriptors and signatures, and the swap key, derive from the BIP39 seed of the words in their own language, so every language gets its own wallets; an English mnemonic gets exactly the keys its words gave before. Silent Payments also derives from that full seed, preserving the account of an English mnemonic without a passphrase.
 
-The import picker offers all ten BIP39 wordlists for a separate, non-default Bitcoin wallet. The in-app keyboard and suggestions normalize Unicode without exposing words to the platform IME. Detection never silently selects a language; ambiguous sentences require an explicit choice. Onboarding and default-wallet recovery remain English-only. Generation continues to use the existing English BDK generator.
+Import, onboarding and default-wallet recovery offer all ten BIP39 wordlists. The in-app keyboard and suggestions normalize Unicode without exposing words to the platform IME. Detection never silently selects a language; ambiguous sentences require an explicit choice. Generation continues to use the existing English BDK generator.
 
 Sealed display and challenge widgets obtain language in the same read as the words and support all ten lists. Their cells use the dimensions of the entire public wordlist in that language, normalized to NFKD, never those of the actual secret words. Japanese sentence layout uses the ideographic separator. No raw-word getter or semantics exposure is added.
 

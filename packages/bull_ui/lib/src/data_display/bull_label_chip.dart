@@ -1,6 +1,7 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A generic label chip. **Re-implemented** in `bull_ui` (not imported from
@@ -50,8 +51,7 @@ class BullLabelChip extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontSize: 11,
+                style: context.bullType.caption.copyWith(
                   fontWeight: FontWeight.w500,
                   color: colors.text,
                 ),

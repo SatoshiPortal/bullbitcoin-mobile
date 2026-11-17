@@ -1,5 +1,4 @@
 import 'package:bull_ui/bull_ui.dart';
-import 'package:bb_mobile/features/buy/ui/widgets/buy_cubes_loader.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
@@ -32,7 +31,7 @@ class AccelerateTransactionListTile extends StatelessWidget {
       child: Material(
         type: MaterialType.transparency,
         child: ListTile(
-          leading: const BuyCubesLoader(),
+          leading: const BullLoader.small(),
           title: Text(
             context.loc.buyAccelerateTransaction,
             style: theme.textTheme.headlineLarge?.copyWith(

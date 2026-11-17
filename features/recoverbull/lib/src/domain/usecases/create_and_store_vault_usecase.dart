@@ -22,7 +22,15 @@ final class CreateAndStoreVaultUsecase {
   final BackupMetadataRepository _metadata;
   final AttemptMonitoringRepository _monitoring;
   final FetchVaultKeyUsecase _fetch;
-  ({EncryptedVault vault, VaultContext context, Uri server})? _pending;
+
+  /// A sealed vault whose provider write failed, with the provider the user chose.
+  ({
+    EncryptedVault vault,
+    VaultContext context,
+    Uri server,
+    VaultProvider provider,
+  })?
+  _pending;
   bool _closed = false;
   bool _busy = false;
 
@@ -54,7 +62,13 @@ final class CreateAndStoreVaultUsecase {
     }
     _busy = true;
     try {
-      final ({EncryptedVault vault, VaultContext context, Uri server}) pending;
+      final ({
+        EncryptedVault vault,
+        VaultContext context,
+        Uri server,
+        VaultProvider provider,
+      })
+      pending;
       final created = await _create.execute(
         passphraseWarningAccepted: passphraseWarningAccepted,
       );
@@ -107,6 +121,7 @@ final class CreateAndStoreVaultUsecase {
             vault: value.vault,
             context: value.context,
             server: settings.server,
+            provider: provider,
           );
           _pending = pending;
       }
@@ -117,9 +132,10 @@ final class CreateAndStoreVaultUsecase {
   }
 
   /// Retries only the provider write; the original server password stays valid.
-  Future<Result<VaultCompletion, RecoverBullFailure>> retryProviderSave(
-    VaultProvider provider,
-  ) async {
+  /// Without [provider], the vault goes where the user first chose.
+  Future<Result<VaultCompletion, RecoverBullFailure>> retryProviderSave([
+    VaultProvider? provider,
+  ]) async {
     if (_closed) return const Err(VaultCancelledFailure());
     final pending = _pending;
     if (_busy || pending == null) {
@@ -127,14 +143,29 @@ final class CreateAndStoreVaultUsecase {
     }
     _busy = true;
     try {
-      return await _savePending(pending, provider);
+      return await _savePending(pending, provider ?? pending.provider);
     } finally {
       _busy = false;
     }
   }
 
+  /// Forgets the sealed vault so the user can start over with another password.
+  /// Its key stays on the server: a failed write may still have produced a file
+  /// that it opens.
+  bool abandonPendingProviderSave() {
+    if (_busy || _pending == null) return false;
+    _pending = null;
+    return true;
+  }
+
   Future<Result<VaultCompletion, RecoverBullFailure>> _savePending(
-    ({EncryptedVault vault, VaultContext context, Uri server}) pending,
+    ({
+      EncryptedVault vault,
+      VaultContext context,
+      Uri server,
+      VaultProvider provider,
+    })
+    pending,
     VaultProvider provider,
   ) async {
     // From here onward even a provider failure may have written a file.

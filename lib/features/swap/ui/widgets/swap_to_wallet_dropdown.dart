@@ -4,7 +4,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, BullShimmerLine, Gap;
 
 class SwapToWalletDropdown extends StatelessWidget {
   const SwapToWalletDropdown();
@@ -13,7 +14,6 @@ class SwapToWalletDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final wallets = context.select((TransferBloc bloc) => bloc.state.wallets);
     final selected = context.select((TransferBloc bloc) => bloc.state.toWallet);
-
     return Column(
       crossAxisAlignment: .start,
       children: [
@@ -23,26 +23,20 @@ class SwapToWalletDropdown extends StatelessWidget {
           const BullShimmerLine()
         else
           BullDropdown<Wallet>(
-            items: wallets
-                .map(
-                  (wallet) => DropdownMenuItem(
-                    value: wallet,
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          wallet.isLiquid
-                              ? 'assets/logos/liquid.png'
-                              : 'assets/logos/bitcoin.png',
-                          width: 20,
-                          height: 20,
-                        ),
-                        const Gap(8),
-                        Text(wallet.displayLabel(context)),
-                      ],
-                    ),
+            items: [
+              for (final wallet in wallets)
+                BullPickerItem(
+                  value: wallet,
+                  label: wallet.displayLabel(context),
+                  leading: Image.asset(
+                    wallet.isLiquid
+                        ? 'assets/logos/liquid.png'
+                        : 'assets/logos/bitcoin.png',
+                    width: 20,
+                    height: 20,
                   ),
-                )
-                .toList(),
+                ),
+            ],
             value: selected,
             validator: (value) {
               if (value == null) {
@@ -51,17 +45,15 @@ class SwapToWalletDropdown extends StatelessWidget {
               return null;
             },
             onChanged: (value) {
-              if (value != null) {
-                final bloc = context.read<TransferBloc>();
-                final currentFromWallet = bloc.state.fromWallet;
-                if (currentFromWallet != null) {
-                  bloc.add(
-                    TransferWalletsChanged(
-                      fromWallet: currentFromWallet,
-                      toWallet: value,
-                    ),
-                  );
-                }
+              final bloc = context.read<TransferBloc>();
+              final currentFromWallet = bloc.state.fromWallet;
+              if (currentFromWallet != null) {
+                bloc.add(
+                  TransferWalletsChanged(
+                    fromWallet: currentFromWallet,
+                    toWallet: value,
+                  ),
+                );
               }
             },
           ),

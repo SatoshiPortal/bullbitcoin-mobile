@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "نقشه",
   "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
   "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
   "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
@@ -751,7 +750,7 @@
   "@torSettingsConnectionStatus": {
     "description": "Title for connection status card"
   },
-  "torSettingsStatusConnected": "اتصال",
+  "torSettingsStatusConnected": "آماده",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -5469,10 +5468,6 @@
   "fundExchangeSinpeDescription": "انتقال کولون با استفاده از SINPE",
   "@fundExchangeSinpeDescription": {
     "description": "Description for SINPE transfer method"
-  },
-  "wordsDropdownSuffix": " کلمات",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "receiveVerifyAddressOnLedger": "بررسی آدرس در Ledger",
   "@receiveVerifyAddressOnLedger": {
@@ -11276,5 +11271,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "نتوانستیم تأیید کنیم که تراکنش شما منتشر شده است. پیش از تلاش دوباره، آن را در یک کاوشگر بلاک بررسی کنید.",
   "broadcastSignedTxErrorNetworkNotEnabled": "انتشار در این شبکه در تنظیمات فعلی فعال نیست.",
   "settingsDarkModeTitle": "حالت تیره",
-  "settingsSourceCodeTitle": "کد منبع"
+  "settingsSourceCodeTitle": "کد منبع",
+  "torSettingsStatusNoInternetOrBlocked": "اینترنت وجود ندارد یا شبکه سانسور شده است",
+  "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود."
 }

@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Карта",
   "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если:",
   "backupWarningLoseReasonLostPhone": "Потеряете телефон",
   "backupWarningLoseReasonDeletedApp": "Удалите приложение",
@@ -441,7 +440,7 @@
   "autoswapWarningOkButton": "ХОРОШО",
   "swapTitle": "Внутренний своп",
   "sendOutputTooSmall": "Выход за пределы пыли",
-  "torSettingsStatusConnected": "Соединение",
+  "torSettingsStatusConnected": "Готово",
   "payLightningNetwork": "Сеть освещения",
   "ledgerSuccessVerifyTitle": "Проверяющий адрес на Ledger...",
   "payCorporateNameHint": "Введите фирменное имя",
@@ -1705,7 +1704,6 @@
   "sellMxnBalance": "MXN Баланс",
   "fundExchangeWarningTactic4": "Они просят отправить биткойн на их адрес",
   "fundExchangeSinpeDescription": "Трансфер Колонны с помощью SINPE",
-  "wordsDropdownSuffix": " слова",
   "receiveVerifyAddressOnLedger": "Проверка Адреса на Ledger",
   "buyWaitForFreeWithdrawal": "Ожидание свободного вывода",
   "sellSendPaymentCrcBalance": "CRC Баланс",
@@ -4629,5 +4627,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Не удалось подтвердить, что транзакция была транслирована. Проверьте её в обозревателе блоков, прежде чем повторить попытку.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Трансляция в этой сети не включена в текущих настройках.",
   "settingsDarkModeTitle": "Тёмная тема",
-  "settingsSourceCodeTitle": "Исходный код"
+  "settingsSourceCodeTitle": "Исходный код",
+  "torSettingsStatusNoInternetOrBlocked": "Нет интернета или сеть под цензурой",
+  "torSettingsDescNoInternetOrBlocked": "У этой сети нет доступа к интернету, или она блокирует Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull не удалось подключиться к настроенному прокси SOCKS5."
 }

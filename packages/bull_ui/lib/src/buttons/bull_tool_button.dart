@@ -2,6 +2,7 @@ import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Compact icon-over-label button (the design's `ToolBtn`). **New.**
@@ -69,9 +70,8 @@ class BullToolButton extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     label,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w600,
+                    style: context.bullType.caption.copyWith(
+                      fontWeight: FontWeight.w700,
                       color: fg,
                     ),
                   ),

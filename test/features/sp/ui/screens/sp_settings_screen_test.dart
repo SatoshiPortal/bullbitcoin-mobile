@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/ui/screens/sp_settings_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullSettingsEntryItem;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -142,7 +142,7 @@ void main() {
     );
 
     // No editable network selector in settings.
-    expect(find.byType(DropdownButtonFormField<BitcoinNetwork>), findsNothing);
+    expect(find.byType(BullDropdown<BitcoinNetwork>), findsNothing);
     // The current network is shown read-only.
     expect(find.text(BitcoinNetwork.mainnet.name), findsOneWidget);
     verifyNever(() => settingsCubit.setNetwork(any()));

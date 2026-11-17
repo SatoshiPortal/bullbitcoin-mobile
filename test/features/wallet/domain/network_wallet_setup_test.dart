@@ -47,8 +47,10 @@ void main() {
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
-    secret =
-        (await secrets.import(words: words) as Ok<Secret, SecretFailure>).value;
+    secret = (await secrets.import(
+      words: words,
+      language: bip39.Language.english,
+    ) as Ok<Secret, SecretFailure>).value;
     registerFallbackValue(secret);
     settings = _Settings();
     references = _References();
@@ -128,6 +130,7 @@ void main() {
     final passphrase = (await secrets.import(
       words: words,
       passphrase: 'TREZOR',
+      language: bip39.Language.english,
     ) as Ok<Secret, SecretFailure>).value;
     when(() => references.list())
         .thenAnswer((_) async => Ok([secret.id, french.id, passphrase.id]));

@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullTypographyX, Gap;
 
 class BankTransferCadForm extends StatefulWidget {
   const BankTransferCadForm({super.key, this.hookError});
@@ -177,8 +177,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           const Gap(16.0),
           Text(
             context.loc.recipientsAccountOwnerQuestion,
-            style: TextStyle(
-              fontSize: 14,
+            style: context.bullType.label.copyWith(
               fontWeight: .w500,
               color: context.appColors.onSurface,
             ),

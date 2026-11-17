@@ -1,6 +1,7 @@
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Swipe-to-reveal-one-action row. **New (key gap)** — no equivalent exists in
@@ -155,12 +156,10 @@ class _BullSwipeActionState extends State<BullSwipeAction> {
                             Text(
                               widget.actionLabel,
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: foreground,
-                                  ),
+                              style: context.bullType.caption.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: foreground,
+                              ),
                             ),
                           ],
                         ),

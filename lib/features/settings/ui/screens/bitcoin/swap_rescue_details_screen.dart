@@ -1,11 +1,11 @@
-import 'package:bb_mobile/features/swap/public/swap_facade.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/restored_swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,10 +30,10 @@ class SwapRescueDetailsScreen extends StatelessWidget {
               );
               context.pop();
             } else if (state.status == SwapRescueStatus.error) {
-              if (state.error case final failure?) {
+              if (state.error case final error?) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  failure.toTranslated(context),
+                  error.toTranslated(context),
                 );
               }
             }
@@ -146,27 +146,16 @@ class _WalletSelector extends StatelessWidget {
         const Gap(8),
         BullDropdown<Wallet>(
           value: selected,
-          hint: BullText(
-            context.loc.swapRescueWalletHint,
-            style: context.font.bodyMedium,
-            color: context.bull.textMuted,
-          ),
-          items: state.wallets
-              .map(
-                (wallet) => DropdownMenuItem<Wallet>(
-                  value: wallet,
-                  child: BullText(
-                    wallet.displayLabel(context),
-                    style: context.font.bodyMedium,
-                  ),
-                ),
-              )
-              .toList(),
-          onChanged: (wallet) {
-            if (wallet != null) {
-              context.read<SwapRescueCubit>().selectWallet(wallet.id);
-            }
-          },
+          hint: context.loc.swapRescueWalletHint,
+          items: [
+            for (final wallet in state.wallets)
+              BullPickerItem(
+                value: wallet,
+                label: wallet.displayLabel(context),
+              ),
+          ],
+          onChanged: (wallet) =>
+              context.read<SwapRescueCubit>().selectWallet(wallet.id),
         ),
       ],
     );

@@ -391,9 +391,8 @@ class _LogLineState extends State<_LogLine> {
                 key: ValueKey('log-text-${widget.index}'),
                 maxLines: _expanded ? null : 1,
                 softWrap: _expanded,
-                style: TextStyle(
+                style: context.bullType.caption.copyWith(
                   fontFamily: 'monospace',
-                  fontSize: 12,
                   color: color,
                 ),
               ),

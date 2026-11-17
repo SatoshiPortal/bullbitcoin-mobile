@@ -1,11 +1,19 @@
-import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/inputs/bull_dropdown_menu.dart';
+import 'package:bull_ui/src/inputs/bull_picker_item.dart';
+import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// A themed [DropdownButtonFormField].
+/// A dropdown field: a filled [BullTheme.surface] box showing the selected
+/// item's label (or [hint]) with a chevron, which opens the Bull menu
+/// ([showBullDropdownMenu]) as wide as the field, right under it.
 ///
-/// Generic over the item value type [T]. Items are left-aligned and the menu
-/// is capped at 240px tall.
+/// Generic over the item value type [T]; an item's value may be null (a
+/// placeholder row), which is why [onChanged] never fires on dismissal.
+/// Takes part in an enclosing [Form]: [validator] runs on [value] and the
+/// message shows under the field in [BullTheme.error].
 class BullDropdown<T> extends StatelessWidget {
   const BullDropdown({
     super.key,
@@ -14,81 +22,110 @@ class BullDropdown<T> extends StatelessWidget {
     required this.onChanged,
     this.validator,
     this.hint,
-    this.height = 64,
   });
 
-  /// The selectable items.
-  final List<DropdownMenuItem<T>> items;
+  /// The choices, in menu order.
+  final List<BullPickerItem<T>> items;
 
-  /// The currently selected value.
+  /// The selected value; its item's label fills the field.
   final T? value;
 
-  /// Fired on selection; null disables the dropdown.
-  final ValueChanged<T?>? onChanged;
+  /// Fired with the picked value; null disables the field.
+  final ValueChanged<T>? onChanged;
 
-  /// Optional form validator.
+  /// Optional form validator, run on [value].
   final FormFieldValidator<T>? validator;
 
-  /// Placeholder widget shown when nothing is selected.
-  final Widget? hint;
-
-  /// Per-item height.
-  final double height;
+  /// Placeholder shown while no item matches [value].
+  final String? hint;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    return SizedBox(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          popupMenuTheme: PopupMenuThemeData(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(context.bullShapes.input),
-              side: BorderSide(color: colors.primary, width: 1.0),
-            ),
-            color: colors.onPrimary,
-            elevation: 8,
-          ),
-        ),
-        child: ButtonTheme(
-          alignedDropdown: true,
-          child: DropdownButtonFormField<T>(
-            initialValue: value,
-            items: items.map((item) {
-              return DropdownMenuItem<T>(
-                value: item.value,
-                child: Container(
-                  width: double.infinity,
-                  alignment: Alignment.centerLeft,
-                  child: item.child,
+    final shapes = context.bullShapes;
+    final text = context.bullText;
+    final enabled = onChanged != null;
+    final selected = items.where((item) => item.value == value).firstOrNull;
+    final labelColor = !enabled || selected == null
+        ? colors.textMuted
+        : colors.text;
+    final validate = validator;
+    return FormField<T>(
+      initialValue: value,
+      validator: validate == null ? null : (_) => validate(value),
+      builder: (field) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Builder(
+            builder: (anchor) => Material(
+              color: colors.surface,
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(shapes.input),
+                side: BorderSide(
+                  color: field.hasError ? colors.error : colors.transparent,
                 ),
-              );
-            }).toList(),
-            onChanged: onChanged,
-            validator: validator,
-            hint: hint,
-            dropdownColor: colors.onSecondary,
-            menuMaxHeight: 240,
-            itemHeight: height,
-            alignment: Alignment.center,
-            isExpanded: true,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: colors.surface,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(context.bullShapes.input),
-                borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 16.0,
+              child: InkWell(
+                onTap: enabled ? () => _open(anchor, field) : null,
+                child: SizedBox(
+                  height: 56,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: BullSpacing.md,
+                    ),
+                    child: Row(
+                      children: [
+                        if (selected?.leading case final leading?) ...[
+                          leading,
+                          const Gap(BullSpacing.xs),
+                        ],
+                        Expanded(
+                          child: Text(
+                            selected?.label ?? hint ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: text.bodyLarge?.copyWith(color: labelColor),
+                          ),
+                        ),
+                        Icon(
+                          Icons.keyboard_arrow_down,
+                          color: enabled ? colors.primary : colors.textMuted,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              isDense: false,
             ),
-            icon: Icon(Icons.keyboard_arrow_down, color: colors.primary),
           ),
-        ),
+          if (field.errorText case final error?)
+            Padding(
+              padding: const EdgeInsets.only(
+                top: BullSpacing.xxs,
+                left: BullSpacing.md,
+              ),
+              child: Text(
+                error,
+                style: text.bodySmall?.copyWith(color: colors.error),
+              ),
+            ),
+        ],
       ),
     );
+  }
+
+  Future<void> _open(BuildContext anchor, FormFieldState<T> field) async {
+    final index = await showBullDropdownMenu<T>(
+      anchor: anchor,
+      items: items,
+      value: value,
+      matchAnchorWidth: true,
+    );
+    if (index == null) return;
+    final picked = items[index].value;
+    if (field.mounted) field.didChange(picked);
+    onChanged?.call(picked);
   }
 }

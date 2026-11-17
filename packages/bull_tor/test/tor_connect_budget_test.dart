@@ -7,4 +7,12 @@ void main() {
     expect(torConnectDeadline, torConnectBudget * 1.1);
     expect(torConnectDeadline, greaterThan(torConnectBudget));
   });
+
+  test('Snowflake connects get a longer budget than direct ones', () {
+    expect(TorTransport.direct.connectBudget, torConnectBudget);
+    expect(
+      TorTransport.snowflake.connectBudget,
+      greaterThan(TorTransport.direct.connectBudget),
+    );
+  });
 }

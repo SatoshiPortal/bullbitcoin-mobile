@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:swaps/swaps.dart';
 
 void main() {
   for (final status in [SwapStatus.failed, SwapStatus.expired]) {

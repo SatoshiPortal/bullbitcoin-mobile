@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -52,9 +52,11 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullCountdown,
+        BullDropdown,
         BullFadingLinearProgress,
         BullInfoCard,
         BullInputText,
+        BullLoader,
         BullPickerItem,
         BullPickerMenu,
         BullSegmented,
@@ -482,43 +484,25 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                 ),
                                               ),
                                             )
-                                          : DropdownButtonFormField<String>(
-                                              alignment: Alignment.centerLeft,
-                                              decoration: const InputDecoration(
-                                                border: InputBorder.none,
-                                                contentPadding: EdgeInsets.zero,
-                                              ),
-                                              icon: Icon(
-                                                Icons.keyboard_arrow_down,
-                                                color:
-                                                    context.appColors.secondary,
-                                              ),
-                                              iconSize: 24,
-                                              initialValue: selectedWallet.id,
-                                              items: wallets.map((w) {
-                                                return DropdownMenuItem(
-                                                  value: w.id,
-                                                  child: Text(
-                                                    w.displayLabel(context),
-                                                    style: context
-                                                        .font
-                                                        .headlineSmall,
+                                          : BullDropdown<String>(
+                                              value: selectedWallet.id,
+                                              items: [
+                                                for (final w in wallets)
+                                                  BullPickerItem(
+                                                    value: w.id,
+                                                    label: w.displayLabel(
+                                                      context,
+                                                    ),
                                                   ),
-                                                );
-                                              }).toList(),
-                                              onChanged: (walletId) {
-                                                if (walletId != null) {
-                                                  context
-                                                      .read<SendCubit>()
-                                                      .updateSelectedWallet(
-                                                        wallets.firstWhere(
-                                                          (wallet) =>
-                                                              wallet.id ==
-                                                              walletId,
-                                                        ),
-                                                      );
-                                                }
-                                              },
+                                              ],
+                                              onChanged: (walletId) => context
+                                                  .read<SendCubit>()
+                                                  .updateSelectedWallet(
+                                                    wallets.firstWhere(
+                                                      (wallet) =>
+                                                          wallet.id == walletId,
+                                                    ),
+                                                  ),
                                             ),
                                     ),
                                   ),
@@ -899,10 +883,14 @@ class SendConfirmScreen extends StatelessWidget {
     final orderSwap = context.select(
       (SendCubit cubit) => cubit.state.lightningOrder,
     );
+    final hasBoltzLightningSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwap != null,
+    );
     final isLnSwap =
-        orderSwap != null &&
-        (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
-            orderSwap.outNetwork == OrderSwapNetwork.lightning);
+        hasBoltzLightningSwap ||
+        (orderSwap != null &&
+            (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
+                orderSwap.outNetwork == OrderSwapNetwork.lightning));
     final isChainSwap =
         context.select((SendCubit cubit) => cubit.state.chainSwap != null) ||
         (orderSwap != null && !isLnSwap);
@@ -1460,8 +1448,14 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
-    final swap = context.select(
-      (SendCubit cubit) => cubit.state.lightningOrder,
+    final swapReference = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwapReference,
+    );
+    final sendAmountSat = context.select(
+      (SendCubit cubit) => cubit.state.lightningPayinAmountSat,
+    );
+    final receiveAmountSat = context.select(
+      (SendCubit cubit) => cubit.state.lightningPayoutAmountSat,
     );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
@@ -1494,36 +1488,36 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          SendInfoRow(
-            title: context.loc.sendSwapId,
-            details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Flexible(
-                  child: BullText(
-                    swap!.order!.orderNumber.toString(),
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                    textAlign: .end,
+          if (swapReference != null) ...[
+            SendInfoRow(
+              title: context.loc.sendSwapId,
+              details: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Flexible(
+                    child: BullText(
+                      swapReference,
+                      style: context.font.bodyLarge,
+                      color: context.appColors.secondary,
+                      textAlign: .end,
+                    ),
                   ),
-                ),
-                const Gap(4),
-                InkWell(
-                  onTap: () {
-                    Clipboard.setData(
-                      ClipboardData(text: swap.order!.orderNumber.toString()),
-                    );
-                  },
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
+                  const Gap(4),
+                  InkWell(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: swapReference));
+                    },
+                    child: Icon(
+                      Icons.copy,
+                      color: context.appColors.primary,
+                      size: 16,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          _divider(context),
+            _divider(context),
+          ],
           SendInfoRow(
             title: context.loc.sendTo,
             details: Row(
@@ -1567,36 +1561,40 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
             _divider(context),
           ],
-          SendInfoRow(
-            title: context.loc.sendSendAmount,
-            details: Column(
-              crossAxisAlignment: .end,
-              children: [
-                CurrencyText(
-                  swap.order!.payinAmountSat.toInt(),
-                  showFiat: false,
-                  style: context.font.bodyLarge,
-                  color: context.appColors.secondary,
-                ),
-              ],
+          if (sendAmountSat != null) ...[
+            SendInfoRow(
+              title: context.loc.sendSendAmount,
+              details: Column(
+                crossAxisAlignment: .end,
+                children: [
+                  CurrencyText(
+                    sendAmountSat,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                  ),
+                ],
+              ),
             ),
-          ),
-          _divider(context),
-          SendInfoRow(
-            title: context.loc.sendReceiveAmount,
-            details: Column(
-              crossAxisAlignment: .end,
-              children: [
-                CurrencyText(
-                  swap.order!.payoutAmountSat.toInt(),
-                  showFiat: false,
-                  style: context.font.bodyLarge,
-                  color: context.appColors.secondary,
-                ),
-              ],
+            _divider(context),
+          ],
+          if (receiveAmountSat != null) ...[
+            SendInfoRow(
+              title: context.loc.sendReceiveAmount,
+              details: Column(
+                crossAxisAlignment: .end,
+                children: [
+                  CurrencyText(
+                    receiveAmountSat,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                  ),
+                ],
+              ),
             ),
-          ),
-          _divider(context),
+            _divider(context),
+          ],
           if (networkFee != null) ...[
             SendInfoRow(
               title: context.loc.sendSendNetworkFee,
@@ -1990,7 +1988,9 @@ class SendSendingScreen extends StatelessWidget {
       (SendCubit cubit) => cubit.state.isLnInvoicePaid,
     );
     final isLnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningOrder != null,
+      (SendCubit cubit) =>
+          cubit.state.lightningOrder != null ||
+          cubit.state.lightningSwap != null,
     );
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
@@ -2041,12 +2041,7 @@ class SendSendingScreen extends StatelessWidget {
           child: Column(
             children: [
               const Gap(192),
-              if (pausedFailure == null)
-                Gif(
-                  autostart: Autostart.loop,
-                  height: 123,
-                  image: AssetImage(Assets.animations.cubesLoading.path),
-                ),
+              if (pausedFailure == null) const BullLoader.large(),
               if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
                 BullText(
@@ -2171,6 +2166,14 @@ class SendSucessScreen extends StatelessWidget {
     final chainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap,
     );
+    final lightningSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwap,
+    );
+    final isLnInvoicePaid = context.select(
+      (SendCubit cubit) => cubit.state.isLnInvoicePaid,
+    );
+    final boltzSwap = chainSwap ?? lightningSwap;
+    final isBoltzLnSwap = lightningSwap != null;
     final isLnSwap =
         orderSwap != null &&
         (orderSwap.inNetwork == OrderSwapNetwork.lightning ||
@@ -2187,7 +2190,7 @@ class SendSucessScreen extends StatelessWidget {
         (orderSwap != null
             ? orderSwap.localPayinTransactionId != null &&
                   orderSwap.sourceWalletId != null
-            : chainSwap != null || payjoin != null);
+            : boltzSwap != null || payjoin != null);
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -2223,9 +2226,9 @@ class SendSucessScreen extends StatelessWidget {
                   ] else if (orderSwap?.localStatus ==
                           OrderSwapLocalStatus.failed ||
                       orderSwap?.localStatus == OrderSwapLocalStatus.expired ||
-                      chainSwap?.status == SwapStatus.failed ||
-                      chainSwap?.status == SwapStatus.expired ||
-                      chainSwap?.status == SwapStatus.refundable) ...[
+                      boltzSwap?.status == SwapStatus.failed ||
+                      boltzSwap?.status == SwapStatus.expired ||
+                      boltzSwap?.status == SwapStatus.refundable) ...[
                     BullText(
                       context.loc.sendSwapRefundInProgress,
                       style: context.font.headlineLarge,
@@ -2239,6 +2242,7 @@ class SendSucessScreen extends StatelessWidget {
                   ] else if ((orderSwap != null &&
                           orderSwap.localStatus ==
                               OrderSwapLocalStatus.refunded) ||
+                      boltzSwap?.status == SwapStatus.refunded ||
                       (chainSwap != null &&
                           chainSwap.status == SwapStatus.completed &&
                           chainSwap.refundTxid != null)) ...[
@@ -2252,9 +2256,10 @@ class SendSucessScreen extends StatelessWidget {
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     ),
-                  ] else if (isLnSwap &&
-                      orderSwap.localStatus ==
-                          OrderSwapLocalStatus.completed) ...[
+                  ] else if ((isLnSwap &&
+                          orderSwap.localStatus ==
+                              OrderSwapLocalStatus.completed) ||
+                      (isBoltzLnSwap && isLnInvoicePaid)) ...[
                     Gif(
                       image: AssetImage(Assets.animations.successTick.path),
                       autostart: Autostart.once,
@@ -2266,15 +2271,17 @@ class SendSucessScreen extends StatelessWidget {
                       context.loc.sendInvoicePaid,
                       style: context.font.headlineLarge,
                     ),
-                  ] else if (isLnSwap &&
-                      !isBitcoin &&
-                      orderSwap.localStatus != OrderSwapLocalStatus.completed)
+                  ] else if ((isLnSwap &&
+                          !isBitcoin &&
+                          orderSwap.localStatus !=
+                              OrderSwapLocalStatus.completed) ||
+                      (isBoltzLnSwap && !isBitcoin))
                     BullText(
                       context.loc.sendPaymentProcessing,
                       style: context.font.headlineLarge,
                       textAlign: .center,
                     )
-                  else if (isLnSwap && isBitcoin)
+                  else if ((isLnSwap || isBoltzLnSwap) && isBitcoin)
                     BullText(
                       context.loc.sendPaymentWillTakeTime,
                       style: context.font.headlineLarge,
@@ -2361,12 +2368,12 @@ class SendSucessScreen extends StatelessWidget {
                         },
                       );
                     }
-                  } else if (chainSwap != null) {
+                  } else if (boltzSwap != null) {
                     context.pushNamed(
                       TransactionsRoute.swapTransactionDetails.name,
-                      pathParameters: {'swapId': chainSwap.id},
+                      pathParameters: {'swapId': boltzSwap.id},
                       queryParameters: {
-                        'walletId': chainSwap.walletId,
+                        'walletId': boltzSwap.walletId,
                         'returnHome': 'true',
                       },
                     );

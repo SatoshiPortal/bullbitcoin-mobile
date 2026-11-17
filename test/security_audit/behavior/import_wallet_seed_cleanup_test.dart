@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart'
     show BitcoinUnit, Err, Fingerprint, Ok;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bb_mobile/core/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -63,7 +64,7 @@ void main() {
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
     final fallback = await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words);
+        .import(words: words, language: bip39.Language.english);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(_Admission());
@@ -88,6 +89,7 @@ void main() {
       () => checkDuplicate.execute(
         mnemonicWords: any(named: 'mnemonicWords'),
         passphrase: any(named: 'passphrase'),
+        language: bip39.Language.english,
       ),
     ).thenAnswer((_) async => const Ok(null));
     when(() => checkDuplicate.isReferenced(any(), any()))
@@ -146,6 +148,7 @@ void main() {
       final result = await usecase.execute(
         mnemonicWords: words,
         passphrase: 'TREZOR',
+        language: bip39.Language.english,
       );
 
       expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
@@ -191,8 +194,8 @@ void main() {
       );
 
       await Future.wait([
-        usecase.execute(mnemonicWords: words),
-        usecase.execute(mnemonicWords: words),
+        usecase.execute(mnemonicWords: words, language: bip39.Language.english),
+        usecase.execute(mnemonicWords: words, language: bip39.Language.english),
       ]);
 
       expect(
@@ -208,13 +211,16 @@ void main() {
       'keeps a stored secret when the failure precedes the import',
       () async {
         expect(
-          await secrets.import(words: words),
+          await secrets.import(words: words, language: bip39.Language.english),
           isA<Ok<Secret, SecretFailure>>(),
         );
         when(() => settingsRepository.fetch())
             .thenThrow(Exception('settings unavailable'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
         expect(storedSecrets(), hasLength(1));
@@ -223,7 +229,7 @@ void main() {
 
     test('keeps a secret already referenced by an existing wallet', () async {
       expect(
-        await secrets.import(words: words),
+        await secrets.import(words: words, language: bip39.Language.english),
         isA<Ok<Secret, SecretFailure>>(),
       );
       when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
@@ -231,7 +237,10 @@ void main() {
         const WalletAlreadyExistsException('existing-wallet-id'),
       );
 
-      final result = await usecase.execute(mnemonicWords: words);
+      final result = await usecase.execute(
+        mnemonicWords: words,
+        language: bip39.Language.english,
+      );
 
       expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
       expect(
@@ -270,7 +279,10 @@ void main() {
         );
         failCreateWalletWith(Exception('electrum unreachable'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
         expect(
@@ -288,7 +300,10 @@ void main() {
             .thenAnswer((_) async => settings);
         failCreateWalletWith(Exception('electrum unreachable'));
 
-        final result = await usecase.execute(mnemonicWords: words);
+        final result = await usecase.execute(
+          mnemonicWords: words,
+          language: bip39.Language.english,
+        );
 
         expect(result, isA<Err<Wallet, ImportMnemonicFailure>>());
         expect(

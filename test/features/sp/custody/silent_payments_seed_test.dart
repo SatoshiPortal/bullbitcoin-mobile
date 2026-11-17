@@ -106,7 +106,10 @@ void main() {
   test('wipes the seed buffer after a successful native call', () async {
     final secrets = Secrets(scratchDirectory: () async => '/tmp');
     final mnemonic = bip39.Mnemonic(List.filled(16, 0), bip39.Language.english);
-    final imported = await secrets.import(words: mnemonic.words);
+    final imported = await secrets.import(
+      words: mnemonic.words,
+      language: Language.english,
+    );
     final secret = (imported as Ok<Secret, SecretFailure>).value;
     final account = _Account();
     api.account = account;

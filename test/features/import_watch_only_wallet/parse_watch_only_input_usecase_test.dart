@@ -14,6 +14,7 @@ void main() {
         'the raw parser error', () async {
       final result = await usecase.execute(
         'this is definitely not a descriptor or an extended public key',
+        environment: NetworkEnv.mainnet,
       );
 
       expect(result, isA<Err<WatchOnlyWalletEntity, ImportWatchOnlyFailure>>());

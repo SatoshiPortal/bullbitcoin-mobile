@@ -18,12 +18,14 @@ final class OpenKeyServerUsecase {
     required BackupSettings expected,
     bool monitoring = false,
     bool restartEmbedded = false,
+    bool viaSnowflake = false,
   }) async {
     final allowed = await _allowed(expected, monitoring);
     if (!allowed) return const Err(VaultContextChangedFailure());
     final opened = await _sessions.open(
       expected.server,
       restartEmbedded: restartEmbedded,
+      viaSnowflake: viaSnowflake,
     );
     switch (opened) {
       case Err():

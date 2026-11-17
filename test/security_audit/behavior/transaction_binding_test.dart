@@ -11,9 +11,9 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:swaps/swaps.dart' hide Environment;
+import 'package:swaps/swaps.dart' as swaps show Environment;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
@@ -43,7 +43,7 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockWalletTransactionRepository extends Mock
     implements WalletTransactionRepository {}
 
-class _MockBoltzSwapRepository extends Mock implements BoltzSwapRepository {}
+class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
@@ -87,7 +87,7 @@ WalletTransaction _walletTransaction({
 void main() {
   late _MockSettingsRepository settingsRepository;
   late _MockWalletTransactionRepository walletTransactionRepository;
-  late _MockBoltzSwapRepository boltzSwapRepository;
+  late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
   late _MockExchangeOrderRepository orderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
@@ -101,7 +101,7 @@ void main() {
   setUp(() {
     settingsRepository = _MockSettingsRepository();
     walletTransactionRepository = _MockWalletTransactionRepository();
-    boltzSwapRepository = _MockBoltzSwapRepository();
+    swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
     orderRepository = _MockExchangeOrderRepository();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
@@ -116,9 +116,8 @@ void main() {
     );
     when(() => payjoinSessions.list(any()))
         .thenAnswer((_) async => const Ok([]));
-    when(
-      () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
-    ).thenAnswer((_) async => <Swap>[]);
+    when(() => swapStore.all(walletId: any(named: 'walletId')))
+        .thenAnswer((_) async => const Ok(<Swap>[]));
     when(() => orderRepository.getOrders())
         .thenAnswer((_) async => const Ok(<Order>[]));
     when(() => labelExchangeOrdersUsecase.execute(orders: any(named: 'orders')))
@@ -132,7 +131,7 @@ void main() {
     usecase = GetTransactionsUsecase(
       settingsRepository: settingsRepository,
       walletTransactionRepository: walletTransactionRepository,
-      boltzSwapRepository: boltzSwapRepository,
+      swapStore: swapStore,
       payjoinSessions: payjoinSessions,
       mainnetExchangeOrderRepository: orderRepository,
       testnetExchangeOrderRepository: _MockExchangeOrderRepository(),
@@ -212,16 +211,14 @@ void main() {
           environment: any(named: 'environment'),
         ),
       ).thenAnswer((_) async => [tx]);
-      when(
-        () => boltzSwapRepository.getAllSwaps(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => [
+      when(() => swapStore.all(walletId: any(named: 'walletId'))).thenAnswer(
+        (_) async => Ok([
           Swap.lnSend(
             id: 'swap-1',
             keyIndex: 0,
             type: SwapType.bitcoinToLightning,
             status: SwapStatus.pending,
-            environment: Environment.mainnet,
+            environment: swaps.Environment.mainnet,
             creationTime: DateTime.utc(2026, 7, 29, 12),
             sendWalletId: 'wallet-1',
             invoice: 'lnbc1',
@@ -230,7 +227,7 @@ void main() {
             paymentAmount: 900000,
             sendTxid: 'wallet-txid',
           ),
-        ],
+        ]),
       );
 
       final transactions = _transactionsOf(await usecase.execute());

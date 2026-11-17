@@ -43,7 +43,9 @@ void main() {
 
     FakeSecureStoragePlatform().install();
     final repo = SecretRepository();
-    final info = ok(await repo.store(words: wallet));
+    final info = ok(
+      await repo.store(words: wallet, language: bip39.Language.english),
+    );
     final material = ok(await repo.use(info, (m) => m));
 
     final child = Deriver.bip85.mnemonic(

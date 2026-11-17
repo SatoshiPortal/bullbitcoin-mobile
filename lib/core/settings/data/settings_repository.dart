@@ -14,15 +14,24 @@ import 'package:bull_tor/tor.dart';
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
   final StreamController<String> _currencyChangeController;
+  final StreamController<Environment> _environmentChangeController;
 
   SettingsRepository({required this._settingsDatasource})
-    : _currencyChangeController = StreamController<String>.broadcast();
+    : _currencyChangeController = StreamController<String>.broadcast(),
+      _environmentChangeController = StreamController<Environment>.broadcast();
 
   @override
   Stream<String> get currencyChangeStream => _currencyChangeController.stream;
 
   @override
-  Future<void> close() => _currencyChangeController.close();
+  Stream<Environment> get environmentChangeStream =>
+      _environmentChangeController.stream;
+
+  @override
+  Future<void> close() async {
+    await _currencyChangeController.close();
+    await _environmentChangeController.close();
+  }
 
   @override
   Future<Result<void, SettingsStoreFailure>> store({
@@ -107,7 +116,6 @@ class SettingsRepository implements domain.SettingsRepository {
   ) async {
     try {
       await _settingsDatasource.setEnvironment(env);
-      return const Ok(null);
     } catch (e, st) {
       log.severe(
         message: 'Failed to persist settings: setEnvironment',
@@ -118,6 +126,10 @@ class SettingsRepository implements domain.SettingsRepository {
         SettingsStoreWriteFailure('setEnvironment failed: ${e.runtimeType}'),
       );
     }
+    if (!_environmentChangeController.isClosed) {
+      _environmentChangeController.add(env);
+    }
+    return const Ok(null);
   }
 
   @override

@@ -51,6 +51,12 @@ final class ImportMnemonicScanInvalidMnemonicFailure
   const ImportMnemonicScanInvalidMnemonicFailure();
 }
 
+/// This script cannot be imported in the selected network environment.
+final class ImportMnemonicScanUnsupportedFailure
+    extends ImportMnemonicScanFailure {
+  const ImportMnemonicScanUnsupportedFailure();
+}
+
 /// Catch-all. [logMessage] holds the error type only and MUST never reach the UI.
 final class ImportMnemonicScanUnexpectedFailure
     extends ImportMnemonicScanFailure {

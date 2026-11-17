@@ -15,7 +15,13 @@ bool canReuseConfirmedReceiveDetails(ReceiveState state) {
     return false;
   }
   if (state.type != ReceiveType.lightning) return true;
-  return state.orderSwap != null && !state.orderSwap!.localStatus.isTerminal;
+  if (state.orderSwap case final orderSwap?) {
+    return !orderSwap.localStatus.isTerminal;
+  }
+  return switch (state.lightningSwap?.status) {
+    final status? => !status.isTerminal,
+    null => false,
+  };
 }
 
 ReceiveDetailsTarget? receiveDetailsTarget(ReceiveState state) {

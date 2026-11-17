@@ -9,8 +9,9 @@ import '../domain/entities/recoverbull_flow.dart';
 import '../domain/recoverbull_environment_port.dart';
 import '../domain/recoverbull_legacy_settings_port.dart';
 import '../domain/recoverbull_route_port.dart';
-import '../ui/screens/vault_flow_page.dart';
+import '../ui/recoverbull_flow_navigator.dart';
 import '../ui/widgets/backup_alarm_overlay.dart';
+import '../ui/widgets/recoverbull_widgets.dart' show ViewVaultKeyWarningSheet;
 import 'recoverbull_runtime.dart';
 
 import '../data/secrets_vault_repository.dart';
@@ -70,6 +71,8 @@ final class RecoverBullFeature {
   GoRoute route({
     required String Function(BuildContext) copiedMessage,
     required void Function(BuildContext) onRecovered,
+    required void Function(BuildContext) onTested,
+    void Function(BuildContext)? onOpenTorSettings,
   }) => GoRoute(
     path: '/recoverbull-flows',
     name: 'recoverbullFlows',
@@ -80,7 +83,7 @@ final class RecoverBullFeature {
       final flow = request is RecoverBullFlowRequest
           ? request.flow
           : RecoverBullFlow.settings;
-      return VaultFlowPage(
+      return RecoverBullFlowNavigator(
         flow: flow,
         presentation: () => runtime.flow(
           flow,
@@ -88,18 +91,34 @@ final class RecoverBullFeature {
         ),
         copiedMessage: copiedMessage(context),
         onRecovered: () => onRecovered(context),
+        onFinished: () => onTested(context),
+        onOpenTorSettings: onOpenTorSettings == null
+            ? null
+            : () => onOpenTorSettings(context),
+        onTestVault: () => context.pushReplacementNamed(
+          'recoverbullFlows',
+          extra: const RecoverBullFlowRequest(RecoverBullFlow.testVault),
+        ),
       );
     },
   );
 
+  /// Opens [flow]; revealing the vault key first asks the user to acknowledge
+  /// where not to keep it.
   static Future<T?> open<T>(
     BuildContext context,
     RecoverBullFlow flow, {
     domain.EncryptedVault? vault,
-  }) => context.pushNamed<T>(
-    'recoverbullFlows',
-    extra: RecoverBullFlowRequest(flow, vault),
-  );
+  }) async {
+    if (flow == RecoverBullFlow.viewVaultKey) {
+      final confirmed = await ViewVaultKeyWarningSheet.show(context);
+      if (confirmed != true || !context.mounted) return null;
+    }
+    return context.pushNamed<T>(
+      'recoverbullFlows',
+      extra: RecoverBullFlowRequest(flow, vault),
+    );
+  }
 
   Future<void> dispose() async => _runtime?.dispose();
 

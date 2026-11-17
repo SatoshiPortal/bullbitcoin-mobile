@@ -228,7 +228,7 @@ class FoundationSpacing extends m.StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// TextStyles — the Material TextTheme roles (sourced from AppFonts)
+// TextStyles — the Material TextTheme roles (projected from BullTypography)
 // ---------------------------------------------------------------------------
 
 @widgetbook.UseCase(
@@ -253,6 +253,9 @@ class FoundationTextStyles extends m.StatelessWidget {
       ('headlineLarge', t.headlineLarge),
       ('headlineMedium', t.headlineMedium),
       ('headlineSmall', t.headlineSmall),
+      ('titleLarge', t.titleLarge),
+      ('titleMedium', t.titleMedium),
+      ('titleSmall', t.titleSmall),
       ('bodyLarge', t.bodyLarge),
       ('bodyMedium', t.bodyMedium),
       ('bodySmall', t.bodySmall),

@@ -102,8 +102,10 @@ void main() {
   setUp(() async {
     FakeSecureStoragePlatform().install();
     secrets = Secrets(scratchDirectory: () async => '/tmp');
-    final stored =
-        (await secrets.import(words: words)) as Ok<Secret, SecretFailure>;
+    final stored = (await secrets.import(
+      words: words,
+      language: bip39.Language.english,
+    )) as Ok<Secret, SecretFailure>;
     defaultWallet = walletFor(stored.value.id.hex);
 
     bip85Repository = _MockBip85Repository();
@@ -177,6 +179,7 @@ void main() {
           length: any(named: 'length'),
           index: any(named: 'index'),
           alias: any(named: 'alias'),
+          language: bip39.Language.english,
         ),
       ).thenAnswer((_) async => const Ok("83696968'/39'/0'/12'/3'"));
 
@@ -190,6 +193,7 @@ void main() {
           length: any(named: 'length'),
           index: 3,
           alias: any(named: 'alias'),
+          language: bip39.Language.english,
         ),
       ).called(1);
     });

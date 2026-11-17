@@ -22,4 +22,7 @@ final class WalletRecoverBullBindings {
 
   static void recovered(BuildContext context) =>
       context.read<WalletBloc>().add(const WalletStarted());
+
+  static void tested(BuildContext context) =>
+      context.read<WalletBloc>().add(const VerifyBackupStatus());
 }

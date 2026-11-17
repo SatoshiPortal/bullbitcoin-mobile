@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/import_mnemonic/domain/import_mnemonic_failur
 import 'package:bb_mobile/features/import_mnemonic/domain/check_wallet_status_usecase.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language;
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show ScriptType;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart'
+    show ScriptType, UnsupportedNetworkException;
 
 typedef MnemonicScan = ({BigInt satoshis, int transactions});
 
@@ -59,6 +60,8 @@ class ScanMnemonicUsecase {
 
   /// Keeps the kind of [error] only: its message may name a server, a descriptor or a word.
   static ImportMnemonicScanFailure _failureOf(Object error) => switch (error) {
+    UnsupportedNetworkException() =>
+      const ImportMnemonicScanUnsupportedFailure(),
     CheckWalletStatusInvalidMnemonicException() =>
       const ImportMnemonicScanInvalidMnemonicFailure(),
     TimeoutException() => const ImportMnemonicScanTimeoutFailure(),

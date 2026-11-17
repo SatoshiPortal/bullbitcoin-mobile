@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "মানচিত্ৰ",
   "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
   "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
   "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
@@ -2497,10 +2496,6 @@
   "requiredHint": "প্ৰয়োজনীয়",
   "@requiredHint": {
     "description": "Placeholder hint for required label field"
-  },
-  "wordsDropdownSuffix": " শব্দ",
-  "@wordsDropdownSuffix": {
-    "description": "Suffix for mnemonic length dropdown"
   },
   "emptyMnemonicWordsError": "আপোনাৰ mnemonic-ৰ সকলো শব্দ লিখক",
   "@emptyMnemonicWordsError": {
@@ -7456,7 +7451,7 @@
   "@torSettingsConnectionStatus": {
     "description": "Title for connection status card"
   },
-  "torSettingsStatusConnected": "সংযুক্ত",
+  "torSettingsStatusConnected": "সাজু",
   "@torSettingsStatusConnected": {
     "description": "Status title when Tor is connected"
   },
@@ -8658,5 +8653,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "আপোনাৰ লেনদেন সম্প্ৰচাৰ হৈছে নে নাই নিশ্চিত কৰিব পৰা নগ'ল। পুনৰ চেষ্টা কৰাৰ আগতে এটা ব্লক এক্সপ্ল'ৰাৰত পৰীক্ষা কৰক।",
   "broadcastSignedTxErrorNetworkNotEnabled": "বৰ্তমানৰ ছেটিংছত এই নেটৱৰ্কত সম্প্ৰচাৰ সক্ৰিয় কৰা হোৱা নাই।",
   "settingsDarkModeTitle": "আন্ধাৰ ম'ড",
-  "settingsSourceCodeTitle": "উৎস ক'ড"
+  "settingsSourceCodeTitle": "উৎস ক'ড",
+  "torSettingsStatusNoInternetOrBlocked": "ইণ্টাৰনেট নাই বা নেটৱৰ্ক সেন্সৰ কৰা",
+  "torSettingsDescNoInternetOrBlocked": "এই নেটৱৰ্কত ইণ্টাৰনেট নাই, বা ই Tor অৱৰোধ কৰে।",
+  "torSettingsExternalProxyUnavailableDescription": "Bull-এ কনফিগাৰ কৰা SOCKS5 প্ৰক্সিত সংযোগ কৰিব নোৱাৰিলে।"
 }

@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -56,6 +55,9 @@ BullTheme _bullThemeFrom(AppColors colors) {
 }
 
 class AppTheme {
+  static const shapes = BullShapes.standard;
+  static const typography = BullTypography.standard;
+
   static ThemeData themeData(AppThemeType themeType) {
     final colors = themeType == AppThemeType.dark
         ? AppColors.dark
@@ -63,13 +65,18 @@ class AppTheme {
     final brightness = themeType == AppThemeType.dark
         ? Brightness.dark
         : Brightness.light;
-    final fonts = AppFonts.textTheme;
-    const shapes = BullShapes.standard;
+
+    final bullTheme = _bullThemeFrom(colors);
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      extensions: [_bullThemeFrom(colors), shapes],
+      extensions: bullUiExtensions(
+        colors: bullTheme,
+        brightness: brightness,
+        shapes: shapes,
+        typography: typography,
+      ),
       // Material widgets read Bull's colours, so nothing is derived from the red seed. Roles without a Bull colour use the nearest one.
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.primary,
@@ -115,38 +122,11 @@ class AppTheme {
       ),
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
-      fontFamily: fonts.fontFamily,
-      textTheme: fonts.textTheme.apply(
+      fontFamily: typography.body.fontFamily,
+      textTheme: typography.toTextTheme().apply(
         bodyColor: colors.text,
         displayColor: colors.text,
       ),
-      /* TODO: Add theme for inputs like TextField here and remove BBInputText
-       Make sure to check impact on all different inputs in the app and adjust accordingly.
-       + do the same for other widgets like dropdowns, buttons, etc.
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: fonts.textTheme.bodyLarge?.copyWith(
-          color: colours.surfaceContainer,
-        ),
-        filled: true,
-        fillColor: colours.onPrimary,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
-          borderSide: BorderSide(color: colours.surface),
-        ),
-      ),
-       */
       appBarTheme: AppBarTheme(
         backgroundColor: colors.transparent,
         systemOverlayStyle: themeType == AppThemeType.dark
@@ -154,9 +134,7 @@ class AppTheme {
             : SystemUiOverlayStyle.dark,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: fonts.textTheme.headlineMedium!.copyWith(
-          color: colors.text,
-        ),
+        titleTextStyle: typography.subtitle.copyWith(color: colors.text),
         centerTitle: true,
         iconTheme: IconThemeData(color: colors.text),
         actionsIconTheme: IconThemeData(color: colors.text),
@@ -183,26 +161,7 @@ class AppTheme {
         shadowColor: colors.border,
         margin: EdgeInsets.zero,
       ),
-      switchTheme: SwitchThemeData(
-        trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-          if (states.contains(WidgetState.selected)) {
-            return colors.text;
-          }
-          return colors.textMuted;
-        }),
-        trackOutlineWidth: const WidgetStatePropertyAll(0),
-        thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
-          return colors.surface;
-        }),
-        padding: EdgeInsets.zero,
-        overlayColor: WidgetStateProperty.all(colors.transparent),
-        trackOutlineColor: WidgetStateProperty.all(colors.transparent),
-        materialTapTargetSize: .shrinkWrap,
-        thumbIcon: WidgetStateProperty.all(
-          Icon(Icons.circle, color: colors.surface),
-        ),
-        splashRadius: 0,
-      ),
+      switchTheme: BullSwitch.themeData(bullTheme),
       listTileTheme: ListTileThemeData(
         tileColor: colors.surface,
         shape: RoundedRectangleBorder(
@@ -210,16 +169,10 @@ class AppTheme {
           side: BorderSide(color: colors.border),
         ),
         textColor: colors.text,
-        titleTextStyle: fonts.textTheme.headlineSmall!.copyWith(
-          fontWeight: .w400,
-        ),
-        subtitleTextStyle: fonts.textTheme.labelMedium!.copyWith(
-          color: colors.textMuted,
-          fontWeight: .w400,
-        ),
-        leadingAndTrailingTextStyle: fonts.textTheme.labelLarge!.copyWith(
+        titleTextStyle: typography.subtitle.copyWith(fontWeight: .w400),
+        subtitleTextStyle: typography.caption.copyWith(color: colors.textMuted),
+        leadingAndTrailingTextStyle: typography.label.copyWith(
           color: colors.text,
-          fontWeight: .w500,
         ),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(

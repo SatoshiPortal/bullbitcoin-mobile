@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/theme/bull_theme.dart';
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Label / value / sub triplet for the summary bar (the design's `Stat`).
@@ -34,8 +35,7 @@ class BullStatTile extends StatelessWidget {
       children: [
         Text(
           label.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontSize: 11,
+          style: context.bullType.caption.copyWith(
             letterSpacing: 0.3,
             color: colors.textMuted,
           ),
@@ -43,8 +43,8 @@ class BullStatTile extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           value,
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-            fontSize: 15,
+          style: context.bullType.body.copyWith(
+            fontWeight: FontWeight.w700,
             fontFeatures: const [FontFeature.tabularFigures()],
             color: accent ?? colors.text,
           ),
@@ -53,8 +53,7 @@ class BullStatTile extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             sub!,
-            style: Theme.of(context).textTheme.labelSmall
-                ?.copyWith(fontSize: 11, color: colors.textMuted),
+            style: context.bullType.caption.copyWith(color: colors.textMuted),
           ),
         ],
       ],

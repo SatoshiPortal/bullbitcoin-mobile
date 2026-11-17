@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
+    show ElectrumFailure;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/status_check/status_core_locator.dart';
@@ -51,6 +53,7 @@ import 'package:bb_mobile/features/sp/sp_locator.dart';
 import 'package:bb_mobile/features/status_check/locator.dart';
 import 'package:bb_mobile/features/swap/order_swap_watcher.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
+import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
@@ -59,6 +62,7 @@ import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
+import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
 
@@ -89,7 +93,7 @@ class AppLocator {
   }
 
   /// Call this in the `main` function **before** `runApp()`
-  static Future<void> setup(
+  static Future<Result<void, ElectrumFailure>> setup(
     GetIt locator,
     SqliteDatabase database, {
     required String payjoinDatabasePath,
@@ -111,12 +115,15 @@ class AppLocator {
     // Register core dependencies first
     CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
+    // Lazy registrations only; storage is prepared before network repositories.
+    ElectrumSettingsLocator.setup(locator);
     // Note: since the WalletLocator repositories depend on ports for electrum servers,
     // we need to make sure the ports are registered before the repositories
     // This is a hack though as normally repositories should not depend on ports
     // The proper solution is to refactor the code to remove this dependency
     CoreLocator.registerPorts(locator);
-    await CoreLocator.registerRepositories(locator);
+    final repositories = await CoreLocator.registerRepositories(locator);
+    if (repositories case Err()) return repositories;
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
     CoreLocator.registerFrameworks(locator);
@@ -131,7 +138,6 @@ class AppLocator {
     SyncLocator.setupForeground(locator);
 
     // Register feature-specific dependencies
-    ElectrumSettingsLocator.setup(locator);
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
@@ -151,6 +157,7 @@ class AppLocator {
       notificationChannelId: paymentNotificationChannelId,
     );
     const LogsFeature().setup(locator);
+    BtcMapFeature.setup(locator);
     BitcoinPriceLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
@@ -199,5 +206,11 @@ class AppLocator {
     LedgerLocator.setup(locator);
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
+
+    // Follows network switches from launch on, whether or not the swap
+    // watcher has started yet: the engine must match the network the first
+    // swap is created on. A switch stops and relaunches the watcher.
+    locator<SwapEngineSwitcher>().start();
+    return const Ok(null);
   }
 }

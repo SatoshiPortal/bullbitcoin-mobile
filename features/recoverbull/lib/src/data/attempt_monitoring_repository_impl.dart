@@ -1,3 +1,5 @@
+import 'dart:math' show max;
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:convert/convert.dart' show hex;
 import 'package:crypto/crypto.dart' show sha256;
@@ -216,7 +218,23 @@ final class AttemptMonitoringRepositoryImpl
     )..where((row) => row.server.equals(state.server))).get();
     for (final row in rows) {
       final sample = snapshot?.entries[hex.encode(row.digest)];
-      if (sample == null) {
+      if (snapshot != null && sample == null && row.anchorRequests == null) {
+        // A published snapshot without this vault proves nobody asked for it
+        // yet, so every request it shows later is new.
+        final pending = await _pending(row.server, row.digest);
+        await _write(
+          row,
+          RecoverbullMonitoredVaultsCompanion(
+            anchorRequests: const Value(0),
+            observedRequests: const Value(0),
+            collection: Value(
+              snapshot.collectionStartedAt.millisecondsSinceEpoch,
+            ),
+            ownRequests: Value(pending),
+            unknown: Value(pending > 0),
+          ),
+        );
+      } else if (sample == null) {
         await _write(
           row,
           const RecoverbullMonitoredVaultsCompanion(unknown: Value(true)),
@@ -258,14 +276,24 @@ final class AttemptMonitoringRepositoryImpl
             collection < previousCollection)) {
       return;
     }
+    // Anchored at zero before the vault had any window: its first window is new.
+    final fromZero = anchor == 0 && previousWindow == null;
     final discontinuity =
         anchor == null ||
-        window != previousWindow ||
+        (window != previousWindow && !fromZero) ||
         (exact != null && previousExact != null && exact != previousExact) ||
         (collection != null &&
             previousCollection != null &&
             collection != previousCollection);
     if (discontinuity) {
+      // A later window or collection began after we last saw this vault, so
+      // all its requests are new: only our own not yet seen can explain them.
+      if (enabled && anchor != null) {
+        final seen = (row.observedRequests ?? anchor) - anchor;
+        if (sample.requests > max(0, row.ownRequests - seen)) {
+          await _alert(row, window, BackupAlertKind.unexplainedActivity);
+        }
+      }
       await _write(
         row,
         RecoverbullMonitoredVaultsCompanion(
@@ -298,6 +326,7 @@ final class AttemptMonitoringRepositoryImpl
       row,
       RecoverbullMonitoredVaultsCompanion(
         observedRequests: Value(sample.requests),
+        window: Value(window),
         exactWindow: exact == null ? const Value.absent() : Value(exact),
         collection: collection == null
             ? const Value.absent()

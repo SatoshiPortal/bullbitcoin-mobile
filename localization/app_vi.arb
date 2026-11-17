@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Bản đồ",
   "buyUnexpectedError": "Không thể tạo đơn hàng của bạn ngay lúc này. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "buyConfirmPayoutWallet": "Ví nhận tiền",
   "buyPayoutMethodLiquid": "L-BTC trên Liquid",
@@ -1810,7 +1809,6 @@
   "submitButton": "Gửi",
   "optionalPassphraseHint": "Cụm mật khẩu (tùy chọn)",
   "requiredHint": "Bắt buộc",
-  "wordsDropdownSuffix": " từ",
   "emptyMnemonicWordsError": "Nhập đầy đủ các từ trong mnemonic của bạn",
   "tryAgainButton": "Thử lại",
   "errorGenericTitle": "Rất tiếc! Đã xảy ra lỗi",
@@ -3001,7 +2999,7 @@
   "torSettingsPortValidationRange": "Cổng phải nằm trong khoảng từ 1 đến 65535",
   "torSettingsSaveButton": "Lưu",
   "torSettingsConnectionStatus": "Trạng thái kết nối",
-  "torSettingsStatusConnected": "Đã kết nối",
+  "torSettingsStatusConnected": "Sẵn sàng",
   "torSettingsStatusConnecting": "Đang kết nối...",
   "torSettingsStatusDisconnected": "Đã ngắt kết nối",
   "torSettingsStatusUnknown": "Trạng thái không xác định",
@@ -3514,5 +3512,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Không thể xác nhận giao dịch của bạn đã được phát sóng. Hãy kiểm tra trên trình khám phá khối trước khi thử lại.",
   "broadcastSignedTxErrorNetworkNotEnabled": "Phát sóng trên mạng này chưa được bật trong cài đặt hiện tại.",
   "settingsDarkModeTitle": "Chế độ tối",
-  "settingsSourceCodeTitle": "Mã nguồn"
+  "settingsSourceCodeTitle": "Mã nguồn",
+  "torSettingsStatusNoInternetOrBlocked": "Không có internet hoặc mạng bị kiểm duyệt",
+  "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor.",
+  "torSettingsExternalProxyUnavailableDescription": "Bull không thể kết nối tới proxy SOCKS5 đã cấu hình."
 }

@@ -255,28 +255,25 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const Gap(24),
-        DropdownButtonFormField<FiatCurrency>(
-          initialValue: currency,
-          decoration: InputDecoration(
-            labelText: context.loc.limitOrdersPaymentMethod,
-          ),
-          items: state.balances
-              .map(
-                (balance) => DropdownMenuItem(
-                  value: balance.currency,
-                  child: Text(
+        Text(
+          context.loc.limitOrdersPaymentMethod,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const Gap(4),
+        BullDropdown<FiatCurrency>(
+          value: currency,
+          items: [
+            for (final balance in state.balances)
+              BullPickerItem(
+                value: balance.currency,
+                label:
                     '${balance.currency.code} — ${FormatAmount.fiat(balance.amount, balance.currency.code)}',
-                  ),
-                ),
-              )
-              .toList(),
+              ),
+          ],
           onChanged: state.isLoading
               ? null
-              : (value) {
-                  if (value != null) {
-                    context.read<CreateLimitOrderCubit>().selectCurrency(value);
-                  }
-                },
+              : (value) =>
+                    context.read<CreateLimitOrderCubit>().selectCurrency(value),
         ),
         const Gap(24),
         LimitOrderDetailRow(

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_failure.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -8,8 +9,12 @@ import 'package:primitives/primitives.dart';
 /// The developer-network selector uses this authorization and persistence boundary.
 class SetActiveNetworkUsecase {
   final SettingsRepository _settingsRepository;
+  final ElectrumSettingsFacade _electrumSettings;
 
-  const SetActiveNetworkUsecase({required this._settingsRepository});
+  const SetActiveNetworkUsecase({
+    required this._settingsRepository,
+    required this._electrumSettings,
+  });
 
   @useResult
   Future<Result<void, SettingsFailure>> execute(NetworkEnv network) async {
@@ -37,6 +42,24 @@ class SetActiveNetworkUsecase {
         }
       } on Exception {
         log.warning('Network selection refused category=settingsRead');
+        return const Err(SettingsStorageFailure());
+      }
+    }
+    if (network == NetworkEnv.regtest) {
+      if (await _electrumSettings.prepareForegroundStorage(network)
+          case Err()) {
+        log.warning(
+          'Network selection refused network=regtest category=electrumStorage',
+        );
+        return Err(SettingsNetworkUnavailableFailure(network));
+      }
+      // Preparation can yield; consent may have been revoked in the meantime.
+      try {
+        final current = await _settingsRepository.fetch();
+        if (current.isSuperuser != true || current.isDevModeEnabled != true) {
+          return const Err(SettingsConsentFailure());
+        }
+      } on Exception {
         return const Err(SettingsStorageFailure());
       }
     }

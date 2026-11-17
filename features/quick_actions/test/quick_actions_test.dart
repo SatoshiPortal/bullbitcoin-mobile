@@ -29,6 +29,18 @@ void main() {
     expect(disabled.more, [QuickAction.settings]);
   });
 
+  test('injected defaults drive the row and its complement in More', () {
+    final layout = QuickActionsLayout.resolve(
+      available: all.toSet(),
+      defaults: QuickActionsLayout.iosDefaults,
+    );
+    expect(layout.primary, QuickActionsLayout.iosDefaults);
+    expect(layout.more, contains(QuickAction.map));
+    expect(layout.more, isNot(contains(QuickAction.settings)));
+    expect(layout.more, isNot(contains(QuickAction.history)));
+    expect(layout.more, isNot(contains(QuickAction.transfer)));
+  });
+
   test('unavailable custom actions retain their position when restored', () {
     final selection = QuickActionSelection([
       QuickAction.buy,

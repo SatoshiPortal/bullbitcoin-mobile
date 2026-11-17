@@ -1,3 +1,5 @@
+import 'initialization_result.dart';
+
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
 import 'dart:io';
@@ -13,7 +15,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  if (!isInitialized) await Bull.init();
+  if (!isInitialized) {
+    requireSuccessfulBullInitialization(await Bull.init());
+  }
 
   final recoverbull = locator<RecoverBullFacade>();
 

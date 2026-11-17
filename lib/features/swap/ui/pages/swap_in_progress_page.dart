@@ -1,14 +1,13 @@
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullInfoCard, Gap;
-import 'package:gif/gif.dart';
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullInfoCard, BullLoader, Gap;
 import 'package:go_router/go_router.dart';
 
 class SwapInProgressPage extends StatelessWidget {
@@ -47,13 +46,7 @@ class SwapInProgressPage extends StatelessWidget {
                     children: [
                       if (swap?.status == SwapStatus.pending ||
                           swap?.status == SwapStatus.paid) ...[
-                        Gif(
-                          autostart: Autostart.loop,
-                          height: 123,
-                          image: AssetImage(
-                            Assets.animations.cubesLoading.path,
-                          ),
-                        ),
+                        const BullLoader.large(),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferPendingTitle,

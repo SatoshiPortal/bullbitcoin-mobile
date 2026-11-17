@@ -60,6 +60,7 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
       setState(() => _scanning = true);
       final scan = await context.read<OnboardingBloc>().scanWallet(
         words: mnemonic.words,
+        language: mnemonic.language,
         passphrase: mnemonic.passphrase,
       );
       if (!mounted || attempt != _attempt) return;
@@ -174,7 +175,6 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                                 ? 0.5
                                 : 1.0,
                             child: MnemonicWidget(
-                              englishOnly: true,
                               initialLength: bip39.MnemonicLength.words12,
                               allowMultipleMnemonicLength: true,
                               allowLabel: false,

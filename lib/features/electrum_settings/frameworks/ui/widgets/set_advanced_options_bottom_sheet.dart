@@ -13,7 +13,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullInfoCard,
         BullSettingsEntryItem,
-        BullShapesX;
+        BullShapesX,
+        BullTypographyX;
 
 bool shouldShowTorInAdvancedOptions(ElectrumSettingsState state) =>
     !state.isLiquid && state.hasActiveCustomBitcoinOnionServer;
@@ -417,7 +418,7 @@ class _SetAdvancedOptionsBottomSheetState
                         onFieldSubmitted: (_) => _confirm(),
                       ),
                       const SizedBox(height: 12),
-                      SwitchListTile.adaptive(
+                      SwitchListTile(
                         shape: const RoundedRectangleBorder(
                           side: BorderSide.none,
                         ),
@@ -460,9 +461,9 @@ class _SetAdvancedOptionsBottomSheetState
                           if (state.advancedOptionsError != null) ...[
                             Text(
                               state.advancedOptionsError!.toTranslated(context),
-                              style: TextStyle(
+                              style: context.bullType.label.copyWith(
+                                fontWeight: FontWeight.w400,
                                 color: context.appColors.error,
-                                fontSize: 14,
                               ),
                             ),
                             const SizedBox(height: 8),

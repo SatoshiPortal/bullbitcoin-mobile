@@ -48,13 +48,15 @@ void main() {
         url,
         network: ElectrumServerNetwork.bitcoinRegtest,
       );
-      expect(
-        await datasource.fetchByUrl(
-          url,
-          network: ElectrumServerNetwork.bitcoinRegtest,
-        ),
-        isNull,
+      final restored = await datasource.fetchByUrl(
+        url,
+        network: ElectrumServerNetwork.bitcoinRegtest,
       );
+      expect(restored, isNotNull);
+      expect(restored?.url, url);
+      expect(restored?.network, ElectrumServerNetwork.bitcoinRegtest);
+      expect(restored?.isCustom, isFalse);
+      expect(restored?.priority, 0);
       expect(
         await datasource.fetchByUrl(
           url,

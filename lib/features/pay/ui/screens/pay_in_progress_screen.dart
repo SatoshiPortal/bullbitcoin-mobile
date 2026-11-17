@@ -7,11 +7,9 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
-import 'package:gif/gif.dart';
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullLoader, Gap;
 import 'package:go_router/go_router.dart';
 
 class PayInProgressScreen extends StatefulWidget {
@@ -136,12 +134,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
               child: Column(
                 mainAxisAlignment: .center,
                 children: [
-                  Gif(
-                    image: AssetImage(Assets.animations.cubesLoading.path),
-                    autostart: Autostart.loop,
-                    height: 100,
-                    width: 100,
-                  ),
+                  const BullLoader.large(),
                   const Gap(20),
                   Text(
                     context.loc.payPaymentInProgress,

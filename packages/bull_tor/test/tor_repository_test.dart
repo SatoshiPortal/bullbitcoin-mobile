@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 import 'package:bull_tor/src/data/tor_repository_impl.dart';
 import 'package:bull_tor/src/domain/ports/embedded_tor_port.dart';
 import 'package:bull_tor/src/domain/ports/external_tor_port.dart';
+import 'package:bull_tor/src/domain/ports/network_presence_port.dart';
 import 'package:bull_tor/src/domain/tor_repository.dart';
 import 'package:bull_tor/src/domain/usecases/set_tor_dormant_usecase.dart';
 import 'package:bull_tor/tor.dart';
@@ -241,6 +242,309 @@ void main() {
       expect(state.route.transport, TorTransport.snowflake);
     });
 
+    group('a Snowflake retry asked by the user', () {
+      test('automatic mode goes straight to Snowflake', () async {
+        final pending = repository.retry(snowflake: true);
+        await Future<void>.delayed(Duration.zero);
+        expect(embedded.startedTransports, [TorTransport.snowflake]);
+
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41004),
+        );
+        final state = await pending as TorReady;
+        expect(state.route.transport, TorTransport.snowflake);
+        expect(repository.mode, TorTransportMode.automatic);
+      });
+
+      test('an explicit direct mode stays direct', () async {
+        await repository.close();
+        embedded = _FakeEmbeddedTor();
+        repository = TorRepositoryImpl(
+          embedded,
+          initialMode: TorTransportMode.direct,
+        );
+        unawaited(repository.retry(snowflake: true));
+        await Future<void>.delayed(Duration.zero);
+        expect(embedded.startedTransports, [TorTransport.direct]);
+      });
+
+      test('a direct retry already running does not absorb it', () async {
+        unawaited(repository.retry());
+        await Future<void>.delayed(Duration.zero);
+        unawaited(repository.retry(snowflake: true));
+        await Future<void>.delayed(Duration.zero);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+        ]);
+      });
+    });
+
+    group('attempt budgets', () {
+      final t0 = DateTime.utc(2026, 11, 15, 12);
+
+      Future<TorRepository> withBudgets({
+        Duration direct = const Duration(minutes: 2),
+        Duration snowflake = const Duration(minutes: 15),
+        TorTransportMode mode = TorTransportMode.automatic,
+      }) async {
+        await repository.close();
+        embedded = _FakeEmbeddedTor();
+        return repository = TorRepositoryImpl(
+          embedded,
+          initialMode: mode,
+          directBudget: direct,
+          snowflakeBudget: snowflake,
+          now: () => t0,
+        );
+      }
+
+      test('each attempt announces when it will give up', () async {
+        final repo = await withBudgets();
+        final states = <TorConnectionState>[];
+        final subscription = repo.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        unawaited(repo.ensureReady());
+        await Future<void>.delayed(Duration.zero);
+
+        final connecting = states.whereType<TorConnecting>().last;
+        expect(connecting.deadline, t0.add(const Duration(minutes: 2)));
+      });
+
+      test('an expired direct budget falls back to Snowflake', () async {
+        final repo = await withBudgets(
+          direct: const Duration(milliseconds: 20),
+          snowflake: const Duration(hours: 1),
+        );
+        final states = <TorConnectionState>[];
+        final subscription = repo.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        unawaited(repo.ensureReady());
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+
+        expect(embedded.stopCalls, 1);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+        ]);
+        final snowflake = states.whereType<TorConnecting>().last;
+        expect(snowflake.circumvention, isTrue);
+        expect(snowflake.deadline, t0.add(const Duration(hours: 1)));
+      });
+
+      test(
+        'an expired Snowflake budget stops Tor and fails as a timeout',
+        () async {
+          final repo = await withBudgets(
+            snowflake: const Duration(milliseconds: 20),
+            mode: TorTransportMode.snowflake,
+          );
+          final result = await repo.ensureReady();
+
+          expect(embedded.stopCalls, 1);
+          expect(
+            result,
+            isA<TorUnavailable>().having(
+              (state) => state.failure,
+              'failure',
+              isA<TorBootstrapTimeoutFailure>(),
+            ),
+          );
+        },
+      );
+    });
+
+    group('on a network that blocks Tor relays', () {
+      late _FakeNetwork network;
+
+      setUp(() async {
+        await repository.close();
+        embedded = _FakeEmbeddedTor();
+        network = _FakeNetwork();
+        repository = TorRepositoryImpl(
+          embedded,
+          network: network,
+          censorshipFallbackAfter: const Duration(milliseconds: 20),
+        );
+      });
+
+      test('an offline verdict with a device network means no internet or a blocking network', () async {
+        final states = <TorConnectionState>[];
+        final subscription = repository.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        unawaited(repository.ensureReady());
+        await Future<void>.delayed(Duration.zero);
+
+        embedded.events.add(
+          const EmbeddedTorConnecting(
+            progress: 0,
+            transport: TorTransport.direct,
+            diagnostic: TorDiagnostic.offline,
+          ),
+        );
+
+        await Future<void>.delayed(Duration.zero);
+        final connecting = states.whereType<TorConnecting>().last;
+        expect(connecting.diagnostic, TorDiagnostic.noInternetOrBlocked);
+        // Not Tor's own filtering evidence, but Snowflake is still worth a try.
+        expect(connecting.diagnostic?.suggestsCensorship, isFalse);
+        expect(connecting.diagnostic?.worthSnowflake, isTrue);
+      });
+
+      test(
+        'an offline verdict without a device network stays offline',
+        () async {
+          network.present = false;
+          final states = <TorConnectionState>[];
+          final subscription = repository.watch().listen(states.add);
+          addTearDown(subscription.cancel);
+          unawaited(repository.ensureReady());
+          await Future<void>.delayed(Duration.zero);
+
+          embedded.events.add(
+            const EmbeddedTorConnecting(
+              progress: 0,
+              transport: TorTransport.direct,
+              diagnostic: TorDiagnostic.offline,
+            ),
+          );
+          await Future<void>.delayed(const Duration(milliseconds: 60));
+
+          expect(
+            states.whereType<TorConnecting>().last.diagnostic,
+            TorDiagnostic.offline,
+          );
+          expect(embedded.startedTransports, [TorTransport.direct]);
+        },
+      );
+
+      test('persistent censorship switches to Snowflake and announces it', () async {
+        final states = <TorConnectionState>[];
+        final subscription = repository.watch().listen(states.add);
+        addTearDown(subscription.cancel);
+        final pending = repository.ensureReady();
+        await Future<void>.delayed(Duration.zero);
+
+        embedded.events.add(
+          const EmbeddedTorConnecting(
+            progress: 0,
+            transport: TorTransport.direct,
+            diagnostic: TorDiagnostic.offline,
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+
+        // The direct bootstrap never finished: the switch did not wait for it.
+        expect(embedded.starts.first.isCompleted, isFalse);
+        expect(embedded.stopCalls, 1);
+        expect(embedded.startedTransports, [
+          TorTransport.direct,
+          TorTransport.snowflake,
+        ]);
+        final snowflake = states.whereType<TorConnecting>().last;
+        expect(snowflake.transport, TorTransport.snowflake);
+        expect(snowflake.circumvention, isTrue);
+
+        embedded.starts.last.complete(
+          TorProxyEndpoint(host: '127.0.0.1', port: 41003),
+        );
+        final state = await pending as TorReady;
+        expect(state.route.transport, TorTransport.snowflake);
+      });
+
+      group('without a blockage verdict', () {
+        setUp(() async {
+          await repository.close();
+          embedded = _FakeEmbeddedTor();
+          repository = TorRepositoryImpl(
+            embedded,
+            network: network,
+            stallFallbackAfter: const Duration(milliseconds: 30),
+          );
+        });
+
+        test(
+          'a direct bootstrap that stops progressing hands over to Snowflake',
+          () async {
+            final pending = repository.ensureReady();
+            await Future<void>.delayed(Duration.zero);
+
+            // Arti dips and returns to 85% without ever carrying traffic.
+            for (final progress in [0.3, 0.85, 0.3, 0.85]) {
+              embedded.events.add(
+                EmbeddedTorConnecting(
+                  progress: progress,
+                  transport: TorTransport.direct,
+                ),
+              );
+            }
+            await Future<void>.delayed(const Duration(milliseconds: 80));
+
+            expect(embedded.startedTransports, [
+              TorTransport.direct,
+              TorTransport.snowflake,
+            ]);
+            embedded.starts.last.complete(
+              TorProxyEndpoint(host: '127.0.0.1', port: 41004),
+            );
+            final state = await pending as TorReady;
+            expect(state.route.transport, TorTransport.snowflake);
+          },
+        );
+
+        test('a direct bootstrap that never reports hands over too', () async {
+          unawaited(repository.ensureReady());
+          await Future<void>.delayed(const Duration(milliseconds: 80));
+
+          expect(embedded.startedTransports, [
+            TorTransport.direct,
+            TorTransport.snowflake,
+          ]);
+        });
+
+        test('steady progress keeps the direct attempt', () async {
+          unawaited(repository.ensureReady());
+          await Future<void>.delayed(Duration.zero);
+
+          for (var step = 1; step <= 6; step++) {
+            embedded.events.add(
+              EmbeddedTorConnecting(
+                progress: step / 10,
+                transport: TorTransport.direct,
+              ),
+            );
+            await Future<void>.delayed(const Duration(milliseconds: 15));
+          }
+
+          expect(embedded.startedTransports, [TorTransport.direct]);
+        });
+      });
+
+      test('a passing diagnostic does not switch transport', () async {
+        unawaited(repository.ensureReady());
+        await Future<void>.delayed(Duration.zero);
+
+        embedded.events
+          ..add(
+            const EmbeddedTorConnecting(
+              progress: 0,
+              transport: TorTransport.direct,
+              diagnostic: TorDiagnostic.offline,
+            ),
+          )
+          ..add(
+            const EmbeddedTorConnecting(
+              progress: 0.4,
+              transport: TorTransport.direct,
+            ),
+          );
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+
+        expect(embedded.startedTransports, [TorTransport.direct]);
+        expect(embedded.stopCalls, 0);
+      });
+    });
+
     test('automatic mode remembers Snowflake without downgrading', () async {
       final first = repository.ensureReady();
       await Future<void>.delayed(Duration.zero);
@@ -403,6 +707,13 @@ final class _FakeExternalTor implements ExternalTorPort {
     final error = failure;
     if (error != null) throw error;
   }
+}
+
+final class _FakeNetwork implements NetworkPresencePort {
+  bool present = true;
+
+  @override
+  bool get hasNetwork => present;
 }
 
 final class _FakeEmbeddedTor implements EmbeddedTorPort {

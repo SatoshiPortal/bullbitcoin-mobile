@@ -76,7 +76,10 @@ void main() {
   group('fingerprint', () {
     test('matches the published BIP39 vector', () async {
       expect(
-        ok(await repoWith(FakeSecureStoragePlatform()).idOf(words: words)).hex,
+        ok(
+          await repoWith(FakeSecureStoragePlatform())
+              .idOf(words: words, language: Language.english),
+        ).hex,
         plainFingerprint,
       );
     });
@@ -84,8 +87,11 @@ void main() {
     test('a passphrase produces a different fingerprint', () async {
       expect(
         ok(
-          await repoWith(FakeSecureStoragePlatform())
-              .idOf(words: words, passphrase: 'TREZOR'),
+          await repoWith(FakeSecureStoragePlatform()).idOf(
+            words: words,
+            passphrase: 'TREZOR',
+            language: Language.english,
+          ),
         ).hex,
         trezorFingerprint,
       );
@@ -94,7 +100,9 @@ void main() {
     test('store files the entry under the derived fingerprint', () async {
       final storage = FakeSecureStoragePlatform();
 
-      final info = ok(await repoWith(storage).store(words: words));
+      final info = ok(
+        await repoWith(storage).store(words: words, language: Language.english),
+      );
 
       expect(storage.entries.keys, ['seed_$plainFingerprint']);
       expect(info.id, Fingerprint(plainFingerprint));
@@ -324,7 +332,10 @@ void main() {
       );
 
       expect(
-        err(await repoWith(storage).store(words: words)),
+        err(
+          await repoWith(storage)
+              .store(words: words, language: Language.english),
+        ),
         isA<StoreSecretFailure>(),
       );
       expect(
@@ -344,7 +355,10 @@ void main() {
       );
 
       expect(
-        err(await repoWith(storage).store(words: words)),
+        err(
+          await repoWith(storage)
+              .store(words: words, language: Language.english),
+        ),
         isA<StoreSecretFailure>(),
       );
       expect(storage.entries['seed_$plainFingerprint'], entry(underivable));
@@ -360,7 +374,10 @@ void main() {
         );
 
         expect(
-          ok(await repoWith(storage).store(words: words)).id.hex,
+          ok(
+            await repoWith(storage)
+                .store(words: words, language: Language.english),
+          ).id.hex,
           plainFingerprint,
         );
         expect(storage.entries['seed_$plainFingerprint'], entry(words));
@@ -371,8 +388,8 @@ void main() {
       final storage = FakeSecureStoragePlatform();
       final repo = repoWith(storage);
 
-      await repo.store(words: words);
-      await repo.store(words: words);
+      await repo.store(words: words, language: Language.english);
+      await repo.store(words: words, language: Language.english);
 
       expect(storage.entries['seed_$plainFingerprint'], entry(words));
     });
@@ -385,8 +402,14 @@ void main() {
       final storage = FakeSecureStoragePlatform();
       final repo = repoWith(storage);
 
-      ok(await repo.store(words: words));
-      ok(await repo.store(words: words, passphrase: ''));
+      ok(await repo.store(words: words, language: Language.english));
+      ok(
+        await repo.store(
+          words: words,
+          passphrase: '',
+          language: Language.english,
+        ),
+      );
 
       expect(storage.entries['seed_$plainFingerprint'], entry(words));
       expect(storage.entries['seed_$plainFingerprint'], isNot(contains('""')));
@@ -400,9 +423,19 @@ void main() {
       final storage = FakeSecureStoragePlatform();
       final repo = repoWith(storage);
 
-      final first = ok(await repo.store(words: words, passphrase: 'caf\u00e9'));
+      final first = ok(
+        await repo.store(
+          words: words,
+          passphrase: 'caf\u00e9',
+          language: Language.english,
+        ),
+      );
       final second = ok(
-        await repo.store(words: words, passphrase: 'cafe\u0301'),
+        await repo.store(
+          words: words,
+          passphrase: 'cafe\u0301',
+          language: Language.english,
+        ),
       );
 
       expect(second.id, first.id);
@@ -471,7 +504,10 @@ void main() {
           entries: {'seed_$plainFingerprint': reordered},
         );
 
-        ok(await repoWith(storage).store(words: words));
+        ok(
+          await repoWith(storage)
+              .store(words: words, language: Language.english),
+        );
 
         expect(
           storage.entries['seed_$plainFingerprint'],

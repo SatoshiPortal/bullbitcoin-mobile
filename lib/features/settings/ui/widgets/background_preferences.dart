@@ -23,18 +23,14 @@ class BackgroundPreferences extends StatelessWidget {
             value: state.interval,
             items: [
               for (final interval in BackgroundSyncInterval.values)
-                DropdownMenuItem(
+                BullPickerItem(
                   value: interval,
-                  child: Text(_label(context, interval)),
+                  label: _label(context, interval),
                 ),
             ],
-            onChanged: (value) {
-              if (value != null) {
-                context.read<BackgroundPreferencesCubit>().load(
-                  interval: value,
-                );
-              }
-            },
+            onChanged: (value) => context
+                .read<BackgroundPreferencesCubit>()
+                .load(interval: value),
           ),
           Text(context.loc.backgroundNotificationsTitle),
           Text(

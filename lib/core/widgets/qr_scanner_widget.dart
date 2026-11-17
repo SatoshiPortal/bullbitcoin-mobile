@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/urqr/urqr.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 
@@ -66,9 +66,9 @@ class _ScannerState extends State<QrScannerWidget> {
               ),
               child: Text(
                 _progressText,
-                style: TextStyle(
+                style: context.bullType.label.copyWith(
+                  fontWeight: FontWeight.w400,
                   color: context.appColors.onSecondary,
-                  fontSize: 14,
                 ),
                 textAlign: .center,
               ),

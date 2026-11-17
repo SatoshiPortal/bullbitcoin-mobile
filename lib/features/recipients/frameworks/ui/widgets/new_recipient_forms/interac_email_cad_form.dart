@@ -7,7 +7,8 @@ import 'package:bb_mobile/features/recipients/presentation/models/recipient_form
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullLowerCaseTextFormatter, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullLowerCaseTextFormatter, BullTypographyX, Gap;
 
 class InteracEmailCadForm extends StatefulWidget {
   const InteracEmailCadForm({super.key, this.hookError});
@@ -145,8 +146,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
               padding: const EdgeInsets.only(top: 4.0),
               child: Text(
                 context.loc.recipientsCharCounter(_securityQuestion.length),
-                style: TextStyle(
-                  fontSize: 12,
+                style: context.bullType.caption.copyWith(
                   color: _securityQuestion.length < 10
                       ? context.appColors.error
                       : context.appColors.onSurface.withValues(alpha: 0.6),
@@ -186,8 +186,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
           const Gap(16.0),
           Text(
             context.loc.recipientsAccountOwnerQuestion,
-            style: TextStyle(
-              fontSize: 14,
+            style: context.bullType.label.copyWith(
               fontWeight: .w500,
               color: context.appColors.onSurface,
             ),

@@ -10,6 +10,7 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+
 import 'package:bull_ui_catalogue/amount_use_cases.dart'
     as _bull_ui_catalogue_amount_use_cases;
 import 'package:bull_ui_catalogue/use_cases/foundation.dart'
@@ -394,6 +395,21 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullLoader',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Large',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullLoaderLargeUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Small',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullLoaderSmallUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullReferenceNotice',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -473,15 +489,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
-        name: 'BullDialPad',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Default',
-            builder: _bull_ui_catalogue_use_cases_use_cases.bullDialPadUseCase,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
         name: 'BullDropdown',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -517,12 +524,41 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullMnemonicKeyboard',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'AZERTY with accents',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullMnemonicKeyboardAccentsUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Character grid',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullMnemonicKeyboardGridUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'QWERTY',
+            builder: _bull_ui_catalogue_use_cases_use_cases
+                .bullMnemonicKeyboardUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullPasteInput',
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Default',
             builder:
                 _bull_ui_catalogue_use_cases_use_cases.bullPasteInputUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'BullPinPad',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder: _bull_ui_catalogue_use_cases_use_cases.bullPinPadUseCase,
           ),
         ],
       ),

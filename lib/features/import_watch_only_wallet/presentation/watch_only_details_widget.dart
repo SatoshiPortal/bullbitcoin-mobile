@@ -9,9 +9,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
+        BullDropdown,
         BullInfoCard,
         BullInputText,
         BullLabeledTextInput,
+        BullPickerItem,
         BullText,
         Gap;
 import 'package:satoshifier/enums/derivation.dart' as satoshifier;
@@ -39,7 +41,10 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         .watch<ImportWatchOnlyCubit>()
         .state
         .watchOnlyWallet;
-    final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
+    if (watchOnlyWallet is! WatchOnlyDescriptorEntity) {
+      return const SizedBox.shrink();
+    }
+    final entity = watchOnlyWallet;
     final networkLabel = switch (entity.network) {
       Network.bitcoinMainnet =>
         context.loc.importWatchOnlyNetworkBitcoinMainnet,
@@ -70,7 +75,8 @@ class _DescriptorDetailsWidget extends StatelessWidget {
           onChanged: null,
         ),
         const Gap(24),
-        if (entity.signerDevice == null)
+        if (entity.network != Network.bitcoinRegtest &&
+            entity.signerDevice == null)
           Row(
             children: [
               SizedBox(
@@ -82,40 +88,29 @@ class _DescriptorDetailsWidget extends StatelessWidget {
               ),
               SizedBox(
                 width: 220,
-                child: DropdownButtonFormField<SignerDeviceEntity?>(
-                  alignment: Alignment.centerLeft,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
-                  ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.appColors.text,
-                  ),
-                  initialValue: entity.signerDevice,
-                  items: [null, ...SignerDeviceEntity.values]
-                      .map(
-                        (value) => DropdownMenuItem<SignerDeviceEntity?>(
-                          value: value,
-                          child: BullText(
+                child: BullDropdown<SignerDeviceEntity?>(
+                  value: entity.signerDevice,
+                  items: [
+                    for (final value in [null, ...SignerDeviceEntity.values])
+                      BullPickerItem<SignerDeviceEntity?>(
+                        value: value,
+                        label:
                             value?.displayName ??
-                                context.loc.importWatchOnlyUnknown,
-                            style: context.font.headlineSmall,
-                          ),
-                        ),
-                      )
-                      .toList(),
+                            context.loc.importWatchOnlyUnknown,
+                      ),
+                  ],
                   onChanged: cubit.onSignerDeviceChanged,
                 ),
               ),
             ],
           ),
-        if (entity.signerDevice != null)
-          BullLabeledTextInput(
-            label: context.loc.importWatchOnlySigningDevice,
-            value: entity.signerDevice!.displayName,
-            onChanged: null,
-          ),
+        if (entity.network != Network.bitcoinRegtest)
+          if (entity.signerDevice case final device?)
+            BullLabeledTextInput(
+              label: context.loc.importWatchOnlySigningDevice,
+              value: device.displayName,
+              onChanged: null,
+            ),
         const Gap(24),
         BullLabeledTextInput(
           label: context.loc.importWatchOnlyLabel,
@@ -147,7 +142,8 @@ class _XpubDetailsWidget extends StatelessWidget {
         .watch<ImportWatchOnlyCubit>()
         .state
         .watchOnlyWallet;
-    final entity = watchOnlyWallet! as WatchOnlyXpubEntity;
+    if (watchOnlyWallet is! WatchOnlyXpubEntity) return const SizedBox.shrink();
+    final entity = watchOnlyWallet;
     final isXpub = entity.pubkey.startsWith('xpub');
 
     return Column(
@@ -166,10 +162,7 @@ class _XpubDetailsWidget extends StatelessWidget {
             style: context.font.titleMedium,
           ),
           const Gap(8),
-          BullText(
-            entity.watchOnlyXpub.extendedPubkey.xpub,
-            style: context.font.bodyMedium,
-          ),
+          BullText(entity.bip32Pubkey, style: context.font.bodyMedium),
           const Gap(24),
         ],
         BullText(
@@ -192,28 +185,15 @@ class _XpubDetailsWidget extends StatelessWidget {
           ),
           SizedBox(
             width: 260,
-            child: DropdownButtonFormField<satoshifier.Derivation>(
-              alignment: Alignment.centerLeft,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
-              ),
-              icon: Icon(
-                Icons.keyboard_arrow_down,
-                color: context.appColors.text,
-              ),
-              initialValue: entity.extendedPubkey.derivation,
-              items: [...satoshifier.Derivation.values]
-                  .map(
-                    (value) => DropdownMenuItem<satoshifier.Derivation>(
-                      value: value,
-                      child: BullText(
-                        'BIP${value.purpose} - ${value.label}',
-                        style: context.font.headlineSmall,
-                      ),
-                    ),
-                  )
-                  .toList(),
+            child: BullDropdown<satoshifier.Derivation>(
+              value: entity.extendedPubkey.derivation,
+              items: [
+                for (final value in satoshifier.Derivation.values)
+                  BullPickerItem(
+                    value: value,
+                    label: 'BIP${value.purpose} - ${value.label}',
+                  ),
+              ],
               onChanged: cubit.onDerivationChanged,
             ),
           ),

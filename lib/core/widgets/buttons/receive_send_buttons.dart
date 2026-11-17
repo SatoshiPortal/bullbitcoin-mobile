@@ -24,6 +24,10 @@ class ReceiveSendButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = dark
+        ? context.appColors.background
+        : context.appColors.secondaryFixed;
     return Row(
       children: [
         Expanded(
@@ -32,7 +36,7 @@ class ReceiveSendButtons extends StatelessWidget {
             label: receiveLabel,
             iconFirst: true,
             onPressed: onReceive,
-            bgColor: context.appColors.secondaryFixed,
+            bgColor: bgColor,
             textColor: context.appColors.onSecondaryFixed,
             outlined: true,
             borderColor: context.appColors.onSecondaryFixed,
@@ -45,7 +49,7 @@ class ReceiveSendButtons extends StatelessWidget {
             label: sendLabel,
             iconFirst: true,
             onPressed: onSend,
-            bgColor: context.appColors.secondaryFixed,
+            bgColor: bgColor,
             textColor: context.appColors.onSecondaryFixed,
             outlined: true,
             borderColor: context.appColors.onSecondaryFixed,

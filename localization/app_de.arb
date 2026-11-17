@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Karte",
   "backupWarningDescription": "Ohne Backup verlieren Sie den Zugriff auf Ihre Bitcoin, wenn:",
   "backupWarningLoseReasonLostPhone": "Sie Ihr Handy verlieren",
   "backupWarningLoseReasonDeletedApp": "Sie die App löschen",
@@ -432,7 +431,7 @@
   "verifyButton": "Überprüfen",
   "swapTitle": "Interner Swap",
   "sendOutputTooSmall": "Output unterhalb der Staubgrenze",
-  "torSettingsStatusConnected": "Verbunden",
+  "torSettingsStatusConnected": "Bereit",
   "receiveNote": "Notiz",
   "payLightningNetwork": "Lightning-Netzwerk",
   "ledgerSuccessVerifyTitle": "Adresse auf Ledger bestätigen…",
@@ -1664,7 +1663,6 @@
   "sellMxnBalance": "MXN-Guthaben",
   "fundExchangeWarningTactic4": "Sie bitten darum, Bitcoin an ihre Adresse zu senden.",
   "fundExchangeSinpeDescription": "Überweisen Sie Costa-Rica-Colón mit SINPE",
-  "wordsDropdownSuffix": " Wörter",
   "receiveVerifyAddressOnLedger": "Bitte überprüfen Sie die Adresse auf Ihrem Ledger.",
   "buyWaitForFreeWithdrawal": "Auf kostenlose Auszahlung warten",
   "sellSendPaymentCrcBalance": "CRC-Guthaben",
@@ -4844,5 +4842,11 @@
   "passphraseShow": "Passphrase anzeigen",
   "passphraseHide": "Passphrase verbergen",
   "settingsDarkModeTitle": "Dunkelmodus",
-  "settingsSourceCodeTitle": "Quellcode"
+  "settingsSourceCodeTitle": "Quellcode",
+  "torSettingsStatusNoInternetOrBlocked": "Kein Internet oder zensiertes Netzwerk",
+  "torSettingsDescNoInternetOrBlocked": "Dieses Netzwerk hat keinen Internetzugang oder blockiert Tor.",
+  "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen",
+  "mnemonicWordCountLabel": "Wörter",
+  "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
+  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt"
 }

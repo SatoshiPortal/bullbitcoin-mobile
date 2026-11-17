@@ -13,6 +13,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullDropdown,
         BullInfoCard,
         BullInputText,
+        BullPickerItem,
         BullShapesX,
         BullSwitch,
         BullText,
@@ -475,29 +476,20 @@ class _WalletSelectionDropdown extends StatelessWidget {
         ),
         const Gap(8),
         BullDropdown<Wallet>(
-          items: availableWallets
-              .map(
-                (wallet) => DropdownMenuItem(
-                  value: wallet,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          wallet.isLiquid
-                              ? 'assets/logos/liquid.png'
-                              : 'assets/logos/bitcoin.png',
-                          width: 20,
-                          height: 20,
-                        ),
-                        const Gap(8),
-                        Text(wallet.displayLabel(context)),
-                      ],
-                    ),
-                  ),
+          items: [
+            for (final wallet in availableWallets)
+              BullPickerItem(
+                value: wallet,
+                label: wallet.displayLabel(context),
+                leading: Image.asset(
+                  wallet.isLiquid
+                      ? 'assets/logos/liquid.png'
+                      : 'assets/logos/bitcoin.png',
+                  width: 20,
+                  height: 20,
                 ),
-              )
-              .toList(),
+              ),
+          ],
           value: selectedWallet,
           validator: enabled
               ? (value) {
@@ -509,18 +501,11 @@ class _WalletSelectionDropdown extends StatelessWidget {
                   return null;
                 }
               : null,
-          hint: BullText(
-            enabled
-                ? context.loc.autoswapRecipientWalletPlaceholderRequired
-                : context.loc.autoswapRecipientWalletPlaceholder,
-            style: context.font.bodyMedium?.copyWith(
-              color: enabled && selectedWalletId == null
-                  ? context.appColors.error
-                  : context.appColors.textMuted,
-            ),
-          ),
+          hint: enabled
+              ? context.loc.autoswapRecipientWalletPlaceholderRequired
+              : context.loc.autoswapRecipientWalletPlaceholder,
           onChanged: (wallet) {
-            context.read<AutoSwapSettingsCubit>().onWalletSelected(wallet?.id);
+            context.read<AutoSwapSettingsCubit>().onWalletSelected(wallet.id);
             // Auto-save when wallet selection changes
             context.read<AutoSwapSettingsCubit>().updateSettings();
           },

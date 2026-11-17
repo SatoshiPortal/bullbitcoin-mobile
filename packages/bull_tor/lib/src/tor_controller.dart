@@ -51,7 +51,8 @@ class EmbeddedTor {
 
   Future<TorConnectionState> ensureReady() => _ensureReady.execute();
 
-  Future<TorConnectionState> retry() => _retry.execute();
+  Future<TorConnectionState> retry({bool snowflake = false}) =>
+      _retry.execute(snowflake: snowflake);
 
   Future<TorConnectionState> setMode(TorTransportMode mode) =>
       _setMode.execute(mode);

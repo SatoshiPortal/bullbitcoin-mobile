@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart';
 import 'package:bb_mobile/core/bip85/bip85_locator.dart';
 import 'package:bb_mobile/features/bitbox/bitbox_core_locator.dart';
 import 'package:bb_mobile/features/send/blockchain_core_locator.dart';
@@ -53,10 +54,15 @@ class CoreLocator {
     LabelsLocator.registerPorts(locator);
   }
 
-  static Future<void> registerRepositories(GetIt locator) async {
+  static Future<Result<void, ElectrumFailure>> registerRepositories(
+    GetIt locator,
+  ) async {
     await SettingsLocator.registerRepositories(locator);
     final settingsRepository = locator<settings.SettingsRepository>();
     final appSettings = await settingsRepository.fetch();
+    final prepared = await locator<ElectrumSettingsFacade>()
+        .prepareForegroundStorage(appSettings.environment.networkEnv);
+    if (prepared case Err()) return prepared;
     bull_tor.TorLocator.registerRepositories(
       locator,
       initialMode: appSettings.torTransportMode,
@@ -81,11 +87,12 @@ class CoreLocator {
     FeesLocator.registerRepositories(locator);
     MempoolLocator.registerRepositories(locator);
     await SettingsLocator.registerRepositories(locator);
-    SwapsLocator.registerRepositories(locator);
+    await SwapsLocator.registerRepositories(locator);
     WalletLocator.registerRepositories(locator);
     Bip85DerivationsLocator.registerRepositories(locator);
     LedgerLocator.registerRepositories(locator);
     BitBoxCoreLocator.registerRepositories(locator);
+    return const Ok(null);
   }
 
   static void registerServices(GetIt locator) {

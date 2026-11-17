@@ -312,6 +312,7 @@ void main() {
       storage = FakeSecureStoragePlatform()..install();
       secrets = Secrets(scratchDirectory: () async => directory.path);
       final result = await secrets.import(
+        language: Language.english,
         words: [...List.filled(11, 'abandon'), 'about'],
       );
       id = (result as Ok<Secret, SecretFailure>).value.id;
@@ -470,7 +471,10 @@ void main() {
       () async {
         expect(await references.deleteUnreferenced(secrets, id), isA<Ok>());
         expect(
-          await secrets.import(words: [...List.filled(11, 'abandon'), 'about']),
+          await secrets.import(
+            language: Language.english,
+            words: [...List.filled(11, 'abandon'), 'about'],
+          ),
           isA<Ok>(),
         );
         expect(

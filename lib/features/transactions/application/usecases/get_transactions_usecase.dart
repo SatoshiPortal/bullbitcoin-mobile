@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_history_repository.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -20,7 +19,7 @@ import 'package:primitives/primitives.dart';
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final SwapHistoryRepository _boltzSwapRepository;
+  final SwapStore _swapStore;
   final PayjoinSessions _payjoinSessions;
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
@@ -30,7 +29,7 @@ class GetTransactionsUsecase {
   GetTransactionsUsecase({
     required this._settingsRepository,
     required this._walletTransactionRepository,
-    required this._boltzSwapRepository,
+    required this._swapStore,
     required this._payjoinSessions,
     required this._mainnetExchangeOrderRepository,
     required this._testnetExchangeOrderRepository,
@@ -79,7 +78,7 @@ class GetTransactionsUsecase {
       final (
         walletTransactions,
         payjoinResult,
-        swaps,
+        swapResult,
         loadedOrderSwaps,
       ) = await (
         _walletTransactionRepository.getWalletTransactions(
@@ -95,12 +94,22 @@ class GetTransactionsUsecase {
                 : BitcoinNetwork.mainnet,
           ),
         ),
-        _boltzSwapRepository.getAllSwaps(walletId: walletId),
+        _swapStore.all(walletId: walletId),
         _getTransactionOrderSwapsUsecase.execute(walletId: walletId),
       ).wait;
       final payjoins = switch (payjoinResult) {
         Ok(:final value) => value,
         Err() => <PayjoinSession>[],
+      };
+      final swaps = switch (swapResult) {
+        Ok(:final value) => value,
+        Err(:final failure) => () {
+          log.warning(
+            'Swaps unavailable; listing without them: '
+            '${failure.runtimeType}',
+          );
+          return <Swap>[];
+        }(),
       };
       // A failed swap load degrades the list rather than failing it: wallet
       // transactions are still worth showing. Logged, so a broken swap store

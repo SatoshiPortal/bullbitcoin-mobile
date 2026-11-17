@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Քարտեզ",
   "buyUnexpectedError": "Ձեր պատվերը հնարավոր չեղավ ստեղծել այս պահին։ Փորձեք կրկին կամ դիմեք աջակցման ծառայությանը։",
   "buyConfirmPayoutWallet": "Վճարման դրամապանակ",
   "buyPayoutMethodLiquid": "L-BTC Liquid-ում",
@@ -1810,7 +1809,6 @@
   "submitButton": "Ուղարկել",
   "optionalPassphraseHint": "Ընտրովի Passphrase",
   "requiredHint": "Պարտադիր",
-  "wordsDropdownSuffix": " բառ",
   "emptyMnemonicWordsError": "Մուտքագրեք ձեր մնեմոնիկի բոլոր բառերը",
   "tryAgainButton": "Կրկին փորձել",
   "errorGenericTitle": "Ուպս! Ինչ-որ բան սխալ գնաց",
@@ -2967,7 +2965,7 @@
   "statusCheckUnknown": "Անհայտ",
   "torSettingsTitle": "Tor կարգավորումներ",
   "torSettingsSaveButton": "Պահպանել",
-  "torSettingsStatusConnected": "Միացված է",
+  "torSettingsStatusConnected": "Պատրաստ է",
   "buyUnauthenticatedError": "Դուք նույնականացված չեք։ Խնդրում ենք մուտք գործել՝ շարունակելու համար։",
   "withdrawUnauthenticatedError": "Դուք նույնականացված չեք։ Խնդրում ենք մուտք գործել՝ շարունակելու համար։",
   "coreScreensPageNotFound": "Էջը չի գտնվել",
@@ -3514,5 +3512,8 @@
   "broadcastSignedTxErrorOutcomeUnknown": "Չհաջողվեց հաստատել, որ ձեր գործարքը հեռարձակվել է։ Նորից փորձելուց առաջ ստուգեք բլոկների դիտարկիչում։",
   "broadcastSignedTxErrorNetworkNotEnabled": "Այս ցանցում հեռարձակումը միացված չէ ընթացիկ կարգավորումներում։",
   "settingsDarkModeTitle": "Մուգ ռեժիմ",
-  "settingsSourceCodeTitle": "Սկզբնական կոդ"
+  "settingsSourceCodeTitle": "Սկզբնական կոդ",
+  "torSettingsStatusNoInternetOrBlocked": "Ինտերնետ չկա կամ ցանցը գրաքննված է",
+  "torSettingsDescNoInternetOrBlocked": "Այս ցանցը ինտերնետ հասանելիություն չունի, կամ արգելափակում է Tor-ը։",
+  "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։"
 }

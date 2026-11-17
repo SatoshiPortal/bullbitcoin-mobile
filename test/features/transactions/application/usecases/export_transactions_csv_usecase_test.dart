@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
@@ -45,7 +44,7 @@ Swap _lnReceive({String id = 'swap_ln_recv', String? receiveTxid}) =>
       keyIndex: 0,
       type: SwapType.lightningToBitcoin,
       status: SwapStatus.completed,
-      environment: Environment.mainnet,
+      environment: SwapEnvironment.mainnet,
       creationTime: DateTime.utc(2026, 3, 1, 12),
       receiveWalletId: 'w1',
       invoice: 'lnbc_test_invoice_recv',
@@ -61,7 +60,7 @@ Swap _lnSend({
   keyIndex: 0,
   type: SwapType.bitcoinToLightning,
   status: SwapStatus.completed,
-  environment: Environment.mainnet,
+  environment: SwapEnvironment.mainnet,
   creationTime: DateTime.utc(2026, 3, 2, 14),
   sendWalletId: 'w1',
   invoice: 'lnbc_test_invoice_send',
@@ -84,7 +83,7 @@ Swap _chainSwap({
   keyIndex: 0,
   type: type,
   status: SwapStatus.completed,
-  environment: Environment.mainnet,
+  environment: SwapEnvironment.mainnet,
   creationTime: DateTime.utc(2026, 3, 3, 10),
   sendWalletId: 'w1',
   paymentAddress: 'bc1qsendaddr',

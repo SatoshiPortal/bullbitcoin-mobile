@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
-import 'package:gif/gif.dart' show Autostart, Gif;
+import 'package:bull_ui/bull_ui.dart' show BullLoader, BullText, Gap;
 
 class ProgressScreen extends StatelessWidget {
   final String? title;
@@ -22,15 +20,7 @@ class ProgressScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: .center,
         children: [
-          if (isLoading)
-            Center(
-              child: Gif(
-                autostart: Autostart.loop,
-                width: 200,
-                height: 200,
-                image: AssetImage(Assets.animations.cubesLoading.path),
-              ),
-            ),
+          if (isLoading) const Center(child: BullLoader.large()),
           if (title != null) ...[
             const Gap(16),
             BullText(

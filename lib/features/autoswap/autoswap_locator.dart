@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/wallet/data/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_watcher.dart';
+import 'package:bb_mobile/features/autoswap/data/boltz_autoswap_provider.dart';
 import 'package:bb_mobile/features/autoswap/data/exchange_autoswap_provider.dart';
-import 'package:bb_mobile/features/autoswap/domain/autoswap_provider_port.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/execute_autoswap_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
@@ -16,6 +16,13 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/load_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/domain/usecases/save_autoswap_settings_usecase.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
+import 'package:swaps/swaps.dart'
+    show
+        CreateLiquidToBitcoinSwapUsecase,
+        DropPendingSwapLockupUsecase,
+        GetSwapLimitsAndFeesUsecase,
+        RecordPendingSwapLockupUsecase,
+        RecordSwapLockupUsecase;
 import 'package:get_it/get_it.dart';
 
 class AutoSwapLocator {
@@ -27,7 +34,22 @@ class AutoSwapLocator {
   }
 
   static void registerProviders(GetIt locator) {
-    locator.registerLazySingleton<AutoswapProviderPort>(
+    locator.registerLazySingleton<BoltzAutoswapProvider>(
+      () => BoltzAutoswapProvider(
+        locator<GetSwapLimitsAndFeesUsecase>(),
+        locator<CreateLiquidToBitcoinSwapUsecase>(),
+        locator<RecordSwapLockupUsecase>(),
+        locator<RecordPendingSwapLockupUsecase>(),
+        locator<DropPendingSwapLockupUsecase>(),
+        locator<WalletRepository>(),
+        locator<SettingsRepository>(),
+        locator<LiquidWalletRepository>(),
+        locator<GetReceiveAddressUsecase>(),
+        locator<BroadcastLiquidTransactionUsecase>(),
+        locator<LabelsFacade>(),
+      ),
+    );
+    locator.registerLazySingleton<ExchangeAutoswapProvider>(
       () => ExchangeAutoswapProvider(
         locator<WalletRepository>(),
         locator<SettingsRepository>(),
@@ -56,7 +78,9 @@ class AutoSwapLocator {
     locator.registerFactory<ExecuteAutoswapUsecase>(
       () => ExecuteAutoswapUsecase(
         locator<GetAutoSwapSettingsUsecase>(),
-        locator<AutoswapProviderPort>(),
+        locator<SwapFacade>(),
+        boltzProvider: locator<BoltzAutoswapProvider>(),
+        exchangeProvider: locator<ExchangeAutoswapProvider>(),
       ),
     );
   }
