@@ -17,6 +17,11 @@ import 'package:sync/sync.dart'
         SyncSpendBlockedFailure;
 
 final class _Servers implements ElectrumServersPort {
+  @override
+  Future<bool> hasCustomServers({
+    required ElectrumServerNetwork network,
+  }) async => false;
+
   int calls = 0;
 
   @override

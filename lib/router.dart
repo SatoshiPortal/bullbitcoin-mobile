@@ -211,6 +211,7 @@ class AppRouter {
         ),
       ),
       SwapRouter.route,
+      SwapRouter.settingsRoute,
       ...BuyRouter.routes,
       ...FundExchangeRouter.routes,
       SellRouter.route,

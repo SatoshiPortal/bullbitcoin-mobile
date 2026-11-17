@@ -48,9 +48,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/data/sync_coordinator.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart'
@@ -65,6 +64,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.d
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -250,12 +250,8 @@ class WalletLocator {
     );
     // Usecase
     locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
-      () => GetUnconfirmedIncomingBalanceUsecase(
-        boltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-      ),
+      () =>
+          GetUnconfirmedIncomingBalanceUsecase(swapStore: locator<SwapStore>()),
     );
     locator.registerLazySingleton<SeedReferences>(
       () => SeedReferences(locator<WalletRepository>()),
@@ -263,10 +259,7 @@ class WalletLocator {
     locator.registerFactory<core.DeleteWalletUsecase>(
       () => core.DeleteWalletUsecase(
         walletRepository: locator<WalletRepository>(),
-        swapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
+        swapStore: locator<SwapStore>(),
         seedReferences: locator<SeedReferences>(),
         secrets: locator<Secrets>(),
       ),
@@ -314,6 +307,9 @@ class WalletLocator {
       () => WalletBloc(
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
           locator<WalletFacade>(),
+        ),
+        retrySwapsOnRefreshUsecase: RetrySwapsOnRefreshUsecase(
+          locator<SwapFacade>(),
         ),
         checkSpWalletSetupForWalletUsecase:
             locator<CheckSpWalletSetupForWalletUsecase>(),

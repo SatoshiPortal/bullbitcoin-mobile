@@ -70,6 +70,7 @@ export 'src/data/chain/electrum_chain.dart'
         broadcastBitcoinTransactionTo,
         broadcastLiquidTransaction,
         estimateBitcoinFees,
+        liquidTransactionKnown,
         probeBitcoinServer;
 export 'src/data/chain/bitcoin_prescan.dart' show prescanBitcoinWallet;
 export 'src/data/write/datasources/native_store_errors.dart'

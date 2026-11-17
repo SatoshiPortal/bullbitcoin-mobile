@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart'
     show SeedReferences;
-import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:bb_mobile/features/wallet/domain/usecases/delete_stored_wallet_usecase.dart';
 import 'package:bb_mobile/features/all_seed_view/domain/usecases/delete_secret_usecase.dart';
 import 'package:secrets/secrets.dart';
@@ -39,7 +39,7 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
 
-class _Swaps extends Mock implements BoltzSwapRepository {}
+class _Swaps extends Mock implements SwapStore {}
 
 class _Native extends Mock implements WalletNativeLifecycle {}
 
@@ -216,13 +216,13 @@ void main() {
         );
         if (deleteWallet) {
           final swaps = _Swaps();
-          when(() => swaps.getOngoingSwaps(walletId: id))
-              .thenAnswer((_) async => []);
+          when(() => swaps.ongoing(walletId: id))
+              .thenAnswer((_) async => const Ok([]));
           expect(
             await DeleteWalletUsecase(
               walletRepository: guardedRepository,
               seedReferences: SeedReferences(guardedRepository),
-              swapRepository: swaps,
+              swapStore: swaps,
               secrets: secrets,
             ).execute(walletId: id),
             isA<Ok>(),

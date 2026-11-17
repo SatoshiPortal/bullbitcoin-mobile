@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existin
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_required_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/restore_missing_default_secret_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/start_swap_engine_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/domain/app_unlock_failure.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -28,6 +29,9 @@ class _MockInitializeRequiredTorUsecase extends Mock
 class _MockRestoreMissingDefaultSecretUsecase extends Mock
     implements RestoreMissingDefaultSecretUsecase {}
 
+class _MockStartSwapEngineUsecase extends Mock
+    implements StartSwapEngineUsecase {}
+
 void main() {
   setUpAll(() => registerFallbackValue(Language.english));
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +48,7 @@ void main() {
   late _MockCheckForExistingDefaultWalletsUsecase checkDefaultWallets;
   late _MockInitializeRequiredTorUsecase initializeRequiredTor;
   late _MockRestoreMissingDefaultSecretUsecase restoreSecret;
+  late _MockStartSwapEngineUsecase startSwapEngine;
 
   AppStartupBloc buildBloc() => AppStartupBloc(
     resetAppDataUsecase: resetAppData,
@@ -51,6 +56,7 @@ void main() {
     checkForExistingDefaultWalletsUsecase: checkDefaultWallets,
     initializeRequiredTorUsecase: initializeRequiredTor,
     restoreMissingDefaultSecretUsecase: restoreSecret,
+    startSwapEngineUsecase: startSwapEngine,
   );
 
   setUp(() {
@@ -59,10 +65,12 @@ void main() {
     checkDefaultWallets = _MockCheckForExistingDefaultWalletsUsecase();
     initializeRequiredTor = _MockInitializeRequiredTorUsecase();
     restoreSecret = _MockRestoreMissingDefaultSecretUsecase();
+    startSwapEngine = _MockStartSwapEngineUsecase();
 
     when(() => resetAppData.execute()).thenAnswer((_) async => const Ok(null));
     // No encrypted backup in these fixtures, so Tor is never warmed.
     when(() => initializeRequiredTor.execute()).thenAnswer((_) async => null);
+    when(() => startSwapEngine.execute()).thenAnswer((_) async {});
   });
 
   test('starts up when default wallets exist', () async {
@@ -85,6 +93,7 @@ void main() {
 
     bloc.add(const AppStartupStarted());
     await bloc.stream.firstWhere((s) => s is AppStartupSuccess);
+    verify(() => startSwapEngine.execute()).called(1);
   });
 
   test(
@@ -105,6 +114,7 @@ void main() {
 
       expect(bloc.state, isA<AppStartupLoadingInProgress>());
       verify(() => checkPinCodeExists.execute()).called(1);
+      verifyNever(() => startSwapEngine.execute());
     },
   );
 
