@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "지도",
   "backupWarningDescription": "백업이 없으면 다음과 같은 경우 비트코인에 접근할 수 없습니다:",
   "backupWarningLoseReasonLostPhone": "휴대폰을 분실한 경우",
   "backupWarningLoseReasonDeletedApp": "앱을 삭제한 경우",

@@ -59,6 +59,7 @@ import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
 import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bull_logs/bull_logs.dart';
+import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
 
@@ -151,6 +152,7 @@ class AppLocator {
       notificationChannelId: paymentNotificationChannelId,
     );
     const LogsFeature().setup(locator);
+    BtcMapFeature.setup(locator);
     BitcoinPriceLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);

@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "地图",
   "backupWarningDescription": "如果没有备份，在以下情况下您将无法访问您的比特币：",
   "backupWarningLoseReasonLostPhone": "您丢失手机",
   "backupWarningLoseReasonDeletedApp": "您删除应用程序",

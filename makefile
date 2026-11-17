@@ -114,6 +114,11 @@ build-runner:
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
 	@$(MAKE) recoverbull-build-runner
+	@$(MAKE) btc-map-build-runner
+
+.PHONY: btc-map-build-runner
+btc-map-build-runner:
+	@(cd features/btc_map && fvm dart run build_runner build --force-jit)
 
 .PHONY: recoverbull-build-runner
 recoverbull-build-runner:
@@ -127,6 +132,7 @@ translations:
 	@echo "🌐 Generating translations files"
 	@$(MAKE) novlang-translations
 	@fvm flutter gen-l10n
+	@(cd features/btc_map && fvm flutter gen-l10n)
 	@(cd features/logs && fvm flutter gen-l10n)
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations

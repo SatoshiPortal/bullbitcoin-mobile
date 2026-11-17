@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Bản đồ",
   "buyUnexpectedError": "Không thể tạo đơn hàng của bạn ngay lúc này. Vui lòng thử lại hoặc liên hệ bộ phận hỗ trợ.",
   "buyConfirmPayoutWallet": "Ví nhận tiền",
   "buyPayoutMethodLiquid": "L-BTC trên Liquid",

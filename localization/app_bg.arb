@@ -1,5 +1,4 @@
 {
-  "settingsBtcMapTitle": "Карта",
   "buyUnexpectedError": "Вашата заявка не може да бъде създадена в момента. Опитайте отново или се свържете с поддръжката.",
   "buyConfirmPayoutWallet": "Портфейл за изплащане",
   "buyPayoutMethodLiquid": "L-BTC в Liquid",

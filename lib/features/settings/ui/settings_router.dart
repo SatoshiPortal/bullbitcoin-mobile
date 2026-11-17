@@ -17,7 +17,6 @@ import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_fa
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/btc_map/btc_map_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_advanced_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/payjoin_settings_screen.dart';
@@ -240,11 +239,6 @@ class SettingsRouter {
         path: SettingsRoute.currency.path,
         name: SettingsRoute.currency.name,
         builder: (context, state) => const CurrencySettingsScreen(),
-      ),
-      GoRoute(
-        path: SettingsRoute.btcMap.path,
-        name: SettingsRoute.btcMap.name,
-        builder: (context, state) => const BtcMapScreen(),
       ),
     ],
   );
