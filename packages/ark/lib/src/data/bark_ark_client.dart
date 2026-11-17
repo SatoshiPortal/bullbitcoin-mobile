@@ -8,6 +8,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../../ark.dart';
 import '../domain/ark_execution_policy.dart';
+import '../domain/ark_board_abandonment_port.dart';
 import '../domain/ark_renewal_batches.dart';
 import 'ark_chain_preflight.dart';
 import 'ark_claim_delivery.dart';
@@ -26,6 +27,7 @@ final class BarkArkClient implements ArkClient {
   final ArkExecutionPolicyPort executionPolicy;
   final ArkExecutionMode executionMode;
   final ArkStageBudget stageBudget;
+  final ArkBoardAbandonmentPort? boardAbandonment;
   final ArkNativeOpener opener;
   final ArkChainPreflight preflight;
   final DateTime Function() now;
@@ -44,6 +46,7 @@ final class BarkArkClient implements ArkClient {
     required this.stageBudget,
     required this.opener,
     required this.preflight,
+    this.boardAbandonment,
     DateTime Function()? clock,
     this.claimDelivery = const HttpArkClaimDelivery(),
   }) : now = clock ?? DateTime.now;
@@ -406,6 +409,134 @@ final class BarkArkClient implements ArkClient {
         : previous?.recovery ?? ArkRecoveryStatus.unknown;
   }
 
+  Future<ArkSnapshot> _classifyAbandonedBoards(
+    ArkStore store,
+    ArkSnapshot snapshot,
+    Map<String, ArkNeverSignedBoard?> proofs, {
+    Set<String>? nativeIds,
+  }) async {
+    final authority = boardAbandonment;
+    if (authority == null) return snapshot;
+    final native = nativeIds ?? snapshot.vtxos.map((v) => v.id).toSet();
+    final candidates = <String>{};
+    for (final vtxo in snapshot.vtxos.where(
+      (v) => v.state == ArkVtxoState.unknown,
+    )) {
+      final boards = snapshot.pendingBoards
+          .where((b) => b.vtxoId == vtxo.id)
+          .toList();
+      if (boards.length != 1 ||
+          snapshot.vtxos.where((v) => v.id == vtxo.id).length != 1) {
+        continue;
+      }
+      final board = boards.single;
+      if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(board.fundingTxid) ||
+          snapshot.pendingBoards
+                  .where((b) => b.fundingTxid == board.fundingTxid)
+                  .length !=
+              1 ||
+          board.amount != vtxo.amount) {
+        continue;
+      }
+      final operations = snapshot.operations
+          .where(
+            (o) =>
+                o.kind == ArkOperationKind.board &&
+                o.nativeReference == board.fundingTxid,
+          )
+          .toList();
+      if (operations.length != 1) continue;
+      final operation = operations.single;
+      final tuple = operation.boardFunding;
+      final record = store.operation(operation.id);
+      final quote = record == null ? null : store.quote(record.binding);
+      if (tuple == null ||
+          quote == null ||
+          quote.account != snapshot.account ||
+          quote.kind != ArkOperationKind.board) {
+        continue;
+      }
+      if (!proofs.containsKey(operation.id)) {
+        if (!_mayRun(snapshot.account)) continue;
+        proofs[operation.id] = switch (await authority.readNeverSigned(
+          account: snapshot.account,
+          operationId: operation.id,
+          fundingTxid: board.fundingTxid,
+        )) {
+          Ok(:final value) => value,
+          Err() => null,
+        };
+      }
+      final proof = proofs[operation.id];
+      if (proof == null ||
+          proof.account != snapshot.account ||
+          proof.operationId != operation.id ||
+          proof.fundingTxid != board.fundingTxid ||
+          proof.address != tuple.address ||
+          proof.keypairIndex != tuple.keypairIndex ||
+          proof.expiryHeight != tuple.expiryHeight ||
+          proof.expiryHeight != vtxo.expiryHeight ||
+          (board.expiryHeight != null &&
+              board.expiryHeight != proof.expiryHeight) ||
+          proof.grossAmount != quote.amount ||
+          proof.netAmount != quote.net ||
+          proof.netAmount != board.amount ||
+          proof.netAmount.value <= BigInt.zero ||
+          quote.amount.value - quote.fee.value != quote.net.value) {
+        continue;
+      }
+      candidates.add(vtxo.id);
+    }
+    if (candidates.isEmpty) return snapshot;
+    // Do not subtract a Board value from unrelated Lightning/round pending funds.
+    final boardBalance = snapshot.pendingBoardBalance;
+    final pending = snapshot.pending;
+    final nativeBoardRows = snapshot.pendingBoards.where(
+      (b) =>
+          native.contains(b.vtxoId) &&
+          snapshot.vtxos.any(
+            (v) =>
+                v.id == b.vtxoId &&
+                (v.state == ArkVtxoState.unknown ||
+                    v.state == ArkVtxoState.locked),
+          ),
+    );
+    final counted = nativeBoardRows.fold<BigInt>(
+      BigInt.zero,
+      (sum, b) => sum + b.amount.value,
+    );
+    if (boardBalance == null ||
+        pending == null ||
+        (boardBalance.value != BigInt.zero && counted != boardBalance.value) ||
+        pending.value < boardBalance.value) {
+      return snapshot;
+    }
+    final removed = boardBalance.value == BigInt.zero
+        ? BigInt.zero
+        : nativeBoardRows
+              .where((b) => candidates.contains(b.vtxoId))
+              .fold<BigInt>(BigInt.zero, (sum, b) => sum + b.amount.value);
+    return copySnapshot(
+      snapshot,
+      pending: Sats(pending.value - removed),
+      pendingBoardBalance: Sats(boardBalance.value - removed),
+      vtxos: [
+        for (final v in snapshot.vtxos)
+          if (candidates.contains(v.id))
+            ArkVtxo(
+              id: v.id,
+              amount: v.amount,
+              expiryHeight: v.expiryHeight,
+              state: ArkVtxoState.abandonedBoard,
+              anchor: v.anchor,
+              pendingRound: v.pendingRound,
+            )
+          else
+            v,
+      ],
+    );
+  }
+
   Future<ArkSnapshot> _observe(
     ArkStore store,
     ArkNativeSession session,
@@ -430,6 +561,15 @@ final class BarkArkClient implements ArkClient {
       store.put('reserve-address', {'address': reserveAddress});
     }
     observed = copySnapshot(observed, reserveAddress: reserveAddress);
+    final proofs = <String, ArkNeverSignedBoard?>{};
+    final nativeIds = observed.vtxos
+        .where(
+          (v) =>
+              v.state == ArkVtxoState.unknown || v.state == ArkVtxoState.locked,
+        )
+        .map((v) => v.id)
+        .toSet();
+    observed = await _classifyAbandonedBoards(store, observed, proofs);
     final previousTip = previous?.tipHeight;
     final nextTip = observed.tipHeight;
     if (previousTip != null && (nextTip == null || nextTip < previousTip)) {
@@ -496,11 +636,16 @@ final class BarkArkClient implements ArkClient {
       known.putIfAbsent(v.id, () => v);
     }
     final unresolved = <ArkVtxo>[];
+    final retainedAbandoned = <ArkVtxo>[];
     for (final old in known.values.where(
       (v) => v.state != ArkVtxoState.spent,
     )) {
       final current = observed.vtxos.where((v) => v.id == old.id).firstOrNull;
       if ((current == null || current.state == ArkVtxoState.spent) &&
+          old.state == ArkVtxoState.abandonedBoard &&
+          !observed.pendingBoards.any((b) => b.vtxoId == old.id)) {
+        retainedAbandoned.add(old);
+      } else if ((current == null || current.state == ArkVtxoState.spent) &&
           !provenSpent(old.id)) {
         unresolved.add(
           ArkVtxo(
@@ -514,23 +659,28 @@ final class BarkArkClient implements ArkClient {
         );
       }
     }
+    if (unresolved.isNotEmpty || retainedAbandoned.isNotEmpty) {
+      final retained = [...unresolved, ...retainedAbandoned];
+      final ids = retained.map((v) => v.id).toSet();
+      observed = copySnapshot(
+        observed,
+        vtxos: [
+          ...observed.vtxos.where((v) => !ids.contains(v.id)),
+          ...retained,
+        ],
+      );
+      observed = await _classifyAbandonedBoards(
+        store,
+        observed,
+        proofs,
+        nativeIds: nativeIds,
+      );
+    }
     if (observed.vtxos.any((v) => v.state == ArkVtxoState.unknown)) {
       observed = copySnapshot(
         observed,
         stale: true,
         vtxoCompleteness: ArkSectionCompleteness.incomplete,
-      );
-    }
-    if (unresolved.isNotEmpty) {
-      final unresolvedIds = unresolved.map((v) => v.id).toSet();
-      observed = copySnapshot(
-        observed,
-        stale: true,
-        vtxoCompleteness: ArkSectionCompleteness.incomplete,
-        vtxos: [
-          ...observed.vtxos.where((v) => !unresolvedIds.contains(v.id)),
-          ...unresolved,
-        ],
       );
     }
     final pinned = store.get('server');
@@ -1381,6 +1531,8 @@ ArkSnapshot copySnapshot(
   ArkSectionCompleteness? vtxoCompleteness,
   String? reserveAddress,
   List<ArkVtxo>? vtxos,
+  Sats? pending,
+  Sats? pendingBoardBalance,
 }) => ArkSnapshot(
   account: value.account,
   revision: value.revision,
@@ -1388,7 +1540,8 @@ ArkSnapshot copySnapshot(
   tipHeight: value.tipHeight,
   stale: stale ?? value.stale,
   spendable: value.spendable,
-  pending: value.pending,
+  pending: pending ?? value.pending,
+  pendingBoardBalance: pendingBoardBalance ?? value.pendingBoardBalance,
   confirmedReserve: value.confirmedReserve,
   vtxos: vtxos ?? value.vtxos,
   movements: value.movements,

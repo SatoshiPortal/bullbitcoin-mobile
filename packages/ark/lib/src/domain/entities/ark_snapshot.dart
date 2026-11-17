@@ -3,7 +3,7 @@ import 'package:primitives/primitives.dart';
 import 'ark_account.dart';
 import 'ark_operation.dart';
 
-enum ArkVtxoState { spendable, locked, spent, exited, unknown }
+enum ArkVtxoState { spendable, locked, spent, exited, unknown, abandonedBoard }
 
 enum ArkRecoveryStatus { unknown, notRun, complete, incomplete, failed }
 
@@ -110,6 +110,9 @@ final class ArkSnapshot {
   final ArkExitStatus exits;
   final ArkRecoveryStatus recovery;
   final ArkObligationStatus obligations;
+
+  /// Board-only pending balance after proved exclusions; null when unobserved.
+  final Sats? pendingBoardBalance;
   final int? pendingBoardCount;
   final int? pendingLightningCount;
   final int? pendingRoundCount;
@@ -136,6 +139,7 @@ final class ArkSnapshot {
     this.exits = ArkExitStatus.unknown,
     this.recovery = ArkRecoveryStatus.unknown,
     this.obligations = ArkObligationStatus.unknown,
+    this.pendingBoardBalance,
     this.pendingBoardCount,
     this.pendingLightningCount,
     this.pendingRoundCount,

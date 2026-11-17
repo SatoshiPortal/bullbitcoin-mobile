@@ -227,6 +227,7 @@ final class BarkNativeSession implements ArkNativeSession {
       stale: currentRecovery != ArkRecoveryStatus.complete,
       spendable: Sats.fromInt(balance.spendableSats),
       pending: Sats.fromInt(pending),
+      pendingBoardBalance: Sats.fromInt(balance.pendingBoardSats),
       confirmedReserve: Sats.fromInt(reserve.confirmedSats),
       vtxos: vtxos,
       vtxoCompleteness: currentRecovery == ArkRecoveryStatus.complete
