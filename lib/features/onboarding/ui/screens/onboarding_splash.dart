@@ -41,7 +41,7 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingBullBitcoin,
                     style: TextStyle(
                       fontFamily: BullTypography.brandFamily,
-                      fontSize: 54,
+                      fontSize: 54, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
                       fontWeight: .w500,
                       color: context.appColors.onPrimaryFixed,
                       height: 1,
@@ -51,7 +51,7 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingOwnYourMoney,
                     style: TextStyle(
                       fontFamily: BullTypography.brandFamily,
-                      fontSize: 40,
+                      fontSize: 40, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
                       fontWeight: .w500,
                       color: context.appColors.secondaryFixed,
                       height: 1,
