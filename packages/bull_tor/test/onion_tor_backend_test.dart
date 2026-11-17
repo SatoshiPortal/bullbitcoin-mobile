@@ -139,11 +139,11 @@ void main() {
       final waited = <Duration>[];
       final backend = OnionTorBackend(
         const TorLogger(),
-        readinessHold: const Duration(seconds: 15),
+        readinessHold: (_) => const Duration(seconds: 15),
         wait: (duration) async => waited.add(duration),
       );
 
-      await backend.holdReadiness();
+      await backend.holdReadiness(TorTransport.direct);
 
       expect(waited, [const Duration(seconds: 15)]);
     });
@@ -156,7 +156,7 @@ void main() {
           const TorLogger(),
           wait: (_) => never.future,
         );
-        final holding = backend.holdReadiness();
+        final holding = backend.holdReadiness(TorTransport.snowflake);
 
         await backend.stop();
 
