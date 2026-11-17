@@ -18,6 +18,20 @@ void main() {
     expect(removed, isTrue);
   });
 
+  testWidgets('removable chip is removed by a tap on its label', (
+    tester,
+  ) async {
+    var removed = false;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullFilterChip(label: 'Date', onRemove: () => removed = true),
+      ),
+    );
+
+    await tester.tap(find.text('Date'));
+    expect(removed, isTrue);
+  });
+
   testWidgets('removable chip offers a named 48 dp remove target', (
     tester,
   ) async {
