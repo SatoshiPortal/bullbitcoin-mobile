@@ -16,6 +16,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         BullSnackBar,
         BullText,
+        BullTypographyX,
         Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -223,9 +224,8 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         context.loc.testBackupTapWordsInOrder,
                         textAlign: .center,
                         maxLines: 2,
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: .w600,
-                          fontSize: 16,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w700,
                           letterSpacing: 0,
                         ),
                       ),
@@ -234,22 +234,20 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         BullText(
                           context.loc.testBackupWhatIsWordNumber(_placed + 1),
                           textAlign: .center,
-                          style: context.font.labelMedium?.copyWith(
+                          style: context.bullType.caption.copyWith(
                             fontWeight: .w700,
                             color: context.appColors.outline,
                             letterSpacing: 0,
-                            fontSize: 12,
                           ),
                         )
                       else
                         BullText(
                           context.loc.testBackupAllWordsSelected,
                           textAlign: .center,
-                          style: context.font.labelMedium?.copyWith(
+                          style: context.bullType.label.copyWith(
                             fontWeight: .w700,
                             color: context.appColors.surface,
                             letterSpacing: 0,
-                            fontSize: 14,
                           ),
                         ),
                       const Gap(16),
@@ -367,9 +365,8 @@ class _Challenge extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         return value.widgets.mnemonicChallenge(
-          style: context.font.bodyLarge?.copyWith(
+          style: context.bullType.label.copyWith(
             fontWeight: .w700,
-            fontSize: 14,
             color: context.appColors.secondary,
           ),
           placeholder: const Center(child: CircularProgressIndicator()),
@@ -472,9 +469,8 @@ class _Tile extends StatelessWidget {
                 child: Center(
                   child: BullText(
                     tile.position?.toString() ?? '00',
-                    style: context.font.titleMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       fontWeight: .w700,
-                      fontSize: 16,
                       letterSpacing: 0.15,
                       color: context.appColors.onPrimary,
                     ),

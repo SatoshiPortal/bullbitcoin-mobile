@@ -15,7 +15,13 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScreenPrivacyGate, BullShapesX, BullText, Gap;
+    show
+        BullButton,
+        BullScreenPrivacyGate,
+        BullShapesX,
+        BullText,
+        BullTypographyX,
+        Gap;
 import 'package:secrets/secrets.dart' show Secret, SecretExtension;
 
 class ShowMnemonicScreen extends StatefulWidget {
@@ -217,11 +223,10 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
           BullText(
             context.loc.testBackupStoreItSafe,
             textAlign: .center,
-            style: context.font.labelMedium?.copyWith(
+            style: context.bullType.caption.copyWith(
               fontWeight: .w700,
               color: context.appColors.textMuted,
               letterSpacing: 0,
-              fontSize: 12,
             ),
           ),
           if (lastPhysicalBackup != null)
@@ -230,11 +235,10 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
                 lastPhysicalBackup.toString().substring(0, 19),
               ),
               textAlign: .center,
-              style: context.font.labelMedium?.copyWith(
+              style: context.bullType.caption.copyWith(
                 fontWeight: .w700,
                 color: context.appColors.textMuted,
                 letterSpacing: 0,
-                fontSize: 12,
               ),
             ),
           const Gap(32),
@@ -275,15 +279,13 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
                       failureBuilder: (context, failure, retry) =>
                           _DisplayError(onRetry: retry),
                       passphraseLabel: context.loc.testBackupPassphrase,
-                      passphraseLabelStyle: context.font.labelMedium?.copyWith(
+                      passphraseLabelStyle: context.bullType.label.copyWith(
                         fontWeight: .w700,
                         color: context.appColors.onSurface,
                         letterSpacing: 0,
-                        fontSize: 14,
                       ),
-                      style: context.font.bodyLarge?.copyWith(
+                      style: context.bullType.label.copyWith(
                         fontWeight: .w700,
-                        fontSize: 14,
                         color: context.appColors.secondary,
                       ),
                       wordBuilder: (context, number, word) =>
@@ -348,9 +350,8 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
                   child: BullText(
                     context.loc.testBackupDoNotShare,
                     textAlign: .center,
-                    style: context.font.headlineMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       fontWeight: .w500,
-                      fontSize: 16,
                       color: context.appColors.secondary,
                     ),
                   ),
@@ -436,9 +437,8 @@ class _WarningItem extends StatelessWidget {
       const Gap(4),
       Text(
         text,
-        style: context.font.headlineMedium?.copyWith(
+        style: context.bullType.caption.copyWith(
           fontWeight: .w700,
-          fontSize: 12,
           color: context.appColors.secondary,
         ),
       ),
@@ -492,9 +492,8 @@ class _RecoveryPhraseWord extends StatelessWidget {
                 child: Center(
                   child: BullText(
                     number < 10 ? '0$number' : '$number',
-                    style: context.font.titleMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       fontWeight: .w700,
-                      fontSize: 16,
                       letterSpacing: 0.15,
                       color: context.appColors.onSecondary,
                     ),
