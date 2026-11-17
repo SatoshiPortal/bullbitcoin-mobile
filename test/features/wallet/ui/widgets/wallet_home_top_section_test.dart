@@ -109,15 +109,11 @@ void main() {
         greaterThanOrEqualTo(tester.getBottomLeft(unconfirmed).dy + 12),
       );
       expect(tester.getTopLeft(find.byKey(actionKey)).dy, greaterThan(224));
-      // The actions straddle the bottom edge of the background image.
+      // The actions sit fully inside the background image.
       final backgroundBottom = tester.getBottomLeft(find.byType(Image)).dy;
       expect(
         backgroundBottom,
-        greaterThan(tester.getTopLeft(find.byKey(actionKey)).dy),
-      );
-      expect(
-        backgroundBottom,
-        lessThan(tester.getBottomLeft(find.byKey(actionKey)).dy),
+        greaterThanOrEqualTo(tester.getBottomLeft(find.byKey(actionKey)).dy),
       );
     },
   );
