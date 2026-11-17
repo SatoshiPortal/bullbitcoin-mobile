@@ -2395,7 +2395,7 @@ void main() {
     });
 
     group('to an external address', () {
-      TransferState external({String? error}) => crossChain().copyWith(
+      TransferState external({SwapFailure? error}) => crossChain().copyWith(
         sendToExternal: true,
         externalAddress: 'destination',
         externalAddressError: error,
@@ -2431,7 +2431,13 @@ void main() {
         stubDetected(
           const PaymentRequest.liquid(address: 'destination', isTestnet: true),
         );
-        bloc.emit(external(error: 'Please enter a valid Liquid address'));
+        bloc.emit(
+          external(
+            error: const SwapInvalidExternalAddressFailure(
+              expectsBitcoin: false,
+            ),
+          ),
+        );
 
         bloc.add(const TransferEvent.swapCreated('1000'));
         await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
