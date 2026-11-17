@@ -397,6 +397,8 @@ class PdkPayjoinDatasource {
       // payjoin-cli saves a session before driving it. A request found by a
       // poll must always land on a stored row.
       return model;
+    } on PayjoinRuntimeInactiveException {
+      rethrow;
     } catch (e) {
       throw ReceiveCreationException(e.toString());
     }
