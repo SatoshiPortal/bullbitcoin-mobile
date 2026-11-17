@@ -1,5 +1,6 @@
 library;
 
+export 'src/domain/ark_account_selection_port.dart';
 export 'src/data/create_ark_facade.dart';
 export 'src/data/shared_preferences_ark_preferences_repository.dart';
 export 'src/data/ark_deadline_budget.dart';
