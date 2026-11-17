@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart' show visibleForTesting;
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -362,6 +364,12 @@ class BoltzDatasource {
         description: description,
         referralId: boltzReferralId,
       );
+      await _requireReverseQuote(
+        invoice: btcLnSwap.invoice,
+        onchainAmount: btcLnSwap.expectedOnchainAmount?.toInt(),
+        outAmount: outAmount,
+        fees: reverseFees.btcFees,
+      );
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
       final swapModel = SwapModel.lnReceive(
         id: btcLnSwap.id,
@@ -441,6 +449,12 @@ class BoltzDatasource {
         referralId: boltzReferralId,
       );
 
+      await _requireReverseQuote(
+        invoice: lbtcLnSwap.invoice,
+        onchainAmount: lbtcLnSwap.expectedOnchainAmount?.toInt(),
+        outAmount: outAmount,
+        fees: reverseFees.lbtcFees,
+      );
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
       final swapModel = SwapModel.lnReceive(
@@ -568,6 +582,11 @@ class BoltzDatasource {
         referralId: boltzReferralId,
       );
 
+      await _requireSubmarineQuote(
+        invoice: invoice,
+        expectedAmount: btcLnSwap.outAmount.toInt(),
+        fees: submarineFees.btcFees,
+      );
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
 
       final swapModel = SwapModel.lnSend(
@@ -626,6 +645,11 @@ class BoltzDatasource {
         referralId: boltzReferralId,
       );
 
+      await _requireSubmarineQuote(
+        invoice: invoice,
+        expectedAmount: lbtcLnSwap.outAmount.toInt(),
+        fees: submarineFees.lbtcFees,
+      );
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
       final swapModel = SwapModel.lnSend(
@@ -790,6 +814,12 @@ class BoltzDatasource {
         referralId: boltzReferralId,
       );
 
+      _requireChainQuote(
+        lockupAmount: chainSwap.outAmount.toInt(),
+        onchainAmount: chainSwap.expectedOnchainAmount?.toInt(),
+        amountSat: amountSat,
+        fees: chainFees.btcToLbtcFees,
+      );
       await _boltzStore.storeChainSwap(chainSwap);
       final swapModel = SwapModel.chain(
         id: chainSwap.id,
@@ -851,6 +881,12 @@ class BoltzDatasource {
         referralId: boltzReferralId,
       );
 
+      _requireChainQuote(
+        lockupAmount: chainSwap.outAmount.toInt(),
+        onchainAmount: chainSwap.expectedOnchainAmount?.toInt(),
+        amountSat: amountSat,
+        fees: chainFees.lbtcToBtcFees,
+      );
       await _boltzStore.storeChainSwap(chainSwap);
 
       final swapModel = SwapModel.chain(
@@ -1487,6 +1523,67 @@ class BoltzDatasource {
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
   }
 
+  // The amounts Boltz answers with must match the quote just fetched; a
+  // mismatch refuses the swap before anything is paid or locked, and drops
+  // the cached fees so a retry quotes afresh.
+  void _requireQuote(String? mismatch, void Function() dropFees) {
+    if (mismatch == null) return;
+    dropFees();
+    throw SwapsException('Boltz $mismatch does not match the quoted fees');
+  }
+
+  Future<void> _requireReverseQuote({
+    required String invoice,
+    required int? onchainAmount,
+    required int outAmount,
+    required RevSwapFees fees,
+  }) async {
+    final (invoiceSat, _, _, _) = await decodeInvoice(invoice);
+    _requireQuote(
+      reverseQuoteMismatch(
+        invoiceSat: invoiceSat,
+        onchainAmount: onchainAmount,
+        outAmount: outAmount,
+        percentage: fees.percentage,
+        lockupFee: fees.minerFees.lockup.toInt(),
+      ),
+      () => _reverseFeesFetchedAt = null,
+    );
+  }
+
+  Future<void> _requireSubmarineQuote({
+    required String invoice,
+    required int expectedAmount,
+    required SubSwapFees fees,
+  }) async {
+    final (invoiceSat, _, _, _) = await decodeInvoice(invoice);
+    _requireQuote(
+      submarineQuoteMismatch(
+        invoiceSat: invoiceSat,
+        expectedAmount: expectedAmount,
+        percentage: fees.percentage,
+        minerFees: fees.minerFees.toInt(),
+      ),
+      () => _submarineFeesFetchedAt = null,
+    );
+  }
+
+  void _requireChainQuote({
+    required int lockupAmount,
+    required int? onchainAmount,
+    required int amountSat,
+    required ChainSwapFees fees,
+  }) => _requireQuote(
+    chainQuoteMismatch(
+      lockupAmount: lockupAmount,
+      onchainAmount: onchainAmount,
+      amountSat: amountSat,
+      percentage: fees.percentage,
+      serverFee: fees.server.toInt(),
+    ),
+    () => _chainFeesFetchedAt = null,
+  );
+
   Future<(int, bool, String?, String?)> decodeInvoice(String invoice) async {
     try {
       final decoded = await DecodedInvoice.fromString(
@@ -1769,4 +1866,55 @@ class BoltzDatasource {
           ),
     ];
   }
+}
+
+int _percentOf(int amount, double percentage) =>
+    (percentage * amount / 100).ceil();
+
+/// The reverse-swap amount Boltz got wrong, or null when its invoice asks for
+/// exactly [outAmount] and its lockup leaves at most the quoted fees off it.
+@visibleForTesting
+String? reverseQuoteMismatch({
+  required int invoiceSat,
+  required int? onchainAmount,
+  required int outAmount,
+  required double percentage,
+  required int lockupFee,
+}) {
+  if (invoiceSat != outAmount) return 'invoice amount';
+  final minimum = outAmount - _percentOf(outAmount, percentage) - lockupFee - 1;
+  if (onchainAmount != null && onchainAmount < minimum) return 'lockup amount';
+  return null;
+}
+
+/// The submarine-swap amount Boltz got wrong, or null when it asks for at
+/// most the invoice plus the quoted fees.
+@visibleForTesting
+String? submarineQuoteMismatch({
+  required int invoiceSat,
+  required int expectedAmount,
+  required double percentage,
+  required int minerFees,
+}) {
+  final maximum =
+      invoiceSat + _percentOf(invoiceSat, percentage) + minerFees + 1;
+  return expectedAmount > maximum ? 'expected amount' : null;
+}
+
+/// The chain-swap amount Boltz got wrong, or null when our lockup is exactly
+/// [amountSat] and Boltz's leaves at most the quoted fees off it.
+@visibleForTesting
+String? chainQuoteMismatch({
+  required int lockupAmount,
+  required int? onchainAmount,
+  required int amountSat,
+  required double percentage,
+  required int serverFee,
+}) {
+  if (lockupAmount != amountSat) return 'lockup amount';
+  final minimum = amountSat - _percentOf(amountSat, percentage) - serverFee - 1;
+  if (onchainAmount != null && onchainAmount < minimum) {
+    return 'server lockup amount';
+  }
+  return null;
 }
