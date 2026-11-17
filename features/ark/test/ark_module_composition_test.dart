@@ -1,3 +1,7 @@
+import 'package:bull_ark/src/ui/ark_exit_request_screen.dart';
+
+import 'ark_exit_request_screen_test.dart' as exit_input;
+
 import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
 
 import 'fake_ark_board_funding.dart';
@@ -233,6 +237,59 @@ void main() {
       Bloc.observer = previous;
     });
   });
+  testWidgets(
+    'exits navigation reaches an explicit native quote request before submission',
+    (tester) async {
+      final r = Rig();
+      r.client.snapshot = Ok(exit_input.inventory());
+      r.client.quoted = Ok(
+        ArkQuote(
+          id: 'exit-review',
+          account: account(),
+          generation: 1,
+          chainSource: Uri.parse('https://esplora.example'),
+          configGeneration: 1,
+          kind: ArkOperationKind.emergencyExit,
+          amount: Sats.fromInt(1000),
+          fee: Sats.fromInt(20),
+          net: Sats.fromInt(980),
+          selectedIds: ['selected'],
+          observedTip: 100,
+          validUntil: DateTime.utc(2030),
+          destination: 'bcrt1-return',
+          feeRate: FeeRate(2),
+          maxClaimFee: Sats.fromInt(500),
+          confirmedReserveExposure: Sats.fromInt(10000),
+        ),
+      );
+      await accountPage(tester, r);
+      page<ArkAccountScreen>(tester).onExits();
+      await frame(tester);
+      button(tester, 'Emergency exit').onPressed();
+      await frame(tester);
+      expect(find.byType(ArkExitRequestScreen), findsOneWidget);
+      expect(
+        r.client.calls.where((call) => call == 'quote' || call == 'submit'),
+        isEmpty,
+      );
+      await exit_input.fill(tester);
+      exit_input.review(tester).onPressed();
+      await frame(tester);
+      expect(find.byType(ArkOperationReviewScreen), findsOneWidget);
+      final operation = page<ArkOperationReviewScreen>(tester).cubit;
+      expect(operation.request, isA<ArkEmergencyExitQuoteRequest>());
+      final request = operation.request as ArkEmergencyExitQuoteRequest;
+      expect(request.ids, ['selected']);
+      expect(request.destination, 'bcrt1-return');
+      expect(request.maxClaimFee, Sats.fromInt(500));
+      expect(r.client.calls.where((call) => call == 'quote'), hasLength(1));
+      expect(r.client.calls.where((call) => call == 'submit'), isEmpty);
+      button(tester, 'Confirm').onPressed();
+      await frame(tester);
+      expect(r.client.calls.where((call) => call == 'submit'), hasLength(1));
+      expect(operation.state, isA<ArkOperationUncertain>());
+    },
+  );
   testWidgets(
     'builders keep page owner and read count; fresh entry closes exact owner before admission',
     (tester) async {

@@ -63,6 +63,49 @@ List<BullDetailsTableItem> items(WidgetTester tester) => [
 ];
 
 void main() {
+  testWidgets(
+    'refresh is passive until requested and cannot cross an account replacement',
+    (tester) async {
+      var refreshes = 0;
+      final h = Harness(view());
+      await tester.pumpWidget(
+        app(
+          ArkExitsScreen(
+            snapshot: h.snapshot,
+            onReviewExit: () {},
+            onReviewProgress: () {},
+            onReviewClaim: (_) {},
+            onRefresh: () => refreshes++,
+          ),
+        ),
+      );
+      expect(refreshes, 0);
+      final refresh = tester
+          .widget<BullButton>(find.widgetWithText(BullButton, 'Refresh'))
+          .onPressed;
+      refresh();
+      expect(refreshes, 1);
+      final original = account();
+      await tester.pumpWidget(
+        app(
+          ArkExitsScreen(
+            snapshot: view(
+              owner: ArkAccountId(
+                parent: original.parent,
+                network: original.network,
+                serverIdentity: 'other',
+              ),
+            ),
+            onReviewExit: () {},
+            onReviewProgress: () {},
+            onReviewClaim: (_) {},
+          ),
+        ),
+      );
+      refresh();
+      expect(refreshes, 1);
+    },
+  );
   testWidgets('read-only mount shows explicit sats and exact copy metadata', (
     tester,
   ) async {
