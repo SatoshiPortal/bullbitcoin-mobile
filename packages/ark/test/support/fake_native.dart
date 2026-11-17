@@ -96,6 +96,9 @@ final class FakeOpener implements ArkNativeOpener {
   bool missingVtxos = false;
   List<ArkVtxo>? inventoryOverride;
   bool observationStale = false;
+  Sats pendingAmount = Sats.zero;
+  Sats? pendingBoardBalance;
+  List<ArkPendingBoard> pendingBoards = [];
   ArkSectionCompleteness inventoryCompleteness =
       ArkSectionCompleteness.complete;
   ArkRenewalStatus renewalStatus = ArkRenewalStatus.due;
@@ -196,7 +199,8 @@ final class FakeSession implements ArkNativeSession {
       tipHeight: owner.tip,
       stale: owner.observationStale,
       spendable: Sats.fromInt(20000),
-      pending: Sats.zero,
+      pending: owner.pendingAmount,
+      pendingBoardBalance: owner.pendingBoardBalance,
       confirmedReserve: Sats.fromInt(5000),
       vtxos:
           owner.inventoryOverride ??
@@ -217,7 +221,8 @@ final class FakeSession implements ArkNativeSession {
       renewal: owner.renewalStatus,
       exits: ArkExitStatus.none,
       obligations: ArkObligationStatus.present,
-      pendingBoardCount: 0,
+      pendingBoardCount: owner.pendingBoards.length,
+      pendingBoards: owner.pendingBoards,
       pendingLightningCount: 0,
       pendingRoundCount: 0,
       operations: operations,
