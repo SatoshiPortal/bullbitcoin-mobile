@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/theme/bull_keypad_colors.dart';
+import 'package:bull_ui/src/theme/bull_loader_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_typography.dart';
@@ -10,9 +11,11 @@ import 'package:material_ui/material_ui.dart';
 List<ThemeExtension<dynamic>> bullUiExtensions({
   required BullTheme colors,
   required Brightness brightness,
+  BullLoaderTheme loader = BullLoaderTheme.standard,
 }) => [
   colors,
   BullShapes.standard,
   BullTypography.standard,
   BullKeypadColors.of(brightness),
+  loader,
 ];

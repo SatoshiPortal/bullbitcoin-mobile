@@ -15,7 +15,7 @@ const _package = 'bull_recoverbull';
 AssetImage recoverBullAsset(String name) =>
     AssetImage('assets/$name', package: _package);
 
-/// Looping cubes shown while a vault operation is in flight.
+/// Loader shown while a vault operation is in flight.
 class RecoverBullProgress extends StatelessWidget {
   final String? title;
   final String? description;
@@ -35,15 +35,7 @@ class RecoverBullProgress extends StatelessWidget {
       child: Column(
         mainAxisAlignment: .center,
         children: [
-          if (isLoading)
-            Center(
-              child: Gif(
-                autostart: Autostart.loop,
-                width: 200,
-                height: 200,
-                image: recoverBullAsset('cubes_loading.gif'),
-              ),
-            ),
+          if (isLoading) const Center(child: BullLoader.large()),
           if (title case final title?) ...[
             const Gap(16),
             BullText(
@@ -201,12 +193,7 @@ class KeyServerStatusWidget extends StatelessWidget {
         mainAxisAlignment: .center,
         children: [
           if (status == KeyServerStatus.connecting)
-            Gif(
-              image: recoverBullAsset('cubes_loading.gif'),
-              autostart: Autostart.loop,
-              height: 55,
-              width: 55,
-            )
+            const BullLoader.small()
           else
             RichText(
               text: TextSpan(

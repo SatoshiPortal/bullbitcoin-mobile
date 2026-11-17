@@ -56,6 +56,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullFadingLinearProgress,
         BullInfoCard,
         BullInputText,
+        BullLoader,
         BullPickerItem,
         BullPickerMenu,
         BullSegmented,
@@ -2024,12 +2025,7 @@ class SendSendingScreen extends StatelessWidget {
           child: Column(
             children: [
               const Gap(192),
-              if (pausedFailure == null)
-                Gif(
-                  autostart: Autostart.loop,
-                  height: 123,
-                  image: AssetImage(Assets.animations.cubesLoading.path),
-                ),
+              if (pausedFailure == null) const BullLoader.large(),
               if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
                 BullText(
