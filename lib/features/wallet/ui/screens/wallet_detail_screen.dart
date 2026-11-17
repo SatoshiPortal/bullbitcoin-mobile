@@ -61,6 +61,7 @@ class WalletDetailScreen extends StatelessWidget {
             : BullText(walletName, style: context.font.headlineMedium),
         actions: [
           IconButton(
+            tooltip: context.loc.settingsWalletSettingsTitle,
             onPressed: () {
               context.pushNamed(
                 SettingsRoute.walletDetailsSelectedWallet.name,
