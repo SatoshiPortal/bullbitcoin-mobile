@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:primitives/primitives.dart'
-    show NetworkCapabilities, NetworkCapability, BitcoinNetwork, LiquidNetwork;
+import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_transaction.dart';
@@ -28,33 +27,62 @@ sealed class Transaction with _$Transaction {
       orderSwap?.canonicalWalletTransactionId ??
       payjoin?.txId ??
       order?.transactionId;
-  bool get supportsPublicExplorer {
-    final network = walletTransaction?.network;
+  primitives.Network? get _explorerNetwork {
+    final walletNetwork = walletTransaction?.network;
+    if (walletNetwork != null) return walletNetwork.shared;
     final origin = swap;
-    if (network == null && origin != null) {
-      return NetworkCapabilities.supports(
-        origin.isBitcoin
-            ? BitcoinNetwork.fromName(origin.environment.name)
-            : LiquidNetwork.fromName(origin.environment.name),
-        NetworkCapability.publicExplorer,
-      );
+    if (origin != null) {
+      return origin.isBitcoin
+          ? primitives.BitcoinNetwork.fromName(origin.environment.name)
+          : primitives.LiquidNetwork.fromName(origin.environment.name);
     }
-    return network == null ||
-        NetworkCapabilities.supports(
-          network.shared,
-          NetworkCapability.publicExplorer,
+    final orderRecord = orderSwap;
+    if (orderRecord != null) {
+      final testnet = orderRecord.environment == OrderSwapEnvironment.testnet;
+      return switch (orderRecord.canonicalWalletNetwork) {
+        OrderSwapNetwork.bitcoin =>
+          testnet
+              ? primitives.BitcoinNetwork.testnet
+              : primitives.BitcoinNetwork.mainnet,
+        OrderSwapNetwork.liquid =>
+          testnet
+              ? primitives.LiquidNetwork.testnet
+              : primitives.LiquidNetwork.mainnet,
+        OrderSwapNetwork.lightning || null => null,
+      };
+    }
+    final session = payjoin;
+    if (session != null) return session.network;
+    final exchange = order;
+    if (exchange != null) {
+      if (exchange.isBitcoin) {
+        return exchange.isTestnet
+            ? primitives.BitcoinNetwork.testnet
+            : primitives.BitcoinNetwork.mainnet;
+      }
+      if (exchange.isLiquid) {
+        return exchange.isTestnet
+            ? primitives.LiquidNetwork.testnet
+            : primitives.LiquidNetwork.mainnet;
+      }
+    }
+    return null;
+  }
+
+  bool get supportsPublicExplorer {
+    final network = _explorerNetwork;
+    return network != null &&
+        primitives.NetworkCapabilities.supports(
+          network,
+          primitives.NetworkCapability.publicExplorer,
         );
   }
 
-  bool get isTestnet =>
-      walletTransaction?.network.requireHistoricalTestnet() ??
-      swap?.environment.isTestnet ??
-      (orderSwap == null
-          ? null
-          : orderSwap!.environment == OrderSwapEnvironment.testnet) ??
-      payjoin?.isTestnet ??
-      order?.isTestnet ??
-      false;
+  bool get isTestnet => switch (_explorerNetwork?.env) {
+    primitives.NetworkEnv.mainnet => false,
+    primitives.NetworkEnv.testnet => true,
+    _ => throw StateError('Transaction has no historical explorer network'),
+  };
   bool get isBitcoin =>
       walletTransaction?.isBitcoin ??
       swap?.isBitcoin ??

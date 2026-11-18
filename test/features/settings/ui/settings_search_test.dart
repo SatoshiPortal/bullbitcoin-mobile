@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:bb_mobile/generated/l10n/localization_as.dart';
@@ -26,7 +27,10 @@ void main() {
 
     test('matches a dedicated Assamese keyword', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(localization: localization);
+      final items = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: localization,
+      );
 
       final results = searchSettings(items, 'ব্লক এক্সপ্লোৰাৰ');
 
@@ -36,7 +40,10 @@ void main() {
 
     test('matches dedicated metadata for another localized setting', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(localization: localization);
+      final items = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: localization,
+      );
 
       final results = searchSettings(items, 'আন্ধাৰ');
 
@@ -45,7 +52,10 @@ void main() {
 
     test('keeps English terms as a fallback in another locale', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(localization: localization);
+      final items = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: localization,
+      );
 
       final results = searchSettings(items, 'transaction fees');
 
@@ -152,8 +162,12 @@ void main() {
     });
 
     test('account settings is listed only when exchange is ready', () {
-      final hidden = buildSettingsItems(localization: AppLocalizationsEn());
+      final hidden = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: AppLocalizationsEn(),
+      );
       final ready = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
         localization: AppLocalizationsEn(),
         accountReady: true,
       );
@@ -352,6 +366,7 @@ List<SettingsItem> _englishItems({
 }) {
   final localization = AppLocalizationsEn();
   return buildSettingsItems(
+    environment: NetworkEnv.mainnet,
     localization: localization,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
@@ -361,10 +376,16 @@ List<SettingsItem> _englishItems({
 
 List<SettingsItem> _frenchItems() {
   final localization = AppLocalizationsFr();
-  return buildSettingsItems(localization: localization);
+  return buildSettingsItems(
+    environment: NetworkEnv.mainnet,
+    localization: localization,
+  );
 }
 
 List<SettingsItem> _germanItems() {
   final localization = AppLocalizationsDe();
-  return buildSettingsItems(localization: localization);
+  return buildSettingsItems(
+    environment: NetworkEnv.mainnet,
+    localization: localization,
+  );
 }

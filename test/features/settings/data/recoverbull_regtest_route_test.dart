@@ -120,6 +120,7 @@ void main() {
           final capturedPath = await SettingsRecoverBullBindings.setup(
             services,
             databasePath: '/tmp/scope/recoverbull.sqlite',
+            regtestHost: 'stack.example',
           );
           expect(
             capturedPath,
@@ -380,6 +381,7 @@ void main() {
         final path = await SettingsRecoverBullBindings.setup(
           services,
           databasePath: '/tmp/scope/recoverbull.sqlite',
+          regtestHost: 'stack.example',
         );
         expect(
           path,

@@ -8,12 +8,20 @@ abstract class SwapSettingsState with _$SwapSettingsState {
     @Default(SwapRouteOverride.auto) SwapRouteOverride routeOverride,
     @Default(false) bool devModeEnabled,
     @Default(SwapServer.mainnetDefault) SwapServer swapServer,
-    @Default(false) bool swapServerIsTestnet,
+    NetworkEnv? swapServerEnvironment,
     @Default(false) bool saving,
     SwapFailure? failure,
   }) = _SwapSettingsState;
   const SwapSettingsState._();
 
-  bool get isDefaultSwapServer =>
-      swapServer == SwapServer.defaultFor(isTestnet: swapServerIsTestnet);
+  bool get canEditSwapServer =>
+      loaded &&
+      (swapServerEnvironment == NetworkEnv.mainnet ||
+          swapServerEnvironment == NetworkEnv.testnet);
+
+  bool get isDefaultSwapServer => switch (swapServerEnvironment) {
+    NetworkEnv.mainnet => swapServer == SwapServer.mainnetDefault,
+    NetworkEnv.testnet => swapServer == SwapServer.testnetDefault,
+    _ => false,
+  };
 }

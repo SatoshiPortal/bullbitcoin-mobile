@@ -5,6 +5,7 @@ enum NetworkCapability {
   softwareWallet,
   exchange,
   swaps,
+  automaticSwaps,
   payjoin,
   hardwareWallet,
   ark,
@@ -23,6 +24,7 @@ abstract final class NetworkCapabilities {
           NetworkCapability.softwareWallet ||
           NetworkCapability.exchange ||
           NetworkCapability.swaps ||
+          NetworkCapability.automaticSwaps ||
           NetworkCapability.payjoin ||
           NetworkCapability.hardwareWallet ||
           NetworkCapability.silentPayments ||
@@ -36,6 +38,7 @@ abstract final class NetworkCapabilities {
           NetworkCapability.softwareWallet ||
           NetworkCapability.exchange ||
           NetworkCapability.swaps ||
+          NetworkCapability.automaticSwaps ||
           NetworkCapability.hardwareWallet ||
           NetworkCapability.publicExplorer ||
           NetworkCapability.publicFeeEstimates => true,
@@ -45,6 +48,7 @@ abstract final class NetworkCapabilities {
           NetworkCapability.swaps ||
           NetworkCapability.payjoin => true,
           NetworkCapability.exchange ||
+          NetworkCapability.automaticSwaps ||
           NetworkCapability.hardwareWallet ||
           NetworkCapability.ark ||
           NetworkCapability.silentPayments ||

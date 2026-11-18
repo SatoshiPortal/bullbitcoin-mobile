@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullDialog, BullPickerChip, BullPickerItem;
+import 'package:primitives/primitives.dart' show RegtestHostProfile;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,10 +31,11 @@ class TestnetModeSwitch extends StatelessWidget {
           value: Environment.testnet,
           label: context.loc.electrumTestnet,
         ),
-        BullPickerItem(
-          value: Environment.regtest,
-          label: context.loc.electrumRegtest,
-        ),
+        if (RegtestHostProfile.isConfigured)
+          BullPickerItem(
+            value: Environment.regtest,
+            label: context.loc.electrumRegtest,
+          ),
       ],
       onChanged: (environment) async {
         final cubit = context.read<SettingsCubit>();
