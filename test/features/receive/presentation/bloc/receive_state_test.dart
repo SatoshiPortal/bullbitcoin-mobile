@@ -19,9 +19,12 @@ void main() {
   //  payjoinGloballyEnabled semantics, not the balance one — a zero default
   //  would make isPayjoinLoading false for a reason unrelated to what each
   //  test names. Tests about isPayjoinAwaitingFunds override it explicitly.
-  Wallet localWallet({BigInt? balanceSat}) => Wallet(
+  Wallet localWallet({
+    BigInt? balanceSat,
+    Network network = Network.bitcoinMainnet,
+  }) => Wallet(
     origin: 'test-origin',
-    network: Network.bitcoinMainnet,
+    network: network,
     xpubFingerprint: '00000000',
     scriptType: ScriptType.bip84,
     xpub: '',
@@ -208,7 +211,7 @@ void main() {
         'message=', () {
       final state = ReceiveState(
         type: ReceiveType.liquid,
-        wallet: localWallet(),
+        wallet: localWallet(network: Network.liquidMainnet),
         liquidAddress: WalletAddress(
           walletId: 'w1',
           index: 0,
