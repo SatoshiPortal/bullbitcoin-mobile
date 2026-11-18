@@ -102,38 +102,45 @@ class BullServerTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: statusColor,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            statusLabel,
-                            style: context.bullType.label.copyWith(
-                              fontWeight: FontWeight.w400,
-                              color: colors.onSurface,
-                            ),
-                          ),
-                        ),
-                        if (disabled && disabledText != null) ...[
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              disabledText,
-                              style: context.bullType.label.copyWith(
-                                fontWeight: FontWeight.w400,
-                                color: colors.onSurface.withValues(alpha: 0.6),
-                                fontStyle: FontStyle.italic,
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: statusColor,
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  statusLabel,
+                                  style: context.bullType.label.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: colors.onSurface,
+                                  ),
+                                ),
+                              ),
+                              if (disabled && disabledText != null) ...[
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    disabledText,
+                                    style: context.bullType.label.copyWith(
+                                      fontWeight: FontWeight.w400,
+                                      color: colors.onSurface.withValues(
+                                        alpha: 0.6,
+                                      ),
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
-                        ],
-                        const Spacer(),
+                        ),
                         const SizedBox(width: 8),
                         BullBadge(
                           label: badgeLabel,
