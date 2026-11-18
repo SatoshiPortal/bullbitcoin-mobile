@@ -1,11 +1,11 @@
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/ui/ark_vtxos_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullButton, BullDetailsTable, BullDetailsTableItem;
+    show BullBorderedTile, BullButton, BullTopBar, ValueKey, GestureDetector;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import 'ark_information_widget_test.dart' show app;
+import 'ark_information_widget_test.dart' show app, details;
 import 'ark_operations_test.dart' show account;
 
 ArkVtxo coin(
@@ -13,12 +13,14 @@ ArkVtxo coin(
   ArkVtxoState state = ArkVtxoState.spendable,
   bool pendingRound = false,
   int expiry = 500,
+  String? anchor,
 }) => ArkVtxo(
   id: id,
   amount: Sats.fromInt(1234),
   expiryHeight: expiry,
   state: state,
   pendingRound: pendingRound,
+  anchor: anchor,
 );
 ArkSnapshot view({
   ArkAccountId? owner,
@@ -102,6 +104,98 @@ void main() {
     oldRenew();
     expect(calls, isEmpty);
   });
+
+  testWidgets('details use observed data and never select a renewal', (
+    tester,
+  ) async {
+    final calls = <List<String>>[];
+    await paint(tester, view(), calls);
+    await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
+    await tester.pumpAndSettle();
+    expect(find.text('VTXO details'), findsOneWidget);
+    expect(find.text('Created'), findsOneWidget);
+    expect(find.text('Anchor'), findsOneWidget);
+    expect(find.text('Unavailable'), findsNWidgets(2));
+    expect(find.text('400'), findsOneWidget);
+    expect(renew(tester).disabled, true);
+    expect(calls, isEmpty);
+    tester.widget<BullTopBar>(find.byType(BullTopBar)).onBack?.call();
+    await tester.pumpAndSettle();
+    expect(find.text('Total value'), findsOneWidget);
+    expect(renew(tester).disabled, true);
+  });
+  testWidgets('account replacement closes the previous account details', (
+    tester,
+  ) async {
+    final calls = <List<String>>[];
+    await paint(tester, view(), calls);
+    await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
+    await tester.pumpAndSettle();
+    final oldDetails = tester.widget<BullTopBar>(find.byType(BullTopBar));
+    expect(oldDetails.title, 'VTXO details');
+    await paint(tester, view(owner: other), calls);
+    expect(find.text('VTXO details'), findsNothing);
+    expect(find.text('Total value'), findsOneWidget);
+  });
+  testWidgets('filters never imply that an inventory is empty', (tester) async {
+    final calls = <List<String>>[];
+    await paint(tester, view(), calls);
+    await tester.tap(find.text('Locked 0'));
+    await tester.pumpAndSettle();
+    expect(find.text('No VTXOs match this filter.'), findsOneWidget);
+    expect(find.text('No items in this observed inventory.'), findsNothing);
+    expect(renew(tester).disabled, true);
+  });
+  testWidgets('details close when their ID disappears or becomes ambiguous', (
+    tester,
+  ) async {
+    final calls = <List<String>>[];
+    for (final values in <List<ArkVtxo>>[
+      [],
+      [coin('shared'), coin('shared')],
+    ]) {
+      await paint(tester, view(), calls);
+      await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
+      await tester.pumpAndSettle();
+      expect(find.text('VTXO details'), findsOneWidget);
+      await paint(tester, view(values: values), calls);
+      expect(find.text('VTXO details'), findsNothing);
+    }
+    expect(calls, isEmpty);
+  });
+  testWidgets('old details callback cannot open a replacement account', (
+    tester,
+  ) async {
+    final calls = <List<String>>[];
+    await paint(tester, view(), calls);
+    final oldOpen = tester
+        .widget<GestureDetector>(
+          find.byKey(const ValueKey('vtxo-details-shared')),
+        )
+        .onTap;
+    await paint(tester, view(owner: other), calls);
+    oldOpen?.call();
+    await tester.pumpAndSettle();
+    expect(find.text('VTXO details'), findsNothing);
+    expect(calls, isEmpty);
+  });
+  testWidgets(
+    'details retain real anchor and invalidate stale blocks remaining',
+    (tester) async {
+      final calls = <List<String>>[];
+      final values = [coin('shared', anchor: 'actual-anchor')];
+      await paint(tester, view(values: values), calls);
+      await tester.tap(find.byKey(const ValueKey('vtxo-details-shared')));
+      await tester.pumpAndSettle();
+      expect(details(tester), containsPair('Anchor', 'actual-anchor'));
+      expect(details(tester), containsPair('Blocks remaining', '400'));
+      await paint(tester, view(values: values, stale: true), calls);
+      expect(details(tester), containsPair('Blocks remaining', 'Unavailable'));
+      expect(details(tester), containsPair('Anchor', 'actual-anchor'));
+      expect(renew(tester).disabled, true);
+      expect(calls, isEmpty);
+    },
+  );
   final invalid = {
     'stale': view(stale: true),
     'incomplete': view(completeness: ArkSectionCompleteness.incomplete),
@@ -151,12 +245,7 @@ void main() {
       ];
       final calls = <List<String>>[];
       await paint(tester, view(values: values), calls);
-      final amounts = tester
-          .widgetList<BullDetailsTable>(find.byType(BullDetailsTable))
-          .expand((table) => table.items.whereType<BullDetailsTableItem>())
-          .where((item) => item.label == 'Amount in sats');
-      expect(amounts, hasLength(values.length));
-      expect(amounts.every((item) => item.displayValue == '1234'), true);
+      expect(find.text('1,234 sats'), findsNWidgets(values.length));
       for (final id in [
         'locked',
         'spent',

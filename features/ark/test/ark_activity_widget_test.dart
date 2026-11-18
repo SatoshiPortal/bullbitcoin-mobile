@@ -207,12 +207,12 @@ void main() {
       expect((cubit.state as ArkViewFailed).lastObserved?.stale, false);
       expect(find.text(historical), findsOneWidget);
       expect(rows(tester), hasLength(1));
-      for (final label in ['Send', 'Receive', 'Add funds']) {
+      for (final label in ['Send', 'Receive', 'Board to Ark']) {
         expect(button(tester, label).disabled, true);
         button(tester, label).onPressed();
       }
       expect(calls, isEmpty);
-      for (final label in ['VTXOs', 'Emergency exit', 'Server information']) {
+      for (final label in ['VTXOs', 'Emergency exit', 'Ark info']) {
         button(tester, label).onPressed();
       }
       expect(calls, ['vtxos', 'exits', 'info']);

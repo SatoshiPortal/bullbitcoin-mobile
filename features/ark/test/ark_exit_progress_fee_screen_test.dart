@@ -20,6 +20,22 @@ Future<void> edit(WidgetTester tester, String raw) async {
 
 void main() {
   testWidgets(
+    'progression explains a foreground review without fabricated fee estimates',
+    (tester) async {
+      await tester.pumpWidget(app(ArkExitProgressFeeScreen(config: config())));
+      expect(find.text('Progress emergency exits'), findsOneWidget);
+      expect(
+        find.text(
+          'Choose a fee rate to request a foreground review of exit progression.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('144 blocks'), findsNothing);
+      expect(find.textContaining('automatically'), findsNothing);
+    },
+  );
+
+  testWidgets(
     'absent host stays unavailable, passive and explicitly in sat/vB',
     (tester) async {
       await tester.pumpWidget(app(ArkExitProgressFeeScreen(config: config())));

@@ -4,7 +4,11 @@ import 'package:bull_ark/src/ui/ark_connection_details.dart';
 import 'package:bull_ark/src/ui/ark_information_screen.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDetailsTable, BullDetailsTableItem;
+    show
+        BullDetailsTable,
+        BullDetailsTableItem,
+        BullAmountScope,
+        BullAmountSnapshot;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
@@ -21,7 +25,15 @@ ArkAccountConfig config({bool fallback = true}) => ArkAccountConfig(
   renewalThresholdBlocks: 1008,
 );
 
-Widget app(Widget child, {String language = 'en'}) => MaterialApp(
+Widget app(
+  Widget child, {
+  String language = 'en',
+  BullAmountSnapshot? amountPreferences = const BullAmountSnapshot(
+    unit: BitcoinUnit.sats,
+    hideAmounts: false,
+    isReady: true,
+  ),
+}) => MaterialApp(
   locale: Locale(language),
   supportedLocales: ArkLocalizations.supportedLocales,
   localizationsDelegates: const [
@@ -29,7 +41,13 @@ Widget app(Widget child, {String language = 'en'}) => MaterialApp(
     ...GlobalMaterialLocalizations.delegates,
   ],
   theme: ThemeData(extensions: testBullExtensions),
-  home: child,
+  home: amountPreferences == null
+      ? child
+      : BullAmountScope(
+          snapshot: amountPreferences,
+          writeUnit: (_) async => false,
+          child: child,
+        ),
 );
 
 Map<String, String?> details(WidgetTester tester) => {

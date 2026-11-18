@@ -1,7 +1,13 @@
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/ui/ark_exits_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDetailsTable, BullDetailsTableItem, SizedBox;
+    show
+        BullButton,
+        BullDetailsTable,
+        BullDetailsTableItem,
+        BullBorderedTile,
+        BullBadge,
+        SizedBox;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -64,6 +70,21 @@ List<BullDetailsTableItem> items(WidgetTester tester) => [
 
 void main() {
   testWidgets(
+    'compact exit rows open only observed metadata without advancing',
+    (tester) async {
+      final h = Harness(view(rows: [exitRow(status: ArkExitStatus.submitted)]));
+      await tester.pumpWidget(app(h.screen));
+      expect(find.byType(BullDetailsTable), findsNothing);
+      expect(find.text('Claim submitted'), findsOneWidget);
+      await tester.tap(find.byType(BullBorderedTile).first);
+      await tester.pump();
+      expect(find.text('observed-txid'), findsOneWidget);
+      expect(h.untouched, true);
+      expect(find.textContaining('confirmed'), findsNothing);
+    },
+  );
+
+  testWidgets(
     'refresh is passive until requested and cannot cross an account replacement',
     (tester) async {
       var refreshes = 0;
@@ -112,6 +133,8 @@ void main() {
     final h = Harness(view());
     await tester.pumpWidget(app(h.screen));
     expect(h.untouched, true);
+    await tester.tap(find.byType(BullBorderedTile).first);
+    await tester.pump();
     final amount = items(tester)
         .singleWhere((i) => i.label == 'Amount in sats');
     expect(amount.displayValue, '1234');
@@ -119,7 +142,7 @@ void main() {
         .singleWhere((i) => i.label == 'Claim transaction');
     expect(txid.displayValue, 'observed-txid');
     expect(txid.copyValue, txid.displayValue);
-    expect(find.text('Exit claimable'), findsOneWidget);
+    expect(find.text('Exit claimable'), findsWidgets);
   });
   testWidgets('explicit claim review emits exactly one immutable current ID', (
     tester,
@@ -218,7 +241,7 @@ void main() {
         final old = buttons(tester).map((b) => b.onPressed).toList();
         h.snapshot = invalid;
         await tester.pumpWidget(app(h.screen));
-        expect(find.text('shared'), findsOneWidget);
+        expect(find.text('1,234 sats'), findsOneWidget);
         for (final callback in old) {
           callback();
         }
@@ -259,13 +282,13 @@ void main() {
       view(rows: [], exits: ArkExitStatus.pending),
     ]) {
       await tester.pumpWidget(app(Harness(unknown).screen));
-      expect(find.text('No items in this observed inventory.'), findsNothing);
+      expect(find.text('No emergency exits'), findsNothing);
       expect(find.text('Unavailable'), findsWidgets);
     }
     await tester.pumpWidget(
       app(Harness(view(rows: [], exits: ArkExitStatus.none)).screen),
     );
-    expect(find.text('No items in this observed inventory.'), findsOneWidget);
+    expect(find.text('No emergency exits'), findsOneWidget);
   });
   testWidgets(
     'missing height and txid remain unavailable without copy default',
@@ -273,6 +296,8 @@ void main() {
       await tester.pumpWidget(
         app(Harness(view(rows: [exitRow(height: null, txid: null)])).screen),
       );
+      await tester.tap(find.byType(BullBorderedTile).first);
+      await tester.pump();
       final txid = items(tester)
           .singleWhere((i) => i.label == 'Claim transaction');
       expect(txid.displayValue, 'Unavailable');
@@ -296,9 +321,9 @@ void main() {
         await tester.pumpWidget(
           app(Harness(view(rows: rows)).screen, language: language),
         );
-        final statuses = items(tester)
-            .where((i) => i.label == (language == 'en' ? 'State' : 'État'))
-            .map((i) => i.displayValue)
+        final statuses = tester
+            .widgetList<BullBadge>(find.byType(BullBadge))
+            .map((badge) => badge.label)
             .toSet();
         expect(
           statuses,

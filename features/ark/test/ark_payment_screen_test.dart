@@ -4,7 +4,14 @@ import 'package:ark/ark.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:bull_ark/src/presentation/ark_payment_cubit.dart';
 import 'package:bull_ark/src/ui/ark_payment_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullInputText, SizedBox;
+import 'package:bull_ui/bull_ui.dart'
+    show
+        BullButton,
+        BullInputText,
+        BullTopBar,
+        SizedBox,
+        ValueKey,
+        VoidCallback;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -24,9 +31,27 @@ BullButton action(WidgetTester tester, String label) {
   return tester.widget<BullButton>(finder);
 }
 
-BullInputText input(WidgetTester tester, int index) => tester
-    .widgetList<BullInputText>(find.byType(BullInputText))
-    .elementAt(index);
+BullInputText input(WidgetTester tester, int index) =>
+    tester.widget<BullInputText>(
+      find.byKey(
+        ValueKey(index == 0 ? 'ark-payment-address' : 'ark-payment-amount'),
+      ),
+    );
+
+VoidCallback cancelAction(WidgetTester tester) {
+  final callback = tester.widget<BullTopBar>(find.byType(BullTopBar)).onBack;
+  if (callback == null) throw StateError('Expected explicit back action');
+  return callback;
+}
+
+Future<void> expectDestination(WidgetTester tester, String value) async {
+  cancelAction(tester)();
+  await frame(tester);
+  expect(input(tester, 0).value, value);
+  action(tester, 'Continue').onPressed();
+  await frame(tester);
+}
+
 ArkPaymentScreen page(
   PaymentRig r, {
   void Function()? reconcile,
@@ -107,23 +132,24 @@ void main() {
       await tester.pumpWidget(app(page(r)));
       await frame(tester);
       expect(r.client.calls, isEmpty);
-      expect(input(tester, 0).value, destination);
+      await expectDestination(tester, destination);
       input(tester, 1).onChanged('1000');
       await frame(tester);
       expect(r.client.calls, isEmpty);
       r.client.quoted = Ok(paymentQuote(r.cubit.account));
-      final review = action(tester, 'Review').onPressed;
+      final review = action(tester, 'Continue').onPressed;
       review();
       review();
       await frame(tester);
       expect(r.client.calls, ['quote']);
       expect(details(tester), {
-        'Ark address or BOLT11 invoice': destination,
-        'Amount in sats': '1000',
-        'Fee (sats)': '100',
-        'Net amount (sats)': '900',
+        'From': 'Ark',
+        'To': destination,
+        'Amount': '900 sats',
+        'Network fees': '100 sats',
+        'Total': '1,000 sats',
       });
-      expect(find.widgetWithText(BullButton, 'Review'), findsNothing);
+      expect(find.widgetWithText(BullButton, 'Continue'), findsNothing);
       expect(r.ids, 0);
     },
   );
@@ -138,7 +164,7 @@ void main() {
       await frame(tester);
       final reply = Completer<Result<ArkQuote, ArkWalletFailure>>();
       r.client.replies.add(reply);
-      action(tester, 'Review').onPressed();
+      action(tester, 'Continue').onPressed();
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentQuoting>());
       oldField('2000');
@@ -148,13 +174,13 @@ void main() {
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentEditing>());
       r.client.quoted = Ok(paymentQuote(r.cubit.account, amount: 2000));
-      action(tester, 'Review').onPressed();
+      action(tester, 'Continue').onPressed();
       await frame(tester);
       oldField('9999');
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentReview>());
-      expect(details(tester)['Amount in sats'], '2000');
-      action(tester, 'Cancel').onPressed();
+      expect(details(tester)['Total'], '2,000 sats');
+      cancelAction(tester)();
       await frame(tester);
       expect(input(tester, 1).value, '2000');
       expect(r.client.calls, ['quote', 'quote']);
@@ -168,7 +194,7 @@ void main() {
       await tester.pumpWidget(app(page(r)));
       await frame(tester);
       final confirm1 = action(tester, 'Confirm').onPressed;
-      final cancel1 = action(tester, 'Cancel').onPressed;
+      final cancel1 = cancelAction(tester);
       r.cubit.edit();
       await r.ready(amount: 2000);
       await frame(tester);
@@ -180,7 +206,7 @@ void main() {
       final pending = Completer<Result<ArkOperation, ArkWalletFailure>>();
       r.client.submission = pending;
       final confirm2 = action(tester, 'Confirm').onPressed;
-      final cancel2 = action(tester, 'Cancel').onPressed;
+      final cancel2 = cancelAction(tester);
       confirm2();
       confirm2();
       cancel2();
@@ -202,7 +228,7 @@ void main() {
       await frame(tester);
       expect(r.ids, 1);
       expect(r.client.journal.keys, ['payment-1']);
-      expect(find.widgetWithText(BullButton, 'Review'), findsNothing);
+      expect(find.widgetWithText(BullButton, 'Continue'), findsNothing);
       expect(find.widgetWithText(BullButton, 'Cancel'), findsNothing);
     },
   );
@@ -215,11 +241,11 @@ void main() {
         await tester.pumpWidget(app(page(a, reconcile: () => oldReconciles++)));
         await frame(tester);
         final oldField = input(tester, 1).onChanged;
-        final oldReview = action(tester, 'Review').onPressed;
+        final oldReview = action(tester, 'Continue').onPressed;
         await a.ready();
         await frame(tester);
         final oldConfirm = action(tester, 'Confirm').onPressed;
-        final oldCancel = action(tester, 'Cancel').onPressed;
+        final oldCancel = cancelAction(tester);
         a.cubit.emit(const ArkPaymentUncertain('original'));
         await frame(tester);
         final oldRefresh = action(tester, 'Refresh').onPressed;
@@ -245,18 +271,18 @@ void main() {
         oldCancel();
         oldRefresh();
         await frame(tester);
-        expect(input(tester, 0).value, 'new-initial');
+        await expectDestination(tester, 'new-initial');
         expect(input(tester, 1).value, '');
         expect(b.client.calls, isEmpty);
         expect(a.client.calls, ['quote']);
         expect(a.ids + b.ids + oldReconciles + newReconciles, 0);
         expect(a.cubit.isClosed, false);
         final field = input(tester, 1).onChanged;
-        final review = action(tester, 'Review').onPressed;
+        final review = action(tester, 'Continue').onPressed;
         await b.ready();
         await frame(tester);
         final confirm = action(tester, 'Confirm').onPressed;
-        final cancel = action(tester, 'Cancel').onPressed;
+        final cancel = cancelAction(tester);
         b.cubit.emit(const ArkPaymentUncertain('current'));
         await frame(tester);
         final refresh = action(tester, 'Refresh').onPressed;
@@ -279,7 +305,7 @@ void main() {
       final r = PaymentRig();
       await tester.pumpWidget(app(page(r)));
       await frame(tester);
-      final oldReview = action(tester, 'Review').onPressed;
+      final oldReview = action(tester, 'Continue').onPressed;
       final field = input(tester, 1).onChanged;
       field('1000');
       await frame(tester);
@@ -290,7 +316,7 @@ void main() {
       expect(r.client.calls, ['quote']);
       r.cubit.emit(const ArkPaymentEditing(ArkInvalidRequestFailure()));
       await frame(tester);
-      final stale = action(tester, 'Review').onPressed;
+      final stale = action(tester, 'Continue').onPressed;
       r.cubit.edit();
       await frame(tester);
       stale();
@@ -350,7 +376,11 @@ void main() {
         expect(r.ids, 0);
         expect(
           tester.widgetList<BullButton>(find.byType(BullButton)),
-          hasLength(1),
+          hasLength(
+            ArkOperationStatus.values[i] == ArkOperationStatus.succeeded
+                ? 2
+                : 1,
+          ),
         );
       }
     },

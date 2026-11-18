@@ -8,7 +8,7 @@ import 'package:bull_ark/src/domain/usecases/request_ark_receive_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_receive_cubit.dart';
 import 'package:bull_ark/src/ui/ark_receive_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDetailsTable, BullDetailsTableItem, BullQrCode;
+    show BullCopyField, BullDetailsTable, BullDetailsTableItem, BullQrCode;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -67,13 +67,10 @@ void main() {
       await cubit.request(lightning: true, amount: '1000');
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: cubit)));
       await tester.pumpAndSettle();
-      final rows = tester
-          .widget<BullDetailsTable>(find.byType(BullDetailsTable))
-          .items
-          .whereType<BullDetailsTableItem>();
-      expect(rows.first.label, 'Lightning invoice');
-      expect(rows.first.displayValue, destination().value);
-      expect(rows.first.copyValue, destination().value);
+      final field = tester.widget<BullCopyField>(find.byType(BullCopyField));
+      expect(field.label, 'Lightning invoice');
+      expect(field.text, destination().value);
+      expect(field.clipboardText, destination().value);
       final qr = tester.widget<BullQrCode>(find.byType(BullQrCode));
       expect(qr.data, destination().value);
       expect(qr.semanticsLabel, 'Lightning invoice');

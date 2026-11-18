@@ -568,6 +568,22 @@ void main() {
       preferences: _Preferences(),
     );
 
+    test('dashboard observation does not open an absent runtime', () async {
+      final binding = _Binding();
+      final subject = ArkForegroundHost(
+        locator,
+        arkUrl: Uri.parse('http://127.0.0.1:3535'),
+        primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+        initializeNew: true,
+        boardFunding: () => binding.value,
+        preferences: _Preferences(),
+      );
+      expect(await subject.homeObservation(), isNull);
+      expect(binding.binds, 0);
+      await subject.close();
+      expect(await subject.homeObservation(), isNull);
+    });
+
     test('host invalidation retires the mounted runtime', () async {
       final subject = host();
       addTearDown(subject.close);

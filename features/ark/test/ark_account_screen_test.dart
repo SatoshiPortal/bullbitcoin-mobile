@@ -281,18 +281,18 @@ void main() {
         final oldPayments = [
           'Send',
           'Receive',
-          'Add funds',
+          'Board to Ark',
         ].map((label) => button(tester, label).onPressed).toList();
         await tester.pumpWidget(app(screen(cubit, calls, enabled: false)));
         for (final callback in oldPayments) {
           callback();
         }
-        for (final label in ['Send', 'Receive', 'Add funds']) {
+        for (final label in ['Send', 'Receive', 'Board to Ark']) {
           expect(button(tester, label).disabled, true);
           button(tester, label).onPressed();
         }
         expect(calls, isEmpty);
-        for (final label in ['VTXOs', 'Emergency exit', 'Server information']) {
+        for (final label in ['VTXOs', 'Emergency exit', 'Ark info']) {
           button(tester, label).onPressed();
         }
         expect(calls, ['vtxos', 'exits', 'info']);

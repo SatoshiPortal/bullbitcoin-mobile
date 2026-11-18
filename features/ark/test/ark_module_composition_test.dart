@@ -24,8 +24,9 @@ import 'package:bull_ark/src/ui/ark_receive_screen.dart';
 import 'package:bull_ark/src/ui/ark_operation_review_screen.dart';
 import 'package:bull_ark/src/ui/ark_snapshot_page.dart';
 import 'package:bull_ark/src/ui/ark_unavailable_screen.dart';
-import 'package:bull_ark/ark_ui.dart' show ArkPaymentEntry;
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullBorderedTile;
+import 'package:bull_ark/ark_ui.dart' show ArkPaymentEntry, ArkAccountEntry;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullBorderedTile, BullAmountScope, BullAmountSnapshot;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -209,6 +210,15 @@ class Rig {
   Widget app() => MaterialApp.router(
     theme: ThemeData(extensions: testBullExtensions),
     routerConfig: router,
+    builder: (context, child) => BullAmountScope(
+      snapshot: const BullAmountSnapshot(
+        unit: BitcoinUnit.sats,
+        hideAmounts: false,
+        isReady: true,
+      ),
+      writeUnit: (_) async => false,
+      child: child ?? const SizedBox.shrink(),
+    ),
   );
 }
 
@@ -237,6 +247,33 @@ void main() {
       Bloc.observer = previous;
     });
   });
+  testWidgets('dashboard account selector opens only the captured account', (
+    tester,
+  ) async {
+    final rig = Rig();
+    await tester.pumpWidget(rig.app());
+    await frame(tester);
+    rig.router.go('/ark/account', extra: ArkAccountEntry(account()));
+    await frame(tester);
+    expect(page<ArkAccountScreen>(tester).cubit.account, account());
+    expect(rig.client.calls, ['read']);
+    final selected = account();
+    rig.router.go(
+      '/ark/account',
+      extra: ArkAccountEntry(
+        ArkAccountId(
+          parent: selected.parent,
+          network: selected.network,
+          serverIdentity: 'foreign',
+        ),
+      ),
+    );
+    await frame(tester);
+    expect(find.byType(ArkAccountScreen), findsNothing);
+    expect(find.byType(ArkUnavailableScreen), findsOneWidget);
+    expect(rig.client.calls, ['read']);
+  });
+
   testWidgets(
     'exits navigation reaches an explicit native quote request before submission',
     (tester) async {
@@ -265,7 +302,7 @@ void main() {
       await accountPage(tester, r);
       page<ArkAccountScreen>(tester).onExits();
       await frame(tester);
-      button(tester, 'Emergency exit').onPressed();
+      button(tester, 'Start emergency exit').onPressed();
       await frame(tester);
       expect(find.byType(ArkExitRequestScreen), findsOneWidget);
       expect(
@@ -683,7 +720,7 @@ void main() {
     (tester) async {
       final r = Rig();
       await accountPage(tester, r);
-      button(tester, 'Add funds').onPressed();
+      button(tester, 'Board to Ark').onPressed();
       await frame(tester);
       expect(find.byType(ArkBoardAmountScreen), findsOneWidget);
       expect(r.boardFunding.calls, isEmpty);

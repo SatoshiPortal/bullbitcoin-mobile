@@ -2,14 +2,24 @@ import 'dart:async';
 
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/data/ark_repository_impl.dart';
+import 'package:bull_ark/src/domain/ark_display_data_port.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:bull_ark/src/domain/usecases/confirm_ark_operation_usecase.dart';
 import 'package:bull_ark/src/domain/usecases/quote_ark_operation_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_operation_cubit.dart';
+import 'package:bull_ark/src/ui/ark_amount.dart';
 import 'package:bull_ark/src/ui/ark_operation_review_screen.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDetailsTable, BullDetailsTableItem, SizedBox;
+    show
+        BullButton,
+        BullDetailsTable,
+        BullDetailsTableItem,
+        BullTopBar,
+        SingleChildScrollView,
+        SizedBox;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart' show Size, Offset;
 import 'package:primitives/primitives.dart';
 
 import 'ark_information_widget_test.dart' show app;
@@ -68,14 +78,14 @@ class Rig {
   final client = Client();
   late final ArkOperationCubit cubit;
   int ids = 0, reconciles = 0;
-  Rig({ArkAccountId? owner}) {
+  Rig({ArkAccountId? owner, ArkQuoteRequest? request}) {
     final repository = ArkRepositoryImpl(client);
     cubit = ArkOperationCubit(
       QuoteArkOperationUsecase(repository, Preferences()),
       ConfirmArkOperationUsecase(repository, Preferences()),
       () => 'attempt-${++ids}',
       account: owner ?? account(),
-      request: ArkQuoteRequest.renewal(ids: ['selected-vtxo']),
+      request: request ?? ArkQuoteRequest.renewal(ids: ['selected-vtxo']),
     );
     addTearDown(cubit.close);
   }
@@ -108,6 +118,179 @@ Future<void> pumpState(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets(
+    'incomplete progression quote keeps defensive confirm without a net hero',
+    (tester) async {
+      final r = Rig(request: ArkQuoteRequest.exitProgress(feeRate: FeeRate(2)));
+      // Deliberately mismatched fixture: request/quote facts must remain closed.
+      r.cubit.emit(ArkOperationReview(reviewed(r.cubit.account)));
+      await tester.pumpWidget(app(r.screen));
+      await pumpState(tester);
+      expect(button(tester, 'Confirm').disabled, true);
+      expect(find.text('900 sats'), findsNothing);
+      expect(find.byType(ArkFiatAmount), findsNothing);
+      expect(details(tester)['Net amount (sats)'], '900');
+      button(tester, 'Confirm').onPressed();
+      await pumpState(tester);
+      expect(r.client.calls, isEmpty);
+      expect(r.ids, 0);
+    },
+  );
+
+  testWidgets(
+    'review keeps quote net, header and confirm footer at phone size',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final r = Rig();
+      await r.ready();
+      await tester.pumpWidget(app(r.screen));
+      await pumpState(tester);
+      expect(find.text('900 sats'), findsOneWidget);
+      expect(details(tester)['Net amount (sats)'], '900');
+      final footer = find.widgetWithText(BullButton, 'Confirm');
+      final header = find.byType(BullTopBar);
+      final headerY = tester.getTopLeft(header).dy;
+      final footerY = tester.getTopLeft(footer).dy;
+      expect(tester.getBottomRight(footer).dy, greaterThan(780));
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(0, -500),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.getTopLeft(header).dy, headerY);
+      expect(tester.getTopLeft(footer).dy, footerY);
+      expect(r.client.calls, ['quote']);
+      expect(r.ids, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('fiat observation is matched to the reviewing account only', (
+    tester,
+  ) async {
+    final r = Rig();
+    await r.ready();
+    final price = BitcoinPrice(
+      currency: SupportedCurrency.cad,
+      fiatAmount: 100000,
+      fetchedAt: DateTime.utc(2026, 11, 17),
+    );
+    final owner = r.cubit.account;
+    for (final matches in [true, false]) {
+      await tester.pumpWidget(
+        app(
+          ArkOperationReviewScreen(
+            cubit: r.cubit,
+            onReconcile: () {},
+            displayData: ArkDisplayData(
+              account: matches
+                  ? owner
+                  : ArkAccountId(
+                      parent: owner.parent,
+                      network: owner.network,
+                      serverIdentity: 'other',
+                    ),
+              walletId: 'source',
+              available: Sats.fromInt(100000),
+              price: price,
+            ),
+          ),
+        ),
+      );
+      await pumpState(tester);
+      final equivalent = tester.widget<ArkFiatAmount>(
+        find.byType(ArkFiatAmount),
+      );
+      expect(equivalent.amount, Sats.fromInt(900));
+      expect(equivalent.price, matches ? price : isNull);
+      expect(r.client.calls, ['quote']);
+    }
+  });
+
+  for (final (request, kind, label)
+      in <(ArkQuoteRequest, ArkOperationKind, String)>[
+        (
+          ArkQuoteRequest.renewal(ids: ['selected-vtxo']),
+          ArkOperationKind.renewal,
+          'Renewal started',
+        ),
+        (
+          ArkQuoteRequest.emergencyExit(
+            ids: ['selected-vtxo'],
+            destination: 'destination',
+            feeRate: FeeRate(2),
+            maxClaimFee: Sats.fromInt(1000),
+          ),
+          ArkOperationKind.emergencyExit,
+          'Emergency exit started',
+        ),
+        (
+          ArkQuoteRequest.payment(
+            destination: ArkPaymentDestination(
+              kind: ArkDestinationKind.ark,
+              value: 'ark-destination',
+            ),
+            amount: Sats.fromInt(1000),
+          ),
+          ArkOperationKind.payment,
+          'Payment sent',
+        ),
+      ]) {
+    testWidgets(
+      'native $kind success title needs the matching request and succeeded status',
+      (tester) async {
+        final r = Rig(request: request);
+        await tester.pumpWidget(app(r.screen));
+        for (final status in ArkOperationStatus.values) {
+          r.cubit.emit(
+            ArkOperationSubmitted(
+              ArkOperation(
+                id: 'native-id',
+                kind: kind,
+                status: status,
+                chainSource: Uri.parse('http://localhost:3000'),
+                configGeneration: 1,
+              ),
+            ),
+          );
+          await pumpState(tester);
+          expect(
+            find.text(label),
+            status == ArkOperationStatus.succeeded
+                ? findsOneWidget
+                : findsNothing,
+          );
+          expect(details(tester)['Identifier'], 'native-id');
+          expect(find.widgetWithText(BullButton, 'Confirm'), findsNothing);
+          expect(find.text('900 sats'), findsNothing);
+        }
+        final mismatch = kind == ArkOperationKind.payment
+            ? ArkOperationKind.renewal
+            : ArkOperationKind.payment;
+        r.cubit.emit(
+          ArkOperationSubmitted(
+            ArkOperation(
+              id: 'mismatched-kind',
+              kind: mismatch,
+              status: ArkOperationStatus.succeeded,
+              chainSource: Uri.parse('http://localhost:3000'),
+              configGeneration: 1,
+            ),
+          ),
+        );
+        await pumpState(tester);
+        expect(find.text('Renewal started'), findsNothing);
+        expect(find.text('Emergency exit started'), findsNothing);
+        expect(find.text('Payment sent'), findsNothing);
+        expect(details(tester)['Identifier'], 'mismatched-kind');
+        expect(r.client.calls, isEmpty);
+      },
+    );
+  }
+
   testWidgets('mount and replacement never quote an unstarted owner', (
     tester,
   ) async {
@@ -153,7 +336,7 @@ void main() {
         'Amount in sats': '1000',
         'Fee (sats)': '100',
         'Net amount (sats)': '900',
-        'Ark address or BOLT11 invoice': 'reviewed-destination',
+        'Payment address or BOLT11 invoice': 'reviewed-destination',
         'Identifier': 'selected-vtxo',
       });
     },

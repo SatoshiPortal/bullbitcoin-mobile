@@ -5,7 +5,7 @@ import 'package:bull_ark/src/domain/usecases/read_ark_board_usecase.dart';
 import 'package:bull_ark/src/presentation/ark_board_cubit.dart';
 import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
 import 'package:bull_ark/src/ui/ark_board_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, SizedBox;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullInputText, SizedBox;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -57,9 +57,20 @@ void main() {
         find.text('Minimum boarding amount (sats): $minimum'),
         findsOneWidget,
       );
-      expect(rig.cubit.state, isA<ArkBoardPending>());
+      expect(rig.cubit.state, isA<ArkBoardEditing>());
       expect(rig.funding.calls, ['prepare']);
       expect(find.widgetWithText(BullButton, 'Confirm'), findsNothing);
+      // A synchronous refusal can coalesce Busy and Editing into one frame.
+      // The replacement input must not retain the consumed form's latch.
+      rig.funding.prepared = Ok(prepared());
+      tester
+          .widget<BullInputText>(find.byType(BullInputText))
+          .onChanged('1000');
+      await tester.pump();
+      button(tester, 'Board').onPressed();
+      await tester.pumpAndSettle();
+      expect(rig.cubit.state, isA<ArkBoardReviewed>());
+      expect(rig.funding.calls, ['prepare', 'prepare', 'read']);
     });
   }
   testWidgets(

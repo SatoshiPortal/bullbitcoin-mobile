@@ -1,6 +1,7 @@
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/ui/ark_exit_request_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullInputText, SizedBox;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullInputText, BullSegmented, BullCheckbox, SizedBox;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -58,6 +59,68 @@ Future<void> fill(WidgetTester tester, {bool claim = false}) async {
 }
 
 void main() {
+  testWidgets(
+    'selected scope excludes locked rows and reviews only chosen eligible ids',
+    (tester) async {
+      final requests = <ArkQuoteRequest>[];
+      await tester.pumpWidget(
+        app(
+          ArkExitRequestScreen(snapshot: inventory(), onReview: requests.add),
+        ),
+      );
+      tester
+          .widget<BullSegmented>(find.byType(BullSegmented))
+          .onSelected('Selected VTXOs');
+      await tester.pump();
+      expect(find.byType(BullCheckbox), findsOneWidget);
+      await fill(tester);
+      expect(review(tester).disabled, true);
+      final select = tester
+          .widget<BullCheckbox>(find.byType(BullCheckbox))
+          .onChanged;
+      if (select == null) fail('Selection callback is required');
+      select(true);
+      await tester.pump();
+      expect(review(tester).disabled, false);
+      review(tester).onPressed();
+      expect((requests.single as ArkEmergencyExitQuoteRequest).ids, [
+        'selected',
+      ]);
+    },
+  );
+
+  testWidgets('captured selection cannot edit a replacement observation', (
+    tester,
+  ) async {
+    final requests = <ArkQuoteRequest>[];
+    await tester.pumpWidget(
+      app(ArkExitRequestScreen(snapshot: inventory(), onReview: requests.add)),
+    );
+    tester
+        .widget<BullSegmented>(find.byType(BullSegmented))
+        .onSelected('Selected VTXOs');
+    await tester.pump();
+    final old = tester
+        .widget<BullCheckbox>(find.byType(BullCheckbox))
+        .onChanged;
+    await tester.pumpWidget(
+      app(
+        ArkExitRequestScreen(
+          snapshot: inventory(stale: true),
+          onReview: requests.add,
+        ),
+      ),
+    );
+    if (old == null) fail('Selection callback is required');
+    old(true);
+    await tester.pump();
+    expect(
+      tester.widget<BullCheckbox>(find.byType(BullCheckbox)).checked,
+      false,
+    );
+    expect(requests, isEmpty);
+  });
+
   testWidgets(
     'one explicit exit request uses current spendable ids and reviewed fee inputs',
     (tester) async {

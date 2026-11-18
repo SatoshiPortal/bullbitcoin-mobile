@@ -2,12 +2,7 @@ import 'package:ark/ark.dart';
 import 'package:bull_ark/src/presentation/ark_receive_cubit.dart';
 import 'package:bull_ark/src/ui/ark_receive_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullQrCode,
-        BullDetailsTable,
-        BullDetailsTableItem,
-        SizedBox;
+    show BullButton, BullQrCode, BullCopyField, SizedBox;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -62,13 +57,9 @@ void main() {
         await frame(tester);
         expect(received, isEmpty);
         expect(client.calls, ['receive']);
-        final row = tester
-            .widget<BullDetailsTable>(find.byType(BullDetailsTable))
-            .items
-            .whereType<BullDetailsTableItem>()
-            .first;
-        expect(row.displayValue, destination.value);
-        expect(row.copyValue, destination.value);
+        final field = tester.widget<BullCopyField>(find.byType(BullCopyField));
+        expect(field.text, destination.value);
+        expect(field.clipboardText, destination.value);
         expect(
           tester.widget<BullQrCode>(find.byType(BullQrCode)).data,
           destination.value,

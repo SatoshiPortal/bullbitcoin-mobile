@@ -9,7 +9,7 @@ import 'ark_information_widget_test.dart' show app, config;
 import 'ark_operations_test.dart' show account;
 
 BullButton review(WidgetTester tester) =>
-    tester.widget<BullButton>(find.widgetWithText(BullButton, 'Review'));
+    tester.widget<BullButton>(find.widgetWithText(BullButton, 'Board'));
 BullInputText input(WidgetTester tester) =>
     tester.widget<BullInputText>(find.byType(BullInputText));
 Future<void> edit(WidgetTester tester, String raw) async {
@@ -29,8 +29,9 @@ void main() {
       find.text('This Ark action is unavailable in this build.'),
       findsOneWidget,
     );
-    expect(input(tester).hint, 'Amount in sats');
-    expect(find.textContaining('00112233/regtest/'), findsOneWidget);
+    expect(input(tester).hint, '0');
+    expect(find.textContaining('00112233/regtest/'), findsNothing);
+    expect(find.text('Available on-chain'), findsOneWidget);
     expect(
       find.text('FAST fee policy only. No fee speed selection.'),
       findsOneWidget,

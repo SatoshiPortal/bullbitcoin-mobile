@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
+import 'package:bull_ui/bull_ui.dart' show BullAmountScope, BullAmountSnapshot;
 
 import '../../../features/ark/test/ark_information_widget_test.dart'
     show config;
@@ -42,16 +43,24 @@ void main() {
           ],
           home: RepaintBoundary(
             key: boundary,
-            child: ArkInformationScreen(
-              config: source,
-              snapshot: ArkSnapshot(
-                account: source.id,
-                revision: 2,
-                observedAt: DateTime.utc(2026, 11, 18),
-                stale: false,
-                confirmedReserve: Sats.zero,
-                reserveAddress:
-                    'bcrt1qpublicfeereservefixtureforhostrenderonly',
+            child: BullAmountScope(
+              snapshot: const BullAmountSnapshot(
+                unit: BitcoinUnit.sats,
+                hideAmounts: false,
+                isReady: true,
+              ),
+              writeUnit: (_) async => false,
+              child: ArkInformationScreen(
+                config: source,
+                snapshot: ArkSnapshot(
+                  account: source.id,
+                  revision: 2,
+                  observedAt: DateTime.utc(2026, 11, 18),
+                  stale: false,
+                  confirmedReserve: Sats.zero,
+                  reserveAddress:
+                      'bcrt1qpublicfeereservefixtureforhostrenderonly',
+                ),
               ),
             ),
           ),
