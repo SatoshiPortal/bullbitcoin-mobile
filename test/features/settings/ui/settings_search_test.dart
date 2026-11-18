@@ -92,7 +92,7 @@ void main() {
       );
       expect(
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet → Import wallet',
+        'Settings → Wallet → Import Wallet',
       );
       expect(backupSettingsDataItemOrder, [
         SettingsItemId.labels,
@@ -147,7 +147,7 @@ void main() {
         SettingsItemSection.app,
       );
       final theme = items.byId(SettingsItemId.theme);
-      expect(theme.title, 'Dark mode');
+      expect(theme.title, 'Dark Mode');
       expect(theme.isInlineControl, isTrue);
     });
 

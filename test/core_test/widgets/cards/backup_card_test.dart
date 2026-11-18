@@ -28,7 +28,8 @@ void main() {
       final decoration =
           tester.widget<Container>(card.first).decoration as BoxDecoration?;
       expect(decoration?.color, colors.banner);
-      expect(decoration?.border, Border.all(color: colors.bannerOutline));
+      expect(decoration?.border, isNull);
+      expect(decoration?.boxShadow?.single.color, colors.scrim);
       final icon = find.byType(Image);
       expect(tester.widget<Image>(icon).color, colors.onBanner);
       expect(

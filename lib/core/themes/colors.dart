@@ -25,12 +25,10 @@ class AppColors {
   // Action buttons: the main wallet actions (Receive / Send)
   final Color actionButton;
   final Color onActionButton;
-  final Color actionButtonOutline;
 
   // Banner: a card that asks for attention (e.g. the backup reminder)
   final Color banner;
   final Color onBanner;
-  final Color bannerOutline;
 
   // Behind the home header, seen when the page is pulled down
   final Color homeHeaderBackground;
@@ -97,10 +95,8 @@ class AppColors {
     required this.bitcoinOrange,
     required this.actionButton,
     required this.onActionButton,
-    required this.actionButtonOutline,
     required this.banner,
     required this.onBanner,
-    required this.bannerOutline,
     required this.homeHeaderBackground,
     required this.walletCardBackground,
     required this.background,
@@ -150,12 +146,10 @@ class AppColors {
     bitcoinOrange: Color(0xFFF7931A),
     actionButton: Color(0xFF15171C),
     onActionButton: Color(0xFFFFFFFF),
-    actionButtonOutline: Color(0xFFFFFFFF),
-    banner: Color(0xFF15171C),
-    onBanner: Color(0xFFFFFFFF),
-    bannerOutline: Color(0x00000000),
+    banner: Color(0xFFFFFFFF),
+    onBanner: Color(0xFF15171C),
     homeHeaderBackground: Color(0xFF000000),
-    walletCardBackground: Color(0xFFF5F5F5),
+    walletCardBackground: Color(0xFFFFFFFF),
     background: Color(0xFFF5F5F5),
     surface: Color(0xFFFFFFFF),
     surfaceContainer: Color(0xFFF5F5F5),
@@ -201,14 +195,12 @@ class AppColors {
     onTertiary: Color(0xFFFF9F0A),
     tertiaryContainer: Color(0xFF3D2D00),
     bitcoinOrange: Color(0xFFF7931A),
-    actionButton: Color(0xFF000000),
-    onActionButton: Color(0xFFFFFFFF),
-    actionButtonOutline: Color(0xFFFFFFFF),
-    banner: Color(0xFFFFFFFF),
-    onBanner: Color(0xFF15171C),
-    bannerOutline: Color(0x00000000),
+    actionButton: Color(0xFFFFFFFF),
+    onActionButton: Color(0xFF15171C),
+    banner: Color(0xFF1C1C1E),
+    onBanner: Color(0xFFFFFFFF),
     homeHeaderBackground: Color(0xFF000000),
-    walletCardBackground: Color(0xFF000000),
+    walletCardBackground: Color(0xFF1C1C1E),
     background: Color(0xFF000000),
     surface: Color(0xFF1C1C1E),
     surfaceContainer: Color(0xFF2C2C2E),

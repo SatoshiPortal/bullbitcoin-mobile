@@ -577,8 +577,7 @@ class SendCubit extends Cubit<SendState>
 
   /// Called when a payment request is detected directly from the scanner
   Future<void> onScannedPaymentRequest(
-    String scannedRawPaymentRequest,
-    PaymentRequest? paymentRequest, {
+    String scannedRawPaymentRequest, {
     bool autoContinue = true,
   }) async {
     if (state.selectedInputsUnavailable) return;
@@ -596,72 +595,33 @@ class SendCubit extends Cubit<SendState>
       }
       return;
     }
-    final generation = _startNewPaymentRequestInput();
-    clearFailure();
-    final raw = scannedRawPaymentRequest.trim().toLowerCase();
-    if (paymentRequest == null ||
-        raw.startsWith('bcrt1') ||
-        raw.startsWith('bitcoin:bcrt1') ||
-        raw.startsWith('el1') ||
-        raw.startsWith('ert1')) {
-      try {
-        paymentRequest = await _detectBitcoinStringUsecase.execute(
-          data: scannedRawPaymentRequest,
-        );
-      } on Exception {
-        if (isClosed || generation != _paymentRequestInputGeneration) return;
-        // An unreadable scan still replaces the previous recipient: a stale
-        // MAX/remainder state must not survive it.
-        emit(
-          state.copyWith(
-            copiedRawPaymentRequest: scannedRawPaymentRequest.trim(),
-            scannedRawPaymentRequest: scannedRawPaymentRequest,
-            failure: const SendInvalidPaymentRequestFailure(),
-            paymentRequest: null,
-            recipientDrafts: _primaryRecipientDrafts(
-              paymentRequest: null,
-              address: scannedRawPaymentRequest.trim(),
-              isValid: false,
-            ),
-            sendMax: state.isSweep,
-          ),
-        );
-        return;
-      }
-    }
-    if (isClosed || generation != _paymentRequestInputGeneration) return;
     final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
       RegExp(r'^["\"]+|["\"]+$'),
       '',
     );
-    final recipientChanged =
-        state.paymentRequest != paymentRequest ||
-        state.scannedRawPaymentRequest != scannedRawPaymentRequest;
-    final recipientDrafts = _primaryRecipientDrafts(
-      paymentRequest: paymentRequest,
-      address: _bitcoinAddressOf(paymentRequest) ?? sanitizedText,
-      isValid: _bitcoinAddressOf(paymentRequest) != null,
-    );
+    // The text input path invalidates the old request and fee plans, and shares
+    // its parsing future with Continue before yielding to the detector.
+    final input = onChangedText(scannedRawPaymentRequest);
+    final generation = _paymentRequestInputGeneration;
     emit(
       state.copyWith(
         scannedRawPaymentRequest: scannedRawPaymentRequest,
-        copiedRawPaymentRequest: sanitizedText,
-        paymentRequest: paymentRequest,
-        recipientDrafts: recipientDrafts,
-        internalRecipientWallets: _internalWalletsFor(recipientDrafts),
-        qrAmountRecipientIds: _qrAmountsFor(recipientDrafts),
-        recipientAmountsSat: recipientChanged
-            ? const []
-            : state.recipientAmountsSat,
-        sendMax: state.isSweep,
+        recipientDrafts: _primaryRecipientDrafts(
+          paymentRequest: null,
+          address: sanitizedText,
+          isValid: false,
+        ),
       ),
     );
-    // Recipient is part of the cache fingerprint — a different address
-    // means a different output script in the PSBT. Skip the clear when
-    // nothing actually changed so the modal doesn't re-shimmer on a
-    // no-op scan.
-    if (recipientChanged) clearBitcoinFeePreviews();
-    if (autoContinue) await continueOnAddressConfirmed();
+    await input;
+    if (isClosed ||
+        generation != _paymentRequestInputGeneration ||
+        state.copiedRawPaymentRequest != sanitizedText) {
+      return;
+    }
+    if (state.hasValidPaymentRequest && state.failure == null && autoContinue) {
+      await continueOnAddressConfirmed();
+    }
   }
 
   /// Called when text is pasted or entered manually
@@ -730,7 +690,8 @@ class SendCubit extends Cubit<SendState>
     );
     try {
       final paymentRequest = await parsing;
-      if (inputGeneration != _paymentRequestInputGeneration ||
+      if (isClosed ||
+          inputGeneration != _paymentRequestInputGeneration ||
           state.copiedRawPaymentRequest != sanitizedText) {
         return;
       }
@@ -854,7 +815,8 @@ class SendCubit extends Cubit<SendState>
                     ),
                   ));
       } on Exception {
-        if (inputGeneration != _paymentRequestInputGeneration ||
+        if (isClosed ||
+            inputGeneration != _paymentRequestInputGeneration ||
             state.copiedRawPaymentRequest != rawPaymentRequest) {
           return null;
         }
@@ -867,7 +829,8 @@ class SendCubit extends Cubit<SendState>
         return null;
       }
     }
-    if (inputGeneration != _paymentRequestInputGeneration ||
+    if (isClosed ||
+        inputGeneration != _paymentRequestInputGeneration ||
         state.copiedRawPaymentRequest != rawPaymentRequest) {
       return null;
     }

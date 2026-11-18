@@ -1,4 +1,6 @@
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:bull_ui/bull_ui.dart' show BullPickerChip;
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -11,6 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSettingsCubit extends Mock implements SettingsCubit {}
+
+class _MockBitcoinPriceBloc extends Mock implements BitcoinPriceBloc {}
 
 SettingsState _settingsState({bool revokeSpFailed = false}) => SettingsState(
   storedSettings: const SettingsEntity(
@@ -32,8 +36,16 @@ Widget _buildPage({required SettingsCubit settingsCubit}) => MaterialApp(
   home: Builder(
     builder: (context) {
       Device.init(context);
-      return BlocProvider<SettingsCubit>.value(
-        value: settingsCubit,
+      final price = _MockBitcoinPriceBloc();
+      when(() => price.state).thenReturn(
+        const BitcoinPriceState(availableCurrencies: ['USD', 'CAD']),
+      );
+      when(() => price.stream).thenAnswer((_) => const Stream.empty());
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider<SettingsCubit>.value(value: settingsCubit),
+          BlocProvider<BitcoinPriceBloc>.value(value: price),
+        ],
         child: const AppSettingsScreen(),
       );
     },
@@ -88,9 +100,9 @@ void main() {
     await pumpScreen(tester);
     await tester.pump();
 
-    expect(find.text('Dark mode'), findsOneWidget);
+    expect(find.text('Dark Mode'), findsOneWidget);
     final darkMode = find.ancestor(
-      of: find.text('Dark mode'),
+      of: find.text('Dark Mode'),
       matching: find.byType(ListTile),
     );
     final toggle = find.descendant(of: darkMode, matching: find.byType(Switch));
@@ -110,5 +122,17 @@ void main() {
     await tester.pump();
 
     expect(find.text(failureMessage), findsNothing);
+  });
+
+  // The fiat currency is picked in place, like the language; there is no
+  // separate currency screen any more.
+  testWidgets('the default currency is picked inline', (tester) async {
+    when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
+    await pumpScreen(tester);
+
+    final chip = tester.widget<BullPickerChip<String>>(
+      find.byType(BullPickerChip<String>),
+    );
+    expect(chip.value, 'USD');
   });
 }

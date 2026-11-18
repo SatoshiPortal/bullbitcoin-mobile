@@ -84,6 +84,7 @@ void main() {
                 createSetupCubit: createSetupCubit,
                 onEmptyMainnet: () {},
                 onImportNetworkWallet: () {},
+                onRecoverEncryptedVault: () {},
                 quickActions: quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
