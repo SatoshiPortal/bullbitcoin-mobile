@@ -129,7 +129,7 @@ final class _Boundary implements BarkOpenBoundary {
 void main() {
   // Public BIP39 zero-entropy vector, never a retained wallet or secret source.
   final words = Mnemonic(List<int>.filled(16, 0), Language.english).sentence;
-  final identity = deriveBarkChildFingerprint(words);
+  const identity = '53bdf6b1';
   final account = ArkAccountId(
     parent: Fingerprint('12345678'),
     network: BitcoinNetwork.regtest,
@@ -152,6 +152,7 @@ void main() {
           config: config,
           datadir: 'scripted-fixture',
           mnemonic: words,
+          childFingerprint: Fingerprint(identity),
           chainSource: config.primaryEsploraUrl,
           create: false,
           expectedFingerprint: identity,

@@ -38,6 +38,18 @@ final class FingerprintDeriver {
   /// Canonical BIP39 spelling, without changing element boundaries.
   List<String> normalizeWords(List<String> words) => words.map(nfkd).toList();
 
+  /// Bark's public consistency identity for an already scoped English child.
+  /// The path and empty passphrase are part of existing Ark account identity.
+  Fingerprint arkFingerprint(List<String> words) {
+    final bytes = seed(words, language: bip39.Language.english);
+    try {
+      final purpose = Bip32Keys.fromSeed(bytes).deriveHardened(350);
+      return Fingerprint(convert.hex.encode(purpose.fingerprint));
+    } finally {
+      bytes.fillRange(0, bytes.length, 0);
+    }
+  }
+
   /// The master fingerprint of a seed — 4 bytes, 8 lowercase hex.
   Fingerprint fingerprint(Uint8List seed) =>
       Fingerprint(convert.hex.encode(Bip32Keys.fromSeed(seed).fingerprint));

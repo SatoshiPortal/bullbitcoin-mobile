@@ -1,9 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:bip32_keys/bip32_keys.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 
 import 'package:bark_bitcoin/bark_bitcoin.dart' as bark;
 import 'package:primitives/primitives.dart';
@@ -25,6 +21,7 @@ final class BarkNativeOpener implements ArkNativeOpener {
     required ArkAccountConfig config,
     required String datadir,
     required String mnemonic,
+    required Fingerprint childFingerprint,
     required Uri chainSource,
     required bool create,
     required String? expectedFingerprint,
@@ -45,7 +42,7 @@ final class BarkNativeOpener implements ArkNativeOpener {
       'datadir-info',
       () async => boundary.inspect(datadir),
     );
-    final derived = deriveBarkChildFingerprint(mnemonic);
+    final derived = childFingerprint.hex;
     if ((expectedFingerprint != null && expectedFingerprint != derived) ||
         (existing != null &&
             (existing.network != network || existing.fingerprint != derived))) {
@@ -89,12 +86,15 @@ final class BarkNativeOpener implements ArkNativeOpener {
           ),
         );
         try {
+          final fingerprint = wallet.fingerprint();
+          if (fingerprint != derived) {
+            throw const ArkBoundaryException(
+              ArkValidationFailure(ArkFailureReason.identityMismatch),
+            );
+          }
           // Persist the admitted open's outcome before budget can revoke any
           // subsequent stage. NotRun cannot erase a prior recovery result.
-          onOpened(
-            mapBarkRecovery(wallet.recoveryStatus()),
-            wallet.fingerprint(),
-          );
+          onOpened(mapBarkRecovery(wallet.recoveryStatus()), fingerprint);
           return wallet;
         } catch (_) {
           wallet.dispose();
@@ -1130,26 +1130,4 @@ final class FfiBarkOpenBoundary implements BarkOpenBoundary {
     config: config,
     args: args,
   );
-}
-
-/// Public consistency identity only, from the scoped dedicated child at m/350h.
-/// The four-byte fingerprint is not collision-resistant authentication.
-/// Dart strings/key objects cannot be guaranteed to be zeroized.
-String deriveBarkChildFingerprint(String words) {
-  try {
-    final mnemonic = Mnemonic.fromSentence(
-      words,
-      Language.english,
-      passphrase: '',
-    );
-    final purpose = Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed))
-        .deriveHardened(350);
-    return purpose.fingerprint
-        .map((b) => b.toRadixString(16).padLeft(2, '0'))
-        .join();
-  } on MnemonicException {
-    throw const ArkBoundaryException(
-      ArkValidationFailure(ArkFailureReason.identityMismatch),
-    );
-  }
 }

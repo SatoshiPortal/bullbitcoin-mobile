@@ -17,14 +17,14 @@ final class FakeChild implements ArkChildProviderPort {
   @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
-    Future<Result<T, ArkWalletFailure>> Function(String) action,
+    Future<Result<T, ArkWalletFailure>> Function(String, Fingerprint) action,
   ) {
     calls++;
     if (failOnce) {
       failOnce = false;
       return Future.value(const Err(ArkUnavailableFailure()));
     }
-    return action('test-provider-placeholder');
+    return action('test-provider-placeholder', Fingerprint('53bdf6b1'));
   }
 }
 
@@ -125,6 +125,7 @@ final class FakeOpener implements ArkNativeOpener {
     required ArkAccountConfig config,
     required String datadir,
     required String mnemonic,
+    required Fingerprint childFingerprint,
     required Uri chainSource,
     required bool create,
     required String? expectedFingerprint,

@@ -72,7 +72,7 @@ final class Boundary implements BarkOpenBoundary {
 void main() {
   // Explicit public BIP39 all-zero entropy vector; never printed or persisted.
   final words = Mnemonic(List<int>.filled(16, 0), Language.english).sentence;
-  final identity = deriveBarkChildFingerprint(words);
+  const identity = '53bdf6b1';
   final account = ArkAccountId(
     parent: Fingerprint('12345678'),
     network: BitcoinNetwork.regtest,
@@ -91,6 +91,7 @@ void main() {
     config: config,
     datadir: 'fixture',
     mnemonic: words,
+    childFingerprint: Fingerprint(identity),
     chainSource: config.primaryEsploraUrl,
     create: true,
     expectedFingerprint: stored,

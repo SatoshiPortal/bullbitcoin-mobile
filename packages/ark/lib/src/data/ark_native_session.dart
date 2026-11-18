@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart';
+
 import '../../ark.dart';
 
 /// Internal seam used by lifecycle tests. No native dependency in its types.
@@ -6,6 +8,7 @@ abstract interface class ArkNativeOpener {
     required ArkAccountConfig config,
     required String datadir,
     required String mnemonic,
+    required Fingerprint childFingerprint,
     required Uri chainSource,
     required bool create,
     required String? expectedFingerprint,
