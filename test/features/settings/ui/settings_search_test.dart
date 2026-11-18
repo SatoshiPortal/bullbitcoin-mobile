@@ -92,7 +92,7 @@ void main() {
       );
       expect(
         items.byId(SettingsItemId.importWallet).location(TextDirection.ltr),
-        'Settings → Wallet → Import wallet',
+        'Settings → Wallet → Import Wallet',
       );
       expect(backupSettingsDataItemOrder, [
         SettingsItemId.labels,

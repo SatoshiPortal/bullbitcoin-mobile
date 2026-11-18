@@ -127,9 +127,13 @@ class AppTheme {
       textTheme: typography.toTextTheme(),
       appBarTheme: AppBarTheme(
         backgroundColor: colors.transparent,
-        systemOverlayStyle: themeType == AppThemeType.dark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+        // A transparent status bar shows each page's own colour behind it;
+        // without it Android paints a grey scrim over light pages.
+        systemOverlayStyle:
+            (themeType == AppThemeType.dark
+                    ? SystemUiOverlayStyle.light
+                    : SystemUiOverlayStyle.dark)
+                .copyWith(statusBarColor: colors.transparent),
         elevation: 0,
         scrolledUnderElevation: 0,
         titleTextStyle: typography.subtitle.copyWith(color: colors.text),

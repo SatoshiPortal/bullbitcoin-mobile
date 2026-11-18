@@ -72,7 +72,8 @@ class ServerListItem extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: context.appColors.tertiaryContainer,
+                                color:
+                                    context.appColors.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(
                                   context.bullShapes.badge,
                                 ),
@@ -80,7 +81,7 @@ class ServerListItem extends StatelessWidget {
                               child: Text(
                                 server.protocol.toUpperCase(),
                                 style: context.bullType.caption.copyWith(
-                                  color: context.appColors.tertiary,
+                                  color: context.appColors.onSurface,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -96,7 +97,7 @@ class ServerListItem extends StatelessWidget {
                               .copyWith(fontWeight: FontWeight.w400)
                               .copyWith(
                                 color: context.appColors.onSurface.withValues(
-                                  alpha: 153,
+                                  alpha: 0.6,
                                 ),
                                 fontStyle: .italic,
                               ),

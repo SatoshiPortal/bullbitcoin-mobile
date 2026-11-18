@@ -62,7 +62,6 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
                 builder: (context, state) {
                   return SliverList(
                     delegate: SliverChildListDelegate([
-                      const SizedBox(height: 16),
                       BullSegmented(
                         items: {
                           context.loc.electrumNetworkBitcoin,

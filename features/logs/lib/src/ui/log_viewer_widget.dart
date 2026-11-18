@@ -358,6 +358,16 @@ class _LogLineState extends State<_LogLine> {
   @override
   Widget build(BuildContext context) {
     final color = _colorForSeverity(context, widget.entry.severity);
+    final text = Text.rich(
+      _highlightedText(context.bull.onSurface),
+      key: ValueKey('log-text-${widget.index}'),
+      maxLines: _expanded ? null : 1,
+      softWrap: _expanded,
+      style: context.bullType.caption.copyWith(
+        fontFamily: 'monospace',
+        color: context.bull.onSurface,
+      ),
+    );
     final line = Semantics(
       container: true,
       button: true,
@@ -388,15 +398,29 @@ class _LogLineState extends State<_LogLine> {
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-              child: Text.rich(
-                _highlightedText(color),
-                key: ValueKey('log-text-${widget.index}'),
-                maxLines: _expanded ? null : 1,
-                softWrap: _expanded,
-                style: context.bullType.caption.copyWith(
-                  fontFamily: 'monospace',
-                  color: color,
-                ),
+              // The severity colour marks a dot, not the text: FINE green or
+              // CONFIG grey text was too faint to read on the light page.
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Container(
+                      key: ValueKey('log-severity-${widget.index}'),
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Collapsed lines scroll sideways at their natural width;
+                  // an expanded line wraps within the row.
+                  if (_expanded) Expanded(child: text) else text,
+                ],
               ),
             ),
           ),

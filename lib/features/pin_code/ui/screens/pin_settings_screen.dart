@@ -4,16 +4,21 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullTopBar, Gap, BullTypographyX;
+    show BullButton, BullInfoCard, BullTopBar, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class PinSettingsScreen extends StatelessWidget {
-  const PinSettingsScreen({super.key});
+  /// Opens the wallet backup, shown while a backup is required first.
+  final VoidCallback onBackUp;
+
+  const PinSettingsScreen({super.key, required this.onBackUp});
 
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<PinCodeSettingBloc>();
-    final isPinCodeSet = context.watch<PinCodeSettingBloc>().state.isPinCodeSet;
+    final state = context.watch<PinCodeSettingBloc>().state;
+    final isPinCodeSet = state.isPinCodeSet;
+    final backupRequired = state.status == PinCodeSettingStatus.backupRequired;
 
     return Scaffold(
       appBar: AppBar(
@@ -49,6 +54,14 @@ class PinSettingsScreen extends StatelessWidget {
                         color: context.appColors.textMuted,
                       ),
                     ),
+                    if (backupRequired) ...[
+                      const Gap(24),
+                      BullInfoCard(
+                        description: context.loc.pinCodeBackupRequiredWarning,
+                        tagColor: context.appColors.warning,
+                        bgColor: context.appColors.warningContainer,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -57,7 +70,17 @@ class PinSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
+                  if (backupRequired) ...[
+                    BullButton.big(
+                      label: context.loc.backupSettingsStartBackup,
+                      onPressed: onBackUp,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
+                    ),
+                    const Gap(16),
+                  ],
                   BullButton.big(
+                    disabled: backupRequired,
                     label: isPinCodeSet
                         ? context.loc.pinCodeChangeButton
                         : context.loc.pinCodeCreateButton,
