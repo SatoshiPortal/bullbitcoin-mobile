@@ -895,6 +895,24 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Abandoned board (never signed)'**
   String get abandonedBoardState;
+
+  /// Observed public on-chain emergency exit fee reserve
+  ///
+  /// In en, this message translates to:
+  /// **'On-chain fee reserve'**
+  String get feeReserveTitle;
+
+  /// Observed public on-chain emergency exit fee reserve
+  ///
+  /// In en, this message translates to:
+  /// **'Fund this address with on-chain bitcoin before starting an emergency exit when the fee reserve is insufficient.'**
+  String get feeReserveHelp;
+
+  /// Observed public on-chain emergency exit fee reserve
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} sats'**
+  String feeReserveAmount(String amount);
 }
 
 class _ArkLocalizationsDelegate

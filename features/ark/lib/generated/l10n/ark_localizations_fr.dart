@@ -441,4 +441,16 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get abandonedBoardState => 'Board abandonné (jamais signé)';
+
+  @override
+  String get feeReserveTitle => 'Réserve de frais on-chain';
+
+  @override
+  String get feeReserveHelp =>
+      'Alimentez cette adresse en bitcoins on-chain avant de démarrer une sortie d’urgence lorsque la réserve de frais est insuffisante.';
+
+  @override
+  String feeReserveAmount(String amount) {
+    return '$amount sats';
+  }
 }
