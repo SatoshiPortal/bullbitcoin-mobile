@@ -61,4 +61,17 @@ void main() {
       },
     );
   }
+
+  test('turning on keeps a chosen interval and revives an off one', () {
+    for (final interval in BackgroundSyncInterval.values) {
+      expect(interval.withEnabled(false), BackgroundSyncInterval.off);
+      expect(
+        interval.withEnabled(true),
+        interval == BackgroundSyncInterval.off
+            ? BackgroundSyncInterval.fallback
+            : interval,
+      );
+    }
+    expect(BackgroundSyncInterval.fallback.isEnabled, isTrue);
+  });
 }
