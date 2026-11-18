@@ -48,15 +48,17 @@ Future<KeyMaterialReport> checkKeyMaterial(String rootPath) async {
         .contextFor(path)
         .currentSession
         .getResolvedUnit(path);
-    if (result is ResolvedUnitResult) {
-      violations.addAll(
-        checkSecretsReach(
-          result.unit,
-          path.substring(root.length + 1),
-          root: root,
-        ),
-      );
+    final relative = path.substring(root.length + 1);
+    if (result is! ResolvedUnitResult) {
+      violations.add('$relative: unresolved unit (bindings boundary)');
+      continue;
     }
+    for (final diagnostic in result.diagnostics) {
+      if (diagnostic.diagnosticCode.severity.name == 'ERROR') {
+        violations.add('$relative: ${diagnostic.diagnosticCode.lowerCaseName}');
+      }
+    }
+    violations.addAll(checkSecretsReach(result.unit, relative, root: root));
   }
   for (final path in files) {
     final relative = path.substring(root.length + 1);
