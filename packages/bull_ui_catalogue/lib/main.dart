@@ -54,10 +54,6 @@ class BullUiCatalogue extends StatelessWidget {
               data: catalogueThemeData(Brightness.dark),
             ),
           ],
-          initialTheme: WidgetbookTheme(
-            name: 'Light',
-            data: catalogueThemeData(Brightness.light),
-          ),
         ),
         // NOTE: ViewportAddon (device frames) is intentionally omitted —
         // widgetbook 3.24.0's viewport addon trips a Navigator
