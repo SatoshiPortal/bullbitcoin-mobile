@@ -1,4 +1,7 @@
 import 'dart:convert';
+
+import 'package:bull_payjoin/src/engine/payjoin_engine_exception.dart';
+
 import 'dart:core';
 import 'dart:core' as core;
 import 'dart:math';
@@ -147,6 +150,62 @@ void main() {
   });
 
   group('fetchDirectoryKeys', () {
+    test('receiver creation preserves inactive discovery refusal', () async {
+      final datasource = PdkPayjoinDatasource(
+        codec: const TestPayjoinCodec(),
+        log: PayjoinLogger.silent,
+        dio: Dio(),
+        isCurrent: () async => false,
+      );
+      try {
+        await expectLater(
+          datasource.createReceiver(
+            walletId: 'wallet',
+            address: 'unused',
+            isTestnet: true,
+            maxFeeRateSatPerVb: BigInt.one,
+            expireAfterSec: 60,
+          ),
+          throwsA(isA<PayjoinRuntimeInactiveException>()),
+        );
+      } finally {
+        await datasource.dispose();
+      }
+    });
+
+    test(
+      'inactive discovery is terminal without a second server attempt',
+      () async {
+        var active = true;
+        var attempts = 0;
+        final datasource = PdkPayjoinDatasource(
+          codec: const TestPayjoinCodec(),
+          log: PayjoinLogger.silent,
+          dio: Dio(),
+          isCurrent: () async => active,
+          ohttpKeysFetcher:
+              ({
+                required ohttpRelayUrl,
+                required directoryUrl,
+                required timeout,
+              }) async {
+                attempts++;
+                active = false;
+                throw const PayjoinRuntimeInactiveException();
+              },
+        );
+        try {
+          await expectLater(
+            datasource.fetchDirectoryKeys(),
+            throwsA(isA<PayjoinRuntimeInactiveException>()),
+          );
+          expect(attempts, 1);
+        } finally {
+          await datasource.dispose();
+        }
+      },
+    );
+
     test(
       'moves to another relay off the directory host when one fails',
       () async {

@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/themes/colors.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_card.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/localizations.dart';
@@ -160,6 +162,28 @@ void main() {
     );
     await tester.pump();
   }
+
+  testWidgets('a wallet card is painted in the wallet card colour', (
+    tester,
+  ) async {
+    await pumpCards(
+      tester,
+      isSpWalletSetup: true,
+      isSpFeatureEnabled: true,
+      isSuperuser: true,
+      isDevModeEnabled: true,
+    );
+
+    final material = tester.widget<Material>(
+      find
+          .descendant(
+            of: find.byType(WalletCard),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    expect(material.color, AppColors.light.walletCardBackground);
+  });
 
   group('SP wallet card visibility', () {
     testWidgets(

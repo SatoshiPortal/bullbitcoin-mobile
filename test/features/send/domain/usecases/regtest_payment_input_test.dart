@@ -44,6 +44,20 @@ void main() {
       }
     },
   );
+  test('regtest Payjoin BIP21 preserves pj and pjos for the selected wallet', () async {
+    final pj = 'https://localhost:8040/fixture#public-key';
+    final result = await detect.execute(
+      data:
+          'bitcoin:$address?amount=0.0001&pj=${Uri.encodeComponent(pj)}&pjos=0',
+      environment: NetworkEnv.regtest,
+    );
+    expect(result, isA<Bip21PaymentRequest>());
+    final request = result as Bip21PaymentRequest;
+    expect(request.network, app.Network.bitcoinRegtest);
+    expect(request.pj, pj);
+    expect(request.pjos, '0');
+    expect(request.amountSat, 10000);
+  });
   test('regtest input cannot enter either historical network', () async {
     for (final environment in [NetworkEnv.mainnet, NetworkEnv.testnet]) {
       for (final input in [address, 'bitcoin:$address?amount=1']) {

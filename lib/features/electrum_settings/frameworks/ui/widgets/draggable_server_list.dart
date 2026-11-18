@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_bottom_sheet.dart';
-import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/delete_custom_server_dialog.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/electrum_servers_error_card.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/server_list_item.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullConfirmDialog, BullInfoCard, Gap;
 
 class DraggableServerList extends StatelessWidget {
   const DraggableServerList({super.key});
@@ -91,12 +90,19 @@ class DraggableServerList extends StatelessWidget {
                     server: server,
                     isDraggable: true,
                     onDelete: () async {
-                      final isConfirmed = await DeleteCustomServerDialog.show(
+                      final isConfirmed = await BullConfirmDialog.show(
                         context,
-                        server.url,
-                        customServers.length == 1,
+                        title: context.loc.electrumDeleteServerTitle,
+                        message: [
+                          if (customServers.length == 1)
+                            context.loc.electrumDeletePrivacyNotice,
+                          context.loc.electrumDeleteConfirmation(server.url),
+                        ].join('\n\n'),
+                        confirmLabel: context.loc.electrumDelete,
+                        cancelLabel: context.loc.electrumCancel,
+                        destructive: true,
                       );
-                      if (isConfirmed == true && context.mounted) {
+                      if (isConfirmed && context.mounted) {
                         context.read<ElectrumSettingsBloc>().add(
                           ElectrumCustomServerDeleted(server: server),
                         );

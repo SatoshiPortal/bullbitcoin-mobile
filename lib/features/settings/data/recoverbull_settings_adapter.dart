@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -5,6 +6,9 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
+
+import '../domain/regtest_recoverbull_profile.dart';
+import '../domain/settings_entity.dart';
 
 /// Settings owns environment selection, proxy preference and the legacy row.
 final class RecoverBullSettingsAdapter
@@ -16,23 +20,45 @@ final class RecoverBullSettingsAdapter
   final SqliteDatabase _database;
   final EmbeddedTor _embedded;
   final Tor _tor;
+  final RegtestRecoverBullProfile? regtestProfile;
+  StreamController<TorConnectionState>? _regtestStates;
+  TorConnectionState _regtestState = const TorUninitialized();
+  bool _closed = false;
 
-  const RecoverBullSettingsAdapter(
+  RecoverBullSettingsAdapter(
     this._settings,
     this._database,
     this._embedded,
-    this._tor,
-  );
+    this._tor, {
+    this.regtestProfile,
+  });
+
+  bool _matchesRuntime(SettingsEntity settings) {
+    final regtest = settings.environment == Environment.regtest;
+    return regtest == (regtestProfile != null) &&
+        (!regtest ||
+            (settings.isSuperuser == true &&
+                settings.isDevModeEnabled == true));
+  }
+
+  Future<bool> _runtimeIsCurrent() async {
+    if (_closed) return false;
+    try {
+      final settings = await _settings.fetch();
+      return !_closed && _matchesRuntime(settings);
+    } on Exception {
+      return false;
+    }
+  }
 
   @override
   Future<Result<BitcoinNetwork, RecoverBullFailure>> currentNetwork() async {
     try {
       final settings = await _settings.fetch();
-      return Ok(
-        settings.environment.requireHistoricalTestnet()
-            ? BitcoinNetwork.testnet
-            : BitcoinNetwork.mainnet,
-      );
+      if (!_matchesRuntime(settings)) {
+        return const Err(VaultContextChangedFailure());
+      }
+      return Ok(BitcoinNetwork.fromName(settings.environment.name));
     } on Exception {
       log.warning('recoverbull.environment.read.failed');
       return const Err(VaultStorageFailure());
@@ -42,6 +68,19 @@ final class RecoverBullSettingsAdapter
   @override
   Future<Result<LegacyBackupSettings, RecoverBullFailure>> read() async {
     try {
+      final settings = await _settings.fetch();
+      if (!_matchesRuntime(settings)) {
+        return const Err(VaultContextChangedFailure());
+      }
+      final profile = regtestProfile;
+      if (profile != null) {
+        return Ok(
+          LegacyBackupSettings(
+            server: profile.server,
+            permissionGranted: false,
+          ),
+        );
+      }
       final row = await _database.managers.recoverbull
           .filter((f) => f.id(1))
           .getSingleOrNull();
@@ -63,10 +102,33 @@ final class RecoverBullSettingsAdapter
   }
 
   @override
-  Stream<TorConnectionState> watch() => _embedded.states;
+  Stream<TorConnectionState> watch() {
+    if (regtestProfile == null) {
+      return _embedded.states;
+    }
+    if (_closed) {
+      return Stream.value(const TorStopped(TorSource.external));
+    }
+    return Stream.multi((controller) {
+      controller.add(_regtestState);
+      final states = _regtestStates ??=
+          StreamController<TorConnectionState>.broadcast(sync: true);
+      final subscription = states.stream.listen(controller.add);
+      controller.onCancel = subscription.cancel;
+    }, isBroadcast: true);
+  }
+
+  void _publish(TorConnectionState state) {
+    if (_closed) {
+      return;
+    }
+    _regtestState = state;
+    _regtestStates?.add(state);
+  }
 
   @override
-  bool get snowflakeAvailable => _embedded.mode == TorTransportMode.automatic;
+  bool get snowflakeAvailable =>
+      regtestProfile == null && _embedded.mode == TorTransportMode.automatic;
 
   @override
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
@@ -74,7 +136,26 @@ final class RecoverBullSettingsAdapter
     bool viaSnowflake = false,
   }) async {
     try {
+      if (_closed) {
+        return const Err(VaultCancelledFailure());
+      }
       final settings = await _settings.fetch();
+      if (!_matchesRuntime(settings)) {
+        return const Err(VaultContextChangedFailure());
+      }
+      final profile = regtestProfile;
+      if (profile != null) {
+        _publish(const TorConnecting(source: TorSource.external));
+        final ready = await _tor.external.verify(profile.endpoint);
+        if (!await _runtimeIsCurrent()) {
+          return const Err(VaultContextChangedFailure());
+        }
+        _publish(ready);
+        if (ready is! TorReady || ready.route.source != TorSource.external) {
+          return const Err(ExternalTorProxyUnavailableFailure());
+        }
+        return Ok(RecoverBullRoute(ready.route, () async {}));
+      }
       if (settings.useTorProxy) {
         final TorProxyEndpoint endpoint;
         try {
@@ -85,7 +166,11 @@ final class RecoverBullSettingsAdapter
         } on ArgumentError {
           return const Err(ExternalTorProxyUnavailableFailure());
         }
-        return switch (await _tor.external.verify(endpoint)) {
+        final ready = await _tor.external.verify(endpoint);
+        if (!await _runtimeIsCurrent()) {
+          return const Err(VaultContextChangedFailure());
+        }
+        return switch (ready) {
           TorReady(:final route) => Ok(RecoverBullRoute(route, () async {})),
           _ => const Err(ExternalTorProxyUnavailableFailure()),
         };
@@ -95,10 +180,17 @@ final class RecoverBullSettingsAdapter
       final ready = restartEmbedded || viaSnowflake
           ? await _embedded.retry(snowflake: viaSnowflake)
           : await _embedded.ensureReady();
+      if (!await _runtimeIsCurrent()) {
+        return const Err(VaultContextChangedFailure());
+      }
       if (ready is! TorReady || ready.route.source != TorSource.embedded) {
         return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
       }
       final session = await _embedded.sessions.open();
+      if (!await _runtimeIsCurrent()) {
+        await session.close();
+        return const Err(VaultContextChangedFailure());
+      }
       return Ok(
         RecoverBullRoute(
           TorRoute(
@@ -114,5 +206,10 @@ final class RecoverBullSettingsAdapter
       log.warning('recoverbull.route.open.failed');
       return const Err(KeyServerFailure(KeyServerFailureKind.unavailable));
     }
+  }
+
+  Future<void> close() async {
+    _closed = true;
+    await _regtestStates?.close();
   }
 }

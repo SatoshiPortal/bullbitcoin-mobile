@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/features/buy/domain/validate_buy_destination_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/sync_buy_receipt_usecase.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
@@ -41,8 +42,12 @@ class _MockGetBuyPayjoinEnabledUsecase extends Mock
 class _MockLoadBuyContextUsecase extends Mock
     implements LoadBuyContextUsecase {}
 
+class _MockValidateBuyDestination extends Mock
+    implements ValidateBuyDestinationUsecase {}
+
 class _SeedableBuyBloc extends BuyBloc {
   _SeedableBuyBloc({
+    super.validateDestination,
     required super.syncBuyReceiptUsecase,
     required super.loadBuyContextUsecase,
     required super.confirmBuyOrderUsecase,
@@ -67,6 +72,7 @@ void main() {
 
   group('BuyBloc — quote refresh scheduling', () {
     late _SeedableBuyBloc bloc;
+    late _MockValidateBuyDestination destination;
     late _MockRefreshBuyOrderUsecase refresh;
     late _MockConfirmBuyOrderUsecase confirm;
     late _MockCancelAbandonedBuyPayjoinUsecase cancel;
@@ -78,6 +84,7 @@ void main() {
     setUpAll(() => registerFallbackValue(_MockBuyOrder()));
 
     _SeedableBuyBloc build() => _SeedableBuyBloc(
+      validateDestination: destination,
       syncBuyReceiptUsecase: receipt,
       loadBuyContextUsecase: _MockLoadBuyContextUsecase(),
       confirmBuyOrderUsecase: confirm,
@@ -96,6 +103,7 @@ void main() {
         refresh.execute(orderId: 'quote-order', confirmed: true);
 
     setUp(() {
+      destination = _MockValidateBuyDestination();
       refresh = _MockRefreshBuyOrderUsecase();
       confirm = _MockConfirmBuyOrderUsecase();
       cancel = _MockCancelAbandonedBuyPayjoinUsecase();
@@ -140,6 +148,44 @@ void main() {
     tearDown(() async {
       if (!bloc.isClosed) await bloc.close();
     });
+
+    test('an invalid address cannot remain an order destination', () async {
+      when(() => destination.execute('wrong-rail'))
+          .thenAnswer((_) async => null);
+      bloc.seed(const BuyState(bitcoinAddressInput: 'previous'));
+      bloc.add(const BuyEvent.bitcoinAddressInputChanged('wrong-rail'));
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.hasDestination, isFalse);
+    });
+
+    test('a stale validation cannot restore a cleared address', () async {
+      final pending = Completer<String?>();
+      when(() => destination.execute('old')).thenAnswer((_) => pending.future);
+      bloc.add(const BuyEvent.bitcoinAddressInputChanged('old'));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const BuyEvent.bitcoinAddressInputChanged(''));
+      await Future<void>.delayed(Duration.zero);
+      pending.complete('normalized-old');
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.bitcoinAddressInput, isEmpty);
+      expect(bloc.state.hasDestination, isFalse);
+    });
+
+    test(
+      'a wallet selection invalidates pending external validation',
+      () async {
+        final pending = Completer<String?>();
+        when(() => destination.execute('old'))
+            .thenAnswer((_) => pending.future);
+        bloc.add(const BuyEvent.bitcoinAddressInputChanged('old'));
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(const BuyEvent.selectedWalletChanged(null));
+        await Future<void>.delayed(Duration.zero);
+        pending.complete('normalized-old');
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state.bitcoinAddressInput, isEmpty);
+      },
+    );
 
     // The scheduler's timers must be born inside the fake zone, so the bloc
     // is rebuilt there from the state the outer setUp seeded.

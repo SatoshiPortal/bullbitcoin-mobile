@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSwitch, BullText, Gap;
 
@@ -72,7 +73,7 @@ class BalanceRow extends StatelessWidget {
           Row(
             children: [
               BullText(
-                'MAX',
+                context.loc.swapMax,
                 style: context.font.labelLarge,
                 color: context.appColors.secondary,
               ),

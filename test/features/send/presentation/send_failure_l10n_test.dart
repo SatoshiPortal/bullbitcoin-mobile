@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/send_failure_l10n.dart';
 import 'package:bb_mobile/localizations.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,6 +20,7 @@ const _rawReason = 'BdkException: secret-detail xprv9s21ZrQH143K3';
 /// is that each arm resolves to a real, non-empty `.arb` value and that no arm
 /// echoes the raw reason — that is what this table locks in.
 final _everyFailure = <SendFailure>[
+  const SendPayjoinUnavailableFailure(_rawReason),
   const SendPayjoinPausedFailure(),
   const SendInvalidPaymentRequestFailure(logMessage: _rawReason),
   const SendInvalidPaymentRequestFailure(
@@ -87,6 +89,31 @@ Future<String> _translate(
 }
 
 void main() {
+  testWidgets(
+    'stale Payjoin runtime uses the existing localized restart message',
+    (tester) async {
+      final actual = await _translate(
+        tester,
+        const SendPayjoinUnavailableFailure(_rawReason),
+      );
+      late String expected;
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) {
+              expected = context.loc.appStartupErrorMessage;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+      expect(actual, expected);
+      expect(actual, isNot(contains(_rawReason)));
+    },
+  );
+
   group('SendFailureL10n.toTranslated', () {
     for (final failure in _everyFailure) {
       testWidgets('${failure.runtimeType} resolves to a user-safe message', (

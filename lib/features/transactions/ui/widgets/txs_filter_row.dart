@@ -19,7 +19,8 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
     final availableFilters = state.availableFilters;
     return SingleChildScrollView(
       scrollDirection: .horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      // 3 + the 48 dp chip targets keep the 8 dp around each 38 dp chip.
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),
       child: Row(
         children: availableFilters.map((filter) {
           return Padding(

@@ -146,20 +146,6 @@ abstract class Wallet with _$Wallet {
     };
   }
 
-  String get walletTypeString {
-    String name = switch (network) {
-      Network.bitcoinMainnet ||
-      Network.bitcoinTestnet ||
-      Network.bitcoinRegtest => 'Bitcoin network',
-      Network.liquidMainnet ||
-      Network.liquidTestnet ||
-      Network.liquidRegtest => 'Liquid and Lightning',
-    };
-    if (isWatchOnly) name = 'Watch-Only';
-    if (isWatchSigner) name = 'Watch-Signer';
-    return name;
-  }
-
   String get networkString {
     return switch (network) {
       Network.bitcoinMainnet => 'Bitcoin Network',

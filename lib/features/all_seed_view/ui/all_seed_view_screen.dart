@@ -13,8 +13,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullConfirmDialog,
         BullButton,
-        BullDialog,
         BullFadingLinearProgress,
         BullScreenPrivacyGate,
         BullShapesX,
@@ -292,159 +292,51 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
     );
   }
 
-  Future<void> _showWarningDialog(BuildContext context) {
-    return BullDialog.show<void>(
-      context: context,
+  Future<void> _showWarningDialog(BuildContext context) async {
+    final confirmed = await BullConfirmDialog.show(
+      context,
+      title: context.loc.allSeedViewSecurityWarningTitle,
+      message: context.loc.allSeedViewSecurityWarningMessage,
+      confirmLabel: context.loc.allSeedViewIUnderstandButton,
+      cancelLabel: context.loc.cancel,
       isDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
-        ),
-        backgroundColor: context.appColors.surface,
-        title: Text(
-          context.loc.allSeedViewSecurityWarningTitle,
-          style: context.font.headlineSmall?.copyWith(
-            color: context.appColors.onSurface,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            context.loc.allSeedViewSecurityWarningMessage,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              context.loc.cancel,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<AllSeedViewCubit>().showSeeds();
-            },
-            child: Text(
-              context.loc.allSeedViewIUnderstandButton,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.primary,
-                fontWeight: .bold,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
+    if (confirmed && context.mounted) {
+      context.read<AllSeedViewCubit>().showSeeds();
+    }
   }
 
-  Future<void> _showDeleteWarningDialog(BuildContext context, Secret seed) {
-    return BullDialog.show<void>(
-      context: context,
+  Future<void> _showDeleteWarningDialog(
+    BuildContext context,
+    Secret seed,
+  ) async {
+    final confirmed = await BullConfirmDialog.show(
+      context,
+      title: context.loc.allSeedViewDeleteWarningTitle,
+      message: context.loc.allSeedViewDeleteWarningMessage,
+      confirmLabel: context.loc.delete,
+      cancelLabel: context.loc.cancel,
+      destructive: true,
       isDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
-        ),
-        backgroundColor: context.appColors.surface,
-        title: Text(
-          context.loc.allSeedViewDeleteWarningTitle,
-          style: context.font.headlineSmall?.copyWith(
-            color: context.appColors.error,
-            fontWeight: .bold,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            context.loc.allSeedViewDeleteWarningMessage,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              context.loc.cancel,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<AllSeedViewCubit>().deleteSeed(seed.id.hex);
-            },
-            child: Text(
-              context.loc.delete,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
-                fontWeight: .bold,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
+    if (confirmed && context.mounted) {
+      context.read<AllSeedViewCubit>().deleteSeed(seed.id.hex);
+    }
   }
 
-  Future<void> _showDeleteSwapWarningDialog(BuildContext context) {
-    return BullDialog.show<void>(
-      context: context,
+  Future<void> _showDeleteSwapWarningDialog(BuildContext context) async {
+    final confirmed = await BullConfirmDialog.show(
+      context,
+      title: context.loc.allSeedViewDeleteSwapMnemonicTitle,
+      message: context.loc.allSeedViewDeleteSwapMnemonicMessage,
+      confirmLabel: context.loc.delete,
+      cancelLabel: context.loc.cancel,
+      destructive: true,
       isDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
-        ),
-        backgroundColor: context.appColors.surface,
-        title: Text(
-          context.loc.allSeedViewDeleteSwapMnemonicTitle,
-          style: context.font.headlineSmall?.copyWith(
-            color: context.appColors.error,
-            fontWeight: .bold,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            context.loc.allSeedViewDeleteSwapMnemonicMessage,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              context.loc.cancel,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<AllSeedViewCubit>().deleteSwapMnemonic();
-            },
-            child: Text(
-              context.loc.delete,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
-                fontWeight: .bold,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
+    if (confirmed && context.mounted) {
+      context.read<AllSeedViewCubit>().deleteSwapMnemonic();
+    }
   }
 
   Widget _buildSwapKeyCard(BuildContext context, SwapMasterKeyInfo swapKey) {

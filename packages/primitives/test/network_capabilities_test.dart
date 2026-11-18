@@ -25,9 +25,16 @@ void main() {
     BitcoinNetwork.testnet: historicalBitcoin,
     LiquidNetwork.mainnet: historicalLiquid,
     LiquidNetwork.testnet: historicalLiquid,
-    BitcoinNetwork.regtest: {NetworkCapability.softwareWallet},
+    BitcoinNetwork.regtest: {
+      NetworkCapability.softwareWallet,
+      NetworkCapability.swaps,
+      NetworkCapability.payjoin,
+    },
     BitcoinNetwork.signet: {},
-    LiquidNetwork.regtest: {NetworkCapability.softwareWallet},
+    LiquidNetwork.regtest: {
+      NetworkCapability.softwareWallet,
+      NetworkCapability.swaps,
+    },
   };
 
   for (final network in <Network>[

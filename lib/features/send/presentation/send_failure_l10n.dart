@@ -8,6 +8,7 @@ extension SendFailureL10n on SendFailure {
     BuildContext context, {
     String? formattedFrozenBalance,
   }) => switch (this) {
+    SendPayjoinUnavailableFailure() => context.loc.appStartupErrorMessage,
     SendPayjoinPausedFailure() => context.loc.sendPayjoinSpendPaused,
     SendSpendBlockedFailure(:final busy) =>
       busy

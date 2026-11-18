@@ -55,7 +55,7 @@ void main() {
 
       expect(order, isA<GenericOrder>());
       expect(order.orderType, OrderType.sellUsdt);
-      expect(order.orderTypeLabel, 'Sell USDT');
+      expect((order as GenericOrder).orderTypeName, 'Sell USDT');
     });
 
     test('an unknown order type keeps the server-sent name for display', () {
@@ -66,7 +66,7 @@ void main() {
       expect(order, isA<GenericOrder>());
       expect(order.orderType, OrderType.unknown);
       // The list row renders from these three, so none of them may be lost.
-      expect(order.orderTypeLabel, 'Buy Gold Bars');
+      expect((order as GenericOrder).orderTypeName, 'Buy Gold Bars');
       expect(order.orderStatus, OrderStatus.completed);
       expect(order.amountAndCurrencyToDisplay(), (100000, 'sats'));
     });

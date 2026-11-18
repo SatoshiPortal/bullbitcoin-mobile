@@ -4,9 +4,9 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
+import 'package:bull_ui/bull_ui.dart' show bullTimeAgo;
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 /// Resolves an [SpPayment] into the shared [TxListItemData] the core row
 /// renders.
@@ -51,7 +51,8 @@ class SpPaymentStatusLabel extends StatelessWidget {
         payment.status == SpPaymentStatus.confirmedUnverified ||
         payment.status == SpPaymentStatus.verifyFailed;
     final date = payment.timestamp != null
-        ? timeago.format(
+        ? bullTimeAgo(
+            context,
             DateTime.fromMillisecondsSinceEpoch(
               payment.timestamp!.toInt() * 1000,
             ),

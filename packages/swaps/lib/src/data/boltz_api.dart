@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:meta/meta.dart' show visibleForTesting;
 
 import 'dart:async';
@@ -36,7 +37,14 @@ BoltzWebSocket _createBoltzWebSocket(
 const boltzReferralId = 'BULL';
 
 class BoltzDatasource {
+  /// Installed by the owning repository, checked after native-store reads.
+  void Function()? effectAdmission;
+
   final String _baseUrl;
+  final NetworkEnv environment;
+  final String? _webSocketUrl;
+  final String? _bitcoinExplorerUrl;
+  final String? _liquidExplorerUrl;
   final BoltzWebSocketFactory webSocketFactory;
   late String _httpsUrl;
   late final Dio _http;
@@ -72,19 +80,43 @@ class BoltzDatasource {
 
   BoltzDatasource({
     required String url,
+    required this.environment,
+    String? webSocketUrl,
+    this._bitcoinExplorerUrl,
+    this._liquidExplorerUrl,
     required this._boltzStore,
     this.webSocketFactory = _createBoltzWebSocket,
-  }) : _baseUrl = url {
+  }) : _baseUrl = url,
+       _webSocketUrl = webSocketUrl {
+    BoltzNetwork.fromEnvironment(environment);
+    if (environment == NetworkEnv.regtest && webSocketUrl == null) {
+      throw ArgumentError('Regtest requires an explicit Boltz websocket');
+    }
     // A bare host gets https (the production default cannot be downgraded);
     // an explicit http:// is a deliberate dev/staging opt-in (SSH tunnel to
     // a local backend) and the websocket follows it as ws://.
     _httpsUrl = _baseUrl.startsWith('http://') ? _baseUrl : 'https://$_baseUrl';
-    _http = Dio(BaseOptions(baseUrl: _httpsUrl));
+    _http = Dio(
+      BaseOptions(
+        baseUrl: _httpsUrl,
+        connectTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 15),
+      ),
+    );
   }
 
-  String get _wsBaseUrl => _baseUrl.startsWith('http://')
-      ? 'ws://${_baseUrl.substring('http://'.length)}'
-      : _baseUrl;
+  String get _wsBaseUrl =>
+      _webSocketUrl ??
+      (_baseUrl.startsWith('http://')
+          ? 'ws://${_baseUrl.substring('http://'.length)}'
+          : _baseUrl);
+
+  void _requireEnvironment(NetworkEnv requested) {
+    if (requested != environment) {
+      throw SwapsException('Swap operation network does not match its engine');
+    }
+  }
 
   Future<void> updateFees({required swap_entity.SwapType swapType}) async {
     final allFees = Fees(boltzUrl: _httpsUrl);
@@ -195,15 +227,23 @@ class BoltzDatasource {
   /// fingerprint whose key was never stored.
   Future<bool> swapMasterKeyReady({
     required String walletFingerprint,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
     final generation = ++_swapMasterKeyGeneration;
     _swapMasterKeyWalletFingerprint = null;
-    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    _requireEnvironment(environment);
+    final network = BoltzNetwork.fromEnvironment(environment);
     final exists = await _boltzStore.swapMasterKeyExists(
       network,
       walletFingerprint: walletFingerprint,
     );
+    if (exists) {
+      final stored = await _boltzStore.fetchSwapMasterKey(
+        network,
+        walletFingerprint: walletFingerprint,
+      );
+      stored.requireEnvironment(environment);
+    }
     if (generation != _swapMasterKeyGeneration) return false;
     if (exists) _swapMasterKeyWalletFingerprint = walletFingerprint;
     return exists;
@@ -211,9 +251,10 @@ class BoltzDatasource {
 
   Future<void> storeSwapMasterKey({
     required DerivedSwapMasterKey key,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
-    if (key.isTestnet != isTestnet) {
+    _requireEnvironment(environment);
+    if (key.environment != environment) {
       throw SwapsException(
         'swap master key network does not match the engine network',
       );
@@ -222,12 +263,19 @@ class BoltzDatasource {
       SwapMasterKeyModel.fromDerived(key),
       walletFingerprint: key.walletFingerprint,
     );
+    final stored = await _boltzStore.fetchSwapMasterKey(
+      BoltzNetwork.fromEnvironment(environment),
+      walletFingerprint: key.walletFingerprint,
+    );
+    stored.requireEnvironment(environment);
     // Bind only after a successful store, so a failed store leaves the key
     // "not initialized" rather than bound to an absent blob.
     _swapMasterKeyWalletFingerprint = key.walletFingerprint;
   }
 
-  Future<SwapMasterKeyModel> getSwapMasterKey({required bool isTestnet}) async {
+  Future<SwapMasterKeyModel> getSwapMasterKey({
+    required NetworkEnv environment,
+  }) async {
     final walletFingerprint = _swapMasterKeyWalletFingerprint;
     if (walletFingerprint == null) {
       throw StateError(
@@ -235,11 +283,13 @@ class BoltzDatasource {
         'before any swap operation',
       );
     }
-    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
-    return _boltzStore.fetchSwapMasterKey(
+    _requireEnvironment(environment);
+    final network = BoltzNetwork.fromEnvironment(environment);
+    final stored = await _boltzStore.fetchSwapMasterKey(
       network,
       walletFingerprint: walletFingerprint,
     );
+    return stored.requireEnvironment(environment);
   }
 
   /// Reads the swap master key for [walletFingerprint] WITHOUT requiring the
@@ -247,28 +297,31 @@ class BoltzDatasource {
   /// null when no key is stored for that wallet+network.
   Future<SwapMasterKeyModel?> getSwapMasterKeyForWallet({
     required String walletFingerprint,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
-    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    _requireEnvironment(environment);
+    final network = BoltzNetwork.fromEnvironment(environment);
     final exists = await _boltzStore.swapMasterKeyExists(
       network,
       walletFingerprint: walletFingerprint,
     );
     if (!exists) return null;
-    return _boltzStore.fetchSwapMasterKey(
+    final stored = await _boltzStore.fetchSwapMasterKey(
       network,
       walletFingerprint: walletFingerprint,
     );
+    return stored.requireEnvironment(environment);
   }
 
-  /// Deletes the swap master key (and its index counter) for
+  /// Deletes the swap master key blob, retaining the shared high-water counter for
   /// [walletFingerprint]. Clears the in-memory binding when it pointed at this
   /// wallet so a subsequent read forces a fresh derive.
   Future<void> deleteSwapMasterKey({
     required String walletFingerprint,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
-    final network = isTestnet ? BoltzNetwork.testnet : BoltzNetwork.mainnet;
+    _requireEnvironment(environment);
+    final network = BoltzNetwork.fromEnvironment(environment);
     await _boltzStore.deleteSwapMasterKey(
       network,
       walletFingerprint: walletFingerprint,
@@ -285,7 +338,7 @@ class BoltzDatasource {
   Future<List<RestoredSwapSummary>> restoreSwapSummaries({
     required SwapMasterKeyModel swapMasterKey,
   }) => boltz.restoreSwapSummaries(
-    swapMasterKey: swapMasterKey.toBoltz(),
+    swapMasterKey: swapMasterKey.requireEnvironment(environment).toBoltz(),
     boltzUrl: _httpsUrl,
   );
 
@@ -293,7 +346,7 @@ class BoltzDatasource {
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
   }) => boltz.restoreLnBtcSwaps(
-    swapMasterKey: swapMasterKey.toBoltz(),
+    swapMasterKey: swapMasterKey.requireEnvironment(environment).toBoltz(),
     electrumUrl: electrumUrl,
     boltzUrl: _httpsUrl,
   );
@@ -302,7 +355,7 @@ class BoltzDatasource {
     required SwapMasterKeyModel swapMasterKey,
     required String electrumUrl,
   }) => boltz.restoreLnLbtcSwaps(
-    swapMasterKey: swapMasterKey.toBoltz(),
+    swapMasterKey: swapMasterKey.requireEnvironment(environment).toBoltz(),
     electrumUrl: electrumUrl,
     boltzUrl: _httpsUrl,
   );
@@ -312,7 +365,7 @@ class BoltzDatasource {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
   }) => boltz.restoreChainSwaps(
-    swapMasterKey: swapMasterKey.toBoltz(),
+    swapMasterKey: swapMasterKey.requireEnvironment(environment).toBoltz(),
     btcElectrumUrl: btcElectrumUrl,
     lbtcElectrumUrl: lbtcElectrumUrl,
     boltzUrl: _httpsUrl,
@@ -324,7 +377,7 @@ class BoltzDatasource {
     required SwapMasterKeyModel swapMasterKey,
   }) async {
     final highest = await boltz.restoreSwapIndex(
-      swapMasterKey: swapMasterKey.toBoltz(),
+      swapMasterKey: swapMasterKey.requireEnvironment(environment).toBoltz(),
       boltzUrl: _httpsUrl,
     );
     return highest.toInt();
@@ -343,7 +396,7 @@ class BoltzDatasource {
     required String walletId,
     required int index,
     required int outAmount,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required String electrumUrl,
     required String magicRouteHintAddress,
     String? description,
@@ -354,10 +407,12 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newReverse(
-        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(environment: environment))
+            .toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
-        network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+        network: BoltzNetwork.fromEnvironment(environment)
+            .nativeChain(isLiquid: false),
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
@@ -375,7 +430,7 @@ class BoltzDatasource {
         id: btcLnSwap.id,
         status: swap_entity.SwapStatus.pending.name,
         type: swap_entity.SwapType.lightningToBitcoin.name,
-        isTestnet: isTestnet,
+        isTestnet: environment == NetworkEnv.testnet,
         keyIndex: index,
         creationTime: DateTime.now().millisecondsSinceEpoch,
         receiveWalletId: walletId,
@@ -407,6 +462,7 @@ class BoltzDatasource {
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
+      effectAdmission?.call();
 
       return await btcLnSwap.claim(
         outAddress: claimAddress,
@@ -427,7 +483,7 @@ class BoltzDatasource {
     required String walletId,
     required int index,
     required int outAmount,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required String electrumUrl,
     required String magicRouteHintAddress,
     String? description,
@@ -438,10 +494,12 @@ class BoltzDatasource {
       }
       final reverseFees = _reverseFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newReverse(
-        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(environment: environment))
+            .toBoltz(),
         index: BigInt.from(index),
         outAmount: BigInt.from(outAmount),
-        network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
+        network: BoltzNetwork.fromEnvironment(environment)
+            .nativeChain(isLiquid: true),
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
@@ -461,7 +519,7 @@ class BoltzDatasource {
         id: lbtcLnSwap.id,
         status: swap_entity.SwapStatus.pending.name,
         type: swap_entity.SwapType.lightningToLiquid.name,
-        isTestnet: isTestnet,
+        isTestnet: environment == NetworkEnv.testnet,
         keyIndex: index,
         creationTime: DateTime.now().millisecondsSinceEpoch,
         receiveWalletId: walletId,
@@ -495,6 +553,7 @@ class BoltzDatasource {
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
+      effectAdmission?.call();
 
       return await lbtcLnSwap.claim(
         outAddress: claimAddress,
@@ -563,7 +622,7 @@ class BoltzDatasource {
     required String walletId,
     required int index,
     required String invoice,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required String electrumUrl,
   }) async {
     try {
@@ -573,10 +632,12 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final btcLnSwap = await BtcLnSwap.newSubmarine(
-        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(environment: environment))
+            .toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
-        network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+        network: BoltzNetwork.fromEnvironment(environment)
+            .nativeChain(isLiquid: false),
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
         referralId: boltzReferralId,
@@ -593,7 +654,7 @@ class BoltzDatasource {
         id: btcLnSwap.id,
         status: swap_entity.SwapStatus.pending.name,
         type: swap_entity.SwapType.bitcoinToLightning.name,
-        isTestnet: isTestnet,
+        isTestnet: environment == NetworkEnv.testnet,
         keyIndex: index,
         creationTime: DateTime.now().millisecondsSinceEpoch,
         sendWalletId: walletId,
@@ -626,7 +687,7 @@ class BoltzDatasource {
     required String walletId,
     required int index,
     required String invoice,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required String electrumUrl,
   }) async {
     try {
@@ -636,10 +697,12 @@ class BoltzDatasource {
       }
       final submarineFees = _submarineFeesAndLimits!;
       final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
-        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(environment: environment))
+            .toBoltz(),
         index: BigInt.from(index),
         invoice: invoice,
-        network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
+        network: BoltzNetwork.fromEnvironment(environment)
+            .nativeChain(isLiquid: true),
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
         referralId: boltzReferralId,
@@ -656,7 +719,7 @@ class BoltzDatasource {
         id: lbtcLnSwap.id,
         status: swap_entity.SwapStatus.pending.name,
         type: swap_entity.SwapType.liquidToLightning.name,
-        isTestnet: isTestnet,
+        isTestnet: environment == NetworkEnv.testnet,
         keyIndex: index,
         creationTime: DateTime.now().millisecondsSinceEpoch,
         sendWalletId: walletId,
@@ -689,6 +752,7 @@ class BoltzDatasource {
   Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
+      effectAdmission?.call();
       return await btcLnSwap.coopCloseSubmarine();
     } catch (e) {
       if (e is BoltzError) {
@@ -702,6 +766,7 @@ class BoltzDatasource {
   Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
+      effectAdmission?.call();
       await lbtcLnSwap.coopCloseSubmarine();
       return;
     } catch (e) {
@@ -722,6 +787,7 @@ class BoltzDatasource {
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
+      effectAdmission?.call();
       return await btcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -746,6 +812,7 @@ class BoltzDatasource {
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
+      effectAdmission?.call();
       return await lbtcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -791,7 +858,7 @@ class BoltzDatasource {
     required String sendWalletId,
     required int index,
     required int amountSat,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     String? receiveWalletId,
@@ -803,12 +870,13 @@ class BoltzDatasource {
       }
       final chainFees = _chainFeesAndLimits!;
       final chainSwap = await ChainSwap.newSwap(
-        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(environment: environment))
+            .toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.btcToLbtc,
         amount: BigInt.from(amountSat),
-        network: isTestnet ? boltz.Network.testnet : boltz.Network.mainnet,
+        network: BoltzNetwork.fromEnvironment(environment).nativeNetwork,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
         referralId: boltzReferralId,
@@ -825,7 +893,7 @@ class BoltzDatasource {
         id: chainSwap.id,
         status: swap_entity.SwapStatus.pending.name,
         type: swap_entity.SwapType.bitcoinToLiquid.name,
-        isTestnet: isTestnet,
+        isTestnet: environment == NetworkEnv.testnet,
         keyIndex: index,
         creationTime: DateTime.now().millisecondsSinceEpoch,
         sendWalletId: sendWalletId,
@@ -857,7 +925,7 @@ class BoltzDatasource {
     required String sendWalletId,
     required int index,
     required int amountSat,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     String? receiveWalletId,
@@ -870,12 +938,13 @@ class BoltzDatasource {
       final chainFees = _chainFeesAndLimits!;
 
       final chainSwap = await ChainSwap.newSwap(
-        swapMasterKey: (await getSwapMasterKey(isTestnet: isTestnet)).toBoltz(),
+        swapMasterKey: (await getSwapMasterKey(environment: environment))
+            .toBoltz(),
         index: BigInt.from(index),
         boltzUrl: _httpsUrl,
         direction: ChainSwapDirection.lbtcToBtc,
         amount: BigInt.from(amountSat),
-        network: isTestnet ? boltz.Network.testnet : boltz.Network.mainnet,
+        network: BoltzNetwork.fromEnvironment(environment).nativeNetwork,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
         referralId: boltzReferralId,
@@ -893,7 +962,7 @@ class BoltzDatasource {
         id: chainSwap.id,
         status: swap_entity.SwapStatus.pending.name,
         type: swap_entity.SwapType.liquidToBitcoin.name,
-        isTestnet: isTestnet,
+        isTestnet: environment == NetworkEnv.testnet,
         keyIndex: index,
         creationTime: DateTime.now().millisecondsSinceEpoch,
         sendWalletId: sendWalletId,
@@ -971,6 +1040,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
       // The claim spends the server lockup on the RECEIVING chain (Liquid).
       return await chainSwap.claim(
         outAddress: claimLiquidAddress,
@@ -996,6 +1066,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
       // The claim spends the server lockup on the RECEIVING chain (Bitcoin).
       return await chainSwap.claim(
         outAddress: claimBitcoinAddress,
@@ -1048,6 +1119,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
       // BtcToLbtc refunds spend the user's BITCOIN lockup.
       return await chainSwap.refund(
         refundAddress: refundBitcoinAddress,
@@ -1073,6 +1145,7 @@ class BoltzDatasource {
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
+      effectAdmission?.call();
 
       // LbtcToBtc refunds spend the user's LIQUID lockup.
       final signedTxHex = await chainSwap.refund(
@@ -1343,6 +1416,7 @@ class BoltzDatasource {
     SwapStatus boltzStatus,
     String? transactionId,
   ) {
+    if (_disposed) return Future<void>.value();
     final previous = _eventChains[swapId] ?? Future.value();
     final next = previous.then(
       (_) =>
@@ -1361,16 +1435,30 @@ class BoltzDatasource {
   /// mapping pipeline as websocket events, so recovery never depends on Boltz
   /// replaying events missed while disconnected.
   Future<void> reconcileSwaps(List<String> swapIds) async {
-    for (final swapId in swapIds) {
-      try {
-        final response = await _http.get<Map<String, dynamic>>('/swap/$swapId');
-        final data = response.data;
-        if (data == null) continue;
-        final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
-        await _enqueueEvent(swapId, status.status, status.transaction?.id);
-      } catch (e) {
-        swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
+    if (_disposed) return;
+    final cancellation = CancelToken();
+    final deadline = Timer(const Duration(seconds: 30), () {
+      cancellation.cancel('status reconciliation deadline');
+    });
+    try {
+      for (final swapId in swapIds) {
+        if (_disposed || cancellation.isCancelled) break;
+        try {
+          final response = await _http.get<Map<String, dynamic>>(
+            '/swap/$swapId',
+            cancelToken: cancellation,
+          );
+          if (_disposed || cancellation.isCancelled) break;
+          final data = response.data;
+          if (data == null) continue;
+          final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
+          await _enqueueEvent(swapId, status.status, status.transaction?.id);
+        } catch (e) {
+          swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
+        }
       }
+    } finally {
+      deadline.cancel();
     }
   }
 
@@ -1380,11 +1468,13 @@ class BoltzDatasource {
     SwapStatus boltzStatus, {
     String? transactionId,
   }) async {
+    if (_disposed) return;
     try {
       // The repository writers hold the same per-swap lock, so a store here
       // can never write back a row that predates a concurrent field update.
       await _boltzStore.mutate(swapId, () async {
         final swapModel = await _boltzStore.fetch(swapId);
+        if (_disposed) return;
         if (swapModel == null) {
           unsubscribeToSwaps([swapId]);
           return;
@@ -1400,12 +1490,12 @@ class BoltzDatasource {
         switch (mapping) {
           case SwapUnchanged():
             if (_isSettled(swapModel) && !_swapNeedsProcessing(swapModel)) {
-              _swapUpdatesController.add(swapModel);
+              if (!_disposed) _swapUpdatesController.add(swapModel);
               unsubscribeToSwaps([swapId]);
             } else if (_swapNeedsProcessing(swapModel)) {
               // Status unchanged but the swap still needs a claim, refund or coop
               // close: re-emit so reconciliation un-sticks a missed action.
-              _swapUpdatesController.add(swapModel);
+              if (!_disposed) _swapUpdatesController.add(swapModel);
             }
 
           case SwapUpdated(:final swap):
@@ -1414,7 +1504,7 @@ class BoltzDatasource {
               '[Boltz] swap $swapId: ${swapModel.status} -> ${swap.status} '
               '(event ${boltzStatus.name})',
             );
-            _swapUpdatesController.add(swap);
+            if (!_disposed) _swapUpdatesController.add(swap);
             if (_isSettled(swap) && !_swapNeedsProcessing(swap)) {
               unsubscribeToSwaps([swapId]);
             }
@@ -1508,7 +1598,13 @@ class BoltzDatasource {
     _boltzWebSocket = null;
     webSocket?.dispose();
     _subscribedSwapIds.clear();
-    _http.close();
+    _http.close(force: true);
+  }
+
+  /// Close read transports and join mutations already admitted from events.
+  Future<void> close() async {
+    dispose();
+    await Future.wait(_eventChains.values.toList());
   }
 
   void unsubscribeToSwaps(List<String> swapIds) {
@@ -1808,6 +1904,28 @@ class BoltzDatasource {
   /// spent vout. No entry is proof of OUR claim/refund — the covenant can
   /// sit at any vout and Boltz spends its own change/refunds through the
   /// same tx — so callers must verify a spender actually paid them.
+  @visibleForTesting
+  String? lockupExplorer({
+    required swap_entity.SwapType swapType,
+    required bool isClaim,
+  }) {
+    final lockupIsLiquid = switch (swapType) {
+      swap_entity.SwapType.lightningToBitcoin ||
+      swap_entity.SwapType.bitcoinToLightning => false,
+      swap_entity.SwapType.lightningToLiquid ||
+      swap_entity.SwapType.liquidToLightning => true,
+      swap_entity.SwapType.bitcoinToLiquid => isClaim,
+      swap_entity.SwapType.liquidToBitcoin => !isClaim,
+    };
+    final explorerUrl = lockupIsLiquid
+        ? _liquidExplorerUrl
+        : _bitcoinExplorerUrl;
+    if (environment == NetworkEnv.regtest && explorerUrl == null) {
+      throw SwapsException('Regtest requires an explicit lockup explorer');
+    }
+    return explorerUrl;
+  }
+
   Future<List<SwapTxOutspendModel>> checkLockupOutspends({
     required String swapId,
     required swap_entity.SwapType swapType,
@@ -1829,6 +1947,8 @@ class BoltzDatasource {
       Network.bitcoinTestnet => Chain.bitcoinTestnet,
       Network.liquidMainnet => Chain.liquid,
       Network.liquidTestnet => Chain.liquidTestnet,
+      Network.bitcoinRegtest => Chain.bitcoinRegtest,
+      Network.liquidRegtest => Chain.liquidRegtest,
     };
 
     final chainSwapDirection = swapDirection != null
@@ -1838,6 +1958,8 @@ class BoltzDatasource {
           }
         : null;
 
+    _requireEnvironment(network.environment);
+    final explorerUrl = lockupExplorer(swapType: swapType, isClaim: isClaim);
     final outspends = await boltz.checkLockupOutspends(
       swapId: swapId,
       swapType: boltzSwapType,
@@ -1845,6 +1967,7 @@ class BoltzDatasource {
       network: boltzChain,
       boltzUrl: _httpsUrl,
       chainSwapDirection: chainSwapDirection,
+      explorerUrl: explorerUrl,
     );
 
     swapsLog.fine(

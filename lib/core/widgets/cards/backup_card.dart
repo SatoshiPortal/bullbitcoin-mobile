@@ -11,14 +11,17 @@ class BackupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.appColors;
     return InkWell(
       onTap: () {
         onTap();
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        // 15 + the 1px border = 16 of space around the content.
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: context.appColors.secondary,
+          color: colors.banner,
+          border: Border.all(color: colors.bannerOutline),
           borderRadius: BorderRadius.circular(context.bullShapes.card),
         ),
         child: Row(
@@ -28,7 +31,7 @@ class BackupCard extends StatelessWidget {
               Assets.misc.passwordbook.path,
               height: 32,
               width: 32,
-              color: context.appColors.onSecondary,
+              color: colors.onBanner,
             ),
             const Gap(16),
             Expanded(
@@ -38,18 +41,18 @@ class BackupCard extends StatelessWidget {
                   BullText(
                     context.loc.backupCardTitle,
                     style: context.font.bodyMedium,
-                    color: context.appColors.onSecondary,
+                    color: colors.onBanner,
                   ),
                   BullText(
                     context.loc.backupCardSubtitle,
                     style: context.font.bodyMedium,
-                    color: context.appColors.onSecondary,
+                    color: colors.onBanner,
                   ),
                 ],
               ),
             ),
             const Gap(8),
-            Icon(Icons.arrow_forward, color: context.appColors.onSecondary),
+            Icon(Icons.arrow_forward, color: colors.onBanner),
           ],
         ),
       ),

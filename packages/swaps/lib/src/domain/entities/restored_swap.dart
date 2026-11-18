@@ -1,9 +1,11 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:swaps/src/domain/entities/swap.dart';
 
 enum RestoredSwapKind { lightningSend, lightningReceive, crossChain }
 
 /// A swap returned by the Boltz restore endpoints, identified by its Boltz id.
 class RestoredSwap {
+  final NetworkEnv? environment;
   final String id;
   final RestoredSwapKind kind;
 
@@ -27,6 +29,7 @@ class RestoredSwap {
   final String toAsset;
 
   const RestoredSwap({
+    this.environment,
     required this.id,
     required this.kind,
     required this.status,

@@ -360,7 +360,6 @@
   "payPayoutMethod": "Método de pagamento",
   "ledgerVerifyButton": "Verificar endereço",
   "sendErrorSwapFeesNotLoaded": "Taxas de swap não carregadas",
-  "walletDetailsCopyButton": "Entendido",
   "backupWalletGoogleDrivePrivacyMessage3": "deixar seu telefone e é ",
   "backupCompletedDescription": "Agora vamos testar seu backup para garantir que tudo foi feito corretamente.",
   "sendErrorInsufficientFundsForFees": "Não há fundos suficientes para cobrir o montante e as taxas",

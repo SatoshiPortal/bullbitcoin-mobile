@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -107,6 +108,31 @@ Future<void> _pumpTopSection(
 }
 
 void main() {
+  testWidgets('keeps 16 between the balance and the eye badge', (tester) async {
+    await _pumpTopSection(
+      tester,
+      textScale: 1,
+      actionsHeight: 100,
+      unconfirmedIncomingBalance: 0,
+    );
+    final row = find.ancestor(
+      of: find.byType(EyeToggle),
+      matching: find.byType(Row),
+    );
+    final balance = tester.getRect(
+      find.descendant(of: row.first, matching: find.byType(Flexible)).first,
+    );
+    final badge = tester.getRect(
+      find
+          .descendant(
+            of: find.byType(EyeToggle),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    expect(badge.left - balance.right, 16);
+  });
+
   testWidgets(
     'balance grows for unconfirmed amount at 200 percent text scale',
     (tester) async {

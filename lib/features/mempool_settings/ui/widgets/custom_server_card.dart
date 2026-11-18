@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBottomSheet,
-        BullDialog,
+        BullConfirmDialog,
         BullShapesX,
         BullSnackBar,
         BullTypographyX;
@@ -181,54 +181,18 @@ class CustomServerCard extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context) {
-    BullDialog.show(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
-        ),
-        backgroundColor: context.appColors.surface,
-        title: Text(
-          context.loc.mempoolCustomServerDeleteTitle,
-          style: context.font.headlineSmall?.copyWith(
-            color: context.appColors.error,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Text(
-          context.loc.mempoolCustomServerDeleteMessage,
-          style: context.font.bodyMedium?.copyWith(
-            color: context.appColors.onSurface,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              context.loc.cancel,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.read<MempoolSettingsCubit>().deleteCustomServer();
-            },
-            child: Text(
-              context.loc.delete,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-        actionsAlignment: MainAxisAlignment.spaceBetween,
-      ),
+  Future<void> _showDeleteConfirmation(BuildContext context) async {
+    final confirmed = await BullConfirmDialog.show(
+      context,
+      title: context.loc.mempoolCustomServerDeleteTitle,
+      message: context.loc.mempoolCustomServerDeleteMessage,
+      confirmLabel: context.loc.delete,
+      cancelLabel: context.loc.cancel,
+      destructive: true,
     );
+    if (confirmed && context.mounted) {
+      await context.read<MempoolSettingsCubit>().deleteCustomServer();
+    }
   }
 }
 

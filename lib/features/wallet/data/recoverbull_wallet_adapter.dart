@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:secrets/secrets.dart' show Secrets, KeystoreLockedFailure;
@@ -22,6 +24,9 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
   Future<Result<VaultContext?, RecoverBullFailure>> currentDefault() async {
     try {
       final settings = await _settings.fetch();
+      if (!_authorized(settings)) {
+        return const Err(VaultContextChangedFailure());
+      }
       switch (await _wallets.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
@@ -33,6 +38,11 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
           if (value.isEmpty) return const Ok(null);
           if (value.length != 1) return const Err(VaultContextChangedFailure());
           final wallet = value.single;
+          if (!wallet.network.isBitcoin ||
+              wallet.network.bitcoin.env != settings.environment.networkEnv ||
+              !await _stillSelected(settings.environment)) {
+            return const Err(VaultContextChangedFailure());
+          }
           final description = await _secrets.fetch(
             Fingerprint(wallet.masterFingerprint),
           );
@@ -49,9 +59,7 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
             VaultContext(
               fingerprint: Fingerprint(wallet.masterFingerprint),
               hasPassphrase: hasPassphrase,
-              network: wallet.network.requireHistoricalTestnet()
-                  ? BitcoinNetwork.testnet
-                  : BitcoinNetwork.mainnet,
+              network: wallet.network.bitcoin,
             ),
           );
       }
@@ -66,15 +74,12 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
     VaultContext requested,
   ) async {
     try {
-      // RecoverBull's server protocol supports only mainnet and testnet.
-      // Refuse an unsupported captured request before opening the keystore.
-      if (requested.network != BitcoinNetwork.mainnet &&
-          requested.network != BitcoinNetwork.testnet) {
+      if (requested.network == BitcoinNetwork.signet) {
         return const Err(VaultContextChangedFailure());
       }
       final settings = await _settings.fetch();
-      if (settings.environment.requireHistoricalTestnet() !=
-          (requested.network == BitcoinNetwork.testnet)) {
+      if (!_authorized(settings) ||
+          settings.environment.networkEnv != requested.network.env) {
         return const Err(VaultContextChangedFailure());
       }
       final fetched = await _secrets.fetch(requested.fingerprint);
@@ -84,7 +89,13 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
         case Err():
           return const Err(VaultStorageFailure());
         case Ok(:final value):
-          final result = await _create.execute(secret: value);
+          if (!await _stillSelected(settings.environment)) {
+            return const Err(VaultContextChangedFailure());
+          }
+          final result = await _create.execute(
+            secret: value,
+            expectedNetwork: requested.network.env,
+          );
           if (result case Err()) return const Err(VaultStorageFailure());
           final created = switch (result) {
             Ok(:final value) => value,
@@ -102,9 +113,7 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
           return Ok(
             VaultContext(
               fingerprint: Fingerprint(wallet.masterFingerprint),
-              network: wallet.network.requireHistoricalTestnet()
-                  ? BitcoinNetwork.testnet
-                  : BitcoinNetwork.mainnet,
+              network: wallet.network.bitcoin,
             ),
           );
       }
@@ -112,5 +121,14 @@ final class RecoverBullWalletAdapter implements RecoverBullWalletPort {
       log.warning('recoverbull.wallet.restore.failed');
       return const Err(VaultStorageFailure());
     }
+  }
+
+  bool _authorized(SettingsEntity settings) =>
+      settings.environment != Environment.regtest ||
+      (settings.isSuperuser == true && settings.isDevModeEnabled == true);
+
+  Future<bool> _stillSelected(Environment expected) async {
+    final settings = await _settings.fetch();
+    return settings.environment == expected && _authorized(settings);
   }
 }

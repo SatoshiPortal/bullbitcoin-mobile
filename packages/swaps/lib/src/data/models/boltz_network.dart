@@ -1,13 +1,40 @@
+import 'package:primitives/primitives.dart';
+import 'package:bull_sdk/boltz.dart' as native;
+
 enum BoltzNetwork {
   mainnet,
-  testnet;
+  testnet,
+  regtest;
 
-  String get value {
-    switch (this) {
-      case BoltzNetwork.mainnet:
-        return 'mainnet';
-      case BoltzNetwork.testnet:
-        return 'testnet';
-    }
-  }
+  String get value => name;
+
+  factory BoltzNetwork.fromEnvironment(NetworkEnv environment) =>
+      switch (environment) {
+        NetworkEnv.mainnet => BoltzNetwork.mainnet,
+        NetworkEnv.testnet => BoltzNetwork.testnet,
+        NetworkEnv.regtest => BoltzNetwork.regtest,
+        NetworkEnv.signet => throw ArgumentError('Unsupported swap network'),
+      };
+
+  NetworkEnv get environment => switch (this) {
+    mainnet => NetworkEnv.mainnet,
+    testnet => NetworkEnv.testnet,
+    regtest => NetworkEnv.regtest,
+  };
+
+  native.Network get nativeNetwork => switch (this) {
+    mainnet => native.Network.mainnet,
+    testnet => native.Network.testnet,
+    regtest => native.Network.regtest,
+  };
+
+  native.Chain nativeChain({required bool isLiquid}) =>
+      switch ((this, isLiquid)) {
+        (mainnet, false) => native.Chain.bitcoin,
+        (mainnet, true) => native.Chain.liquid,
+        (testnet, false) => native.Chain.bitcoinTestnet,
+        (testnet, true) => native.Chain.liquidTestnet,
+        (regtest, false) => native.Chain.bitcoinRegtest,
+        (regtest, true) => native.Chain.liquidRegtest,
+      };
 }

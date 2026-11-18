@@ -8,7 +8,8 @@ part 'swap.freezed.dart';
 /// environment; mapped at the app boundary.
 enum Environment {
   mainnet,
-  testnet;
+  testnet,
+  regtest;
 
   factory Environment.fromName(String name) {
     return Environment.values.firstWhere(

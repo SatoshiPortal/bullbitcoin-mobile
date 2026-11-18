@@ -43,9 +43,13 @@ class CreateSendCrossChainSwapUsecase {
         return const Err(SendSwapCreationFailure('Wallet not found'));
       }
       if (!NetworkCapabilities.supports(
-        wallet.network.shared,
-        NetworkCapability.swaps,
-      )) {
+            wallet.network.shared,
+            NetworkCapability.swaps,
+          ) ||
+          !NetworkCapabilities.supports(
+            wallet.network.shared,
+            NetworkCapability.exchange,
+          )) {
         return const Err(SendSwapRouteUnavailableFailure());
       }
       if (destinationIsTestnet != wallet.network.requireHistoricalTestnet()) {

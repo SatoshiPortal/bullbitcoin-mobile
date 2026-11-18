@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/public/payjoin_disclaimer_dialog.dart';
@@ -10,7 +9,8 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
-import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, BullSwitch, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, BullSwitch, Gap, BullSnackBar;
 import 'package:go_router/go_router.dart';
 
 /// Payjoin settings: one switch per action, payments with other users
@@ -48,7 +48,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
         'Failed to update Payjoin from settings: ${failure.logMessage}',
       );
       if (mounted) {
-        SnackBarUtils.showSnackBar(context, failure.toTranslated(context));
+        BullSnackBar.show(context, message: failure.toTranslated(context));
       }
     });
 

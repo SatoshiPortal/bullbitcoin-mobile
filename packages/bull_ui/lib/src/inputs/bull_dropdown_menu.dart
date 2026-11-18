@@ -7,8 +7,8 @@ import 'package:material_ui/material_ui.dart';
 
 /// The one menu behind every Bull dropdown: a flat [BullTheme.surface] panel
 /// with a hairline [BullTheme.primary] outline and the [BullShapes.input]
-/// corner, opened directly under [anchor], the selected row tinted and in
-/// bold. Scrolls past half the screen.
+/// corner, opened directly under [anchor], the selected row in bold
+/// [BullTheme.primary] text. Scrolls past half the screen.
 ///
 /// Resolves with the index of the tapped item, or null when dismissed, so an
 /// item whose value is null stays distinguishable from a dismissal.
@@ -79,10 +79,10 @@ class BullDropdownRow<T> extends StatelessWidget {
   /// The choice this row shows.
   final BullPickerItem<T> item;
 
-  /// Whether this row is the current value: tinted, in bold, in primary.
+  /// Whether this row is the current value: in bold, in primary.
   final bool selected;
 
-  /// Whether the tint spans the whole menu width rather than hugging the label.
+  /// Whether the row spans the whole menu width rather than hugging the label.
   final bool fillWidth;
 
   @override
@@ -98,12 +98,6 @@ class BullDropdownRow<T> extends StatelessWidget {
         horizontal: BullSpacing.xs,
         vertical: BullSpacing.xxs,
       ),
-      decoration: selected
-          ? BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(context.bullShapes.input),
-            )
-          : null,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

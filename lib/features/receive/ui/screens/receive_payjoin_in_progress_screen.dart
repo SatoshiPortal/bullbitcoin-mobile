@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
@@ -15,7 +14,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullCountdown, BullFadingLinearProgress, Gap;
+    show BullCountdown, BullFadingLinearProgress, BullTopBar, Gap;
 import 'package:go_router/go_router.dart';
 
 class ReceivePayjoinInProgressScreen extends StatelessWidget {
@@ -66,9 +65,8 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
           appBar: AppBar(
             forceMaterialTransparency: true,
             automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
+            flexibleSpace: BullTopBar(
               title: context.loc.receiveTitle,
-              actionIcon: Icons.close,
               onAction: () => context.go(WalletRoute.walletHome.path),
             ),
             bottom: PreferredSize(

@@ -1,4 +1,5 @@
 import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
 
 import 'dart:async';
 
@@ -18,7 +19,11 @@ import 'package:mocktail/mocktail.dart';
 class _MockBuyBloc extends Mock implements BuyBloc {}
 
 void main() {
-  setUpAll(() => registerFallbackValue(const BuyEvent.createOrder()));
+  setUpAll(() async {
+    registerFallbackValue(const BuyEvent.createOrder());
+    await BullSdk.init();
+  });
+  tearDownAll(BullSdk.dispose);
 
   testWidgets(
     'order creation does not show a progress bar on the input screen',
@@ -48,7 +53,7 @@ void main() {
         amountInput: '50000',
         exchangeRate: 100000,
         balances: {'CAD': 1000},
-        bitcoinAddressInput: 'tb1qtest',
+        bitcoinAddressInput: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
       );
       when(() => bloc.state).thenAnswer((_) => state);
       when(() => bloc.stream).thenAnswer((_) => states.stream);
@@ -72,7 +77,8 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
+      clearInteractions(bloc);
 
       final amountFields = find.byType(BuyAmountInputFields);
       final continueButton = find.byWidgetPredicate(

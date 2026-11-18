@@ -26,6 +26,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
+        BullErrorState,
         BullFadingLinearProgress,
         BullShimmerLine,
         BullSnackBar,
@@ -240,24 +241,12 @@ class _LoadErrorContent extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
+        child: BullErrorState(
+          message:
               failure?.toTranslated(context) ??
-                  context.loc.transactionDetailLoadError,
-              textAlign: TextAlign.center,
-              style: context.font.bodyMedium,
-            ),
-            const Gap(16),
-            BullButton.small(
-              label: context.loc.retry,
-              onPressed: () =>
-                  context.read<TransactionDetailsCubit>().refresh(),
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
-            ),
-          ],
+              context.loc.transactionDetailLoadError,
+          retryLabel: context.loc.retry,
+          onRetry: () => context.read<TransactionDetailsCubit>().refresh(),
         ),
       ),
     );

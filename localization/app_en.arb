@@ -503,10 +503,6 @@
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
   },
-  "walletDetailsCopyButton": "Copy",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "mempoolSettingsTitle": "Mempool Server",
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
@@ -15543,5 +15539,184 @@
   "importMnemonicUnsupportedScript": "This wallet type is not supported on the selected Bitcoin network.",
   "@importMnemonicUnsupportedScript": {
     "description": "Shown when the selected Bitcoin network does not support this wallet script type; retrying the scan cannot enable it."
+  },
+  "transactionOrderTypeSellUsdt": "Sell USDT",
+  "@transactionOrderTypeSellUsdt": {
+    "description": "Order type of an exchange order selling USDT, shown in the transaction list and details"
+  },
+  "transactionOrderTypeFiatPayment": "Fiat Payment",
+  "@transactionOrderTypeFiatPayment": {
+    "description": "Order type of an exchange order paying a fiat recipient"
+  },
+  "transactionOrderTypeBalanceAdjustment": "Balance Adjustment",
+  "@transactionOrderTypeBalanceAdjustment": {
+    "description": "Order type of an exchange balance adjustment"
+  },
+  "walletTypeBitcoinNetwork": "Bitcoin network",
+  "@walletTypeBitcoinNetwork": {
+    "description": "Subtitle of a wallet card on the home screen: a Bitcoin wallet"
+  },
+  "walletTypeLiquidAndLightning": "Liquid and Lightning",
+  "@walletTypeLiquidAndLightning": {
+    "description": "Subtitle of a wallet card on the home screen: a Liquid wallet, which also pays Lightning"
+  },
+  "walletTypeWatchOnly": "Watch-Only",
+  "@walletTypeWatchOnly": {
+    "description": "Subtitle of a wallet card on the home screen: a wallet without signing keys"
+  },
+  "walletTypeWatchSigner": "Watch-Signer",
+  "@walletTypeWatchSigner": {
+    "description": "Subtitle of a wallet card on the home screen: a wallet signed by an external signer"
+  },
+  "swapErrorInvalidBitcoinAddress": "Please enter a valid Bitcoin address",
+  "@swapErrorInvalidBitcoinAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Bitcoin"
+  },
+  "swapErrorInvalidLiquidAddress": "Please enter a valid Liquid address",
+  "@swapErrorInvalidLiquidAddress": {
+    "description": "Error under the external address field of a transfer that pays out on Liquid"
+  },
+  "exchangeBitcoinWalletsLoadFailed": "Failed to load default wallets",
+  "@exchangeBitcoinWalletsLoadFailed": {
+    "description": "Error shown when the default Bitcoin wallets of the exchange account cannot be loaded"
+  },
+  "exchangeBitcoinWalletsAddressEmpty": "Address cannot be empty",
+  "@exchangeBitcoinWalletsAddressEmpty": {
+    "description": "Error shown when saving an empty default wallet address"
+  },
+  "exchangeBitcoinWalletsSaveFailed": "Failed to save wallet address",
+  "@exchangeBitcoinWalletsSaveFailed": {
+    "description": "Error shown when a default wallet address cannot be saved"
+  },
+  "exchangeBitcoinWalletsDeleteFailed": "Failed to delete wallet address",
+  "@exchangeBitcoinWalletsDeleteFailed": {
+    "description": "Error shown when a default wallet address cannot be deleted"
+  },
+  "walletShowAmountsTooltip": "Show amounts",
+  "@walletShowAmountsTooltip": {
+    "description": "Accessible name of the eye button that reveals hidden balances"
+  },
+  "walletHideAmountsTooltip": "Hide amounts",
+  "@walletHideAmountsTooltip": {
+    "description": "Accessible name of the eye button that hides balances"
+  },
+  "priceChartShowTooltip": "Show price chart",
+  "@priceChartShowTooltip": {
+    "description": "Accessible name of the Exchange home button that opens the price chart"
+  },
+  "swapReverseDirectionTooltip": "Reverse direction",
+  "@swapReverseDirectionTooltip": {
+    "description": "Accessible name of the Swap button that exchanges the source and destination wallets"
+  },
+  "destinationAmountFromQr": "{type} · {amount} sats from the QR",
+  "@destinationAmountFromQr": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "destinationExpectedType": "Enter or scan a valid {type}.",
+  "@destinationExpectedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipients": "Recipients",
+  "@sendRecipients": {},
+  "sendMultipleRecipients": "Multiple recipients",
+  "@sendMultipleRecipients": {},
+  "sendMultipleRecipientsHint": "Pay several addresses in one transaction",
+  "@sendMultipleRecipientsHint": {},
+  "sendMultipleUnavailable": "Not available for this destination",
+  "@sendMultipleUnavailable": {},
+  "sendAdd": "Add",
+  "@sendAdd": {},
+  "sendRecipient": "Recipient",
+  "@sendRecipient": {},
+  "sendMyWallet": "My wallet",
+  "@sendMyWallet": {},
+  "sendRemoveOtherRecipients": "Remove the other recipients?",
+  "@sendRemoveOtherRecipients": {},
+  "sendRemoveOtherRecipientsMessage": "The other recipients will be removed. Recipient 1 is kept.",
+  "@sendRemoveOtherRecipientsMessage": {},
+  "sendToMyWallet": "Send to my wallet",
+  "@sendToMyWallet": {},
+  "sendMyWalletAddressHint": "A new receive address of the chosen wallet is used.",
+  "@sendMyWalletAddressHint": {},
+  "sendLiquidUnavailable": "Liquid is not available for multiple recipients",
+  "@sendLiquidUnavailable": {},
+  "sendMultipleUnavailableLightning": "Not available for Lightning invoices or addresses",
+  "@sendMultipleUnavailableLightning": {},
+  "sendMultipleUnavailableLiquid": "Not available for Liquid payments",
+  "@sendMultipleUnavailableLiquid": {},
+  "sendMultipleUnavailableAmount": "Not available when the payment request sets an amount",
+  "@sendMultipleUnavailableAmount": {},
+  "sendMultipleUnavailableSilent": "Not available for silent payments",
+  "@sendMultipleUnavailableSilent": {},
+  "sendLightningInvoice": "Lightning invoice",
+  "@sendLightningInvoice": {
+    "description": "Send payment form"
+  },
+  "sendRemove": "Remove",
+  "@sendRemove": {
+    "description": "Send payment form"
+  },
+  "sendAmountSetByRequest": "Amount set by the payment request",
+  "@sendAmountSetByRequest": {
+    "description": "Send payment form"
+  },
+  "sendRestGoesTo": "Rest goes to",
+  "@sendRestGoesTo": {
+    "description": "Send payment form"
+  },
+  "sendRestNone": "None",
+  "@sendRestNone": {
+    "description": "Send payment form"
+  },
+  "sendRestChangeHint": "The rest stays in the wallet as change.",
+  "@sendRestChangeHint": {
+    "description": "Send payment form"
+  },
+  "sendRestCalculated": "Rest, calculated after fees",
+  "@sendRestCalculated": {
+    "description": "Send payment form"
+  },
+  "sendAmountFromQrEditable": "Amount from the QR, editable",
+  "@sendAmountFromQrEditable": {
+    "description": "Send payment form"
+  },
+  "sendToRecipients": "To recipients",
+  "@sendToRecipients": {
+    "description": "Send payment form"
+  },
+  "sendEstimatedNetworkFee": "Estimated network fee",
+  "@sendEstimatedNetworkFee": {
+    "description": "Send payment form"
+  },
+  "sendTotalDebited": "Total debited",
+  "@sendTotalDebited": {
+    "description": "Send payment form"
+  },
+  "sendLightningInvoiceAmount": "Lightning invoice · {amount} sats",
+  "@sendLightningInvoiceAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "sendSilentPaymentAddress": "Silent payment address",
+  "@sendSilentPaymentAddress": {},
+  "sendPsbtRequest": "PSBT",
+  "@sendPsbtRequest": {
+    "description": "Interpreted type of a partially signed Bitcoin transaction in Send"
   }
 }

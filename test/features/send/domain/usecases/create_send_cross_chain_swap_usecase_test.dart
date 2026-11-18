@@ -35,64 +35,75 @@ void main() {
     );
   });
 
-  test(
-    'regtest refuses before receive-address or provider side effects',
-    () async {
-      when(() => getWallet.execute('wallet-1'))
-          .thenAnswer((_) async => _wallet(Network.bitcoinRegtest));
-      final result = await usecase.execute(
-        walletId: 'wallet-1',
-        amountSat: 1000,
-        destinationAddress: 'unused',
-        destinationIsTestnet: true,
-        isInAmountFixed: false,
-        quotedCounterpartAmountSat: BigInt.from(1000),
-      );
-      expect(
-        result,
-        isA<Err>().having(
-          (result) => result.failure,
-          'failure',
-          isA<SendSwapRouteUnavailableFailure>(),
-        ),
-      );
-      verifyZeroInteractions(swapFacade);
-      verifyZeroInteractions(getReceiveAddress);
-    },
-  );
-
-  test('creates Liquid to Bitcoin with a Liquid fallback', () async {
-    when(() => getWallet.execute('wallet-1'))
-        .thenAnswer((_) async => _wallet(Network.liquidTestnet));
-    when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
-        .thenAnswer((_) async => _address('tlq1-fallback'));
-    when(
-      () => swapFacade.createOrder(
-        amountSat: BigInt.from(100000),
-        isInAmountFixed: false,
-        inNetwork: OrderSwapNetwork.liquid,
-        outNetwork: OrderSwapNetwork.bitcoin,
-        destinationAddress: 'tb1-destination',
-        fallbackAddress: 'tlq1-fallback',
-        purpose: OrderSwapPurpose.sendCrossChain,
-        environment: OrderSwapEnvironment.testnet,
-        sourceWalletId: 'wallet-1',
-        note: 'transfer',
-        quotedCounterpartAmountSat: BigInt.from(101000),
-      ),
-    ).thenAnswer((_) async => Ok(_record()));
-    final result = await usecase.execute(
-      walletId: 'wallet-1',
-      destinationAddress: 'tb1-destination',
-      destinationIsTestnet: true,
-      amountSat: 100000,
-      isInAmountFixed: false,
-      note: 'transfer',
-      quotedCounterpartAmountSat: BigInt.from(101000),
+  for (final network in [Network.bitcoinRegtest, Network.liquidRegtest]) {
+    test(
+      '$network refuses before receive-address or provider side effects',
+      () async {
+        when(() => getWallet.execute('wallet-1'))
+            .thenAnswer((_) async => _wallet(network));
+        final result = await usecase.execute(
+          walletId: 'wallet-1',
+          amountSat: 1000,
+          destinationAddress: 'unused',
+          destinationIsTestnet: true,
+          isInAmountFixed: false,
+          quotedCounterpartAmountSat: BigInt.from(1000),
+        );
+        expect(
+          result,
+          isA<Err>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SendSwapRouteUnavailableFailure>(),
+          ),
+        );
+        verifyZeroInteractions(swapFacade);
+        verifyZeroInteractions(getReceiveAddress);
+      },
     );
+  }
 
-    expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
-  });
+  for (final isTestnet in [false, true]) {
+    final environment = isTestnet
+        ? OrderSwapEnvironment.testnet
+        : OrderSwapEnvironment.mainnet;
+    final network = isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+    test(
+      '$environment creates Liquid to Bitcoin with a Liquid fallback',
+      () async {
+        when(() => getWallet.execute('wallet-1'))
+            .thenAnswer((_) async => _wallet(network));
+        when(() => getReceiveAddress.execute(walletId: 'wallet-1'))
+            .thenAnswer((_) async => _address('tlq1-fallback'));
+        when(
+          () => swapFacade.createOrder(
+            amountSat: BigInt.from(100000),
+            isInAmountFixed: false,
+            inNetwork: OrderSwapNetwork.liquid,
+            outNetwork: OrderSwapNetwork.bitcoin,
+            destinationAddress: 'tb1-destination',
+            fallbackAddress: 'tlq1-fallback',
+            purpose: OrderSwapPurpose.sendCrossChain,
+            environment: environment,
+            sourceWalletId: 'wallet-1',
+            note: 'transfer',
+            quotedCounterpartAmountSat: BigInt.from(101000),
+          ),
+        ).thenAnswer((_) async => Ok(_record(environment: environment)));
+        final result = await usecase.execute(
+          walletId: 'wallet-1',
+          destinationAddress: 'tb1-destination',
+          destinationIsTestnet: isTestnet,
+          amountSat: 100000,
+          isInAmountFixed: false,
+          note: 'transfer',
+          quotedCounterpartAmountSat: BigInt.from(101000),
+        );
+
+        expect(result, isA<Ok<OrderSwapRecord, SendFailure>>());
+      },
+    );
+  }
 
   test('creates Bitcoin to Liquid with a Bitcoin fallback', () async {
     when(() => getWallet.execute('wallet-1'))
@@ -171,10 +182,12 @@ WalletAddress _address(String address) => WalletAddress(
   updatedAt: DateTime.utc(2026),
 );
 
-OrderSwapRecord _record() => OrderSwapRecord(
+OrderSwapRecord _record({
+  OrderSwapEnvironment environment = OrderSwapEnvironment.testnet,
+}) => OrderSwapRecord(
   localId: 'local-1',
   purpose: OrderSwapPurpose.sendCrossChain,
-  environment: OrderSwapEnvironment.testnet,
+  environment: environment,
   inNetwork: OrderSwapNetwork.liquid,
   outNetwork: OrderSwapNetwork.bitcoin,
   isInAmountFixed: false,
