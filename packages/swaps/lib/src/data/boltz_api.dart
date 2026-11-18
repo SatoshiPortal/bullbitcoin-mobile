@@ -992,6 +992,20 @@ class BoltzDatasource {
     }
   }
 
+  /// Settings for the chain a chain-swap call does NOT operate on. The native
+  /// side builds a client for both chains and, given none, dials the stored
+  /// URL over TLS with the scheme still attached — which fails on a plain
+  /// `tcp://` server (regtest) with "unexpected end of file" before the real
+  /// chain is ever queried.
+  @visibleForTesting
+  static ElectrumSettings storedElectrumSettings(String url) =>
+      ElectrumSettings(
+        url: url,
+        validateDomain: true,
+        tls: !url.startsWith('tcp://'),
+        timeout: 10,
+      );
+
   /// The swap object carries the electrum URLs baked in at creation time;
   /// [electrum] overrides them with a currently-working server so refunds
   /// are not pinned to a host that has since become unreachable.
@@ -1048,6 +1062,7 @@ class BoltzDatasource {
         outAddress: claimLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: storedElectrumSettings(chainSwap.btcElectrumUrl),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
@@ -1075,6 +1090,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
+        lbtcElectrumSettings: storedElectrumSettings(chainSwap.lbtcElectrumUrl),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1128,6 +1144,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
+        lbtcElectrumSettings: storedElectrumSettings(chainSwap.lbtcElectrumUrl),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1154,6 +1171,7 @@ class BoltzDatasource {
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: storedElectrumSettings(chainSwap.btcElectrumUrl),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
       return signedTxHex;
@@ -1271,8 +1289,12 @@ class BoltzDatasource {
     final size = await chainSwap.claimTxSize(
       outAddress: claimAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: claimOnLiquid ? null : override,
-      lbtcElectrumSettings: claimOnLiquid ? override : null,
+      btcElectrumSettings: claimOnLiquid
+          ? storedElectrumSettings(chainSwap.btcElectrumUrl)
+          : override,
+      lbtcElectrumSettings: claimOnLiquid
+          ? override
+          : storedElectrumSettings(chainSwap.lbtcElectrumUrl),
     );
     return size.toInt();
   }
@@ -1316,8 +1338,12 @@ class BoltzDatasource {
     final size = await chainSwap.refundTxSize(
       refundAddress: refundAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: refundOnLiquid ? null : override,
-      lbtcElectrumSettings: refundOnLiquid ? override : null,
+      btcElectrumSettings: refundOnLiquid
+          ? storedElectrumSettings(chainSwap.btcElectrumUrl)
+          : override,
+      lbtcElectrumSettings: refundOnLiquid
+          ? override
+          : storedElectrumSettings(chainSwap.lbtcElectrumUrl),
     );
     return size.toInt();
   }
