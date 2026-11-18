@@ -353,6 +353,30 @@ void main() {
       expect(repository.selected, BackgroundSyncInterval.hour1);
     },
   );
+
+  for (final (stored, enabled, expected) in [
+    (BackgroundSyncInterval.hours6, false, BackgroundSyncInterval.off),
+    (BackgroundSyncInterval.off, true, BackgroundSyncInterval.fallback),
+    (BackgroundSyncInterval.hours6, true, BackgroundSyncInterval.hours6),
+  ]) {
+    test(
+      'turning tasks $enabled over ${stored.name} keeps ${expected.name}',
+      () async {
+        final repository = Preferences()..selected = stored;
+        final state = await BackgroundPreferencesUsecase(repository)
+            .execute(enabled: enabled);
+        expect(repository.selected, expected);
+        expect(state.enabled, enabled);
+        expect(repository.requests, 0);
+      },
+    );
+  }
+
+  test('a refused request is reported, a mere read is not', () async {
+    final usecase = BackgroundPreferencesUsecase(Preferences());
+    expect((await usecase.execute()).refused, isFalse);
+    expect((await usecase.execute(requestPermission: true)).refused, isTrue);
+  });
 }
 
 class Scheduler implements BackgroundTaskSchedulerPort {
