@@ -1506,11 +1506,14 @@ final class BarkArkClient implements ArkClient {
       if (error is Error) rethrow;
       final record = store.operation(id);
       final previous = record?.operation;
+      final committed = record?.evidence?['raw'] != null;
       store.saveOperation(
         _operation(
           quote,
           id,
-          ArkOperationStatus.outcomeUnknown,
+          committed
+              ? ArkOperationStatus.outcomeUnknown
+              : ArkOperationStatus.failed,
           reference: previous?.nativeReference,
           claimRecovery: previous?.claimRecovery,
           actualIds: previous?.actualIds ?? const [],
@@ -1518,7 +1521,12 @@ final class BarkArkClient implements ArkClient {
         ),
         quote.id,
       );
-      return Err(ArkOutcomeUnknownFailure(id));
+      if (committed) return Err(ArkOutcomeUnknownFailure(id));
+      return Err(
+        error is ArkBoundaryException
+            ? error.failure
+            : const ArkNativeFailure(),
+      );
     }
   }
 
