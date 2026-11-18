@@ -141,7 +141,10 @@ class AppLocator {
                 initializeArkFunding && installation.wasNeverProvisioned,
           );
     locator.registerSingleton<ArkFundingSigningGuard>(
-      ArkFundingSigningGuard(arkFunding),
+      ArkFundingSigningGuard(
+        arkFunding,
+        arkFundingDatabasePath == null ? null : installation,
+      ),
     );
     if (arkFunding case Ok(:final value)) {
       locator.registerSingleton<SqliteArkFundingReservations>(

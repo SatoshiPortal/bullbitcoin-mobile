@@ -11,6 +11,7 @@ final class ArkInstallationState {
   final String _fundingPath;
   final SharedPreferencesAsync? _preferences;
   final bool wasNeverProvisioned;
+  bool _absenceLost = false;
 
   ArkInstallationState._(
     this._documents,
@@ -33,9 +34,14 @@ final class ArkInstallationState {
 
   Future<bool> remainsUnprovisioned() async {
     final preferences = _preferences;
-    return wasNeverProvisioned &&
-        preferences != null &&
-        await _hasNoState(_documents, _fundingPath, preferences);
+    if (!wasNeverProvisioned || _absenceLost || preferences == null) {
+      return false;
+    }
+    final absent = await _hasNoState(_documents, _fundingPath, preferences);
+    // Once observed, custody state or a failed inventory cannot be erased by
+    // later file loss. Concurrent successful reads never rearm this evidence.
+    if (!absent) _absenceLost = true;
+    return absent && !_absenceLost;
   }
 
   static Future<bool> _hasNoState(
