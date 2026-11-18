@@ -5,6 +5,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
+import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:primitives/primitives.dart' show RegtestHostProfile;
 
 import '../domain/regtest_recoverbull_profile.dart';
@@ -13,9 +14,13 @@ final class SettingsRecoverBullBindings {
   static Future<String> setup(
     GetIt locator, {
     required String databasePath,
+    @visibleForTesting String? regtestHost,
   }) async {
     final settings = await locator<SettingsRepository>().fetch();
-    final host = RegtestHostProfile.forNetwork(settings.environment.networkEnv);
+    final network = settings.environment.networkEnv;
+    final host = regtestHost == null
+        ? RegtestHostProfile.forNetwork(network)
+        : RegtestHostProfile.forNetwork(network, host: regtestHost);
     final adapter = RecoverBullSettingsAdapter(
       locator<SettingsRepository>(),
       locator<SqliteDatabase>(),

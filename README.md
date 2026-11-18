@@ -90,3 +90,17 @@ Development is tracked in [GitHub issues](https://github.com/SatoshiPortal/bullb
 - Thanks to Blockstream for developing the Liquid Network 
 
 ![image](https://github.com/BullishNode/bullbitcoin-mobile/assets/75800272/a61e4ccc-897d-410f-b97b-37a7c2b240cb)
+
+## Explicit regtest development profile
+
+Regtest is offered in developer mode only when the build defines a valid service host. Normal builds have no implicit regtest host. Build a deliberately configured development app, for example:
+
+```sh
+fvm flutter run --dart-define=BULL_REGTEST_HOST=stack.example
+```
+
+Use `--dart-define=BULL_REGTEST_HOST=127.0.0.1` explicitly when the intended stack is forwarded to loopback; localhost forwarding is not selected automatically. Use a host only, without a scheme, port, path or credentials. The configured stack must expose plaintext Electrum TCP on ports 50000 (Bitcoin) and 50001 (Liquid), Boltz HTTP on 9001 (`/v2`), websocket on 9004, and local explorers on 3000/3001. Configure forwarding and access separately; this build setting does not change network routing or TLS trust.
+
+For regtest Payjoin, the same host routes the fixture's logical HTTPS endpoints `localhost:8040` and `127.0.0.1:8041`; additionally pass `--dart-define=BULL_PAYJOIN_CERT_DER_BASE64=<certificate-DER-base64>` and `--dart-define=BULL_PAYJOIN_CERT_SHA256=<approved-certificate-sha256>` for the approved fixture certificate. The certificate and pin must match; a missing/mismatched pin refuses Payjoin rather than weakening TLS. Existing explicit service profiles and separately configured Ark endpoints remain independent and must be preserved.
+
+If an installation was saved on regtest and is rebuilt without a valid host profile, its regtest services cannot start. Rebuild with the explicit profile to recover that context; no mainnet/testnet or loopback fallback is selected. Liquid regtest receive QR codes and links contain the bare address: the displayed requested amount and note are not encoded until an interoperable regtest URI/asset contract is supported.
