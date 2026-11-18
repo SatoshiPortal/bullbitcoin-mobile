@@ -33,12 +33,13 @@ class WalletHomeTopSection extends StatelessWidget {
 
   /// How far the quick actions card hangs below the background: half of it
   /// straddles the bottom edge, while the balance above is never covered.
-  static const double _actionsOverhang = BullQuickActionBar.height / 2;
+  static double _actionsOverhang(BuildContext context) =>
+      BullQuickActionBar.heightOf(context) / 2;
 
   /// Minimum height of the background image; anything painted behind this
   /// section must stay within it.
-  static const double minBackgroundHeight =
-      _balanceAreaHeight + _actionsTopSpacing + _actionsOverhang;
+  static double minBackgroundHeight(BuildContext context) =>
+      _balanceAreaHeight + _actionsTopSpacing + _actionsOverhang(context);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,7 @@ class WalletHomeTopSection extends StatelessWidget {
           top: 0,
           left: 0,
           right: 0,
-          bottom: _actionsOverhang,
+          bottom: _actionsOverhang(context),
           child: Image.asset(
             Assets.backgrounds.bgRed.path,
             fit: BoxFit.cover,

@@ -19,7 +19,8 @@ class ExchangeHomeTopSection extends StatelessWidget {
 
   /// How far the actions card hangs below the dark area: half of it straddles
   /// the bottom edge.
-  static const double _actionsOverhang = BullQuickActionBar.height / 2;
+  static double _actionsOverhang(BuildContext context) =>
+      BullQuickActionBar.heightOf(context) / 2;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
     );
 
     return SizedBox(
-      height: _balanceAreaHeight + _actionsOverhang,
+      height: _balanceAreaHeight + _actionsOverhang(context),
       child: Stack(
         children: [
           Column(

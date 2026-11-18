@@ -141,8 +141,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             right: 0,
             child: ColoredBox(
               color: context.appColors.homeHeaderBackground,
-              child: const SizedBox(
-                height: WalletHomeTopSection.minBackgroundHeight,
+              child: SizedBox(
+                height: WalletHomeTopSection.minBackgroundHeight(context),
               ),
             ),
           ),
