@@ -25,7 +25,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullText,
         BullTopBar,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class SellReceivePaymentScreen extends StatelessWidget {
   const SellReceivePaymentScreen({super.key});
@@ -106,7 +107,9 @@ class SellReceivePaymentScreen extends StatelessWidget {
               Center(
                 child: BullText(
                   context.loc.sellPleasePayInvoice,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.secondary,
                 ),
               ),
@@ -116,7 +119,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                   children: [
                     BullText(
                       context.loc.sellPriceWillRefreshIn,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.outline,
                     ),
                     if (order?.confirmationDeadline case final deadline?)
@@ -275,7 +278,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
         children: [
           BullText(
             label,
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.onSurfaceVariant,
             ),
           ),
@@ -289,7 +292,7 @@ class SellReceivePaymentScreen extends StatelessWidget {
                     value,
                     textAlign: .end,
                     maxLines: 2,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: isError
                           ? context.appColors.error
                           : context.appColors.secondary,

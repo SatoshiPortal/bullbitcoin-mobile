@@ -8,6 +8,24 @@ final class PayjoinPolicyStore {
 
   const PayjoinPolicyStore(this._database);
 
+  Future<void> ensureDefaults() async {
+    final defaults = PayjoinPolicy.defaults();
+    await _database
+        .into(_database.payjoinPolicies)
+        .insert(
+          PayjoinPoliciesCompanion.insert(
+            id: const Value(1),
+            receiveEnabled: defaults.receiveEnabled,
+            sendEnabled: Value(defaults.sendEnabled),
+            buyEnabled: Value(defaults.buyEnabled),
+            sellEnabled: Value(defaults.sellEnabled),
+            minimumAmountSat: defaults.minimumAmount.value.toInt(),
+            sessionLifetimeSeconds: defaults.sessionLifetime.inSeconds,
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
+  }
+
   Future<PayjoinPolicy> load() async {
     final row = await (_database.select(
       _database.payjoinPolicies,

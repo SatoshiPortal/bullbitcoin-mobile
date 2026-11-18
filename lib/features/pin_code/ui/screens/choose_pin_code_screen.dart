@@ -4,7 +4,13 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInputText, BullPinPad, BullTopBar, Gap;
+    show
+        BullButton,
+        BullInputText,
+        BullPinPad,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ChoosePinCodeScreen extends StatelessWidget {
@@ -36,16 +42,16 @@ class ChoosePinCodeScreen extends StatelessWidget {
                       Text(
                         context.loc.pinCodeCreateTitle,
                         textAlign: .center,
-                        style: context.font.headlineMedium?.copyWith(
-                          color: context.appColors.onSurface,
-                        ),
+                        style: context.bullType.subtitle
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(color: context.appColors.onSurface),
                         maxLines: 3,
                       ),
                       const Gap(16),
                       Text(
                         context.loc.pinCodeCreateDescription,
                         textAlign: .center,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           color: context.appColors.textMuted,
                         ),
                       ),
@@ -103,7 +109,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                                         .toString(),
                                   ),
                                   textAlign: .start,
-                                  style: context.font.labelSmall?.copyWith(
+                                  style: context.bullType.caption.copyWith(
                                     color: context.appColors.error,
                                   ),
                                 )
@@ -159,7 +165,9 @@ class _ConfirmButton extends StatelessWidget {
         builder: (context, isValidPinCode) {
           return BullButton.big(
             label: context.loc.pinCodeContinue,
-            textStyle: context.font.headlineLarge,
+            textStyle: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
             bgColor: isValidPinCode
                 ? context.appColors.primary
                 : context.appColors.textMuted,

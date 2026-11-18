@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullText, Gap;
+    show BullFadingLinearProgress, BullText, Gap, BullTypographyX;
 
 /// A reusable transaction confirm/review screen that displays transaction
 /// details before broadcasting.
@@ -134,7 +134,7 @@ class _ErrorView extends StatelessWidget {
             const Gap(16),
             BullText(
               failure.toTranslated(context),
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),
               textAlign: TextAlign.center,
@@ -232,13 +232,15 @@ class _SummarySection extends StatelessWidget {
                 transaction.sendAmountSat != null
                     ? '${_formatSats(transaction.sendAmountSat!)} sats'
                     : '${_formatSats(transaction.totalOutputsSat)} sats',
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
               ),
               if (fiatAmount != null)
                 BullText(
                   fiatAmount!,
-                  style: context.font.labelSmall,
+                  style: context.bullType.caption,
                   color: context.appColors.onSurfaceVariant,
                 ),
             ],
@@ -253,7 +255,7 @@ class _SummarySection extends StatelessWidget {
             transaction.feeSat != null
                 ? '${_formatSats(transaction.feeSat!)} sats'
                 : context.loc.mempoolServerStatusUnknown,
-            style: context.font.bodyLarge,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.appColors.secondary,
             textAlign: TextAlign.end,
           ),
@@ -275,9 +277,9 @@ class _SummarySection extends StatelessWidget {
                 Expanded(
                   child: BullText(
                     context.loc.coreScreensOutputsExceedInputs,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.error,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.error),
                   ),
                 ),
               ],
@@ -293,7 +295,9 @@ class _SummarySection extends StatelessWidget {
               context.loc.coreScreensFeeRateValue(
                 transaction.feeRate!.toStringAsFixed(1),
               ),
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.secondary,
               textAlign: TextAlign.end,
             ),
@@ -322,9 +326,9 @@ class _SummarySection extends StatelessWidget {
                 Expanded(
                   child: BullText(
                     context.loc.coreScreensChangeOutputUnknown,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.onSurfaceVariant),
                   ),
                 ),
               ],
@@ -344,7 +348,7 @@ class _SummarySection extends StatelessWidget {
         label: context.loc.coreScreensFromLabel,
         child: BullText(
           fromLabel!,
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.secondary,
           textAlign: TextAlign.end,
         ),
@@ -358,7 +362,7 @@ class _SummarySection extends StatelessWidget {
         label: context.loc.coreScreensFromLabel,
         child: BullText(
           context.loc.coreScreensUnknown,
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.onSurfaceVariant,
           textAlign: TextAlign.end,
         ),
@@ -372,9 +376,9 @@ class _SummarySection extends StatelessWidget {
         children: [
           BullText(
             context.loc.coreScreensFromLabel,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.onSurfaceVariant,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.onSurfaceVariant),
           ),
           const Gap(24),
           Expanded(
@@ -405,7 +409,7 @@ class _SummarySection extends StatelessWidget {
           alignment: Alignment.centerRight,
           child: AddressViewer(
             toLabel!,
-            style: context.font.bodyLarge,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.appColors.secondary,
           ),
         ),
@@ -420,9 +424,9 @@ class _SummarySection extends StatelessWidget {
         children: [
           BullText(
             context.loc.coreScreensToLabel,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.onSurfaceVariant,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.onSurfaceVariant),
           ),
           const Gap(24),
           Expanded(
@@ -460,13 +464,15 @@ class _InputAddressRow extends StatelessWidget {
             width: double.infinity,
             child: AddressViewer(
               fullAddress,
-              style: context.font.bodySmall,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
               color: context.appColors.secondary,
             ),
           ),
           BullText(
             '${_formatSats(input.valueSat)} sats',
-            style: context.font.labelSmall,
+            style: context.bullType.caption,
             color: context.appColors.onSurfaceVariant,
           ),
         ],
@@ -495,13 +501,15 @@ class _OutputAddressRow extends StatelessWidget {
             width: double.infinity,
             child: AddressViewer(
               fullAddress,
-              style: context.font.bodySmall,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
               color: context.appColors.secondary,
             ),
           ),
           BullText(
             '${_formatSats(output.valueSat)} sats',
-            style: context.font.labelSmall,
+            style: context.bullType.caption,
             color: context.appColors.onSurfaceVariant,
           ),
         ],
@@ -529,9 +537,9 @@ class _InfoRow extends StatelessWidget {
         children: [
           BullText(
             label,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.onSurfaceVariant,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.onSurfaceVariant),
           ),
           const Gap(24),
           Expanded(child: child),

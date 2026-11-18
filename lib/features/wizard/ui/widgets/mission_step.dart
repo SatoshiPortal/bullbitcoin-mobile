@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 
 /// Mission / consent page body — text only. The Yes/No choice is
 /// rendered by [WizardScreen] in the bottom chrome (in place of the
@@ -15,7 +15,7 @@ class MissionStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = context.loc;
-    final bodyStyle = context.font.bodyMedium?.copyWith(
+    final bodyStyle = context.bullType.body.copyWith(
       color: context.appColors.onSurfaceVariant,
       height: 1.4,
     );
@@ -33,10 +33,12 @@ class MissionStep extends StatelessWidget {
           SizedBox(height: vGapLg),
           BullText(
             loc.wizardMissionQuestion,
-            style: context.font.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: context.appColors.onSurface,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: context.appColors.onSurface,
+                ),
           ),
         ],
       ),

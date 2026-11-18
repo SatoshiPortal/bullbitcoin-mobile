@@ -21,7 +21,7 @@ import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 import 'package:payjoin/payjoin.dart';
 import 'package:payjoin/http.dart' show fetchOhttpKeys;
-import 'package:primitives/primitives.dart' show Outpoint;
+import 'package:primitives/primitives.dart' show Outpoint, BitcoinNetwork;
 
 /// Fetches the OHTTP key config published by [directoryUrl] through
 /// [ohttpRelayUrl]. Matches the signature of `payjoin/http.dart`'s top-level
@@ -36,6 +36,8 @@ typedef OhttpKeysFetcher = Future<OhttpKeys> Function({
 
 class PdkPayjoinDatasource {
   final List<core.Uri> _servers;
+  final BitcoinNetwork? _networkOverride;
+  final Future<bool> Function()? _isCurrent;
   final Random _random;
   final Dio _dio;
   final logger.PayjoinLogger _log;
@@ -87,6 +89,8 @@ class PdkPayjoinDatasource {
   bool _disposed = false;
 
   PdkPayjoinDatasource({
+    this._networkOverride,
+    this._isCurrent,
     List<core.Uri>? servers,
     Random? random,
     required this._dio,
@@ -100,6 +104,13 @@ class PdkPayjoinDatasource {
        _payjoinRequestedController = StreamController.broadcast(),
        _proposalSentController = StreamController.broadcast(),
        _expiredController = StreamController.broadcast();
+
+  Future<void> _requireCurrent() async {
+    final current = _isCurrent;
+    if (current != null && !await current()) {
+      throw const PayjoinRuntimeInactiveException();
+    }
+  }
 
   Stream<PayjoinReceiverModel> get requestsForReceivers =>
       _payjoinRequestedController.stream;
@@ -153,6 +164,7 @@ class PdkPayjoinDatasource {
   Future<({OhttpKeys keys, String directory})?> fetchDirectoryKeys({
     Duration timeout = const Duration(seconds: 30),
   }) async {
+    await _requireCurrent();
     if (timeout <= Duration.zero) {
       throw ArgumentError.value(timeout, 'timeout', 'must be positive');
     }
@@ -201,6 +213,8 @@ class PdkPayjoinDatasource {
             },
           );
           return (keys: keys, directory: directory.toString());
+        } on PayjoinRuntimeInactiveException {
+          rethrow;
         } on _KeyDiscoveryStopped {
           return null;
         } catch (_) {
@@ -252,6 +266,7 @@ class PdkPayjoinDatasource {
     final failed = <(core.Uri, Object)>[];
     for (final relay in [...relays]..shuffle(_random)) {
       if (cancelToken?.cancelError case final error?) throw error;
+      await _requireCurrent();
       try {
         final result = await request(relay.toString());
         for (final (failedRelay, error) in failed) {
@@ -266,6 +281,8 @@ class PdkPayjoinDatasource {
           _reportServerAnswered(directory, PayjoinLogCode.directoryUnreachable);
         }
         return result;
+      } on PayjoinRuntimeInactiveException {
+        rethrow;
       } on PayjoinExpiredException {
         rethrow;
       } on _KeyDiscoveryStopped {
@@ -277,6 +294,9 @@ class PdkPayjoinDatasource {
         // Same on the receiver side, an expired session included.
         rethrow;
       } catch (e) {
+        if (e is DioException && e.error is PayjoinRuntimeInactiveException) {
+          throw const PayjoinRuntimeInactiveException();
+        }
         if (cancelToken?.isCancelled ?? false) rethrow;
         failed.add((relay, e));
       }
@@ -377,6 +397,8 @@ class PdkPayjoinDatasource {
       // payjoin-cli saves a session before driving it. A request found by a
       // poll must always land on a stored row.
       return model;
+    } on PayjoinRuntimeInactiveException {
+      rethrow;
     } catch (e) {
       throw ReceiveCreationException(e.toString());
     }
@@ -1008,6 +1030,7 @@ class PdkPayjoinDatasource {
         codec: _codec,
         address: receiverModel.address,
         isTestnet: receiverModel.isTestnet,
+        networkOverride: _networkOverride,
       );
 
       _pollRecovered(receiverModel, PayjoinLogRole.receiver);

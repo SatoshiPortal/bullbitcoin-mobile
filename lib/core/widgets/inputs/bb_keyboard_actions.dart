@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
@@ -25,7 +26,9 @@ class BBKeyboardActions extends StatelessWidget {
       theme: KeyboardActionsThemeData(
         barColor: context.appColors.surface,
         foregroundColor: context.appColors.onSurface,
-        doneTextStyle: context.font.headlineMedium,
+        doneTextStyle: context.bullType.subtitle.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
       ),
       child: child,
     );

@@ -48,7 +48,7 @@ class CustomServerCard extends StatelessWidget {
                           Flexible(
                             child: Text(
                               customServer!.url,
-                              style: context.font.bodyMedium?.copyWith(
+                              style: context.bullType.body.copyWith(
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -97,9 +97,9 @@ class CustomServerCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         customServer!.fullUrl,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(color: context.appColors.textMuted),
                       ),
                       const SizedBox(height: 6),
                       Row(
@@ -225,7 +225,7 @@ class _AddCustomServerButton extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 context.loc.mempoolCustomServerAdd,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.primary,
                   fontWeight: FontWeight.w500,
                 ),

@@ -19,3 +19,8 @@ class PayjoinSenderKeptException extends PayjoinEngineException {
   PayjoinSenderKeptException(this.originalTxId, this.cause)
     : super('Sender retained after directory publication failed');
 }
+
+/// Refuses a new operation after its captured runtime family is inactive.
+final class PayjoinRuntimeInactiveException implements Exception {
+  const PayjoinRuntimeInactiveException();
+}

@@ -4,7 +4,8 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullText, Gap, BullTypographyX;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,11 +43,16 @@ class BackupSuccessScreen extends StatelessWidget {
                   ),
                 ),
                 const Gap(8),
-                BullText(title, style: context.font.headlineLarge),
+                BullText(
+                  title,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 const Gap(8),
                 BullText(
                   message,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   textAlign: .center,
                 ),
               ],

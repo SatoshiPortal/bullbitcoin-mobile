@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:material_ui/material_ui.dart';
@@ -75,23 +76,21 @@ class BullInfoCard extends StatelessWidget {
                             if (title != null && title!.isNotEmpty) ...[
                               Text(
                                 title!,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(
-                                      color: tagColor,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                style: context.bullType.body.copyWith(
+                                  color: tagColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               const Gap(4),
                             ],
                             Text(
                               description,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: colors.onSurfaceVariant,
-                                    fontWeight: boldDescription
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
+                              style: context.bullType.body.copyWith(
+                                color: colors.onSurfaceVariant,
+                                fontWeight: boldDescription
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
                             ),
                           ],
                         ),

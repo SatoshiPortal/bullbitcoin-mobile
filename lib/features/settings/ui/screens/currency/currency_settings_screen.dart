@@ -15,7 +15,6 @@ class CurrencySettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final currency = context.select(
       (SettingsCubit cubit) => cubit.state.currencyCode,
     );
@@ -49,9 +48,9 @@ class CurrencySettingsScreen extends StatelessWidget {
                   tileColor: context.appColors.transparent,
                   title: BBText(
                     context.loc.satsBitcoinUnitSettingsLabel,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: context.appColors.onSurface,
-                    ),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: context.appColors.onSurface),
                   ),
                   trailing: const SatsBitcoinUnitSwitch(),
                 ),
@@ -64,9 +63,9 @@ class CurrencySettingsScreen extends StatelessWidget {
                   tileColor: context.appColors.transparent,
                   title: BBText(
                     context.loc.currencySettingsDefaultFiatCurrencyLabel,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: context.appColors.onSurface,
-                    ),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: context.appColors.onSurface),
                   ),
                   trailing:
                       currency == null ||

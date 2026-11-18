@@ -46,7 +46,8 @@ Widget host(
         },
         child: stableChild ?? const SizedBox(),
       ),
-      child: child,
+      // Keep the interactive amounts below the top feedback overlay.
+      child: Padding(padding: const EdgeInsets.only(top: 120), child: child),
     ),
   );
 }

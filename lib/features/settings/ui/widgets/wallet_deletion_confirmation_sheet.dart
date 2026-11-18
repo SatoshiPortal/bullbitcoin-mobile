@@ -22,7 +22,7 @@ class WalletDeletionConfirmationSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final loc = context.loc;
-    final text = context.bullText;
+    final text = context.bullType;
 
     return SafeArea(
       child: Padding(
@@ -43,16 +43,15 @@ class WalletDeletionConfirmationSheet extends StatelessWidget {
             const Gap(16),
             Text(
               loc.walletDeletionConfirmationTitle,
-              style: text.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colors.text,
-              ),
+              style: text.subtitle
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(fontWeight: FontWeight.bold, color: colors.text),
               textAlign: TextAlign.center,
             ),
             const Gap(8),
             Text(
               loc.walletDeletionConfirmationMessage,
-              style: text.bodyMedium?.copyWith(color: colors.text),
+              style: text.body.copyWith(color: colors.text),
               textAlign: TextAlign.center,
             ),
             const Gap(24),

@@ -9,7 +9,12 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullScrollableColumn, BullShimmerLine, Gap;
+    show
+        BullFadingLinearProgress,
+        BullScrollableColumn,
+        BullShimmerLine,
+        Gap,
+        BullTypographyX;
 
 class WithdrawConfirmationScreen extends StatelessWidget {
   const WithdrawConfirmationScreen({super.key});
@@ -57,9 +62,9 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                   const Gap(24.0),
                   Text(
                     context.loc.withdrawConfirmTitle,
-                    style: context.font.headlineMedium?.copyWith(
-                      color: context.appColors.secondary,
-                    ),
+                    style: context.bullType.subtitle
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: context.appColors.secondary),
                   ),
                   const Gap(4.0),
                   const Gap(8.0),
@@ -191,7 +196,7 @@ class _DetailRow extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.onSurfaceVariant,
                   ),
                 ),
@@ -200,7 +205,7 @@ class _DetailRow extends StatelessWidget {
                     value!,
                     textAlign: .end,
                     maxLines: 2,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.secondary,
                     ),
                   ),
@@ -243,7 +248,7 @@ class _ConfirmButton extends StatelessWidget {
         if (withdrawFailure != null) ...[
           Text(
             withdrawFailure.toTranslated(context),
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.error,
             ),
           ),

@@ -73,7 +73,9 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
             Expanded(
               child: Text(
                 context.loc.limitOrdersTitle,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             const Icon(Icons.chevron_right),
@@ -93,7 +95,9 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
             Expanded(
               child: Text(
                 context.loc.limitOrdersActiveTitle,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             Icon(Icons.circle, size: 10, color: context.bull.primary),
@@ -134,7 +138,7 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
         if (!state.canCreate)
           Text(
             context.loc.limitOrdersMaximumActiveHint,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           ),
         const Gap(8),
         Row(
@@ -168,7 +172,7 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 4),
     minimumSize: Size.zero,
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    textStyle: Theme.of(context).textTheme.titleMedium,
+    textStyle: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
   );
 
   Future<void> _openCreate(BuildContext context) async {
@@ -187,7 +191,7 @@ final class LimitOrdersDashboardCard extends StatelessWidget {
         children: [
           Text(
             context.loc.limitOrdersCancelAllTitle,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: context.bullType.title,
           ),
           const Gap(BullSpacing.sm),
           Text(context.loc.limitOrdersCancelAllMessage),

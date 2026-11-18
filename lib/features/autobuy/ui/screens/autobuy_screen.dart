@@ -13,7 +13,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullShimmerLine,
         BullSnackBar,
         BullSpacing,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -149,7 +150,12 @@ class _IntroStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(context.loc.autoBuyDescription, style: context.font.bodyLarge),
+            Text(
+              context.loc.autoBuyDescription,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const Gap(BullSpacing.md),
             BullBorderedTile(
               padding: const EdgeInsets.all(BullSpacing.md),
@@ -158,7 +164,9 @@ class _IntroStep extends StatelessWidget {
                 children: [
                   Text(
                     context.loc.autoBuyHowItWorks,
-                    style: context.font.titleMedium,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const Gap(BullSpacing.sm),
                   _Bullet(text: context.loc.autoBuyConnectWallet),
@@ -172,9 +180,9 @@ class _IntroStep extends StatelessWidget {
             const Gap(BullSpacing.md),
             Text(
               context.loc.autoBuyRiskDisclaimer,
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.textMuted,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: context.appColors.textMuted),
             ),
             const Gap(BullSpacing.xs),
             Align(
@@ -188,11 +196,13 @@ class _IntroStep extends StatelessWidget {
                   ),
                   child: Text(
                     context.loc.settingsTermsOfServiceTitle,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.primary,
-                      decoration: TextDecoration.underline,
-                      decorationColor: context.appColors.primary,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(
+                          color: context.appColors.primary,
+                          decoration: TextDecoration.underline,
+                          decorationColor: context.appColors.primary,
+                        ),
                   ),
                 ),
               ),
@@ -229,9 +239,9 @@ class _Bullet extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('•', style: context.font.bodyMedium),
+        Text('•', style: context.bullType.body),
         const Gap(BullSpacing.xs),
-        Expanded(child: Text(text, style: context.font.bodyMedium)),
+        Expanded(child: Text(text, style: context.bullType.body)),
       ],
     );
   }
@@ -253,10 +263,7 @@ class _ConfirmStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              context.loc.autoBuyInfoMessage,
-              style: context.font.bodyMedium,
-            ),
+            Text(context.loc.autoBuyInfoMessage, style: context.bullType.body),
             const Gap(BullSpacing.lg),
             if (wallets.bitcoinAddress.isNotEmpty)
               _WalletRow(
@@ -303,11 +310,11 @@ class _WalletRow extends StatelessWidget {
       children: [
         const Divider(),
         const Gap(BullSpacing.xs),
-        Text(label, style: context.font.labelMedium),
+        Text(label, style: context.bullType.caption),
         const Gap(BullSpacing.xs),
         AddressViewer(
           address,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: context.appColors.onSurface,
         ),
         const Gap(BullSpacing.xs),

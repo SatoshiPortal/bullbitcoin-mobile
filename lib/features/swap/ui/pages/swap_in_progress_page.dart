@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInfoCard, BullLoader, Gap;
+    show BullButton, BullInfoCard, BullLoader, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class SwapInProgressPage extends StatelessWidget {
@@ -50,14 +50,14 @@ class SwapInProgressPage extends StatelessWidget {
                         const Gap(8),
                         Text(
                           context.loc.swapTransferPendingTitle,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.secondary,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w700)
+                              .copyWith(color: context.appColors.secondary),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferPendingMessage,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             color: context.appColors.secondary,
                           ),
                           maxLines: 4,
@@ -68,14 +68,14 @@ class SwapInProgressPage extends StatelessWidget {
                           swap?.refundTxid == null) ...[
                         Text(
                           context.loc.swapTransferCompletedTitle,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.secondary,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w700)
+                              .copyWith(color: context.appColors.secondary),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferCompletedMessage,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             color: context.appColors.secondary,
                           ),
                           maxLines: 4,
@@ -85,14 +85,14 @@ class SwapInProgressPage extends StatelessWidget {
                       if (swap?.status == SwapStatus.refundable) ...[
                         Text(
                           context.loc.swapTransferRefundInProgressTitle,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.secondary,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w700)
+                              .copyWith(color: context.appColors.secondary),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferRefundInProgressMessage,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             color: context.appColors.secondary,
                           ),
                           maxLines: 4,
@@ -104,14 +104,14 @@ class SwapInProgressPage extends StatelessWidget {
                               swap?.refundTxid != null)) ...[
                         Text(
                           context.loc.swapTransferRefundedTitle,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.secondary,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w700)
+                              .copyWith(color: context.appColors.secondary),
                         ),
                         const Gap(8),
                         Text(
                           context.loc.swapTransferRefundedMessage,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             color: context.appColors.secondary,
                           ),
                           maxLines: 4,
@@ -124,16 +124,16 @@ class SwapInProgressPage extends StatelessWidget {
                           swap?.status == SwapStatus.failed
                               ? context.loc.transactionStatusSwapFailed
                               : context.loc.transactionStatusSwapExpired,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.error,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w700)
+                              .copyWith(color: context.appColors.error),
                         ),
                         const Gap(8),
                         Text(
                           swap?.status == SwapStatus.failed
                               ? context.loc.transactionSwapDescChainFailed
                               : context.loc.transactionSwapDescChainExpired,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             color: context.appColors.secondary,
                           ),
                           maxLines: 4,

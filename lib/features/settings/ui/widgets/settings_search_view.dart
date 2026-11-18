@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSettingsEntryItem, BullTypographyX;
 
 /// The settings search surface: a field, and the results for what it holds.
 ///
@@ -54,7 +55,6 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final hasQuery = _query.trim().isNotEmpty;
     final results = hasQuery
         ? searchSettings(widget.items, _query)
@@ -69,14 +69,14 @@ class _SettingsSearchViewState extends State<SettingsSearchView> {
           onChanged: (query) => setState(() => _query = query),
           maxLines: 1,
           textInputAction: TextInputAction.search,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: context.appColors.onSurface,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.onSurface),
           decoration: InputDecoration(
             hintText: context.loc.settingsSearchHint,
-            hintStyle: theme.textTheme.bodyLarge?.copyWith(
-              color: context.appColors.textMuted,
-            ),
+            hintStyle: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(color: context.appColors.textMuted),
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
@@ -133,8 +133,9 @@ class _Message extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyLarge
-              ?.copyWith(color: context.appColors.textMuted),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.textMuted),
         ),
       ),
     );

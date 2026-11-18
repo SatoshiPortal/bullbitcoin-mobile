@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, BullTypography, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullText, BullTypography, Gap, BullTypographyX;
 
 /// Page 1 of the wizard — splash-style welcome that mirrors
 /// `OnboardingSplash` visually. Renders only the centered content; the
@@ -45,7 +46,7 @@ class WelcomeStep extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: BullText(
               context.loc.onboardingSplashDescription,
-              style: context.font.labelSmall,
+              style: context.bullType.caption,
               color: context.appColors.onPrimaryFixed,
               textAlign: TextAlign.center,
               maxLines: 2,

@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,14 +17,16 @@ class FundExchangeMethodListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return ListTile(
       tileColor: context.appColors.transparent,
       shape: const RoundedRectangleBorder(),
-      title: BBText(title, style: theme.textTheme.bodyLarge),
+      title: BBText(
+        title,
+        style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+      ),
       subtitle: BBText(
         subtitle,
-        style: theme.textTheme.labelMedium,
+        style: context.bullType.caption,
         color: context.appColors.outline,
       ),
       onTap: onTap,

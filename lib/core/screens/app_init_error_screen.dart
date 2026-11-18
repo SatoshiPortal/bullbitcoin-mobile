@@ -99,8 +99,9 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                         Expanded(
                           child: Text(
                             loc.appInitErrorTitle,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                            style: context.bullType.subtitle
+                                .copyWith(fontWeight: FontWeight.w400)
+                                .copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -205,7 +206,6 @@ class _BackupSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -220,15 +220,13 @@ class _BackupSection extends StatelessWidget {
         const Gap(16),
         Text(
           title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: context.bullType.title.copyWith(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
         const Gap(8),
         Text(
           message,
-          style: theme.textTheme.bodyMedium,
+          style: context.bullType.body,
           textAlign: TextAlign.center,
         ),
       ],

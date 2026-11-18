@@ -27,6 +27,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinPolicyStore _policy;
   final api.PayjoinLabelsPort _labels;
   final api.PayjoinCodecPort _codec;
+  final bool _regtest;
+  final Future<bool> Function()? _isCurrent;
   // Shared across receiver sessions so two proposals cannot select the same
   // wallet UTXO before either proposal has been persisted.
   final Lock _utxoSelectionLock;
@@ -98,6 +100,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Duration fallbackRetryDelay = const Duration(seconds: 1);
 
   PayjoinRepositoryImpl({
+    bool regtest = false,
+    Future<bool> Function()? isCurrent,
     required this._localPayjoinDatasource,
     required this._pdkPayjoinDatasource,
     required this._log,
@@ -107,7 +111,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required PayjoinPolicyStore policy,
     required api.PayjoinLabelsPort labels,
     required api.PayjoinCodecPort codec,
-  }) : _wallet = wallet,
+  }) : _regtest = regtest,
+       _isCurrent = isCurrent,
+       _wallet = wallet,
        _codec = codec,
        _blockchain = blockchain,
        _transactions = transactions,
@@ -179,6 +185,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     await _payjoinStreamController.close();
   }
 
+  Future<T> _io<T>(Future<T> Function() operation) async {
+    final current = _isCurrent;
+    if (current != null && !await current()) {
+      throw const PayjoinRuntimeInactiveException();
+    }
+    // An admitted opaque call finishes and records its outcome; no post-effect guard.
+    return operation();
+  }
+
+  primitives.BitcoinNetwork _networkFor(bool isTestnet) => _regtest
+      ? primitives.BitcoinNetwork.regtest
+      : isTestnet
+      ? primitives.BitcoinNetwork.testnet
+      : primitives.BitcoinNetwork.mainnet;
+
   @override
   Stream<Payjoin> get payjoinStream => _payjoinStreamController.stream;
 
@@ -209,6 +230,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     bool onlyOngoing = false,
     primitives.BitcoinNetwork? network,
   }) async {
+    if (network != null &&
+        (_regtest != (network == primitives.BitcoinNetwork.regtest))) {
+      return [];
+    }
     final models = await _localPayjoinDatasource.fetchAll(
       walletId: walletId,
       onlyUnfinished: onlyOngoing,
@@ -269,9 +294,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             sessionId: payjoin.id,
             role: role,
             walletId: payjoin.walletId,
-            network: payjoin.isTestnet
-                ? primitives.BitcoinNetwork.testnet
-                : primitives.BitcoinNetwork.mainnet,
+            network: _networkFor(payjoin.isTestnet),
             status: api.PayjoinStatus.values.byName(payjoin.status.name),
           ),
         );
@@ -554,10 +577,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<String?> _visibleCompetingTransaction(Payjoin payjoin) async {
     for (final txId in [payjoin.originalTxId, payjoin.txId]) {
       if (txId == null) continue;
-      if (await _transactions.isTransactionVisible(
-        walletId: payjoin.walletId,
-        transactionId: txId,
-        refresh: true,
+      if (await _io(
+        () => _transactions.isTransactionVisible(
+          walletId: payjoin.walletId,
+          transactionId: txId,
+          refresh: true,
+        ),
       )) {
         return txId;
       }
@@ -823,15 +848,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<Payjoin?> _broadcastOriginalTransaction(Payjoin payjoin) async {
     var broadcasted = false;
     try {
-      final network = payjoin.isTestnet
-          ? primitives.BitcoinNetwork.testnet
-          : primitives.BitcoinNetwork.mainnet;
+      final network = _networkFor(payjoin.isTestnet);
 
       PayjoinModel? model;
       if (payjoin is PayjoinReceiver) {
-        await _blockchain.broadcastTransaction(
-          network: network,
-          transaction: payjoin.originalTxBytes!,
+        await _io(
+          () => _blockchain.broadcastTransaction(
+            network: network,
+            transaction: payjoin.originalTxBytes!,
+          ),
         );
         broadcasted = true;
 
@@ -841,11 +866,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         final sender = payjoin;
         await _sendSenderPayment(
           sender.id,
-          () => _blockchain.broadcastPsbt(
-            walletId: sender.walletId,
-            sessionId: sender.id,
-            network: network,
-            psbt: sender.originalPsbt,
+          () => _io(
+            () => _blockchain.broadcastPsbt(
+              walletId: sender.walletId,
+              sessionId: sender.id,
+              network: network,
+              psbt: sender.originalPsbt,
+            ),
           ),
         );
         broadcasted = true;
@@ -1023,12 +1050,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         );
         result = await _settleReceiverAfterDisable(model);
       } else {
-        final network = model.isTestnet
-            ? primitives.BitcoinNetwork.testnet
-            : primitives.BitcoinNetwork.mainnet;
-        final unspentUtxos = await _wallet.spendableUtxos(
-          walletId: model.walletId,
-          network: network,
+        final network = _networkFor(model.isTestnet);
+        final unspentUtxos = await _io(
+          () => _wallet.spendableUtxos(
+            walletId: model.walletId,
+            network: network,
+          ),
         );
         result = await _proposePayjoin(model, unspentUtxos);
       }
@@ -1258,18 +1285,22 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // Ask the remote visibility boundary; unknown is never absence.
       final proposalId = model.txId;
       if (proposalId != null &&
-          await _transactions.isTransactionVisible(
-            walletId: model.walletId,
-            transactionId: proposalId,
-            refresh: true,
+          await _io(
+            () => _transactions.isTransactionVisible(
+              walletId: model.walletId,
+              transactionId: proposalId,
+              refresh: true,
+            ),
           )) {
         await _completeOnPayjoinTransactionSeen(id, proposalId);
         return;
       }
-      if (await _transactions.isTransactionVisible(
-        walletId: model.walletId,
-        transactionId: model.originalTxId,
-        refresh: true,
+      if (await _io(
+        () => _transactions.isTransactionVisible(
+          walletId: model.walletId,
+          transactionId: model.originalTxId,
+          refresh: true,
+        ),
       )) {
         await _completeOnOriginalTransactionSeen(id, model.originalTxId);
         return;
@@ -1367,12 +1398,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     PayjoinSender? result;
     String? finalizedPsbt;
     try {
-      finalizedPsbt = await _wallet.signPsbt(
-        walletId: payjoin.walletId,
-        network: payjoin.isTestnet
-            ? primitives.BitcoinNetwork.testnet
-            : primitives.BitcoinNetwork.mainnet,
-        psbt: proposalPsbt,
+      finalizedPsbt = await _io<String>(
+        () => _wallet.signPsbt(
+          walletId: payjoin.walletId,
+          network: _networkFor(payjoin.isTestnet),
+          psbt: proposalPsbt,
+        ),
       );
       _log.fine(
         code: api.PayjoinLogCode.proposalSigned,
@@ -1386,9 +1417,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       result = await _broadcastPsbt(
         payjoinModel: payjoinModel,
         finalizedPsbt: finalizedPsbt,
-        network: payjoinModel.isTestnet
-            ? primitives.BitcoinNetwork.testnet
-            : primitives.BitcoinNetwork.mainnet,
+        network: _networkFor(payjoinModel.isTestnet),
       );
       // logRef, never id/raw txid: a sender payjoin id is the full BIP21 URI
       //  and a raw txid identifies the payment on-chain — both off-limits in
@@ -1530,10 +1559,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final txId = payjoin.txId;
     if (txId == null) return null;
     try {
-      final visible = await _transactions.isTransactionVisible(
-        walletId: payjoin.walletId,
-        transactionId: txId,
-        refresh: true,
+      final visible = await _io(
+        () => _transactions.isTransactionVisible(
+          walletId: payjoin.walletId,
+          transactionId: txId,
+          refresh: true,
+        ),
       );
       return visible ? txId : null;
     } catch (e, st) {
@@ -1563,18 +1594,22 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       final payjoinTxId = sender.txId ?? await _deriveSenderPayjoinTxId(sender);
       if (payjoinTxId != null &&
-          await _transactions.isTransactionVisible(
-            walletId: sender.walletId,
-            transactionId: payjoinTxId,
-            refresh: true,
+          await _io(
+            () => _transactions.isTransactionVisible(
+              walletId: sender.walletId,
+              transactionId: payjoinTxId,
+              refresh: true,
+            ),
           )) {
         await _completeOnPayjoinTransactionSeen(sender.id, payjoinTxId);
         return false;
       }
-      if (await _transactions.isTransactionVisible(
-        walletId: sender.walletId,
-        transactionId: sender.originalTxId,
-        refresh: true,
+      if (await _io(
+        () => _transactions.isTransactionVisible(
+          walletId: sender.walletId,
+          transactionId: sender.originalTxId,
+          refresh: true,
+        ),
       )) {
         await _completeOnOriginalTransactionSeen(
           sender.id,
@@ -1614,10 +1649,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     var absent = false;
     try {
-      if (await _transactions.isTransactionVisible(
-        walletId: sender.walletId,
-        transactionId: sender.originalTxId,
-        refresh: true,
+      if (await _io(
+        () => _transactions.isTransactionVisible(
+          walletId: sender.walletId,
+          transactionId: sender.originalTxId,
+          refresh: true,
+        ),
       )) {
         await _completeOnOriginalTransactionSeen(
           sender.id,
@@ -2221,27 +2258,29 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         return null;
       }
 
-      final network = payjoin.isTestnet
-          ? primitives.BitcoinNetwork.testnet
-          : primitives.BitcoinNetwork.mainnet;
+      final network = _networkFor(payjoin.isTestnet);
       // One capture answers both questions from the same committed state.
       // The input guard asks about outpoints, not scripts: the sender supplies
       // the previous outputs in its PSBT, so a script-keyed answer could be
       // steered. The output check is a different question — it is our own
       // address, so a script check is the right one there.
-      final ownership = await _wallet.captureOwnership(
-        walletId: payjoin.walletId,
-        network: network,
+      final ownership = await _io(
+        () => _wallet.captureOwnership(
+          walletId: payjoin.walletId,
+          network: network,
+        ),
       );
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
         ownsOutpoint: ownership.ownsOutpoint,
         hasReceiverOutput: ownership.ownsScript,
         inputPairs: inputPairs,
-        signPsbt: (psbt) => _wallet.signPsbt(
-          walletId: payjoin.walletId,
-          network: network,
-          psbt: psbt,
+        signPsbt: (psbt) => _io(
+          () => _wallet.signPsbt(
+            walletId: payjoin.walletId,
+            network: network,
+            psbt: psbt,
+          ),
         ),
       );
 
@@ -2409,11 +2448,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     await _sendSenderPayment(
       payjoinModel.id,
-      () => _blockchain.broadcastPsbt(
-        walletId: payjoinModel.walletId,
-        sessionId: payjoinModel.id,
-        network: network,
-        psbt: finalizedPsbt,
+      () => _io(
+        () => _blockchain.broadcastPsbt(
+          walletId: payjoinModel.walletId,
+          sessionId: payjoinModel.id,
+          network: network,
+          psbt: finalizedPsbt,
+        ),
       ),
     );
 
@@ -2707,10 +2748,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       var visible = false;
       try {
-        visible = await _transactions.isTransactionVisible(
-          walletId: walletId,
-          transactionId: txId,
-          refresh: true,
+        visible = await _io(
+          () => _transactions.isTransactionVisible(
+            walletId: walletId,
+            transactionId: txId,
+            refresh: true,
+          ),
         );
       } catch (e) {
         _log.warning(
@@ -2974,7 +3017,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   /// even though it already succeeded.
   void _syncWalletAfterBroadcast(String walletId) {
     unawaited(
-      Future(() => _transactions.refreshWallet(walletId))
+      Future(() => _io(() => _transactions.refreshWallet(walletId)))
           .catchError((Object e) {
             _log.warning(code: api.PayjoinLogCode.walletFailure, error: e);
           }),

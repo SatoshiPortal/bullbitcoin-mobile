@@ -17,7 +17,12 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullShimmerBox, BullShimmerLine, Gap;
+    show
+        BullFadingLinearProgress,
+        BullShimmerBox,
+        BullShimmerLine,
+        Gap,
+        BullTypographyX;
 
 class FundExchangeMethodSelectionScreen extends StatefulWidget {
   const FundExchangeMethodSelectionScreen({super.key});
@@ -82,7 +87,6 @@ class _FundExchangeMethodSelectionScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isFundingRestricted = context.select(
       (FundExchangeBloc bloc) =>
           bloc.state.isStarted && bloc.state.isFundingRestricted,
@@ -129,7 +133,7 @@ class _FundExchangeMethodSelectionScreenState
                 const Gap(8.0),
                 BBText(
                   context.loc.fundExchangeAccountTitle,
-                  style: theme.textTheme.displaySmall,
+                  style: context.bullType.headline,
                 ),
                 const Gap(8.0),
                 if (isFundingRestricted) ...[
@@ -138,7 +142,9 @@ class _FundExchangeMethodSelectionScreenState
                 ] else ...[
                   BBText(
                     context.loc.fundExchangeAccountSubtitle,
-                    style: theme.textTheme.headlineSmall,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   const Gap(24.0),
                   if (jurisdiction == null)

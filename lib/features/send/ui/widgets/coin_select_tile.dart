@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullCheckbox, BullShapesX, BullSpacing, BullText, Gap;
+    show BullCheckbox, BullShapesX, BullSpacing, BullText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 class CoinSelectTile extends StatelessWidget {
@@ -85,7 +85,7 @@ class CoinSelectTile extends StatelessWidget {
                       children: [
                         BullText(
                           '$utxoValue ',
-                          style: context.font.displaySmall?.copyWith(
+                          style: context.bullType.headline.copyWith(
                             color: context.appColors.onSurface,
                             fontWeight: .w500,
                           ),
@@ -94,7 +94,7 @@ class CoinSelectTile extends StatelessWidget {
                     ),
                     subtitle: BullText(
                       label,
-                      style: context.font.labelMedium?.copyWith(
+                      style: context.bullType.caption.copyWith(
                         color: context.appColors.onSurfaceVariant,
                       ),
                     ),
@@ -107,14 +107,14 @@ class CoinSelectTile extends StatelessWidget {
                   if (fiatEquivalent != null)
                     BullText(
                       '~$fiatEquivalent',
-                      style: context.font.labelSmall?.copyWith(
+                      style: context.bullType.caption.copyWith(
                         color: context.appColors.onSurfaceVariant,
                       ),
                     ),
                   const SizedBox(height: 4),
                   BullText(
                     confirmations,
-                    style: context.font.labelSmall?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
                   ),
@@ -126,14 +126,14 @@ class CoinSelectTile extends StatelessWidget {
                     children: [
                       BullText(
                         context.loc.sendAddress,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullType.caption.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       Expanded(
                         child: AddressViewer(
                           address,
-                          style: context.font.labelLarge,
+                          style: context.bullType.label,
                           color: context.appColors.onSurface,
                         ),
                       ),
@@ -141,13 +141,13 @@ class CoinSelectTile extends StatelessWidget {
                         const Gap(BullSpacing.xs),
                         BullText(
                           context.loc.sendType,
-                          style: context.font.labelMedium?.copyWith(
+                          style: context.bullType.caption.copyWith(
                             color: context.appColors.onSurfaceVariant,
                           ),
                         ),
                         BullText(
                           addressType,
-                          style: context.font.labelLarge?.copyWith(
+                          style: context.bullType.label.copyWith(
                             color: context.appColors.onSurface,
                           ),
                         ),

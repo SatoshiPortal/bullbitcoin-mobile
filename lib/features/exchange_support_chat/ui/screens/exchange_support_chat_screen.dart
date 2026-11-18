@@ -19,7 +19,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInputText, BullShapesX, Gap, BullSnackBar, bullDateLocale;
+    show
+        BullInputText,
+        BullShapesX,
+        Gap,
+        BullSnackBar,
+        bullDateLocale,
+        BullTypographyX;
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
@@ -66,7 +72,9 @@ class ExchangeSupportChatScreen extends StatelessWidget {
           ),
           title: BBText(
             context.loc.exchangeSupportChatTitle,
-            style: context.font.headlineMedium,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
           ),
           backgroundColor: context.appColors.background,
         ),
@@ -143,9 +151,9 @@ class _ChatBodyState extends State<_ChatBody> {
                     return Center(
                       child: BBText(
                         context.loc.exchangeSupportChatEmptyState,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
+                        style: context.bullType.body
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(color: context.appColors.textMuted),
                       ),
                     );
                   }
@@ -236,7 +244,7 @@ class _MessageBubble extends StatelessWidget {
                 if (message.text != null && message.text!.isNotEmpty)
                   BBText(
                     message.text!,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: isUserMessage
                           ? context.appColors.onSecondary
                           : context.appColors.onPrimary,
@@ -257,7 +265,7 @@ class _MessageBubble extends StatelessWidget {
                   const Gap(4),
                   BBText(
                     _formatTime(message.createdAt!, context),
-                    style: context.font.labelSmall?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: isUserMessage
                           ? context.appColors.textMuted
                           : context.appColors.onPrimary.withValues(alpha: 0.7),
@@ -332,7 +340,7 @@ class _MessageInputState extends State<_MessageInput> {
             if (state.sendMessageFailure case final sendFailure?) ...[
               BBText(
                 sendFailure.toTranslated(context),
-                style: context.font.labelSmall?.copyWith(
+                style: context.bullType.caption.copyWith(
                   color: context.appColors.error,
                 ),
               ),
@@ -523,11 +531,13 @@ class _AttachmentWidget extends StatelessWidget {
                     attachment.fileName != null
                         ? _shortenFileName(attachment.fileName!)
                         : context.loc.exchangeSupportChatAttachmentImage,
-                    style: context.font.bodySmall?.copyWith(
-                      color: isUserMessage
-                          ? context.appColors.onSecondary
-                          : null,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(
+                          color: isUserMessage
+                              ? context.appColors.onSecondary
+                              : null,
+                        ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -615,9 +625,13 @@ class _AttachmentWidget extends StatelessWidget {
                   attachment.fileName != null
                       ? _shortenFileName(attachment.fileName!)
                       : context.loc.exchangeSupportChatAttachmentUnknownFile,
-                  style: context.font.bodySmall?.copyWith(
-                    color: isUserMessage ? context.appColors.onSecondary : null,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(
+                        color: isUserMessage
+                            ? context.appColors.onSecondary
+                            : null,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

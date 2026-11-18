@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullSnackBar, BullText, Gap;
+    show BullButton, BullSnackBar, BullText, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ImportColdcardPage extends StatelessWidget {
@@ -79,7 +79,9 @@ class ImportColdcardPage extends StatelessWidget {
           children: [
             BullText(
               context.loc.importColdcardConnectDescription(deviceName),
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: .center,
               maxLines: 2,
             ),

@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
@@ -43,8 +44,9 @@ class BullSelectionActionBar extends StatelessWidget {
             children: [
               Text(
                 summary,
-                style: Theme.of(context).textTheme.bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.w600, color: colors.text),
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(fontWeight: FontWeight.w600, color: colors.text),
               ),
               const SizedBox(height: 8),
               Row(

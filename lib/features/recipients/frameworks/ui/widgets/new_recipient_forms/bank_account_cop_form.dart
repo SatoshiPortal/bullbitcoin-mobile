@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/recipients/presentation/models/cop_document_t
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, Gap, BullTypographyX;
 
 class BankAccountCopForm extends StatefulWidget {
   const BankAccountCopForm({super.key, this.hookError});
@@ -77,10 +78,12 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           // Institution Number Dropdown
           Text(
             context.loc.recipientsFieldBankInstitution,
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.secondary,
-              fontWeight: .w500,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  color: context.appColors.secondary,
+                  fontWeight: .w500,
+                ),
             textAlign: .left,
           ),
           const Gap(8.0),
@@ -113,10 +116,12 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           // Account Type Dropdown
           Text(
             context.loc.recipientsFieldAccountType,
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.secondary,
-              fontWeight: .w500,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  color: context.appColors.secondary,
+                  fontWeight: .w500,
+                ),
             textAlign: .left,
           ),
           const Gap(8.0),
@@ -160,10 +165,12 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           const Gap(12.0), // Account Type Dropdown
           Text(
             context.loc.recipientsFieldDocumentType,
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.secondary,
-              fontWeight: .w500,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  color: context.appColors.secondary,
+                  fontWeight: .w500,
+                ),
             textAlign: .left,
           ),
           const Gap(8.0),

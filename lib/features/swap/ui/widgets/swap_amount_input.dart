@@ -6,7 +6,12 @@ import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShapesX, BullShimmerLine, Gap;
+    show
+        BullAmountInputFormatter,
+        BullShapesX,
+        BullShimmerLine,
+        Gap,
+        BullTypographyX;
 
 class SwapAmountInput extends StatelessWidget {
   const SwapAmountInput({
@@ -44,7 +49,10 @@ class SwapAmountInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text(context.loc.swapAmountLabel, style: context.font.bodyLarge),
+        Text(
+          context.loc.swapAmountLabel,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        ),
         const Gap(8),
         Card(
           elevation: 1,
@@ -79,12 +87,12 @@ class SwapAmountInput extends StatelessWidget {
                           inputFormatters: [
                             BullAmountInputFormatter(bitcoinUnit.code),
                           ],
-                          style: context.font.displaySmall?.copyWith(
+                          style: context.bullType.headline.copyWith(
                             color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: '0',
-                            hintStyle: context.font.displaySmall?.copyWith(
+                            hintStyle: context.bullType.headline.copyWith(
                               color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
@@ -99,7 +107,7 @@ class SwapAmountInput extends StatelessWidget {
                       const Gap(8.0),
                       Text(
                         fromCurrency,
-                        style: context.font.displaySmall?.copyWith(
+                        style: context.bullType.headline.copyWith(
                           color: context.appColors.primary,
                         ),
                       ),
@@ -129,7 +137,7 @@ class SwapAmountInput extends StatelessWidget {
                 ),
               null => context.loc.swapInsufficientFunds,
             },
-            style: context.font.labelLarge?.copyWith(
+            style: context.bullType.label.copyWith(
               color: context.appColors.error,
             ),
           ),

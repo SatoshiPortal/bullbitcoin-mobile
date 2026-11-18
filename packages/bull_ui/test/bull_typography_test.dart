@@ -150,7 +150,7 @@ void main() {
           ),
         ),
       );
-      expect(type, same(BullTypography.standard));
+      expect(type, same(testBullTypography));
     });
 
     testWidgets('throws a StateError when none is registered', (tester) async {

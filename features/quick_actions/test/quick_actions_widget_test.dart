@@ -4,7 +4,7 @@ import 'customization_test.dart'
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQuickAction, BullText, BullThemeX;
+    show BullQuickAction, BullText, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -47,11 +47,11 @@ void main() {
     );
     expect(
       tester.widget<BullText>(title).style,
-      tester.element(title).bullText.titleLarge,
+      tester.element(title).bullType.title,
     );
     expect(
       tester.widget<BullText>(edit).style,
-      tester.element(edit).bullText.labelLarge,
+      tester.element(edit).bullType.label,
     );
     expect(find.text('Trade'), findsOneWidget);
     await tester.tap(find.text('Buy'));

@@ -11,7 +11,8 @@ import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullQuickActionBar, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -161,7 +162,7 @@ class _BtcTotalAmt extends StatelessWidget {
       btcTotal,
       showFiat: false,
       interactive: true,
-      style: context.font.displaySmall,
+      style: context.bullType.headline,
       color: context.appColors.onPrimary,
     );
   }
@@ -256,7 +257,9 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
                   unconfirmed,
                   showFiat: false,
                   interactive: true,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: color,
                 ),
               ],
@@ -264,7 +267,9 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
             Align(
               child: Text(
                 context.loc.walletBalanceUnconfirmedIncoming,
-                style: context.font.bodyLarge?.copyWith(color: color),
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(color: color),
               ),
             ),
           ],

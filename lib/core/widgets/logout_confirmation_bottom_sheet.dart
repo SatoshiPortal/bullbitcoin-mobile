@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText;
+    show BullBottomSheet, BullButton, BullShapesX, BullText, BullTypographyX;
 
 class LogoutConfirmationBottomSheet extends StatelessWidget {
   final Future<void> Function() onConfirm;
@@ -46,13 +46,15 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
               const SizedBox(height: 16),
               BullText(
                 context.loc.logoutConfirmationTitle,
-                style: context.font.headlineSmall?.copyWith(fontWeight: .bold),
+                style: context.bullType.subtitle
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(fontWeight: .bold),
                 textAlign: .center,
               ),
               const SizedBox(height: 8),
               BullText(
                 context.loc.logoutConfirmationDescription,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
                 textAlign: .center,

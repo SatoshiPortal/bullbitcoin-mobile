@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDetailsTableItem, BullSnackBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDetailsTableItem, BullSnackBar, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 class PaymentDetailRow extends StatelessWidget {
@@ -40,7 +41,7 @@ class PaymentDetailRow extends StatelessWidget {
                   child: Text(
                     text,
                     textAlign: TextAlign.end,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.primary,
                     ),
                   ),

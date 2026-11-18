@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -117,7 +118,9 @@ class _BullSearchBarState extends State<BullSearchBar> {
     }
 
     final colors = context.bull;
-    final textStyle = Theme.of(context).textTheme.bodyLarge;
+    final textStyle = context.bullType.body.copyWith(
+      fontWeight: FontWeight.w500,
+    );
     final hasQuery = (widget.value ?? '').isNotEmpty;
     final onCleared = widget.onCleared;
     return _Frame(
@@ -134,7 +137,7 @@ class _BullSearchBarState extends State<BullSearchBar> {
         focusNode: widget.focusNode,
         onChanged: widget.onChanged,
         textInputAction: TextInputAction.search,
-        style: textStyle?.copyWith(color: colors.text),
+        style: textStyle.copyWith(color: colors.text),
         cursorColor: colors.primary,
         decoration: InputDecoration(
           hintText: widget.hint,
@@ -150,9 +153,9 @@ class _BullSearchBarState extends State<BullSearchBar> {
     );
   }
 
-  static TextStyle? _hintStyle(BuildContext context) =>
-      Theme.of(context).textTheme.bodyLarge
-          ?.copyWith(color: context.bull.textMuted);
+  static TextStyle? _hintStyle(BuildContext context) => context.bullType.body
+      .copyWith(fontWeight: FontWeight.w500)
+      .copyWith(color: context.bull.textMuted);
 }
 
 class _Frame extends StatelessWidget {

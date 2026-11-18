@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 
 class ScanQrPage extends StatelessWidget {
   const ScanQrPage({super.key});
@@ -58,7 +58,7 @@ class ScanQrPage extends StatelessWidget {
                   child: Center(
                     child: BullText(
                       '${state.bbqr.parts.length} / ${state.bbqr.options!.total}',
-                      style: context.font.labelMedium,
+                      style: context.bullType.caption,
                       color: context.appColors.onPrimary,
                     ),
                   ),

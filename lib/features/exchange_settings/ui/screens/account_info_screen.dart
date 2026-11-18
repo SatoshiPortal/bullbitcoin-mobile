@@ -64,9 +64,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
             BullText(
               state.failure?.toTranslated(context) ??
                   context.loc.exchangeAccountInfoLoadErrorMessage,
-              style: context.bullText.bodyMedium?.copyWith(
-                color: context.bull.error,
-              ),
+              style: context.bullType.body.copyWith(color: context.bull.error),
             ),
             const Gap(BullSpacing.md),
             BullButton.big(
@@ -154,10 +152,12 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
           children: [
             BullText(
               label,
-              style: context.bullText.headlineMedium?.copyWith(
-                color: context.bull.onSurfaceVariant,
-                fontWeight: .w500,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(
+                    color: context.bull.onSurfaceVariant,
+                    fontWeight: .w500,
+                  ),
             ),
             const Spacer(),
             if (isCopyable)
@@ -166,10 +166,12 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                 children: [
                   BullText(
                     value,
-                    style: context.bullText.bodyLarge?.copyWith(
-                      color: context.bull.secondary,
-                      fontWeight: .w700,
-                    ),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(
+                          color: context.bull.secondary,
+                          fontWeight: .w700,
+                        ),
                   ),
                   const Gap(BullSpacing.xs),
                   GestureDetector(
@@ -188,10 +190,9 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
             else
               BullText(
                 value,
-                style: context.bullText.bodyLarge?.copyWith(
-                  color: context.bull.secondary,
-                  fontWeight: .w700,
-                ),
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(color: context.bull.secondary, fontWeight: .w700),
               ),
           ],
         ),

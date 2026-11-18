@@ -9,14 +9,13 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 
 class FundExchangeCrIbanCrcScreen extends StatelessWidget {
   const FundExchangeCrIbanCrcScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final details = context.select(
       (FundExchangeBloc bloc) => bloc.state.fundingDetails,
     );
@@ -38,7 +37,7 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
             children: [
               BBText(
                 context.loc.fundExchangeCrIbanCrcTitle,
-                style: theme.textTheme.displaySmall,
+                style: context.bullType.headline,
               ),
               const Gap(16.0),
               RichText(
@@ -46,17 +45,21 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: context.loc.fundExchangeCrIbanCrcDescription,
-                      style: theme.textTheme.headlineSmall,
-                    ),
-                    TextSpan(
-                      text: context.loc.fundExchangeCrIbanCrcDescriptionBold,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: .bold,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     TextSpan(
+                      text: context.loc.fundExchangeCrIbanCrcDescriptionBold,
+                      style: context.bullType.subtitle
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(fontWeight: .bold),
+                    ),
+                    TextSpan(
                       text: context.loc.fundExchangeCrIbanCrcDescriptionEnd,
-                      style: theme.textTheme.headlineSmall,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ],
                 ),

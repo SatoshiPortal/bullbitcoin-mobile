@@ -110,14 +110,16 @@ class SepaVirtualPayeeActivationView extends StatelessWidget {
                       ],
                       BullText(
                         title,
-                        style: context.bullText.headlineSmall,
+                        style: context.bullType.subtitle.copyWith(
+                          fontWeight: FontWeight.w400,
+                        ),
                         color: colors.text,
                         textAlign: .center,
                       ),
                       const Gap(12),
                       BullText(
                         description,
-                        style: context.bullText.bodyMedium,
+                        style: context.bullType.body,
                         color: colors.textMuted,
                         textAlign: .center,
                       ),
@@ -125,7 +127,7 @@ class SepaVirtualPayeeActivationView extends StatelessWidget {
                         const Gap(16),
                         BullText(
                           failure.toTranslated(context),
-                          style: context.bullText.bodyMedium,
+                          style: context.bullType.body,
                           color: colors.error,
                           textAlign: .center,
                         ),

@@ -2,6 +2,9 @@ import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'dart:async';
 
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:primitives/primitives.dart';
+
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
@@ -32,8 +35,35 @@ abstract final class PayjoinSetup {
     String databasePath, {
     bool startRecovery = true,
   }) {
+    bool? capturedRegtest;
+    Future<bool> isCurrent() async {
+      try {
+        final active =
+            (await locator<GetSettingsUsecase>().execute()).activeNetwork;
+        final captured = capturedRegtest;
+        if (captured == null) return true;
+        return captured
+            ? active == NetworkEnv.regtest
+            : (active == NetworkEnv.mainnet || active == NetworkEnv.testnet);
+      } on Exception {
+        return false;
+      }
+    }
+
+    Future<RegtestHostProfile?>? capturedProfile;
+    Future<RegtestHostProfile?> captureProfile() =>
+        capturedProfile ??= () async {
+          final settings = await locator<GetSettingsUsecase>().execute();
+          final host = RegtestHostProfile.forNetwork(settings.activeNetwork);
+          capturedRegtest = host != null;
+          return host;
+        }();
+
     final runtime = RecoverablePayjoin(() async {
+      final profile = await captureProfile();
       return openPayjoin(
+        regtestHostProfile: profile,
+        isCurrent: isCurrent,
         databasePath: databasePath,
         wallet: PayjoinWalletAdapter(
           locator<Secrets>(),
@@ -60,7 +90,7 @@ abstract final class PayjoinSetup {
         log: const AppPayjoinLogAdapter(),
         codec: const AppPayjoinCodecAdapter(),
       );
-    });
+    }, isCurrent: isCurrent);
     _registerRoles(locator, runtime.payjoin);
     locator.registerSingleton<PayjoinLifecycle>(runtime);
 

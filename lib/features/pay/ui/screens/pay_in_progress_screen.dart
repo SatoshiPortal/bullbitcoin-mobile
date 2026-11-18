@@ -9,7 +9,8 @@ import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullLoader, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullLoader, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class PayInProgressScreen extends StatefulWidget {
@@ -138,7 +139,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                   const Gap(20),
                   Text(
                     context.loc.payPaymentInProgress,
-                    style: context.font.titleLarge,
+                    style: context.bullType.title,
                   ),
                   if (order != null) ...[
                     const Gap(10),
@@ -146,7 +147,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 32.0),
                       child: Text(
                         _description(context, order),
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                         textAlign: .center,
                       ),
                     ),

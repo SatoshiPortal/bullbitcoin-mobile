@@ -34,7 +34,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullShapesX,
         BullShimmerLine,
         BullSnackBar,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
@@ -126,10 +127,7 @@ class ReceiveQRDetails extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            BBText(
-              failure.toTranslated(context),
-              style: context.font.bodyMedium,
-            ),
+            BBText(failure.toTranslated(context), style: context.bullType.body),
             const Gap(16),
             BBButton.big(
               label: context.loc.retry,
@@ -224,7 +222,9 @@ class ReceiveQRDetails extends StatelessWidget {
                         isLightning
                             ? context.loc.receiveLightningInvoice
                             : context.loc.receiveAddress,
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         color: context.appColors.secondary,
                       ),
                       const Gap(4),
@@ -232,13 +232,17 @@ class ReceiveQRDetails extends StatelessWidget {
                           ? InvoiceViewer(
                               addressOrInvoiceOnly,
                               clipboardText: clipboardData,
-                              style: context.font.bodyLarge,
+                              style: context.bullType.body.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
                               color: context.appColors.secondary,
                             )
                           : AddressViewer(
                               addressOrInvoiceOnly,
                               clipboardText: clipboardData,
-                              style: context.font.bodyLarge,
+                              style: context.bullType.body.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
                               color: context.appColors.secondary,
                             ),
                     ],
@@ -307,7 +311,9 @@ class ReceiveInfoDetails extends StatelessWidget {
                     children: [
                       BBText(
                         context.loc.receiveAdditionalInformation,
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         color: context.appColors.secondary,
                       ),
                       const Gap(4),
@@ -319,21 +325,21 @@ class ReceiveInfoDetails extends StatelessWidget {
                           '${context.loc.coreScreensAmountLabel}: '
                           '${FormatAmount.btc(ConvertAmount.satsToBtc(amountSat))}'
                           '$enteredUnitSuffix',
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                           maxLines: 1,
                           overflow: .ellipsis,
                         ),
                       if (note.isNotEmpty)
                         BBText(
                           '${context.loc.receiveMessageForSender}: $note',
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                           maxLines: 2,
                           overflow: .ellipsis,
                         ),
                       if (amountSat == null && note.isEmpty)
                         BBText(
                           context.loc.receiveAdditionalInformationPlaceholder,
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                           color: context.appColors.onSurfaceVariant,
                         ),
                     ],
@@ -396,7 +402,9 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               children: [
                 BBText(
                   context.loc.transactionLabelSendAmount,
-                  style: context.font.bodySmall,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                   color: context.appColors.onSurfaceVariant,
                 ),
                 const Spacer(),
@@ -406,12 +414,12 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                     CurrencyText(
                       amountSat ?? 0,
                       showFiat: false,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.secondary,
                     ),
                     BBText(
                       amountEquivalent.isEmpty ? '' : '~$amountEquivalent',
-                      style: context.font.labelSmall,
+                      style: context.bullType.caption,
                       color: context.appColors.onSurfaceVariant,
                     ),
                   ],
@@ -427,7 +435,9 @@ class ReceiveLnInfoDetails extends StatelessWidget {
               children: [
                 BBText(
                   context.loc.receiveReceiveAmount,
-                  style: context.font.bodySmall,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                   color: context.appColors.onSurfaceVariant,
                 ),
                 const Spacer(),
@@ -441,7 +451,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   CurrencyText(
                     swap!.receieveAmount!,
                     showFiat: false,
-                    style: context.font.bodyMedium,
+                    style: context.bullType.body,
                     color: context.appColors.secondary,
                   ),
               ],
@@ -455,14 +465,14 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 children: [
                   BBText(
                     context.loc.receiveNote,
-                    style: context.font.labelSmall,
+                    style: context.bullType.caption,
                     color: context.appColors.onSurfaceVariant,
                   ),
                   const Gap(24),
                   Expanded(
                     child: BBText(
                       note.isNotEmpty ? note : '',
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.secondary,
                       maxLines: 5,
                       textAlign: .end,
@@ -504,7 +514,7 @@ class ReceiveLnSwapID extends StatelessWidget {
         children: [
           BBText(
             context.loc.swapTransferTitle,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
@@ -518,7 +528,9 @@ class ReceiveLnSwapID extends StatelessWidget {
             BBText(
               orderNumber?.toString() ??
                   StringFormatting.truncateMiddle(identifier),
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.secondary,
               textAlign: .end,
             ),
@@ -557,14 +569,14 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
         children: [
           BBText(
             label,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
           CurrencyText(
             amt,
             showFiat: false,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.secondary,
           ),
         ],
@@ -587,7 +599,9 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
               children: [
                 BBText(
                   context.loc.receiveTotalFee,
-                  style: context.font.bodySmall,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                   color: context.appColors.onSurfaceVariant,
                 ),
                 const Spacer(),
@@ -620,14 +634,18 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
             children: [
               BBText(
                 context.loc.receiveTotalFee,
-                style: context.font.bodySmall,
+                style: context.bullType.label.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
                 color: context.appColors.onSurfaceVariant,
               ),
               const Spacer(),
               CurrencyText(
                 swap.fees?.totalFees(null) ?? 0,
                 showFiat: false,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
               ),
               const Gap(4),
@@ -645,7 +663,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
             padding: const EdgeInsets.only(bottom: 8),
             child: BBText(
               context.loc.receiveFeeExplanation,
-              style: context.font.labelSmall,
+              style: context.bullType.caption,
               color: context.appColors.onSurfaceVariant,
             ),
           ),

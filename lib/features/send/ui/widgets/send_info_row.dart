@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 class SendInfoRow extends StatelessWidget {
@@ -16,7 +16,7 @@ class SendInfoRow extends StatelessWidget {
         children: [
           BullText(
             title,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.onSurfaceVariant,
           ),
           const Gap(24),

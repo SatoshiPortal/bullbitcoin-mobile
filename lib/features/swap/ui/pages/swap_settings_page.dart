@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_failure_l10n.dart';
@@ -56,7 +55,9 @@ class _SwapSettingsBody extends StatelessWidget {
             Expanded(
               child: BullText(
                 context.loc.swapSettingsExchangeFallbackLabel,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.bull.text,
               ),
             ),
@@ -69,7 +70,7 @@ class _SwapSettingsBody extends StatelessWidget {
         const Gap(8),
         BullText(
           context.loc.swapSettingsExchangeFallbackDescription,
-          style: context.font.bodySmall,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.bull.textMuted,
         ),
         const Gap(24),
@@ -83,7 +84,9 @@ class _SwapSettingsBody extends StatelessWidget {
                   children: [
                     BullText(
                       context.loc.swapServerTitle,
-                      style: context.font.bodyLarge,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                       color: context.bull.text,
                     ),
                     const Gap(2),
@@ -91,7 +94,9 @@ class _SwapSettingsBody extends StatelessWidget {
                       state.isDefaultSwapServer
                           ? context.loc.swapServerDefault
                           : state.swapServer.host,
-                      style: context.font.bodySmall,
+                      style: context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                       color: context.bull.textMuted,
                     ),
                   ],
@@ -109,7 +114,7 @@ class _SwapSettingsBody extends StatelessWidget {
           const Gap(32),
           BullText(
             context.loc.swapSettingsRouteOverrideTitle,
-            style: context.font.titleSmall,
+            style: context.bullType.label,
             color: context.bull.text,
           ),
           const Gap(12),
@@ -215,13 +220,13 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
       children: [
         BullText(
           context.loc.swapServerTitle,
-          style: context.font.titleMedium,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.bull.text,
         ),
         const Gap(8),
         BullText(
           context.loc.swapServerSubtitle,
-          style: context.font.bodySmall,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.bull.textMuted,
         ),
         const Gap(16),
@@ -239,7 +244,7 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
           const Gap(8),
           BullText(
             context.loc.swapServerInvalid,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.bull.error,
           ),
         ],

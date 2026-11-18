@@ -7,6 +7,6 @@ class RecoverBullHistoricalWarning extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BullText(
     context.loc.recoverbullHistoricalUnknown,
-    style: context.bullText.bodyMedium,
+    style: context.bullType.body,
   );
 }

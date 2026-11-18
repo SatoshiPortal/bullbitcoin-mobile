@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
@@ -30,7 +31,7 @@ class UseForFeeEstimationToggle extends StatelessWidget {
                     children: [
                       Text(
                         context.loc.mempoolSettingsUseForFeeEstimation,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -39,9 +40,9 @@ class UseForFeeEstimationToggle extends StatelessWidget {
                         context
                             .loc
                             .mempoolSettingsUseForFeeEstimationDescription,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(color: context.appColors.textMuted),
                       ),
                     ],
                   ),

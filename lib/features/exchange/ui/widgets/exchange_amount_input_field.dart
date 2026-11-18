@@ -5,7 +5,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShapesX, BullShimmerLine, Gap;
+    show
+        BullAmountInputFormatter,
+        BullShapesX,
+        BullShimmerLine,
+        Gap,
+        BullTypographyX;
 import 'package:intl/intl.dart';
 
 class ExchangeAmountInputField extends StatelessWidget {
@@ -46,7 +51,7 @@ class ExchangeAmountInputField extends StatelessWidget {
       children: [
         Text(
           context.loc.exchangeAmountInputTitle,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
         ),
         const Gap(4.0),
         Card(
@@ -82,14 +87,14 @@ class ExchangeAmountInputField extends StatelessWidget {
                           inputFormatters: [
                             BullAmountInputFormatter(inputCurrency),
                           ],
-                          style: context.font.displaySmall?.copyWith(
+                          style: context.bullType.headline.copyWith(
                             color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: NumberFormat.decimalPatternDigits(
                               decimalDigits: amountInputDecimals,
                             ).format(0),
-                            hintStyle: context.font.displaySmall?.copyWith(
+                            hintStyle: context.bullType.headline.copyWith(
                               color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
@@ -144,7 +149,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                             : _isFiatCurrencyInput
                             ? _fiatCurrency!.code
                             : _bitcoinUnit.code,
-                        style: context.font.displaySmall?.copyWith(
+                        style: context.bullType.headline.copyWith(
                           color: context.appColors.primary,
                         ),
                       ),
@@ -182,7 +187,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                           _isFiatCurrencyInput
                               ? _bitcoinUnit?.code ?? BitcoinUnit.btc.code
                               : _fiatCurrency!.code,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             color: context.appColors.outline,
                           ),
                         ),

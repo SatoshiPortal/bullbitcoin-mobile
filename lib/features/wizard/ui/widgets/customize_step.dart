@@ -14,7 +14,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullPickerItem,
         BullSettingsEntryItem,
         BullSwitch,
-        BullText;
+        BullText,
+        BullTypographyX;
 
 /// Settings page of the wizard, built from the controls of the app settings:
 /// switches for dark mode and the exchange, menus for the language and the
@@ -54,7 +55,7 @@ class CustomizeStep extends StatelessWidget {
         children: [
           BullText(
             loc.wizardCustomizeBody,
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.onSurfaceVariant,
               height: 1.4,
             ),

@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullShapesX, BullSnackBar, BullText;
+    show BullBottomSheet, BullShapesX, BullSnackBar, BullText, BullTypographyX;
 
 enum _NfcOperation { read, write }
 
@@ -124,7 +124,9 @@ class NfcBottomSheet {
               children: [
                 BullText(
                   title,
-                  style: sheetContext.font.headlineSmall,
+                  style: sheetContext.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                   color: sheetContext.appColors.text,
                   textAlign: TextAlign.center,
                 ),

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullText, BullTypographyX;
 
 class TxsFilterItem extends StatelessWidget {
   const TxsFilterItem({
@@ -47,7 +48,7 @@ class TxsFilterItem extends StatelessWidget {
               ),
               child: BullText(
                 title,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: isSelected
                       ? context.appColors.surface
                       : context.appColors.onSurface,

@@ -11,7 +11,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, BullTypography, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullText, BullTypography, Gap, BullTypographyX;
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({super.key, this.loading = false});
@@ -62,7 +63,7 @@ class OnboardingSplash extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 48),
                     child: BullText(
                       context.loc.onboardingSplashDescription,
-                      style: context.font.labelSmall,
+                      style: context.bullType.caption,
                       color: context.appColors.onPrimaryFixed,
                       textAlign: .center,
                       maxLines: 2,
@@ -135,7 +136,7 @@ class _Actions extends StatelessWidget {
               },
               child: Text(
                 context.loc.onboardingAdvancedOptionsTitle,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.onPrimaryFixed.withValues(
                     alpha: 0.9,
                   ),

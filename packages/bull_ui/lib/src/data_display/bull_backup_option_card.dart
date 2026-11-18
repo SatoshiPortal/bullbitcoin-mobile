@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/data_display/bull_options_tag.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -61,13 +62,16 @@ class BullBackupOptionCard extends StatelessWidget {
                       children: [
                         BullText(
                           title,
-                          style: Theme.of(context).textTheme.headlineMedium,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         const Gap(10),
                         BullText(
                           description,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: colors.textMuted),
+                          style: context.bullType.label
+                              .copyWith(fontWeight: FontWeight.w400)
+                              .copyWith(color: colors.textMuted),
                           maxLines: 3,
                         ),
                         const Gap(10),

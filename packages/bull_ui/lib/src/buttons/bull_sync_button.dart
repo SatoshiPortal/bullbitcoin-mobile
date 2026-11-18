@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
@@ -73,7 +74,7 @@ class _BullSyncButtonState extends State<BullSyncButton>
           const SizedBox(width: 4),
           Text(
             widget.label,
-            style: context.bullText.labelMedium?.copyWith(
+            style: context.bullType.caption.copyWith(
               color: colors.primary,
               fontWeight: FontWeight.w600,
             ),

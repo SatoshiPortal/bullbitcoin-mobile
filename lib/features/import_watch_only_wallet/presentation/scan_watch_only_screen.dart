@@ -14,7 +14,7 @@ import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';
 import 'package:satoshifier/satoshifier.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullSnackBar;
+    show BullBottomSheet, BullButton, BullSnackBar, BullTypographyX;
 
 class ScanWatchOnlyScreen extends StatefulWidget {
   final SignerDeviceEntity? signerDevice;
@@ -91,7 +91,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
               right: 24,
               child: BullButton.big(
                 iconData: Icons.copy,
-                textStyle: context.font.labelMedium,
+                textStyle: context.bullType.caption,
                 textColor: context.appColors.onPrimary,
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: _scanned));
@@ -164,7 +164,9 @@ Future<String?> _chooseDerivation(BuildContext context, String data) async {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
                 context.loc.importWatchOnlySelectDerivation,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             for (final opt in options)

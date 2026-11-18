@@ -1,3 +1,5 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
+
 import 'dart:async';
 
 import 'package:bull_ui/src/theme/bull_icon.dart';
@@ -121,9 +123,11 @@ class BullQuickAction extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style:
                               (flat
-                                      ? Theme.of(context).textTheme.labelLarge
-                                      : Theme.of(context).textTheme.titleMedium)
-                                  ?.copyWith(
+                                      ? context.bullType.label
+                                      : context.bullType.body.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                        ))
+                                  .copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: foreground,
                                   ),

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullLoader, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullLoader, BullText, Gap, BullTypographyX;
 
 class ProgressScreen extends StatelessWidget {
   final String? title;
@@ -26,7 +26,9 @@ class ProgressScreen extends StatelessWidget {
             BullText(
               title!,
               textAlign: .center,
-              style: context.font.headlineLarge?.copyWith(fontWeight: .bold),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w700)
+                  .copyWith(fontWeight: .bold),
             ),
           ],
           if (description != null) ...[
@@ -34,7 +36,9 @@ class ProgressScreen extends StatelessWidget {
             BullText(
               description!,
               textAlign: .center,
-              style: context.font.bodySmall,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
               maxLines: 3,
             ),
           ],

@@ -1,5 +1,6 @@
 import '../domain/bull_map_failure.dart';
 import '../domain/entities/geo_bounds.dart';
+import '../domain/entities/geo_point.dart';
 import '../domain/entities/merchant.dart';
 import '../domain/entities/merchant_listing.dart';
 
@@ -24,6 +25,9 @@ sealed class MapState with _$MapState {
 
     /// What the map shows, once it has reported it.
     GeoBounds? viewport,
+
+    /// A transient IP-derived suggestion for this map opening, never GPS data.
+    GeoPoint? initialCenter,
     @Default('') String query,
 
     /// Null for every category.

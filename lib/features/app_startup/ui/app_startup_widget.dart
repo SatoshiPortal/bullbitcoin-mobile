@@ -13,7 +13,8 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart'
 import 'package:bb_mobile/router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullSupportButton, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullSupportButton, Gap, BullTypographyX;
 
 class AppStartupWidget extends StatefulWidget {
   const AppStartupWidget({super.key, required this.app});
@@ -128,9 +129,9 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
                     const Gap(8),
                     Text(
                       context.loc.appStartupErrorTitle,
-                      style: context.font.headlineLarge?.copyWith(
-                        color: context.appColors.error,
-                      ),
+                      style: context.bullType.subtitle
+                          .copyWith(fontWeight: FontWeight.w700)
+                          .copyWith(color: context.appColors.error),
                     ),
                   ],
                 ),
@@ -138,7 +139,7 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     failure.toTranslated(context),
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.secondary.withValues(alpha: 0.7),
                     ),
                   ),
@@ -158,9 +159,11 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
               const SizedBox(height: 24),
               Text(
                 context.loc.appStartupContactSupportMessage,
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.secondary.withValues(alpha: 0.7),
-                ),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(
+                      color: context.appColors.secondary.withValues(alpha: 0.7),
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),

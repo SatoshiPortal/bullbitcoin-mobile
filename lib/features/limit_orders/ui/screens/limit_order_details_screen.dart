@@ -169,7 +169,7 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
         children: [
           Text(
             context.loc.limitOrderCancelTitle,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: context.bullType.title,
           ),
           const Gap(BullSpacing.sm),
           Text(context.loc.limitOrderCancelMessage),

@@ -50,7 +50,7 @@ m.Widget bullTextUseCase(m.BuildContext context) {
     context,
     BullText(
       context.knobs.string(label: 'text', initialValue: 'The quick brown fox'),
-      style: m.Theme.of(context).textTheme.headlineMedium,
+      style: context.bullType.subtitle.copyWith(fontWeight: m.FontWeight.w500),
       color: context.bull.text,
     ),
   );
@@ -201,10 +201,7 @@ m.Widget bullScaffoldUseCase(m.BuildContext context) {
         const BullTopBar(title: 'Bull Scaffold'),
         m.Expanded(
           child: m.Center(
-            child: BullText(
-              'Body content',
-              style: m.Theme.of(context).textTheme.bodyMedium,
-            ),
+            child: BullText('Body content', style: context.bullType.body),
           ),
         ),
       ],
@@ -333,12 +330,16 @@ m.Widget bullSwipeActionUseCase(m.BuildContext context) {
             children: [
               BullText(
                 'Swipe me left',
-                style: m.Theme.of(context).textTheme.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: m.FontWeight.w500,
+                ),
               ),
               const Gap(BullSpacing.xxs),
               BullText(
                 'to reveal the Freeze action',
-                style: m.Theme.of(context).textTheme.bodySmall,
+                style: context.bullType.label.copyWith(
+                  fontWeight: m.FontWeight.w400,
+                ),
                 color: context.bull.textMuted,
               ),
             ],
@@ -673,7 +674,7 @@ m.Widget bullBorderedTileUseCase(m.BuildContext context) {
           children: [
             BullText(
               'Setting row',
-              style: m.Theme.of(context).textTheme.bodyMedium,
+              style: context.bullType.body,
               color: context.bull.text,
             ),
             const m.Spacer(),
@@ -894,10 +895,12 @@ m.Widget bullCountdownUseCase(m.BuildContext context) {
     context,
     BullCountdown(
       until: DateTime.now().add(Duration(minutes: minutes)),
-      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
-        fontFeatures: const [m.FontFeature.tabularFigures()],
-        color: context.bull.text,
-      ),
+      textStyle: context.bullType.subtitle
+          .copyWith(fontWeight: m.FontWeight.w700)
+          .copyWith(
+            fontFeatures: const [m.FontFeature.tabularFigures()],
+            color: context.bull.text,
+          ),
     ),
   );
 }
@@ -908,10 +911,12 @@ m.Widget bullCountdownShortUseCase(m.BuildContext context) {
     context,
     BullCountdown(
       until: DateTime.now().add(const Duration(seconds: 30)),
-      textStyle: m.Theme.of(context).textTheme.headlineLarge?.copyWith(
-        fontFeatures: const [m.FontFeature.tabularFigures()],
-        color: context.bull.warning,
-      ),
+      textStyle: context.bullType.subtitle
+          .copyWith(fontWeight: m.FontWeight.w700)
+          .copyWith(
+            fontFeatures: const [m.FontFeature.tabularFigures()],
+            color: context.bull.warning,
+          ),
     ),
   );
 }
@@ -939,7 +944,7 @@ m.Widget bullRefreshIndicatorUseCase(m.BuildContext context) {
           BullBorderedTile(
             child: BullText(
               'Pull to refresh — row $i',
-              style: m.Theme.of(context).textTheme.bodyMedium,
+              style: context.bullType.body,
             ),
           ),
       ],
@@ -1052,10 +1057,7 @@ m.Widget bullScrollableColumnUseCase(m.BuildContext context) {
     children: [
       for (var i = 0; i < 8; i++)
         BullBorderedTile(
-          child: BullText(
-            'Scrollable row $i',
-            style: m.Theme.of(context).textTheme.bodyMedium,
-          ),
+          child: BullText('Scrollable row $i', style: context.bullType.body),
         ),
     ],
   );
@@ -1098,10 +1100,7 @@ m.Widget bullStackedPageUseCase(m.BuildContext context) {
       onPressed: () {},
     ),
     child: m.Center(
-      child: BullText(
-        'Scrolling content',
-        style: m.Theme.of(context).textTheme.bodyMedium,
-      ),
+      child: BullText('Scrolling content', style: context.bullType.body),
     ),
   );
 }
@@ -1114,10 +1113,7 @@ m.Widget bullPullableBodyUseCase(m.BuildContext context) {
       m.SliverList.builder(
         itemCount: 10,
         itemBuilder: (_, i) => BullBorderedTile(
-          child: BullText(
-            'Sliver row $i',
-            style: m.Theme.of(context).textTheme.bodyMedium,
-          ),
+          child: BullText('Sliver row $i', style: context.bullType.body),
         ),
       ),
     ],
@@ -1138,13 +1134,15 @@ m.Widget bullBottomSheetUseCase(m.BuildContext context) {
         children: [
           BullText(
             'Bottom sheet title',
-            style: m.Theme.of(context).textTheme.headlineMedium,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: m.FontWeight.w500,
+            ),
             color: context.bull.text,
           ),
           const Gap(12),
           BullText(
             'Sheet body content goes here.',
-            style: m.Theme.of(context).textTheme.bodyMedium,
+            style: context.bullType.body,
             color: context.bull.textMuted,
           ),
         ],
@@ -1163,7 +1161,9 @@ m.Widget bullDialogUseCase(m.BuildContext context) {
         children: [
           BullText(
             'Confirm action',
-            style: m.Theme.of(context).textTheme.headlineMedium,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: m.FontWeight.w500,
+            ),
             color: context.bull.text,
           ),
           const Gap(12),

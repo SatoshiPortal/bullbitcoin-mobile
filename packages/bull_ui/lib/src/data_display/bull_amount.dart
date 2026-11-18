@@ -1,3 +1,5 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
+
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
@@ -164,8 +166,10 @@ class _BullAmountUnitToggleState extends State<BullAmountUnitToggle> {
     final VoidCallback? globalAction = ready && scope != null
         ? () => unawaited(scope.changeDefaultUnit(widget.unit))
         : null;
-    final style = (widget.style ?? Theme.of(context).textTheme.bodyLarge)
-        ?.copyWith(color: widget.color);
+    final style =
+        (widget.style ??
+                context.bullType.body.copyWith(fontWeight: FontWeight.w500))
+            .copyWith(color: widget.color);
     return Semantics(
       container: true,
       button: true,
@@ -194,7 +198,7 @@ class _BullAmountUnitToggleState extends State<BullAmountUnitToggle> {
           style: TextButton.styleFrom(
             minimumSize: const Size(BullSpacing.xxl, BullSpacing.xxl),
             padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xxs),
-            foregroundColor: widget.color ?? style?.color,
+            foregroundColor: widget.color ?? style.color,
             tapTargetSize: MaterialTapTargetSize.padded,
             visualDensity: VisualDensity.standard,
           ),

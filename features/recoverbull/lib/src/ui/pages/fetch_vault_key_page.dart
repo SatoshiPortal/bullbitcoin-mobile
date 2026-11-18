@@ -334,7 +334,7 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                 BullText(
                   context.loc.recoverbullPassphraseNotVaultPassword,
                   textAlign: .center,
-                  style: context.bullText.labelMedium?.copyWith(
+                  style: context.bullType.caption.copyWith(
                     color: context.bull.textMuted,
                   ),
                   maxLines: 4,
@@ -351,9 +351,9 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                   const Gap(8),
                   BullText(
                     context.loc.recoverbullPassphraseWhitespace,
-                    style: context.bullText.bodySmall?.copyWith(
-                      color: context.bull.warning,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.bull.warning),
                     maxLines: 3,
                   ),
                 ],
@@ -363,9 +363,9 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                     liveRegion: true,
                     child: BullText(
                       error,
-                      style: context.bullText.bodySmall?.copyWith(
-                        color: context.bull.error,
-                      ),
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(color: context.bull.error),
                       maxLines: 4,
                     ),
                   ),
@@ -376,7 +376,9 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                 else ...[
                   BullButton.big(
                     label: context.loc.recoverbullPassphraseVerify,
-                    textStyle: context.bullText.headlineLarge,
+                    textStyle: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                     bgColor: context.bull.onSurface,
                     textColor: context.bull.surface,
                     onPressed: _submit,
@@ -388,7 +390,7 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                         label: context.loc.recoverbullContinueWithoutPassphrase,
                         bgColor: context.bull.transparent,
                         textColor: context.bull.info,
-                        textStyle: context.bullText.labelSmall,
+                        textStyle: context.bullType.caption,
                         onPressed: () => setState(() => _confirmWithout = true),
                       )
                     else ...[

@@ -17,7 +17,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullSettingsEntryItem,
         BullShapesX,
         Gap,
-        BullSnackBar;
+        BullSnackBar,
+        BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -117,7 +118,7 @@ class _BackendConfigSection extends StatelessWidget {
       children: [
         Text(
           context.loc.spSettingsBackendConfig,
-          style: context.font.titleMedium,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
         const Gap(8),
         SpBackendConfigForm<SpSettingsState>(
@@ -182,7 +183,10 @@ class _WalletManagementSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(context.loc.spWalletManagement, style: context.font.titleMedium),
+        Text(
+          context.loc.spWalletManagement,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        ),
         const Gap(4),
         BullSettingsEntryItem(
           icon: Icons.account_balance_wallet,
@@ -296,7 +300,9 @@ class _NotificationConsoleSection extends StatelessWidget {
           children: [
             Text(
               context.loc.spNotificationsDebug,
-              style: context.font.titleMedium,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
             BBButton.small(
               compact: true,
@@ -305,7 +311,7 @@ class _NotificationConsoleSection extends StatelessWidget {
               disabled: console.isEmpty,
               bgColor: context.appColors.transparent,
               textColor: context.appColors.secondary,
-              textStyle: context.font.labelMedium,
+              textStyle: context.bullType.caption,
               outlined: true,
             ),
           ],
@@ -323,9 +329,9 @@ class _NotificationConsoleSection extends StatelessWidget {
               ? Center(
                   child: Text(
                     context.loc.spNoNotifications,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.textMuted),
                   ),
                 )
               : ListView.builder(
@@ -338,7 +344,7 @@ class _NotificationConsoleSection extends StatelessWidget {
                       '${DateFormat.Hms().format(line.time)}  ${line.notification.consoleText}',
                       // No monospace token in the theme yet; the family is the
                       // one thing this console still hardcodes.
-                      style: context.font.labelMedium?.copyWith(
+                      style: context.bullType.caption.copyWith(
                         fontFamily: 'monospace',
                         color: context.appColors.onSurface,
                       ),

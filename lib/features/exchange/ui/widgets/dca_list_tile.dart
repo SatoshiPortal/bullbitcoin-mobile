@@ -166,12 +166,12 @@ class DcaSettingsContent extends StatelessWidget {
             frequency,
             network,
           ),
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: context.bullType.body,
         ),
         const Gap(8),
         Text(
           context.loc.exchangeDcaAddressDisplay(addressLabel, address),
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: context.bullType.body,
         ),
       ],
     );
