@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart';
@@ -49,13 +50,21 @@ final class _Wallet implements bark.Wallet {
             status: status,
             subsystemName: subsystem,
             subsystemKind: 'lightning',
-            metadataJson: '{}',
+            metadataJson: subsystem == 'bark.lightning_receive'
+                ? jsonEncode({
+                    'payment_hash': 'a' * 64,
+                    'htlc_vtxos': [FakeOpener.firstId],
+                    'payment_preimage': '0' * 64,
+                  })
+                : '{}',
             intendedBalanceSats: 0,
             effectiveBalanceSats: 0,
             offchainFeeSats: 0,
             sentToAddresses: [],
             receivedOnAddresses: [],
-            inputVtxoIds: [FakeOpener.firstId],
+            inputVtxoIds: subsystem == 'bark.lightning_receive'
+                ? []
+                : [FakeOpener.firstId],
             outputVtxoIds: [],
             exitedVtxoIds: [],
             createdAt: '2026-11-18T00:00:00Z',
