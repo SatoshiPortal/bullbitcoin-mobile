@@ -31,6 +31,7 @@ Secrets
 |-- contains(words:, language:, [passphrase:]) -> bool
 |-- find(words:, language:, [passphrase:]) -> Secret?
 |-- preview
+|   |-- arkFingerprint(words:) -> Fingerprint
 |   |-- bitcoinDescriptors(words:, language:, [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |   `-- matchesBitcoinDescriptors(words:, language:, [passphrase:], network:, scriptType:, expected:) -> bool
 |-- recoverbull
