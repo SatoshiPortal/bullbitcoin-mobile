@@ -96,9 +96,15 @@ final class ArkStore {
   void commitObservation(
     ArkSnapshot snapshot, {
     Map<String, Object?>? syncFailures,
+    List<ArkOperation> settledOperations = const [],
   }) {
     _db.execute('BEGIN IMMEDIATE');
     try {
+      for (final settled in settledOperations) {
+        final previous = operation(settled.id);
+        if (previous == null) throw const FormatException('Missing operation');
+        saveOperation(settled, previous.binding);
+      }
       final prior = get('inventory-obligations') ?? get('complete-inventory');
       final known = prior == null
           ? const <ArkVtxo>[]

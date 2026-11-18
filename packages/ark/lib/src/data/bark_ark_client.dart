@@ -712,8 +712,13 @@ final class BarkArkClient implements ArkClient {
     ArkStore store,
     ArkSnapshot snapshot, {
     Map<String, Object?>? syncFailures,
+    List<ArkOperation> settledOperations = const [],
   }) {
-    store.commitObservation(snapshot, syncFailures: syncFailures);
+    store.commitObservation(
+      snapshot,
+      syncFailures: syncFailures,
+      settledOperations: settledOperations,
+    );
     _changes[snapshot.account.canonical]?.add(Ok(snapshot));
   }
 
@@ -914,9 +919,54 @@ final class BarkArkClient implements ArkClient {
       if (failed.isNotEmpty || rounds.isNotEmpty) {
         snapshot = copySnapshot(snapshot, stale: true);
       }
+      final settled = <ArkOperation>[];
+      if (failed.isEmpty &&
+          rounds.isEmpty &&
+          !snapshot.stale &&
+          snapshot.vtxoInventoryComplete &&
+          snapshot.tipHeight != null &&
+          snapshot.recovery == ArkRecoveryStatus.complete) {
+        for (final operation in store.operations) {
+          if (operation.status == ArkOperationStatus.outcomeUnknown &&
+              (operation.kind == ArkOperationKind.payment ||
+                  operation.kind == ArkOperationKind.renewal) &&
+              operation.chainSource == source &&
+              operation.configGeneration == 1 &&
+              operation.actualIds.isNotEmpty &&
+              operation.actualIds.every(
+                (id) => snapshot.vtxos.any(
+                  (v) =>
+                      v.id == id &&
+                      v.state == ArkVtxoState.spendable &&
+                      !v.pendingRound,
+                ),
+              ) &&
+              !snapshot.movements.any(
+                (m) => m.inputVtxoIds.any(operation.actualIds.contains),
+              )) {
+            settled.add(
+              operationFromJson({
+                ...operationToJson(operation),
+                'status': ArkOperationStatus.failed.name,
+              }),
+            );
+          }
+        }
+      }
+      if (settled.isNotEmpty) {
+        final byId = {for (final operation in settled) operation.id: operation};
+        snapshot = copySnapshot(
+          snapshot,
+          operations: [
+            for (final operation in store.operations)
+              byId[operation.id] ?? operation,
+          ],
+        );
+      }
       _commitObservation(
         store,
         snapshot,
+        settledOperations: settled,
         syncFailures: barriers.encode(
           failed.isEmpty &&
                   !snapshot.stale &&
@@ -1047,7 +1097,9 @@ final class BarkArkClient implements ArkClient {
               (op.kind == ArkOperationKind.payment ||
                   op.kind == ArkOperationKind.renewal ||
                   op.kind == ArkOperationKind.claim) &&
-              op.actualIds.any(quote.selectedIds.contains),
+              op.actualIds.any(quote.selectedIds.contains) &&
+              !(quote.kind == ArkOperationKind.emergencyExit &&
+                  op.status == ArkOperationStatus.outcomeUnknown),
         )) {
       return const Err(ArkUnavailableFailure());
     }
