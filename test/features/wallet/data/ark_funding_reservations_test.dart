@@ -1325,55 +1325,35 @@ void main() {
       }
     }
 
-    test(
-      'authority migration is foreground-only and never backfills a seal',
-      () async {
-        final binding = await prepare();
-        store.close();
-        final db = sqlite3.open('${dir.path}/store');
-        try {
-          db.execute('DROP TABLE ark_funding_authority');
-        } finally {
-          db.close();
+    test('missing authority table refuses without resetting operations', () async {
+      await prepare();
+      store.close();
+      final db = sqlite3.open('${dir.path}/store');
+      try {
+        db.execute('DROP TABLE ark_funding_authority');
+        for (final foreground in [false, true]) {
+          for (final initializeNew in [false, true]) {
+            expect(
+              SqliteArkFundingReservations.open(
+                '${dir.path}/store',
+                foreground: foreground,
+                initializeNew: initializeNew,
+              ),
+              isA<Err>(),
+            );
+          }
         }
+        expect(db.select('SELECT * FROM ark_funding_operations'), hasLength(1));
         expect(
-          SqliteArkFundingReservations.open(
-            '${dir.path}/store',
-            foreground: false,
+          db.select(
+            "SELECT name FROM sqlite_master WHERE name='ark_funding_authority'",
           ),
-          isA<Err>(),
+          isEmpty,
         );
-        store = ok(
-          SqliteArkFundingReservations.open(
-            '${dir.path}/store',
-            foreground: true,
-          ),
-        );
-        expect(ok(await store.reservations()).length, 1);
-        expect(
-          await store.beginSigning(
-            expected: binding,
-            admittedRevision: stamp(),
-          ),
-          isA<Err>(),
-        );
-        expect(
-          await store.tombstoneNeverSigned(
-            expected: binding,
-            admittedRevision: stamp(),
-          ),
-          isA<Err>(),
-        );
-        store.close();
-        store = ok(
-          SqliteArkFundingReservations.open(
-            '${dir.path}/store',
-            foreground: false,
-          ),
-        );
-        expect(ok(await store.reservations()).length, 1);
-      },
-    );
+      } finally {
+        db.close();
+      }
+    });
 
     test(
       'incompatible authority schema refuses without resetting operations',

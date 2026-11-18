@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:isolate';
 
@@ -326,20 +325,47 @@ void main() {
       }
     },
   );
-  test(
-    'missing host marker table is not silently adopted by background open',
-    () {
-      final db = sqlite3.open(fixture.path);
-      try {
-        db.execute('DROP TABLE ark_ordinary_signing');
-      } finally {
-        db.close();
-      }
-      expect(
-        SqliteArkFundingReservations.open(fixture.path, foreground: false),
-        isA<Err>(),
+  for (final foreground in [false, true]) {
+    for (final initializeNew in [false, true]) {
+      test(
+        'lost ordinary handoff table refuses foreground=$foreground initializeNew=$initializeNew',
+        () async {
+          sourceOk(
+            await fixture.store.admitOrdinarySigning(
+              key: fundingKey,
+              unsignedPsbt: publicFundingPsbt,
+            ),
+          );
+          final db = sqlite3.open(fixture.path);
+          try {
+            expect(
+              db.select('SELECT * FROM ark_ordinary_signing'),
+              hasLength(1),
+            );
+            db.execute('DROP TABLE ark_ordinary_signing');
+          } finally {
+            db.close();
+          }
+          final reopened = SqliteArkFundingReservations.open(
+            fixture.path,
+            foreground: foreground,
+            initializeNew: initializeNew,
+          );
+          if (reopened case Ok(:final value)) value.close();
+          expect(reopened, isA<Err>());
+          final check = sqlite3.open(fixture.path);
+          try {
+            expect(
+              check.select(
+                "SELECT name FROM sqlite_master WHERE name='ark_ordinary_signing'",
+              ),
+              isEmpty,
+            );
+          } finally {
+            check.close();
+          }
+        },
       );
-      expect(File(fixture.path).existsSync(), isTrue);
-    },
-  );
+    }
+  }
 }
