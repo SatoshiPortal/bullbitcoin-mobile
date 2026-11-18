@@ -567,7 +567,11 @@ final class _RegistryReferenceOwner implements SeedReferencePort {
   Future<Result<void, ArkFailure>> ensureOpen(bool initializeNew) {
     if (_closing) return Future.value(const Err(ArkFeatureStorageFailure()));
     if (_registry != null) return Future.value(const Ok(null));
-    return _opening ??= _open(initializeNew)
+    // Every retry, including profile/runtime setup, retains startup's refusal
+    // to initialize over surviving custody state.
+    final mayInitialize =
+        initializeNew && (_installation?.wasNeverProvisioned ?? true);
+    return _opening ??= _open(mayInitialize)
         .whenComplete(() => _opening = null);
   }
 

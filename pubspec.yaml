@@ -68,6 +68,7 @@ dependencies:
   flutter_secure_storage: ^10.3.3
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
+  shared_preferences_platform_interface: ^2.4.2
   qr_flutter: ^4.1.0
   decimal: ^3.2.4
   clock: ^1.1.2
@@ -163,7 +164,6 @@ dependencies:
   keyboard_actions: ^5.0.3
 
 dev_dependencies:
-  shared_preferences_platform_interface: ^2.4.2
   # Parse import, conditional export and part directives in the shell boundary test.
   analyzer: ^13.0.0
   build_runner: ^2.10.4
