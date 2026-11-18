@@ -94,11 +94,7 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
 
       final statusCode = response.statusCode;
       if (statusCode == null || statusCode < 200 || statusCode >= 300) {
-        log.severe(
-          message: 'Validation failed: Invalid status code $statusCode',
-          error: 'status $statusCode',
-          trace: StackTrace.current,
-        );
+        log.warning('Validation failed: Invalid status code $statusCode');
         return const Err(MempoolValidationNotMempoolServerFailure());
       }
 
@@ -136,11 +132,12 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
 
       log.fine('Mempool server validation successful');
       return const Ok(null);
-    } on DioException catch (e, st) {
-      log.severe(
-        message: 'Validation failed with DioException',
-        error: e,
-        trace: st,
+    } on DioException catch (e) {
+      // An unreachable or non-mempool server is an expected answer, not an
+      // app error: keep it in the support log without reporting it, and
+      // without the exception text, which can carry the server URL.
+      log.warning(
+        'Validation failed: ${e.type.name}, status ${e.response?.statusCode}',
       );
       return Err(_dioFailure(e, url));
     } catch (e, st) {
