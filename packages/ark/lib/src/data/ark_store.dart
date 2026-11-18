@@ -114,17 +114,19 @@ final class ArkStore {
         final movement = snapshot.movements
             .where(
               (m) =>
-                  m.status == ArkMovementStatus.successful &&
-                  m.inputVtxoIds.contains(old.id) &&
-                  (m.kind == ArkMovementKind.payment ||
-                      (m.kind == ArkMovementKind.renewal &&
-                          m.outputVtxoIds.isNotEmpty)) &&
-                  m.outputVtxoIds.every(
-                    (id) => snapshot.vtxos.any(
-                      (v) =>
-                          v.id == id && v.eligibleAt(snapshot.tipHeight ?? 0),
-                    ),
-                  ),
+                  terminalMovementRetires(m, old.id, snapshot.vtxos) ||
+                  (m.status == ArkMovementStatus.successful &&
+                      m.inputVtxoIds.contains(old.id) &&
+                      (m.kind == ArkMovementKind.payment ||
+                          (m.kind == ArkMovementKind.renewal &&
+                              m.outputVtxoIds.isNotEmpty)) &&
+                      m.outputVtxoIds.every(
+                        (id) => snapshot.vtxos.any(
+                          (v) =>
+                              v.id == id &&
+                              v.eligibleAt(snapshot.tipHeight ?? 0),
+                        ),
+                      )),
             )
             .firstOrNull;
         final exit = snapshot.exitDetails

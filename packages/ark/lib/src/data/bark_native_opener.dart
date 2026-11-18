@@ -301,7 +301,7 @@ final class BarkNativeSession implements ArkNativeSession {
               status: switch (v.status) {
                 'successful' => ArkMovementStatus.successful,
                 'pending' => ArkMovementStatus.pending,
-                'failed' => ArkMovementStatus.failed,
+                'failed' || 'canceled' => ArkMovementStatus.failed,
                 _ => ArkMovementStatus.unknown,
               },
               amount: Sats.fromInt(v.effectiveBalanceSats.abs()),

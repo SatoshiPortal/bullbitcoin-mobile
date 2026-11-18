@@ -616,28 +616,29 @@ final class BarkArkClient implements ArkClient {
       }
       return observed.movements.any(
         (movement) =>
-            movement.status == ArkMovementStatus.successful &&
-            movement.inputVtxoIds.contains(id) &&
-            (movement.kind == ArkMovementKind.renewal
-                ? observed.renewal != ArkRenewalStatus.delegated &&
-                      observed.renewal != ArkRenewalStatus.failed &&
-                      observed.renewal != ArkRenewalStatus.unknown &&
-                      movement.outputVtxoIds.isNotEmpty &&
-                      movement.outputVtxoIds.every(
-                        (output) => observed.vtxos.any(
-                          (v) =>
-                              v.id == output &&
-                              v.eligibleAt(observed.tipHeight ?? 0),
-                        ),
-                      )
-                : movement.kind == ArkMovementKind.payment &&
-                      movement.outputVtxoIds.every(
-                        (output) => observed.vtxos.any(
-                          (v) =>
-                              v.id == output &&
-                              v.eligibleAt(observed.tipHeight ?? 0),
-                        ),
-                      )),
+            terminalMovementRetires(movement, id, observed.vtxos) ||
+            (movement.status == ArkMovementStatus.successful &&
+                movement.inputVtxoIds.contains(id) &&
+                (movement.kind == ArkMovementKind.renewal
+                    ? observed.renewal != ArkRenewalStatus.delegated &&
+                          observed.renewal != ArkRenewalStatus.failed &&
+                          observed.renewal != ArkRenewalStatus.unknown &&
+                          movement.outputVtxoIds.isNotEmpty &&
+                          movement.outputVtxoIds.every(
+                            (output) => observed.vtxos.any(
+                              (v) =>
+                                  v.id == output &&
+                                  v.eligibleAt(observed.tipHeight ?? 0),
+                            ),
+                          )
+                    : movement.kind == ArkMovementKind.payment &&
+                          movement.outputVtxoIds.every(
+                            (output) => observed.vtxos.any(
+                              (v) =>
+                                  v.id == output &&
+                                  v.eligibleAt(observed.tipHeight ?? 0),
+                            ),
+                          ))),
       );
     }
 
