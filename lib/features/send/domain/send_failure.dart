@@ -150,3 +150,9 @@ final class SendPayjoinPausedFailure extends SendFailure {
 final class SendConsolidationRequiredFailure extends SendFailure {
   const SendConsolidationRequiredFailure([super.logMessage]);
 }
+
+/// The app runs on the network it launched with, not the one now selected:
+/// spend preconditions cannot be read, so no swap is created.
+final class SendRelaunchRequiredFailure extends SendFailure {
+  const SendRelaunchRequiredFailure([super.logMessage]);
+}

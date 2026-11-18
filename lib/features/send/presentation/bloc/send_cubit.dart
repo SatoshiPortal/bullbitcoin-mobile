@@ -1769,6 +1769,9 @@ class SendCubit extends Cubit<SendState>
       );
       return _BoltzChainSendOutcome.stopped;
     }
+    if (!await _spendPreconditionsReadable(wallet)) {
+      return _BoltzChainSendOutcome.stopped;
+    }
     emit(state.copyWith(creatingSwap: true));
     final fromLiquid = wallet.network.isLiquid;
     final limitsAndFees = await _getSwapLimitsAndFeesUsecase.execute(
@@ -2387,6 +2390,32 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
+  /// Bitcoin funding reads the Payjoin reservations; when they cannot be read
+  /// (the runtime still serves the network the app launched on) funding would
+  /// fail after the swap was created. Surfaces the relaunch failure and
+  /// returns false in that case, before any swap exists.
+  Future<bool> _spendPreconditionsReadable(Wallet wallet) async {
+    if (wallet.network.isLiquid) return true;
+    try {
+      await _validateBitcoinSelectionUsecase.execute(walletId: wallet.id);
+      return true;
+    } on ValidateBitcoinSelectionException {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            creatingSwap: false,
+            loadingBestWallet: false,
+            amountConfirmedClicked: false,
+            failure: const SendRelaunchRequiredFailure(
+              'spend preconditions unreadable',
+            ),
+          ),
+        );
+      }
+      return false;
+    }
+  }
+
   /// Tries to pay [invoice] through a Boltz submarine swap when the swap route
   /// starts with Boltz. Returns true when Boltz handled the send — the swap
   /// exists and its lockup is being built, or its failure was surfaced — and
@@ -2404,6 +2433,7 @@ class SendCubit extends Cubit<SendState>
     final route = await _getSendSwapRouteUsecase.execute();
     if (isClosed) return true;
     if (!route.startsWithBoltz) return false;
+    if (!await _spendPreconditionsReadable(wallet)) return true;
     final created = await _createBoltzSendSwapUsecase.execute(
       wallet: wallet,
       invoice: invoice,
