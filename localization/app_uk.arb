@@ -999,7 +999,7 @@
   "exchangeDcaUnableToGetConfig": "Неможливо отримати конфігурацію DCA",
   "psbtFlowClickScan": "Натисніть сканування",
   "sellInstitutionNumber": "Кількість установ",
-  "mempoolSettingsCustomServer": "Статус на сервери",
+  "mempoolSettingsCustomServer": "Власний сервер",
   "fundExchangeMethodRegularSepa": "Звичайна СПА",
   "addressViewTransactions": "Твитнуть",
   "importQrDeviceKruxStep3": "Натисніть XPUB - QR-код",

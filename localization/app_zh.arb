@@ -38,7 +38,7 @@
   "exchangeDcaUnableToGetConfig": "无法获得发展中国家的组合",
   "psbtFlowClickScan": "浮雕",
   "sellInstitutionNumber": "机构数目",
-  "mempoolSettingsCustomServer": "海关服务器",
+  "mempoolSettingsCustomServer": "自定义服务器",
   "fundExchangeMethodRegularSepa": "SEPA",
   "addressViewTransactions": "交易",
   "fundExchangeSinpeLabelPhone": "电话号码",

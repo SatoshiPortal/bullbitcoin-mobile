@@ -122,7 +122,7 @@
   "mempoolSettingsTitle": "Mempool Server",
   "mempoolSettingsDescription": "Configurez des serveurs mempool personnalisés pour différents réseaux. Chaque réseau peut utiliser son propre serveur pour l'explorateur de blocs et l'estimation des frais.",
   "mempoolSettingsDefaultServer": "Default Server",
-  "mempoolSettingsCustomServer": "Custom Server",
+  "mempoolSettingsCustomServer": "Serveur personnalisé",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",

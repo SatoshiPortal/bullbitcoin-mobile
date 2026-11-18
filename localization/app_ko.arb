@@ -122,7 +122,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "주문 서버",
+  "mempoolSettingsCustomServer": "사용자 지정 서버",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },

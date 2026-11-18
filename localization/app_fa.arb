@@ -1048,7 +1048,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Custom Server",
+  "mempoolSettingsCustomServer": "سرور سفارشی",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },

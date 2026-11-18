@@ -118,7 +118,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "خادم الجمارك",
+  "mempoolSettingsCustomServer": "خادم مخصص",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },

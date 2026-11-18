@@ -84,7 +84,7 @@
   "mempoolSettingsTitle": "Mempool Server",
   "mempoolSettingsDescription": "Määritä mukautettuja mempool-palvelimia eri verkoille. Jokainen verkko voi käyttää omaa palvelintaan lohkoselainta ja maksuarviointia varten.",
   "mempoolSettingsDefaultServer": "Default Server",
-  "mempoolSettingsCustomServer": "Custom Server",
+  "mempoolSettingsCustomServer": "Mukautettu palvelin",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",

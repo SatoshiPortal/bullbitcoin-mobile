@@ -98,7 +98,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Custom Server",
+  "mempoolSettingsCustomServer": "Προσαρμοσμένος διακομιστής",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },
