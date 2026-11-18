@@ -368,6 +368,17 @@ const _unresolvedSensitiveMembers = {
   'createFromSeed',
   'createFromSeedWithScanRuntime',
   'deriveSpAddressFromSeed',
+  // Secret's internal members that hand back or use key material: a dynamic
+  // call reaches them without the analyzer seal ever seeing it.
+  'revealMnemonic',
+  'bip85Hex',
+  'bip85Mnemonic',
+  'swapKey',
+  'signPsbt',
+  'signPset',
+  'silentPaymentsAccount',
+  'backupRecoverbull',
+  'restoreRecoverbull',
 };
 
 const _bridgeLibrary = 'package:rust_bindings/src/rust/frb_generated.dart';
