@@ -28,8 +28,12 @@ class SetSwapServerUsecase {
   @useResult
   Future<Result<SwapServer, SwapFailure>> execute(String input) async {
     try {
-      final isTestnet =
-          !(await _settingsRepository.fetch()).environment.isMainnet;
+      final environment =
+          (await _settingsRepository.fetch()).environment.networkEnv;
+      if (environment == NetworkEnv.regtest) {
+        return const Err(SwapUnsupportedNetworkFailure());
+      }
+      final isTestnet = environment == NetworkEnv.testnet;
       final server = SwapServer.parse(input, isTestnet: isTestnet);
       if (server == null) {
         return const Err(
@@ -55,7 +59,7 @@ class SetSwapServerUsecase {
       }
       await _swapServerSettingRepository.save(server, isTestnet: isTestnet);
       return switch (await _swapEngineSwitcher.rebuild(
-        isTestnet: isTestnet,
+        environment: environment,
         waitForCompletion: true,
       )) {
         Ok() => Ok(server),

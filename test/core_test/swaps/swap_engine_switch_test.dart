@@ -23,8 +23,9 @@ class _Engine {
   final boltz = _MockBoltz();
   final updates = StreamController<Swap>.broadcast();
 
-  _Engine({required bool isTestnet}) {
-    when(() => boltz.isTestnet).thenReturn(isTestnet);
+  _Engine({required NetworkEnv environment}) {
+    when(() => boltz.isTestnet).thenReturn(environment == NetworkEnv.testnet);
+    when(() => boltz.environment).thenReturn(environment);
     when(() => boltz.updates).thenAnswer((_) => updates.stream);
     when(() => boltz.close()).thenAnswer((_) async => boltz.dispose());
     when(() => store.ongoing()).thenAnswer((_) async => const Ok([]));
@@ -47,8 +48,8 @@ Swap _swap(String id) => Swap.lnReceive(
 void main() {
   group('SwitchableSwapEngine', () {
     test('forwards to the current engine and moves on replace', () async {
-      final mainnet = _Engine(isTestnet: false);
-      final testnet = _Engine(isTestnet: true);
+      final mainnet = _Engine(environment: NetworkEnv.mainnet);
+      final testnet = _Engine(environment: NetworkEnv.testnet);
       final repository = SwitchableSwapEngine(mainnet.parts);
       final seen = <String>[];
       final sub = repository.updates.listen((swap) => seen.add(swap.id));
@@ -80,12 +81,12 @@ void main() {
     late _MockSettingsRepository settingsRepository;
     late _MockSwapWatcher watcher;
     late StreamController<settings.Environment> environments;
-    late List<bool> builds;
+    late List<NetworkEnv> builds;
     late SwapEngineSwitcher switcher;
 
     setUp(() {
-      mainnet = _Engine(isTestnet: false);
-      testnet = _Engine(isTestnet: true);
+      mainnet = _Engine(environment: NetworkEnv.mainnet);
+      testnet = _Engine(environment: NetworkEnv.testnet);
       repository = SwitchableSwapEngine(mainnet.parts);
       settingsRepository = _MockSettingsRepository();
       watcher = _MockSwapWatcher();
@@ -101,9 +102,11 @@ void main() {
         settingsRepository: settingsRepository,
         engine: repository,
         swapWatcher: watcher,
-        build: ({required isTestnet}) async {
-          builds.add(isTestnet);
-          return isTestnet ? testnet.parts : mainnet.parts;
+        build: ({required environment}) async {
+          builds.add(environment);
+          return environment == NetworkEnv.testnet
+              ? testnet.parts
+              : mainnet.parts;
         },
       );
       switcher.start();
@@ -118,7 +121,7 @@ void main() {
       environments.add(settings.Environment.testnet);
       await pumpEventQueue();
 
-      expect(builds, [true]);
+      expect(builds, [NetworkEnv.testnet]);
       expect(repository.isTestnet, isTrue);
       verifyInOrder([() => watcher.stop(), () => watcher.start()]);
     });
@@ -133,11 +136,11 @@ void main() {
 
     test('queued rebuilds skip targets superseded before admission', () async {
       await Future.wait([
-        switcher.rebuild(isTestnet: true),
-        switcher.rebuild(isTestnet: false),
+        switcher.rebuild(environment: NetworkEnv.testnet),
+        switcher.rebuild(environment: NetworkEnv.mainnet),
       ]);
 
-      expect(builds, [false]);
+      expect(builds, [NetworkEnv.mainnet]);
       expect(repository.isTestnet, isFalse);
     });
 
@@ -148,10 +151,10 @@ void main() {
           settingsRepository: settingsRepository,
           engine: repository,
           swapWatcher: watcher,
-          build: ({required isTestnet}) async => throw Exception('boom'),
+          build: ({required environment}) async => throw Exception('boom'),
         );
 
-        final result = await failing.rebuild(isTestnet: true);
+        final result = await failing.rebuild(environment: NetworkEnv.testnet);
 
         expect(result, isA<Err<void, SwapsFailure>>());
         expect(repository.isTestnet, isFalse);

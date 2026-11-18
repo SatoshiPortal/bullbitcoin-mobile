@@ -26,6 +26,57 @@ final class BuiltTransaction {
     : inputs = List.unmodifiable(inputs);
 }
 
+/// Funding must retain its unsigned txid through external signing. Refuse
+/// scriptSig-bearing inputs, missing witness prevouts and any signed/finalised
+/// PSBT input. This is checked on actual native output, not caller metadata.
+bool isUnfinalisedNativeSegwitFunding(BuiltTransaction built) {
+  bdk.Psbt? psbt;
+  try {
+    psbt = bdk.Psbt(psbtBase64: built.encoded);
+    final decoded = decodeNativePsbt(psbt);
+    final inputs = psbt.input();
+    try {
+      if (inputs.isEmpty ||
+          inputs.length != built.inputs.length ||
+          decoded.inputs.length != built.inputs.length) {
+        return false;
+      }
+      for (var index = 0; index < inputs.length; index++) {
+        final input = inputs[index];
+        final script = input.witnessUtxo?.scriptPubkey.toBytes();
+        if (script == null ||
+            script.length != 22 ||
+            script[0] != 0 ||
+            script[1] != 20 ||
+            input.redeemScript != null ||
+            input.finalScriptSig != null ||
+            input.finalScriptWitness != null ||
+            input.partialSigs.isNotEmpty ||
+            input.tapKeySig != null ||
+            input.tapScriptSigs.isNotEmpty ||
+            decoded.inputs[index] != built.inputs[index] ||
+            decoded.inputDetails[index].scriptSig.isNotEmpty) {
+          return false;
+        }
+      }
+      return true;
+    } finally {
+      for (final input in inputs) {
+        input.nonWitnessUtxo?.dispose();
+        input.witnessUtxo?.scriptPubkey.dispose();
+        input.witnessUtxo?.value.dispose();
+        input.redeemScript?.dispose();
+        input.witnessScript?.dispose();
+        input.finalScriptSig?.dispose();
+      }
+    }
+  } on Exception {
+    return false;
+  } finally {
+    psbt?.dispose();
+  }
+}
+
 /// Thrown by a native spend to end the command with [failure].
 final class SpendRefusal implements Exception {
   final SyncFailure failure;

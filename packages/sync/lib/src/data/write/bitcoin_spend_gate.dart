@@ -43,6 +43,7 @@ final class BitcoinSpendGate {
     WalletKey key, {
     String? replacing,
     bool handoff = false,
+    LeaseDiagnostics? diagnostics,
   }) async {
     if (key.network is! BitcoinNetwork) {
       return const BitcoinSpendRefused(BitcoinSpendStatus.unavailable);
@@ -50,10 +51,9 @@ final class BitcoinSpendGate {
     final acquired = await WriterLock.acquireWriter(
       documentsDirectory,
       key,
-      diagnostics: LeaseDiagnostics(
-        role: LeaseRole.writer,
-        intent: LeaseIntent.sync,
-      ),
+      diagnostics:
+          diagnostics ??
+          LeaseDiagnostics(role: LeaseRole.writer, intent: LeaseIntent.sync),
     );
     if (acquired case Err(:final failure)) {
       // Contention says nothing about the wallet's payments.

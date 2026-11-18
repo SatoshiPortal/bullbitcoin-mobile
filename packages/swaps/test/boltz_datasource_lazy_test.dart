@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:swaps/src/data/boltz_api.dart';
 import 'package:swaps/src/data/swap_storage.dart';
 import 'package:mocktail/mocktail.dart';
@@ -12,6 +13,7 @@ void main() {
     var webSocketCreations = 0;
 
     BoltzDatasource(
+      environment: NetworkEnv.mainnet,
       url: 'api.boltz.exchange/v2',
       boltzStore: SwapStorage(
         rows: _MockRowStore(),

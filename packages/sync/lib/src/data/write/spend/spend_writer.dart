@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../../domain/bitcoin_spend.dart';
 import '../../../domain/ports/input_reservation_port.dart';
+import '../../../domain/ports/funding_reservation_port.dart';
+import '../../../domain/native_network_policy.dart';
 import '../../../domain/ports/wallet_connection_port.dart';
 import '../../../domain/public_wallet_descriptor.dart';
 import '../../../domain/spend.dart';
@@ -17,6 +20,7 @@ import '../../bitcoin_transaction_decoder.dart';
 import '../../chain/electrum_chain.dart';
 import '../../datasources/revision_store_datasource.dart';
 import '../../freeze_authority.dart';
+import '../../lease_diagnostics.dart';
 import '../bitcoin_spend_gate.dart';
 import '../writer_session.dart';
 import 'native_spend.dart';
@@ -36,6 +40,12 @@ abstract interface class WalletSpender {
     int generation,
     SpendRequest request,
   );
+  Future<Result<UnsignedSpend, SyncFailure>> prepareFunding(
+    WalletKey key,
+    int generation,
+    BitcoinSpendRequest request, {
+    required String context,
+  });
   Future<Result<UnsignedSpend, SyncFailure>> bump(
     WalletKey key,
     int generation,
@@ -127,12 +137,13 @@ final class SpendWriter implements WalletSpender {
   final BitcoinSpendGate _gate;
   final FreezeAuthority _freezes;
   final InputReservationPort _reservations;
+  final FundingReservationPort? _fundingReservations;
   final NativeSpendSessions _natives;
   final SpendTransport _send;
   final bool Function() _closed;
   final Map<WalletKey, _ReadinessCell> _readiness = {};
 
-  /// The guard requests in flight, awaited by [close].
+  /// Guard requests and funding commands in flight, awaited by [close].
   final Set<Future<void>> _requests = {};
   late final StreamSubscription<WalletRevisionState> _changes;
 
@@ -141,6 +152,7 @@ final class SpendWriter implements WalletSpender {
     required this._gate,
     required this._freezes,
     required this._reservations,
+    this._fundingReservations,
     required this._natives,
     required this._send,
     required this._closed,
@@ -282,37 +294,12 @@ final class SpendWriter implements WalletSpender {
         final BitcoinSpendRequest request,
       ):
         await _admitBitcoin(key);
-        final policy = await _policy(key, request.owner);
-        if (request.selected case final selected?) {
-          if (policy.check(selected, exempt: policy.owned) case final hit?) {
-            throw WriterRefusal(hit);
-          }
-        }
-        final excluded = {...policy.excluded, ...request.exclude};
-        final built = await _command(
+        return _buildBitcoin(
           key,
           record,
-          () => _natives.bitcoin(bitcoin),
-          (native) async {
-            final built = native.build(request, excluded);
-            if (policy.check(built.inputs, exempt: policy.owned)
-                case final hit?) {
-              throw SpendRefusal(hit);
-            }
-            if (built.inputs.any(request.exclude.contains) ||
-                !native.paysAsRequested(built.encoded, request)) {
-              throw const SpendRefusal(SyncSpendRefusedFailure());
-            }
-            return built;
-          },
-          persist: (native) => native.persist(),
-          close: (native) => native.close(),
-        );
-        return UnsignedSpend(
-          revision: _committed(key),
-          encoded: built.encoded,
-          inputs: built.inputs,
-          owner: request.owner,
+          bitcoin,
+          request,
+          await _policy(key, request.owner),
         );
       case (
         final LiquidWalletDescriptor liquid,
@@ -364,6 +351,178 @@ final class SpendWriter implements WalletSpender {
         throw const WriterRefusal(SyncUnsupportedNetworkFailure());
     }
   });
+
+  /// The durable native stage shared by ordinary builds and funding. It
+  /// assumes the caller already owns the wallet writer lease and policy.
+  Future<UnsignedSpend> _buildBitcoin(
+    WalletKey key,
+    RevisionRecord record,
+    BitcoinWalletDescriptor descriptor,
+    BitcoinSpendRequest request,
+    _Policy policy, {
+    bool funding = false,
+  }) async {
+    if (request.selected case final selected?) {
+      if (policy.check(selected, exempt: policy.owned) case final hit?) {
+        throw WriterRefusal(hit);
+      }
+    }
+    final excluded = {...policy.excluded, ...request.exclude};
+    final built = await _command(
+      key,
+      record,
+      () => _natives.bitcoin(descriptor),
+      (native) async {
+        final built = native.build(request, excluded);
+        if (policy.check(built.inputs, exempt: policy.owned) case final hit?) {
+          throw SpendRefusal(hit);
+        }
+        if (built.inputs.any(request.exclude.contains) ||
+            !native.paysAsRequested(built.encoded, request)) {
+          throw const SpendRefusal(SyncSpendRefusedFailure());
+        }
+        if (funding) {
+          final selected = request.selected;
+          if (built.inputs.isEmpty ||
+              built.inputs.toSet().length != built.inputs.length ||
+              (request.selectedOnly &&
+                  (selected == null ||
+                      selected.isEmpty ||
+                      selected.toSet().length != selected.length ||
+                      built.inputs.length != selected.length ||
+                      !built.inputs.toSet().containsAll(selected))) ||
+              !isUnfinalisedNativeSegwitFunding(built)) {
+            throw const SpendRefusal(SyncInvalidTransactionFailure());
+          }
+        }
+        return built;
+      },
+      persist: (native) => native.persist(),
+      close: (native) => native.close(),
+    );
+    return UnsignedSpend(
+      revision: _committed(key),
+      encoded: built.encoded,
+      inputs: built.inputs,
+      owner: request.owner,
+    );
+  }
+
+  @override
+  Future<Result<UnsignedSpend, SyncFailure>> prepareFunding(
+    WalletKey key,
+    int generation,
+    BitcoinSpendRequest request, {
+    required String context,
+  }) {
+    // close() must await funding too: its stores cannot be disposed while
+    // an admitted reservation is still completing.
+    final operation = _prepareFunding(key, generation, request, context).then((
+      result,
+    ) {
+      if (result case Err(:final failure)) {
+        _session.reportSpendFailure(key, failure);
+      } else {
+        _session.reportSpendSuccess(key);
+      }
+      return result;
+    });
+    late final Future<void> tracked;
+    tracked = operation
+        .then<void>((_) {}, onError: (Object _, StackTrace _) {})
+        .whenComplete(() => _requests.remove(tracked));
+    _requests.add(tracked);
+    return operation;
+  }
+
+  Future<Result<UnsignedSpend, SyncFailure>> _prepareFunding(
+    WalletKey key,
+    int generation,
+    BitcoinSpendRequest request,
+    String context,
+  ) async {
+    if (_closed()) return const Err(SyncClosedFailure());
+    final funding = _fundingReservations;
+    if (funding == null) return const Err(SyncSpendRefusedFailure());
+    if (nativeKeyFailure(key) case final failure?) return Err(failure);
+    if (key.network is! BitcoinNetwork) {
+      return const Err(SyncUnsupportedNetworkFailure());
+    }
+    if (request.owner == null ||
+        context.isEmpty ||
+        context.length > 4096 ||
+        utf8.encode(context).length > 4096 ||
+        (request.selectedOnly &&
+            (request.selected == null || request.selected?.isEmpty == true))) {
+      return const Err(SyncSpendRefusedFailure());
+    }
+    final admission = await _gate.acquire(
+      key,
+      diagnostics: LeaseDiagnostics(
+        role: LeaseRole.writer,
+        intent: LeaseIntent.spend,
+        scope: _session.leaseScope,
+        sink: _session.diagnostics,
+      ),
+    );
+    if (admission case BitcoinSpendRefused(:final status)) {
+      return Err(
+        status == BitcoinSpendStatus.busy
+            ? const SyncBusyFailure()
+            : SyncSpendBlockedFailure(status),
+      );
+    }
+    final lease = admission as BitcoinSpendAdmission;
+    try {
+      if (_closed()) return const Err(SyncClosedFailure());
+      if (lease.revision.generation != generation) {
+        return const Err(SyncNotFoundFailure());
+      }
+      final record = _session.active(key, generation);
+      final descriptor = await _session.descriptor(key);
+      if (descriptor is! BitcoinWalletDescriptor ||
+          descriptor.scriptType != ScriptType.bip84 ||
+          !descriptor.externalDescriptor.startsWith('wpkh(') ||
+          !descriptor.internalDescriptor.startsWith('wpkh(')) {
+        return const Err(SyncSpendRefusedFailure());
+      }
+      // Same lock order as broadcast. Never call _policy(), build(),
+      // WriterSession.run() or another freeze read inside this callback.
+      return await _freezes.guard((frozen) async {
+        final policy = await _policyWith(key, request.owner, frozen);
+        final spend = await _buildBitcoin(
+          key,
+          record,
+          descriptor,
+          request,
+          policy,
+          funding: true,
+        );
+        WriterSession.value(
+          await funding.reserve(key: key, spend: spend, context: context),
+        );
+        // External protocols can publish a reservation without taking our
+        // writer lease. A late overlap must refuse hand-out, retaining both
+        // durable obligations for host reconciliation.
+        final reserved = await _policyWith(key, request.owner, frozen);
+        if (reserved.check(spend.inputs, exempt: reserved.owned)
+            case final hit?) {
+          throw WriterRefusal(hit);
+        }
+        if (!reserved.owned.containsAll(spend.inputs)) {
+          throw const WriterRefusal(SyncSpendRefusedFailure());
+        }
+        return spend;
+      });
+    } on Exception catch (error) {
+      return Err(WriterSession.mapFailure(error));
+    } finally {
+      lease.close();
+      if (_readiness[key] case final cell?) {
+        _refresh(key, cell);
+      }
+    }
+  }
 
   List<Outpoint> _liquidInputs(String pset) => _natives.psetInputs(pset);
 

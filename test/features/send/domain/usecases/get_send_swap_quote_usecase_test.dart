@@ -18,65 +18,73 @@ void main() {
     usecase = GetSendSwapQuoteUsecase(swapFacade);
   });
 
-  test('regtest refuses before requesting a remote quote', () async {
-    final result = await usecase.execute(
-      wallet: _wallet(Network.bitcoinRegtest),
-      amountSat: BigInt.from(1000),
-    );
-    expect(
-      result,
-      isA<Err>().having(
-        (result) => result.failure,
-        'failure',
-        isA<SendSwapRouteUnavailableFailure>(),
-      ),
-    );
-    verifyZeroInteractions(swapFacade);
-  });
-
-  test(
-    'requests only the selected wallet route in output-fixed mode',
-    () async {
-      when(
-        () => swapFacade.getQuote(
-          environment: OrderSwapEnvironment.testnet,
-          amountSat: BigInt.from(1000),
-          isInAmountFixed: false,
-          inNetwork: OrderSwapNetwork.bitcoin,
-          outNetwork: OrderSwapNetwork.lightning,
-        ),
-      ).thenAnswer(
-        (_) async => Ok(
-          OrderSwapQuote(
-            inAmountSat: BigInt.from(1010),
-            outAmountSat: BigInt.from(1000),
-            inNetwork: OrderSwapNetwork.bitcoin,
-            outNetwork: OrderSwapNetwork.lightning,
-            inCurrency: 'BTC',
-            outCurrency: 'BTCLN',
-            feeBasisPoints: 100,
-            warnings: const [],
-          ),
-        ),
-      );
-
+  for (final network in [Network.bitcoinRegtest, Network.liquidRegtest]) {
+    test('$network refuses before requesting a remote quote', () async {
       final result = await usecase.execute(
-        wallet: _wallet(Network.bitcoinTestnet),
+        wallet: _wallet(network),
         amountSat: BigInt.from(1000),
       );
-
-      expect(result, isA<Ok<OrderSwapQuote, SendFailure>>());
-      verify(
-        () => swapFacade.getQuote(
-          environment: OrderSwapEnvironment.testnet,
-          amountSat: BigInt.from(1000),
-          isInAmountFixed: false,
-          inNetwork: OrderSwapNetwork.bitcoin,
-          outNetwork: OrderSwapNetwork.lightning,
+      expect(
+        result,
+        isA<Err>().having(
+          (result) => result.failure,
+          'failure',
+          isA<SendSwapRouteUnavailableFailure>(),
         ),
-      ).called(1);
-    },
-  );
+      );
+      verifyZeroInteractions(swapFacade);
+    });
+  }
+
+  for (final isTestnet in [false, true]) {
+    final environment = isTestnet
+        ? OrderSwapEnvironment.testnet
+        : OrderSwapEnvironment.mainnet;
+    final network = isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet;
+    test(
+      '$environment requests only the selected wallet route in output-fixed mode',
+      () async {
+        when(
+          () => swapFacade.getQuote(
+            environment: environment,
+            amountSat: BigInt.from(1000),
+            isInAmountFixed: false,
+            inNetwork: OrderSwapNetwork.bitcoin,
+            outNetwork: OrderSwapNetwork.lightning,
+          ),
+        ).thenAnswer(
+          (_) async => Ok(
+            OrderSwapQuote(
+              inAmountSat: BigInt.from(1010),
+              outAmountSat: BigInt.from(1000),
+              inNetwork: OrderSwapNetwork.bitcoin,
+              outNetwork: OrderSwapNetwork.lightning,
+              inCurrency: 'BTC',
+              outCurrency: 'BTCLN',
+              feeBasisPoints: 100,
+              warnings: const [],
+            ),
+          ),
+        );
+
+        final result = await usecase.execute(
+          wallet: _wallet(network),
+          amountSat: BigInt.from(1000),
+        );
+
+        expect(result, isA<Ok<OrderSwapQuote, SendFailure>>());
+        verify(
+          () => swapFacade.getQuote(
+            environment: environment,
+            amountSat: BigInt.from(1000),
+            isInAmountFixed: false,
+            inNetwork: OrderSwapNetwork.bitcoin,
+            outNetwork: OrderSwapNetwork.lightning,
+          ),
+        ).called(1);
+      },
+    );
+  }
 
   test('preserves an API minimum in the Send failure family', () async {
     when(

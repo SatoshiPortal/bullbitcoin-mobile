@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:bb_mobile/features/receive/domain/extensions/wallet_receive_extensions.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
@@ -45,7 +46,9 @@ void main() {
         final selected = wallet(network, signer: signer);
         final expected = switch ((network, signer)) {
           (
-            Network.liquidMainnet || Network.liquidTestnet,
+            Network.liquidMainnet ||
+                Network.liquidTestnet ||
+                Network.liquidRegtest,
             SignerEntity.local,
           ) =>
             ReceiveNetworkType.lightning,
@@ -86,13 +89,20 @@ void main() {
       tester.element(find.byType(ReceiveNetworkSelection)),
     );
     final selector = tester.widget<BullSegmented>(find.byType(BullSegmented));
-    expect(selector.items, {loc.receiveLiquid});
-    expect(selector.initialValue, loc.receiveLiquid);
-    expect(find.text(loc.receiveLightning), findsNothing);
+    expect(selector.items, {loc.receiveLightning, loc.receiveLiquid});
+    expect(selector.initialValue, loc.receiveLightning);
+    expect(find.text(loc.receiveLightning), findsOneWidget);
+    expect(
+      primitives.NetworkCapabilities.supports(
+        primitives.LiquidNetwork.regtest,
+        primitives.NetworkCapability.exchange,
+      ),
+      isFalse,
+    );
   });
 
   testWidgets(
-    'Liquid regtest Receive button opens the Liquid route with its wallet',
+    'Liquid regtest Receive button opens the Boltz Lightning route with its wallet',
     (tester) async {
       final selected = wallet(Network.liquidRegtest);
       Object? received;
@@ -107,15 +117,16 @@ void main() {
             path: '/liquid',
             name: ReceiveRoute.receiveLiquid.name,
             builder: (_, state) {
-              received = state.extra;
               return const Scaffold(body: Text('Liquid route'));
             },
           ),
           GoRoute(
             path: '/lightning',
             name: ReceiveRoute.receiveLightning.name,
-            builder: (_, _) =>
-                const Scaffold(body: Text('Wrong Lightning route')),
+            builder: (_, state) {
+              received = state.extra;
+              return const Scaffold(body: Text('Lightning route'));
+            },
           ),
         ],
       );
@@ -134,7 +145,8 @@ void main() {
       );
       await tester.tap(find.text(loc.walletButtonReceive));
       await tester.pumpAndSettle();
-      expect(find.text('Liquid route'), findsOneWidget);
+      expect(find.text('Lightning route'), findsOneWidget);
+      expect(find.text('Liquid route'), findsNothing);
       expect(received, same(selected));
       expect(tester.takeException(), isNull);
     },
@@ -164,12 +176,7 @@ void main() {
       final selection = tester.widget<BullSegmented>(
         find.byType(BullSegmented),
       );
-      expect(
-        selection.items,
-        network == Network.bitcoinRegtest
-            ? {loc.receiveBitcoin}
-            : {loc.receiveBitcoin, loc.receiveLightning},
-      );
+      expect(selection.items, {loc.receiveBitcoin, loc.receiveLightning});
     });
   }
   for (final network in [
@@ -226,19 +233,13 @@ void main() {
         final loc = AppLocalizations.of(
           tester.element(find.byType(ReceiveScaffold)),
         );
-        expect(
-          selection.items,
-          // Regtest has no swaps, so no Lightning; Home still offers Liquid.
-          network == Network.bitcoinRegtest
-              ? {loc.receiveBitcoin, if (fromHome) loc.receiveLiquid}
-              : {
-                  loc.receiveBitcoin,
-                  loc.receiveLightning,
-                  if (fromHome) loc.receiveLiquid,
-                },
-        );
+        expect(selection.items, {
+          loc.receiveBitcoin,
+          loc.receiveLightning,
+          if (fromHome) loc.receiveLiquid,
+        });
         if (fromHome) expect(loadingModes, isEmpty);
-        if (network != Network.bitcoinRegtest) {
+        {
           // Lightning's settlement wallet must not change the entry's modes.
           final liquid = Network.fromEnvironment(
             environment: network.environment,

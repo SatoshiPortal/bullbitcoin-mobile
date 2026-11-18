@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
+
 import 'dart:async';
 import 'dart:io';
 
@@ -45,7 +47,7 @@ void main() {
       final provider = BoltzSwapRepository.connect(
         url: 'http://127.0.0.1:${server.port}',
         storage: storage,
-        isTestnet: true,
+        environment: NetworkEnv.testnet,
         electrum: ReproElectrumBackend(),
         lockupChain: chain,
         newAddressFor: (_) async => throw StateError('No address needed'),
@@ -54,12 +56,15 @@ void main() {
         fastestFee: ({
           required txSize,
           required isLiquid,
-          required isTestnet,
+          required environment,
         }) async => 1,
-        wallets: ({required isTestnet}) async => const [],
-        swapMasterKeySource: ({required isTestnet}) async => null,
+        wallets: ({required environment}) async => const [],
+        swapMasterKeySource: ({required environment}) async => null,
       );
-      final store = SwapStoreImpl(storage: storage, isTestnet: true);
+      final store = SwapStoreImpl(
+        storage: storage,
+        environment: NetworkEnv.testnet,
+      );
       final watcher = SwapWatcher(
         store: store,
         resolvers: {SwapProvider.boltz: provider},

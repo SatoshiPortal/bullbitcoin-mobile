@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/data/sqlite_parent_custody_admission.dart';
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/background_wallet_sync_impl.dart';
 
@@ -221,7 +222,13 @@ void main() {
           expect(
             await DeleteWalletUsecase(
               walletRepository: guardedRepository,
-              seedReferences: SeedReferences(guardedRepository),
+              seedReferences: SeedReferences(
+                guardedRepository,
+                admission: SqliteParentCustodyAdmission(
+                  directory: () async => directory.path,
+                  mayCreate: true,
+                ),
+              ),
               swapStore: swaps,
               secrets: secrets,
             ).execute(walletId: id),
@@ -230,7 +237,13 @@ void main() {
         } else {
           final result = await DeleteSecretUsecase(
             secrets: secrets,
-            seedReferences: SeedReferences(guardedRepository),
+            seedReferences: SeedReferences(
+              guardedRepository,
+              admission: SqliteParentCustodyAdmission(
+                directory: () async => directory.path,
+                mayCreate: true,
+              ),
+            ),
           ).execute(secret.value.id);
           expect(result, isA<Err>());
         }

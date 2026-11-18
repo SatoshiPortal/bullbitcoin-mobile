@@ -11,3 +11,8 @@ final class AllSeedViewFetchFailure extends AllSeedViewFailure {
 final class AllSeedViewDeleteFailure extends AllSeedViewFailure {
   const AllSeedViewDeleteFailure([super.logMessage]);
 }
+
+/// Missing or corrupt durable custody state requires explicit repair.
+final class AllSeedViewCustodyMetadataFailure extends AllSeedViewFailure {
+  const AllSeedViewCustodyMetadataFailure();
+}

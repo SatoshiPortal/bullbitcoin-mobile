@@ -1,12 +1,11 @@
+import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullDropdown, BullPickerItem, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem, Gap;
 
 class BuyDestinationInputFields extends StatefulWidget {
   const BuyDestinationInputFields({super.key});
@@ -17,32 +16,12 @@ class BuyDestinationInputFields extends StatefulWidget {
 }
 
 class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
-  late TextEditingController _bitcoinAddressInputController;
+  String _addressInput = '';
 
   @override
   void initState() {
-    final bitcoinAddressInput = context
-        .read<BuyBloc>()
-        .state
-        .bitcoinAddressInput;
-    _bitcoinAddressInputController = TextEditingController(
-      text: bitcoinAddressInput,
-    );
-    _bitcoinAddressInputController.addListener(() {
-      context.read<BuyBloc>().add(
-        BuyEvent.bitcoinAddressInputChanged(
-          _bitcoinAddressInputController.text,
-        ),
-      );
-    });
-
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _bitcoinAddressInputController.dispose();
-    super.dispose();
+    _addressInput = context.read<BuyBloc>().state.bitcoinAddressInput;
   }
 
   @override
@@ -91,49 +70,19 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
         // bitcoin address manually.
         if (isStarted && selectedWallet == null) ...[
           const Gap(16.0),
-          Text(
-            context.loc.buyEnterBitcoinAddress,
-            style: context.font.bodyMedium,
-          ),
-          const Gap(4.0),
-          SizedBox(
-            height: 56,
-            child: Material(
-              elevation: 2,
-              color: context.appColors.onSecondary,
-              borderRadius: BorderRadius.circular(context.bullShapes.input),
-              child: Center(
-                child: TextFormField(
-                  controller: _bitcoinAddressInputController,
-                  textAlignVertical: TextAlignVertical.center,
-                  style: context.font.headlineSmall?.copyWith(
-                    color: context.appColors.secondary,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: context.loc.buyBitcoinAddressHint,
-                    hintStyle: context.font.headlineSmall?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        Icons.paste,
-                        color: context.appColors.secondary,
-                      ),
-                      onPressed: () {
-                        Clipboard.getData(Clipboard.kTextPlain).then((value) {
-                          if (value?.text != null) {
-                            _bitcoinAddressInputController.text = value!.text!;
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
+          PaymentDestinationField(
+            value: _addressInput,
+            label: context.loc.buyEnterBitcoinAddress,
+            hint: context.loc.buyBitcoinAddressHint,
+            acceptedTypes: const {PaymentDestinationType.bitcoin},
+            onChanged: (value) {
+              setState(() => _addressInput = value);
+              context.read<BuyBloc>().add(
+                const BuyEvent.bitcoinAddressInputChanged(''),
+              );
+            },
+            onValidated: (destination) => context.read<BuyBloc>().add(
+              BuyEvent.bitcoinAddressInputChanged(destination?.address ?? ''),
             ),
           ),
         ],

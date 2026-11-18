@@ -1,3 +1,6 @@
+import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+export 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
+
 export '../domain/wallet_spend_failure.dart';
 
 export 'package:bb_mobile/features/wallet/domain/seed_reference_port.dart'
@@ -45,6 +48,22 @@ export '../background_setup.dart'
 
 /// Wallet-owned invalidations. A revision is not a successful network sync.
 final class WalletFacade {
+  final Future<Result<String, WalletFailure>> Function(
+    String, {
+    Set<String> excludedAddresses,
+  })?
+  _nextReceiveAddress;
+
+  Future<Result<String, WalletFailure>> nextReceiveAddress(
+    String walletId, {
+    Set<String> excludedAddresses = const {},
+  }) async =>
+      _nextReceiveAddress?.call(
+        walletId,
+        excludedAddresses: excludedAddresses,
+      ) ??
+      const Err(WalletStorageFailure('receive capability unavailable'));
+
   final Future<BitcoinSpendStatus> Function(String, {String? replacing})?
   _spendStatus;
   final BroadcastSpend? _broadcastSpend;
@@ -59,6 +78,7 @@ final class WalletFacade {
   final bool Function()? _isSyncPassActive;
   const WalletFacade(
     this._revisions, {
+    this._nextReceiveAddress,
     this._spendStatus,
     this._broadcastSpend,
     this._protectObservedSpend,

@@ -4,6 +4,14 @@ User secret material — BIP39 mnemonics and raw seeds — behind a custody boun
 
 Custody owners implement the public `SeedReferencePort`; the application registers every owner before exposing deletion and refuses deletion if any inventory fails or is incomplete.
 
+`ParentCustodyAdmissionPort` is the host's cross-process admission contract for publishing a parent-seed obligation and checking/deleting an unreferenced parent. Secrets supplies the contract only; the wallet owner supplies persistence and policy. Its scoped `ParentCustodyLease` reads `ready`, `deleting` or `deleted`, and commits deletion state independently of the exclusion lease. A callback must publish its durable obligation before returning; fetching a handle alone does not protect a seed. Lease methods refuse use after the callback ends, and an admission budget never truncates admitted work.
+
+The wallet's manual deletion and orphan cleanup both hold this admission through complete reference inventory and `Secrets.trash`. A deletion interrupted after the durable `deleting` marker remains blocked for automatic cleanup. A new explicit foreground deletion request reconciles the parent with `Secrets.fetch` and complete owner inventory under the same admission; it can complete a deletion already performed or delete a reimported, unreferenced parent. An unreadable parent is never treated as absent. These host guarantees do not change `Secrets.trash`, which remains unconditional and knows nothing of wallets.
+
+Explicit mnemonic import learns the parent identity, takes the same admission, re-fetches the seed inside it, derives and publishes the durable wallet catalog/native state, then calls `reconcilePresent`. This deliberate foreground action can clear `deleting` or `deleted`; a missing seed refuses publication. The admission ends before balance reads or network synchronization. Default-wallet creation and startup recovery retain their existing paths; admission protects cooperating publishers rather than claiming to serialize every legacy creator.
+
+`ParentCustodyMetadataFailure` means expected durable state is missing, malformed or incompatible. Import and manual seed deletion refuse with a localized security-metadata message; neither reconstructs `ready` automatically. An explicit foreground repair using a fresh seed read and complete owner inventory remains a follow-up. Other keystore/admission failures remain typed refusals. Tests use injected cutpoints for Dart deletion crash windows; the Python3 child terminated by SIGKILL proves SQLite cross-process exclusion and committed tombstone persistence, not termination of the Dart deletion usecase. Isolate-termination coverage is separately identified.
+
 ## Public API
 
 <!-- secrets-api:start -->

@@ -18,12 +18,14 @@ class ImportWalletUsecase {
   final Secrets _secrets;
   final SettingsRepository _settingsRepository;
   final WalletRepository _wallet;
+  final ParentCustodyAdmissionPort _admission;
 
   ImportWalletUsecase({
     required this._checkDuplicateMnemonicUsecase,
     required this._secrets,
     required this._settingsRepository,
     required WalletRepository walletRepository,
+    required this._admission,
   }) : _wallet = walletRepository;
 
   @useResult
@@ -104,14 +106,26 @@ class ImportWalletUsecase {
         case Err(:final failure):
           return Err(ImportMnemonicUnexpectedFailure(failure.toString()));
       }
-      final wallet = await _wallet.createWallet(
-        secret: secret,
+      final Wallet wallet;
+      switch (await _wallet.importWallet(
+        parent: secret.id,
+        secrets: _secrets,
+        admission: _admission,
         network: bitcoinNetwork,
         scriptType: scriptType,
-        isDefault: false,
-        sync: false,
         label: label,
-      );
+      )) {
+        case Ok(:final value):
+          wallet = value;
+        case Err(failure: ParentCustodyMetadataFailure()):
+          log.warning('Wallet import refused reason=custody_metadata');
+          return const Err(ImportMnemonicCustodyMetadataFailure());
+        case Err():
+          log.warning('Wallet import refused reason=custody_unavailable');
+          return const Err(
+            ImportMnemonicUnexpectedFailure('custody unavailable'),
+          );
+      }
 
       log.fine(
         'Wallet imported language=${language.name} network=${bitcoinNetwork.name} script=${scriptType.name}',

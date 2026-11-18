@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart'
+    as settings;
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
 import 'package:bb_mobile/features/swap/domain/swap_network_policy.dart';
@@ -97,11 +99,11 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
   @override
   Future<T> run<T>({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required Future<T> Function(swaps.ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   }) => _port.runWithFallback(
-    network: _network(isLiquid: isLiquid, isTestnet: isTestnet),
+    network: _network(isLiquid: isLiquid, environment: environment),
     isTransient: isTransient,
     operation: (connection) => operation(
       swaps.ElectrumConnection(
@@ -115,11 +117,11 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
   @override
   Future<bool> usesCustomServers({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
     try {
       return await _port.hasCustomServers(
-        network: _network(isLiquid: isLiquid, isTestnet: isTestnet),
+        network: _network(isLiquid: isLiquid, environment: environment),
       );
     } on Exception {
       return true;
@@ -128,11 +130,8 @@ class AppElectrumRunner implements swaps.ElectrumRunner {
 
   ElectrumServerNetwork _network({
     required bool isLiquid,
-    required bool isTestnet,
-  }) => ElectrumServerNetwork.fromNetworkEnv(
-    isTestnet ? NetworkEnv.testnet : NetworkEnv.mainnet,
-    isLiquid: isLiquid,
-  );
+    required NetworkEnv environment,
+  }) => ElectrumServerNetwork.fromNetworkEnv(environment, isLiquid: isLiquid);
 }
 
 /// The user's own Electrum servers settling a lockup whose broadcast outcome
@@ -161,10 +160,10 @@ class AppLockupChain implements swaps.LockupChain {
     required String txid,
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
     final result = await _connections.run(
-      network: _network(isLiquid: isLiquid, isTestnet: isTestnet),
+      network: _network(isLiquid: isLiquid, environment: environment),
       operation: (connection) => isLiquid
           ? liquidTransactionKnown(txid, connection)
           : bitcoinTransactionKnown(txid, connection),
@@ -182,10 +181,10 @@ class AppLockupChain implements swaps.LockupChain {
   Future<swaps.LockupBroadcast> broadcast({
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
     void Function()? requireAdmission,
   }) async {
-    if (isTestnet) {
+    if (environment != NetworkEnv.mainnet) {
       final repository = _settingsRepository;
       if (repository == null) throw const swaps.SwapsAuthorizationFailure();
       try {
@@ -202,7 +201,7 @@ class AppLockupChain implements swaps.LockupChain {
     if (isLiquid) {
       result = await broadcastLiquidTransaction(
         signedTx,
-        network: isTestnet ? LiquidNetwork.testnet : LiquidNetwork.mainnet,
+        network: LiquidNetwork.fromName(environment.name),
         connections: _connections,
       );
     } else {
@@ -214,7 +213,7 @@ class AppLockupChain implements swaps.LockupChain {
       }
       result = await broadcastBitcoinTransaction(
         transaction,
-        network: isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet,
+        network: BitcoinNetwork.fromName(environment.name),
         connections: _connections,
       );
     }
@@ -229,32 +228,27 @@ class AppLockupChain implements swaps.LockupChain {
     };
   }
 
-  static Network _network({required bool isLiquid, required bool isTestnet}) =>
-      switch ((isLiquid, isTestnet)) {
-        (true, true) => LiquidNetwork.testnet,
-        (true, false) => LiquidNetwork.mainnet,
-        (false, true) => BitcoinNetwork.testnet,
-        (false, false) => BitcoinNetwork.mainnet,
-      };
+  static Network _network({
+    required bool isLiquid,
+    required NetworkEnv environment,
+  }) => isLiquid
+      ? LiquidNetwork.fromName(environment.name)
+      : BitcoinNetwork.fromName(environment.name);
 }
 
 /// Bundles the app-side callbacks the engine's constructor takes.
 class SwapsAppGlue {
   final WalletRepository _walletRepository;
-  final SettingsRepository _settingsRepository;
   final Secrets _secrets;
 
-  SwapsAppGlue({
-    required this._walletRepository,
-    required this._settingsRepository,
-    required this._secrets,
-  });
+  SwapsAppGlue({required this._walletRepository, required this._secrets});
 
-  Future<List<swaps.SwapWalletInfo>> wallets({required bool isTestnet}) async {
-    final settings = await _settingsRepository.fetch();
-    if (!swapEnvironmentAvailable(settings.environment.networkEnv)) return [];
+  Future<List<swaps.SwapWalletInfo>> wallets({
+    required NetworkEnv environment,
+  }) async {
+    if (!swapEnvironmentAvailable(environment)) return [];
     final all = switch (await _walletRepository.getWallets(
-      environment: settings.environment,
+      environment: settings.Environment.fromName(environment.name),
     )) {
       Ok(:final value) => value,
       Err(:final failure) => throw SwapsAppGlueException(
@@ -277,16 +271,15 @@ class SwapsAppGlue {
   /// no default bitcoin wallet with a mnemonic (watch-only, hardware-only,
   /// pre-onboarding).
   Future<swaps.DerivedSwapMasterKey?> swapMasterKey({
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async {
-    final settings = await _settingsRepository.fetch();
-    if (!swapEnvironmentAvailable(settings.environment.networkEnv)) {
+    if (!swapEnvironmentAvailable(environment)) {
       return null;
     }
     final defaults = switch (await _walletRepository.getWallets(
       onlyDefaults: true,
       onlyBitcoin: true,
-      environment: settings.environment,
+      environment: settings.Environment.fromName(environment.name),
     )) {
       Ok(:final value) => value,
       Err(:final failure) => throw SwapsAppGlueException(
@@ -305,7 +298,7 @@ class SwapsAppGlue {
     };
     if (secret == null || !secret.info.isMnemonic) return null;
 
-    final network = isTestnet ? BitcoinNetwork.testnet : BitcoinNetwork.mainnet;
+    final network = BitcoinNetwork.fromName(environment.name);
     final key = switch (await secret.derive.swapKey(network: network)) {
       Ok(:final value) => value,
       Err(:final failure) => throw SwapsAppGlueException(
@@ -318,7 +311,7 @@ class SwapsAppGlue {
       xpub: key.xpub,
       mnemonic: key.mnemonic,
       fingerprint: key.fingerprint.hex,
-      isTestnet: key.isTestnet,
+      environment: environment,
     );
   }
 }

@@ -100,6 +100,9 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   // SwapResolver
 
   @override
+  NetworkEnv get environment => _boltz.environment;
+
+  @override
   bool get isTestnet => _boltz.isTestnet;
 
   @override

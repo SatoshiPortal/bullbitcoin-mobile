@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
+
 import 'dart:async';
 
 import 'package:bull_sdk/boltz.dart' as native;
@@ -130,13 +132,15 @@ void main() {
           await release.future;
           return chain;
         });
+        when(() => storage.isRegtestStore).thenReturn(false);
         final api = BoltzDatasource(
+          environment: NetworkEnv.testnet,
           url: 'http://127.0.0.1:1',
           boltzStore: storage,
         );
         final repository = BoltzSwapRepository(
           boltz: api,
-          isTestnet: true,
+          environment: NetworkEnv.testnet,
           electrum: ReproElectrumBackend(),
           lockupChain: ReproChainBackend(),
           newAddressFor: (_) async => throw StateError('No address needed'),
@@ -145,10 +149,10 @@ void main() {
           fastestFee: ({
             required txSize,
             required isLiquid,
-            required isTestnet,
+            required environment,
           }) async => 1,
-          wallets: ({required isTestnet}) async => const [],
-          swapMasterKeySource: ({required isTestnet}) async => null,
+          wallets: ({required environment}) async => const [],
+          swapMasterKeySource: ({required environment}) async => null,
         );
         addTearDown(repository.close);
         final running = entry.value.$2(api);

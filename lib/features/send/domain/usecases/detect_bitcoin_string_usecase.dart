@@ -24,10 +24,27 @@ class DetectBitcoinStringUsecase {
         ? uri?.path ?? ''
         : input;
     final lower = address.toLowerCase();
-    if (active == primitives.NetworkEnv.signet ||
-        lower.startsWith('el1') ||
-        lower.startsWith('ert1')) {
+    if (active == primitives.NetworkEnv.signet) {
       throw const FormatException('Unsupported payment network');
+    }
+    final raw = input.toLowerCase();
+    final regtestInvoice =
+        raw.startsWith('lnbcrt') || raw.startsWith('lightning:lnbcrt');
+    final regtestLiquid = raw.startsWith('el1') || raw.startsWith('ert1');
+    if (regtestInvoice || regtestLiquid) {
+      if (active != primitives.NetworkEnv.regtest) {
+        throw const FormatException('Unsupported payment network');
+      }
+      if (regtestInvoice) return PaymentRequest.parse(input);
+      if (await native.validateAddress(input, primitives.LiquidNetwork.regtest)
+          is primitives.Err) {
+        throw const FormatException('Invalid regtest destination');
+      }
+      return PaymentRequest.bip21(
+        network: Network.liquidRegtest,
+        uri: input,
+        address: input,
+      );
     }
     if (active == primitives.NetworkEnv.regtest || lower.startsWith('bcrt1')) {
       if (active != primitives.NetworkEnv.regtest) {

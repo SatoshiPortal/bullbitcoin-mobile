@@ -150,6 +150,64 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     bool sync = false,
     DateTime? birthday,
   }) async {
+    final metadata = await _provisionSecretWallet(
+      secret: secret,
+      network: network,
+      scriptType: scriptType,
+      label: label,
+      isDefault: isDefault,
+      birthday: birthday,
+    );
+    return _createdWallet(metadata, sync: sync);
+  }
+
+  /// Explicit mnemonic import only: default creation/startup keep their existing
+  /// paths. Re-read custody under admission, publish locally, then reconcile.
+  /// Balance reads and any network work happen only after admission is released.
+  @useResult
+  Future<Result<Wallet, ParentCustodyFailure>> importWallet({
+    required Fingerprint parent,
+    required Secrets secrets,
+    required ParentCustodyAdmissionPort admission,
+    required Network network,
+    required ScriptType scriptType,
+    String? label,
+  }) async {
+    final published = await admission.runExclusive<WalletMetadataModel>(
+      parent,
+      (lease) async {
+        final Secret secret;
+        switch (await secrets.fetch(parent)) {
+          case Ok(:final value):
+            secret = value;
+          case Err():
+            return const Err(ParentCustodySeedUnavailableFailure());
+        }
+        final metadata = await _provisionSecretWallet(
+          secret: secret,
+          network: network,
+          scriptType: scriptType,
+          label: label,
+          isDefault: false,
+        );
+        // The catalog reference is durable before clearing either tombstone.
+        return lease.reconcilePresent().map((_) => metadata);
+      },
+    );
+    return switch (published) {
+      Err(:final failure) => Err(failure),
+      Ok(:final value) => Ok(await _createdWallet(value)),
+    };
+  }
+
+  Future<WalletMetadataModel> _provisionSecretWallet({
+    required Secret secret,
+    required Network network,
+    required ScriptType scriptType,
+    String? label,
+    required bool isDefault,
+    DateTime? birthday,
+  }) async {
     _requireSupportedCreation(network, scriptType);
     // Derive and store the wallet metadata
     final walletLabel =
@@ -184,6 +242,14 @@ class WalletRepository implements SeedReferencePort, WalletReaderRepository {
     }
 
     await _provision(metadata);
+    return metadata;
+  }
+
+  Future<Wallet> _createdWallet(
+    WalletMetadataModel metadata, {
+    bool sync = false,
+  }) async {
+    final network = metadata.network;
     final balance = await _getBalance(metadata, sync: sync);
 
     return Wallet(

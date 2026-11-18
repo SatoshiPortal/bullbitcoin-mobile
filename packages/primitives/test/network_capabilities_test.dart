@@ -27,10 +27,14 @@ void main() {
     LiquidNetwork.testnet: historicalLiquid,
     BitcoinNetwork.regtest: {
       NetworkCapability.softwareWallet,
+      NetworkCapability.swaps,
       NetworkCapability.payjoin,
     },
     BitcoinNetwork.signet: {},
-    LiquidNetwork.regtest: {NetworkCapability.softwareWallet},
+    LiquidNetwork.regtest: {
+      NetworkCapability.softwareWallet,
+      NetworkCapability.swaps,
+    },
   };
 
   for (final network in <Network>[

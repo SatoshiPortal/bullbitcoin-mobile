@@ -14,12 +14,13 @@ class SwapEngineSwitcher {
   final SettingsRepository _settingsRepository;
   final SwitchableSwapEngine _engine;
   final SwapWatcher _swapWatcher;
-  final Future<SwapEngineParts> Function({required bool isTestnet}) _build;
+  final Future<SwapEngineParts> Function({required NetworkEnv environment})
+  _build;
   final Duration _requestBudget;
 
   StreamSubscription<Environment>? _environmentChanges;
   Future<void> _pending = Future.value();
-  late bool _desiredIsTestnet;
+  late NetworkEnv _desiredEnvironment;
   int _revision = 0;
   bool _failed = false;
   bool _disposed = false;
@@ -31,7 +32,7 @@ class SwapEngineSwitcher {
     required this._build,
     this._requestBudget = const Duration(milliseconds: 100),
   }) {
-    _desiredIsTestnet = _engine.isTestnet;
+    _desiredEnvironment = _engine.environment;
   }
 
   void start() {
@@ -39,21 +40,21 @@ class SwapEngineSwitcher {
     _environmentChanges ??= _settingsRepository.environmentChangeStream.listen((
       environment,
     ) {
-      final isTestnet = !environment.isMainnet;
-      if (isTestnet == _desiredIsTestnet && !_failed) return;
-      unawaited(rebuild(isTestnet: isTestnet).then<void>((_) {}));
+      final target = environment.networkEnv;
+      if (target == _desiredEnvironment && !_failed) return;
+      unawaited(rebuild(environment: target).then<void>((_) {}));
     });
   }
 
   /// Ok means activated. Busy retains the serialized transition; callers must
   /// not infer that a previous driver has closed or install another one.
   Future<Result<void, SwapsFailure>> rebuild({
-    bool? isTestnet,
+    NetworkEnv? environment,
     bool waitForCompletion = false,
   }) {
     if (_disposed) return Future.value(const Err(SwapsBusyFailure()));
-    final target = isTestnet ?? _desiredIsTestnet;
-    _desiredIsTestnet = target;
+    final target = environment ?? _desiredEnvironment;
+    _desiredEnvironment = target;
     final revision = ++_revision;
     _failed = false;
     _engine.suspendCreation();
@@ -72,14 +73,17 @@ class SwapEngineSwitcher {
 
   bool _current(int revision) => !_disposed && revision == _revision;
 
-  Future<Result<void, SwapsFailure>> _rebuild(bool target, int revision) async {
+  Future<Result<void, SwapsFailure>> _rebuild(
+    NetworkEnv target,
+    int revision,
+  ) async {
     SwapEngineParts? uninstalled;
     try {
       if (!_current(revision)) return const Err(SwapsBusyFailure());
       await _swapWatcher.stop();
       await _swapWatcher.drained;
       if (!_current(revision)) return const Err(SwapsBusyFailure());
-      final parts = await _build(isTestnet: target);
+      final parts = await _build(environment: target);
       uninstalled = parts;
       if (!_current(revision)) {
         await parts.boltz.close();
@@ -97,7 +101,7 @@ class SwapEngineSwitcher {
         throw const SwapsBusyFailure('swap driver did not activate');
       }
       _engine.resumeCreation();
-      log.config('[Swaps] engine rebuilt (isTestnet=$target)');
+      log.config('[Swaps] engine rebuilt (network=${target.name})');
       return const Ok(null);
     } catch (error) {
       if (uninstalled case final parts?) await parts.boltz.close();

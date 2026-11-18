@@ -15504,6 +15504,10 @@
   "@settingsSourceCodeTitle": {
     "description": "Settings entry opening the app's public source code repository."
   },
+  "parentCustodyMetadataUnavailable": "Wallet security records are missing or damaged. This action was stopped to protect your seed. Contact support before trying again.",
+  "@parentCustodyMetadataUnavailable": {
+    "description": "Refusal to import or delete a seed when durable parent custody state is missing or corrupt; never recreate it automatically."
+  },
   "torSettingsStatusNoInternetOrBlocked": "No internet or censored network",
   "@torSettingsStatusNoInternetOrBlocked": {
     "description": "Status title when the device has a network but Tor gets no connection: no internet access or a network blocking Tor"
@@ -15603,5 +15607,116 @@
   "swapReverseDirectionTooltip": "Reverse direction",
   "@swapReverseDirectionTooltip": {
     "description": "Accessible name of the Swap button that exchanges the source and destination wallets"
+  },
+  "destinationAmountFromQr": "{type} · {amount} sats from the QR",
+  "@destinationAmountFromQr": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "destinationExpectedType": "Enter or scan a valid {type}.",
+  "@destinationExpectedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "sendRecipients": "Recipients",
+  "@sendRecipients": {},
+  "sendMultipleRecipients": "Multiple recipients",
+  "@sendMultipleRecipients": {},
+  "sendMultipleRecipientsHint": "Pay several addresses in one transaction",
+  "@sendMultipleRecipientsHint": {},
+  "sendMultipleUnavailable": "Not available for this destination",
+  "@sendMultipleUnavailable": {},
+  "sendAdd": "Add",
+  "@sendAdd": {},
+  "sendRecipient": "Recipient",
+  "@sendRecipient": {},
+  "sendMyWallet": "My wallet",
+  "@sendMyWallet": {},
+  "sendRemoveOtherRecipients": "Remove the other recipients?",
+  "@sendRemoveOtherRecipients": {},
+  "sendRemoveOtherRecipientsMessage": "The other recipients will be removed. Recipient 1 is kept.",
+  "@sendRemoveOtherRecipientsMessage": {},
+  "sendToMyWallet": "Send to my wallet",
+  "@sendToMyWallet": {},
+  "sendMyWalletAddressHint": "A new receive address of the chosen wallet is used.",
+  "@sendMyWalletAddressHint": {},
+  "sendLiquidUnavailable": "Liquid is not available for multiple recipients",
+  "@sendLiquidUnavailable": {},
+  "sendMultipleUnavailableLightning": "Not available for Lightning invoices or addresses",
+  "@sendMultipleUnavailableLightning": {},
+  "sendMultipleUnavailableLiquid": "Not available for Liquid payments",
+  "@sendMultipleUnavailableLiquid": {},
+  "sendMultipleUnavailableAmount": "Not available when the payment request sets an amount",
+  "@sendMultipleUnavailableAmount": {},
+  "sendMultipleUnavailableSilent": "Not available for silent payments",
+  "@sendMultipleUnavailableSilent": {},
+  "sendLightningInvoice": "Lightning invoice",
+  "@sendLightningInvoice": {
+    "description": "Send payment form"
+  },
+  "sendRemove": "Remove",
+  "@sendRemove": {
+    "description": "Send payment form"
+  },
+  "sendAmountSetByRequest": "Amount set by the payment request",
+  "@sendAmountSetByRequest": {
+    "description": "Send payment form"
+  },
+  "sendRestGoesTo": "Rest goes to",
+  "@sendRestGoesTo": {
+    "description": "Send payment form"
+  },
+  "sendRestNone": "None",
+  "@sendRestNone": {
+    "description": "Send payment form"
+  },
+  "sendRestChangeHint": "The rest stays in the wallet as change.",
+  "@sendRestChangeHint": {
+    "description": "Send payment form"
+  },
+  "sendRestCalculated": "Rest, calculated after fees",
+  "@sendRestCalculated": {
+    "description": "Send payment form"
+  },
+  "sendAmountFromQrEditable": "Amount from the QR, editable",
+  "@sendAmountFromQrEditable": {
+    "description": "Send payment form"
+  },
+  "sendToRecipients": "To recipients",
+  "@sendToRecipients": {
+    "description": "Send payment form"
+  },
+  "sendEstimatedNetworkFee": "Estimated network fee",
+  "@sendEstimatedNetworkFee": {
+    "description": "Send payment form"
+  },
+  "sendTotalDebited": "Total debited",
+  "@sendTotalDebited": {
+    "description": "Send payment form"
+  },
+  "sendLightningInvoiceAmount": "Lightning invoice · {amount} sats",
+  "@sendLightningInvoiceAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "sendSilentPaymentAddress": "Silent payment address",
+  "@sendSilentPaymentAddress": {},
+  "sendPsbtRequest": "PSBT",
+  "@sendPsbtRequest": {
+    "description": "Interpreted type of a partially signed Bitcoin transaction in Send"
   }
 }

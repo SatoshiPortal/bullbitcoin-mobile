@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/features/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
@@ -18,12 +21,17 @@ class MockSaveDefaultWalletUsecase extends Mock
 class MockDeleteDefaultWalletUsecase extends Mock
     implements DeleteDefaultWalletUsecase {}
 
+class MockValidateDestination extends Mock
+    implements ValidateDefaultWalletDestinationUsecase {}
+
 void main() {
+  late MockValidateDestination validateDestination;
   late MockGetDefaultWalletsUsecase getWallets;
   late MockSaveDefaultWalletUsecase saveWallet;
   late MockDeleteDefaultWalletUsecase deleteWallet;
 
   DefaultWalletsCubit buildCubit() => DefaultWalletsCubit(
+    validateDestination: validateDestination,
     getDefaultWalletsUsecase: getWallets,
     saveDefaultWalletUsecase: saveWallet,
     deleteDefaultWalletUsecase: deleteWallet,
@@ -32,6 +40,7 @@ void main() {
   setUpAll(() => registerFallbackValue(WalletAddressType.bitcoin));
 
   setUp(() {
+    validateDestination = MockValidateDestination();
     getWallets = MockGetDefaultWalletsUsecase();
     saveWallet = MockSaveDefaultWalletUsecase();
     deleteWallet = MockDeleteDefaultWalletUsecase();
@@ -132,4 +141,77 @@ void main() {
       );
     },
   );
+
+  test(
+    'rejects a destination from the wrong payment rail before saving',
+    () async {
+      when(
+        () => validateDestination.execute(
+          WalletAddressType.bitcoin,
+          'user@example.com',
+        ),
+      ).thenAnswer((_) async => null);
+      final cubit = buildCubit();
+      cubit.startEditing(WalletAddressType.bitcoin);
+      cubit.updateBitcoinAddress('user@example.com');
+      await cubit.saveWallet(WalletAddressType.bitcoin);
+      expect(cubit.state.saveError, isA<DefaultWalletsInvalidAddressFailure>());
+      expect(cubit.state.isSaving, isFalse);
+      verifyNever(
+        () => saveWallet.execute(
+          walletType: any(named: 'walletType'),
+          address: any(named: 'address'),
+          existingRecipientId: any(named: 'existingRecipientId'),
+        ),
+      );
+      await cubit.close();
+    },
+  );
+
+  test(
+    'does not save a validation result after the destination changes',
+    () async {
+      final pending = Completer<String?>();
+      when(() => validateDestination.execute(WalletAddressType.bitcoin, 'old'))
+          .thenAnswer((_) => pending.future);
+      final cubit = buildCubit();
+      cubit.updateBitcoinAddress('old');
+      final saving = cubit.saveWallet(WalletAddressType.bitcoin);
+      cubit.updateBitcoinAddress('new');
+      pending.complete('normalized-old');
+      await saving;
+      expect(cubit.state.bitcoinAddressInput, 'new');
+      expect(cubit.state.isSaving, isFalse);
+      verifyNever(
+        () => saveWallet.execute(
+          walletType: any(named: 'walletType'),
+          address: any(named: 'address'),
+          existingRecipientId: any(named: 'existingRecipientId'),
+        ),
+      );
+      await cubit.close();
+    },
+  );
+  test('cancelling editing invalidates a pending validation', () async {
+    final pending = Completer<String?>();
+    when(() => validateDestination.execute(WalletAddressType.bitcoin, 'old'))
+        .thenAnswer((_) => pending.future);
+    final cubit = buildCubit();
+    cubit.startEditing(WalletAddressType.bitcoin);
+    cubit.updateBitcoinAddress('old');
+    final saving = cubit.saveWallet(WalletAddressType.bitcoin);
+    cubit.cancelEditing();
+    pending.complete('normalized-old');
+    await saving;
+    expect(cubit.state.editingWalletType, isNull);
+    expect(cubit.state.isSaving, isFalse);
+    verifyNever(
+      () => saveWallet.execute(
+        walletType: any(named: 'walletType'),
+        address: any(named: 'address'),
+        existingRecipientId: any(named: 'existingRecipientId'),
+      ),
+    );
+    await cubit.close();
+  });
 }

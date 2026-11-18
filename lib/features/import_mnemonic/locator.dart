@@ -27,6 +27,7 @@ class ImportMnemonicLocator {
         secrets: locator<Secrets>(),
         settingsRepository: locator<SettingsRepository>(),
         walletRepository: locator<WalletRepository>(),
+        admission: locator<ParentCustodyAdmissionPort>(),
       ),
     );
     locator.registerFactory<CheckWalletStatusUsecase>(

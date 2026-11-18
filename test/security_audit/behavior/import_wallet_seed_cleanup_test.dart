@@ -28,6 +28,8 @@ class _MockWalletRepository extends Mock implements WalletRepository {}
 /// A catalog entry may already be committed when the native writer fails.
 /// Assert against the real Secrets and in-memory keystore; automatic cleanup
 /// cannot safely infer that a secret is unreferenced from an unavailable reader.
+class _Admission extends Fake implements ParentCustodyAdmissionPort {}
+
 void main() {
   const words = [
     'abandon',
@@ -65,6 +67,7 @@ void main() {
         .import(words: words, language: bip39.Language.english);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
+    registerFallbackValue(_Admission());
     registerFallbackValue(Network.bitcoinMainnet);
     registerFallbackValue(ScriptType.bip84);
   });
@@ -80,6 +83,7 @@ void main() {
       secrets: secrets,
       settingsRepository: settingsRepository,
       walletRepository: walletRepository,
+      admission: _Admission(),
     );
     when(
       () => checkDuplicate.execute(
@@ -97,12 +101,12 @@ void main() {
 
   void failCreateWalletWith(Object error) {
     when(
-      () => walletRepository.createWallet(
-        secret: any(named: 'secret'),
+      () => walletRepository.importWallet(
+        parent: any(named: 'parent'),
+        secrets: secrets,
+        admission: any(named: 'admission'),
         network: any(named: 'network'),
         scriptType: any(named: 'scriptType'),
-        isDefault: any(named: 'isDefault'),
-        sync: any(named: 'sync'),
         label: any(named: 'label'),
       ),
     ).thenThrow(error);
@@ -125,19 +129,19 @@ void main() {
       bool? askedIsDefault;
       when(() => settingsRepository.fetch()).thenAnswer((_) async => settings);
       when(
-        () => walletRepository.createWallet(
-          secret: any(named: 'secret'),
+        () => walletRepository.importWallet(
+          parent: any(named: 'parent'),
+          secrets: secrets,
+          admission: any(named: 'admission'),
           network: any(named: 'network'),
           scriptType: any(named: 'scriptType'),
-          isDefault: any(named: 'isDefault'),
-          sync: any(named: 'sync'),
           label: any(named: 'label'),
         ),
       ).thenAnswer((invocation) async {
         // Captured, never asserted here: the usecase catches broadly, so a
         // TestFailure thrown inside this callback is swallowed into an Err
         // and the test passes while proving nothing.
-        askedIsDefault = invocation.namedArguments[#isDefault] as bool?;
+        askedIsDefault = invocation.namedArguments.containsKey(#isDefault);
         throw const WalletAlreadyExistsException('stop-here');
       });
 
@@ -154,12 +158,12 @@ void main() {
         reason: 'an imported wallet must never become a default wallet',
       );
       verify(
-        () => walletRepository.createWallet(
-          secret: any(named: 'secret'),
+        () => walletRepository.importWallet(
+          parent: any(named: 'parent'),
+          secrets: secrets,
+          admission: any(named: 'admission'),
           network: any(named: 'network'),
           scriptType: any(named: 'scriptType'),
-          isDefault: any(named: 'isDefault'),
-          sync: any(named: 'sync'),
           label: any(named: 'label'),
         ),
       ).called(1);

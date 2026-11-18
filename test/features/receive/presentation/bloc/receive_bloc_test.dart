@@ -1,5 +1,5 @@
+import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 
 import 'dart:async';
 
@@ -231,16 +231,19 @@ swaps.LnReceiveSwap _boltzReceiveSwap({
   swaps.SwapStatus status = swaps.SwapStatus.pending,
   swaps.SwapType type = swaps.SwapType.lightningToLiquid,
   String receiveWalletId = 'w1',
+  swaps.Environment environment = swaps.Environment.testnet,
+  String invoice = 'lntb10u1boltz',
+  String receiveAddress = 'tlq1-claim',
 }) => swaps.Swap.lnReceive(
   id: id,
   keyIndex: 0,
   type: type,
   status: status,
-  environment: swaps.Environment.testnet,
+  environment: environment,
   creationTime: DateTime.utc(2026),
   receiveWalletId: receiveWalletId,
-  invoice: 'lntb10u1boltz',
-  receiveAddress: 'tlq1-claim',
+  invoice: invoice,
+  receiveAddress: receiveAddress,
 ) as swaps.LnReceiveSwap;
 
 class _MockTransactions extends Mock implements WalletTransactionRepository {}
@@ -408,100 +411,135 @@ void main() {
     await payjoinMinAmountChangeController.close();
   });
 
-  // Regtest has no swaps: Lightning is refused before any Liquid lookup.
-  for (final mode in [ReceiveNetworkType.lightning]) {
-    for (final preset in [false, true]) {
-      for (final warm in [false, true]) {
-        test(
-          '$mode regtest refusal preset=$preset warm=$warm precedes Liquid lookup',
-          () async {
-            final inner = _MockSettings();
-            when(() => inner.execute()).thenAnswer(
-              (_) async => SettingsEntity(
-                environment: preset ? Environment.mainnet : Environment.regtest,
-                bitcoinUnit: BitcoinUnit.sats,
-                currencyCode: 'USD',
+  for (final preset in [false, true]) {
+    for (final warm in [false, true]) {
+      test(
+        'regtest Lightning uses Boltz preset=$preset warm=$warm without an Exchange order',
+        () async {
+          final inner = _MockSettings();
+          when(() => inner.execute()).thenAnswer(
+            (_) async => SettingsEntity(
+              environment: preset ? Environment.mainnet : Environment.regtest,
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'USD',
+            ),
+          );
+          final selected = _testWallet(network: Network.bitcoinRegtest);
+          final liquid = _testWallet(
+            origin: 'liquid-regtest',
+            network: Network.liquidRegtest,
+          );
+          final receiveWallet = preset ? selected : liquid;
+          when(() => getWallets.execute(onlyBitcoin: true))
+              .thenAnswer((_) async => Ok([selected]));
+          when(() => getWallets.execute(onlyLiquid: true, onlyDefaults: true))
+              .thenAnswer((_) async => Ok([liquid]));
+          when(() => getSwapRoute.execute())
+              .thenAnswer((_) async => SwapRoute.boltz);
+          when(
+            () => createBoltzSwap.execute(
+              wallet: any(named: 'wallet'),
+              amountSat: 1000,
+              note: any(named: 'note'),
+            ),
+          ).thenAnswer(
+            (_) async => Ok(
+              _boltzReceiveSwap(
+                type: preset
+                    ? swaps.SwapType.lightningToBitcoin
+                    : swaps.SwapType.lightningToLiquid,
+                receiveWalletId: receiveWallet.id,
+                environment: swaps.Environment.regtest,
+                invoice: 'lnbcrt10u1public',
+                receiveAddress: preset ? 'bcrt1public' : 'el1public',
               ),
-            );
-            final selected = _testWallet(network: Network.bitcoinRegtest);
-            when(() => getWallets.execute(onlyBitcoin: true))
-                .thenAnswer((_) async => Ok([selected]));
-            final bloc = buildBloc(
-              wallet: selected,
-              withPresetWallet: preset,
-              settings: GetReceiveSettingsUsecase(inner),
-            );
-            addTearDown(bloc.close);
-            if (warm) {
-              when(
-                () => receiveWithPayjoin.execute(
-                  walletId: selected.id,
-                  network: BitcoinNetwork.regtest,
-                  address: any(named: 'address'),
-                ),
-              ).thenAnswer(
-                (_) async => const Err(
-                  ReceivePayjoinUnavailableFailure('fixture trust unavailable'),
-                ),
-              );
-              final ready = bloc.stream.firstWhere(
-                (s) => s.bitcoinUnit != null && s.payjoinAttemptSettled,
-              );
-              bloc.add(const ReceiveBitcoinStarted(null));
-              await ready;
-              verify(
-                () => receiveWithPayjoin.execute(
-                  walletId: selected.id,
-                  network: BitcoinNetwork.regtest,
-                  address: any(named: 'address'),
-                ),
-              ).called(1);
-            }
-            final refused = bloc.stream.firstWhere(
-              (s) => s.failure is ReceiveUnsupportedNetworkFailure,
-            );
-            bloc.add(
-              mode == ReceiveNetworkType.lightning
-                  ? const ReceiveLightningStarted()
-                  : const ReceiveLiquidStarted(),
-            );
-            await refused;
-            verifyNever(
+            ),
+          );
+          final bloc = buildBloc(
+            wallet: selected,
+            withPresetWallet: preset,
+            settings: GetReceiveSettingsUsecase(inner),
+          );
+          addTearDown(bloc.close);
+          if (warm) {
+            when(
               () => receiveWithPayjoin.execute(
                 walletId: selected.id,
                 network: BitcoinNetwork.regtest,
                 address: any(named: 'address'),
               ),
+            ).thenAnswer(
+              (_) async => const Err(
+                ReceivePayjoinUnavailableFailure('fixture trust unavailable'),
+              ),
             );
-            verifyNoMoreInteractions(receiveWithPayjoin);
-            expect(bloc.state.revealedAddressGeneration, isNull);
-            expect(bloc.state.canConfirmAmount, isFalse);
-            for (final event in <ReceiveEvent>[
-              const ReceiveAmountInputChanged('1000'),
-              const ReceiveAmountCurrencyChanged('sats'),
-              const ReceiveAmountConfirmed(),
-            ]) {
-              bloc.add(event);
-              await Future<void>.delayed(Duration.zero);
-              expect(
-                bloc.state.admissionFailure,
-                isA<ReceiveUnsupportedNetworkFailure>(),
-              );
-              expect(
-                bloc.state.failure,
-                isA<ReceiveUnsupportedNetworkFailure>(),
-              );
-              expect(bloc.state.canConfirmAmount, isFalse);
-              expect(bloc.state.creatingSwap, isFalse);
-              expect(bloc.state.confirmedAmountSat, isNull);
-            }
-            verifyZeroInteractions(createOrderSwap);
-            verifyNever(
-              () => getWallets.execute(onlyLiquid: true, onlyDefaults: true),
+            final ready = bloc.stream.firstWhere(
+              (state) =>
+                  state.bitcoinUnit != null && state.payjoinAttemptSettled,
             );
-          },
-        );
-      }
+            bloc.add(const ReceiveBitcoinStarted(null));
+            await ready;
+            verify(
+              () => receiveWithPayjoin.execute(
+                walletId: selected.id,
+                network: BitcoinNetwork.regtest,
+                address: any(named: 'address'),
+              ),
+            ).called(1);
+          }
+          final admitted = bloc.stream.firstWhere(
+            (state) =>
+                state.walletAdmitted && state.type == ReceiveType.lightning,
+          );
+          bloc.add(const ReceiveLightningStarted());
+          await admitted;
+          verifyNever(
+            () => receiveWithPayjoin.execute(
+              walletId: selected.id,
+              network: BitcoinNetwork.regtest,
+              address: any(named: 'address'),
+            ),
+          );
+          verifyNoMoreInteractions(receiveWithPayjoin);
+          expect(bloc.state.wallet, receiveWallet);
+          expect(bloc.state.admissionFailure, isNull);
+          final created = bloc.stream.firstWhere(
+            (state) => state.lightningSwap != null,
+          );
+          bloc.add(const ReceiveAmountInputChanged('1000'));
+          await pumpEventQueue();
+          bloc.add(const ReceiveAmountConfirmed());
+          await created;
+          verifyNever(
+            () => receiveWithPayjoin.execute(
+              walletId: selected.id,
+              network: BitcoinNetwork.regtest,
+              address: any(named: 'address'),
+            ),
+          );
+          verifyNoMoreInteractions(receiveWithPayjoin);
+          expect(
+            bloc.state.lightningSwap?.environment,
+            swaps.Environment.regtest,
+          );
+          expect(bloc.state.confirmedAmountSat, 1000);
+          verify(
+            () => createBoltzSwap.execute(
+              wallet: receiveWallet,
+              amountSat: 1000,
+              note: any(named: 'note'),
+            ),
+          ).called(1);
+          verifyZeroInteractions(createOrderSwap);
+          expect(
+            primitives.NetworkCapabilities.supports(
+              primitives.BitcoinNetwork.regtest,
+              primitives.NetworkCapability.exchange,
+            ),
+            isFalse,
+          );
+        },
+      );
     }
   }
 
