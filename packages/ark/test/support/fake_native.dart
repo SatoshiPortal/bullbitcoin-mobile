@@ -88,6 +88,7 @@ final class FakeOpener implements ArkNativeOpener {
   int broadcasts = 0;
   int registrations = 0;
   int fundings = 0;
+  int boardExpiry = 2000;
   int tip = 100;
   bool failExecute = false;
   bool requireBoardServerInfo = false;
@@ -340,7 +341,7 @@ final class FakeSession implements ArkNativeSession {
         return ArkBoardFundingDetails(
           address: 'funding-address',
           keypairIndex: 4,
-          expiryHeight: 2000,
+          expiryHeight: owner.boardExpiry,
         );
       });
   @override

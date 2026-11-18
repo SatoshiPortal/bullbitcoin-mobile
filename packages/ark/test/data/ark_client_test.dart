@@ -1032,4 +1032,30 @@ void main() {
     expect(reopened.operation('exit')?.binding, quote.id);
     reopened.close();
   });
+  test(
+    'expired Board funding reports a stale quote before registration',
+    () async {
+      expect(await client.create(config), isA<Ok>());
+      final quoted = await client.quote(
+        account,
+        ArkQuoteRequest.board(amount: Sats.fromInt(20000)),
+      );
+      final quote = (quoted as Ok<ArkQuote, ArkWalletFailure>).value;
+      native.boardExpiry = native.tip;
+      final result = await client.submit(
+        account,
+        ArkSubmission.boardFunding(
+          quoteId: quote.id,
+          operationId: 'expired-board',
+        ),
+      );
+      expect(result, isA<Err<ArkOperation, ArkWalletFailure>>());
+      expect(
+        (result as Err<ArkOperation, ArkWalletFailure>).failure,
+        isA<ArkStaleQuoteFailure>(),
+      );
+      expect(native.registrations, 0);
+      expect(native.broadcasts, 0);
+    },
+  );
 }
