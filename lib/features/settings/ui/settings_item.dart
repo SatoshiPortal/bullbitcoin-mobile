@@ -787,7 +787,7 @@ List<SettingsItem> buildSettingsItems({
       SettingsItemId.exchange ||
       SettingsItemId.exchangeAccountSettings ||
       SettingsItemId.testnetCredentials => NetworkCapability.exchange,
-      SettingsItemId.autoswap => NetworkCapability.swaps,
+      SettingsItemId.autoswap => NetworkCapability.automaticSwaps,
       SettingsItemId.payjoin => NetworkCapability.payjoin,
       SettingsItemId.sp => NetworkCapability.silentPayments,
       SettingsItemId.mempool ||
