@@ -163,6 +163,7 @@ dependencies:
   keyboard_actions: ^5.0.3
 
 dev_dependencies:
+  shared_preferences_platform_interface: ^2.4.2
   # Parse import, conditional export and part directives in the shell boundary test.
   analyzer: ^13.0.0
   build_runner: ^2.10.4
