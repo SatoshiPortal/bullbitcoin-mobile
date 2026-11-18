@@ -42,6 +42,14 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     } finally {
       emit(state.copyWith(isLoading: false));
     }
+    // Probe the listed servers so the screen shows a real status on open, as
+    // the Electrum settings do, without waiting for a pull to refresh.
+    final defaultServer = state.defaultServer;
+    final customServer = state.customServer;
+    await Future.wait([
+      if (defaultServer != null) checkServerStatus(defaultServer),
+      if (customServer != null) checkServerStatus(customServer),
+    ]);
   }
 
   /// Reload server data from local DB then probe each server's status, all
