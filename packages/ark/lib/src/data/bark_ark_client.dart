@@ -1061,6 +1061,12 @@ final class BarkArkClient implements ArkClient {
       return const Err(ArkValidationFailure());
     }
     if (submission is! ArkRegisterBoard && existing != null) {
+      if (submission is ArkBoardFunding &&
+          existing.operation.kind == ArkOperationKind.board &&
+          existing.operation.status == ArkOperationStatus.failed &&
+          existing.operation.boardFunding == null) {
+        return const Err(ArkStaleQuoteFailure());
+      }
       return Ok(await _verifiedOperation(store, account, existing.operation));
     }
     if (submission case ArkRegisterBoard()) {
@@ -1210,6 +1216,10 @@ final class BarkArkClient implements ArkClient {
           return Err(ArkOutcomeUnknownFailure(operationId));
         }
         if (funding.expiryHeight <= quote.observedTip) {
+          store.saveOperation(
+            _operation(quote, operationId, ArkOperationStatus.failed),
+            quoteId,
+          );
           return const Err(ArkStaleQuoteFailure());
         }
         final result = _operation(
