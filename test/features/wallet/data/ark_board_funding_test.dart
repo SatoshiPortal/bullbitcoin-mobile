@@ -154,6 +154,22 @@ void main() {
   }
 
   test(
+    'transfer refuses a changed source before any native or metadata call',
+    () async {
+      final result = await actor.prepareFrom(
+        config(account),
+        Sats.fromInt(100000),
+        sourceWalletId: 'another-wallet',
+      );
+      expect(result, isA<Err<ArkBoardPreparation, ArkFailure>>());
+      verifyZeroInteractions(client);
+      verifyZeroInteractions(metadata);
+      verifyZeroInteractions(fees);
+      verifyZeroInteractions(custody);
+    },
+  );
+
+  test(
     'mainnet refuses before source selection, Secrets or any Ark native call',
     () async {
       int selections = 0;
