@@ -60,6 +60,7 @@ void main() {
         },
         onMainnet: () {},
         onImport: () {},
+        onRecoverEncryptedVault: () {},
       );
       Widget app() => MaterialApp(
         home: BlocProvider<WalletBloc>.value(value: wallets, child: view),
