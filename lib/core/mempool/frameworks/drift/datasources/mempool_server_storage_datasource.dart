@@ -34,11 +34,7 @@ class MempoolServerStorageDatasource {
   Future<MempoolServerModel?> fetchCustomServerByNetwork(
     MempoolServerNetwork network,
   ) async {
-    try {
-      return await _fetchServerByNetwork(network, isCustom: true);
-    } catch (_) {
-      return null;
-    }
+    return _fetchServerByNetwork(network, isCustom: true);
   }
 
   Future<MempoolServerModel?> fetchDefaultServerByNetwork(
