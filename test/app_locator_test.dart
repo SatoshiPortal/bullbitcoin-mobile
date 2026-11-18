@@ -76,6 +76,7 @@ void main() {
     late GetIt locator;
     late SqliteDatabase database;
     late PathProviderPlatform previousPaths;
+    SharedPreferencesAsyncPlatform? previousPreferences;
     var composed = false;
     final parent = Fingerprint('00112233');
     setUp(() async {
@@ -85,6 +86,7 @@ void main() {
       PathProviderPlatform.instance = _Paths(directory.path);
       FakeSecureStoragePlatform().install();
       SharedPreferences.setMockInitialValues({});
+      previousPreferences = SharedPreferencesAsyncPlatform.instance;
       SharedPreferencesAsyncPlatform.instance =
           InMemorySharedPreferencesAsync.empty();
       database = SqliteDatabase(NativeDatabase.memory());
@@ -100,6 +102,7 @@ void main() {
       await locator.reset();
       await database.close();
       PathProviderPlatform.instance = previousPaths;
+      SharedPreferencesAsyncPlatform.instance = previousPreferences;
       await directory.delete(recursive: true);
     });
     Future<void> compose({bool initialize = false}) async {
@@ -145,6 +148,40 @@ void main() {
         registry.close();
       }
     }
+
+    test('profile initialization cannot recreate a lost registry over surviving custody', () async {
+      final funding = sourceOk(
+        SqliteArkFundingReservations.open(
+          '${directory.path}/ark-funding.sqlite',
+          foreground: true,
+          initializeNew: true,
+        ),
+      );
+      funding.close();
+      Directory('${directory.path}/ark/native').createSync(recursive: true);
+      await compose(initialize: true);
+      await setupArkForeground(
+        locator,
+        arkUrl: Uri.parse('http://ark.regtest'),
+        primaryEsploraUrl: Uri.parse('http://chain.regtest'),
+        initializeNew: true,
+      );
+      expect(
+        File('${directory.path}/ark/accounts.sqlite').existsSync(),
+        isFalse,
+      );
+      expect(
+        File('${directory.path}/ark/accounts.sqlite.initialized').existsSync(),
+        isFalse,
+      );
+      final storage = _SecureStorage(parent)..install();
+      final result = await locator<SeedReferences>().deleteUnreferenced(
+        Secrets(scratchDirectory: () async => directory.path),
+        parent,
+      );
+      expect(result, isA<Err>());
+      expect(storage.parentDeletes, 0);
+    });
 
     for (final scenario in [
       'confirmed Board',
