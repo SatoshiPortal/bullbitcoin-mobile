@@ -91,7 +91,8 @@ class BullServerTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      _breakAtSeparators(title),
+                      semanticsLabel: title,
                       style: context.bullType.body.copyWith(
                         color: colors.onSurface,
                         decoration: disabled
@@ -169,4 +170,9 @@ class BullServerTile extends StatelessWidget {
       ),
     );
   }
+
+  /// Lets a long host name wrap after `.`, `:` or `-` instead of inside a
+  /// word, by inserting zero-width spaces; the semantics keep the raw title.
+  static String _breakAtSeparators(String value) =>
+      value.replaceAllMapped(RegExp('[.:-]'), (m) => '${m[0]}\u200B');
 }
