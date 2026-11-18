@@ -1143,19 +1143,9 @@ final class BarkArkClient implements ArkClient {
           _operation(quote, operationId, ArkOperationStatus.admitted),
           quoteId,
         );
+        final ArkBoardFundingDetails funding;
         try {
-          final funding = await session.boardFunding();
-          if (funding.expiryHeight <= quote.observedTip) {
-            throw const ArkBoundaryException(ArkStaleQuoteFailure());
-          }
-          final result = _operation(
-            quote,
-            operationId,
-            ArkOperationStatus.prepared,
-            boardFunding: funding,
-          );
-          store.saveOperation(result, quoteId);
-          return Ok(result);
+          funding = await session.boardFunding();
         } catch (error) {
           if (error is Error) rethrow;
           store.saveOperation(
@@ -1164,7 +1154,19 @@ final class BarkArkClient implements ArkClient {
           );
           return Err(ArkOutcomeUnknownFailure(operationId));
         }
+        if (funding.expiryHeight <= quote.observedTip) {
+          return const Err(ArkStaleQuoteFailure());
+        }
+        final result = _operation(
+          quote,
+          operationId,
+          ArkOperationStatus.prepared,
+          boardFunding: funding,
+        );
+        store.saveOperation(result, quoteId);
+        return Ok(result);
       }
+
       if (quote.kind == ArkOperationKind.board) {
         return const Err(ArkValidationFailure());
       }
