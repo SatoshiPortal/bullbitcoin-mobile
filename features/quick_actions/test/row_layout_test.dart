@@ -82,7 +82,10 @@ void main() {
     );
     await mount(tester, facade);
     final before = tester.getSize(find.byType(QuickActionsRow));
-    expect(before.height, BullQuickActionBar.height);
+    expect(
+      before.height,
+      BullQuickActionBar.heightOf(tester.element(find.byType(QuickActionsRow))),
+    );
     expect(
       tester
           .widget<BullQuickAction>(find.byType(BullQuickAction).first)
