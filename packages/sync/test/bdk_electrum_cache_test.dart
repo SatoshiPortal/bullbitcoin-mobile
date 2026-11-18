@@ -6,6 +6,8 @@ import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/write/native_wallet_writer_repository.dart';
 import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/sqlite_wallet_revision_reader.dart';
+import 'package:sync/src/domain/spend.dart' show signedForGeneration;
+import 'package:sync/testing.dart' show MemoryFreezeStore;
 
 import 'support/connections.dart';
 import 'support/regtest_wallet.dart';
@@ -91,6 +93,30 @@ final class _Wallet {
 
 String _hex(List<int> b) =>
     b.map((x) => x.toRadixString(16).padLeft(2, '0')).join();
+
+// Synthetic spends accepted by the loopback fixture. Native BDK still parses
+// their exact outpoints and verifies their canonical confirmation evidence.
+Uint8List _replacementSpend(Outpoint input, int sats) {
+  final amount = ByteData(8)..setUint64(0, sats, Endian.little);
+  final index = ByteData(4)..setUint32(0, input.vout, Endian.little);
+  return (BytesBuilder()
+        ..add([2, 0, 0, 0, 1])
+        ..add([
+          for (var i = 62; i >= 0; i -= 2)
+            int.parse(input.txId.substring(i, i + 2), radix: 16),
+        ])
+        ..add(index.buffer.asUint8List())
+        ..add([0, 0xfd, 0xff, 0xff, 0xff, 1])
+        ..add(amount.buffer.asUint8List())
+        ..add([22, 0, 20, ...List.filled(20, 0xab), 0, 0, 0, 0]))
+      .toBytes();
+}
+
+final class _NoInputReservations implements InputReservationPort {
+  @override
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
+      const Ok([]);
+}
 
 Map<String, String> _walletScripts() {
   final dir = Directory.systemTemp.createTempSync('wts_cache_scripts_');
@@ -663,6 +689,214 @@ void main() {
       },
     );
 
+    for (final scenario in [
+      'confirmed conflict',
+      'unconfirmed conflict',
+      'confirmed nonconflict',
+      'unknown replacement',
+      'legacy missing inputs',
+    ]) {
+      test('never-observed accepted spend: $scenario', () async {
+        // T1 and T2 provide independent confirmed coins in this wallet.
+        final phase = await fixture.load('S5-incoming-older-revealed', 1);
+        final initial = completed(await sync.execute(descriptor));
+        final input = (txId: phase.ids['T1'] ?? fail('missing T1'), vout: 0);
+        final independent = (
+          txId: phase.ids['T2'] ?? fail('missing T2'),
+          vout: 0,
+        );
+        final original = _replacementSpend(input, 90000);
+        final native = bdk.Transaction(transactionBytes: original);
+        final txid = native.computeTxid();
+        final originalId = txid.toString();
+        txid.dispose();
+        native.dispose();
+        ForegroundStores openStores() => openForeground(
+          documentsDirectory: dir.path,
+          catalog: SingleWalletCatalog(descriptor),
+          reservedAddresses: NoReservedAddresses(),
+          freezes: MemoryFreezeStore(),
+          inputReservations: _NoInputReservations(),
+          connections: connections,
+        );
+        var stores = openStores();
+        addTearDown(() => stores.close());
+        final receipt = await stores.spend.broadcast(
+          signedForGeneration(
+            key: descriptor.key,
+            generation: initial.revision!.generation,
+            transaction: SignedBitcoinTransaction(original),
+          ),
+        );
+        expect(receipt, isA<Ok<SpendReceipt, SyncFailure>>());
+        expect(
+          (receipt as Ok<SpendReceipt, SyncFailure>).value.durable,
+          isTrue,
+        );
+        expect(
+          await stores.spendGate.check(descriptor.key),
+          BitcoinSpendStatus.pending,
+        );
+        if (scenario == 'legacy missing inputs') {
+          final db = sqlite3.open(spendGateStorePath(dir.path));
+          db.execute('UPDATE broadcasts SET inputs=NULL WHERE txid=?', [
+            originalId,
+          ]);
+          db.close();
+        }
+
+        // Bull never imports T. Only another application's R is returned by
+        // subsequent history requests, and no absence cancels T's obligation.
+        await fixture.dropBroadcasts();
+        String? replacementId;
+        if (scenario != 'unknown replacement') {
+          final replacement = bdk.Transaction(
+            transactionBytes: _replacementSpend(
+              scenario == 'confirmed nonconflict' ? independent : input,
+              scenario == 'confirmed nonconflict' ? 40000 : 80000,
+            ),
+          );
+          final client = bdk.ElectrumClient(
+            url: fixture.url,
+            socks5: null,
+            timeout: 5,
+            retry: 0,
+            validateDomain: false,
+          );
+          try {
+            final id = client.transactionBroadcast(tx: replacement);
+            try {
+              replacementId = id.toString();
+              if (scenario != 'unconfirmed conflict') {
+                await fixture.confirmBroadcast(id.toString());
+              } else {
+                await fixture.exposeBroadcasts(true);
+              }
+            } finally {
+              id.dispose();
+            }
+          } finally {
+            client.dispose();
+            replacement.dispose();
+          }
+        }
+        completed(await sync.execute(descriptor, discover: true));
+        final ready = scenario == 'confirmed conflict';
+        final expected = ready
+            ? BitcoinSpendStatus.ready
+            : BitcoinSpendStatus.pending;
+
+        Future<void> assertReopened() async {
+          final wallet = _Wallet.open(path);
+          final originalTxid = bdk.Txid.fromString(hex: originalId);
+          try {
+            expect(
+              wallet.wallet.getTx(txid: originalTxid),
+              isNull,
+              reason:
+                  'T must never have been imported, including after restart',
+            );
+            if (replacementId case final id?) {
+              final nativeId = bdk.Txid.fromString(hex: id);
+              final replacement = wallet.wallet.getTx(txid: nativeId);
+              nativeId.dispose();
+              expect(replacement, isNotNull);
+              if (replacement case final transaction?) {
+                expect(
+                  transaction.chainPosition is bdk.ConfirmedChainPosition,
+                  scenario != 'unconfirmed conflict',
+                );
+              }
+            }
+            if (ready) {
+              final coins = wallet.wallet.listUnspent();
+              try {
+                expect(
+                  coins.any(
+                    (coin) =>
+                        coin.outpoint.txid.toString() == independent.txId &&
+                        coin.outpoint.vout == independent.vout,
+                  ),
+                  isTrue,
+                );
+              } finally {
+                for (final coin in coins) {
+                  coin.outpoint.txid.dispose();
+                  coin.txout.scriptPubkey.dispose();
+                  coin.txout.value.dispose();
+                  if (coin.chainPosition case bdk.ConfirmedChainPosition(
+                    :final confirmationBlockTime,
+                    :final transitively,
+                  )) {
+                    confirmationBlockTime.blockId.hash.dispose();
+                    transitively?.dispose();
+                  }
+                }
+              }
+            }
+          } finally {
+            originalTxid.dispose();
+            wallet.close();
+          }
+          final revisions = RevisionStoreDatasource.openExisting(
+            revisionStorePath(dir.path),
+          );
+          try {
+            final reopened = BitcoinSpendGate(
+              documentsDirectory: dir.path,
+              revisions: revisions,
+              catalog: SingleWalletCatalog(descriptor),
+            );
+            expect(
+              await reopened.check(descriptor.key),
+              expected,
+              reason:
+                  'Only a positive confirmed input conflict settles absent T',
+            );
+          } finally {
+            revisions.close();
+          }
+        }
+
+        // This is separate from receipt/input SQL assertions: on baseline it
+        // exposes the wallet-wide refusal even after R actually confirmed.
+        await assertReopened();
+        expect(await stores.spendGate.check(descriptor.key), expected);
+        await stores.close();
+        stores = openStores();
+        expect(await stores.spendGate.check(descriptor.key), expected);
+        await assertReopened();
+        if (ready) {
+          final wallet = _Wallet.open(path);
+          final recipient = wallet.wallet
+              .peekAddress(keychain: bdk.KeychainKind.external_, index: 2)
+              .address;
+          final address = recipient.toString();
+          recipient.dispose();
+          wallet.close();
+          for (var run = 0; run < 2; run++) {
+            final built = await stores.spend.build(
+              descriptor.key,
+              initial.revision!.generation,
+              BitcoinSpendRequest(
+                recipients: [SpendRecipient(address, amountSat: 1000)],
+                fee: SpendAbsoluteFee(1000),
+                selected: [independent],
+                selectedOnly: true,
+              ),
+            );
+            expect(built, isA<Ok<UnsignedSpend, SyncFailure>>());
+            expect((built as Ok<UnsignedSpend, SyncFailure>).value.inputs, [
+              independent,
+            ]);
+            await assertReopened();
+            await stores.close();
+            stores = openStores();
+          }
+        }
+      });
+    }
+
     for (final visible in [true, false]) {
       test('chained send diagnostic: broadcast visible=$visible', () async {
         await fixture.load('S10-no-change', 0);
@@ -909,11 +1143,15 @@ void main() {
           if (replacing case final BitcoinSpendAdmission lease) lease.close();
         }
         expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
-        // A tracked replacement seen in the pass settles the payment it
-        // conflicts with, for that pass only: nothing is forgotten.
+        // An observed but unconfirmed replacement does not settle the absent
+        // predecessor, so ordinary spends and another fee bump stay blocked.
         completed(await sync.execute(descriptor));
-        expect(await gate.check(descriptor.key), BitcoinSpendStatus.ready);
-        expect(settled(aId), isTrue);
+        expect(await gate.check(descriptor.key), BitcoinSpendStatus.pending);
+        expect(
+          await gate.check(descriptor.key, replacing: cId),
+          BitcoinSpendStatus.pending,
+        );
+        expect(settled(aId), isFalse);
         expect(settled(cId), isTrue);
         // The conflict is no longer seen: protection of both is reinstated.
         await fixture.exposeBroadcasts(false);
