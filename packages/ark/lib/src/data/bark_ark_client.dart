@@ -334,7 +334,7 @@ final class BarkArkClient implements ArkClient {
     final exists = opener.datadirExists(datadir);
     if (!exists && !allowCreate) return const Err(ArkRecoveryRequiredFailure());
     final stages = _Stages(() => _mayRun(account));
-    return childProvider.withChild(account, (mnemonic) async {
+    return childProvider.withChild(account, (mnemonic, fingerprint) async {
       ArkNativeSession? session;
       try {
         if (store.get('recovery') == null) {
@@ -353,6 +353,7 @@ final class BarkArkClient implements ArkClient {
           config: config,
           datadir: datadir,
           mnemonic: mnemonic,
+          childFingerprint: fingerprint,
           chainSource: source,
           create: allowCreate,
           expectedFingerprint:

@@ -14,7 +14,11 @@ final class SecretsArkChildProvider implements ArkChildProviderPort {
   @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
-    Future<Result<T, ArkWalletFailure>> Function(String mnemonic) action,
+    Future<Result<T, ArkWalletFailure>> Function(
+      String mnemonic,
+      Fingerprint fingerprint,
+    )
+    action,
   ) async {
     switch (await _registry.list()) {
       case Err():
@@ -38,7 +42,12 @@ final class SecretsArkChildProvider implements ArkChildProviderPort {
           case Ok(value: final words):
             // Strings cannot be zeroized in Dart. No field, cache, storage, log
             // or facade receives them; scope ends only after native settles.
-            return action(words.join(' '));
+            switch (await _secrets.preview.arkFingerprint(words: words)) {
+              case Err():
+                return const Err(ArkRecoveryRequiredFailure());
+              case Ok(value: final fingerprint):
+                return action(words.join(' '), fingerprint);
+            }
         }
     }
   }

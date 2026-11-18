@@ -23,10 +23,15 @@ abstract interface class ArkExecutionPolicyPort {
 }
 
 /// Scoped child derivation. Implementations must never retain child words.
+/// Compute the public identity through Secrets from the same admitted child.
 /// Kept out of the ordinary ark.dart barrel.
 abstract interface class ArkChildProviderPort {
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
-    Future<Result<T, ArkWalletFailure>> Function(String mnemonic) action,
+    Future<Result<T, ArkWalletFailure>> Function(
+      String mnemonic,
+      Fingerprint fingerprint,
+    )
+    action,
   );
 }

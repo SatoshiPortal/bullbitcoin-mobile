@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:ark/ark.dart';
 import 'package:ark/src/data/ark_writer_lock.dart';
-import 'package:ark/src/data/bark_native_opener.dart'
-    show deriveBarkChildFingerprint;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bark_bitcoin/bark_bitcoin.dart' as bark;
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
@@ -35,10 +34,13 @@ void main() {
         await request.response.close();
       });
       try {
-        // Generated solely for this local fixture; never print or store words.
-        final child = bark.generateMnemonic();
+        // Public BIP39 zero-entropy fixture; never a funded account.
+        final child = Mnemonic(
+          List<int>.filled(16, 0),
+          Language.english,
+        ).sentence;
         expect(bark.validateMnemonic(mnemonic: child), isTrue);
-        final expected = deriveBarkChildFingerprint(child);
+        const expected = '53bdf6b1';
         final endpoint = 'http://127.0.0.1:${server.port}';
         final config = bark.Config(
           serverAddress: endpoint,

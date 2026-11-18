@@ -13,21 +13,23 @@ final class _Stages implements ArkStageRunner {
 
 final class _Wallet implements bark.Wallet {
   final String identity;
+  bool disposed = false;
   _Wallet(this.identity);
   @override
   String fingerprint() => identity;
   @override
   bark.RecoveryStatus recoveryStatus() => bark.NotRunRecoveryStatus();
   @override
-  void dispose() {}
+  void dispose() => disposed = true;
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw StateError('Unexpected native call');
 }
 
 final class _Onchain implements bark.OnchainWallet {
+  bool disposed = false;
   @override
-  void dispose() {}
+  void dispose() => disposed = true;
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw StateError('Unexpected onchain call');
@@ -40,6 +42,8 @@ final class Boundary implements BarkOpenBoundary {
   int walletOpens = 0;
   bool? create;
   final String identity;
+  late final wallet = _Wallet(identity);
+  final onchain = _Onchain();
   Boundary(this.identity);
   @override
   bark.DatadirInfo? inspect(String datadir) => metadata;
@@ -53,7 +57,7 @@ final class Boundary implements BarkOpenBoundary {
     required String datadir,
   }) async {
     onchainOpens++;
-    return _Onchain();
+    return onchain;
   }
 
   @override
@@ -65,14 +69,14 @@ final class Boundary implements BarkOpenBoundary {
   }) async {
     walletOpens++;
     create = args.createIfNotExists;
-    return _Wallet(identity);
+    return wallet;
   }
 }
 
 void main() {
   // Explicit public BIP39 all-zero entropy vector; never printed or persisted.
   final words = Mnemonic(List<int>.filled(16, 0), Language.english).sentence;
-  final identity = deriveBarkChildFingerprint(words);
+  const identity = '53bdf6b1';
   final account = ArkAccountId(
     parent: Fingerprint('12345678'),
     network: BitcoinNetwork.regtest,
@@ -87,10 +91,12 @@ void main() {
     Boundary boundary, {
     String? stored,
     bool prior = false,
+    void Function(ArkRecoveryStatus, String)? onOpened,
   }) => BarkNativeOpener(boundary: boundary).open(
     config: config,
     datadir: 'fixture',
     mnemonic: words,
+    childFingerprint: Fingerprint(identity),
     chainSource: config.primaryEsploraUrl,
     create: true,
     expectedFingerprint: stored,
@@ -98,7 +104,7 @@ void main() {
     onNativeAdmission: () {},
     stages: _Stages(),
     onOnchainOpened: () {},
-    onOpened: (recovery, fingerprint) {},
+    onOpened: onOpened ?? (recovery, fingerprint) {},
   );
   bark.DatadirInfo metadata(String value) => bark.DatadirInfo(
     dbFile: 'fixture/db.sqlite',
@@ -167,11 +173,36 @@ void main() {
       session.close();
     },
   );
-  test(
-    'purpose fingerprint differs from the public vector root fingerprint',
-    () {
-      expect(identity, isNot('73c5da0a'));
-      expect(RegExp(r'^[0-9a-f]{8}$').hasMatch(identity), isTrue);
-    },
-  );
+  for (final existing in [false, true]) {
+    test(
+      'wallet mismatch disposes handles without publication existing=$existing',
+      () async {
+        final boundary = Boundary('deadbeef');
+        if (existing) {
+          boundary.metadata = metadata(identity);
+          boundary.files = true;
+        }
+        var published = false;
+        await expectLater(
+          open(
+            boundary,
+            stored: existing ? identity : null,
+            prior: existing,
+            onOpened: (_, _) => published = true,
+          ),
+          throwsA(
+            isA<ArkBoundaryException>().having(
+              (e) => e.failure.reason,
+              'reason',
+              ArkFailureReason.identityMismatch,
+            ),
+          ),
+        );
+        expect(boundary.walletOpens, 1);
+        expect(boundary.wallet.disposed, isTrue);
+        expect(boundary.onchain.disposed, isTrue);
+        expect(published, isFalse);
+      },
+    );
+  }
 }

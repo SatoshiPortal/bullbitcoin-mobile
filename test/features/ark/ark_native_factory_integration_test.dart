@@ -33,7 +33,7 @@ final class _ChildSpy implements native.ArkChildProviderPort {
   @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
-    Future<Result<T, ArkWalletFailure>> Function(String) action,
+    Future<Result<T, ArkWalletFailure>> Function(String, Fingerprint) action,
   ) async {
     calls++;
     // Never derive or fabricate words if a regression reaches this capability.

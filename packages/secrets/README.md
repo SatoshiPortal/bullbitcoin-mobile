@@ -31,6 +31,7 @@ Secrets
 |-- contains(words:, language:, [passphrase:]) -> bool
 |-- find(words:, language:, [passphrase:]) -> Secret?
 |-- preview
+|   |-- arkFingerprint(words:) -> Fingerprint
 |   |-- bitcoinDescriptors(words:, language:, [passphrase:], network:, scriptTypes:) -> Map<ScriptType, ({String external, String internal})>
 |   `-- matchesBitcoinDescriptors(words:, language:, [passphrase:], network:, scriptType:, expected:) -> bool
 |-- recoverbull
@@ -120,12 +121,15 @@ Keep `secret.id`, a `primitives.Fingerprint`, to fetch a new handle later. Impor
 
 `generate` and `import` return a `Secret`. Importing an existing secret returns a dedicated duplicate failure; it never overwrites the existing entry. `contains(words:, language:, passphrase:)` and `exists(id)` are preliminary checks, not proof that a later import or read will succeed. `preview.bitcoinDescriptors(words:, language:, passphrase:, network:, scriptTypes:)` derives the public account-0 descriptors of words that are not stored, one pair per requested script type from a single seed derivation, for a chain scan before import: it reads and writes nothing, keeps nothing, and only descriptor strings leave the isolate that derives and wipes the seed. The words are read in the `language` the caller states, so every mnemonic previews its own seed and the descriptors match those an import of the same words in the same language derives. `trash(id)` deletes the secret; checking whether a wallet still needs it belongs to the application.
 
+`preview.arkFingerprint(words:)` returns the public Bark m/350h consistency identity of an already scoped English child, with the empty passphrase required by existing Ark accounts. It never reads or writes the keystore and returns only a validated `Fingerprint`. The host must pair it with the same child supplied to Bark; the four-byte identity is not cryptographic authentication. Temporary seed bytes are wiped, but library-internal copies cannot be guaranteed erased.
+
 `list()` returns `List<SecretEntry>`. The sealed family contains usable `Secret` handles and `UnreadableSecret` entries carrying their failure and, when recoverable, their fingerprint. A failure to read the store as a whole remains an `Err`; it must not be interpreted as an empty store or a lost seed. On Android, the platform's `readAll` may fail because of an entry in any namespace. Fetching an individual secret avoids that global read.
 
 ## Outputs and custody
 
 | Operation | Output | Sensitivity |
 |---|---|---|
+| `preview.arkFingerprint` (on `Secrets`) | public Bark child fingerprint | 32-bit consistency discriminator, no spending authority |
 | `derive.xpub` | account xpub | reveals addresses |
 | `preview.bitcoinDescriptors` (on `Secrets`) | receive/change public descriptors of unstored words | reveals addresses |
 | `derive.descriptors.bitcoin` | receive/change public descriptors | reveals addresses |
