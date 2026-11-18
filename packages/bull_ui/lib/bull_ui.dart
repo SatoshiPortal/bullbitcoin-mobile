@@ -75,6 +75,7 @@ export 'package:flutter/widgets.dart'
         PageScrollPhysics,
         PageView,
         Positioned,
+        PopScope,
         Radius,
         Row,
         SafeArea,
@@ -107,7 +108,12 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:material_ui/material_ui.dart'
-    show FormFieldValidator, RefreshCallback, RefreshIndicatorState, TextTheme;
+    show
+        FormFieldValidator,
+        MaterialPageRoute,
+        RefreshCallback,
+        RefreshIndicatorState,
+        TextTheme;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 

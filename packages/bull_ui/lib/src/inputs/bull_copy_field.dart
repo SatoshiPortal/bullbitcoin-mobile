@@ -1,4 +1,5 @@
 import 'package:bull_ui/src/theme/bull_shapes.dart';
+import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:bull_ui/src/feedback/bull_snack_bar.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -22,6 +23,8 @@ class BullCopyField extends StatelessWidget {
     this.onCopy,
     this.maxLines,
     this.overflow,
+    this.label,
+    this.backgroundColor,
   });
 
   /// The value shown.
@@ -44,50 +47,77 @@ class BullCopyField extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? overflow;
 
+  /// Optional heading inside the field, above the public value.
+  final String? label;
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     final toCopy = clipboardText ?? text;
+    final heading = label;
+    final value = Row(
+      children: [
+        const Gap(15),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Text(
+              text,
+              style: context.bullText.bodyLarge?.copyWith(
+                color: colors.secondary,
+              ),
+              maxLines: maxLines,
+              overflow: overflow,
+            ),
+          ),
+        ),
+        if (toCopy.isNotEmpty)
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            iconSize: 20,
+            tooltip:
+                copyLabel ?? MaterialLocalizations.of(context).copyButtonLabel,
+            icon: Icon(Icons.copy_sharp, color: colors.secondary),
+            onPressed:
+                onCopy ??
+                () {
+                  Clipboard.setData(ClipboardData(text: toCopy));
+                  BullSnackBar.show(context, message: copiedMessage);
+                },
+          ),
+        const Gap(8),
+      ],
+    );
     return Container(
       decoration: BoxDecoration(
-        color: colors.onSecondary,
+        color: backgroundColor ?? colors.onSecondary,
         borderRadius: BorderRadius.circular(context.bullShapes.input),
         border: Border.all(color: colors.secondaryFixedDim),
       ),
-      child: Row(
-        children: [
-          const Gap(15),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                text,
-                style: context.bullText.bodyLarge?.copyWith(
-                  color: colors.secondary,
+      child: heading == null
+          ? value
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    BullSpacing.md,
+                    BullSpacing.sm,
+                    BullSpacing.md,
+                    BullSpacing.zero,
+                  ),
+                  child: Text(
+                    heading,
+                    style: context.bullText.bodyLarge?.copyWith(
+                      color: colors.secondary,
+                    ),
+                  ),
                 ),
-                maxLines: maxLines,
-                overflow: overflow,
-              ),
+                value,
+              ],
             ),
-          ),
-          if (toCopy.isNotEmpty)
-            IconButton(
-              visualDensity: VisualDensity.compact,
-              iconSize: 20,
-              tooltip:
-                  copyLabel ??
-                  MaterialLocalizations.of(context).copyButtonLabel,
-              icon: Icon(Icons.copy_sharp, color: colors.secondary),
-              onPressed:
-                  onCopy ??
-                  () {
-                    Clipboard.setData(ClipboardData(text: toCopy));
-                    BullSnackBar.show(context, message: copiedMessage);
-                  },
-            ),
-          const Gap(8),
-        ],
-      ),
     );
   }
 }
