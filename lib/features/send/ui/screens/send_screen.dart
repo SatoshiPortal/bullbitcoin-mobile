@@ -2071,7 +2071,6 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
           CurrencyText(
             amt,
             showFiat: false,
-            interactive: true,
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.secondary,
           ),
