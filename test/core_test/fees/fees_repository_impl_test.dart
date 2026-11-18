@@ -107,6 +107,24 @@ void main() {
     verifyZeroInteractions(serverRepository);
   });
 
+  test('uses the custom server when one exists', () async {
+    final custom = MempoolServer.existing(
+      url: 'custom.example',
+      network: network,
+      isCustom: true,
+    );
+    when(() => serverRepository.fetchCustomServer(network))
+        .thenAnswer((_) async => Ok(custom));
+
+    await repository.getNetworkFees(network: Network.bitcoinMainnet);
+
+    verify(
+      () =>
+          datasource.fetchBitcoinNetworkFees(baseUrl: 'https://custom.example'),
+    ).called(1);
+    verifyNever(() => serverRepository.fetchDefaultServer(any()));
+  });
+
   test('uses the default server when no custom server exists', () async {
     final defaultServer = MempoolServer.existing(
       url: 'default.example',
