@@ -11,6 +11,9 @@ import '../data/ark_repository_impl.dart';
 import '../data/create_ark_facade.dart';
 import '../domain/ark_account_selection_port.dart';
 import '../domain/ark_board_funding_port.dart';
+import '../domain/ark_display_data_port.dart';
+import '../domain/usecases/read_ark_display_data_usecase.dart';
+import '../presentation/ark_display_data_cubit.dart';
 import '../domain/ark_provisioning_port.dart';
 import '../domain/repositories/ark_account_registry_repository.dart';
 import '../domain/usecases/load_ark_settings_usecase.dart';
@@ -36,6 +39,7 @@ import '../presentation/ark_l10n.dart';
 import '../ui/ark_settings_screen.dart';
 import '../ui/ark_account_screen.dart';
 import '../ui/ark_payment_screen.dart';
+import '../ui/ark_scanner.dart';
 import '../ui/ark_receive_screen.dart';
 import '../ui/ark_vtxos_screen.dart';
 import '../ui/ark_information_screen.dart';
@@ -104,6 +108,8 @@ final class ArkFeature {
   final ArkPreferencesRepository _preferences;
   final ArkProvisioningPort _provisioning;
   final ArkBoardFundingPort _boardFunding;
+  final ArkDisplayDataPort? _displayData;
+  final ArkScanner? _scanner;
   final ArkRepositoryImpl _repository;
   final ArkFacade facade;
   final _ownerListeners = <VoidCallback>{};
@@ -131,6 +137,8 @@ final class ArkFeature {
     required ArkProvisioningPort provisioning,
     required ArkAccountRegistryRepository registry,
     required ArkBoardFundingPort boardFunding,
+    this._displayData,
+    this._scanner,
   }) : _client = client,
        _preferences = preferences,
        _provisioning = provisioning,
@@ -254,6 +262,8 @@ class _ArkPage extends StatefulWidget {
 
 class _ArkPageState extends State<_ArkPage> {
   BlocBase<Object?>? _owner;
+  ArkDisplayDataCubit? _displayOwner;
+  StreamSubscription<ArkDisplayDataState>? _displaySubscription;
   StreamSubscription<ArkSettingsState>? _originSubscription;
   int _generation = 0;
   bool _loading = false, _enabled = false;
@@ -277,6 +287,9 @@ class _ArkPageState extends State<_ArkPage> {
               entry.sourceWalletId.isNotEmpty &&
               entry.amount.value > BigInt.zero &&
               entry.amount.value <= BigInt.from(2100000000000000),
+        final ArkAccountEntry entry =>
+          widget.kind == _Kind.account &&
+              entry.account == widget.feature._config.id,
         final ArkPaymentEntry entry =>
           widget.kind == _Kind.payment &&
               entry.account == widget.feature._config.id,
@@ -318,6 +331,14 @@ class _ArkPageState extends State<_ArkPage> {
     ++_generation;
     final owner = _owner;
     _owner = null;
+    final display = _displayOwner;
+    _displayOwner = null;
+    final displaySubscription = _displaySubscription;
+    _displaySubscription = null;
+    if (displaySubscription != null) {
+      _observeCleanup(displaySubscription.cancel());
+    }
+    if (display != null) _observeCleanup(display.close());
     _loading = false;
     final subscription = _originSubscription;
     _originSubscription = null;
@@ -446,6 +467,30 @@ class _ArkPageState extends State<_ArkPage> {
       default:
         break;
     }
+    final displayPort = feature._displayData;
+    if (displayPort != null &&
+        _owner != null &&
+        const {
+          _Kind.account,
+          _Kind.board,
+          _Kind.payment,
+          _Kind.receive,
+          _Kind.review,
+        }.contains(widget.kind)) {
+      final display = ArkDisplayDataCubit(
+        ReadArkDisplayDataUsecase(displayPort),
+        account: account,
+      );
+      _displayOwner = display;
+      _displaySubscription = display.stream.listen((_) {
+        if (mounted &&
+            generation == _generation &&
+            identical(display, _displayOwner)) {
+          setState(() {});
+        }
+      });
+      unawaited(display.load());
+    }
     final settings = _origin?.settings;
     final own = _owner;
     if (own is ArkSettingsCubit) {
@@ -548,19 +593,64 @@ class _ArkPageState extends State<_ArkPage> {
     };
   }
 
+  Future<String?> _scanPayment() async {
+    final owner = _owner;
+    final scanner = widget.feature._scanner;
+    if (owner is! ArkPaymentCubit || scanner == null || !_live(owner)) {
+      return null;
+    }
+    final value = await scanner(context, context.loc.send);
+    return _live(owner) ? value : null;
+  }
+
+  Sats? _observedSpendable() {
+    var origin = _origin;
+    while (origin != null) {
+      if (!origin.valid) return null;
+      final owner = origin.owner;
+      if (owner is ArkCubit) {
+        if (owner.state case ArkObserved(:final snapshot)
+            when snapshot.account == widget.feature._config.id &&
+                !snapshot.stale) {
+          return snapshot.spendable;
+        }
+      }
+      origin = origin.parent;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_validEntry()) return const ArkUnavailableScreen();
     final owner = _owner;
     final publication = owner is ArkSettingsCubit ? owner.state : null;
+    final displayData = switch (_displayOwner?.state) {
+      ArkDisplayDataReady(:final source)
+          when source.account == widget.feature._config.id =>
+        source,
+      _ => null,
+    };
     return switch (owner) {
       ArkSettingsCubit() => ArkSettingsScreen(
         cubit: owner,
+        onInfo: () => _open(owner, _Kind.info, publication: publication),
+        onVtxos: () => _open(owner, _Kind.vtxos, publication: publication),
+        onBoard: () {
+          if (publication is ArkSettingsReady &&
+              publication.settings?.enabled == true) {
+            _open(owner, _Kind.board, publication: publication);
+          }
+        },
+        onExits: () => _open(owner, _Kind.exits, publication: publication),
         onOpenAccount: (_) =>
             _open(owner, _Kind.account, publication: publication),
       ),
       ArkPaymentCubit() => ArkPaymentScreen(
         cubit: owner,
+        displayData: displayData,
+        observedSpendable: _observedSpendable(),
+        onScan: widget.feature._scanner == null ? null : _scanPayment,
         initialDestination: switch (widget.entry) {
           ArkPaymentEntry(:final destination) => destination,
           _ => '',
@@ -569,13 +659,16 @@ class _ArkPageState extends State<_ArkPage> {
       ),
       ArkReceiveCubit() => ArkReceiveScreen(
         cubit: owner,
+        displayData: displayData,
       ), // Share honestly absent.
       ArkBoardCubit() => ArkBoardScreen(
         cubit: owner,
+        displayData: displayData,
         onReconcile: () => _open(owner, _Kind.vtxos),
       ),
       ArkOperationCubit() => ArkOperationReviewScreen(
         cubit: owner,
+        displayData: displayData,
         onReconcile: () => _open(
           owner,
           owner.request is ArkEmergencyExitQuoteRequest ||
@@ -587,6 +680,7 @@ class _ArkPageState extends State<_ArkPage> {
       ),
       ArkCubit() when widget.kind == _Kind.account => ArkAccountScreen(
         cubit: owner,
+        displayData: displayData,
         enabled: _enabled,
         onSend: () => _open(owner, _Kind.payment),
         onReceive: () => _open(owner, _Kind.receive),

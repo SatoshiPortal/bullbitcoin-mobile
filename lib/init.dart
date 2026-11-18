@@ -116,7 +116,7 @@ Future<void> _setupArkRegtestProfile() async {
   final arkUrl = Uri.tryParse(_arkUrl);
   final esploraUrl = Uri.tryParse(_arkEsploraUrl);
   if (!_arkProfileAdmitted || arkUrl == null || esploraUrl == null) return;
-  await ArkForegroundHost.setup(
+  await setupArkForeground(
     locator,
     arkUrl: arkUrl,
     primaryEsploraUrl: esploraUrl,

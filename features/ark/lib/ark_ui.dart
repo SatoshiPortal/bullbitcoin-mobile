@@ -7,3 +7,4 @@ export 'src/presentation/ark_l10n.dart'
     show arkLocalizationsOf, arkLocalizationsForLanguage;
 export 'generated/l10n/ark_localizations.dart' show ArkLocalizations;
 export 'src/ui/ark_send_entry_button.dart';
+export 'src/ui/ark_wallet_card.dart' show ArkWalletCard;

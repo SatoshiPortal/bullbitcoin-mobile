@@ -19,10 +19,18 @@ Object _configuration(ArkAccountConfig config) => (
 class ArkSettingsScreen extends StatefulWidget {
   final ArkSettingsCubit cubit;
   final ValueChanged<ArkAccountConfig> onOpenAccount;
+  final VoidCallback? onInfo;
+  final VoidCallback? onVtxos;
+  final VoidCallback? onBoard;
+  final VoidCallback? onExits;
   const ArkSettingsScreen({
     super.key,
     required this.cubit,
     required this.onOpenAccount,
+    this.onInfo,
+    this.onVtxos,
+    this.onBoard,
+    this.onExits,
   });
   @override
   State<ArkSettingsScreen> createState() => _ArkSettingsScreenState();
@@ -71,10 +79,18 @@ class _ArkSettingsScreenState extends State<ArkSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = arkLocalizationsOf(context);
-    final state = widget.cubit.state;
+    final owner = widget.cubit;
+    final state = owner.state;
     final settings = state.settings;
     final accepted = _consented(settings?.config);
+    bool current() =>
+        mounted &&
+        !owner.isClosed &&
+        identical(owner, widget.cubit) &&
+        identical(state, owner.state) &&
+        state is ArkSettingsReady;
     return BullScaffold(
+      backgroundColor: context.bull.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(BullSpacing.md),
@@ -94,6 +110,92 @@ class _ArkSettingsScreenState extends State<ArkSettingsScreen> {
                 ),
               if (state.busy) BullText(l10n.loading, style: null),
               if (settings != null) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: BullText(l10n.title, role: BullTextRole.body),
+                    ),
+                    BullSwitch(
+                      value: settings.enabled,
+                      onChanged:
+                          state is! ArkSettingsReady ||
+                              (!settings.enabled && !accepted)
+                          ? null
+                          : (value) {
+                              if (!current() ||
+                                  value == owner.state.settings?.enabled) {
+                                return;
+                              }
+                              if (value) {
+                                unawaited(
+                                  owner.enable(
+                                    privacyDisclosureAccepted: _consented(
+                                      owner.state.settings?.config,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                unawaited(owner.disable());
+                              }
+                            },
+                    ),
+                  ],
+                ),
+                const Gap(BullSpacing.md),
+                if (settings.enabled) ...[
+                  BullBorderedTile(
+                    backgroundColor: context.bull.surface,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        BullText(
+                          l10n.nextRound,
+                          role: BullTextRole.label,
+                          color: context.bull.textMuted,
+                        ),
+                        const Gap(BullSpacing.sm),
+                        BullText(l10n.unknown, role: BullTextRole.subtitle),
+                      ],
+                    ),
+                  ),
+                  const Gap(BullSpacing.md),
+                ],
+                for (final row in [
+                  (label: l10n.arkInfo, action: widget.onInfo, funding: false),
+                  (label: l10n.vtxos, action: widget.onVtxos, funding: false),
+                  (
+                    label: l10n.boardToArk,
+                    action: widget.onBoard,
+                    funding: true,
+                  ),
+                  (label: l10n.exits, action: widget.onExits, funding: false),
+                ]) ...[
+                  BullBorderedTile(
+                    onTap:
+                        state is ArkSettingsReady &&
+                            row.action != null &&
+                            (!row.funding || settings.enabled)
+                        ? () {
+                            if (!current() ||
+                                (row.funding &&
+                                    owner.state.settings?.enabled != true)) {
+                              return;
+                            }
+                            row.action?.call();
+                          }
+                        : null,
+                    backgroundColor: context.bull.surface,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: BullText(row.label, role: BullTextRole.body),
+                        ),
+                        const BullIcon(BullIcons.chevronRight),
+                      ],
+                    ),
+                  ),
+                  const Gap(BullSpacing.xs),
+                ],
                 ArkConnectionDetails(config: settings.config),
                 const Gap(BullSpacing.md),
                 if (!settings.enabled) ...[

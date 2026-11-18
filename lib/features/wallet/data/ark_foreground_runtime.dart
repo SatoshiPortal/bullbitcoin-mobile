@@ -28,6 +28,8 @@ import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:secrets/secrets.dart';
 
 import 'ark_board_abandonment.dart';
+import 'ark_display_data.dart';
+import 'wallet_native_runtime.dart';
 import 'sqlite_ark_funding_reservations.dart';
 
 /// Constructs the wallet-owned Board actor over the runtime's single client.
@@ -94,7 +96,9 @@ final class ArkForegroundRuntime {
           Ok(:final value) =>
             value.id == _config.id &&
                 value.arkUrl == _config.arkUrl &&
-                value.primaryEsploraUrl == _config.primaryEsploraUrl,
+                value.primaryEsploraUrl == _config.primaryEsploraUrl &&
+                value.fallbackEsploraUrl == _config.fallbackEsploraUrl &&
+                value.renewalThresholdBlocks == _config.renewalThresholdBlocks,
           Err() => false,
         } &&
         _policy.active;
@@ -185,6 +189,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   required ArkBoardFundingBinding boardFunding,
   ArkPreferencesRepository? preferences,
   BackgroundTaskDispatcher? dispatcher,
+  ArkScanner? scanner,
 }) async {
   try {
     final selection = _WalletArkSelection(
@@ -227,6 +232,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
       stageBudget: const native.ArkUnlimitedStageBudget(),
     );
     ArkForegroundMaintenance? maintenance;
+    WalletArkDisplayData? displayData;
     try {
       final locale =
           (await locator<SettingsRepository>().fetch()).language?.locale ??
@@ -250,6 +256,17 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           ? registry
           : _ScheduledArkRegistry(registry, dispatcher);
       final board = boardFunding.bind(client, selection.sourceWalletId);
+      if (locator.isRegistered<WalletNativeRuntime>()) {
+        final settings = locator<SettingsRepository>();
+        displayData = WalletArkDisplayData(
+          runtime: locator<WalletNativeRuntime>(),
+          account: config.id,
+          selectedSource: selection.displaySourceWalletId,
+          currency: () async => (await settings.fetch()).currencyCode,
+          currencyChanges: settings.currencyChangeStream,
+          isActive: () => policy.active,
+        );
+      }
       final feature = ArkFeature(
         selection,
         config: config,
@@ -263,11 +280,13 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         ),
         registry: managedRegistry,
         boardFunding: board,
+        displayData: displayData,
+        scanner: scanner,
       );
       final runtime = ArkForegroundRuntime._(
         feature,
         client,
-        boardFunding.close,
+        () => _closeArkDisplayAndBoard(displayData, boardFunding.close),
         policy,
         maintenance,
         selection,
@@ -287,7 +306,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         await maintenance?.close();
       } catch (_) {}
       try {
-        await boardFunding.close();
+        await _closeArkDisplayAndBoard(displayData, boardFunding.close);
       } catch (_) {}
       try {
         await client.close();
@@ -321,6 +340,17 @@ Future<bool> prepareArkMaintenanceSchedule(
     Ok(:final value) => value.isNotEmpty,
     Err() => false,
   };
+}
+
+Future<void> _closeArkDisplayAndBoard(
+  WalletArkDisplayData? display,
+  Future<void> Function() closeBoard,
+) async {
+  try {
+    await display?.close();
+  } finally {
+    await closeBoard();
+  }
 }
 
 /// Publication is durable before scheduling; failure never erases the account.
@@ -401,6 +431,14 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
         throw StateError('Ark source wallet is unavailable or changed');
     }
   }
+
+  Future<Result<String, ArkFailure>> displaySourceWalletId(
+    ArkAccountId account,
+  ) async => switch (await _select()) {
+    Ok(:final value) when value.$1.id == account => Ok(value.$2),
+    Err(:final failure) => Err(failure),
+    _ => const Err(ArkAccountRecoveryFailure()),
+  };
 
   Future<Result<(ArkAccountConfig, String), ArkFailure>> _select() async {
     try {

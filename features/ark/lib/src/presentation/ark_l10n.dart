@@ -12,6 +12,10 @@ ArkLocalizations arkLocalizationsOf(BuildContext context) =>
       Localizations.maybeLocaleOf(context)?.languageCode ?? 'en',
     );
 
+extension ArkLocalizationsContext on BuildContext {
+  ArkLocalizations get loc => arkLocalizationsOf(this);
+}
+
 /// Shared by context-free settings catalogues as well as visible entry widgets.
 ArkLocalizations arkLocalizationsForLanguage(String localeName) =>
     localeName.split(RegExp('[-_]')).first.toLowerCase() == 'fr'

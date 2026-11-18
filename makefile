@@ -142,7 +142,12 @@ translations:
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
+	@$(MAKE) ark-translations
 	@$(MAKE) novlang-bridge
+
+.PHONY: ark-translations
+ark-translations:
+	@(cd features/ark && fvm flutter gen-l10n)
 
 .PHONY: bull-ui-translations
 bull-ui-translations:

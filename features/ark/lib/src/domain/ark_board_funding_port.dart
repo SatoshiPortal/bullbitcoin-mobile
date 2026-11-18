@@ -12,6 +12,9 @@ export 'ark_failure.dart';
 /// Preparation never signs. A reviewable result must come from durable facts;
 /// uncertain work retains its operation and is not permission to prepare again.
 abstract interface class ArkBoardFundingPort {
+  /// Invalid-request, insufficient-funds and below-minimum failures guarantee
+  /// refusal before journal admission. Once admission may have been attempted,
+  /// return ArkSubmissionUncertainFailure with the original operation ID instead.
   @useResult
   Future<Result<ArkBoardPreparation, ArkFailure>> prepare(
     ArkAccountConfig config,

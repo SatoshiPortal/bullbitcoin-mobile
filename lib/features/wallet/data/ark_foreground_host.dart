@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:background_tasks/background_tasks.dart';
+import 'package:ark/ark.dart' show ArkSnapshot;
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
@@ -46,6 +47,7 @@ final class ArkForegroundHost {
   final Uri _esplora;
   final bool _initialize;
   final ArkPreferencesRepository? _preferences;
+  final ArkScanner? _scanner;
   final BackgroundTaskDispatcher? dispatcher;
   final ArkBoardFundingBinding Function() _boardFunding;
   ArkForegroundRuntime? _runtime;
@@ -63,6 +65,7 @@ final class ArkForegroundHost {
     required bool initializeNew,
     required this._boardFunding,
     this._preferences,
+    this._scanner,
     this.dispatcher,
   }) : _ark = arkUrl,
        _esplora = primaryEsploraUrl,
@@ -80,6 +83,7 @@ final class ArkForegroundHost {
     required bool initializeNew,
     ArkPreferencesRepository? preferences,
     BackgroundTaskDispatcher? dispatcher,
+    ArkScanner? scanner,
   }) async {
     final host = ArkForegroundHost(
       locator,
@@ -87,6 +91,7 @@ final class ArkForegroundHost {
       primaryEsploraUrl: primaryEsploraUrl,
       initializeNew: initializeNew,
       preferences: preferences,
+      scanner: scanner,
       dispatcher: dispatcher,
       boardFunding: () {
         final factory = WalletArkFundingFactory(
@@ -166,6 +171,23 @@ final class ArkForegroundHost {
     if (!_closed && runtime != null) await runtime.maintain();
   }
 
+  /// Read only an already-open account. Home never initializes a runtime.
+  Future<ArkSnapshot?> homeObservation() async {
+    final runtime = _runtime;
+    final generation = _generation;
+    bool live() =>
+        !_closed && generation == _generation && identical(runtime, _runtime);
+    if (runtime == null || _pending != null || !live()) return null;
+    if (!await runtime.isCurrent() || !live()) return null;
+    final result = await runtime.feature.facade.read(runtime.account);
+    if (!live() || !await runtime.isCurrent() || !live()) return null;
+    return switch (result) {
+      Ok(:final value) when value.account == runtime.account && !value.stale =>
+        value,
+      _ => null,
+    };
+  }
+
   /// Synchronously retires the current runtime and its mounted pages.
   ///
   /// Call before or when the app context Ark depends on changes, such as the
@@ -242,6 +264,7 @@ final class ArkForegroundHost {
       boardFunding: _boardFunding(),
       preferences: _preferences,
       dispatcher: dispatcher,
+      scanner: _scanner,
     );
     if (opened case Ok(:final value)) {
       if (_closed || generation != _generation) {

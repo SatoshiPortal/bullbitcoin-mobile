@@ -3,6 +3,7 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:primitives/primitives.dart';
 
 import '../presentation/ark_l10n.dart';
+import 'ark_amount.dart';
 
 /// Collects one foreground intent; the native quote revalidates all authority.
 class ArkExitRequestScreen extends StatefulWidget {
@@ -22,6 +23,8 @@ class ArkExitRequestScreen extends StatefulWidget {
 class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
   String _destination = '', _rate = '', _maximum = '';
   bool _consumed = false;
+  bool _selectedOnly = false;
+  final Set<String> _selected = {};
   int _revision = 0;
 
   BigInt? _positive(String raw, BigInt maximum) {
@@ -36,7 +39,9 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
       widget.claimIds ??
       [
         for (final vtxo in widget.snapshot.vtxos)
-          if (vtxo.state == ArkVtxoState.spendable && !vtxo.pendingRound)
+          if (vtxo.state == ArkVtxoState.spendable &&
+              !vtxo.pendingRound &&
+              (!_selectedOnly || _selected.contains(vtxo.id)))
             vtxo.id,
       ];
 
@@ -111,6 +116,8 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.snapshot.account != widget.snapshot.account) {
       _destination = _rate = _maximum = '';
+      _selectedOnly = false;
+      _selected.clear();
       ++_revision;
     }
   }
@@ -120,7 +127,35 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
     final l10n = arkLocalizationsOf(context);
     final rendered = widget;
     final revision = _revision;
+    final ids = _ids;
+    final values = widget.claimIds == null
+        ? widget.snapshot.vtxos
+              .where((vtxo) => ids.contains(vtxo.id))
+              .map((vtxo) => vtxo.amount.value)
+        : widget.snapshot.exitDetails
+              .where((exit) => ids.contains(exit.id))
+              .map((exit) => exit.amount.value);
+    final amount = Sats(values.fold(BigInt.zero, (sum, value) => sum + value));
     return BullScaffold(
+      backgroundColor: context.bull.background,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            BullSpacing.md,
+            BullSpacing.xs,
+            BullSpacing.md,
+            BullSpacing.lg,
+          ),
+          child: BullButton.big(
+            label: l10n.review,
+            disabled: _consumed || _request() == null,
+            onPressed: () => _review(rendered, revision),
+            bgColor: context.bull.inverseSurface,
+            textColor: context.bull.surface,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(BullSpacing.md),
@@ -128,13 +163,106 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BullTopBar(
-                title: l10n.exits,
+                title: widget.claimIds == null
+                    ? l10n.newEmergencyExit
+                    : l10n.exits,
+                titleWidget: BullText(
+                  widget.claimIds == null ? l10n.newEmergencyExit : l10n.exits,
+                  role: BullTextRole.subtitle,
+                ),
                 onBack: () => Navigator.pop(context),
               ),
               BullInfoBar(message: l10n.foregroundExit),
               if (widget.claimIds == null)
                 BullInfoBar(message: l10n.exitProgressReviewWarning),
-              for (final id in _ids) BullText(id, style: null),
+              if (widget.claimIds == null) ...[
+                BullText(
+                  l10n.exitChooseBody,
+                  role: BullTextRole.body,
+                  color: context.bull.textMuted,
+                ),
+                const Gap(BullSpacing.md),
+                BullSegmented(
+                  items: {l10n.exitAllEligible, l10n.exitSelected},
+                  initialValue: _selectedOnly
+                      ? l10n.exitSelected
+                      : l10n.exitAllEligible,
+                  onSelected: (value) => _edit(
+                    rendered,
+                    revision,
+                    () => _selectedOnly = value == l10n.exitSelected,
+                  ),
+                ),
+                const Gap(BullSpacing.sm),
+                if (_selectedOnly)
+                  for (final vtxo in widget.snapshot.vtxos)
+                    if (vtxo.state == ArkVtxoState.spendable &&
+                        !vtxo.pendingRound)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: BullSpacing.sm,
+                        ),
+                        color: context.bull.surface,
+                        child: Row(
+                          children: [
+                            BullCheckbox(
+                              checked: _selected.contains(vtxo.id),
+                              disabled: _consumed,
+                              onChanged: (checked) =>
+                                  _edit(rendered, revision, () {
+                                    if (checked) {
+                                      _selected.add(vtxo.id);
+                                    } else {
+                                      _selected.remove(vtxo.id);
+                                    }
+                                  }),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  BullText(
+                                    formatArkObservedSats(context, vtxo.amount),
+                                    role: BullTextRole.body,
+                                  ),
+                                  BullText(
+                                    vtxo.id,
+                                    role: BullTextRole.caption,
+                                    color: context.bull.textMuted,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              ],
+              const Gap(BullSpacing.md),
+              BullDetailsTable(
+                items: [
+                  BullDetailsTableItem(
+                    label: widget.claimIds != null || _selectedOnly
+                        ? l10n.exitSelected
+                        : l10n.exitAllEligible,
+                    displayValue: ids.length.toString(),
+                  ),
+                  BullDetailsTableItem(
+                    label: l10n.exitAvailableValue,
+                    displayValue: formatArkObservedSats(
+                      context,
+                      widget.snapshot.stale ||
+                              (widget.claimIds == null &&
+                                  !widget.snapshot.vtxoInventoryComplete)
+                          ? null
+                          : amount,
+                    ),
+                  ),
+                ],
+              ),
+              BullInfoBar(message: l10n.exitFeesAfterReview),
+              const Gap(BullSpacing.md),
+              for (final id in ids) BullText(id, role: BullTextRole.caption),
+              const Gap(BullSpacing.sm),
               BullInputText(
                 value: _destination,
                 hint: l10n.claimDestination,
@@ -160,13 +288,6 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
                 disabled: _consumed,
                 onChanged: (value) =>
                     _edit(rendered, revision, () => _maximum = value),
-              ),
-              BullButton.big(
-                label: l10n.review,
-                disabled: _consumed || _request() == null,
-                onPressed: () => _review(rendered, revision),
-                bgColor: context.bull.primary,
-                textColor: context.bull.onPrimary,
               ),
             ],
           ),

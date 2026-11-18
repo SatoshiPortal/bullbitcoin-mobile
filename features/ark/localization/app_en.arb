@@ -52,7 +52,7 @@
   "@info": {},
   "exits": "Emergency exit",
   "@exits": {},
-  "destination": "Ark address or BOLT11 invoice",
+  "destination": "Payment address or BOLT11 invoice",
   "@destination": {},
   "amount": "Amount in sats",
   "@amount": {},
@@ -284,21 +284,274 @@
   "@exitMaximumClaimFee": {},
   "abandonedBoardState": "Abandoned board (never signed)",
   "@abandonedBoardState": {},
-  "feeReserveTitle": "On-chain fee reserve",
-  "@feeReserveTitle": {
-    "description": "Observed public on-chain emergency exit fee reserve"
-  },
-  "feeReserveHelp": "Fund this address with on-chain bitcoin before starting an emergency exit when the fee reserve is insufficient.",
-  "@feeReserveHelp": {
-    "description": "Observed public on-chain emergency exit fee reserve"
-  },
-  "feeReserveAmount": "{amount} sats",
-  "@feeReserveAmount": {
-    "description": "Observed public on-chain emergency exit fee reserve",
+  "walletBalance": "{amount} sats",
+  "@walletBalance": {
+    "description": "Observed spendable Ark wallet balance with explicit satoshi units",
     "placeholders": {
       "amount": {
         "type": "String"
       }
     }
+  },
+  "receiveAddress": "Receive Address",
+  "@receiveAddress": {
+    "description": "Heading above the current Ark receive address"
+  },
+  "boardToArk": "Board to Ark",
+  "@boardToArk": {
+    "description": "Navigation action for moving on-chain bitcoin into Ark"
+  },
+  "arkInfo": "Ark info",
+  "@arkInfo": {
+    "description": "Navigation action opening Ark server information"
+  },
+  "fiatAmount": "{amount} {currency}",
+  "@fiatAmount": {
+    "description": "Fiat equivalent from the app price and selected currency, shown only when available",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "boardIntro": "Move bitcoin from your on-chain wallet into Ark.",
+  "@boardIntro": {
+    "description": "Board form introduction"
+  },
+  "availableOnchain": "Available on-chain",
+  "@availableOnchain": {
+    "description": "Current observed spendable source wallet balance"
+  },
+  "amountToMove": "Amount to move",
+  "@amountToMove": {
+    "description": "Label for the on-chain amount moved into Ark"
+  },
+  "maxAmount": "Max",
+  "@maxAmount": {
+    "description": "Maximum spend action"
+  },
+  "maxUnavailable": "Max is unavailable without a current fast-fee estimate.",
+  "@maxUnavailable": {
+    "description": "Maximum remains disabled when no applicable miner fee quote exists"
+  },
+  "boardAction": "Board",
+  "@boardAction": {
+    "description": "Continue from the Board amount form to the actual funding review"
+  },
+  "satsUnit": "sats",
+  "@satsUnit": {
+    "description": "Satoshi unit displayed in an Ark amount field"
+  },
+  "continueAction": "Continue",
+  "@continueAction": {
+    "description": "Ark payment journey label"
+  },
+  "recipientAddress": "Recipient's address",
+  "@recipientAddress": {
+    "description": "Ark payment journey label"
+  },
+  "paymentAddressHint": "Paste a payment address or invoice",
+  "@paymentAddressHint": {
+    "description": "Ark payment journey label"
+  },
+  "paymentScanHint": "Scan a payment address or invoice.",
+  "@paymentScanHint": {
+    "description": "Ark payment journey label"
+  },
+  "openCamera": "Open the Camera",
+  "@openCamera": {
+    "description": "Ark payment journey label"
+  },
+  "cameraUnavailable": "Camera is unavailable. Enter the recipient's address.",
+  "@cameraUnavailable": {
+    "description": "Ark payment journey label"
+  },
+  "confirmSend": "Confirm Send",
+  "@confirmSend": {
+    "description": "Ark payment journey label"
+  },
+  "paymentSent": "Payment sent",
+  "@paymentSent": {
+    "description": "Ark payment journey label"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Ark payment journey label"
+  },
+  "walletLabel": "Wallet:",
+  "@walletLabel": {
+    "description": "Ark payment journey label"
+  },
+  "balanceLabel": "Balance:",
+  "@balanceLabel": {
+    "description": "Ark payment journey label"
+  },
+  "maxPaymentUnavailable": "Max requires a current payment fee quote.",
+  "@maxPaymentUnavailable": {
+    "description": "Ark payment journey label"
+  },
+  "fromLabel": "From",
+  "@fromLabel": {
+    "description": "Ark payment journey label"
+  },
+  "toLabel": "To",
+  "@toLabel": {
+    "description": "Ark payment journey label"
+  },
+  "amountLabel": "Amount",
+  "@amountLabel": {
+    "description": "Ark payment journey label"
+  },
+  "networkFees": "Network fees",
+  "@networkFees": {
+    "description": "Ark payment journey label"
+  },
+  "totalLabel": "Total",
+  "@totalLabel": {
+    "description": "Ark payment journey label"
+  },
+  "vtxoDetails": "VTXO details",
+  "@vtxoDetails": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoCreated": "Created",
+  "@vtxoCreated": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoAnchor": "Anchor",
+  "@vtxoAnchor": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoAll": "All",
+  "@vtxoAll": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoExpired": "Expired",
+  "@vtxoExpired": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoBlocksRemaining": "Blocks remaining",
+  "@vtxoBlocksRemaining": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoTotal": "Total value",
+  "@vtxoTotal": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoEmptyTitle": "No VTXOs",
+  "@vtxoEmptyTitle": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoEmptyBody": "Your VTXOs will appear here once you receive funds.",
+  "@vtxoEmptyBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoNoMatches": "No VTXOs match this filter.",
+  "@vtxoNoMatches": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoCount": "VTXOs",
+  "@vtxoCount": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "emergencyOnlyTitle": "For emergency use only",
+  "@emergencyOnlyTitle": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "emergencyOnlyBody": "Use an emergency exit only if the Ark server is down or not responding.",
+  "@emergencyOnlyBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "emergencySendInstead": "When Ark is working, just send to an on-chain address from your Ark balance.",
+  "@emergencySendInstead": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "startEmergencyExit": "Start emergency exit",
+  "@startEmergencyExit": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "newEmergencyExit": "New emergency exit",
+  "@newEmergencyExit": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "noEmergencyExits": "No emergency exits",
+  "@noEmergencyExits": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "noEmergencyExitsBody": "You haven’t started an emergency exit. Exits you start will show up here.",
+  "@noEmergencyExitsBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitChooseBody": "Choose whether to exit all eligible VTXOs or only specific ones.",
+  "@exitChooseBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitAllEligible": "All eligible VTXOs",
+  "@exitAllEligible": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitSelected": "Selected VTXOs",
+  "@exitSelected": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitAvailableValue": "Available value",
+  "@exitAvailableValue": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitFeesAfterReview": "Actual fees and reserve exposure are available in the native review.",
+  "@exitFeesAfterReview": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitProgressTitle": "Progress emergency exits",
+  "@exitProgressTitle": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitProgressBody": "Choose a fee rate to request a foreground review of exit progression.",
+  "@exitProgressBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "feeReserveTitle": "On-chain fee reserve",
+  "@feeReserveTitle": {
+    "description": "Public funding destination for emergency exit miner fees"
+  },
+  "feeReserveHelp": "Fund this address with on-chain bitcoin before starting an emergency exit when the fee reserve is insufficient.",
+  "@feeReserveHelp": {
+    "description": "Explains why the native fee reserve must be funded"
+  },
+  "feeReserveAmount": "{amount} sats",
+  "@feeReserveAmount": {
+    "description": "Observed native on-chain fee reserve balance",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "hiddenAmount": "••••",
+  "@hiddenAmount": {
+    "description": "Privacy placeholder for hidden balances"
+  },
+  "operationRenewalStarted": "Renewal started",
+  "@operationRenewalStarted": {
+    "description": "Native operation review outcome or estimate"
+  },
+  "emergencyExitStarted": "Emergency exit started",
+  "@emergencyExitStarted": {
+    "description": "Native operation review outcome or estimate"
+  },
+  "operationEstimatedNet": "Estimated net amount",
+  "@operationEstimatedNet": {
+    "description": "Native operation review outcome or estimate"
+  },
+  "arkWalletSubtitle": "Off-chain bitcoin",
+  "@arkWalletSubtitle": {
+    "description": "Ark account presentation"
+  },
+  "nextRound": "Next round",
+  "@nextRound": {
+    "description": "Ark account presentation"
   }
 }

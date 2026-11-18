@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:bull_ui/bull_ui.dart';
 
 import '../presentation/ark_board_cubit.dart';
+import '../domain/ark_display_data_port.dart';
+import 'ark_amount.dart';
+
 import '../presentation/ark_l10n.dart';
 import '../presentation/ark_failure_l10n.dart';
 import '../presentation/ark_operation_status_l10n.dart';
@@ -11,8 +14,10 @@ import 'ark_board_amount_screen.dart';
 class ArkBoardScreen extends StatefulWidget {
   final ArkBoardCubit cubit;
   final VoidCallback onReconcile;
+  final ArkDisplayData? displayData;
   const ArkBoardScreen({
     super.key,
+    this.displayData,
     required this.cubit,
     required this.onReconcile,
   });
@@ -62,7 +67,10 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
     final l10n = arkLocalizationsOf(context);
     if (state is ArkBoardEditing) {
       return ArkBoardAmountScreen(
+        key: ValueKey(state),
         config: owner.config,
+        failure: state.failure,
+        displayData: widget.displayData,
         onReviewRequest: (config, amount) {
           if (_current(owner, state) && identical(config, owner.config)) {
             unawaited(owner.prepare(amount));
@@ -78,12 +86,25 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BullTopBar(
-                title: l10n.board,
+                title: l10n.boardToArk,
                 onBack: () => Navigator.pop(context),
               ),
               BullInfoBar(message: l10n.boardFastPolicy),
               if (state is ArkBoardBusy) BullText(l10n.loading, style: null),
               if (state case ArkBoardReviewed(:final preparation)) ...[
+                Center(
+                  child: BullText(
+                    formatArkSats(context, preparation.fundingAmount),
+                    role: BullTextRole.headline,
+                  ),
+                ),
+                ArkFiatAmount(
+                  amount: preparation.fundingAmount,
+                  price: widget.displayData?.account == owner.config.id
+                      ? widget.displayData?.price
+                      : null,
+                ),
+                const Gap(BullSpacing.md),
                 BullDetailsTable(
                   items: [
                     BullDetailsTableItem(

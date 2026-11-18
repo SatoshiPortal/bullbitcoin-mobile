@@ -13,7 +13,8 @@ sealed class ArkBoardState {
 }
 
 final class ArkBoardEditing extends ArkBoardState {
-  const ArkBoardEditing();
+  final ArkFailure? failure;
+  const ArkBoardEditing([this.failure]);
 }
 
 final class ArkBoardBusy extends ArkBoardState {
@@ -63,6 +64,17 @@ final class ArkBoardCubit extends Cubit<ArkBoardState> {
         _operationId = value.operationId;
         await _readOriginal(value.operationId);
       case Err(:final failure):
+        final preAdmissionRefusal = switch (failure) {
+          ArkBoardBelowMinimumFailure(:final minimum) =>
+            minimum.value > BigInt.zero,
+          ArkInvalidRequestFailure() ||
+          ArkPaymentInsufficientFundsFailure() => true,
+          _ => false,
+        };
+        if (_operationId == null && preAdmissionRefusal) {
+          emit(ArkBoardEditing(failure));
+          return;
+        }
         if (failure case ArkSubmissionUncertainFailure(:final operationId)) {
           _operationId = operationId;
         }

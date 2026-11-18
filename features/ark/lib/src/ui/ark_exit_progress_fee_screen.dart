@@ -101,6 +101,28 @@ class _ArkExitProgressFeeScreenState extends State<ArkExitProgressFeeScreen> {
     final l10n = arkLocalizationsOf(context);
     final id = rendered.config.id;
     return BullScaffold(
+      backgroundColor: context.bull.background,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            BullSpacing.md,
+            BullSpacing.xs,
+            BullSpacing.md,
+            BullSpacing.lg,
+          ),
+          child: BullButton.big(
+            label: l10n.review,
+            disabled:
+                _consumed ||
+                rendered.onReviewRequest == null ||
+                _parse(raw) == null,
+            onPressed: () => _review(rendered, epoch, raw),
+            bgColor: context.bull.inverseSurface,
+            textColor: context.bull.surface,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(BullSpacing.md),
@@ -108,9 +130,19 @@ class _ArkExitProgressFeeScreenState extends State<ArkExitProgressFeeScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BullTopBar(
-                title: l10n.exits,
+                title: l10n.exitProgressTitle,
+                titleWidget: BullText(
+                  l10n.exitProgressTitle,
+                  role: BullTextRole.subtitle,
+                ),
                 onBack: () => Navigator.pop(context),
               ),
+              BullText(
+                l10n.exitProgressBody,
+                role: BullTextRole.body,
+                color: context.bull.textMuted,
+              ),
+              const Gap(BullSpacing.md),
               BullInfoBar(
                 message: l10n.exitProgressAccount(
                   '${id.parent.hex}/${id.network.name}/${id.serverIdentity}',
@@ -120,6 +152,8 @@ class _ArkExitProgressFeeScreenState extends State<ArkExitProgressFeeScreen> {
               BullInfoBar(message: l10n.foregroundExit),
               BullInfoBar(message: l10n.exitProgressReserveNotice),
               const Gap(BullSpacing.md),
+              BullText(l10n.exitProgressFeeRate, role: BullTextRole.label),
+              const Gap(BullSpacing.xs),
               BullInputText(
                 value: raw,
                 hint: l10n.exitProgressFeeRate,
@@ -132,16 +166,6 @@ class _ArkExitProgressFeeScreenState extends State<ArkExitProgressFeeScreen> {
                 BullInfoBar(message: l10n.exitProgressRateInvalid),
               if (rendered.onReviewRequest == null)
                 BullInfoBar(message: l10n.nativeUnavailable),
-              BullButton.big(
-                label: l10n.review,
-                disabled:
-                    _consumed ||
-                    rendered.onReviewRequest == null ||
-                    _parse(raw) == null,
-                onPressed: () => _review(rendered, epoch, raw),
-                bgColor: context.bull.primary,
-                textColor: context.bull.onPrimary,
-              ),
             ],
           ),
         ),

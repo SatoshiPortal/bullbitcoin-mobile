@@ -3,6 +3,7 @@ import 'package:bull_ui/bull_ui.dart';
 
 import '../presentation/ark_l10n.dart';
 import 'ark_connection_details.dart';
+import 'ark_amount.dart';
 
 class ArkInformationScreen extends StatelessWidget {
   final ArkSnapshot snapshot;
@@ -40,7 +41,9 @@ class ArkInformationScreen extends StatelessWidget {
                     BullText(l10n.feeReserveTitle, role: BullTextRole.subtitle),
                     const Gap(BullSpacing.sm),
                     BullText(
-                      reserve == null
+                      !arkAmountsVisible(context)
+                          ? l10n.hiddenAmount
+                          : reserve == null
                           ? l10n.unknown
                           : l10n.feeReserveAmount(reserve.value.toString()),
                       role: BullTextRole.body,

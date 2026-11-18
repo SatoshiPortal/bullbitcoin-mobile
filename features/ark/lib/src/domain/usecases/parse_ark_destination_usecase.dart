@@ -13,12 +13,13 @@ final class ParseArkDestinationUsecase {
     required BitcoinNetwork network,
   }) {
     final value = input.trim();
-    final lower = value.toLowerCase();
     if (value.isEmpty ||
         value.length > 10000 ||
+        value.codeUnits.any((unit) => unit > 127) ||
         value.contains(RegExp(r'\s'))) {
       return const Err(ArkInvalidRequestFailure());
     }
+    final lower = value.toLowerCase();
     if (isArkAddress(value, network: network)) {
       return Ok(
         ArkPaymentDestination(kind: ArkDestinationKind.ark, value: value),
@@ -35,6 +36,37 @@ final class ParseArkDestinationUsecase {
         ArkPaymentDestination(kind: ArkDestinationKind.bolt11, value: invoice),
       );
     }
+    if (_bitcoinSyntax(value, network)) {
+      return Ok(
+        ArkPaymentDestination(kind: ArkDestinationKind.bitcoin, value: value),
+      );
+    }
     return const Err(ArkInvalidRequestFailure());
   }
+}
+
+/// Classification only. Native quote validates checksum, network and fees.
+/// BIP21 is intentionally excluded: query amounts must not be ignored.
+bool _bitcoinSyntax(String value, BitcoinNetwork network) {
+  if (value.length > 90) {
+    return false;
+  }
+  final prefix = switch (network) {
+    BitcoinNetwork.mainnet => 'bc1',
+    BitcoinNetwork.testnet || BitcoinNetwork.signet => 'tb1',
+    BitcoinNetwork.regtest => 'bcrt1',
+  };
+  final lower = value.toLowerCase();
+  if ((value == lower || value == value.toUpperCase()) &&
+      RegExp(
+        '^$prefix'
+        r'[ac-hj-np-z02-9]{6,}$',
+      ).hasMatch(lower)) {
+    return true;
+  }
+  final legacyPrefix = network.isMainnet ? '[13]' : '[mn2]';
+  return RegExp(
+    '^$legacyPrefix'
+    r'[1-9A-HJ-NP-Za-km-z]{25,34}$',
+  ).hasMatch(value);
 }
