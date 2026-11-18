@@ -229,6 +229,77 @@ void main() {
     );
   }
 
+  // Android rebuilds the native MapView when the activity is recreated, keeps the Dart widget, drops every runtime source and layer, and fires the style callback once more for the same style.
+  testWidgets('pins are uploaded again when the same style loads again', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullMapView(
+          merchants: [Merchant(id: 1, location: region)],
+          controller: controller,
+          onMerchantTap: (_) {},
+          onViewportChanged: (_) {},
+        ),
+      ),
+    );
+    platform.created?.call(0);
+    await tester.pump();
+    tester
+        .widget<MapLibreMap>(find.byType(MapLibreMap))
+        .onStyleLoadedCallback
+        ?.call();
+    await waitForPins(tester);
+    platform.updated = Completer<void>();
+    tester
+        .widget<MapLibreMap>(find.byType(MapLibreMap))
+        .onStyleLoadedCallback
+        ?.call();
+    await waitForPins(tester);
+    expect(platform.sources, hasLength(2));
+    expect(platform.jsonUpdates, hasLength(2));
+    expect(jsonDecode(platform.jsonUpdates.last)['features'].single['id'], 1);
+  });
+
+  testWidgets('an upload outlived by a style reload does not stand in for it', (
+    tester,
+  ) async {
+    final hold = Completer<void>();
+    platform.holdUpdate = hold;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullMapView(
+          merchants: [Merchant(id: 1, location: region)],
+          controller: controller,
+          onMerchantTap: (_) {},
+          onViewportChanged: (_) {},
+        ),
+      ),
+    );
+    platform.created?.call(0);
+    await tester.pump();
+    tester
+        .widget<MapLibreMap>(find.byType(MapLibreMap))
+        .onStyleLoadedCallback
+        ?.call();
+    await waitForPins(tester);
+    // The style reloads while the first upload is still in flight.
+    platform.updated = Completer<void>();
+    platform.holdUpdate = null;
+    tester
+        .widget<MapLibreMap>(find.byType(MapLibreMap))
+        .onStyleLoadedCallback
+        ?.call();
+    await tester.pump();
+    expect(platform.sources, hasLength(2));
+    expect(platform.layers, 6);
+    expect(platform.jsonUpdates, hasLength(1));
+    hold.complete();
+    await waitForPins(tester);
+    expect(platform.jsonUpdates, hasLength(2));
+    expect(jsonDecode(platform.jsonUpdates.last)['features'].single['id'], 1);
+  });
+
   testWidgets('an obsolete style cannot add layers after a theme change', (
     tester,
   ) async {
