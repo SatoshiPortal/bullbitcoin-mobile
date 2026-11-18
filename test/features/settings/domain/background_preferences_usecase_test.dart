@@ -23,6 +23,8 @@ class Preferences implements BackgroundPreferencesRepository {
   var selected = BackgroundSyncInterval.hour1;
   var failWrite = false;
   var failRead = false;
+  var grantRequest = false;
+  var failOpen = false;
   @override
   Future<Result<BackgroundSyncInterval, SettingsFailure>> interval() async =>
       failRead ? const Err(SettingsStorageFailure()) : Ok(selected);
@@ -32,12 +34,12 @@ class Preferences implements BackgroundPreferencesRepository {
   @override
   Future<Result<bool, SettingsFailure>> requestNotifications() async {
     requests++;
-    return const Ok(false);
+    return Ok(grantRequest);
   }
 
   @override
   Future<Result<void, SettingsFailure>> openNotificationSettings() async =>
-      const Ok(null);
+      failOpen ? const Err(SettingsStorageFailure()) : const Ok(null);
   @override
   Future<Result<void, SettingsFailure>> setInterval(
     BackgroundSyncInterval value,
@@ -376,6 +378,30 @@ void main() {
     final usecase = BackgroundPreferencesUsecase(Preferences());
     expect((await usecase.execute()).refused, isFalse);
     expect((await usecase.execute(requestPermission: true)).refused, isTrue);
+  });
+
+  test(
+    'a granted request still not shown leads to the system settings',
+    () async {
+      // The app is allowed but its payment channel alone is blocked.
+      final usecase = BackgroundPreferencesUsecase(
+        Preferences()..grantRequest = true,
+      );
+      expect((await usecase.execute(requestPermission: true)).refused, isTrue);
+    },
+  );
+
+  test('a notification failure keeps background tasks shown as on', () async {
+    final repository = Preferences();
+    final cubit = BackgroundPreferencesCubit(
+      BackgroundPreferencesUsecase(repository),
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    repository.failOpen = true;
+    await cubit.load(openSettings: true);
+    expect(cubit.state.failure, isA<SettingsStorageFailure>());
+    expect(cubit.state.enabled, isTrue);
   });
 }
 

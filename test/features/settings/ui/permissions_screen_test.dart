@@ -12,7 +12,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 
-/// The system refuses every notification request.
+/// The system refuses every notification request; [allowed] stands for the
+/// user's choice in the system settings.
 class _Preferences implements BackgroundPreferencesRepository {
   var selected = BackgroundSyncInterval.hours6;
   var settingsOpened = 0;
@@ -29,9 +30,11 @@ class _Preferences implements BackgroundPreferencesRepository {
     return const Ok(null);
   }
 
+  var allowed = false;
+
   @override
   Future<Result<bool, SettingsFailure>> notificationsAllowed() async =>
-      const Ok(false);
+      Ok(allowed);
 
   @override
   Future<Result<bool, SettingsFailure>> requestNotifications() async =>
@@ -84,6 +87,14 @@ void main() {
     await tester.tap(find.text('Open system settings'));
     await tester.pumpAndSettle();
     expect(preferences.settingsOpened, 1);
+
+    // Allowed in the system settings: coming back reads it again.
+    preferences.allowed = true;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(tester.widget<BullSwitch>(_switchOf('Notifications')).value, true);
+    expect(find.byType(BullInfoBar), findsNothing);
 
     await tester.tap(_switchOf('Background Tasks'));
     await tester.pumpAndSettle();
