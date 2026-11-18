@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Wallet secrets live in secure storage encrypted under hardware-bound Android
+  Keystore keys that never leave the device. If the encrypted files are copied
+  to another device by a cloud restore or a phone-to-phone transfer, they
+  arrive without the keys that decrypt them, and the app can no longer read its
+  own secure storage. Exclude all app data from both vectors so a new device
+  starts clean and the user restores from their recovery phrase or backup.
+  allowBackup="false" already blocks these on Android 11 and below; these rules
+  are what cover device transfer on Android 12+ (targetSdk 36).
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" />
+        <exclude domain="database" />
+        <exclude domain="file" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" />
+        <exclude domain="database" />
+        <exclude domain="file" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>
