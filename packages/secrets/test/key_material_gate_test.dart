@@ -322,6 +322,14 @@ Object? f() => source()?.revealMnemonic;
       ),
       isNotEmpty,
     );
+    final secrets = Uri.file('$repository/packages/secrets/lib/secrets.dart');
+    expect(
+      await inspectReach(
+        'reach_default',
+        "export '$secrets' if (dart.library.io) 'dart:core';\n",
+      ),
+      isNotEmpty,
+    );
     File('${fixture.path}/outside_part.dart')
         .writeAsStringSync("part of 'reach_part.dart';\n");
     expect(
