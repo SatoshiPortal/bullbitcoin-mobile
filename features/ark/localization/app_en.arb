@@ -283,5 +283,22 @@
   "exitMaximumClaimFee": "Maximum claim fee (sats)",
   "@exitMaximumClaimFee": {},
   "abandonedBoardState": "Abandoned board (never signed)",
-  "@abandonedBoardState": {}
+  "@abandonedBoardState": {},
+  "feeReserveTitle": "On-chain fee reserve",
+  "@feeReserveTitle": {
+    "description": "Observed public on-chain emergency exit fee reserve"
+  },
+  "feeReserveHelp": "Fund this address with on-chain bitcoin before starting an emergency exit when the fee reserve is insufficient.",
+  "@feeReserveHelp": {
+    "description": "Observed public on-chain emergency exit fee reserve"
+  },
+  "feeReserveAmount": "{amount} sats",
+  "@feeReserveAmount": {
+    "description": "Observed public on-chain emergency exit fee reserve",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
 }

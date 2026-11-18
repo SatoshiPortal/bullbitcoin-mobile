@@ -16,6 +16,10 @@ class ArkInformationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = arkLocalizationsOf(context);
     final info = snapshot.serverInfo;
+    final address = snapshot.account == config.id
+        ? snapshot.reserveAddress
+        : null;
+    final reserve = snapshot.confirmedReserve;
     return BullScaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -27,10 +31,44 @@ class ArkInformationScreen extends StatelessWidget {
                 title: l10n.info,
                 onBack: () => Navigator.pop(context),
               ),
+              if (snapshot.stale) BullInfoBar(message: l10n.stale),
+              if (address != null && address.trim().isNotEmpty)
+                Column(
+                  key: const ValueKey('ark-fee-reserve'),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    BullText(l10n.feeReserveTitle, role: BullTextRole.subtitle),
+                    const Gap(BullSpacing.sm),
+                    BullText(
+                      reserve == null
+                          ? l10n.unknown
+                          : l10n.feeReserveAmount(reserve.value.toString()),
+                      role: BullTextRole.body,
+                    ),
+                    const Gap(BullSpacing.sm),
+                    BullInfoBar(message: l10n.feeReserveHelp),
+                    const Gap(BullSpacing.md),
+                    Center(
+                      child: BullQrCode(
+                        data: address,
+                        size: 200,
+                        semanticsLabel: l10n.feeReserveTitle,
+                      ),
+                    ),
+                    const Gap(BullSpacing.md),
+                    BullCopyField(
+                      text: address,
+                      clipboardText: address,
+                      copiedMessage: l10n.copied,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const Gap(BullSpacing.lg),
+                  ],
+                ),
               BullInfoBar(message: l10n.privacy),
               const Gap(BullSpacing.md),
               ArkConnectionDetails(config: config),
-              if (snapshot.stale) BullInfoBar(message: l10n.stale),
               BullDetailsTable(
                 items: [
                   BullDetailsTableItem(

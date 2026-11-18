@@ -134,5 +134,8 @@
   "exitMaximumClaimFee": "Frais maximaux de réclamation (sats)",
   "@exitMaximumClaimFee": {},
   "abandonedBoardState": "Board abandonné (jamais signé)",
-  "@abandonedBoardState": {}
+  "@abandonedBoardState": {},
+  "feeReserveTitle": "Réserve de frais on-chain",
+  "feeReserveHelp": "Alimentez cette adresse en bitcoins on-chain avant de démarrer une sortie d’urgence lorsque la réserve de frais est insuffisante.",
+  "feeReserveAmount": "{amount} sats"
 }
