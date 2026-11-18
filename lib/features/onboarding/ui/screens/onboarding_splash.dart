@@ -104,7 +104,7 @@ class _Actions extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.appColors.cardBackground,
+        color: context.appColors.surfaceFixed,
         borderRadius: BorderRadius.circular(context.bullShapes.card),
       ),
       child: Column(
@@ -113,7 +113,7 @@ class _Actions extends StatelessWidget {
           if (creating || loading) ...[
             Center(
               child: CircularProgressIndicator(
-                color: context.appColors.primary,
+                color: context.appColors.primaryFixed,
               ),
             ),
           ] else ...[
@@ -147,9 +147,9 @@ class _Actions extends StatelessWidget {
                 child: Text(
                   context.loc.onboardingAdvancedOptionsTitle,
                   style: context.bullType.body.copyWith(
-                    color: context.appColors.primary,
+                    color: context.appColors.primaryFixed,
                     decoration: TextDecoration.underline,
-                    decorationColor: context.appColors.primary,
+                    decorationColor: context.appColors.primaryFixed,
                   ),
                 ),
               ),

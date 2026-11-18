@@ -12,8 +12,8 @@ class RecoverWalletButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BullButton.big(
       label: context.loc.onboardingRecoverWalletButton,
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
+      bgColor: context.appColors.secondaryFixed,
+      textColor: context.appColors.onSecondaryFixed,
       iconData: Icons.history_edu,
       onPressed: () => context.goNamed(OnboardingRoute.recoverOptions.name),
     );
