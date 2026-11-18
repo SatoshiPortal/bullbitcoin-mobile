@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/notification_permission_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/read_background_tasks_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -20,8 +22,25 @@ part 'wizard_state.dart';
 /// reads the blob, flushes touched fields to SQLite, calls
 /// `markComplete()` again (idempotent), and clears pending.
 class WizardBloc extends Bloc<WizardEvent, WizardState> {
-  WizardBloc({required this._savePending, required this._markComplete})
-    : super(const WizardState()) {
+  WizardBloc({
+    required this._savePending,
+    required this._markComplete,
+    required this._readBackgroundTasks,
+    required this._notificationPermission,
+  }) : super(const WizardState()) {
+    on<_WizardStarted>(_onStarted);
+    on<_WizardBackgroundTasksPicked>(
+      (event, emit) => emit(
+        state.copyWith(
+          choices: state.choices.copyWith(backgroundTasks: event.enabled),
+        ),
+      ),
+    );
+    on<_WizardNotificationsPicked>(_onNotificationsPicked);
+    on<_WizardNotificationsRefreshed>(
+      (event, emit) async =>
+          _emitNotifications(emit, await _notificationPermission.execute()),
+    );
     on<_WizardThemePicked>(_onThemePicked);
     on<_WizardLanguagePicked>(_onLanguagePicked);
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
@@ -44,6 +63,51 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
 
   final SavePendingWizardChoicesUsecase _savePending;
   final MarkWizardCompleteUsecase _markComplete;
+  final ReadBackgroundTasksUsecase _readBackgroundTasks;
+  final NotificationPermissionUsecase _notificationPermission;
+
+  Future<void> _onStarted(
+    _WizardStarted event,
+    Emitter<WizardState> emit,
+  ) async {
+    final enabled = await _readBackgroundTasks.execute();
+    // A pick made while reading wins over the stored value.
+    if (enabled != null &&
+        !state.choices.touched.contains(WizardField.backgroundTasks)) {
+      emit(
+        state.copyWith(
+          choices: state.choices.copyWithSilent(backgroundTasks: enabled),
+        ),
+      );
+    }
+    _emitNotifications(emit, await _notificationPermission.execute());
+  }
+
+  /// Only the system can take the permission back: turning the switch off
+  /// opens its settings.
+  Future<void> _onNotificationsPicked(
+    _WizardNotificationsPicked event,
+    Emitter<WizardState> emit,
+  ) async => _emitNotifications(
+    emit,
+    await _notificationPermission.execute(
+      request: event.enabled,
+      openSettings: !event.enabled,
+    ),
+  );
+
+  void _emitNotifications(
+    Emitter<WizardState> emit,
+    ({bool allowed, bool refused}) permission,
+  ) => emit(
+    state.copyWith(
+      notificationsAllowed: permission.allowed,
+      // A later read cannot tell a refusal from a request never made.
+      notificationsRefused:
+          !permission.allowed &&
+          (permission.refused || state.notificationsRefused),
+    ),
+  );
 
   void _onThemePicked(_WizardThemePicked event, Emitter<WizardState> emit) {
     emit(

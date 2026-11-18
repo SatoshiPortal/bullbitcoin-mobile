@@ -11556,5 +11556,14 @@
   "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai.",
   "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka.",
   "serverEncrypted": "Encrypted",
-  "serverUnencrypted": "Encrypted nahi"
+  "serverUnencrypted": "Encrypted nahi",
+  "backgroundTasksTitle": "Background kaam",
+  "blockedInSystemSettings": "System settings mein blocked",
+  "notificationsBlockedMessage": "Notifications system settings mein blocked hain.",
+  "notificationsTitle": "Notifications",
+  "openSystemSettings": "System settings kholein",
+  "permissionsTitle": "Anumatiyan",
+  "settingsSearchPermissionsKeywords": "notifications|background kaam|battery|alerts",
+  "wizardBackgroundTasksDescription": "App band hone par payment check karta hai.",
+  "wizardNotificationsDescription": "Payment aane par jaanein."
 }

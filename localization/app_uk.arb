@@ -4614,5 +4614,14 @@
   "torSettingsDescNoInternetOrBlocked": "Ця мережа не має доступу до інтернету або блокує Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не вдалося підключитися до налаштованого проксі SOCKS5.",
   "serverEncrypted": "Зашифровано",
-  "serverUnencrypted": "Не зашифровано"
+  "serverUnencrypted": "Не зашифровано",
+  "backgroundTasksTitle": "Фонові завдання",
+  "blockedInSystemSettings": "Заблоковано в налаштуваннях системи",
+  "notificationsBlockedMessage": "Сповіщення заблоковано в налаштуваннях системи.",
+  "notificationsTitle": "Сповіщення",
+  "openSystemSettings": "Відкрити налаштування системи",
+  "permissionsTitle": "Дозволи",
+  "settingsSearchPermissionsKeywords": "сповіщення|фонові завдання|батарея|оповіщення",
+  "wizardBackgroundTasksDescription": "Перевіряє платежі, коли застосунок закрито.",
+  "wizardNotificationsDescription": "Дізнавайтеся про надходження платежів."
 }

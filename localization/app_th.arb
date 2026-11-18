@@ -11253,5 +11253,14 @@
   "torSettingsDescNoInternetOrBlocked": "เครือข่ายนี้ไม่มีการเข้าถึงอินเทอร์เน็ต หรือบล็อก Tor",
   "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้",
   "serverEncrypted": "เข้ารหัสแล้ว",
-  "serverUnencrypted": "ไม่ได้เข้ารหัส"
+  "serverUnencrypted": "ไม่ได้เข้ารหัส",
+  "backgroundTasksTitle": "งานเบื้องหลัง",
+  "blockedInSystemSettings": "ถูกบล็อกในการตั้งค่าระบบ",
+  "notificationsBlockedMessage": "การแจ้งเตือนถูกบล็อกในการตั้งค่าระบบ",
+  "notificationsTitle": "การแจ้งเตือน",
+  "openSystemSettings": "เปิดการตั้งค่าระบบ",
+  "permissionsTitle": "สิทธิ์",
+  "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
+  "wizardBackgroundTasksDescription": "ตรวจสอบการชำระเงินขณะปิดแอป",
+  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า"
 }

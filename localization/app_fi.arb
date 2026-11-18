@@ -4605,5 +4605,14 @@
   "torSettingsDescNoInternetOrBlocked": "Tällä verkolla ei ole internetyhteyttä, tai se estää Torin.",
   "torSettingsExternalProxyUnavailableDescription": "Bull ei saanut yhteyttä määritettyyn SOCKS5-välityspalvelimeen.",
   "serverEncrypted": "Salattu",
-  "serverUnencrypted": "Salaamaton"
+  "serverUnencrypted": "Salaamaton",
+  "backgroundTasksTitle": "Taustatehtävät",
+  "blockedInSystemSettings": "Estetty järjestelmäasetuksissa",
+  "notificationsBlockedMessage": "Ilmoitukset on estetty järjestelmäasetuksissa.",
+  "notificationsTitle": "Ilmoitukset",
+  "openSystemSettings": "Avaa järjestelmäasetukset",
+  "permissionsTitle": "Käyttöoikeudet",
+  "settingsSearchPermissionsKeywords": "ilmoitukset|taustatehtävät|akku|hälytykset",
+  "wizardBackgroundTasksDescription": "Tarkistaa maksut, kun sovellus on suljettu.",
+  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu."
 }

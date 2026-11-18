@@ -29,8 +29,13 @@ import 'package:bull_ui/bull_ui.dart'
 /// theme without marking it as touched, so the user's existing setting
 /// isn't clobbered when they tap Skip.
 class WizardScreen extends StatefulWidget {
-  const WizardScreen({required this.exchangeAllowed, super.key});
+  const WizardScreen({
+    required this.exchangeAllowed,
+    required this.backgroundTasksAvailable,
+    super.key,
+  });
   final bool exchangeAllowed;
+  final bool backgroundTasksAvailable;
 
   @override
   State<WizardScreen> createState() => _WizardScreenState();
@@ -49,9 +54,20 @@ class _WizardScreenState extends State<WizardScreen> {
 
   static const List<WizardPage> _pages = WizardPage.values;
 
+  late final AppLifecycleListener _lifecycle;
+
   @override
   void initState() {
     super.initState();
+    // The user may have allowed notifications in the system settings.
+    _lifecycle = AppLifecycleListener(
+      onResume: () {
+        if (!widget.backgroundTasksAvailable) return;
+        context.read<WizardBloc>().add(
+          const WizardEvent.notificationsRefreshed(),
+        );
+      },
+    );
     final c = context.read<WizardBloc>().state.choices;
     if (c.themeMode != AppThemeMode.system) return;
     final brightness =
@@ -74,6 +90,7 @@ class _WizardScreenState extends State<WizardScreen> {
 
   @override
   void dispose() {
+    _lifecycle.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -147,7 +164,10 @@ class _WizardScreenState extends State<WizardScreen> {
             if (isWelcome) const WelcomeBgPattern(),
             SafeArea(
               child: BlocBuilder<WizardBloc, WizardState>(
-                buildWhen: (a, b) => a.choices != b.choices,
+                buildWhen: (a, b) =>
+                    a.choices != b.choices ||
+                    a.notificationsAllowed != b.notificationsAllowed ||
+                    a.notificationsRefused != b.notificationsRefused,
                 builder: (context, state) {
                   final c = state.choices;
                   final bloc = context.read<WizardBloc>();
@@ -187,6 +207,20 @@ class _WizardScreenState extends State<WizardScreen> {
                                       bloc.add(WizardEvent.languagePicked(l)),
                                   onCurrencyPicked: (code) => bloc.add(
                                     WizardEvent.currencyPicked(code),
+                                  ),
+                                  backgroundTasks:
+                                      widget.backgroundTasksAvailable
+                                      ? c.backgroundTasks
+                                      : null,
+                                  onBackgroundTasksPicked: (value) => bloc.add(
+                                    WizardEvent.backgroundTasksPicked(value),
+                                  ),
+                                  notificationsAllowed:
+                                      state.notificationsAllowed,
+                                  notificationsRefused:
+                                      state.notificationsRefused,
+                                  onNotificationsPicked: (value) => bloc.add(
+                                    WizardEvent.notificationsPicked(value),
                                   ),
                                 ),
                                 const MissionStep(),

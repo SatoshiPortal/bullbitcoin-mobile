@@ -23,6 +23,7 @@ enum SettingsRoute {
   payjoinAdvancedSettings('payjoin-advanced-settings'),
   autoswapSettings('autoswap-settings'),
   appSettings('app-settings'),
+  permissions('permissions'),
   swapRestore('swap-restore'),
   swapRescue('swap-rescue');
 

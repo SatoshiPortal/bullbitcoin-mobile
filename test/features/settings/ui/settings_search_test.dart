@@ -78,6 +78,7 @@ void main() {
         isSuperuser: true,
         isDevModeEnabled: true,
         accountReady: true,
+        backgroundTasksAvailable: true,
       );
       final expectedIds = {
         'dev mode': SettingsItemId.devMode,
@@ -207,6 +208,7 @@ void main() {
         isSuperuser: true,
         isDevModeEnabled: true,
         accountReady: true,
+        backgroundTasksAvailable: true,
       );
       final expectedIds = {
         'trading': SettingsItemId.exchange,
@@ -339,6 +341,20 @@ void main() {
       );
     });
 
+    test('permissions are found by their keywords where tasks run', () {
+      expect(
+        searchSettings(
+          _englishItems(backgroundTasksAvailable: true),
+          'notifications',
+        ).map((item) => item.id),
+        contains(SettingsItemId.permissions),
+      );
+      expect(
+        _englishItems().map((item) => item.id),
+        isNot(contains(SettingsItemId.permissions)),
+      );
+    });
+
     test('still reports no match for a query nothing contains', () {
       expect(searchSettings(_frenchItems(), 'zzz'), isEmpty);
     });
@@ -348,6 +364,7 @@ void main() {
         isSuperuser: true,
         isDevModeEnabled: true,
         accountReady: true,
+        backgroundTasksAvailable: true,
       );
 
       expect(
@@ -363,6 +380,7 @@ List<SettingsItem> _englishItems({
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
   bool accountReady = false,
+  bool backgroundTasksAvailable = false,
 }) {
   final localization = AppLocalizationsEn();
   return buildSettingsItems(
@@ -371,6 +389,7 @@ List<SettingsItem> _englishItems({
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     accountReady: accountReady,
+    backgroundTasksAvailable: backgroundTasksAvailable,
   );
 }
 

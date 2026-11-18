@@ -4623,5 +4623,14 @@
   "torSettingsDescNoInternetOrBlocked": "此网络无法访问互联网，或屏蔽了 Tor。",
   "torSettingsExternalProxyUnavailableDescription": "Bull 无法连接到已配置的 SOCKS5 代理。",
   "serverEncrypted": "已加密",
-  "serverUnencrypted": "未加密"
+  "serverUnencrypted": "未加密",
+  "backgroundTasksTitle": "后台任务",
+  "blockedInSystemSettings": "已在系统设置中屏蔽",
+  "notificationsBlockedMessage": "通知已在系统设置中被屏蔽。",
+  "notificationsTitle": "通知",
+  "openSystemSettings": "打开系统设置",
+  "permissionsTitle": "权限",
+  "settingsSearchPermissionsKeywords": "通知|后台任务|电池|提醒",
+  "wizardBackgroundTasksDescription": "在应用关闭时检查付款。",
+  "wizardNotificationsDescription": "收到付款时通知您。"
 }

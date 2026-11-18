@@ -15332,38 +15332,6 @@
   "@walletDiscoveryFailed": {
     "description": "Recoverable failure of a manual wallet discovery scan"
   },
-  "backgroundSyncTitle": "Background synchronization",
-  "@backgroundSyncTitle": {},
-  "backgroundSyncDescription": "Check for incoming payments while the app is closed. Your system may delay checks.",
-  "@backgroundSyncDescription": {},
-  "backgroundSyncOff": "Off",
-  "@backgroundSyncOff": {},
-  "backgroundSyncMinutes": "Every {count} minutes",
-  "@backgroundSyncMinutes": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "backgroundSyncHours": "{count, plural, =1{Every hour} other{Every {count} hours}}",
-  "@backgroundSyncHours": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "backgroundNotificationsTitle": "Payment notifications",
-  "@backgroundNotificationsTitle": {},
-  "backgroundNotificationsAllowed": "Allowed by system settings",
-  "@backgroundNotificationsAllowed": {},
-  "backgroundNotificationsDenied": "Not allowed by system settings",
-  "@backgroundNotificationsDenied": {},
-  "backgroundNotificationsRequest": "Allow notifications",
-  "@backgroundNotificationsRequest": {},
-  "backgroundNotificationsSettings": "Open notification settings",
-  "@backgroundNotificationsSettings": {},
   "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
   "@backgroundPaymentCount": {
     "placeholders": {
@@ -15710,5 +15678,41 @@
   "serverUnencrypted": "Unencrypted",
   "@serverUnencrypted": {
     "description": "Badge on a server row: the connection to the server is not encrypted"
+  },
+  "backgroundTasksTitle": "Background Tasks",
+  "@backgroundTasksTitle": {
+    "description": "Switch that lets the app check for payments while it is closed."
+  },
+  "blockedInSystemSettings": "Blocked in system settings",
+  "@blockedInSystemSettings": {
+    "description": "Shown under a switch when the system refused the permission."
+  },
+  "notificationsBlockedMessage": "Notifications are blocked in system settings.",
+  "@notificationsBlockedMessage": {
+    "description": "Warning on the permissions screen after the system refused notifications."
+  },
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": "Switch for the system permission to show payment notifications."
+  },
+  "openSystemSettings": "Open system settings",
+  "@openSystemSettings": {
+    "description": "Button that opens the app's page in the system settings."
+  },
+  "permissionsTitle": "Permissions",
+  "@permissionsTitle": {
+    "description": "Title of the settings screen for background tasks and notifications."
+  },
+  "settingsSearchPermissionsKeywords": "notifications|background tasks|battery|alerts",
+  "@settingsSearchPermissionsKeywords": {
+    "description": "Pipe-separated search aliases for the permissions screen. Search metadata; not displayed."
+  },
+  "wizardBackgroundTasksDescription": "Check payments while closed.",
+  "@wizardBackgroundTasksDescription": {
+    "description": "Short line under the background tasks switch of the wizard."
+  },
+  "wizardNotificationsDescription": "Know when a payment arrives.",
+  "@wizardNotificationsDescription": {
+    "description": "Short line under the notifications switch of the wizard."
   }
 }

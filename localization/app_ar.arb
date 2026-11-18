@@ -11252,5 +11252,14 @@
   "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
   "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
   "serverEncrypted": "مشفّر",
-  "serverUnencrypted": "غير مشفّر"
+  "serverUnencrypted": "غير مشفّر",
+  "backgroundTasksTitle": "المهام في الخلفية",
+  "blockedInSystemSettings": "محظور في إعدادات النظام",
+  "notificationsBlockedMessage": "الإشعارات محظورة في إعدادات النظام.",
+  "notificationsTitle": "الإشعارات",
+  "openSystemSettings": "فتح إعدادات النظام",
+  "permissionsTitle": "الأذونات",
+  "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
+  "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
 }

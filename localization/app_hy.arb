@@ -3508,5 +3508,14 @@
   "torSettingsDescNoInternetOrBlocked": "Այս ցանցը ինտերնետ հասանելիություն չունի, կամ արգելափակում է Tor-ը։",
   "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։",
   "serverEncrypted": "Գաղտնագրված",
-  "serverUnencrypted": "Չգաղտնագրված"
+  "serverUnencrypted": "Չգաղտնագրված",
+  "backgroundTasksTitle": "Ֆոնային առաջադրանքներ",
+  "blockedInSystemSettings": "Արգելափակված է համակարգի կարգավորումներում",
+  "notificationsBlockedMessage": "Ծանուցումները արգելափակված են համակարգի կարգավորումներում։",
+  "notificationsTitle": "Ծանուցումներ",
+  "openSystemSettings": "Բացել համակարգի կարգավորումները",
+  "permissionsTitle": "Թույլտվություններ",
+  "settingsSearchPermissionsKeywords": "ծանուցումներ|ֆոնային առաջադրանքներ|մարտկոց|ազդանշաններ",
+  "wizardBackgroundTasksDescription": "Ստուգում է վճարումները, երբ հավելվածը փակ է։",
+  "wizardNotificationsDescription": "Իմացեք, երբ վճարում է ստացվում։"
 }

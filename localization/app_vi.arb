@@ -3508,5 +3508,14 @@
   "torSettingsDescNoInternetOrBlocked": "Mạng này không có truy cập internet, hoặc đang chặn Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull không thể kết nối tới proxy SOCKS5 đã cấu hình.",
   "serverEncrypted": "Đã mã hóa",
-  "serverUnencrypted": "Chưa mã hóa"
+  "serverUnencrypted": "Chưa mã hóa",
+  "backgroundTasksTitle": "Tác vụ nền",
+  "blockedInSystemSettings": "Bị chặn trong cài đặt hệ thống",
+  "notificationsBlockedMessage": "Thông báo bị chặn trong cài đặt hệ thống.",
+  "notificationsTitle": "Thông báo",
+  "openSystemSettings": "Mở cài đặt hệ thống",
+  "permissionsTitle": "Quyền",
+  "settingsSearchPermissionsKeywords": "thông báo|tác vụ nền|pin|cảnh báo",
+  "wizardBackgroundTasksDescription": "Kiểm tra thanh toán khi ứng dụng đóng.",
+  "wizardNotificationsDescription": "Biết khi có khoản thanh toán đến."
 }
