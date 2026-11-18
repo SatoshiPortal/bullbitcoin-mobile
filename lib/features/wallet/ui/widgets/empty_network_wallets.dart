@@ -11,12 +11,14 @@ class EmptyNetworkWallets extends StatelessWidget {
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onMainnet;
   final VoidCallback onImport;
+  final VoidCallback onRecoverEncryptedVault;
 
   const EmptyNetworkWallets({
     super.key,
     required this.createSetupCubit,
     required this.onMainnet,
     required this.onImport,
+    required this.onRecoverEncryptedVault,
   });
 
   @override
@@ -103,6 +105,17 @@ class EmptyNetworkWallets extends StatelessWidget {
                     textColor: context.bull.onSurface,
                     outlined: true,
                   ),
+                  if (options.network == NetworkEnv.regtest) ...[
+                    const Gap(BullSpacing.sm),
+                    BullButton.big(
+                      label: context.loc.onboardingEncryptedVault,
+                      onPressed: onRecoverEncryptedVault,
+                      disabled: state.working,
+                      bgColor: context.bull.surface,
+                      textColor: context.bull.onSurface,
+                      outlined: true,
+                    ),
+                  ],
                   const Gap(BullSpacing.sm),
                   BullButton.big(
                     label: context.loc.onboardingCreateWalletButtonLabel,

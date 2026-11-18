@@ -68,6 +68,7 @@ void main() {
                 createSetupCubit: () => cubit,
                 onMainnet: () {},
                 onImport: () {},
+                onRecoverEncryptedVault: () {},
               ),
             ),
           ),
