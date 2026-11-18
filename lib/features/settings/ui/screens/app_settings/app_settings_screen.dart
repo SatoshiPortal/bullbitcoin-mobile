@@ -97,9 +97,16 @@ class AppSettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  if (backgroundSyncAvailable) const BackgroundPreferences(),
-                  for (final item in items.inSection(SettingsItemSection.app))
+                  // Language and currency lead; background tasks follow the
+                  // exchange option (quick actions).
+                  for (final item in items.inSection(
+                    SettingsItemSection.app,
+                  )) ...[
                     item.buildTile(context, trailing: trailingFor(item.id)),
+                    if (backgroundSyncAvailable &&
+                        item.id == SettingsItemId.quickActions)
+                      const BackgroundPreferences(),
+                  ],
                 ],
               ),
             ),
