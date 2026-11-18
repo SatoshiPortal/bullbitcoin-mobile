@@ -15718,5 +15718,21 @@
   "sendPsbtRequest": "PSBT",
   "@sendPsbtRequest": {
     "description": "Interpreted type of a partially signed Bitcoin transaction in Send"
+  },
+  "networkRelaunchRequiredError": "The network changed since the app started. Close and reopen the app, then try again.",
+  "@networkRelaunchRequiredError": {
+    "description": "Error shown when a payment cannot start because the app is still running on the network it was launched with"
+  },
+  "networkRestartDialogTitle": "Restart required",
+  "@networkRestartDialogTitle": {
+    "description": "Title of the dialog shown after switching to or from regtest in developer settings"
+  },
+  "networkRestartDialogMessage": "Switching to or from regtest takes effect after the app restarts. The app will now close; open it again to continue.",
+  "@networkRestartDialogMessage": {
+    "description": "Body of the restart-required dialog after switching to or from regtest"
+  },
+  "networkRestartDialogAction": "Close the app",
+  "@networkRestartDialogAction": {
+    "description": "Button of the restart-required dialog that closes the app"
   }
 }

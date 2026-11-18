@@ -12,6 +12,7 @@ extension SwapFailureL10n on SwapFailure {
           ? context.loc.walletSpendBusy
           : context.loc.walletSpendAwaitingObservation,
     SwapUnsupportedNetworkFailure() => context.loc.networkFeatureUnavailable,
+    SwapRelaunchRequiredFailure() => context.loc.networkRelaunchRequiredError,
     SwapServerBusyFailure() => context.loc.swapServerBusyError,
     SwapLockupPendingFailure() =>
       context.loc.broadcastSignedTxErrorOutcomeUnknown,

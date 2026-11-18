@@ -99,6 +99,12 @@ final class SwapServerBusyFailure extends SwapInvalidStateFailure {
   const SwapServerBusyFailure();
 }
 
+/// The app runs on the network it launched with, not the one now selected:
+/// spend preconditions cannot be read, so no swap may be created.
+final class SwapRelaunchRequiredFailure extends SwapInvalidStateFailure {
+  const SwapRelaunchRequiredFailure();
+}
+
 /// A lockup for this swap was broadcast but is not yet confirmed: the swap
 /// cannot be rebuilt until it is settled.
 final class SwapLockupPendingFailure extends SwapInvalidStateFailure {
