@@ -28,6 +28,12 @@ enum Environment {
 
   bool get isMainnet => this == Environment.mainnet;
 
+  /// Payjoin and RecoverBull capture their store family at launch, and
+  /// regtest uses its own: going to or from it needs a fresh process.
+  bool requiresRestartWhenSwitchedFrom(Environment previous) =>
+      previous != this &&
+      (previous == Environment.regtest || this == Environment.regtest);
+
   /// Legacy services have only mainnet and testnet backends. Refuse every
   /// other environment before a caller can select one of those backends.
   bool requireHistoricalTestnet() => switch (this) {
