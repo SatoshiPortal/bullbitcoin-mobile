@@ -1054,6 +1054,35 @@ void main() {
         (result as Err<ArkOperation, ArkWalletFailure>).failure,
         isA<ArkStaleQuoteFailure>(),
       );
+      final retry = await client.submit(
+        account,
+        ArkSubmission.boardFunding(
+          quoteId: quote.id,
+          operationId: 'expired-board',
+        ),
+      );
+      expect(
+        retry,
+        isA<Err<ArkOperation, ArkWalletFailure>>(),
+        reason: 'A retry must not return Ok with no funding tuple',
+      );
+      expect(
+        (retry as Err<ArkOperation, ArkWalletFailure>).failure,
+        isA<ArkStaleQuoteFailure>(),
+      );
+      final store = ArkStore.open(
+        '${ArkStore.accountPath(temp.path, account)}/state.sqlite',
+        create: false,
+      );
+      try {
+        expect(
+          store.operation('expired-board')?.operation.status,
+          ArkOperationStatus.failed,
+        );
+      } finally {
+        store.close();
+      }
+      expect(native.fundings, 1);
       expect(native.registrations, 0);
       expect(native.broadcasts, 0);
     },
