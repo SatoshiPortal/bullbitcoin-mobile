@@ -5,8 +5,9 @@ import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A server row shared by the Electrum and Mempool settings: an optional drag
-/// handle, the server title over its status line, a connection badge aligned
-/// to the right edge and an optional delete button.
+/// handle, the server title on its own line (long host names keep the full
+/// width), the status line with the connection badge aligned to the right,
+/// and an optional delete button.
 ///
 /// Purely presentational: the caller supplies every label and colour.
 class BullServerTile extends StatelessWidget {
@@ -121,36 +122,41 @@ class BullServerTile extends StatelessWidget {
                         ),
                         if (disabled && disabledText != null) ...[
                           const SizedBox(width: 8),
-                          Text(
-                            disabledText,
-                            style: context.bullType.label.copyWith(
-                              fontWeight: FontWeight.w400,
-                              color: colors.onSurface.withValues(alpha: 0.6),
-                              fontStyle: FontStyle.italic,
+                          Flexible(
+                            child: Text(
+                              disabledText,
+                              style: context.bullType.label.copyWith(
+                                fontWeight: FontWeight.w400,
+                                color: colors.onSurface.withValues(alpha: 0.6),
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
                           ),
                         ],
+                        const Spacer(),
+                        const SizedBox(width: 8),
+                        BullBadge(
+                          label: badgeLabel,
+                          background: badgeIsWarning
+                              ? colors.warningContainer
+                              : colors.surfaceContainerHighest,
+                          foreground: colors.onSurface,
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            BullBadge(
-              label: badgeLabel,
-              background: badgeIsWarning
-                  ? colors.warningContainer
-                  : colors.surfaceContainerHighest,
-              foreground: colors.onSurface,
-            ),
-            if (onDelete != null)
+            if (onDelete != null) ...[
+              const SizedBox(width: 4),
               IconButton(
                 icon: Icon(Icons.delete_outline, color: colors.error),
                 tooltip: deleteTooltip,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 onPressed: onDelete,
               ),
+            ],
           ],
         ),
       ),
