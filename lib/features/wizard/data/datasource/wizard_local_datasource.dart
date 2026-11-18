@@ -26,6 +26,9 @@ abstract class WizardLocalDatasource {
   Future<bool?> readPendingExchangeAccess();
   Future<void> writePendingExchangeAccess(bool enabled);
 
+  Future<bool?> readPendingBackgroundTasks();
+  Future<void> writePendingBackgroundTasks(bool enabled);
+
   Future<void> clearAllPending();
 }
 
@@ -37,6 +40,7 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   static const _pendingThemeKey = 'wizard_pending_theme_mode';
   static const _pendingCurrencyKey = 'wizard_pending_currency';
   static const _pendingErrorReportingKey = 'wizard_pending_error_reporting';
+  static const _pendingBackgroundTasksKey = 'wizard_pending_background_tasks';
 
   @override
   Future<int?> readCompletedVersion() async {
@@ -123,8 +127,21 @@ class WizardLocalDatasourceImpl implements WizardLocalDatasource {
   }
 
   @override
+  Future<bool?> readPendingBackgroundTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_pendingBackgroundTasksKey);
+  }
+
+  @override
+  Future<void> writePendingBackgroundTasks(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_pendingBackgroundTasksKey, enabled);
+  }
+
+  @override
   Future<void> clearAllPending() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_pendingBackgroundTasksKey);
     await prefs.remove(_pendingExchangeKey);
     await prefs.remove(_pendingVersionKey);
     await prefs.remove(_pendingLanguageKey);

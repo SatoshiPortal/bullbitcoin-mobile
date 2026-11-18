@@ -16,7 +16,9 @@ void main() {
   testWidgets('shows the App Store vocabulary on iOS', (tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     try {
-      await tester.pumpWidget(WizardApp(onDone: (_) {}));
+      await tester.pumpWidget(
+        WizardApp(notificationChannelId: 'payments', onDone: (_) {}),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text(apple), findsOneWidget);
@@ -29,7 +31,9 @@ void main() {
   testWidgets('keeps the real words on Android', (tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     try {
-      await tester.pumpWidget(WizardApp(onDone: (_) {}));
+      await tester.pumpWidget(
+        WizardApp(notificationChannelId: 'payments', onDone: (_) {}),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text(real), findsOneWidget);

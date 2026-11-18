@@ -14,13 +14,21 @@ WizardRepository _buildPreInitWizardRepository() =>
     WizardRepositoryImpl(WizardLocalDatasourceImpl());
 
 /// Collects consent before migrations or network initialization can run.
-Future<void> runStartupWizard() async {
+///
+/// [notificationChannelId] is the channel whose payment notifications the
+/// wizard offers; a user can block that channel alone.
+Future<void> runStartupWizard({required String notificationChannelId}) async {
   final repository = _buildPreInitWizardRepository();
   final isComplete = await IsWizardCompleteUsecase(repository: repository)
       .execute();
   if (!isComplete) {
     final completer = Completer<void>();
-    runApp(WizardApp(onDone: (_) => completer.complete()));
+    runApp(
+      WizardApp(
+        notificationChannelId: notificationChannelId,
+        onDone: (_) => completer.complete(),
+      ),
+    );
     await completer.future;
   }
 }
