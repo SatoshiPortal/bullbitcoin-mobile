@@ -172,10 +172,14 @@ final class ArkStore {
     }
   }
 
-  void saveQuote(ArkQuote value) => _db.execute(
-    'INSERT INTO quotes VALUES(?,?)',
-    [value.id, jsonEncode(quoteToJson(value))],
-  );
+  void saveQuote(ArkQuote value, {bool claimAuthorityRequired = false}) =>
+      _db.execute('INSERT INTO quotes VALUES(?,?)', [
+        value.id,
+        jsonEncode({
+          ...quoteToJson(value),
+          if (claimAuthorityRequired) 'claimAuthorityRequired': true,
+        }),
+      ]);
   ArkQuote? quote(String id) {
     final rows = _db.select('SELECT value FROM quotes WHERE id=?', [id]);
     return rows.isEmpty
@@ -290,6 +294,79 @@ final class ArkStore {
       saveOperation(admitted, authorization.id);
       _db.execute('COMMIT');
       return true;
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
+  /// A reviewed claim may change only its selected ids' remaining authority.
+  /// The plan is inert until authority and admitted operation commit together.
+  String? admitClaim(ArkQuote reviewed, ArkOperation admitted) {
+    final destination = reviewed.destination;
+    final maximum = reviewed.maxClaimFee;
+    final stored = quote(reviewed.id);
+    if (destination == null ||
+        maximum == null ||
+        maximum.value <= BigInt.zero ||
+        stored == null ||
+        reviewed.kind != ArkOperationKind.claim ||
+        admitted.kind != reviewed.kind ||
+        admitted.status != ArkOperationStatus.admitted ||
+        admitted.chainSource != reviewed.chainSource ||
+        admitted.configGeneration != reviewed.configGeneration ||
+        jsonEncode(admitted.actualIds) != jsonEncode(reviewed.selectedIds) ||
+        jsonEncode(quoteToJson(stored)) != jsonEncode(quoteToJson(reviewed))) {
+      throw const FormatException('Invalid claim authorization binding');
+    }
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      final ids = reviewed.selectedIds;
+      if (operations.any(
+        (op) =>
+            op.kind == ArkOperationKind.claim &&
+            op.actualIds.any(ids.contains) &&
+            (op.status == ArkOperationStatus.admitted ||
+                op.status == ArkOperationStatus.pending ||
+                op.status == ArkOperationStatus.outcomeUnknown ||
+                op.status == ArkOperationStatus.conflicted ||
+                operation(op.id)?.evidence?['raw'] != null),
+      )) {
+        _db.execute('ROLLBACK');
+        return null;
+      }
+      var authority = claimAuthority(ids, destination, maximum);
+      if (authority == null) {
+        final row = _db.select('SELECT value FROM quotes WHERE id=?', [
+          reviewed.id,
+        ]).single;
+        if (decodeMap(row['value'] as String)['claimAuthorityRequired'] !=
+            true) {
+          _db.execute('ROLLBACK');
+          return null;
+        }
+        for (final allocation in _db.select('SELECT * FROM claim_allowances')) {
+          final remaining = strings(
+            jsonDecode(allocation['remaining_ids'] as String),
+          );
+          if (remaining.any(ids.contains)) {
+            _db.execute(
+              'UPDATE claim_allowances SET remaining_ids=? WHERE authority=?',
+              [
+                jsonEncode(remaining.where((id) => !ids.contains(id)).toList()),
+                allocation['authority'],
+              ],
+            );
+          }
+        }
+        authority = admitted.id;
+        if (!createClaimAuthority(authority, ids, destination, maximum)) {
+          throw const FormatException('Claim authority overlap');
+        }
+      }
+      saveOperation(admitted, reviewed.id);
+      _db.execute('COMMIT');
+      return authority;
     } catch (_) {
       _db.execute('ROLLBACK');
       rethrow;

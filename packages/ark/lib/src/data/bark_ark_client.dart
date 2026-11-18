@@ -1008,14 +1008,14 @@ final class BarkArkClient implements ArkClient {
               !snapshot.vtxoInventoryComplete)) {
         return const Err(ArkRecoveryRequiredFailure());
       }
+      var needsClaimAuthority = false;
       if (request case ArkClaimQuoteRequest(
         :final ids,
         :final destination,
         :final maxFee,
       )) {
-        if (store.claimAuthority(ids, destination, maxFee) == null) {
-          return const Err(ArkValidationFailure());
-        }
+        needsClaimAuthority =
+            store.claimAuthority(ids, destination, maxFee) == null;
       }
       final quote = await session.estimate(
         snapshot: snapshot,
@@ -1025,7 +1025,7 @@ final class BarkArkClient implements ArkClient {
         configGeneration: 1,
         now: now(),
       );
-      store.saveQuote(quote);
+      store.saveQuote(quote, claimAuthorityRequired: needsClaimAuthority);
       return Ok(quote);
     });
   });
@@ -1445,21 +1445,19 @@ final class BarkArkClient implements ArkClient {
     if (destination == null || maximum == null) {
       return const Err(ArkValidationFailure());
     }
-    final authority = store.claimAuthority(
-      quote.selectedIds,
-      destination,
-      maximum,
-    );
-    if (authority == null) return const Err(ArkValidationFailure());
-    store.saveOperation(
+    if (!_mayRun(quote.account)) {
+      return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
+    }
+    final authority = store.admitClaim(
+      quote,
       _operation(
         quote,
         id,
         ArkOperationStatus.admitted,
         actualIds: quote.selectedIds,
       ),
-      quote.id,
     );
+    if (authority == null) return const Err(ArkValidationFailure());
     try {
       final claim = await session.prepareClaim(quote);
       final actual = claim.actualIds.toSet();
