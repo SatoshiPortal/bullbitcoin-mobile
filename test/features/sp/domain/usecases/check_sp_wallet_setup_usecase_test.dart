@@ -39,7 +39,9 @@ void main() {
     configRepo = MockSpBackendConfigRepository();
     accountRepo = MockSpAccountRepository();
     when(() => configRepo.fetch()).thenAnswer(
-      (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
+      (_) async => Ok<SpBackendConfig?, SpFailure>(
+        spBackendConfig(network: BitcoinNetwork.mainnet),
+      ),
     );
     when(() => accountRepo.hasRevokedSentinel())
         .thenAnswer((_) async => const Ok(false));
@@ -165,6 +167,7 @@ void main() {
         ensureSpSessionUsecase: ensureSpSession,
         getSpFeatureGateUsecase: GetSpFeatureGateUsecase(
           settingsRepository: settingsRepo,
+          configRepository: configRepo,
         ),
       );
 

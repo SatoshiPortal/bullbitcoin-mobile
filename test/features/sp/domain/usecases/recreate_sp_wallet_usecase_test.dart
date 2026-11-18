@@ -21,6 +21,7 @@ class _MockEnsureSpSessionUsecase extends Mock
 // The previous (pre-recreate) config, distinct from the new URLs each test
 // passes to execute().
 SpBackendConfig _previousConfig() => spBackendConfig(
+  network: BitcoinNetwork.mainnet,
   blindbitUrl: 'http://blindbit.old',
   electrumUrl: 'tcp://electrum.old:50001',
 );
@@ -42,7 +43,7 @@ void main() {
     registerFallbackValue(BitcoinNetwork.testnet);
     registerFallbackValue(
       SpBackendConfig(
-        network: BitcoinNetwork.testnet,
+        network: BitcoinNetwork.mainnet,
         blindbitUrl: 'http://blindbit.example',
         electrumUrl: 'tcp://electrum.example:50001',
       ),

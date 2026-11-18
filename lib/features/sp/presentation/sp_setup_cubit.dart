@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_active_network_usecase.dart';
+
 import 'dart:async';
 
 import 'package:primitives/primitives.dart';
@@ -16,11 +18,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// [SpBackendFormMixin].
 class SpSetupCubit extends Cubit<SpSetupState>
     with SpBackendFormMixin<SpSetupState> {
+  final GetSpActiveNetworkUsecase _getSpActiveNetworkUsecase;
   final CreateSpWalletUsecase _createSpWalletUsecase;
   final TestSpBackendUsecase _testSpBackendUsecase;
   final GetSpBackendDefaultsUsecase _getSpBackendDefaultsUsecase;
 
   SpSetupCubit({
+    required this._getSpActiveNetworkUsecase,
     required this._createSpWalletUsecase,
     required this._testSpBackendUsecase,
     required this._getSpBackendDefaultsUsecase,
@@ -29,7 +33,25 @@ class SpSetupCubit extends Cubit<SpSetupState>
        ) {
     // Defaults may come from infra over FFI; fetch them off the UI
     // isolate once the cubit exists instead of blocking construction.
-    unawaited(setNetwork(BitcoinNetwork.mainnet));
+    unawaited(_initialize());
+  }
+
+  Future<void> _initialize() async {
+    final result = await _getSpActiveNetworkUsecase.execute();
+    if (isClosed) return;
+    switch (result) {
+      case Ok(:final value):
+        await setNetwork(value);
+      case Err(:final failure):
+        emit(
+          state.copyWith(
+            form: state.form.copyWith(
+              isFetchingDefaults: false,
+              error: failure,
+            ),
+          ),
+        );
+    }
   }
 
   @override

@@ -35,7 +35,9 @@ Result<BitcoinNetwork?, RecoverBullFailure> _network(BuildContext context) {
 /// Shows where a finished verification or recovery leads.
 Future<void> _showCompletion(BuildContext context, VaultCompletion completion) {
   final scope = RecoverBullFlowScope.of(context);
-  if (completion.recovery is VaultRecovered && scope.onRecovered != null) {
+  if (completion.recovery is VaultRecovered &&
+      completion.warning == null &&
+      scope.onRecovered != null) {
     scope.onRecovered?.call();
     return Future.value();
   }

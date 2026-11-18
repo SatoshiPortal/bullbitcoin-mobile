@@ -1,3 +1,5 @@
+import '../../sp_fakes.dart';
+
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -39,12 +41,15 @@ void main() {
   late MockSettingsRepository settingsRepo;
   late GetSpWalletUsecase usecase;
 
-  setUp(() {
+  setUp(() async {
     ensureSpSessionUsecase = MockEnsureSpSessionUsecase();
     settingsRepo = MockSettingsRepository();
+    final config = FakeSpBackendConfigRepository();
+    await config.save(spBackendConfig(network: BitcoinNetwork.mainnet));
     usecase = GetSpWalletUsecase(
       ensureSpSessionUsecase: ensureSpSessionUsecase,
       getSpFeatureGateUsecase: GetSpFeatureGateUsecase(
+        configRepository: config,
         settingsRepository: settingsRepo,
       ),
     );

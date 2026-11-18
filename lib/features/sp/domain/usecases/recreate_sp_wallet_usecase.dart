@@ -45,7 +45,7 @@ class RecreateSpWalletUsecase {
     // Outer boundary: any Exception from the secret/dispose/backup/discardBackup
     // work becomes an Err so execute() is total.
     try {
-      if (!await _getSpFeatureGateUsecase.execute()) {
+      if (!await _getSpFeatureGateUsecase.execute(network: network)) {
         return const Err(SpUnsupportedNetwork());
       }
       if (!NetworkCapabilities.supports(
@@ -54,14 +54,6 @@ class RecreateSpWalletUsecase {
       )) {
         return const Err(SpUnsupportedNetwork());
       }
-      final Secret secret;
-      switch (await _getSpSecretUsecase.execute(network)) {
-        case Ok(:final value):
-          secret = value;
-        case Err(:final failure):
-          return Err(failure);
-      }
-
       // Read before the teardown bracket, so a failed read aborts with nothing
       // to unwind. It must not read as "no previous config": the rollback would
       // then delete the stored one instead of restoring it.
@@ -71,6 +63,10 @@ class RecreateSpWalletUsecase {
           return Err(failure);
         case Ok(:final value):
           previousConfig = value;
+      }
+
+      if (previousConfig != null && previousConfig.network != network) {
+        return const Err(SpUnsupportedNetwork());
       }
 
       // Validated before the teardown bracket too, for the same reason: a bad
@@ -89,6 +85,22 @@ class RecreateSpWalletUsecase {
           return Err(failure);
         case Ok(:final value):
           config = value;
+      }
+
+      final Secret secret;
+      switch (await _getSpSecretUsecase.execute(network)) {
+        case Ok(:final value):
+          secret = value;
+        case Err(:final failure):
+          return Err(failure);
+      }
+
+      if (!await _hasConfig(previousConfig) ||
+          !await _getSpFeatureGateUsecase.execute(
+            network: network,
+            config: previousConfig,
+          )) {
+        return const Err(SpUnsupportedNetwork());
       }
 
       // Suppress the cubit self-heal for the whole dispose+create window so it
@@ -132,6 +144,12 @@ class RecreateSpWalletUsecase {
             '${failure.logMessage}',
           );
         }
+        if (!await _getSpFeatureGateUsecase.execute(
+          network: network,
+          config: config,
+        )) {
+          return const Err(SpUnsupportedNetwork());
+        }
         return const Ok(null);
       } finally {
         _repository.endTeardown();
@@ -142,6 +160,12 @@ class RecreateSpWalletUsecase {
       return const Err(SpUnexpected('SP wallet recreate failed'));
     }
   });
+
+  Future<bool> _hasConfig(SpBackendConfig? captured) async =>
+      switch (await _configRepository.fetchOrNull()) {
+        Ok(:final value) => value == captured,
+        Err() => false,
+      };
 
   /// Undo a failed recreate: drop the half-built session, restore the backed-up
   /// account dir, revert the persisted config, and re-establish the previous

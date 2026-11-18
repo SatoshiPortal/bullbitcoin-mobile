@@ -1,3 +1,5 @@
+import '../../sp_fakes.dart';
+
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -31,7 +33,10 @@ void main() {
       ),
     );
     expect(
-      await GetSpFeatureGateUsecase(settingsRepository: settings).execute(),
+      await GetSpFeatureGateUsecase(
+        settingsRepository: settings,
+        configRepository: FakeSpBackendConfigRepository(),
+      ).execute(),
       isFalse,
     );
   });
