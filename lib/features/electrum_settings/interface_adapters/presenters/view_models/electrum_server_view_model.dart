@@ -27,4 +27,8 @@ sealed class ElectrumServerViewModel with _$ElectrumServerViewModel {
   String get protocol => _address.scheme;
 
   bool get isOnion => _address.isOnion;
+
+  /// Whether the connection is encrypted end to end: TLS, or an onion service
+  /// (Tor encrypts it even when the scheme is plain `tcp://`).
+  bool get isEncrypted => protocol == 'ssl' || isOnion;
 }

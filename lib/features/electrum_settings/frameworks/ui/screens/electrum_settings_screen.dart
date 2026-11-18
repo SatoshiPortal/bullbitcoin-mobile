@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/add_custom_server_button.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/draggable_server_list.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/set_advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/tor_proxy_error_banner.dart';
@@ -36,6 +37,12 @@ class ElectrumSettingsScreen extends StatelessWidget {
                   foregroundColor: context.appColors.primary,
                 )
               : const SizedBox(height: 3),
+        ),
+      ),
+      bottomNavigationBar: const SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: AddCustomServerButton(),
         ),
       ),
       body: SafeArea(
