@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart';
+
+import 'data/ark_installation_state.dart';
 import 'domain/usecases/get_receive_address_usecase.dart';
 import 'domain/usecases/get_transfer_receive_address_usecase.dart';
 
@@ -289,6 +292,10 @@ class WalletLocator {
       // Ark funding holds keep their source seed referenced.
       if (locator.isRegistered<SqliteArkFundingReservations>()) {
         references.register(locator<SqliteArkFundingReservations>());
+      } else {
+        references.register(
+          _UnavailableArkFundingReferences(locator<ArkInstallationState>()),
+        );
       }
       return references;
     });
@@ -370,4 +377,16 @@ class WalletLocator {
       ),
     );
   }
+}
+
+/// An opening failure remains an owner; only proven absence has no references.
+final class _UnavailableArkFundingReferences implements SeedReferencePort {
+  final ArkInstallationState _installation;
+  const _UnavailableArkFundingReferences(this._installation);
+
+  @override
+  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
+      await _installation.remainsUnprovisioned()
+      ? const Ok({})
+      : const Err(SeedReferencesUnavailable());
 }

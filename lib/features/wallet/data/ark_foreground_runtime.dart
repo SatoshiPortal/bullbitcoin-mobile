@@ -28,6 +28,7 @@ import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:secrets/secrets.dart';
 
 import 'ark_board_abandonment.dart';
+import 'ark_installation_state.dart';
 import 'ark_display_data.dart';
 import 'wallet_native_runtime.dart';
 import 'sqlite_ark_funding_reservations.dart';
@@ -539,7 +540,11 @@ _RegistryReferenceOwner _referenceOwnerFor(GetIt locator) {
   if (locator.isRegistered<_RegistryReferenceOwner>()) {
     return locator<_RegistryReferenceOwner>();
   }
-  final owner = _RegistryReferenceOwner();
+  final owner = _RegistryReferenceOwner(
+    locator.isRegistered<ArkInstallationState>()
+        ? locator<ArkInstallationState>()
+        : null,
+  );
   locator<SeedReferences>().register(owner);
   locator.registerSingleton<_RegistryReferenceOwner>(
     owner,
@@ -550,9 +555,12 @@ _RegistryReferenceOwner _referenceOwnerFor(GetIt locator) {
 
 /// Registered once per app isolate, and refuses inventory while unavailable.
 final class _RegistryReferenceOwner implements SeedReferencePort {
+  final ArkInstallationState? _installation;
   SqliteArkAccountRegistry? _registry;
   Future<Result<void, ArkFailure>>? _opening;
   bool _closing = false;
+
+  _RegistryReferenceOwner(this._installation);
 
   SqliteArkAccountRegistry? get registry => _registry;
 
@@ -567,7 +575,11 @@ final class _RegistryReferenceOwner implements SeedReferencePort {
     try {
       final documents = await getApplicationDocumentsDirectory();
       final directory = Directory('${documents.path}/ark');
-      await directory.create(recursive: true);
+      if (!initializeNew &&
+          await _installation?.remainsUnprovisioned() == true) {
+        return const Ok(null);
+      }
+      if (initializeNew) await directory.create(recursive: true);
       final path = '${directory.path}/accounts.sqlite';
       final hasDatabase = File(path).existsSync();
       final hasMarker = File('$path.initialized').existsSync();
@@ -604,7 +616,11 @@ final class _RegistryReferenceOwner implements SeedReferencePort {
   @override
   Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async {
     final registry = _registry;
-    if (registry == null) return const Err(SeedReferencesUnavailable());
+    if (registry == null) {
+      return await _installation?.remainsUnprovisioned() == true
+          ? const Ok({})
+          : const Err(SeedReferencesUnavailable());
+    }
     return registry.getCustodyFingerprints();
   }
 }

@@ -16,6 +16,7 @@ import '../data/wallet_metadata_datasource.dart';
 import '../data/wallet_native_runtime.dart';
 
 export '../data/ark_funding_signing_guard.dart';
+export '../data/ark_installation_state.dart';
 export '../data/sqlite_ark_funding_reservations.dart'
     show SqliteArkFundingReservations;
 

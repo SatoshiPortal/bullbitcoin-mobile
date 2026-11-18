@@ -73,7 +73,7 @@ class Bull {
     );
     if (setup case Err()) return setup;
     await initializeWalletRuntime(locator);
-    // Before any seed deletion is reachable in an admitted Ark profile.
+    // Custody inventory is already installed, independently of this profile.
     await _setupArkRegtestProfile();
     Bloc.observer = AppBlocObserver();
 
@@ -101,7 +101,7 @@ class Bull {
 }
 
 /// Explicit regtest Ark profile supplied at build time. Builds without both
-/// endpoints keep the unavailable Ark routes and open no Ark storage.
+/// endpoints keep the unavailable Ark routes; existing custody is still read.
 /// BULL_ARK_REGTEST_INITIALIZE_NEW authorizes creating the account registry
 /// and funding authority of a fresh, controlled regtest profile; it is never
 /// inferred from files.
