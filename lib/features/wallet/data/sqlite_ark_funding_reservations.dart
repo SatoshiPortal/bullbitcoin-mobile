@@ -85,6 +85,11 @@ final class SqliteArkFundingReservations
           db.execute(
             'CREATE TABLE IF NOT EXISTS ark_funding_inputs (operation TEXT NOT NULL REFERENCES ark_funding_operations(operation),network TEXT NOT NULL,txid TEXT NOT NULL,vout INTEGER NOT NULL,PRIMARY KEY(network,txid,vout))',
           );
+          db.execute(_authorityDdl);
+          db.execute(_ordinaryDdl);
+          db.execute(_boardDdl);
+          _checkAuthoritySchema(db);
+          _checkHostSchema(db);
           db.userVersion = 1;
           db.execute('COMMIT');
         } catch (_) {
@@ -96,22 +101,10 @@ final class SqliteArkFundingReservations
         opened = null;
         return const Err(SyncStorageFailure());
       }
-      if (foreground) {
-        db.execute('BEGIN IMMEDIATE');
-        try {
-          db.execute(_authorityDdl);
-          db.execute(_ordinaryDdl);
-          db.execute(_boardDdl);
-          _checkAuthoritySchema(db);
-          _checkHostSchema(db);
-          db.execute('COMMIT');
-        } finally {
-          if (!db.autocommit) db.execute('ROLLBACK');
-        }
-      } else {
-        _checkAuthoritySchema(db);
-        _checkHostSchema(db);
-      }
+      // An initialized store must retain its complete signing history. A
+      // missing safety table is corruption, never an implicit migration.
+      _checkAuthoritySchema(db);
+      _checkHostSchema(db);
       if (!markerExists) {
         marker.writeAsStringSync('ark-funding:1\n', flush: true);
       }
