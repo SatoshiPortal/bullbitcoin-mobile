@@ -1,8 +1,11 @@
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/notification_permission_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/read_background_tasks_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
@@ -13,6 +16,8 @@ import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:notifications/notifications.dart';
+import 'package:primitives/primitives.dart';
 
 class _FakeWizardRepository implements WizardRepository {
   WizardChoices? pending;
@@ -32,6 +37,47 @@ class _FakeWizardRepository implements WizardRepository {
   @override
   Future<void> clearPending() async => pending = null;
 }
+
+class _Intervals implements BackgroundSyncIntervalRepository {
+  @override
+  Future<BackgroundSyncInterval> read() async => BackgroundSyncInterval.hour1;
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> write(
+    BackgroundSyncInterval interval,
+  ) async => const Ok(null);
+}
+
+/// The system refuses every request.
+class _Permissions implements NotificationPermissionPort {
+  bool allowed = false;
+  int requests = 0;
+
+  @override
+  Future<Result<bool, NotificationsFailure>> isEnabled() async => Ok(allowed);
+
+  @override
+  Future<Result<bool, NotificationsFailure>> requestPermission() async {
+    requests++;
+    return Ok(allowed);
+  }
+
+  @override
+  Future<Result<void, NotificationsFailure>> openSystemSettings() async =>
+      const Ok(null);
+}
+
+WizardBloc _bloc(
+  WizardRepository repository,
+  NotificationPermissionPort port,
+) => WizardBloc(
+  savePending: SavePendingWizardChoicesUsecase(repository: repository),
+  markComplete: MarkWizardCompleteUsecase(repository: repository),
+  readBackgroundTasks: ReadBackgroundTasksUsecase(intervals: _Intervals()),
+  notificationPermission: NotificationPermissionUsecase(
+    permissions: NotificationPermissionsFacade(gateway: port),
+  ),
+)..add(const WizardEvent.started());
 
 Future<void> _pump(WidgetTester tester, Widget home) async {
   tester.view.physicalSize = const Size(400, 800);
@@ -59,13 +105,11 @@ void main() {
         await _pump(
           tester,
           BlocProvider(
-            create: (_) => WizardBloc(
-              savePending: SavePendingWizardChoicesUsecase(
-                repository: repository,
-              ),
-              markComplete: MarkWizardCompleteUsecase(repository: repository),
+            create: (_) => _bloc(repository, _Permissions()),
+            child: WizardScreen(
+              exchangeAllowed: allowed,
+              backgroundTasksAvailable: false,
             ),
-            child: WizardScreen(exchangeAllowed: allowed),
           ),
         );
         final pages =
@@ -106,6 +150,76 @@ void main() {
       },
     );
   }
+
+  testWidgets('background tasks lead to notifications on the settings page', (
+    tester,
+  ) async {
+    final repository = _FakeWizardRepository();
+    final permissions = _Permissions();
+    await _pump(
+      tester,
+      BlocProvider(
+        create: (_) => _bloc(repository, permissions),
+        child: const WizardScreen(
+          exchangeAllowed: true,
+          backgroundTasksAvailable: true,
+        ),
+      ),
+    );
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+
+    final order = [
+      'Language',
+      'Default currency',
+      'Dark Mode',
+      'BULL Exchange',
+      'Background Tasks',
+      'Notifications',
+    ];
+    final tops = [for (final t in order) tester.getTopLeft(find.text(t)).dy];
+    for (var i = 1; i < tops.length; i++) {
+      expect(tops[i] > tops[i - 1], isTrue, reason: order[i]);
+    }
+
+    // The system refuses: the row says so instead of its description.
+    await tester.tap(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Notifications'),
+          matching: find.byType(ListTile),
+        ),
+        matching: find.byType(BullSwitch),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(permissions.requests, 1);
+    expect(find.text('Blocked in system settings'), findsOneWidget);
+
+    // Notifications only make sense while background tasks run.
+    await tester.tap(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('Background Tasks'),
+          matching: find.byType(ListTile),
+        ),
+        matching: find.byType(BullSwitch),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Notifications'), findsNothing);
+
+    await tester.tap(find.text('Skip'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('No'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Get started'));
+    await tester.pumpAndSettle();
+    final saved = repository.pending;
+    expect(saved?.touched.contains(WizardField.backgroundTasks), isTrue);
+    expect(saved?.backgroundTasks, isFalse);
+    await tester.pump(const Duration(seconds: 3));
+  });
 
   for (final yesFirst in [true, false]) {
     testWidgets('the consent row puts Yes on the left: $yesFirst', (

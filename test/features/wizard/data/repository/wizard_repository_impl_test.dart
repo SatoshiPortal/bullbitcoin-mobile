@@ -28,6 +28,27 @@ void main() {
     },
   );
 
+  test('background tasks choice survives a round trip', () async {
+    final repo = _build();
+    await repo.savePending(
+      const WizardChoices().copyWith(backgroundTasks: false),
+    );
+    final choices = await repo.readPending();
+    expect(choices?.backgroundTasks, isFalse);
+    expect(choices?.touched, {WizardField.backgroundTasks});
+    await repo.clearPending();
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getBool('wizard_pending_background_tasks'), isNull);
+  });
+
+  test('a detected background state is shown, never staged', () async {
+    final repo = _build();
+    await repo.savePending(
+      const WizardChoices().copyWithSilent(backgroundTasks: false),
+    );
+    expect(await repo.readPending(), isNull);
+  });
+
   group('exchange choice', () {
     test('confirmed default is staged even without toggling', () async {
       final repo = _build();
