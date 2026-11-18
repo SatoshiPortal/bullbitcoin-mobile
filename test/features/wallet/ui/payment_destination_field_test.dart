@@ -93,7 +93,7 @@ void main() {
     final scanner = route.builder(
       tester.element(find.byType(PaymentDestinationField)),
     ) as FullScreenScannerPage;
-    scanner.onScannedPaymentRequest((address, null));
+    scanner.onScannedPaymentRequest(address);
     route.navigator?.pop();
     await tester.pumpAndSettle();
     expect(changed, address);
@@ -122,7 +122,7 @@ void main() {
     final scanner = route.builder(
       tester.element(find.byType(PaymentDestinationField)),
     ) as FullScreenScannerPage;
-    scanner.onScannedPaymentRequest((uri, null));
+    scanner.onScannedPaymentRequest(uri);
     route.navigator?.pop();
     await tester.pumpAndSettle();
     expect(changed, uri);

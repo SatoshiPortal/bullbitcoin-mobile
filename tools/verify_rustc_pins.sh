@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+require_bark=false
+if [ "${1:-}" = "--require-bark" ]; then
+  require_bark=true
+  shift
+fi
+
 if [ "$#" -lt 4 ]; then
-  echo "Usage: $0 APK SDK_RUST_VERSION PAYJOIN_RUST_VERSION EXPECTED_ABI..." >&2
+  echo "Usage: $0 [--require-bark] APK SDK_RUST_VERSION PAYJOIN_RUST_VERSION EXPECTED_ABI..." >&2
   exit 2
 fi
 
@@ -49,7 +55,7 @@ for abi_dir in "${abi_dirs[@]}"; do
   if [ "$expected_abi" = false ]; then
     for so in "$abi_dir"/*.so; do
       case "${so##*/}" in
-        librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so)
+        librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so|libbark_ffi_dart.so)
           echo "Tracked Rust library in unexpected ABI: $abi/${so##*/}" >&2
           exit 1
           ;;
@@ -65,7 +71,11 @@ for abi_dir in "${abi_dirs[@]}"; do
     done
     continue
   fi
-  for name in librust_lib_onion.so librust_lib_bull_sdk.so libbdk_dart_ffi.so libpayjoin_ffi_wrapper.so; do
+  libraries=(librust_lib_onion.so librust_lib_bull_sdk.so libbdk_dart_ffi.so libpayjoin_ffi_wrapper.so)
+  if [ "$require_bark" = true ] || [ -f "$abi_dir/libbark_ffi_dart.so" ]; then
+    libraries+=(libbark_ffi_dart.so)
+  fi
+  for name in "${libraries[@]}"; do
     so="$abi_dir/$name"
     if [ ! -f "$so" ]; then
       echo "Missing tracked Rust library: $abi/$name" >&2
@@ -74,6 +84,7 @@ for abi_dir in "${abi_dirs[@]}"; do
     case "$name" in
       librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so) expected=$sdk_rust ;;
       libpayjoin_ffi_wrapper.so) expected=$payjoin_rust ;;
+      libbark_ffi_dart.so) expected=1.90.0 ;;
     esac
     if ! strings "$so" > "$tmpdir/strings"; then
       echo "Cannot inspect Rust library: $abi/$name" >&2
@@ -93,7 +104,7 @@ for abi_dir in "${abi_dirs[@]}"; do
   done
   for so in "$abi_dir"/*.so; do
     case "${so##*/}" in
-      librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so) continue ;;
+      librust_lib_onion.so|librust_lib_bull_sdk.so|libbdk_dart_ffi.so|libpayjoin_ffi_wrapper.so|libbark_ffi_dart.so) continue ;;
     esac
     if ! strings "$so" > "$tmpdir/strings"; then
       echo "Cannot inspect library: $abi/${so##*/}" >&2
