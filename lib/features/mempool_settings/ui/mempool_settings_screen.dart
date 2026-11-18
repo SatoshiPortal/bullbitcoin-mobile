@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/mempool_settings_failure_l10n.dart';
+import 'package:bb_mobile/features/mempool_settings/ui/widgets/add_custom_server_button.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_list.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,8 +39,7 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
             builder: (context, state) {
               return state.isLoading ||
                       state.isSavingServer ||
-                      state.isDeletingServer ||
-                      state.isUpdatingSettings
+                      state.isDeletingServer
                   ? BullFadingLinearProgress(
                       height: 3,
                       trigger: true,
@@ -51,6 +51,18 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
           ),
         ),
       ),
+      bottomNavigationBar:
+          BlocSelector<MempoolSettingsCubit, MempoolSettingsState, bool>(
+            selector: (state) => !state.hasCustomServer,
+            builder: (context, canAdd) => canAdd
+                ? const SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: AddCustomServerButton(),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
       body: SafeArea(
         child: BullPullableBody(
           onRefresh: () async =>

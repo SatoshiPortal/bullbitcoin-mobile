@@ -6,11 +6,9 @@ sealed class MempoolSettingsState with _$MempoolSettingsState {
     @Default(false) bool isLiquid,
     MempoolServerDto? defaultServer,
     MempoolServerDto? customServer,
-    MempoolSettingsDto? settings,
     @Default(false) bool isLoading,
     @Default(false) bool isSavingServer,
     @Default(false) bool isDeletingServer,
-    @Default(false) bool isUpdatingSettings,
     MempoolFailure? failure,
   }) = _MempoolSettingsState;
   const MempoolSettingsState._();
@@ -19,6 +17,5 @@ sealed class MempoolSettingsState with _$MempoolSettingsState {
 
   bool get hasError => failure != null;
 
-  bool get isProcessing =>
-      isLoading || isSavingServer || isDeletingServer || isUpdatingSettings;
+  bool get isProcessing => isLoading || isSavingServer || isDeletingServer;
 }
