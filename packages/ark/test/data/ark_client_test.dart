@@ -1058,4 +1058,88 @@ void main() {
       expect(native.broadcasts, 0);
     },
   );
+  for (final failure in ['prepare', 'verify']) {
+    test(
+      'claim $failure failure before commit releases only the operation hold',
+      () async {
+        expect(await client.create(config), isA<Ok>());
+        final exitResult = await client.quote(
+          account,
+          ArkQuoteRequest.emergencyExit(
+            ids: [FakeOpener.firstId],
+            destination: 'destination',
+            feeRate: FeeRate(1),
+            maxClaimFee: Sats.fromInt(100),
+          ),
+        );
+        final exit = (exitResult as Ok<ArkQuote, ArkWalletFailure>).value;
+        expect(
+          await client.submit(
+            account,
+            ArkSubmission.confirmQuote(quoteId: exit.id, operationId: 'exit'),
+          ),
+          isA<Ok>(),
+        );
+        final request = ArkQuoteRequest.claim(
+          ids: [FakeOpener.firstId],
+          destination: 'destination',
+          maxFee: Sats.fromInt(100),
+        );
+        final quoted = await client.quote(account, request);
+        final quote = (quoted as Ok<ArkQuote, ArkWalletFailure>).value;
+        if (failure == 'prepare') {
+          native.claimPreparer = (_) async =>
+              throw Exception('prepare unavailable');
+        }
+        verifier.wrongInputs = failure == 'verify';
+        expect(
+          await client.submit(
+            account,
+            ArkSubmission.confirmQuote(
+              quoteId: quote.id,
+              operationId: 'failed-claim',
+            ),
+          ),
+          isA<Err>(),
+        );
+        expect(native.broadcasts, 0);
+        final store = ArkStore.open(
+          '${ArkStore.accountPath(temp.path, account)}/state.sqlite',
+          create: false,
+        );
+        try {
+          expect(
+            store.operation('failed-claim')?.operation.status,
+            ArkOperationStatus.failed,
+          );
+          expect(store.operation('failed-claim')?.evidence?['raw'], isNull);
+          expect(
+            store.claimAuthority(
+              [FakeOpener.firstId],
+              'destination',
+              Sats.fromInt(100),
+            ),
+            'exit',
+          );
+        } finally {
+          store.close();
+        }
+        native.claimPreparer = null;
+        verifier.wrongInputs = false;
+        final retried = await client.quote(account, request);
+        final retry = (retried as Ok<ArkQuote, ArkWalletFailure>).value;
+        expect(
+          await client.submit(
+            account,
+            ArkSubmission.confirmQuote(
+              quoteId: retry.id,
+              operationId: 'retry-claim',
+            ),
+          ),
+          isA<Ok>(),
+        );
+        expect(native.broadcasts, 1);
+      },
+    );
+  }
 }
