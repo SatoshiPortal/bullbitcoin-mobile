@@ -1,4 +1,4 @@
-import 'package:bull_sdk/bull_sdk.dart';
+import 'package:rust_bindings/rust_bindings.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet;
 import 'package:swaps/swaps.dart' as swaps;
 import 'package:bb_mobile/core/swaps/swaps_adapters.dart';

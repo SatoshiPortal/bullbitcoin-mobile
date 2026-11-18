@@ -1,4 +1,4 @@
-import 'package:bull_sdk/boltz.dart' as native;
+import 'package:rust_bindings/boltz.dart' as native;
 import 'package:swaps/src/data/models/swap_master_key_model.dart';
 import 'package:test/test.dart';
 
