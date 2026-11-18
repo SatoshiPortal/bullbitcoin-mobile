@@ -10,21 +10,37 @@ final class BackgroundPreferencesUsecase {
   final BackgroundPreferencesRepository _repository;
   const BackgroundPreferencesUsecase(this._repository);
 
+  /// [enabled] turns background tasks on or off, see
+  /// [BackgroundSyncInterval.withEnabled].
   Future<BackgroundPreferencesState> execute({
     BackgroundSyncInterval? interval,
+    bool? enabled,
     bool requestPermission = false,
     bool openSettings = false,
   }) async {
+    if (enabled != null && interval == null) {
+      switch (await _repository.interval()) {
+        case Ok(:final value):
+          final next = value.withEnabled(enabled);
+          if (next != value) interval = next;
+        case Err(:final failure):
+          return BackgroundPreferencesState(failure: failure);
+      }
+    }
     if (interval != null) {
       final result = await _repository.setInterval(interval);
       if (result case Err(:final failure)) {
         return BackgroundPreferencesState(failure: failure);
       }
     }
+    var refused = false;
     if (requestPermission) {
       final result = await _repository.requestNotifications();
-      if (result case Err(:final failure)) {
-        return BackgroundPreferencesState(failure: failure);
+      switch (result) {
+        case Ok(:final value):
+          refused = !value;
+        case Err(:final failure):
+          return BackgroundPreferencesState(failure: failure);
       }
     }
     if (openSettings) {
@@ -41,7 +57,11 @@ final class BackgroundPreferencesUsecase {
         (selection as Ok<BackgroundSyncInterval, SettingsFailure>).value;
     final allowed = await _repository.notificationsAllowed();
     return allowed.fold(
-      (value) => BackgroundPreferencesState(interval: selected, allowed: value),
+      (value) => BackgroundPreferencesState(
+        interval: selected,
+        allowed: value,
+        refused: refused && !value,
+      ),
       (_) => BackgroundPreferencesState(
         interval: selected,
         failure: const SettingsStorageFailure(),
@@ -51,12 +71,22 @@ final class BackgroundPreferencesUsecase {
 }
 
 final class BackgroundPreferencesState {
+  /// `null` until the stored choice has been read.
   final BackgroundSyncInterval? interval;
+
+  /// Read from the system, never remembered by the app.
   final bool allowed;
+
+  /// The system turned down the request just made: it may not ask again.
+  final bool refused;
   final SettingsFailure? failure;
+
   const BackgroundPreferencesState({
     this.interval,
     this.allowed = false,
+    this.refused = false,
     this.failure,
   });
+
+  bool? get enabled => interval?.isEnabled;
 }

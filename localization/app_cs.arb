@@ -11249,5 +11249,14 @@
   "torSettingsDescNoInternetOrBlocked": "Tato síť nemá přístup k internetu, nebo blokuje Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
   "serverEncrypted": "Šifrováno",
-  "serverUnencrypted": "Nešifrováno"
+  "serverUnencrypted": "Nešifrováno",
+  "backgroundTasksTitle": "Úlohy na pozadí",
+  "blockedInSystemSettings": "Zablokováno v nastavení systému",
+  "notificationsBlockedMessage": "Oznámení jsou v nastavení systému zablokována.",
+  "notificationsTitle": "Oznámení",
+  "openSystemSettings": "Otevřít nastavení systému",
+  "permissionsTitle": "Oprávnění",
+  "settingsSearchPermissionsKeywords": "oznámení|úlohy na pozadí|baterie|upozornění",
+  "wizardBackgroundTasksDescription": "Kontroluje platby při zavřené aplikaci.",
+  "wizardNotificationsDescription": "Dozvíte se, když dorazí platba."
 }

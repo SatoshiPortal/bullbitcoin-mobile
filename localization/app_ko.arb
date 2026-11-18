@@ -11249,5 +11249,14 @@
   "torSettingsDescNoInternetOrBlocked": "이 네트워크는 인터넷에 연결되어 있지 않거나 Tor를 차단합니다.",
   "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
   "serverEncrypted": "암호화됨",
-  "serverUnencrypted": "암호화되지 않음"
+  "serverUnencrypted": "암호화되지 않음",
+  "backgroundTasksTitle": "백그라운드 작업",
+  "blockedInSystemSettings": "시스템 설정에서 차단됨",
+  "notificationsBlockedMessage": "시스템 설정에서 알림이 차단되어 있습니다.",
+  "notificationsTitle": "알림",
+  "openSystemSettings": "시스템 설정 열기",
+  "permissionsTitle": "권한",
+  "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고",
+  "wizardBackgroundTasksDescription": "앱이 닫혀 있어도 결제를 확인합니다.",
+  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다."
 }

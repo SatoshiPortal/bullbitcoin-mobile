@@ -11249,5 +11249,14 @@
   "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند.",
   "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود.",
   "serverEncrypted": "رمزگذاری‌شده",
-  "serverUnencrypted": "رمزگذاری‌نشده"
+  "serverUnencrypted": "رمزگذاری‌نشده",
+  "backgroundTasksTitle": "وظایف پس‌زمینه",
+  "blockedInSystemSettings": "در تنظیمات سیستم مسدود است",
+  "notificationsBlockedMessage": "اعلان‌ها در تنظیمات سیستم مسدود شده‌اند.",
+  "notificationsTitle": "اعلان‌ها",
+  "openSystemSettings": "باز کردن تنظیمات سیستم",
+  "permissionsTitle": "مجوزها",
+  "settingsSearchPermissionsKeywords": "اعلان‌ها|وظایف پس‌زمینه|باتری|هشدارها",
+  "wizardBackgroundTasksDescription": "بررسی پرداخت‌ها وقتی برنامه بسته است.",
+  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید."
 }

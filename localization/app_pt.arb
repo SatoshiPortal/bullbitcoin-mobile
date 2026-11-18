@@ -4653,5 +4653,14 @@
   "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
   "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu ligar-se ao proxy SOCKS5 configurado.",
   "serverEncrypted": "Encriptado",
-  "serverUnencrypted": "Não encriptado"
+  "serverUnencrypted": "Não encriptado",
+  "backgroundTasksTitle": "Tarefas em segundo plano",
+  "blockedInSystemSettings": "Bloqueado nas definições do sistema",
+  "notificationsBlockedMessage": "As notificações estão bloqueadas nas definições do sistema.",
+  "notificationsTitle": "Notificações",
+  "openSystemSettings": "Abrir definições do sistema",
+  "permissionsTitle": "Permissões",
+  "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas",
+  "wizardBackgroundTasksDescription": "Verifica pagamentos com a app fechada.",
+  "wizardNotificationsDescription": "Saiba quando chega um pagamento."
 }

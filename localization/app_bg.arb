@@ -9368,5 +9368,14 @@
   "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси.",
   "serverEncrypted": "Криптирано",
-  "serverUnencrypted": "Некриптирано"
+  "serverUnencrypted": "Некриптирано",
+  "backgroundTasksTitle": "Фонови задачи",
+  "blockedInSystemSettings": "Блокирано в системните настройки",
+  "notificationsBlockedMessage": "Известията са блокирани в системните настройки.",
+  "notificationsTitle": "Известия",
+  "openSystemSettings": "Отвори системните настройки",
+  "permissionsTitle": "Разрешения",
+  "settingsSearchPermissionsKeywords": "известия|фонови задачи|батерия|сигнали",
+  "wizardBackgroundTasksDescription": "Проверява плащания при затворено приложение.",
+  "wizardNotificationsDescription": "Разберете, когато пристигне плащане."
 }

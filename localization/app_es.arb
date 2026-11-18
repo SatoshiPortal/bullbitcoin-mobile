@@ -4622,5 +4622,14 @@
   "passphraseOptionOffSubtitle": "Palabra adicional opcional (BIP39)",
   "passphraseOptionOnSubtitle": "Se introduce abajo, nunca se muestra",
   "serverEncrypted": "Cifrado",
-  "serverUnencrypted": "Sin cifrar"
+  "serverUnencrypted": "Sin cifrar",
+  "backgroundTasksTitle": "Tareas en segundo plano",
+  "blockedInSystemSettings": "Bloqueado en los ajustes del sistema",
+  "notificationsBlockedMessage": "Las notificaciones están bloqueadas en los ajustes del sistema.",
+  "notificationsTitle": "Notificaciones",
+  "openSystemSettings": "Abrir ajustes del sistema",
+  "permissionsTitle": "Permisos",
+  "settingsSearchPermissionsKeywords": "notificaciones|tareas en segundo plano|batería|alertas",
+  "wizardBackgroundTasksDescription": "Comprueba pagos con la app cerrada.",
+  "wizardNotificationsDescription": "Entérate cuando llega un pago."
 }

@@ -1,3 +1,5 @@
+import 'package:background_tasks/background_tasks.dart'
+    show backgroundSyncAvailable;
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -64,6 +66,7 @@ enum SettingsItemId {
   devMode,
   testnetCredentials,
   errorReporting,
+  permissions,
 }
 
 enum SettingsItemSection { root, backup, wallet, app }
@@ -183,6 +186,7 @@ List<SettingsItem> settingsItemsOf(
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
     accountReady: accountReady,
+    backgroundTasksAvailable: backgroundSyncAvailable,
     environment: context.select(
       (SettingsCubit cubit) => cubit.state.storedSettings?.activeNetwork,
     ),
@@ -195,6 +199,7 @@ List<SettingsItem> buildSettingsItems({
   bool isDevModeEnabled = false,
   bool isSpWalletSetup = false,
   bool accountReady = false,
+  bool backgroundTasksAvailable = false,
   required NetworkEnv? environment,
 }) {
   final english = AppLocalizationsEn();
@@ -729,6 +734,20 @@ List<SettingsItem> buildSettingsItems({
       ),
       isInlineControl: true,
     ),
+    if (backgroundTasksAvailable)
+      SettingsItem(
+        id: SettingsItemId.permissions,
+        section: SettingsItemSection.app,
+        title: localization.permissionsTitle,
+        path: path(SettingsItemSection.app, localization.permissionsTitle),
+        icon: Icons.verified_user_outlined,
+        open: (context) => context.pushNamed(SettingsRoute.permissions.name),
+        keywords: _keywords(
+          localization.settingsSearchPermissionsKeywords,
+          english.settingsSearchPermissionsKeywords,
+          [english.permissionsTitle],
+        ),
+      ),
     if (isSuperuser)
       SettingsItem(
         id: SettingsItemId.devMode,

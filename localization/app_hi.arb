@@ -11436,5 +11436,14 @@
   "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।",
   "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।",
   "serverEncrypted": "एन्क्रिप्टेड",
-  "serverUnencrypted": "एन्क्रिप्टेड नहीं"
+  "serverUnencrypted": "एन्क्रिप्टेड नहीं",
+  "backgroundTasksTitle": "बैकग्राउंड कार्य",
+  "blockedInSystemSettings": "सिस्टम सेटिंग्स में अवरुद्ध",
+  "notificationsBlockedMessage": "सूचनाएँ सिस्टम सेटिंग्स में अवरुद्ध हैं।",
+  "notificationsTitle": "सूचनाएँ",
+  "openSystemSettings": "सिस्टम सेटिंग्स खोलें",
+  "permissionsTitle": "अनुमतियाँ",
+  "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
+  "wizardBackgroundTasksDescription": "ऐप बंद होने पर भुगतान जाँचता है।",
+  "wizardNotificationsDescription": "भुगतान आने पर जानें।"
 }

@@ -3631,5 +3631,14 @@
   "torSettingsDescNoInternetOrBlocked": "ამ ქსელს არ აქვს ინტერნეტთან წვდომა, ან ის ბლოკავს Tor-ს.",
   "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის.",
   "serverEncrypted": "დაშიფრული",
-  "serverUnencrypted": "დაუშიფრავი"
+  "serverUnencrypted": "დაუშიფრავი",
+  "backgroundTasksTitle": "ფონური ამოცანები",
+  "blockedInSystemSettings": "დაბლოკილია სისტემის პარამეტრებში",
+  "notificationsBlockedMessage": "შეტყობინებები დაბლოკილია სისტემის პარამეტრებში.",
+  "notificationsTitle": "შეტყობინებები",
+  "openSystemSettings": "სისტემის პარამეტრების გახსნა",
+  "permissionsTitle": "ნებართვები",
+  "settingsSearchPermissionsKeywords": "შეტყობინებები|ფონური ამოცანები|ბატარეა|გაფრთხილებები",
+  "wizardBackgroundTasksDescription": "ამოწმებს გადახდებს, როცა აპი დახურულია.",
+  "wizardNotificationsDescription": "გაიგეთ, როცა გადახდა შემოვა."
 }

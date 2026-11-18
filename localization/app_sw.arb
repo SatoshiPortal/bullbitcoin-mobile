@@ -3520,5 +3520,14 @@
   "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa.",
   "serverEncrypted": "Imesimbwa kwa njia fiche",
-  "serverUnencrypted": "Haijasimbwa kwa njia fiche"
+  "serverUnencrypted": "Haijasimbwa kwa njia fiche",
+  "backgroundTasksTitle": "Kazi za chinichini",
+  "blockedInSystemSettings": "Imezuiwa katika mipangilio ya mfumo",
+  "notificationsBlockedMessage": "Arifa zimezuiwa katika mipangilio ya mfumo.",
+  "notificationsTitle": "Arifa",
+  "openSystemSettings": "Fungua mipangilio ya mfumo",
+  "permissionsTitle": "Ruhusa",
+  "settingsSearchPermissionsKeywords": "arifa|kazi za chinichini|betri|tahadhari",
+  "wizardBackgroundTasksDescription": "Hukagua malipo programu ikiwa imefungwa.",
+  "wizardNotificationsDescription": "Jua malipo yanapofika."
 }

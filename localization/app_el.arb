@@ -11249,5 +11249,14 @@
   "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
   "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
   "serverEncrypted": "Κρυπτογραφημένο",
-  "serverUnencrypted": "Μη κρυπτογραφημένο"
+  "serverUnencrypted": "Μη κρυπτογραφημένο",
+  "backgroundTasksTitle": "Εργασίες στο παρασκήνιο",
+  "blockedInSystemSettings": "Αποκλείστηκε στις ρυθμίσεις συστήματος",
+  "notificationsBlockedMessage": "Οι ειδοποιήσεις έχουν αποκλειστεί στις ρυθμίσεις συστήματος.",
+  "notificationsTitle": "Ειδοποιήσεις",
+  "openSystemSettings": "Άνοιγμα ρυθμίσεων συστήματος",
+  "permissionsTitle": "Άδειες",
+  "settingsSearchPermissionsKeywords": "ειδοποιήσεις|εργασίες παρασκηνίου|μπαταρία|ειδοποιήσεις πληρωμών",
+  "wizardBackgroundTasksDescription": "Ελέγχει πληρωμές με κλειστή την εφαρμογή.",
+  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή."
 }

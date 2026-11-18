@@ -8649,5 +8649,14 @@
   "torSettingsDescNoInternetOrBlocked": "এই নেটৱৰ্কত ইণ্টাৰনেট নাই, বা ই Tor অৱৰোধ কৰে।",
   "torSettingsExternalProxyUnavailableDescription": "Bull-এ কনফিগাৰ কৰা SOCKS5 প্ৰক্সিত সংযোগ কৰিব নোৱাৰিলে।",
   "serverEncrypted": "এনক্ৰিপ্ট কৰা",
-  "serverUnencrypted": "এনক্ৰিপ্ট নকৰা"
+  "serverUnencrypted": "এনক্ৰিপ্ট নকৰা",
+  "backgroundTasksTitle": "নেপথ্যৰ কাম",
+  "blockedInSystemSettings": "ছিষ্টেম ছেটিংছত অৱৰুদ্ধ",
+  "notificationsBlockedMessage": "ছিষ্টেম ছেটিংছত জাননী অৱৰুদ্ধ কৰা আছে।",
+  "notificationsTitle": "জাননী",
+  "openSystemSettings": "ছিষ্টেম ছেটিংছ খোলক",
+  "permissionsTitle": "অনুমতি",
+  "settingsSearchPermissionsKeywords": "জাননী|নেপথ্যৰ কাম|বেটাৰী|সতৰ্কবাণী",
+  "wizardBackgroundTasksDescription": "এপ বন্ধ থাকিলেও পেমেণ্ট পৰীক্ষা কৰে।",
+  "wizardNotificationsDescription": "পেমেণ্ট আহিলে জানক।"
 }

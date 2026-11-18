@@ -4841,5 +4841,14 @@
   "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
   "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt",
   "serverEncrypted": "Verschlüsselt",
-  "serverUnencrypted": "Unverschlüsselt"
+  "serverUnencrypted": "Unverschlüsselt",
+  "backgroundTasksTitle": "Hintergrundaufgaben",
+  "blockedInSystemSettings": "In den Systemeinstellungen blockiert",
+  "notificationsBlockedMessage": "Benachrichtigungen sind in den Systemeinstellungen blockiert.",
+  "notificationsTitle": "Benachrichtigungen",
+  "openSystemSettings": "Systemeinstellungen öffnen",
+  "permissionsTitle": "Berechtigungen",
+  "settingsSearchPermissionsKeywords": "Benachrichtigungen|Hintergrundaufgaben|Akku|Hinweise",
+  "wizardBackgroundTasksDescription": "Prüft Zahlungen bei geschlossener App.",
+  "wizardNotificationsDescription": "Erfahren Sie, wann eine Zahlung eingeht."
 }

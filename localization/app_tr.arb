@@ -11249,5 +11249,14 @@
   "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
   "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
   "serverEncrypted": "Şifreli",
-  "serverUnencrypted": "Şifresiz"
+  "serverUnencrypted": "Şifresiz",
+  "backgroundTasksTitle": "Arka plan görevleri",
+  "blockedInSystemSettings": "Sistem ayarlarında engellendi",
+  "notificationsBlockedMessage": "Bildirimler sistem ayarlarında engellendi.",
+  "notificationsTitle": "Bildirimler",
+  "openSystemSettings": "Sistem ayarlarını aç",
+  "permissionsTitle": "İzinler",
+  "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar",
+  "wizardBackgroundTasksDescription": "Uygulama kapalıyken ödemeleri kontrol eder.",
+  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun."
 }

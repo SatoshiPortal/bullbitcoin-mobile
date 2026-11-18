@@ -11455,5 +11455,14 @@
   "torSettingsDescNoInternetOrBlocked": "এই নেটওয়ার্কে ইন্টারনেট নেই, অথবা এটি Tor ব্লক করে।",
   "torSettingsExternalProxyUnavailableDescription": "Bull কনফিগার করা SOCKS5 প্রক্সিতে সংযোগ করতে পারেনি।",
   "serverEncrypted": "এনক্রিপ্ট করা",
-  "serverUnencrypted": "এনক্রিপ্ট করা নয়"
+  "serverUnencrypted": "এনক্রিপ্ট করা নয়",
+  "backgroundTasksTitle": "ব্যাকগ্রাউন্ড কাজ",
+  "blockedInSystemSettings": "সিস্টেম সেটিংসে ব্লক করা",
+  "notificationsBlockedMessage": "সিস্টেম সেটিংসে বিজ্ঞপ্তি ব্লক করা আছে।",
+  "notificationsTitle": "বিজ্ঞপ্তি",
+  "openSystemSettings": "সিস্টেম সেটিংস খুলুন",
+  "permissionsTitle": "অনুমতি",
+  "settingsSearchPermissionsKeywords": "বিজ্ঞপ্তি|ব্যাকগ্রাউন্ড কাজ|ব্যাটারি|সতর্কতা",
+  "wizardBackgroundTasksDescription": "অ্যাপ বন্ধ থাকলেও পেমেন্ট দেখে।",
+  "wizardNotificationsDescription": "পেমেন্ট এলে জানুন।"
 }
