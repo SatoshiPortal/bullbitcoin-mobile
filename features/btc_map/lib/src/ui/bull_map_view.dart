@@ -182,9 +182,12 @@ class _BullMapViewState extends State<BullMapView> {
   Future<void> _onStyleLoaded() async {
     final map = _map;
     if (map == null || !mounted) return;
-    final revision = _styleRevision;
+    // Android activity recreation reloads the same style with empty sources. Invalidate both cached pins and uploads still in flight for the old source.
+    final revision = ++_styleRevision;
     bool currentStyle() => mounted && revision == _styleRevision;
     _layersReady = false;
+    _shownIndex = null;
+    _loadedBounds = null;
     final colors = context.bull;
     try {
       await map.addSource(
@@ -350,13 +353,15 @@ class _BullMapViewState extends State<BullMapView> {
           }
           final updated = await map.editGeoJsonSource(_sourceId, rendered.json);
           if (!mounted) return;
-          if (updated && revision == _styleRevision) {
-            _shownIndex = index;
-            _shownMerchants = merchants;
-            _loadedBounds = rendered.bounds;
-          } else {
+          // The style reloaded meanwhile: this went to a source that is gone, and the new style gets its own upload.
+          if (revision != _styleRevision) continue;
+          if (!updated) {
             log.warning('Merchant map source not updated');
+            continue;
           }
+          _shownIndex = index;
+          _shownMerchants = merchants;
+          _loadedBounds = rendered.bounds;
         } on PlatformException catch (error) {
           log.warning('Merchant map source not updated: ${error.code}');
         }
