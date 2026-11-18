@@ -68,6 +68,8 @@ final class WalletFacade {
   _spendStatus;
   final BroadcastSpend? _broadcastSpend;
   final Future<bool> Function(String, String)? _protectObservedSpend;
+  final Future<Result<String, WalletDiscoveryFailure>> Function(String)?
+  _receiveAddress;
   final Stream<WalletRevisionState> _revisions;
   final Future<Result<void, WalletDiscoveryFailure>> Function(String)?
   _discoverWallet;
@@ -80,6 +82,7 @@ final class WalletFacade {
     this._revisions, {
     this._nextReceiveAddress,
     this._spendStatus,
+    this._receiveAddress,
     this._broadcastSpend,
     this._protectObservedSpend,
     this._discoverWallet,
@@ -88,6 +91,12 @@ final class WalletFacade {
     this._syncPassActivity = const Stream.empty(),
     this._isSyncPassActive,
   });
+
+  Future<Result<String, WalletDiscoveryFailure>> receiveAddress(
+    String walletId,
+  ) =>
+      _receiveAddress?.call(walletId) ??
+      Future.value(const Err(WalletDiscoveryUnavailableFailure()));
 
   Future<BitcoinSpendStatus> spendStatus(
     String walletId, {

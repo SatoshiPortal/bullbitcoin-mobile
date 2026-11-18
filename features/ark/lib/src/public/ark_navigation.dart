@@ -2,6 +2,9 @@ import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:go_router/go_router.dart';
 
+export 'ark_transfer_facade.dart'
+    show ArkTransferBoardEntry, ArkTransferPaymentEntry;
+
 /// Explicit Ark entry. General Receive and payment-route preferences are not
 /// part of this surface. The captured account survives subsequent UI changes.
 final class ArkPaymentEntry {

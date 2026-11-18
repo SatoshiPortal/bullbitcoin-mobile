@@ -12,7 +12,7 @@ import 'package:secrets/secrets.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_ark/bull_ark.dart'
-    show ArkFailure, ArkServiceUnavailableFailure;
+    show ArkFailure, ArkServiceUnavailableFailure, ArkTransferFacade;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -104,6 +104,14 @@ final class ArkForegroundHost {
     locator.registerSingleton<ArkForegroundHost>(
       host,
       dispose: (value) => value.close(),
+    );
+    locator.registerSingleton<ArkTransferFacade>(
+      ArkTransferFacade(() async {
+        return switch (await host.current()) {
+          Err(:final failure) => Err(failure),
+          Ok(:final value) => value.transferContext(),
+        };
+      }),
     );
     await host.prepare();
   }

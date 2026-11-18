@@ -33,3 +33,14 @@ abstract interface class ArkBoardFundingPort {
     String reviewBinding,
   );
 }
+
+/// Optional host capability for a transfer bound to an explicit source.
+abstract interface class ArkTransferBoardFundingPort
+    implements ArkBoardFundingPort {
+  @useResult
+  Future<Result<ArkBoardPreparation, ArkFailure>> prepareFrom(
+    ArkAccountConfig config,
+    Sats amount, {
+    required String sourceWalletId,
+  });
+}

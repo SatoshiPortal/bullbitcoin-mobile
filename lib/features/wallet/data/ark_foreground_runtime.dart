@@ -71,6 +71,21 @@ final class ArkForegroundRuntime {
   /// The selected account this runtime was opened for.
   ArkAccountId get account => _config.id;
 
+  Future<Result<ArkTransferContext, ArkFailure>> transferContext() async {
+    if (!_policy.active) return const Err(ArkServiceUnavailableFailure());
+    final selected = await _selection._select();
+    if (!_policy.active) return const Err(ArkServiceUnavailableFailure());
+    return switch (selected) {
+      Ok(:final value)
+          when value.$1.id == _config.id &&
+              value.$1.arkUrl == _config.arkUrl &&
+              value.$1.primaryEsploraUrl == _config.primaryEsploraUrl =>
+        feature.transferContext(value.$2),
+      Err(:final failure) => Err(failure),
+      _ => const Err(ArkServiceUnavailableFailure()),
+    };
+  }
+
   /// Whether this runtime is open and still matches the current wallet
   /// selection. A stale runtime must be invalidated and closed by its owner.
   Future<bool> isCurrent() async {

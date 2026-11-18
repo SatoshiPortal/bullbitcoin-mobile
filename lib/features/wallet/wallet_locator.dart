@@ -1,8 +1,10 @@
+import 'domain/usecases/get_receive_address_usecase.dart';
+import 'domain/usecases/get_transfer_receive_address_usecase.dart';
+
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show SqliteArkFundingReservations;
 
 import 'domain/usecases/next_unused_receive_address_usecase.dart';
-import 'domain/usecases/get_receive_address_usecase.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
@@ -79,6 +81,10 @@ import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<GetTransferReceiveAddressUsecase>(
+      () =>
+          GetTransferReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
+    );
     locator.registerFactory<WalletSecretReferencesRepository>(
       () => CatalogWalletSecretReferencesRepository(
         locator<WalletMetadataDatasource>(),
@@ -132,6 +138,8 @@ class WalletLocator {
             NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>())
                 .execute(id, excludedAddresses: excludedAddresses),
         spendStatus: locator<WalletNativeRuntime>().spendStatus,
+        receiveAddress: (id) =>
+            locator<GetTransferReceiveAddressUsecase>().execute(id),
         broadcastSpend: locator<BroadcastObservationFollowUp>().wrap(
           locator<WalletNativeRuntime>().broadcast,
         ),

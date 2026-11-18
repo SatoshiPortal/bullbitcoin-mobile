@@ -26,7 +26,7 @@ import 'wallet_native_runtime.dart';
 
 /// Main-wallet Board funding. No Bark key, raw PSBT or data binding leaves here.
 /// Every ambiguous signer/delivery result retains the original operation/holds.
-final class WalletArkBoardFunding implements ArkBoardFundingPort {
+final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
   final ArkClient _client;
   final WalletNativeRuntime _runtime;
   final SqliteArkFundingReservations _authority;
@@ -61,7 +61,20 @@ final class WalletArkBoardFunding implements ArkBoardFundingPort {
   Future<Result<ArkBoardPreparation, ArkFailure>> prepare(
     ArkAccountConfig config,
     Sats amount,
-  ) => _track(() async {
+  ) => _prepare(config, amount);
+
+  @override
+  Future<Result<ArkBoardPreparation, ArkFailure>> prepareFrom(
+    ArkAccountConfig config,
+    Sats amount, {
+    required String sourceWalletId,
+  }) => _prepare(config, amount, expectedSourceWalletId: sourceWalletId);
+
+  Future<Result<ArkBoardPreparation, ArkFailure>> _prepare(
+    ArkAccountConfig config,
+    Sats amount, {
+    String? expectedSourceWalletId,
+  }) => _track(() async {
     if (!_preparing.add(config.id)) return const Err(ArkOperationBusyFailure());
     final id = _id();
     bool journalAttempted = false;
@@ -69,6 +82,11 @@ final class WalletArkBoardFunding implements ArkBoardFundingPort {
       _require(
         config.id.network == BitcoinNetwork.regtest &&
             amount.value > BigInt.zero,
+      );
+      final sourceWalletId = await _sourceWalletId(config.id);
+      _require(
+        expectedSourceWalletId == null ||
+            expectedSourceWalletId == sourceWalletId,
       );
       final existing = _sync(
         await _authority.pendingForAccount(config.id.canonical),
@@ -82,7 +100,7 @@ final class WalletArkBoardFunding implements ArkBoardFundingPort {
           return Err(ArkSubmissionUncertainFailure(remaining));
         }
       }
-      final metadata = await _eligible(await _sourceWalletId(config.id));
+      final metadata = await _eligible(sourceWalletId);
       final parent = metadata.seedFingerprint;
       if (parent == null) throw const _HostFailure(ArkAccountRecoveryFailure());
       _require(parent == config.id.parent);

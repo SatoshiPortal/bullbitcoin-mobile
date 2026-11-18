@@ -58,6 +58,8 @@ graph TB
     ARK --> BG_TASKS
     ARK --> NOTIFICATIONS
     ARK_NATIVE --> PRIMITIVES
+    TRANSFER --> ARK
+    TRANSFER -->|public receive address| WALLETS
     SEND --> ARK
     SETTINGS --> ARK
     APP_STARTUP --> ARK

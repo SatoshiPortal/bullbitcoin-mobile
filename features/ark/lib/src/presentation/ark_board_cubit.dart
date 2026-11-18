@@ -49,10 +49,14 @@ final class ArkBoardCubit extends Cubit<ArkBoardState> {
     required this.config,
   }) : super(const ArkBoardEditing());
 
-  Future<void> prepare(Sats amount) async {
+  Future<void> prepare(Sats amount, {String? expectedSourceWalletId}) async {
     if (isClosed || state is! ArkBoardEditing) return;
     emit(const ArkBoardBusy());
-    final result = await _prepare.execute(config, amount);
+    final result = await _prepare.execute(
+      config,
+      amount,
+      expectedSourceWalletId: expectedSourceWalletId,
+    );
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):

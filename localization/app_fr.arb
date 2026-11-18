@@ -4842,5 +4842,11 @@
   "sendTotalDebited": "Total débité",
   "sendLightningInvoiceAmount": "Facture Lightning · {amount} sats",
   "sendSilentPaymentAddress": "Adresse de paiement silencieux",
-  "sendPsbtRequest": "PSBT"
+  "sendPsbtRequest": "PSBT",
+  "swapTransferDirection": "Inverser la source et la destination",
+  "swapArkMinimum": "Montant minimum : {amount} sats + frais réseau",
+  "swapArkBelowMinimum": "Montant trop faible. Minimum : {amount} sats + frais",
+  "swapArkFeeReview": "Les frais et le montant reçu sont confirmés lors de la prochaine vérification.",
+  "swapArkRouteUnavailable": "Ce transfert est indisponible.",
+  "swapInternalTransferDescription": "Transférez facilement des bitcoins entre vos portefeuilles. Ne gardez dans le portefeuille de paiements instantanés que les fonds nécessaires aux dépenses courantes."
 }

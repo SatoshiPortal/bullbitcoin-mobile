@@ -47,6 +47,7 @@ import '../ui/ark_unavailable_screen.dart';
 import '../ui/ark_board_screen.dart';
 import '../ui/ark_exit_progress_fee_screen.dart';
 import 'ark_facade.dart';
+import 'ark_transfer_facade.dart';
 import 'ark_navigation.dart';
 
 enum _Kind {
@@ -142,6 +143,30 @@ final class ArkFeature {
          boardFunding: boardFunding,
          registry: registry,
        );
+
+  /// Resolve preferences and native evidence through the existing use cases.
+  Future<Result<ArkTransferContext, ArkFailure>> transferContext(
+    String sourceWalletId,
+  ) async {
+    if (!_active) return const Err(ArkServiceUnavailableFailure());
+    final settings = await _load.execute();
+    if (settings case Err(:final failure)) return Err(failure);
+    if (settings case Ok(value: final settings)) {
+      if (!settings.enabled) return const Err(ArkDisabledFailure());
+      if (_configuration(settings.config) != _configuration(_config)) {
+        return const Err(ArkServiceUnavailableFailure());
+      }
+    }
+    final result = await facade.read(_config.id);
+    if (!_active) return const Err(ArkServiceUnavailableFailure());
+    return result.map(
+      (snapshot) => ArkTransferContext(
+        config: _config,
+        snapshot: snapshot,
+        boardSourceWalletId: sourceWalletId,
+      ),
+    );
+  }
 
   /// UI invalidation, not revocation of facade references or backend effects.
   void invalidate() {
@@ -240,6 +265,18 @@ class _ArkPageState extends State<_ArkPage> {
       widget.feature._active &&
       switch (widget.entry) {
         null => widget.kind == _Kind.settings,
+        final ArkTransferPaymentEntry entry =>
+          widget.kind == _Kind.review &&
+              entry.account == widget.feature._config.id &&
+              entry.destination.isNotEmpty &&
+              entry.amount.value > BigInt.zero &&
+              entry.amount.value <= BigInt.from(2100000000000000),
+        final ArkTransferBoardEntry entry =>
+          widget.kind == _Kind.board &&
+              entry.account == widget.feature._config.id &&
+              entry.sourceWalletId.isNotEmpty &&
+              entry.amount.value > BigInt.zero &&
+              entry.amount.value <= BigInt.from(2100000000000000),
         final ArkPaymentEntry entry =>
           widget.kind == _Kind.payment &&
               entry.account == widget.feature._config.id,
@@ -318,10 +355,25 @@ class _ArkPageState extends State<_ArkPage> {
       );
     } else if (widget.kind == _Kind.review) {
       final entry = widget.entry;
-      if (entry is! _Entry || entry.consumed) return;
-      final request = entry.request;
-      if (request == null) return;
-      entry.consumed = true; // One USER intent, consumed before load/await.
+      final ArkQuoteRequest request;
+      switch (entry) {
+        case ArkTransferPaymentEntry() when !entry.consumed:
+          entry.consumed = true;
+          request = ArkQuoteRequest.payment(
+            destination: ArkPaymentDestination(
+              kind: ArkDestinationKind.bitcoin,
+              value: entry.destination,
+            ),
+            amount: entry.amount,
+          );
+        case _Entry() when !entry.consumed:
+          final original = entry.request;
+          if (original == null) return;
+          entry.consumed = true;
+          request = original;
+        default:
+          return;
+      }
       final cubit = ArkOperationCubit(
         QuoteArkOperationUsecase(repository, feature._preferences),
         ConfirmArkOperationUsecase(repository, feature._preferences),
@@ -332,6 +384,10 @@ class _ArkPageState extends State<_ArkPage> {
       _owner = cubit;
       unawaited(cubit.load()); // Parent load BEFORE passive A child mounts.
     } else {
+      if (widget.entry case ArkTransferBoardEntry entry) {
+        if (entry.consumed) return;
+        entry.consumed = true;
+      }
       _loading = true;
       final result = await feature._load.execute();
       if (!mounted || generation != _generation || !_validEntry()) return;
@@ -379,6 +435,17 @@ class _ArkPageState extends State<_ArkPage> {
       }
     }
     if (!mounted || generation != _generation || !_validEntry()) return;
+    switch ((_owner, widget.entry)) {
+      case (ArkBoardCubit owner, ArkTransferBoardEntry entry):
+        unawaited(
+          owner.prepare(
+            entry.amount,
+            expectedSourceWalletId: entry.sourceWalletId,
+          ),
+        );
+      default:
+        break;
+    }
     final settings = _origin?.settings;
     final own = _owner;
     if (own is ArkSettingsCubit) {
