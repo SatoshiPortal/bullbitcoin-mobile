@@ -30,7 +30,7 @@ const _actionKey = ValueKey('actions');
 Future<void> _pumpTopSection(
   WidgetTester tester, {
   required double textScale,
-  required double actionsHeight,
+  double? actionsHeight,
   required int unconfirmedIncomingBalance,
 }) async {
   final wallet = _Wallet();
@@ -95,7 +95,13 @@ Future<void> _pumpTopSection(
               child: SizedBox(
                 width: 360,
                 child: WalletHomeTopSection(
-                  actions: SizedBox(key: _actionKey, height: actionsHeight),
+                  actions: Builder(
+                    builder: (context) => SizedBox(
+                      key: _actionKey,
+                      height:
+                          actionsHeight ?? BullQuickActionBar.heightOf(context),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -172,13 +178,14 @@ void main() {
       await _pumpTopSection(
         tester,
         textScale: 1,
-        actionsHeight: BullQuickActionBar.height,
         unconfirmedIncomingBalance: 0,
       );
       expect(tester.takeException(), isNull);
       expect(
         tester.getSize(find.byType(Image)).height,
-        WalletHomeTopSection.minBackgroundHeight,
+        WalletHomeTopSection.minBackgroundHeight(
+          tester.element(find.byType(WalletHomeTopSection)),
+        ),
       );
     },
   );

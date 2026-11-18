@@ -2323,6 +2323,61 @@ void main() {
       );
     });
 
+    group('Payjoin reservations (network switched without a relaunch)', () {
+      void stubReservations({required bool readable}) {
+        final stub = when(
+          () => validateBitcoinSelection.execute(walletId: 'wallet-1'),
+        );
+        if (readable) {
+          stub.thenAnswer((_) async => []);
+        } else {
+          stub.thenThrow(
+            ValidateBitcoinSelectionException(
+              'Failed to load Payjoin-reserved UTXOs',
+            ),
+          );
+        }
+      }
+
+      test(
+        'unreadable reservations create no swap and ask for a relaunch',
+        () async {
+          when(() => getSwapRoute.execute())
+              .thenAnswer((_) async => SwapRoute.boltz);
+          stubReservations(readable: false);
+          bloc.emit(crossChain());
+
+          bloc.add(const TransferEvent.swapCreated('1000'));
+          await bloc.stream.firstWhere((state) => state.swapFailure != null);
+
+          expect(bloc.state.swapFailure, isA<SwapRelaunchRequiredFailure>());
+          expect(bloc.state.swap, isNull);
+          verifyNever(
+            () => createBitcoinToLiquid.execute(
+              sendWalletId: any(named: 'sendWalletId'),
+              amountSat: any(named: 'amountSat'),
+              destination: any(named: 'destination'),
+            ),
+          );
+        },
+      );
+
+      test('after a relaunch the swap proceeds', () async {
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
+        stubReservations(readable: true);
+        stubCreateChain(Ok(_swap()));
+        stubLockupBuild();
+        bloc.emit(crossChain());
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        expect(bloc.state.swapFailure, isNull);
+        expect(bloc.state.swap?.id, 'swap-1');
+      });
+    });
+
     group('from a Liquid wallet that must consolidate', () {
       TransferState fromLiquid({bool consolidationRequired = false}) =>
           TransferState(

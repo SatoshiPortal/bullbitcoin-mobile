@@ -8,7 +8,6 @@ import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.da
 import 'package:bb_mobile/features/pin_code/ui/screens/confirm_pin_code_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/pin_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,13 +41,10 @@ class PinCodeSettingFlow extends StatelessWidget {
               log.info('Pin Code Deleted');
               context.pop();
             case PinCodeSettingStatus.backupRequired:
+              // The settings screen explains the requirement in place and
+              // offers the backup; redirecting here left Create PIN dead on
+              // return, as this listener only fires on a status change.
               log.warning('Backup required before setting PIN');
-              BullSnackBar.show(
-                context,
-                message: context.loc.pinCodeBackupRequiredWarning,
-              );
-              context.goNamed(WalletRoute.walletHome.name);
-              context.pushNamed(SettingsRoute.backupSettings.name);
             default:
               break;
           }
@@ -76,7 +72,16 @@ class PinCodeSettingFlow extends StatelessWidget {
                     );
                   case PinCodeSettingStatus.settings:
                   case PinCodeSettingStatus.backupRequired:
-                    return const PinSettingsScreen();
+                    return PinSettingsScreen(
+                      onBackUp: () async {
+                        final bloc = context.read<PinCodeSettingBloc>();
+                        await context.pushNamed(
+                          SettingsRoute.backupSettings.name,
+                        );
+                        // Re-check once the user comes back from the backup.
+                        bloc.add(const PinCodeSettingInitialized());
+                      },
+                    );
                   case PinCodeSettingStatus.choose:
                     return const ChoosePinCodeScreen();
                   case PinCodeSettingStatus.confirm:

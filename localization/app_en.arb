@@ -41,7 +41,7 @@
   "@coreSwapsStatusRefunded": {
     "description": "Display name for refunded swap status (payment failed, funds returned)"
   },
-  "swapRestoreTitle": "Swap restore",
+  "swapRestoreTitle": "Swap Restore",
   "@swapRestoreTitle": {
     "description": "Title for the swap restore settings page"
   },
@@ -314,7 +314,7 @@
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
   },
-  "settingsSecurityPinTitle": "Security Pin",
+  "settingsSecurityPinTitle": "Security PIN",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
@@ -675,7 +675,7 @@
   "@mempoolErrorDeleteFailed": {
     "description": "Error when deleting custom mempool server fails"
   },
-  "walletSettingsImportWalletTitle": "Import wallet",
+  "walletSettingsImportWalletTitle": "Import Wallet",
   "@walletSettingsImportWalletTitle": {
     "description": "Title for the import wallet option in Bitcoin settings"
   },
@@ -9846,7 +9846,7 @@
   "@autoswapSave": {
     "description": "Save button label"
   },
-  "electrumTitle": "Electrum Server Settings",
+  "electrumTitle": "Electrum Server",
   "@electrumTitle": {
     "description": "AppBar title for Electrum settings screen"
   },
@@ -11251,7 +11251,7 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "settingsErrorReportingTitle": "Error reporting",
+  "settingsErrorReportingTitle": "Error Reporting",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
   },
@@ -15320,7 +15320,7 @@
   "@wizardExchangeDescription": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "quickActionsSettingsTitle": "Quick actions",
+  "quickActionsSettingsTitle": "Quick Actions",
   "@quickActionsSettingsTitle": {
     "description": "Optional exchange access or wallet quick action setting."
   },
@@ -15496,7 +15496,7 @@
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
   },
-  "settingsDarkModeTitle": "Dark mode",
+  "settingsDarkModeTitle": "Dark Mode",
   "@settingsDarkModeTitle": {
     "description": "App settings switch: on uses the dark theme, off the light theme."
   },
@@ -15752,5 +15752,21 @@
   "swapInternalTransferDescription": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
   "@swapInternalTransferDescription": {
     "description": "Introduction to internal wallet transfers and everyday spending funds."
+  },
+  "networkRelaunchRequiredError": "The network changed since the app started. Close and reopen the app, then try again.",
+  "@networkRelaunchRequiredError": {
+    "description": "Error shown when a payment cannot start because the app is still running on the network it was launched with"
+  },
+  "networkRestartDialogTitle": "Restart required",
+  "@networkRestartDialogTitle": {
+    "description": "Title of the dialog shown after switching to or from regtest in developer settings"
+  },
+  "networkRestartDialogMessage": "Switching to or from regtest takes effect after the app restarts. The app will now close; open it again to continue.",
+  "@networkRestartDialogMessage": {
+    "description": "Body of the restart-required dialog after switching to or from regtest"
+  },
+  "networkRestartDialogAction": "Close the app",
+  "@networkRestartDialogAction": {
+    "description": "Button of the restart-required dialog that closes the app"
   }
 }

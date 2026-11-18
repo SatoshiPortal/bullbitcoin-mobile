@@ -635,35 +635,18 @@ List<SettingsItem> buildSettingsItems({
       isInlineControl: true,
     ),
     SettingsItem(
-      id: SettingsItemId.theme,
-      section: SettingsItemSection.app,
-      title: localization.settingsDarkModeTitle,
-      path: path(SettingsItemSection.app, localization.settingsDarkModeTitle),
-      icon: Icons.palette,
-      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
-      keywords: _keywords(
-        localization.settingsSearchThemeKeywords,
-        english.settingsSearchThemeKeywords,
-        [
-          localization.settingsThemeTitle,
-          english.settingsThemeTitle,
-          english.settingsDarkModeTitle,
-        ],
-      ),
-      isInlineControl: true,
-    ),
-    SettingsItem(
       id: SettingsItemId.currency,
       section: SettingsItemSection.app,
       title: localization.settingsCurrencyTitle,
       path: path(SettingsItemSection.app, localization.settingsCurrencyTitle),
       icon: Icons.attach_money,
-      open: (context) => context.pushNamed(SettingsRoute.currency.name),
+      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
       keywords: _keywords(
         localization.settingsSearchCurrencyKeywords,
         english.settingsSearchCurrencyKeywords,
         [english.settingsCurrencyTitle],
       ),
+      isInlineControl: true,
     ),
     SettingsItem(
       id: SettingsItemId.quickActions,
@@ -709,6 +692,24 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchTorKeywords,
         [english.torSettingsTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.theme,
+      section: SettingsItemSection.app,
+      title: localization.settingsDarkModeTitle,
+      path: path(SettingsItemSection.app, localization.settingsDarkModeTitle),
+      icon: Icons.palette,
+      open: (context) => context.pushNamed(SettingsRoute.appSettings.name),
+      keywords: _keywords(
+        localization.settingsSearchThemeKeywords,
+        english.settingsSearchThemeKeywords,
+        [
+          localization.settingsThemeTitle,
+          english.settingsThemeTitle,
+          english.settingsDarkModeTitle,
+        ],
+      ),
+      isInlineControl: true,
     ),
     SettingsItem(
       id: SettingsItemId.screenPrivacy,

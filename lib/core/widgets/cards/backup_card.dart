@@ -18,12 +18,17 @@ class BackupCard extends StatelessWidget {
         onTap();
       },
       child: Container(
-        // 15 + the 1px border = 16 of space around the content.
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: colors.banner,
-          border: Border.all(color: colors.bannerOutline),
           borderRadius: BorderRadius.circular(context.bullShapes.card),
+          boxShadow: [
+            BoxShadow(
+              color: colors.scrim,
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

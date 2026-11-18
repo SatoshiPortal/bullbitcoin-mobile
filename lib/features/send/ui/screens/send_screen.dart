@@ -475,9 +475,8 @@ class AddressField extends StatelessWidget {
       onScan: () => Navigator.of(context).push<void>(
         MaterialPageRoute(
           builder: (_) => FullScreenScannerPage(
-            onScannedPaymentRequest: (data) => cubit.onScannedPaymentRequest(
-              data.$1,
-              data.$2,
+            onScannedPaymentRequest: (raw) => cubit.onScannedPaymentRequest(
+              raw,
               autoContinue: !multipleRecipients,
             ),
           ),

@@ -10,7 +10,7 @@ void main() {
     (AppThemeType.light, AppColors.light),
     (AppThemeType.dark, AppColors.dark),
   ]) {
-    testWidgets('both buttons are painted in the action button roles ($type)', (
+    testWidgets('both buttons are filled in the action button roles ($type)', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -31,8 +31,7 @@ void main() {
       for (final button in buttons) {
         expect(button.bgColor, colors.actionButton);
         expect(button.textColor, colors.onActionButton);
-        expect(button.outlined, isTrue);
-        expect(button.borderColor, colors.actionButtonOutline);
+        expect(button.outlined, isFalse);
       }
     });
   }
