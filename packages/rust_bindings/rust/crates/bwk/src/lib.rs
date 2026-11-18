@@ -2,9 +2,9 @@
 
 pub mod api;
 
-// When building under the `bull_sdk` feature the full flutter_rust_bridge
-// generated module (`frb_generated.rs`) is intentionally cfg'd out (the
-// aggregator regenerates all wire code). The API layer still references
+// The crate is only built by rust_lib_bull_sdk with the `bull_sdk` feature
+// (crate tests too: `cargo test --features bull_sdk`). The aggregator generates
+// all wire code; the API layer still references
 // `crate::frb_generated::StreamSink`, so we provide a minimal shim.
 //
 // Why an alias to `StreamSinkBase` instead of re-running the FRB macro:
