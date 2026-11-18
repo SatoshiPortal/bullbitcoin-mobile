@@ -544,6 +544,8 @@ final class BarkArkClient implements ArkClient {
     ArkAccountId account,
     Uri source, {
     bool commit = true,
+    int? revision,
+    void Function(bool)? onNativeStaleness,
     bool authoritativePass = true,
     _SyncFailures? syncFailures,
     Set<String> successfulStages = const {},
@@ -551,12 +553,13 @@ final class BarkArkClient implements ArkClient {
     final previous = store.snapshot;
     var observed = await session.observe(
       account: account,
-      revision: (previous?.revision ?? 0) + 1,
+      revision: revision ?? (previous?.revision ?? 0) + 1,
       now: now().toUtc(),
       chainSource: source,
       operations: await _verifiedOperations(store, account),
       previousRecovery: _storedRecovery(store, previous),
     );
+    onNativeStaleness?.call(observed.stale);
     var reserveAddress = store.get('reserve-address')?['address'] as String?;
     if (reserveAddress == null &&
         executionMode == ArkExecutionMode.foreground) {
@@ -615,28 +618,29 @@ final class BarkArkClient implements ArkClient {
       }
       return observed.movements.any(
         (movement) =>
-            movement.status == ArkMovementStatus.successful &&
-            movement.inputVtxoIds.contains(id) &&
-            (movement.kind == ArkMovementKind.renewal
-                ? observed.renewal != ArkRenewalStatus.delegated &&
-                      observed.renewal != ArkRenewalStatus.failed &&
-                      observed.renewal != ArkRenewalStatus.unknown &&
-                      movement.outputVtxoIds.isNotEmpty &&
-                      movement.outputVtxoIds.every(
-                        (output) => observed.vtxos.any(
-                          (v) =>
-                              v.id == output &&
-                              v.eligibleAt(observed.tipHeight ?? 0),
-                        ),
-                      )
-                : movement.kind == ArkMovementKind.payment &&
-                      movement.outputVtxoIds.every(
-                        (output) => observed.vtxos.any(
-                          (v) =>
-                              v.id == output &&
-                              v.eligibleAt(observed.tipHeight ?? 0),
-                        ),
-                      )),
+            terminalMovementRetires(movement, id, observed.vtxos) ||
+            (movement.status == ArkMovementStatus.successful &&
+                movement.inputVtxoIds.contains(id) &&
+                (movement.kind == ArkMovementKind.renewal
+                    ? observed.renewal != ArkRenewalStatus.delegated &&
+                          observed.renewal != ArkRenewalStatus.failed &&
+                          observed.renewal != ArkRenewalStatus.unknown &&
+                          movement.outputVtxoIds.isNotEmpty &&
+                          movement.outputVtxoIds.every(
+                            (output) => observed.vtxos.any(
+                              (v) =>
+                                  v.id == output &&
+                                  v.eligibleAt(observed.tipHeight ?? 0),
+                            ),
+                          )
+                    : movement.kind == ArkMovementKind.payment &&
+                          movement.outputVtxoIds.every(
+                            (output) => observed.vtxos.any(
+                              (v) =>
+                                  v.id == output &&
+                                  v.eligibleAt(observed.tipHeight ?? 0),
+                            ),
+                          ))),
       );
     }
 
@@ -710,8 +714,13 @@ final class BarkArkClient implements ArkClient {
     ArkStore store,
     ArkSnapshot snapshot, {
     Map<String, Object?>? syncFailures,
+    List<ArkOperation> settledOperations = const [],
   }) {
-    store.commitObservation(snapshot, syncFailures: syncFailures);
+    store.commitObservation(
+      snapshot,
+      syncFailures: syncFailures,
+      settledOperations: settledOperations,
+    );
     _changes[snapshot.account.canonical]?.add(Ok(snapshot));
   }
 
@@ -814,6 +823,18 @@ final class BarkArkClient implements ArkClient {
         );
         failed.add('deferred');
         failedKinds.add(ArkStage.vtxos);
+      } catch (error) {
+        if (error is Error) rethrow;
+        record('observe', true);
+        final previous = store.snapshot;
+        if (previous != null) {
+          _commitObservation(
+            store,
+            copySnapshot(previous, stale: true),
+            syncFailures: barriers.encode(barriers.causes),
+          );
+        }
+        rethrow;
       }
       if (failed.isNotEmpty) snapshot = copySnapshot(snapshot, stale: true);
       if (renew &&
@@ -900,9 +921,54 @@ final class BarkArkClient implements ArkClient {
       if (failed.isNotEmpty || rounds.isNotEmpty) {
         snapshot = copySnapshot(snapshot, stale: true);
       }
+      final settled = <ArkOperation>[];
+      if (failed.isEmpty &&
+          rounds.isEmpty &&
+          !snapshot.stale &&
+          snapshot.vtxoInventoryComplete &&
+          snapshot.tipHeight != null &&
+          snapshot.recovery == ArkRecoveryStatus.complete) {
+        for (final operation in store.operations) {
+          if (operation.status == ArkOperationStatus.outcomeUnknown &&
+              (operation.kind == ArkOperationKind.payment ||
+                  operation.kind == ArkOperationKind.renewal) &&
+              operation.chainSource == source &&
+              operation.configGeneration == 1 &&
+              operation.actualIds.isNotEmpty &&
+              operation.actualIds.every(
+                (id) => snapshot.vtxos.any(
+                  (v) =>
+                      v.id == id &&
+                      v.state == ArkVtxoState.spendable &&
+                      !v.pendingRound,
+                ),
+              ) &&
+              !snapshot.movements.any(
+                (m) => m.inputVtxoIds.any(operation.actualIds.contains),
+              )) {
+            settled.add(
+              operationFromJson({
+                ...operationToJson(operation),
+                'status': ArkOperationStatus.failed.name,
+              }),
+            );
+          }
+        }
+      }
+      if (settled.isNotEmpty) {
+        final byId = {for (final operation in settled) operation.id: operation};
+        snapshot = copySnapshot(
+          snapshot,
+          operations: [
+            for (final operation in store.operations)
+              byId[operation.id] ?? operation,
+          ],
+        );
+      }
       _commitObservation(
         store,
         snapshot,
+        settledOperations: settled,
         syncFailures: barriers.encode(
           failed.isEmpty &&
                   !snapshot.stale &&
@@ -944,14 +1010,14 @@ final class BarkArkClient implements ArkClient {
               !snapshot.vtxoInventoryComplete)) {
         return const Err(ArkRecoveryRequiredFailure());
       }
+      var needsClaimAuthority = false;
       if (request case ArkClaimQuoteRequest(
         :final ids,
         :final destination,
         :final maxFee,
       )) {
-        if (store.claimAuthority(ids, destination, maxFee) == null) {
-          return const Err(ArkValidationFailure());
-        }
+        needsClaimAuthority =
+            store.claimAuthority(ids, destination, maxFee) == null;
       }
       final quote = await session.estimate(
         snapshot: snapshot,
@@ -961,7 +1027,7 @@ final class BarkArkClient implements ArkClient {
         configGeneration: 1,
         now: now(),
       );
-      store.saveQuote(quote);
+      store.saveQuote(quote, claimAuthorityRequired: needsClaimAuthority);
       return Ok(quote);
     });
   });
@@ -995,6 +1061,12 @@ final class BarkArkClient implements ArkClient {
       return const Err(ArkValidationFailure());
     }
     if (submission is! ArkRegisterBoard && existing != null) {
+      if (submission is ArkBoardFunding &&
+          existing.operation.kind == ArkOperationKind.board &&
+          existing.operation.status == ArkOperationStatus.failed &&
+          existing.operation.boardFunding == null) {
+        return const Err(ArkStaleQuoteFailure());
+      }
       return Ok(await _verifiedOperation(store, account, existing.operation));
     }
     if (submission case ArkRegisterBoard()) {
@@ -1033,7 +1105,9 @@ final class BarkArkClient implements ArkClient {
               (op.kind == ArkOperationKind.payment ||
                   op.kind == ArkOperationKind.renewal ||
                   op.kind == ArkOperationKind.claim) &&
-              op.actualIds.any(quote.selectedIds.contains),
+              op.actualIds.any(quote.selectedIds.contains) &&
+              !(quote.kind == ArkOperationKind.emergencyExit &&
+                  op.status == ArkOperationStatus.outcomeUnknown),
         )) {
       return const Err(ArkUnavailableFailure());
     }
@@ -1130,19 +1204,9 @@ final class BarkArkClient implements ArkClient {
           _operation(quote, operationId, ArkOperationStatus.admitted),
           quoteId,
         );
+        final ArkBoardFundingDetails funding;
         try {
-          final funding = await session.boardFunding();
-          if (funding.expiryHeight <= quote.observedTip) {
-            throw const ArkBoundaryException(ArkStaleQuoteFailure());
-          }
-          final result = _operation(
-            quote,
-            operationId,
-            ArkOperationStatus.prepared,
-            boardFunding: funding,
-          );
-          store.saveOperation(result, quoteId);
-          return Ok(result);
+          funding = await session.boardFunding();
         } catch (error) {
           if (error is Error) rethrow;
           store.saveOperation(
@@ -1151,7 +1215,23 @@ final class BarkArkClient implements ArkClient {
           );
           return Err(ArkOutcomeUnknownFailure(operationId));
         }
+        if (funding.expiryHeight <= quote.observedTip) {
+          store.saveOperation(
+            _operation(quote, operationId, ArkOperationStatus.failed),
+            quoteId,
+          );
+          return const Err(ArkStaleQuoteFailure());
+        }
+        final result = _operation(
+          quote,
+          operationId,
+          ArkOperationStatus.prepared,
+          boardFunding: funding,
+        );
+        store.saveOperation(result, quoteId);
+        return Ok(result);
       }
+
       if (quote.kind == ArkOperationKind.board) {
         return const Err(ArkValidationFailure());
       }
@@ -1254,15 +1334,24 @@ final class BarkArkClient implements ArkClient {
     if (quote.kind == ArkOperationKind.board) {
       await session.synchronizeStage('server');
     }
-    final fresh = await session.observe(
-      account: quote.account,
+    var nativeStale = true;
+    final fresh = await _observe(
+      store,
+      session,
+      quote.account,
+      quote.chainSource,
+      commit: false,
       revision: quote.generation,
-      now: now(),
-      chainSource: quote.chainSource,
-      operations: store.operations,
-      previousRecovery: _storedRecovery(store, previous),
+      onNativeStaleness: (stale) => nativeStale = stale,
     );
-    if (fresh.stale ||
+    final protective =
+        quote.kind == ArkOperationKind.emergencyExit ||
+        quote.kind == ArkOperationKind.exitProgress ||
+        quote.kind == ArkOperationKind.claim;
+    if ((protective ? nativeStale : fresh.stale) ||
+        (!protective &&
+            (fresh.recovery != ArkRecoveryStatus.complete ||
+                !fresh.vtxoInventoryComplete)) ||
         fresh.tipHeight != quote.observedTip ||
         (previous.serverInfo?.publicKey != fresh.serverInfo?.publicKey)) {
       throw const ArkBoundaryException(ArkStaleQuoteFailure());
@@ -1370,21 +1459,19 @@ final class BarkArkClient implements ArkClient {
     if (destination == null || maximum == null) {
       return const Err(ArkValidationFailure());
     }
-    final authority = store.claimAuthority(
-      quote.selectedIds,
-      destination,
-      maximum,
-    );
-    if (authority == null) return const Err(ArkValidationFailure());
-    store.saveOperation(
+    if (!_mayRun(quote.account)) {
+      return const Err(ArkUnavailableFailure(ArkFailureReason.budgetExhausted));
+    }
+    final authority = store.admitClaim(
+      quote,
       _operation(
         quote,
         id,
         ArkOperationStatus.admitted,
         actualIds: quote.selectedIds,
       ),
-      quote.id,
     );
+    if (authority == null) return const Err(ArkValidationFailure());
     try {
       final claim = await session.prepareClaim(quote);
       final actual = claim.actualIds.toSet();
@@ -1484,11 +1571,14 @@ final class BarkArkClient implements ArkClient {
       if (error is Error) rethrow;
       final record = store.operation(id);
       final previous = record?.operation;
+      final committed = record?.evidence?['raw'] != null;
       store.saveOperation(
         _operation(
           quote,
           id,
-          ArkOperationStatus.outcomeUnknown,
+          committed
+              ? ArkOperationStatus.outcomeUnknown
+              : ArkOperationStatus.failed,
           reference: previous?.nativeReference,
           claimRecovery: previous?.claimRecovery,
           actualIds: previous?.actualIds ?? const [],
@@ -1496,7 +1586,12 @@ final class BarkArkClient implements ArkClient {
         ),
         quote.id,
       );
-      return Err(ArkOutcomeUnknownFailure(id));
+      if (committed) return Err(ArkOutcomeUnknownFailure(id));
+      return Err(
+        error is ArkBoundaryException
+            ? error.failure
+            : const ArkNativeFailure(),
+      );
     }
   }
 

@@ -323,3 +323,15 @@ T _decode<T>(T Function() action) {
     throw const FormatException('Invalid Ark stored field state');
   }
 }
+
+// Terminal native movements retire only inputs also observed natively spent.
+bool terminalMovementRetires(
+  ArkMovement movement,
+  String id,
+  List<ArkVtxo> inventory,
+) =>
+    movement.inputVtxoIds.contains(id) &&
+    inventory.any((v) => v.id == id && v.state == ArkVtxoState.spent) &&
+    (movement.status == ArkMovementStatus.failed ||
+        (movement.status == ArkMovementStatus.successful &&
+            movement.kind == ArkMovementKind.lightningReceive));

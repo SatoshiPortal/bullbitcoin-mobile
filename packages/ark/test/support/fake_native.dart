@@ -86,8 +86,13 @@ final class FakeOpener implements ArkNativeOpener {
   int closes = 0;
   int executes = 0;
   int broadcasts = 0;
+  int preparations = 0;
+  int claimFee = 10;
+  List<String>? claimableIds;
+  List<ArkExit> exitDetails = [];
   int registrations = 0;
   int fundings = 0;
+  int boardExpiry = 2000;
   int tip = 100;
   bool failExecute = false;
   bool requireBoardServerInfo = false;
@@ -186,6 +191,9 @@ final class FakeSession implements ArkNativeSession {
     required List<ArkOperation> operations,
     required ArkRecoveryStatus previousRecovery,
   }) => stages.run('observe', () async {
+    if (owner.failingStage == 'observe') {
+      throw Exception('observation unavailable');
+    }
     if (owner.requireBoardServerInfo) owner.boardServerEvents.add('observe');
     return ArkSnapshot(
       serverInfo: owner.requireBoardServerInfo && serverReady
@@ -220,7 +228,10 @@ final class FakeSession implements ArkNativeSession {
                 ]),
       recovery: previousRecovery,
       renewal: owner.renewalStatus,
-      exits: ArkExitStatus.none,
+      exits: owner.exitDetails.isEmpty
+          ? ArkExitStatus.none
+          : ArkExitStatus.claimable,
+      exitDetails: owner.exitDetails,
       obligations: ArkObligationStatus.present,
       pendingBoardCount: owner.pendingBoards.length,
       pendingBoards: owner.pendingBoards,
@@ -240,6 +251,12 @@ final class FakeSession implements ArkNativeSession {
     required int configGeneration,
     required DateTime now,
   }) => stages.run('estimate', () async {
+    if (request case ArkClaimQuoteRequest(:final ids)) {
+      final claimable = owner.claimableIds;
+      if (claimable != null && !ids.every(claimable.contains)) {
+        throw const ArkBoundaryException(ArkValidationFailure());
+      }
+    }
     if (owner.requireBoardServerInfo && request is ArkBoardQuoteRequest) {
       owner.boardServerEvents.add('estimate-board');
       if (snapshot.serverInfo == null) {
@@ -277,6 +294,7 @@ final class FakeSession implements ArkNativeSession {
       ArkClaimQuoteRequest(:final maxFee) => maxFee,
       _ => null,
     };
+    final estimatedFee = kind == ArkOperationKind.claim ? owner.claimFee : 10;
     return ArkQuote(
       id: id,
       account: snapshot.account,
@@ -287,10 +305,10 @@ final class FakeSession implements ArkNativeSession {
       amount: Sats(
         amount.value + BigInt.from(kind == ArkOperationKind.payment ? 10 : 0),
       ),
-      fee: Sats.fromInt(10),
+      fee: Sats.fromInt(estimatedFee),
       net: kind == ArkOperationKind.payment
           ? amount
-          : Sats(amount.value - BigInt.from(10)),
+          : Sats(amount.value - BigInt.from(estimatedFee)),
       selectedIds: selected,
       destination: destination,
       destinationKind: switch (request) {
@@ -337,7 +355,7 @@ final class FakeSession implements ArkNativeSession {
         return ArkBoardFundingDetails(
           address: 'funding-address',
           keypairIndex: 4,
-          expiryHeight: 2000,
+          expiryHeight: owner.boardExpiry,
         );
       });
   @override
@@ -349,6 +367,7 @@ final class FakeSession implements ArkNativeSession {
   @override
   Future<ArkClaimTransaction> prepareClaim(ArkQuote quote) =>
       stages.run('prepare-claim', () async {
+        owner.preparations++;
         final prepare = owner.claimPreparer;
         if (prepare != null) {
           return prepare(quote);
@@ -359,7 +378,7 @@ final class FakeSession implements ArkNativeSession {
           actualIds: owner.claimActual,
           skippedIds: owner.claimSkipped,
           inputAmounts: {for (final id in owner.claimActual) id: '10000'},
-          fee: '10',
+          fee: owner.claimFee.toString(),
         );
       });
   @override
@@ -398,6 +417,7 @@ final class FakeSession implements ArkNativeSession {
 final class FakeVerifier implements ArkTransactionVerifierPort {
   bool finalised = false;
   bool wrongInputs = false;
+  int fee = 10;
   @override
   Future<Result<ArkBoardPsbtFacts, ArkWalletFailure>> inspectBoardPsbt({
     required String unfinalisedPsbt,
@@ -436,10 +456,10 @@ final class FakeVerifier implements ArkTransactionVerifierPort {
         ArkTransactionOutput(
           scriptPubkey: 'script',
           address: 'destination',
-          amount: Sats.fromInt(9990),
+          amount: Sats.fromInt(10000 - fee),
         ),
       ],
-      fee: Sats.fromInt(10),
+      fee: Sats.fromInt(fee),
     ),
   );
 }
