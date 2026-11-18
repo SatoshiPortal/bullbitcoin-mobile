@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bull_ark/ark_debug_notification.dart';
 import 'package:bull_ark/ark_notification_setup.dart';
 import 'package:material_ui/material_ui.dart';
@@ -17,14 +17,17 @@ Future<void> showArkDebugNotification(BuildContext context) async {
   };
   if (!context.mounted) return;
   final french = locale.languageCode == 'fr';
-  SnackBarUtils.showSnackBar(context, switch (result) {
-    Ok() =>
-      french
-          ? 'Notification programmée dans environ une minute.'
-          : 'Notification scheduled in about one minute.',
-    Err() =>
-      french
-          ? 'Notification indisponible : vérifiez les autorisations.'
-          : 'Notification unavailable: check notification permissions.',
-  });
+  BullSnackBar.show(
+    context,
+    message: switch (result) {
+      Ok() =>
+        french
+            ? 'Notification programmée dans environ une minute.'
+            : 'Notification scheduled in about one minute.',
+      Err() =>
+        french
+            ? 'Notification indisponible : vérifiez les autorisations.'
+            : 'Notification unavailable: check notification permissions.',
+    },
+  );
 }
