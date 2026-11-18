@@ -23,6 +23,10 @@ void main() {
     test('Boltz locking less than the quote allows is refused', () {
       expect(check(onchain: 100000 - 100 - 1500 - 2), 'server lockup amount');
     });
+
+    test('Boltz leaving out its lockup amount is refused', () {
+      expect(check(), 'server lockup amount');
+    });
   });
 
   group('submarine swap', () {
@@ -62,6 +66,10 @@ void main() {
 
     test('a lockup below the quote is refused', () {
       expect(check(onchain: 80000 - 200 - 400 - 2), 'lockup amount');
+    });
+
+    test('Boltz leaving out its lockup amount is refused', () {
+      expect(check(), 'lockup amount');
     });
   });
 }

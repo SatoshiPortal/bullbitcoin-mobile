@@ -2006,7 +2006,7 @@ String? reverseQuoteMismatch({
 }) {
   if (invoiceSat != outAmount) return 'invoice amount';
   final minimum = outAmount - _percentOf(outAmount, percentage) - lockupFee - 1;
-  if (onchainAmount != null && onchainAmount < minimum) return 'lockup amount';
+  if (onchainAmount == null || onchainAmount < minimum) return 'lockup amount';
   return null;
 }
 
@@ -2036,7 +2036,7 @@ String? chainQuoteMismatch({
 }) {
   if (lockupAmount != amountSat) return 'lockup amount';
   final minimum = amountSat - _percentOf(amountSat, percentage) - serverFee - 1;
-  if (onchainAmount != null && onchainAmount < minimum) {
+  if (onchainAmount == null || onchainAmount < minimum) {
     return 'server lockup amount';
   }
   return null;
