@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/domain/entities/swap_route.dart';
@@ -74,42 +75,43 @@ class _SwapSettingsBody extends StatelessWidget {
           color: context.bull.textMuted,
         ),
         const Gap(24),
-        BullBorderedTile(
-          onTap: canEdit ? () => _SwapServerEditor.show(context) : null,
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    BullText(
-                      context.loc.swapServerTitle,
-                      style: context.bullType.body.copyWith(
-                        fontWeight: FontWeight.w500,
+        if (state.canEditSwapServer)
+          BullBorderedTile(
+            onTap: canEdit ? () => _SwapServerEditor.show(context) : null,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      BullText(
+                        context.loc.swapServerTitle,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                        color: context.bull.text,
                       ),
-                      color: context.bull.text,
-                    ),
-                    const Gap(2),
-                    BullText(
-                      state.isDefaultSwapServer
-                          ? context.loc.swapServerDefault
-                          : state.swapServer.host,
-                      style: context.bullType.label.copyWith(
-                        fontWeight: FontWeight.w400,
+                      const Gap(2),
+                      BullText(
+                        state.isDefaultSwapServer
+                            ? context.loc.swapServerDefault
+                            : state.swapServer.host,
+                        style: context.bullType.label.copyWith(
+                          fontWeight: FontWeight.w400,
+                        ),
+                        color: context.bull.textMuted,
                       ),
-                      color: context.bull.textMuted,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              BullIcon(
-                BullIcons.chevronRight,
-                color: context.bull.textMuted,
-                size: 22,
-              ),
-            ],
+                BullIcon(
+                  BullIcons.chevronRight,
+                  color: context.bull.textMuted,
+                  size: 22,
+                ),
+              ],
+            ),
           ),
-        ),
         if (state.loaded && state.devModeEnabled) ...[
           const Gap(32),
           BullText(
@@ -166,20 +168,32 @@ class _RouteOverrideSelector extends StatelessWidget {
 }
 
 class _SwapServerEditor extends StatefulWidget {
-  const _SwapServerEditor({required this.initial, required this.isTestnet});
+  const _SwapServerEditor({required this.initial, required this.environment});
 
   final SwapServer initial;
-  final bool isTestnet;
+  final NetworkEnv environment;
+
+  SwapServer get defaultServer => switch (environment) {
+    NetworkEnv.mainnet => SwapServer.mainnetDefault,
+    NetworkEnv.testnet => SwapServer.testnetDefault,
+    _ => throw StateError('Custom swap server requires a historical network'),
+  };
 
   static Future<void> show(BuildContext context) {
     final cubit = context.read<SwapSettingsCubit>();
+    final environment = cubit.state.swapServerEnvironment;
+    if (environment == null ||
+        (environment != NetworkEnv.mainnet &&
+            environment != NetworkEnv.testnet)) {
+      return Future<void>.value();
+    }
     return BullDialog.show<void>(
       context: context,
       builder: (_) => BlocProvider.value(
         value: cubit,
         child: _SwapServerEditor(
           initial: cubit.state.swapServer,
-          isTestnet: cubit.state.swapServerIsTestnet,
+          environment: environment,
         ),
       ),
     );
@@ -190,8 +204,7 @@ class _SwapServerEditor extends StatefulWidget {
 }
 
 class _SwapServerEditorState extends State<_SwapServerEditor> {
-  late String _input =
-      widget.initial == SwapServer.defaultFor(isTestnet: widget.isTestnet)
+  late String _input = widget.initial == widget.defaultServer
       ? ''
       : widget.initial.host;
   bool _invalid = false;
@@ -232,7 +245,7 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
         const Gap(16),
         BullInputText(
           value: _input,
-          hint: SwapServer.defaultFor(isTestnet: widget.isTestnet).host,
+          hint: widget.defaultServer.host,
           autocorrect: false,
           enableSuggestions: false,
           onChanged: (value) => setState(() {
