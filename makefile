@@ -1,4 +1,4 @@
-.PHONY: rust-bindings-codegen onion-codegen native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -453,6 +453,17 @@ integration-test:
 	@echo "🧪 integration tests"
 	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
+
+# Plugin integration tests that need hardware, outside `make integration-test`:
+# onion's on a phone (Snowflake is mobile-only), bitbox_transport's on a phone
+# with a BitBox02 attached over USB or reachable over BLE. DEVICE=<flutter device id>.
+onion-device-test:
+	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
+	@fvm flutter test integration_test/onion --flavor production -d $(DEVICE) --timeout 5m
+
+bitbox-device-test:
+	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
+	@fvm flutter test integration_test/bitbox_transport --flavor production -d $(DEVICE) --timeout 5m
 
 # Physical-device credential probes use a separately installed debug APK.
 # The SDK driver connects through VM_SERVICE_URL without installing an app.
