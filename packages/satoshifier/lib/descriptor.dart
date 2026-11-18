@@ -120,6 +120,20 @@ class Descriptor {
 
   static final RegExp _fingerprintPattern = RegExp(r'^[0-9a-fA-F]{8}$');
 
+  /// Checks the base58check trailer and refuses a private extended key: a
+  /// watch-only descriptor must never carry one.
+  static void _requirePublicKey(String key) {
+    final Bip32Keys decoded;
+    try {
+      decoded = Bip32Keys.fromBase58(key, bypassVersion: true);
+    } on ArgumentError {
+      throw FormatException('Invalid extended public key in descriptor');
+    }
+    if (!decoded.isNeutered) {
+      throw FormatException('A descriptor cannot hold a private extended key');
+    }
+  }
+
   /// Rejects a descriptor whose key-origin coin type and extended key disagree
   /// about the network.
   ///
@@ -139,20 +153,6 @@ class Descriptor {
   /// parseDescriptorWithOrigin deliberately accepts descriptor flavours that
   /// ExtendedPubkey.parse would reject, and this check is not the place to
   /// narrow that.
-  /// Checks the base58check trailer and refuses a private extended key: a
-  /// watch-only descriptor must never carry one.
-  static void _requirePublicKey(String key) {
-    final Bip32Keys decoded;
-    try {
-      decoded = Bip32Keys.fromBase58(key, bypassVersion: true);
-    } on ArgumentError {
-      throw FormatException('Invalid extended public key in descriptor');
-    }
-    if (!decoded.isNeutered) {
-      throw FormatException('A descriptor cannot hold a private extended key');
-    }
-  }
-
   static void _checkKeyNetworkMatchesPath(String xpub, Network pathNetwork) {
     final XpubType keyType;
     try {
