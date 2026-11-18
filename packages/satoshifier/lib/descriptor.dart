@@ -139,6 +139,20 @@ class Descriptor {
   /// parseDescriptorWithOrigin deliberately accepts descriptor flavours that
   /// ExtendedPubkey.parse would reject, and this check is not the place to
   /// narrow that.
+  /// Checks the base58check trailer and refuses a private extended key: a
+  /// watch-only descriptor must never carry one.
+  static void _requirePublicKey(String key) {
+    final Bip32Keys decoded;
+    try {
+      decoded = Bip32Keys.fromBase58(key, bypassVersion: true);
+    } on ArgumentError {
+      throw FormatException('Invalid extended public key in descriptor');
+    }
+    if (!decoded.isNeutered) {
+      throw FormatException('A descriptor cannot hold a private extended key');
+    }
+  }
+
   static void _checkKeyNetworkMatchesPath(String xpub, Network pathNetwork) {
     final XpubType keyType;
     try {
@@ -161,11 +175,7 @@ class Descriptor {
     if (!isValidFingerprint(fingerprint)) {
       throw FormatException('Invalid key-origin fingerprint');
     }
-    try {
-      Bip32Keys.fromBase58(xpub, bypassVersion: true);
-    } on ArgumentError {
-      throw FormatException('Invalid extended public key in descriptor');
-    }
+    _requirePublicKey(xpub);
     final convertedPath = path.startsWith('m/') ? path.substring(2) : path;
 
     final pathParts = convertedPath.split('/');
@@ -224,11 +234,7 @@ class Descriptor {
     // than through ExtendedPubkey.parse, which additionally insists on a
     // known SLIP-132 prefix and would reject descriptor flavours this parser
     // accepts today.
-    try {
-      Bip32Keys.fromBase58(pubkey, bypassVersion: true);
-    } on ArgumentError {
-      throw FormatException('Invalid extended public key in descriptor');
-    }
+    _requirePublicKey(pubkey);
 
     final operand = useOperandFromRegex
         ? ScriptOperand.fromDescriptor(operandString)
