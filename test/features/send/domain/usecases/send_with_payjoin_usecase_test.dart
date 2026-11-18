@@ -47,21 +47,25 @@ void main() {
     },
   );
 
-  test('regtest is refused before creating a sender session', () async {
+  test('regtest reaches the sender as a concrete network', () async {
     final sender = _MockPayjoinSender();
+    StartPayjoinSender? captured;
+    when(() => sender.start(any())).thenAnswer((call) async {
+      captured = call.positionalArguments.first as StartPayjoinSender;
+      return const Err(PayjoinUnavailableFailure());
+    });
     final result = await SendWithPayjoinUsecase(sender).execute(
       walletId: 'regtest-wallet',
       network: BitcoinNetwork.regtest,
-      bip21: 'bitcoin:bcrt1unused?pj=https://example.invalid',
+      bip21: 'bitcoin:bcrt1unused?pj=https://localhost:8040/fixture',
       unsignedOriginalPsbt: 'unused',
       amountSat: 10000,
       networkFeesSatPerVb: 1,
     );
-    expect(
-      (result as core.Err).failure,
-      isA<SendTransactionConfirmationFailure>(),
-    );
-    verifyZeroInteractions(sender);
+    expect(result, isA<Err>());
+    expect((result as Err).failure, isA<SendPayjoinUnavailableFailure>());
+    expect(captured?.network, BitcoinNetwork.regtest);
+    verify(() => sender.start(any())).called(1);
   });
 
   setUpAll(() {

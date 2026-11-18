@@ -3,6 +3,20 @@ import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('requests retain the concrete regtest network', () {
+    expect(
+      StartPayjoinReceiver(
+        walletId: 'wallet',
+        network: BitcoinNetwork.regtest,
+        address: 'bcrt1fixture',
+      ).network,
+      BitcoinNetwork.regtest,
+    );
+    expect(
+      PayjoinSessionFilter(network: BitcoinNetwork.regtest).network,
+      BitcoinNetwork.regtest,
+    );
+  });
   test('sender request rejects a zero amount', () {
     expect(
       () => StartPayjoinSender(
@@ -32,20 +46,17 @@ void main() {
     expect(() => PayjoinSessionFilter(walletId: ''), throwsArgumentError);
   });
 
-  test(
-    'receiver requests reject networks collapsed to testnet by the engine',
-    () {
-      for (final network in [BitcoinNetwork.signet, BitcoinNetwork.regtest]) {
-        expect(
-          () => StartPayjoinReceiver(
-            walletId: 'wallet',
-            network: network,
-            address: 'address',
-          ),
-          throwsArgumentError,
-          reason: '$network must not be silently executed on testnet',
-        );
-      }
-    },
-  );
+  test('receiver requests reject unsupported networks', () {
+    for (final network in [BitcoinNetwork.signet]) {
+      expect(
+        () => StartPayjoinReceiver(
+          walletId: 'wallet',
+          network: network,
+          address: 'address',
+        ),
+        throwsArgumentError,
+        reason: '$network must not be silently executed on testnet',
+      );
+    }
+  });
 }

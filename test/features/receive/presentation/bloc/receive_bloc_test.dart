@@ -462,12 +462,30 @@ void main() {
           );
           addTearDown(bloc.close);
           if (warm) {
+            when(
+              () => receiveWithPayjoin.execute(
+                walletId: selected.id,
+                network: BitcoinNetwork.regtest,
+                address: any(named: 'address'),
+              ),
+            ).thenAnswer(
+              (_) async => const Err(
+                ReceivePayjoinUnavailableFailure('fixture trust unavailable'),
+              ),
+            );
             final ready = bloc.stream.firstWhere(
               (state) =>
                   state.bitcoinUnit != null && state.payjoinAttemptSettled,
             );
             bloc.add(const ReceiveBitcoinStarted(null));
             await ready;
+            verify(
+              () => receiveWithPayjoin.execute(
+                walletId: selected.id,
+                network: BitcoinNetwork.regtest,
+                address: any(named: 'address'),
+              ),
+            ).called(1);
           }
           final admitted = bloc.stream.firstWhere(
             (state) =>
@@ -475,6 +493,14 @@ void main() {
           );
           bloc.add(const ReceiveLightningStarted());
           await admitted;
+          verifyNever(
+            () => receiveWithPayjoin.execute(
+              walletId: selected.id,
+              network: BitcoinNetwork.regtest,
+              address: any(named: 'address'),
+            ),
+          );
+          verifyNoMoreInteractions(receiveWithPayjoin);
           expect(bloc.state.wallet, receiveWallet);
           expect(bloc.state.admissionFailure, isNull);
           final created = bloc.stream.firstWhere(
@@ -484,6 +510,14 @@ void main() {
           await pumpEventQueue();
           bloc.add(const ReceiveAmountConfirmed());
           await created;
+          verifyNever(
+            () => receiveWithPayjoin.execute(
+              walletId: selected.id,
+              network: BitcoinNetwork.regtest,
+              address: any(named: 'address'),
+            ),
+          );
+          verifyNoMoreInteractions(receiveWithPayjoin);
           expect(
             bloc.state.lightningSwap?.environment,
             swaps.Environment.regtest,

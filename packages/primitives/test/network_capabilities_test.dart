@@ -28,6 +28,7 @@ void main() {
     BitcoinNetwork.regtest: {
       NetworkCapability.softwareWallet,
       NetworkCapability.swaps,
+      NetworkCapability.payjoin,
     },
     BitcoinNetwork.signet: {},
     LiquidNetwork.regtest: {

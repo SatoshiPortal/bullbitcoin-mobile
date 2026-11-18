@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -11,12 +13,27 @@ import 'package:sync/sync.dart'
 
 class _Database extends Mock implements SqliteDatabase {}
 
+class _Settings extends Mock implements GetSettingsUsecase {}
+
+void _registerSettings(GetIt locator) {
+  final settings = _Settings();
+  when(settings.execute).thenAnswer(
+    (_) async => const SettingsEntity(
+      environment: Environment.mainnet,
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'CAD',
+    ),
+  );
+  locator.registerSingleton<GetSettingsUsecase>(settings);
+}
+
 void main() {
   for (final startRecovery in [false, true]) {
     test(
       'setup registers roles before deferred recovery ($startRecovery)',
       () async {
         final locator = GetIt.asNewInstance();
+        _registerSettings(locator);
         addTearDown(locator.reset);
         final database = _Database();
         var openAttempts = 0;
@@ -48,6 +65,7 @@ void main() {
 
   test('sync reads no reservation while Payjoin storage cannot open', () async {
     final locator = GetIt.asNewInstance();
+    _registerSettings(locator);
     addTearDown(locator.reset);
     locator.registerLazySingleton<Secrets>(
       () => throw StateError('storage unavailable'),

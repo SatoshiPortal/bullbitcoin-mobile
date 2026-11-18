@@ -41,6 +41,8 @@ class SendWithPayjoinUsecase {
     switch (result) {
       case Ok(:final value):
         return core.Ok(value);
+      case Err(failure: PayjoinUnavailableFailure(:final logMessage)):
+        return core.Err(SendPayjoinUnavailableFailure(logMessage));
       case Err(failure: PayjoinSpendBlockedFailure(:final busy)):
         return core.Err(SendSpendBlockedFailure(busy: busy));
       case Err(
