@@ -38,6 +38,32 @@ class _Status extends Mock implements ServerStatusPort {}
 
 class _Tor extends Mock implements ElectrumTorSessionPort {}
 
+final _fixtureProfile = RegtestElectrumProfile(host: '127.0.0.1');
+
+Future<Result<void, ElectrumFailure>> _prepare(
+  ElectrumDefaultsProvisioner provisioner,
+  NetworkEnv environment, {
+  RegtestElectrumProfile? regtestProfile,
+}) => provisioner.prepareForegroundStorage(
+  environment,
+  regtestProfile: regtestProfile ?? _fixtureProfile,
+);
+
+/// These database tests explicitly select their local fixture, independently
+/// of whether the application build offers a regtest runtime.
+class _FixtureElectrumFacade extends ElectrumSettingsFacade {
+  _FixtureElectrumFacade(super.provisioner);
+
+  @override
+  Future<Result<void, ElectrumFailure>> prepareForegroundStorage(
+    NetworkEnv environment, {
+    RegtestElectrumProfile? regtestProfile,
+  }) => super.prepareForegroundStorage(
+    environment,
+    regtestProfile: regtestProfile ?? _fixtureProfile,
+  );
+}
+
 void main() {
   late SqliteDatabase database;
   late ElectrumDefaultsProvisioner provisioner;
@@ -63,6 +89,7 @@ void main() {
     servers = DriftElectrumServerRepository(
       electrumServerStorageDatasource: ElectrumServerStorageDatasource(
         sqlite: database,
+        regtestProfile: _fixtureProfile,
       ),
     );
     settings = DriftElectrumSettingsRepository(
@@ -134,7 +161,7 @@ void main() {
 
   SetActiveNetworkUsecase selector() => SetActiveNetworkUsecase(
     settingsRepository: app,
-    electrumSettings: ElectrumSettingsFacade(provisioner),
+    electrumSettings: _FixtureElectrumFacade(provisioner),
   );
 
   Future<void> seedProductionCatalogs() async {
@@ -156,9 +183,7 @@ void main() {
   test(
     'foreground provisioning completes before the first parallel readers',
     () async {
-      final prepared = await provisioner.prepareForegroundStorage(
-        NetworkEnv.regtest,
-      );
+      final prepared = await _prepare(provisioner, NetworkEnv.regtest);
       final (connection, response) = await (
         adapter().runWithFallback(
           network: ElectrumServerNetwork.liquidRegtest,
@@ -233,12 +258,9 @@ void main() {
           ),
         );
     await Future.wait(
-      List.generate(
-        4,
-        (_) => provisioner.prepareForegroundStorage(NetworkEnv.regtest),
-      ),
+      List.generate(4, (_) => _prepare(provisioner, NetworkEnv.regtest)),
     );
-    await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+    await _prepare(provisioner, NetworkEnv.regtest);
     final row = await database.managers.electrumSettings
         .filter((f) => f.network(network))
         .getSingle();
@@ -256,13 +278,10 @@ void main() {
   test('read-only background never repairs missing rows', () async {
     final readonly = ElectrumDefaultsProvisioner(database, readOnly: true);
     expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Err>());
-    expect(
-      await readonly.prepareForegroundStorage(NetworkEnv.regtest),
-      isA<Err>(),
-    );
+    expect(await _prepare(readonly, NetworkEnv.regtest), isA<Err>());
     expect(await database.select(database.electrumSettings).get(), isEmpty);
     expect(await database.select(database.electrumServers).get(), isEmpty);
-    await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+    await _prepare(provisioner, NetworkEnv.regtest);
     expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
     await database.delete(database.electrumServers).go();
     expect(await loadNetwork(ElectrumServerNetwork.bitcoinRegtest), isA<Err>());
@@ -275,10 +294,7 @@ void main() {
       await database.customStatement(
         "CREATE TRIGGER interrupt_liquid BEFORE INSERT ON electrum_servers WHEN NEW.network = 'liquidRegtest' BEGIN SELECT RAISE(ABORT, 'simulated interruption'); END",
       );
-      expect(
-        await provisioner.prepareForegroundStorage(NetworkEnv.regtest),
-        isA<Err>(),
-      );
+      expect(await _prepare(provisioner, NetworkEnv.regtest), isA<Err>());
       expect(await database.select(database.electrumSettings).get(), isEmpty);
       expect(await database.select(database.electrumServers).get(), isEmpty);
       expect(
@@ -286,10 +302,7 @@ void main() {
         isA<Err>(),
       );
       await database.customStatement('DROP TRIGGER interrupt_liquid');
-      expect(
-        await provisioner.prepareForegroundStorage(NetworkEnv.regtest),
-        isA<Ok>(),
-      );
+      expect(await _prepare(provisioner, NetworkEnv.regtest), isA<Ok>());
       expect(await loadNetwork(ElectrumServerNetwork.liquidRegtest), isA<Ok>());
     },
   );
@@ -317,10 +330,8 @@ void main() {
         ),
       );
       final results = await Future.wait([
-        ElectrumDefaultsProvisioner(first)
-            .prepareForegroundStorage(NetworkEnv.regtest),
-        ElectrumDefaultsProvisioner(other)
-            .prepareForegroundStorage(NetworkEnv.regtest),
+        _prepare(ElectrumDefaultsProvisioner(first), NetworkEnv.regtest),
+        _prepare(ElectrumDefaultsProvisioner(other), NetworkEnv.regtest),
       ]);
       expect(results, everyElement(isA<Ok>()));
       expect(await first.select(first.electrumSettings).get(), hasLength(2));
@@ -333,7 +344,7 @@ void main() {
   });
 
   test('configured host replaces only managed defaults, preserving priority and custom URLs', () async {
-    await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+    await _prepare(provisioner, NetworkEnv.regtest);
     await database.customStatement(
       "UPDATE electrum_servers SET priority = 9 WHERE is_custom = 0",
     );
@@ -347,7 +358,7 @@ void main() {
             isCustom: true,
           ),
         );
-    final facade = ElectrumSettingsFacade(provisioner);
+    final facade = _FixtureElectrumFacade(provisioner);
     expect(
       await facade.prepareForegroundStorage(
         NetworkEnv.regtest,
@@ -411,7 +422,7 @@ void main() {
                 ),
               );
         }
-        expect(await provisioner.prepareForegroundStorage(boot), isA<Ok>());
+        expect(await _prepare(provisioner, boot), isA<Ok>());
         for (final network in productionNetworks) {
           expect(await loadNetwork(network), isA<Ok>());
         }
@@ -429,7 +440,7 @@ void main() {
 
   for (final production in [NetworkEnv.mainnet, NetworkEnv.testnet]) {
     test('$production preparation does not create fixture data', () async {
-      expect(await provisioner.prepareForegroundStorage(production), isA<Ok>());
+      expect(await _prepare(provisioner, production), isA<Ok>());
       expect(await database.select(database.electrumSettings).get(), isEmpty);
       expect(await database.select(database.electrumServers).get(), isEmpty);
     });
@@ -438,10 +449,7 @@ void main() {
     'hot selector production boot to regtest provisions before activation',
     () async {
       await seedProductionCatalogs();
-      expect(
-        await provisioner.prepareForegroundStorage(NetworkEnv.mainnet),
-        isA<Ok>(),
-      );
+      expect(await _prepare(provisioner, NetworkEnv.mainnet), isA<Ok>());
       var selected = Environment.mainnet;
       var callbacks = 0;
       var catalogPresentAtActivation = false;
@@ -483,10 +491,7 @@ void main() {
       'hot selector regtest boot to $target leaves production readers usable',
       () async {
         await seedProductionCatalogs();
-        expect(
-          await provisioner.prepareForegroundStorage(NetworkEnv.regtest),
-          isA<Ok>(),
-        );
+        expect(await _prepare(provisioner, NetworkEnv.regtest), isA<Ok>());
         var selected = Environment.regtest;
         when(() => app.fetch()).thenAnswer(
           (_) async => SettingsEntity(
@@ -556,10 +561,7 @@ void main() {
       electrumServerStorageDatasource: datasource,
     );
     expect(
-      await provisioner.prepareForegroundStorage(
-        NetworkEnv.regtest,
-        regtestProfile: profile,
-      ),
+      await _prepare(provisioner, NetworkEnv.regtest, regtestProfile: profile),
       isA<Ok>(),
     );
     final url = profile.endpoint(isLiquid: true);
@@ -571,10 +573,7 @@ void main() {
         isCustom: true,
       ),
     );
-    await provisioner.prepareForegroundStorage(
-      NetworkEnv.regtest,
-      regtestProfile: profile,
-    );
+    await _prepare(provisioner, NetworkEnv.regtest, regtestProfile: profile);
     final preserved = await datasource.fetchByUrl(
       url,
       network: ElectrumServerNetwork.liquidRegtest,
@@ -600,9 +599,12 @@ void main() {
   test(
     'colliding custom restore failure rolls back the deletion transaction',
     () async {
-      await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+      await _prepare(provisioner, NetworkEnv.regtest);
       const url = 'tcp://127.0.0.1:50001';
-      final datasource = ElectrumServerStorageDatasource(sqlite: database);
+      final datasource = ElectrumServerStorageDatasource(
+        sqlite: database,
+        regtestProfile: _fixtureProfile,
+      );
       await datasource.store(
         ElectrumServerModel(
           url: url,
@@ -630,7 +632,7 @@ void main() {
     },
   );
   test('Liquid readers do not depend on the sibling Bitcoin catalog', () async {
-    await provisioner.prepareForegroundStorage(NetworkEnv.regtest);
+    await _prepare(provisioner, NetworkEnv.regtest);
     await database.managers.electrumSettings
         .filter((f) => f.network(ElectrumServerNetwork.bitcoinRegtest))
         .delete();

@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/electrum_settings/data/drift_electrum_server_
 import 'package:bb_mobile/features/electrum_settings/data/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/features/electrum_settings/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
+import 'package:bb_mobile/features/electrum_settings/domain/regtest_electrum_profile.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -14,7 +15,10 @@ void main() {
 
   setUp(() async {
     database = SqliteDatabase(NativeDatabase.memory());
-    datasource = ElectrumServerStorageDatasource(sqlite: database);
+    datasource = ElectrumServerStorageDatasource(
+      sqlite: database,
+      regtestProfile: RegtestElectrumProfile(host: '127.0.0.1'),
+    );
     repository = DriftElectrumServerRepository(
       electrumServerStorageDatasource: datasource,
     );
