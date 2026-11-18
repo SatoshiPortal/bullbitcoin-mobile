@@ -53,6 +53,10 @@ class _BullSegmentedState extends State<BullSegmented> {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    // The selected thumb takes the page colour and the track sits a step
+    // away from it, in both themes: light thumb on a grey track, black thumb
+    // on a dark grey track.
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(context.bullShapes.button),
@@ -70,11 +74,13 @@ class _BullSegmentedState extends State<BullSegmented> {
           isStretch: true,
           customSegmentSettings: CustomSegmentSettings(),
           decoration: BoxDecoration(
-            color: colors.textMuted.withValues(alpha: 0.1),
+            color: dark
+                ? colors.surfaceContainer
+                : colors.textMuted.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           thumbDecoration: BoxDecoration(
-            color: colors.surface,
+            color: dark ? colors.background : colors.surface,
             borderRadius: BorderRadius.circular(context.bullShapes.button),
           ),
           children: {

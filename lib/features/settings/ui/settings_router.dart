@@ -26,7 +26,6 @@ import 'package:bb_mobile/features/settings/presentation/bloc/swap_restore_cubit
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_restore_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/currency/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_account_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
@@ -266,11 +265,6 @@ class SettingsRouter {
           create: (_) => locator<AllSeedViewCubit>(),
           child: const AllSeedViewScreen(appUnlockFacade: AppUnlockFacade()),
         ),
-      ),
-      GoRoute(
-        path: SettingsRoute.currency.path,
-        name: SettingsRoute.currency.name,
-        builder: (context, state) => const CurrencySettingsScreen(),
       ),
     ],
   );

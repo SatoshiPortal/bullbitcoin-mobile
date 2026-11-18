@@ -85,8 +85,8 @@ class RecipientAddressFields extends StatelessWidget {
               onScan: () => Navigator.of(context).push<void>(
                 MaterialPageRoute(
                   builder: (_) => FullScreenScannerPage(
-                    onScannedPaymentRequest: (data) =>
-                        onAddressChanged(recipients[index].id, data.$1),
+                    onScannedPaymentRequest: (raw) =>
+                        onAddressChanged(recipients[index].id, raw),
                   ),
                 ),
               ),
