@@ -22,7 +22,10 @@ final class BitcoinSpendGate {
   final String documentsDirectory;
   final WalletCatalogPort catalog;
   static final _pending =
-      <(String, WalletKey), (PublicWalletDescriptor, int, String)>{};
+      <
+        (String, WalletKey),
+        (PublicWalletDescriptor, int, String, Set<String>?)
+      >{};
 
   const BitcoinSpendGate({
     required this.revisions,
@@ -139,7 +142,7 @@ final class BitcoinSpendGate {
       final pendingKey = (path, key);
       final pending = _pending[pendingKey];
       if (pending != null) {
-        store.accepted(pending.$1, pending.$2, pending.$3);
+        store.accepted(pending.$1, pending.$2, pending.$3, inputs: pending.$4);
         _pending.remove(pendingKey);
       }
       final tracked = store.tracked(descriptor);
@@ -148,7 +151,8 @@ final class BitcoinSpendGate {
       }
       // An observed tracked spend may be replaced. Broadcasting the
       // replacement records it as a new obligation; a pass that sees the
-      // replacement settles the original by conflict, never by eviction.
+      // replacement settles the absent original only after confirmation.
+      // Until then it also blocks ordinary spends and another fee bump.
       final status =
           replacing != null &&
               tracked.contains(replacing) &&
@@ -196,15 +200,24 @@ final class BitcoinSpendAdmission extends BitcoinSpendAdmissionResult {
     this._pendingKey,
   );
 
-  BitcoinBroadcastReceipt accepted(String txid) {
+  /// Record only the outpoints of the actual broadcast, never signing data.
+  /// A txid-only handoff has unknown inputs until a sync observes the original.
+  BitcoinBroadcastReceipt accepted(String txid, {Iterable<Outpoint>? inputs}) {
     if (_closed) throw StateError('Spend admission closed');
+    // Copy before IO: an uncertain write and its retry use identical evidence.
+    final known = inputs == null
+        ? null
+        : Set<String>.unmodifiable(
+            inputs.map((input) => '${input.txId.toLowerCase()}:${input.vout}'),
+          );
     BitcoinSpendGate._pending[_pendingKey] = (
       _descriptor,
       revision.generation,
       txid,
+      known,
     );
     try {
-      _store.accepted(_descriptor, revision.generation, txid);
+      _store.accepted(_descriptor, revision.generation, txid, inputs: known);
       BitcoinSpendGate._pending.remove(_pendingKey);
       return BitcoinBroadcastReceipt(txid, durable: true);
     } on Exception {
