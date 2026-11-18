@@ -187,12 +187,38 @@ class _SecretsReachVisitor extends RecursiveAstVisitor<void> {
     }
   }
 
+  /// Every URI written in [node], the default included when an alternative
+  /// is selected, resolved against the file that contains it.
+  void _reportWritten(NamespaceDirective node) {
+    final file = node
+        .thisOrAncestorOfType<CompilationUnit>()
+        ?.declaredFragment
+        ?.source
+        .fullName;
+    for (final text in [
+      node.uri.stringValue,
+      for (final configuration in node.configurations)
+        configuration.uri.stringValue,
+    ]) {
+      final uri = text == null ? null : Uri.tryParse(text);
+      if (uri == null) continue;
+      final resolved = file == null ? uri : Uri.file(file).resolveUri(uri);
+      if ((resolved.isScheme('package') &&
+              resolved.pathSegments.firstOrNull == 'secrets') ||
+          (resolved.isScheme('file') &&
+              resolved.path.contains('/packages/secrets/'))) {
+        violations.add('$path: reaches $text (bindings boundary)');
+      }
+    }
+  }
+
   @override
   void visitImportDirective(ImportDirective node) {
     _report(node.libraryImport?.importedLibrary);
     for (final configuration in node.configurations) {
       _reportUri(configuration.resolvedUri);
     }
+    _reportWritten(node);
     super.visitImportDirective(node);
   }
 
@@ -202,6 +228,7 @@ class _SecretsReachVisitor extends RecursiveAstVisitor<void> {
     for (final configuration in node.configurations) {
       _reportUri(configuration.resolvedUri);
     }
+    _reportWritten(node);
     super.visitExportDirective(node);
   }
 
