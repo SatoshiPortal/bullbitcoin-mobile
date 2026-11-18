@@ -314,7 +314,7 @@
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
   },
-  "settingsSecurityPinTitle": "Security Pin",
+  "settingsSecurityPinTitle": "Security PIN",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
@@ -11251,7 +11251,7 @@
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
   },
-  "settingsErrorReportingTitle": "Error reporting",
+  "settingsErrorReportingTitle": "Error Reporting",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
   },
@@ -15320,7 +15320,7 @@
   "@wizardExchangeDescription": {
     "description": "Optional exchange access or wallet quick action setting."
   },
-  "quickActionsSettingsTitle": "Quick actions",
+  "quickActionsSettingsTitle": "Quick Actions",
   "@quickActionsSettingsTitle": {
     "description": "Optional exchange access or wallet quick action setting."
   },
@@ -15496,7 +15496,7 @@
   "@passphraseWordsIncompleteWarning": {
     "description": "Protected wallet recovery requires the separately kept passphrase."
   },
-  "settingsDarkModeTitle": "Dark mode",
+  "settingsDarkModeTitle": "Dark Mode",
   "@settingsDarkModeTitle": {
     "description": "App settings switch: on uses the dark theme, off the light theme."
   },
