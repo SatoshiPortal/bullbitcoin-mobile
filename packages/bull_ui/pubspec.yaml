@@ -22,6 +22,7 @@ dependencies:
   gif: ^2.3.0
   shimmer: ^4.0.0
   qr_flutter: ^4.1.0
+  timeago: ^3.7.1
 
 dev_dependencies:
   flutter_test:

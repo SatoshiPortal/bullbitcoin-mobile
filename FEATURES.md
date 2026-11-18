@@ -197,7 +197,7 @@ graph TB
     BACKUPS --> TOR
     BACKUPS --> WALLETS
     BTC_PRICE --> SETTINGS
-    BUY -->|public targeted routine sync| WALLETS
+    BUY -->|public routine sync and destination validation| WALLETS
     BUY --> EXCHANGE
     BUY --> RECEIVE
     BUY --> BULL_PAYJOIN
@@ -205,6 +205,7 @@ graph TB
     COINS --> UTXO_MGMT
     COINS --> LABELS
     COINS -->|public revision stream| WALLETS
+    DCA -->|public destination validation and input| WALLETS
     DCA --> RECEIVE
     IMPORT_WALLET[Wallet Import]
     IMPORT_WALLET --> SETTINGS
@@ -325,7 +326,7 @@ graph TB
     CONSOLIDATION --> SEND
     DCA --> SETTINGS
     DEFAULT_WALLETS --> EXCHANGE
-    DEFAULT_WALLETS --> WALLETS
+    DEFAULT_WALLETS -->|public destination validation and input| WALLETS
     ELECTRUM_SETTINGS --> WALLETS
     EXCHANGE --> SETTINGS
     EXCHANGE_SUPPORT_CHAT --> EXCHANGE
@@ -333,7 +334,7 @@ graph TB
     FEES --> WALLETS
     LABELS --> WALLETS
     LEDGER --> WALLETS
-    LIMIT_ORDERS --> WALLETS
+    LIMIT_ORDERS -->|public destination input| WALLETS
     MEMPOOL_SETTINGS --> SETTINGS
     PAY --> FEES
     PAY --> SETTINGS
@@ -544,3 +545,7 @@ Electrum Settings owns foreground preparation of its current-schema storage and 
 Watch-only import captures the selected Bitcoin environment before parsing. Test-family public-key versions may represent testnet or regtest; the captured selection resolves that ambiguity while preserving the public key. Regtest accepts software BIP84 watch-only input, retains the original network identity and refuses hardware provenance or a mainnet key. The existing capability policy controls explorer actions and Lightning availability. Receive uses that same Lightning capability when choosing its initial Liquid/Lightning mode, so a regtest Liquid wallet opens a supported selection.
 
 Mnemonic scanning preserves the wallet owner's typed unsupported-script refusal. The import UI disables continuation for that result instead of offering an import that cannot succeed. These changes add no database revision and do not enable swaps or Payjoin on regtest by themselves.
+
+## Shared payment destination input
+
+Wallet publishes destination validation and input through `public/payment_destination.dart`. Buy, DCA, limit orders, default wallets and Swap consume this public surface. The adapter retains the complete scanned request, applies each consumer’s accepted payment types and displays the existing AddressViewer. The visual component remains pure UI in bull_ui. The legacy core scanner file, unreachable Send request-identifier route and duplicate Swap scanner are removed; consumers import the published Wallet capability directly.

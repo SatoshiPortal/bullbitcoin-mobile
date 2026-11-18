@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bull_sdk/boltz.dart' as frb;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
@@ -34,7 +35,7 @@ class _PassthroughElectrum implements ElectrumRunner {
   @override
   Future<T> run<T>({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   }) => operation(connection);
@@ -42,7 +43,7 @@ class _PassthroughElectrum implements ElectrumRunner {
   @override
   Future<bool> usesCustomServers({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async => custom;
 }
 
@@ -64,15 +65,17 @@ class _FakeLockupChain implements LockupChain {
     required String txid,
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   }) async => known;
 
   @override
   Future<LockupBroadcast> broadcast({
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
+    void Function()? requireAdmission,
   }) async {
+    requireAdmission?.call();
     broadcasts.add(signedTx);
     return outcome;
   }
@@ -120,7 +123,7 @@ void main() {
     List<SwapWalletInfo> wallets = const [],
   }) => BoltzSwapRepository(
     boltz: boltz,
-    isTestnet: false,
+    environment: NetworkEnv.mainnet,
     electrum: _PassthroughElectrum(custom: customElectrum),
     lockupChain: lockupChain,
     newAddressFor: (walletId) async => 'addr-of-$walletId',
@@ -130,17 +133,17 @@ void main() {
     fastestFee: ({
       required int txSize,
       required bool isLiquid,
-      required bool isTestnet,
+      required NetworkEnv environment,
     }) async => fastest,
-    wallets: ({required bool isTestnet}) async => wallets,
-    swapMasterKeySource: ({required bool isTestnet}) async =>
+    wallets: ({required NetworkEnv environment}) async => wallets,
+    swapMasterKeySource: ({required NetworkEnv environment}) async =>
         const DerivedSwapMasterKey(
           walletFingerprint: 'f00dbabe',
           xprv: 'xprv',
           xpub: 'xpub',
           mnemonic: 'ab cd',
           fingerprint: 'cafe0001',
-          isTestnet: false,
+          environment: NetworkEnv.mainnet,
         ),
   );
 
@@ -164,6 +167,8 @@ void main() {
     boltz = _MockBoltzDatasource();
     lockupChain = _FakeLockupChain();
     storage = _MockSwapStorage();
+    when(() => storage.isRegtestStore).thenReturn(false);
+    when(() => boltz.environment).thenReturn(NetworkEnv.mainnet);
     walletTxs.clear();
     when(() => boltz.storage).thenReturn(storage);
     when(() => storage.fetch(any())).thenAnswer((_) async => chainModel());
@@ -201,6 +206,7 @@ void main() {
   });
 
   setUpAll(() {
+    registerFallbackValue(NetworkEnv.mainnet);
     registerFallbackValue(chainModel());
     registerFallbackValue(
       const ElectrumConnection(url: 'x', validateDomain: true, timeout: 5),
@@ -1059,7 +1065,7 @@ void main() {
         var syncRequested = false;
         final r = BoltzSwapRepository(
           boltz: boltz,
-          isTestnet: false,
+          environment: NetworkEnv.mainnet,
           electrum: _PassthroughElectrum(),
           lockupChain: lockupChain,
           newAddressFor: (w) async => 'a',
@@ -1071,10 +1077,11 @@ void main() {
           fastestFee: ({
             required int txSize,
             required bool isLiquid,
-            required bool isTestnet,
+            required NetworkEnv environment,
           }) async => 50,
-          wallets: ({required bool isTestnet}) async => const [],
-          swapMasterKeySource: ({required bool isTestnet}) async => null,
+          wallets: ({required NetworkEnv environment}) async => const [],
+          swapMasterKeySource: ({required NetworkEnv environment}) async =>
+              null,
         );
         when(
           () => storage.fetchAll(
@@ -1333,7 +1340,7 @@ void main() {
     );
 
     void stubSummaries(frb.RestoredSwapSummary s) {
-      when(() => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')))
+      when(() => boltz.getSwapMasterKey(environment: any(named: 'environment')))
           .thenAnswer((_) async => masterKey);
       when(
         () => boltz.restoreSwapSummaries(
@@ -1349,7 +1356,9 @@ void main() {
         for (final status in ['transaction.mempool', 'transaction.confirmed']) {
           stubSummaries(summary(kind: kind, status: status));
 
-          final restored = await repo().restoreSwaps(isTestnet: false);
+          final restored = await repo().restoreSwaps(
+            environment: NetworkEnv.mainnet,
+          );
 
           expect(
             restored.single.status,
@@ -1367,7 +1376,9 @@ void main() {
           summary(kind: frb.SwapType.reverse, status: 'transaction.mempool'),
         );
 
-        final restored = await repo().restoreSwaps(isTestnet: false);
+        final restored = await repo().restoreSwaps(
+          environment: NetworkEnv.mainnet,
+        );
 
         expect(restored.single.status, SwapStatus.claimable);
       },
@@ -1376,7 +1387,9 @@ void main() {
     test('trusts a positive boltz verdict', () async {
       stubSummaries(summary(recoverable: true));
 
-      final restored = await repo().restoreSwaps(isTestnet: false);
+      final restored = await repo().restoreSwaps(
+        environment: NetworkEnv.mainnet,
+      );
 
       expect(restored.single.recoverable, isTrue);
     });
@@ -1385,7 +1398,9 @@ void main() {
         '(boltz refunded ITS side; ours may be unspent)', () async {
       stubSummaries(summary(status: 'transaction.refunded'));
 
-      final restored = await repo().restoreSwaps(isTestnet: false);
+      final restored = await repo().restoreSwaps(
+        environment: NetworkEnv.mainnet,
+      );
 
       expect(restored.single.recoverable, isTrue);
     });
@@ -1395,7 +1410,9 @@ void main() {
       () async {
         stubSummaries(summary(status: 'swap.refunded'));
 
-        final restored = await repo().restoreSwaps(isTestnet: false);
+        final restored = await repo().restoreSwaps(
+          environment: NetworkEnv.mainnet,
+        );
 
         expect(restored.single.recoverable, isTrue);
       },
@@ -1404,7 +1421,9 @@ void main() {
     test('a claimed chain swap keeps boltz\'s negative verdict', () async {
       stubSummaries(summary(status: 'transaction.claimed'));
 
-      final restored = await repo().restoreSwaps(isTestnet: false);
+      final restored = await repo().restoreSwaps(
+        environment: NetworkEnv.mainnet,
+      );
 
       expect(restored.single.recoverable, isFalse);
     });
@@ -1419,7 +1438,9 @@ void main() {
         ),
       );
 
-      final restored = await repo().restoreSwaps(isTestnet: false);
+      final restored = await repo().restoreSwaps(
+        environment: NetworkEnv.mainnet,
+      );
 
       expect(restored.single.recoverable, isFalse);
     });
@@ -1429,7 +1450,9 @@ void main() {
         summary(kind: frb.SwapType.reverse, status: 'invoice.settled'),
       );
 
-      final restored = await repo().restoreSwaps(isTestnet: false);
+      final restored = await repo().restoreSwaps(
+        environment: NetworkEnv.mainnet,
+      );
 
       expect(restored.single.recoverable, isFalse);
     });
@@ -1437,7 +1460,9 @@ void main() {
     test('a non-resolved status keeps boltz\'s negative verdict', () async {
       stubSummaries(summary(status: 'swap.created'));
 
-      final restored = await repo().restoreSwaps(isTestnet: false);
+      final restored = await repo().restoreSwaps(
+        environment: NetworkEnv.mainnet,
+      );
 
       expect(restored.single.recoverable, isFalse);
     });
@@ -1475,12 +1500,13 @@ void main() {
       required int localTop,
       bool rescued = true,
     }) {
-      when(() => boltz.getSwapMasterKey(isTestnet: any(named: 'isTestnet')))
+      when(() => boltz.getSwapMasterKey(environment: any(named: 'environment')))
           .thenAnswer((_) async => masterKey);
       when(() => storage.getSwapKeyIndex(any()))
           .thenAnswer((_) async => storedCounter);
-      when(() => storage.setSwapKeyIndex(any(), any()))
-          .thenAnswer((_) async {});
+      when(() => storage.reserveSwapKeyIndex(any(), any(), any())).thenAnswer(
+        (invocation) async => invocation.positionalArguments[2] as int,
+      );
       when(
         () => storage.fetchAll(
           walletId: any(named: 'walletId'),
@@ -1496,7 +1522,7 @@ void main() {
       when(
         () => boltz.swapMasterKeyReady(
           walletFingerprint: any(named: 'walletFingerprint'),
-          isTestnet: any(named: 'isTestnet'),
+          environment: any(named: 'environment'),
         ),
       ).thenAnswer((_) async => true);
       when(() => boltz.getBtcToLbtcChainSwapLimits())
@@ -1508,7 +1534,7 @@ void main() {
           sendWalletId: any(named: 'sendWalletId'),
           index: any(named: 'index'),
           amountSat: any(named: 'amountSat'),
-          isTestnet: any(named: 'isTestnet'),
+          environment: any(named: 'environment'),
           btcElectrumUrl: any(named: 'btcElectrumUrl'),
           lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
           receiveWalletId: any(named: 'receiveWalletId'),
@@ -1530,7 +1556,7 @@ void main() {
               sendWalletId: any(named: 'sendWalletId'),
               index: captureAny(named: 'index'),
               amountSat: any(named: 'amountSat'),
-              isTestnet: any(named: 'isTestnet'),
+              environment: any(named: 'environment'),
               btcElectrumUrl: any(named: 'btcElectrumUrl'),
               lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
               receiveWalletId: any(named: 'receiveWalletId'),
@@ -1549,7 +1575,7 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 9);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 11)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 9)).called(1);
     });
 
     test('a counter ahead of local swaps is used as-is', () async {
@@ -1558,7 +1584,7 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 10);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 12)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 10)).called(1);
     });
 
     test('a swap from before 6.12 does not raise the next index', () async {
@@ -1567,7 +1593,7 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 3);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 5)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 3)).called(1);
     });
 
     test('an unset counter seeds past both boltz and local swaps', () async {
@@ -1576,7 +1602,18 @@ void main() {
       final index = await createAndCaptureIndex();
 
       expect(index, 9);
-      verify(() => storage.setSwapKeyIndex('f00dbabe', 11)).called(1);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 9)).called(1);
+    });
+
+    test('an unset counter seeds past a higher remote index', () async {
+      stubCreation(storedCounter: null, localTop: 7);
+      when(
+        () =>
+            boltz.restoreSwapIndex(swapMasterKey: any(named: 'swapMasterKey')),
+      ).thenAnswer((_) async => 20);
+
+      expect(await createAndCaptureIndex(), 21);
+      verify(() => storage.reserveSwapKeyIndex('f00dbabe', 2, 21)).called(1);
     });
 
     test(
@@ -1599,7 +1636,7 @@ void main() {
             swapMasterKey: any(named: 'swapMasterKey'),
           ),
         );
-        verifyNever(() => storage.setSwapKeyIndex(any(), any()));
+        verifyNever(() => storage.reserveSwapKeyIndex(any(), any(), any()));
       },
     );
   });

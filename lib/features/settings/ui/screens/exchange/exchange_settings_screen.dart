@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.
 import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
@@ -17,7 +16,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem;
+import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, BullSnackBar;
 
 class ExchangeSettingsScreen extends StatelessWidget {
   const ExchangeSettingsScreen({super.key});
@@ -181,9 +180,9 @@ class ExchangeSettingsScreen extends StatelessWidget {
                             ):
                               break;
                             case Err(:final failure):
-                              SnackBarUtils.showSnackBar(
+                              BullSnackBar.show(
                                 context,
-                                failure.toTranslated(context),
+                                message: failure.toTranslated(context),
                               );
                           }
                         },
@@ -213,9 +212,9 @@ class ExchangeSettingsScreen extends StatelessWidget {
                             // The session survived, so the user is still
                             // signed in — say so rather than letting the UI
                             // imply the account is gone from this device.
-                            SnackBarUtils.showSnackBar(
+                            BullSnackBar.show(
                               context,
-                              failure.toTranslated(context),
+                              message: failure.toTranslated(context),
                             );
                           },
                         );

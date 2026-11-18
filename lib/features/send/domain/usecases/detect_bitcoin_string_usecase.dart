@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bip21_uri/bip21_uri.dart';
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinRegtestProfile;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:sync/sync.dart' as native show validateAddress;
 
@@ -23,10 +24,27 @@ class DetectBitcoinStringUsecase {
         ? uri?.path ?? ''
         : input;
     final lower = address.toLowerCase();
-    if (active == primitives.NetworkEnv.signet ||
-        lower.startsWith('el1') ||
-        lower.startsWith('ert1')) {
+    if (active == primitives.NetworkEnv.signet) {
       throw const FormatException('Unsupported payment network');
+    }
+    final raw = input.toLowerCase();
+    final regtestInvoice =
+        raw.startsWith('lnbcrt') || raw.startsWith('lightning:lnbcrt');
+    final regtestLiquid = raw.startsWith('el1') || raw.startsWith('ert1');
+    if (regtestInvoice || regtestLiquid) {
+      if (active != primitives.NetworkEnv.regtest) {
+        throw const FormatException('Unsupported payment network');
+      }
+      if (regtestInvoice) return PaymentRequest.parse(input);
+      if (await native.validateAddress(input, primitives.LiquidNetwork.regtest)
+          is primitives.Err) {
+        throw const FormatException('Invalid regtest destination');
+      }
+      return PaymentRequest.bip21(
+        network: Network.liquidRegtest,
+        uri: input,
+        address: input,
+      );
     }
     if (active == primitives.NetworkEnv.regtest || lower.startsWith('bcrt1')) {
       if (active != primitives.NetworkEnv.regtest) {
@@ -46,13 +64,18 @@ class DetectBitcoinStringUsecase {
         final parameters = uri.queryParametersAll;
         if (parameters.values.any((values) => values.length != 1) ||
             parameters.keys.any(
-              (key) =>
-                  key.startsWith('req-') ||
-                  key == 'pj' ||
-                  key == 'pjos' ||
-                  key == 'lightning',
+              (key) => key.startsWith('req-') || key == 'lightning',
             )) {
           throw const FormatException('Unsupported payment parameters');
+        }
+        final pj = uri.queryParameters['pj'];
+        final pjos = uri.queryParameters['pjos'];
+        if ((pj != null &&
+                !PayjoinRegtestProfile.allowsLogicalEndpoint(
+                  Uri.parse(pj).removeFragment(),
+                )) ||
+            (pjos != null && (pj == null || (pjos != '0' && pjos != '1')))) {
+          throw const FormatException('Unsupported Payjoin endpoint');
         }
         final amount = uri.queryParameters['amount'];
         if (amount != null) {
@@ -83,6 +106,8 @@ class DetectBitcoinStringUsecase {
         amountSat: amountSat,
         label: label,
         message: message,
+        pj: uri?.queryParameters['pj'] ?? '',
+        pjos: uri?.queryParameters['pjos'] ?? '',
       );
     }
     final request = await PaymentRequest.parse(input);

@@ -670,7 +670,6 @@
   "walletDetailsSignerLabel": "Msaini",
   "walletDetailsSignerDeviceLabel": "Kifaa cha Kusaini",
   "walletDetailsSignerDeviceNotSupported": "Hakiungwi mkono",
-  "walletDetailsCopyButton": "Nakili",
   "mempoolSettingsTitle": "Seva ya Mempool",
   "mempoolSettingsDescription": "Sanidi seva maalum za mempool kwa mitandao tofauti. Kila mtandao unaweza kutumia seva yake ya kivinjari cha vitalu na ukadiriaji wa ada.",
   "mempoolSettingsDefaultServer": "Seva Chaguo-msingi",

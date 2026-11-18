@@ -2,6 +2,7 @@ import 'package:bull_ark/bull_ark.dart' show ArkFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
 import 'presentation/send_ark_cubit.dart';
+import 'domain/usecases/prepare_internal_recipient_usecase.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -267,6 +268,9 @@ class SendLocator {
       ({SendRouteArgs? args, String? spWalletLabel})?
     >(
       (wallet, options) => SendCubit(
+        prepareInternalRecipientUsecase: PrepareInternalRecipientUsecase(
+          locator<WalletFacade>(),
+        ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
           locator<WalletFacade>(),
         ),

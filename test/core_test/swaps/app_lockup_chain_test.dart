@@ -36,7 +36,7 @@ void main() {
           txid: 'ab' * 32,
           signedTx: 'pset',
           isLiquid: true,
-          isTestnet: true,
+          environment: NetworkEnv.testnet,
         );
 
         expect(known, isTrue);
@@ -51,7 +51,7 @@ void main() {
         txid: 'ab' * 32,
         signedTx: 'psbt',
         isLiquid: false,
-        isTestnet: false,
+        environment: NetworkEnv.mainnet,
       );
 
       expect(known, isFalse);
@@ -66,7 +66,7 @@ void main() {
           txid: 'ab' * 32,
           signedTx: 'pset',
           isLiquid: true,
-          isTestnet: false,
+          environment: NetworkEnv.mainnet,
         ),
         throwsA(isA<swaps.SwapsException>()),
       );
@@ -75,8 +75,11 @@ void main() {
 
   group('broadcast', () {
     Future<swaps.LockupBroadcast> broadcastLiquid(Object answer) =>
-        AppLockupChain(_Connections(answer))
-            .broadcast(signedTx: 'pset', isLiquid: true, isTestnet: false);
+        AppLockupChain(_Connections(answer)).broadcast(
+          signedTx: 'pset',
+          isLiquid: true,
+          environment: NetworkEnv.mainnet,
+        );
 
     test('an accepted lockup carries the txid', () async {
       final outcome = await broadcastLiquid('ab' * 32);

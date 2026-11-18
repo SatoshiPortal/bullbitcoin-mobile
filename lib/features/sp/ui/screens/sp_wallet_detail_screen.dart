@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/buttons/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
 import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/core/widgets/cards/wallet_detail_balance_card.dart';
@@ -20,11 +20,11 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPullableBody, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullPullableBody, BullShapesX, Gap, bullTimeAgo;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class SpWalletDetailScreen extends StatelessWidget {
   const SpWalletDetailScreen({
@@ -347,7 +347,7 @@ class _SpScanNudgeCardState extends State<_SpScanNudgeCard> {
       lastScannedHeight: widget.height,
       chainTip: widget.chainTip,
     ).lastScannedEstimate();
-    final ago = timeago.format(estimate ?? DateTime.now());
+    final ago = bullTimeAgo(context, estimate ?? DateTime.now());
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(

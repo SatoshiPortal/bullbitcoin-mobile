@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/settings_failure_l10n.dart';
 import 'package:bb_mobile/router.dart';
@@ -44,9 +44,9 @@ class SettingsFailureListener
            // it is not silently consumed before anything could show it.
            if (overlay == null) return;
 
-           SnackBarUtils.showSnackBarIn(
+           BullSnackBar.showOnOverlay(
              overlay,
-             state.failure!.toTranslated(overlay.context),
+             message: state.failure!.toTranslated(overlay.context),
            );
            // Consumed, so an identical later failure fires the listener again.
            context.read<SettingsCubit>().clearFailure();

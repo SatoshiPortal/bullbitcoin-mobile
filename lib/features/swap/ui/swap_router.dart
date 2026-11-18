@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
-import 'package:bb_mobile/features/swap/ui/pages/swap_qr_scanner_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_settings_page.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -15,7 +14,6 @@ enum SwapRoute {
   swap('/swap'),
   confirmSwap('/swap/confirm'),
   inProgressSwap('/swap/in-progress'),
-  scanQr('/swap/scan-qr'),
   swapSettings('/swap-settings');
 
   final String path;
@@ -96,11 +94,6 @@ class SwapRouter {
             child: const SwapInProgressPage(),
           );
         },
-      ),
-      GoRoute(
-        name: SwapRoute.scanQr.name,
-        path: SwapRoute.scanQr.path,
-        builder: (context, state) => const SwapQrScannerPage(),
       ),
     ],
   );

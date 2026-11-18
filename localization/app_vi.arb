@@ -657,7 +657,6 @@
   "walletDetailsSignerLabel": "Người ký",
   "walletDetailsSignerDeviceLabel": "Thiết bị ký",
   "walletDetailsSignerDeviceNotSupported": "Không được hỗ trợ",
-  "walletDetailsCopyButton": "Sao chép",
   "mempoolSettingsTitle": "Máy chủ Mempool",
   "mempoolSettingsDescription": "Cấu hình máy chủ mempool tùy chỉnh cho từng mạng khác nhau. Mỗi mạng có thể dùng máy chủ riêng để khám phá khối và ước tính phí.",
   "mempoolSettingsDefaultServer": "Máy chủ mặc định",

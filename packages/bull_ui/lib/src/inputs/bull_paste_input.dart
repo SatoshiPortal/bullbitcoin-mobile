@@ -27,7 +27,7 @@ class BullPasteInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Container(
-      height: 48,
+      constraints: const BoxConstraints(minHeight: 48),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(context.bullShapes.input),
@@ -43,10 +43,12 @@ class BullPasteInput extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelSmall,
                     color: colors.onSurface,
                   )
-                : BullText(
+                : Text(
                     text.trim(),
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    color: colors.onSurface,
+                    style: Theme.of(context).textTheme.bodyLarge
+                        ?.copyWith(color: colors.onSurface),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
           ),
           IconButton(

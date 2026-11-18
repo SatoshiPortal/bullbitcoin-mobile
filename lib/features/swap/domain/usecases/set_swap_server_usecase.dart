@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/swaps/swap_engine_switcher.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/swap/domain/swap_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:swaps/swaps.dart' show SwapStore;
+import 'package:swaps/swaps.dart' show SwapStore, SwapsBusyFailure;
 import 'package:meta/meta.dart';
 
 /// Stores the Boltz backend typed by the user for the network the app is on
@@ -28,8 +28,12 @@ class SetSwapServerUsecase {
   @useResult
   Future<Result<SwapServer, SwapFailure>> execute(String input) async {
     try {
-      final isTestnet =
-          !(await _settingsRepository.fetch()).environment.isMainnet;
+      final environment =
+          (await _settingsRepository.fetch()).environment.networkEnv;
+      if (environment == NetworkEnv.regtest) {
+        return const Err(SwapUnsupportedNetworkFailure());
+      }
+      final isTestnet = environment == NetworkEnv.testnet;
       final server = SwapServer.parse(input, isTestnet: isTestnet);
       if (server == null) {
         return const Err(
@@ -54,8 +58,14 @@ class SetSwapServerUsecase {
         case Ok():
       }
       await _swapServerSettingRepository.save(server, isTestnet: isTestnet);
-      await _swapEngineSwitcher.rebuild(isTestnet: isTestnet);
-      return Ok(server);
+      return switch (await _swapEngineSwitcher.rebuild(
+        environment: environment,
+        waitForCompletion: true,
+      )) {
+        Ok() => Ok(server),
+        Err(failure: SwapsBusyFailure()) => const Err(SwapServerBusyFailure()),
+        Err() => const Err(SwapStorageFailure()),
+      };
     } catch (e) {
       log.warning('Swap server not saved (${e.runtimeType})');
       return const Err(SwapStorageFailure());

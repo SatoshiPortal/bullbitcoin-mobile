@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:btc_map/src/map_types.dart';
 import 'package:btc_map/src/domain/usecases/load_cached_merchants_usecase.dart';
 import 'package:btc_map/src/domain/usecases/sync_merchants_usecase.dart';
@@ -43,6 +45,37 @@ void main() {
     SyncMerchantsUsecase(repository.sync),
   );
 
+  test('loading is visible while the disk cache is still being read', () async {
+    final cache = Completer<Result<List<Merchant>, BullMapFailure>>();
+    final subject = MapCubit(
+      LoadCachedMerchantsUsecase(() => cache.future),
+      SyncMerchantsUsecase(repository.sync),
+    );
+    final starting = subject.start();
+    expect(subject.state.isFirstLoad, isTrue);
+    cache.complete(const Ok([]));
+    await starting;
+    expect(subject.state.isSyncing, isFalse);
+    await subject.close();
+  });
+
+  test('closing during a failed cache read does not start a sync', () async {
+    final cache = Completer<Result<List<Merchant>, BullMapFailure>>();
+    var syncCalls = 0;
+    final subject = MapCubit(
+      LoadCachedMerchantsUsecase(() => cache.future),
+      SyncMerchantsUsecase(() async {
+        syncCalls++;
+        return const Ok([]);
+      }),
+    );
+    final starting = subject.start();
+    await subject.close();
+    cache.complete(const Err(BullMapUnexpectedFailure()));
+    await starting;
+    expect(syncCalls, 0);
+  });
+
   test('shows cached merchants, then the synced ones', () async {
     repository.cachedResult = Ok([_merchant(1, 'Old')]);
     repository.syncResult = Ok([_merchant(1, 'Old'), _merchant(2, 'New')]);
@@ -57,7 +90,8 @@ void main() {
     await pumpEventQueue();
     await subscription.cancel();
 
-    expect(states.first, [1]);
+    expect(states.first, isEmpty);
+    expect(states, contains(equals([1])));
     expect(states.last, [1, 2]);
     expect(subject.state.isSyncing, isFalse);
     expect(subject.state.merchants.last.name, 'New');

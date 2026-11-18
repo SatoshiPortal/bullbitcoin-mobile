@@ -268,7 +268,6 @@
   "walletDetailsSignerLabel": "Signer",
   "walletDetailsSignerDeviceLabel": "Signer ডিভাইচ",
   "walletDetailsSignerDeviceNotSupported": "সমৰ্থিত নহয়",
-  "walletDetailsCopyButton": "কপি কৰক",
   "mempoolSettingsTitle": "Mempool চাৰ্ভাৰ",
   "mempoolSettingsDescription": "বিভিন্ন নেটৱৰ্কৰ বাবে কাষ্টম mempool চাৰ্ভাৰ কনফিগাৰ কৰক। প্ৰতিটো নেটৱৰ্কে ব্লক এক্সপ্লোৰাৰ আৰু মাচুল অনুমানৰ বাবে নিজৰ চাৰ্ভাৰ ব্যৱহাৰ কৰিব পাৰে।",
   "mempoolSettingsDefaultServer": "ডিফল্ট চাৰ্ভাৰ",

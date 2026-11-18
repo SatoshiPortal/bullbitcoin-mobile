@@ -20,6 +20,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final _mapController = BullMapController();
+  bool _isPreparingPins = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,13 +49,19 @@ class _MapScreenState extends State<MapScreen> {
             BullMapView(
               merchants: state.mapMerchants,
               controller: _mapController,
+              initialCenter: state.initialCenter,
               onMerchantTap: _showMerchant,
+              onPreparingChanged: (preparing) {
+                if (mounted && _isPreparingPins != preparing) {
+                  setState(() => _isPreparingPins = preparing);
+                }
+              },
               onViewportChanged: context.read<MapCubit>().viewportChanged,
             ),
             Align(
               alignment: Alignment.topCenter,
               child: BullFadingLinearProgress(
-                trigger: state.isSyncing,
+                trigger: state.isSyncing || _isPreparingPins,
                 backgroundColor: context.bull.surface,
                 foregroundColor: context.bull.primary,
               ),

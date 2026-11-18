@@ -14,7 +14,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/core/widgets/buttons/eye_toggle.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/core/widgets/cards/home_fiat_balance.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
@@ -61,6 +61,7 @@ class WalletDetailScreen extends StatelessWidget {
             : BullText(walletName, style: context.font.headlineMedium),
         actions: [
           IconButton(
+            tooltip: context.loc.settingsWalletSettingsTitle,
             onPressed: () {
               context.pushNamed(
                 SettingsRoute.walletDetailsSelectedWallet.name,

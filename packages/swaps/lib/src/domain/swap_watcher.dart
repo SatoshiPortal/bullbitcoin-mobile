@@ -22,11 +22,18 @@ class SwapWatcher {
   final SwapStore _store;
   final Map<SwapProvider, SwapResolver> _resolvers;
   final Duration _heartbeat;
+  final Duration _requestBudget;
 
   final List<StreamSubscription<Swap>> _updates = [];
   Timer? _heartbeatTimer;
   final Map<String, Future<void>> _inFlight = {};
   bool _stopped = false;
+  bool _suspended = false;
+  bool _draining = false;
+  Future<void>? _drain;
+  Future<void>? _startup;
+  Future<void>? _sweepWork;
+  Future<void>? _providerWork;
   final Map<String, ({int attempts, DateTime nextAttemptAt})> _retrySchedule =
       {};
   static const _maxRetryDelay = Duration(minutes: 30);
@@ -36,14 +43,40 @@ class SwapWatcher {
     required this._store,
     required this._resolvers,
     this._heartbeat = const Duration(minutes: 3),
+    this._requestBudget = const Duration(milliseconds: 100),
   });
+
+  bool get isRunning =>
+      !_stopped && !_suspended && !_draining && _heartbeatTimer != null;
+
+  /// Ownership is retained after a Busy response until this future completes.
+  Future<void> get drained => _drain ?? Future<void>.value();
+
+  /// A transition cannot be undone by a late creation's ensureRunning call.
+  void suspend() {
+    _suspended = true;
+    _stopAdmission();
+  }
+
+  void _stopAdmission() {
+    _stopped = true;
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+    for (final resolver in _resolvers.values) {
+      resolver.suspendEffects();
+    }
+  }
 
   /// Arms the heartbeat and the live-update listeners if they are not
   /// running yet. Called wherever a swap is created, funded or rescued, so a
   /// session that never ran [start] (the app launched before a wallet
   /// existed) still drives every swap it touches.
   void ensureRunning() {
+    if (_draining || _suspended) return;
     _stopped = false;
+    for (final resolver in _resolvers.values) {
+      resolver.resumeEffects();
+    }
     _heartbeatTimer ??= Timer.periodic(
       _heartbeat,
       (_) => unawaited(_onHeartbeat()),
@@ -63,34 +96,75 @@ class SwapWatcher {
   }
 
   /// Never throws — the watcher must not break startup.
-  Future<void> start() async {
+  Future<void> start() {
+    if (_draining) return Future<void>.value();
+    final existing = _startup;
+    if (existing != null) return existing;
+    _suspended = false;
+    late final Future<void> work;
+    work = _start().whenComplete(() {
+      if (identical(_startup, work)) _startup = null;
+    });
+    _startup = work;
+    return work;
+  }
+
+  Future<void> _start() async {
     try {
       // Heartbeat and event subscriptions are armed FIRST: if anything in
       // the initial verify/sweep throws, the periodic driver must already
       // exist or the session would run with no recovery at all.
       ensureRunning();
       for (final resolver in _resolvers.values) {
+        if (_stopped) return;
         if (await resolver.verifyCompletions() case Err(:final failure)) {
           swapsLog.warning('SWAPS: completions not verified: $failure');
         }
       }
-      await _sweep();
+      await _runSweep();
     } catch (e) {
       swapsLog.warning('SWAPS: watcher start failed (${e.runtimeType})');
     }
   }
 
-  /// Stops driving and waits for actions already running, so nothing acts
-  /// on a swap after this returns.
-  Future<void> stop() async {
-    _stopped = true;
-    for (final subscription in _updates) {
-      await subscription.cancel();
+  /// Stops admission immediately. Ok means quiescent; Busy retains the drain
+  /// owner and [drained], and never authorizes a replacement signer.
+  Future<Result<void, SwapsFailure>> stop() {
+    _stopAdmission();
+    if (!_draining) {
+      _draining = true;
+      final subscriptions = _updates.toList();
+      _updates.clear();
+      _drain = _joinOwnedWork(subscriptions).whenComplete(() {
+        _draining = false;
+      });
     }
-    _updates.clear();
-    _heartbeatTimer?.cancel();
-    _heartbeatTimer = null;
-    await Future.wait(_inFlight.values.toList());
+    final drain = drained;
+    return Future.any([
+      drain.then<Result<void, SwapsFailure>>((_) => const Ok(null)),
+      Future<Result<void, SwapsFailure>>.delayed(
+        _requestBudget,
+        () => const Err(SwapsBusyFailure()),
+      ),
+    ]);
+  }
+
+  Future<void> _joinOwnedWork(
+    List<StreamSubscription<Swap>> subscriptions,
+  ) async {
+    await Future.wait(
+      subscriptions.map((subscription) => subscription.cancel()),
+    );
+    while (true) {
+      final work = <Future<void>>{
+        ?_startup,
+        ?_sweepWork,
+        ?_providerWork,
+        ..._inFlight.values,
+      };
+      if (work.isEmpty) return;
+      await Future.wait(work);
+    }
   }
 
   /// Explicit "look now": clears backoffs (a user-triggered sync is a retry
@@ -99,7 +173,7 @@ class SwapWatcher {
     if (_stopped) return;
     _retrySchedule.clear();
     if (_sweeping) return;
-    await _sweep();
+    await _runSweep();
   }
 
   bool _sweeping = false;
@@ -112,13 +186,57 @@ class SwapWatcher {
   Future<void> _onHeartbeat() async {
     if (_sweeping) return;
     try {
-      await _sweep();
+      await _runSweep();
     } catch (e) {
       swapsLog.warning('SWAPS: heartbeat failed (${e.runtimeType})');
     }
   }
 
-  Future<void> _sweep() async {
+  Future<void> _runSweep({bool reconcile = true}) {
+    if (_stopped || _suspended || _draining) return Future<void>.value();
+    final existing = _sweepWork;
+    if (existing != null) return existing;
+    late final Future<void> work;
+    work = _sweep(reconcile: reconcile).whenComplete(() {
+      if (identical(_sweepWork, work)) _sweepWork = null;
+    });
+    _sweepWork = work;
+    return work;
+  }
+
+  void _reconcileProviders(List<Swap> swaps) {
+    if (_providerWork != null || _stopped) return;
+    late final Future<void> work;
+    work = _pollProviders(swaps).whenComplete(() {
+      if (identical(_providerWork, work)) _providerWork = null;
+    });
+    _providerWork = work;
+    unawaited(work);
+  }
+
+  Future<void> _pollProviders(List<Swap> swaps) async {
+    try {
+      for (final MapEntry(key: provider, value: resolver)
+          in _resolvers.entries) {
+        if (_stopped) return;
+        final ids = [
+          for (final swap in swaps)
+            if (swap.provider == provider) swap.id,
+        ];
+        if (ids.isEmpty) continue;
+        resolver.listen(ids);
+        if (await resolver.reconcile(ids) case Err(:final failure)) {
+          swapsLog.warning('SWAPS: reconcile failed, driving stored: $failure');
+        }
+      }
+    } catch (error) {
+      swapsLog.warning(
+        'SWAPS: provider reconciliation failed (${error.runtimeType})',
+      );
+    }
+  }
+
+  Future<void> _sweep({required bool reconcile}) async {
     _sweeping = true;
     try {
       final List<Swap> before;
@@ -137,18 +255,8 @@ class SwapWatcher {
         'SWAPS: driving ${before.length} ongoing swap(s): '
         '${before.map((s) => s.id).join(',')}',
       );
-      for (final MapEntry(key: provider, value: resolver)
-          in _resolvers.entries) {
-        final ids = [
-          for (final swap in before)
-            if (swap.provider == provider) swap.id,
-        ];
-        if (ids.isEmpty) continue;
-        resolver.listen(ids);
-        if (await resolver.reconcile(ids) case Err(:final failure)) {
-          swapsLog.warning('SWAPS: reconcile failed, driving stored: $failure');
-        }
-      }
+      if (_stopped) return;
+      if (reconcile) _reconcileProviders(before);
       // Reconcile may have moved statuses — act on the fresh rows.
       final ongoing = switch (await _store.ongoing()) {
         Ok(:final value) => value,
@@ -168,7 +276,7 @@ class SwapWatcher {
   /// resolution is idempotent on recorded txids, concurrent calls for the
   /// same swap coalesce, and failures back off exponentially.
   Future<void> processSwap(Swap swap) async {
-    if (_stopped || !_shouldAttempt(swap.id)) return;
+    if (_stopped || _draining || _suspended || !_shouldAttempt(swap.id)) return;
     final resolver = _resolvers[swap.provider];
     if (resolver == null) return;
     if (_inFlight.containsKey(swap.id)) {
@@ -185,13 +293,15 @@ class SwapWatcher {
   }
 
   /// User-triggered retry on the script path only, without the provider.
-  /// Runs after any action already in flight for the swap, never beside it.
+  /// Reports Busy while another action owns the swap, never beside it.
   Future<Result<Swap, SwapsFailure>> retry(Swap swap) async {
+    if (_stopped || _draining || _suspended || _inFlight.containsKey(swap.id)) {
+      return const Err(SwapsBusyFailure());
+    }
     final resolver = _resolvers[swap.provider];
     if (resolver == null) {
       return Err(SwapsUnexpectedFailure('no resolver for ${swap.provider}'));
     }
-    await _inFlight[swap.id];
     final completer = Completer<void>();
     _inFlight[swap.id] = completer.future;
     try {

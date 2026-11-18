@@ -81,7 +81,6 @@
   "walletDetailsSignerLabel": "Allekirjoittaja",
   "walletDetailsSignerDeviceLabel": "Allekirjoituslaite",
   "walletDetailsSignerDeviceNotSupported": "Ei tuettu",
-  "walletDetailsCopyButton": "Kopioi",
   "mempoolSettingsTitle": "Mempool Server",
   "mempoolSettingsDescription": "Määritä mukautettuja mempool-palvelimia eri verkoille. Jokainen verkko voi käyttää omaa palvelintaan lohkoselainta ja maksuarviointia varten.",
   "mempoolSettingsDefaultServer": "Default Server",

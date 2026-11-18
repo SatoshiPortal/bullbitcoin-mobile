@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
@@ -121,9 +120,9 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                             true,
                           );
                           Navigator.of(context).pop();
-                          SnackBarUtils.showSnackBar(
+                          BullSnackBar.show(
                             context,
-                            context.loc.errorReportingRestartSnackbar,
+                            message: context.loc.errorReportingRestartSnackbar,
                           );
                         },
                         bgColor: context.appColors.primary,

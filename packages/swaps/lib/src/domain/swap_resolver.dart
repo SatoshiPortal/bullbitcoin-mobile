@@ -6,7 +6,14 @@ import 'package:swaps/src/domain/entities/swap_failure.dart';
 /// Drives one provider's swaps to resolution. Every provider implements
 /// it; the [SwapWatcher] needs nothing else.
 abstract interface class SwapResolver {
+  NetworkEnv get environment;
   bool get isTestnet;
+
+  /// Revoke new effects while retaining already-admitted work and receipts.
+  void suspendEffects();
+
+  /// Only the drained, current lifecycle owner may resume effects.
+  void resumeEffects();
 
   /// Swaps the provider changed, as it reports them.
   Stream<Swap> get updates;

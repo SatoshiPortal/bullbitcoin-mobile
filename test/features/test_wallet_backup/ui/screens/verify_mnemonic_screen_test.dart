@@ -217,7 +217,7 @@ void main() {
     reason: wallet.label,
   );
 
-  // SnackBarUtils is an overlay entry on a 3 second timer, not a Material
+  // BullSnackBar is an overlay entry on a 3 second timer, not a Material
   // SnackBar. A test that triggers one must let that timer run out, or the
   // binding fails the test over a pending timer at teardown.
   Future<void> drainSnackBar(WidgetTester tester) async {

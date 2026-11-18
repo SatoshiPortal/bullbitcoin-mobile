@@ -4,7 +4,8 @@ import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// A removable active-filter chip (label + ✕). **New.** Used in the sub-header
-/// to show which filters are applied; tapping the ✕ fires [onRemove].
+/// to show which filters are applied; tapping the chip fires [onRemove], within
+/// a 48 dp target named by the localized "Delete" tooltip.
 class BullFilterChip extends StatelessWidget {
   const BullFilterChip({super.key, required this.label, required this.onRemove})
     : selected = null,
@@ -47,15 +48,30 @@ class BullFilterChip extends StatelessWidget {
           ),
           if (onSelected == null) ...[
             const SizedBox(width: 4),
-            GestureDetector(
-              onTap: onRemove,
-              child: BullIcon(BullIcons.close, size: 13, color: colors.primary),
-            ),
+            BullIcon(BullIcons.close, size: 13, color: colors.primary),
           ],
         ],
       ),
     );
-    if (onSelected == null) return child;
+    if (onSelected == null) {
+      return Tooltip(
+        message: MaterialLocalizations.of(context).deleteButtonTooltip,
+        child: Semantics(
+          button: true,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onRemove,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: kMinInteractiveDimension,
+                minHeight: kMinInteractiveDimension,
+              ),
+              child: Center(widthFactor: 1, heightFactor: 1, child: child),
+            ),
+          ),
+        ),
+      );
+    }
     return Semantics(
       button: true,
       selected: selected,

@@ -52,9 +52,13 @@ class CreateSendSwapUsecase {
         return const Err(SendSwapCreationFailure('Wallet not found'));
       }
       if (!NetworkCapabilities.supports(
-        wallet.network.shared,
-        NetworkCapability.swaps,
-      )) {
+            wallet.network.shared,
+            NetworkCapability.swaps,
+          ) ||
+          !NetworkCapabilities.supports(
+            wallet.network.shared,
+            NetworkCapability.exchange,
+          )) {
         return const Err(SendSwapRouteUnavailableFailure());
       }
       final inNetwork = wallet.network.isLiquid

@@ -14,10 +14,11 @@ int amountReceived(
   required PayjoinCodecPort codec,
   required String address,
   required bool isTestnet,
+  BitcoinNetwork? networkOverride,
 }) {
   final script = codec.addressScript(
     address,
-    sessionNetwork(isTestnet: isTestnet),
+    networkOverride ?? sessionNetwork(isTestnet: isTestnet),
   );
   if (script == null) return 0;
   var total = 0;
@@ -86,6 +87,7 @@ Uint8List? paymentScriptFromBip21(
   String bip21, {
   required PayjoinCodecPort codec,
   required bool isTestnet,
+  BitcoinNetwork? networkOverride,
 }) {
   final String address;
   try {
@@ -94,7 +96,10 @@ Uint8List? paymentScriptFromBip21(
     return null;
   }
   if (address.isEmpty) return null;
-  return codec.addressScript(address, sessionNetwork(isTestnet: isTestnet));
+  return codec.addressScript(
+    address,
+    networkOverride ?? sessionNetwork(isTestnet: isTestnet),
+  );
 }
 
 bool _sameScript(Uint8List left, Uint8List right) {

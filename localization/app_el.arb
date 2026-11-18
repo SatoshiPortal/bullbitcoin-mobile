@@ -1000,10 +1000,6 @@
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
-  "walletDetailsCopyButton": "Αντιγραφή",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "backupCompletedDescription": "Τώρα ας δοκιμάσουμε το εφεδρικό σας για να βεβαιωθείτε ότι όλα έγιναν σωστά.",
   "@backupCompletedDescription": {
     "description": "Description prompting user to test their backup"

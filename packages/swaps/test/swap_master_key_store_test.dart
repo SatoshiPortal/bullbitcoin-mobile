@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -39,19 +41,20 @@ void main() {
     xpub: 'xpub-swap',
     mnemonic: 'swap words',
     fingerprint: 'cafe0001',
-    isTestnet: false,
+    environment: NetworkEnv.mainnet,
   );
 
   setUp(() {
     secrets = _MemorySecretStore();
     boltz = BoltzDatasource(
+      environment: NetworkEnv.mainnet,
       url: 'boltz.test',
       boltzStore: SwapStorage(rows: _MockRowStore(), secrets: secrets),
     );
   });
 
   test('stores a derived key in the layout earlier releases wrote', () async {
-    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+    await boltz.storeSwapMasterKey(key: key, environment: NetworkEnv.mainnet);
 
     expect(secrets.values.keys, ['swap_master_key_mainnet_f00dbabe']);
     expect(jsonDecode(secrets.values['swap_master_key_mainnet_f00dbabe']!), {
@@ -61,25 +64,27 @@ void main() {
       'mnemonic': 'swap words',
       'fingerprint': 'cafe0001',
     });
-    final stored = await boltz.getSwapMasterKey(isTestnet: false);
+    final stored = await boltz.getSwapMasterKey(
+      environment: NetworkEnv.mainnet,
+    );
     expect(stored.fingerprint, 'cafe0001');
   });
 
   test('refuses a key derived for the other network', () async {
     await expectLater(
-      boltz.storeSwapMasterKey(key: key, isTestnet: true),
+      boltz.storeSwapMasterKey(key: key, environment: NetworkEnv.testnet),
       throwsA(isA<SwapsException>()),
     );
 
     expect(secrets.values, isEmpty);
     await expectLater(
-      boltz.getSwapMasterKey(isTestnet: true),
+      boltz.getSwapMasterKey(environment: NetworkEnv.testnet),
       throwsA(isA<StateError>()),
     );
   });
 
   test('a stored key is never overwritten by a later derivation', () async {
-    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+    await boltz.storeSwapMasterKey(key: key, environment: NetworkEnv.mainnet);
 
     await boltz.storeSwapMasterKey(
       key: const DerivedSwapMasterKey(
@@ -88,65 +93,115 @@ void main() {
         xpub: 'xpub-passphrase',
         mnemonic: 'other words',
         fingerprint: 'cafe0002',
-        isTestnet: false,
+        environment: NetworkEnv.mainnet,
       ),
-      isTestnet: false,
+      environment: NetworkEnv.mainnet,
     );
 
-    final stored = await boltz.getSwapMasterKey(isTestnet: false);
+    final stored = await boltz.getSwapMasterKey(
+      environment: NetworkEnv.mainnet,
+    );
     expect(stored.fingerprint, 'cafe0001');
   });
 
   test('a keychain read failure is not read as a missing key', () async {
-    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+    await boltz.storeSwapMasterKey(key: key, environment: NetworkEnv.mainnet);
     secrets.readsFail = true;
 
     await expectLater(
-      boltz.swapMasterKeyReady(walletFingerprint: 'f00dbabe', isTestnet: false),
+      boltz.swapMasterKeyReady(
+        walletFingerprint: 'f00dbabe',
+        environment: NetworkEnv.mainnet,
+      ),
       throwsA(isA<StateError>()),
     );
     await expectLater(
-      boltz.storeSwapMasterKey(key: key, isTestnet: false),
+      boltz.storeSwapMasterKey(key: key, environment: NetworkEnv.mainnet),
       throwsA(isA<StateError>()),
     );
   });
 
   test('a wallet without a key clears the previous wallet binding', () async {
-    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+    await boltz.storeSwapMasterKey(key: key, environment: NetworkEnv.mainnet);
 
     expect(
       await boltz.swapMasterKeyReady(
         walletFingerprint: 'deadbeef',
-        isTestnet: false,
+        environment: NetworkEnv.mainnet,
       ),
       isFalse,
     );
 
     await expectLater(
-      boltz.getSwapMasterKey(isTestnet: false),
+      boltz.getSwapMasterKey(environment: NetworkEnv.mainnet),
       throwsA(isA<StateError>()),
     );
   });
 
   test('a late readiness lookup cannot bind an older wallet', () async {
-    await boltz.storeSwapMasterKey(key: key, isTestnet: false);
+    await boltz.storeSwapMasterKey(key: key, environment: NetworkEnv.mainnet);
     final release = Completer<void>();
     secrets.held['swap_master_key_mainnet_f00dbabe'] = release;
 
     final old = boltz.swapMasterKeyReady(
       walletFingerprint: 'f00dbabe',
-      isTestnet: false,
+      environment: NetworkEnv.mainnet,
     );
     await boltz.swapMasterKeyReady(
       walletFingerprint: 'deadbeef',
-      isTestnet: false,
+      environment: NetworkEnv.mainnet,
     );
     release.complete();
 
     expect(await old, isFalse);
     await expectLater(
-      boltz.getSwapMasterKey(isTestnet: false),
+      boltz.getSwapMasterKey(environment: NetworkEnv.mainnet),
       throwsA(isA<StateError>()),
     );
   });
+  test(
+    'a mismatched stored tag is refused without overwriting or binding it',
+    () async {
+      final slot = 'swap_master_key_mainnet_f00dbabe';
+      final wrong = jsonEncode({
+        'xprv': '',
+        'xpub': '',
+        'mnemonic': '',
+        'fingerprint': '00000001',
+        'network': 'testnet',
+      });
+      secrets.values[slot] = wrong;
+      await expectLater(
+        boltz.swapMasterKeyReady(
+          walletFingerprint: 'f00dbabe',
+          environment: NetworkEnv.mainnet,
+        ),
+        throwsA(isA<SwapsException>()),
+      );
+      expect(secrets.values[slot], wrong);
+      await expectLater(
+        boltz.getSwapMasterKey(environment: NetworkEnv.mainnet),
+        throwsStateError,
+      );
+    },
+  );
+
+  test(
+    'a matching foreign key argument cannot write outside the captured engine',
+    () async {
+      const foreign = DerivedSwapMasterKey(
+        walletFingerprint: '00000001',
+        xprv: '',
+        xpub: '',
+        mnemonic: '',
+        fingerprint: '00000002',
+        environment: NetworkEnv.regtest,
+      );
+      await expectLater(
+        boltz.storeSwapMasterKey(key: foreign, environment: NetworkEnv.regtest),
+        throwsA(isA<SwapsException>()),
+      );
+      expect(secrets.values, isEmpty);
+    },
+  );
 }

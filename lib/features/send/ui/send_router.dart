@@ -1,13 +1,10 @@
 import '../presentation/send_ark_cubit.dart';
 
-import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/public/send_route.dart';
 import 'package:bb_mobile/features/send/public/send_route_args.dart';
-import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
-import 'package:bb_mobile/features/send/request_identifier/request_identifier_screen.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,17 +40,5 @@ class SendRouter {
         child: const SendScreen(),
       );
     },
-    routes: [
-      GoRoute(
-        name: SendRoute.requestIdentifier.name,
-        path: SendRoute.requestIdentifier.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => RequestIdentifierCubit(
-            detect: locator<DetectBitcoinStringUsecase>(),
-          ),
-          child: const RequestIdentifierScreen(),
-        ),
-      ),
-    ],
   );
 }

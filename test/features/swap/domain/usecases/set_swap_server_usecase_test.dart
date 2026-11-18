@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/swaps/switchable_swap_engine.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_server.dart';
@@ -18,6 +21,10 @@ class _MockSettingsRepository extends Mock implements SettingsRepository {}
 class _MockSwapEngineSwitcher extends Mock implements SwapEngineSwitcher {}
 
 class _MockSwapStore extends Mock implements SwapStore {}
+
+class _MockBoltz extends Mock implements BoltzSwapRepository {}
+
+class _MockWatcher extends Mock implements SwapWatcher {}
 
 void main() {
   late _MockSwapServerSettingRepository serverSettings;
@@ -45,8 +52,12 @@ void main() {
     when(() => swaps.ongoing()).thenAnswer((_) async => const Ok([]));
     when(() => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')))
         .thenAnswer((_) async {});
-    when(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')))
-        .thenAnswer((_) async {});
+    when(
+      () => switcher.rebuild(
+        environment: any(named: 'environment'),
+        waitForCompletion: true,
+      ),
+    ).thenAnswer((_) async => const Ok(null));
     stubEnvironment(Environment.mainnet);
     usecase = SetSwapServerUsecase(
       swapServerSettingRepository: serverSettings,
@@ -70,7 +81,67 @@ void main() {
       () => serverSettings.save(captureAny(), isTestnet: false),
     ).captured.single;
     expect((saved as SwapServer).host, 'boltz.example.com/v2');
-    verify(() => switcher.rebuild(isTestnet: false)).called(1);
+    verify(
+      () => switcher.rebuild(
+        environment: NetworkEnv.mainnet,
+        waitForCompletion: true,
+      ),
+    ).called(1);
+  });
+
+  test('settings wait for a slow rebuild after saving the server', () async {
+    final provider = _MockBoltz();
+    final watcher = _MockWatcher();
+    final updates = StreamController<Swap>.broadcast();
+    when(() => provider.isTestnet).thenReturn(false);
+    when(() => provider.environment).thenReturn(NetworkEnv.mainnet);
+    when(() => provider.updates).thenAnswer((_) => updates.stream);
+    when(() => provider.close()).thenAnswer((_) async {});
+    when(() => watcher.stop()).thenAnswer((_) async => const Ok(null));
+    when(() => watcher.drained).thenAnswer((_) => Future.value());
+    when(() => watcher.start()).thenAnswer((_) async {});
+    when(() => watcher.isRunning).thenReturn(true);
+    final engine = SwitchableSwapEngine((store: swaps, boltz: provider));
+    final entered = Completer<void>();
+    final release = Completer<void>();
+    final realSwitcher = SwapEngineSwitcher(
+      settingsRepository: settingsRepository,
+      engine: engine,
+      swapWatcher: watcher,
+      build: ({required environment}) async {
+        entered.complete();
+        await release.future;
+        return (store: swaps, boltz: provider);
+      },
+    );
+    final saving = SetSwapServerUsecase(
+      swapServerSettingRepository: serverSettings,
+      settingsRepository: settingsRepository,
+      swapEngineSwitcher: realSwitcher,
+      swapStore: swaps,
+    );
+    var returned = false;
+    final result = saving.execute('https://boltz.example.com/v2').then((value) {
+      returned = true;
+      return value;
+    });
+    addTearDown(() async {
+      if (!release.isCompleted) release.complete();
+      await result;
+      await realSwitcher.dispose();
+      await updates.close();
+    });
+    await entered.future;
+    verify(() => serverSettings.save(any(), isTestnet: false)).called(1);
+    await Future<void>.delayed(const Duration(milliseconds: 180));
+    expect(
+      returned,
+      isFalse,
+      reason: 'Saving succeeded; a slow active rebuild is not a busy-server refusal',
+    );
+    release.complete();
+    expect(failureOf(await result), isNull);
+    verify(() => watcher.start()).called(1);
   });
 
   test('stores a testnet server under testnet', () async {
@@ -80,7 +151,12 @@ void main() {
 
     expect(failureOf(result), isNull);
     verify(() => serverSettings.save(any(), isTestnet: true)).called(1);
-    verify(() => switcher.rebuild(isTestnet: true)).called(1);
+    verify(
+      () => switcher.rebuild(
+        environment: NetworkEnv.testnet,
+        waitForCompletion: true,
+      ),
+    ).called(1);
   });
 
   test('refuses an address it cannot parse', () async {
@@ -90,7 +166,12 @@ void main() {
     verifyNever(
       () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
     );
-    verifyNever(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')));
+    verifyNever(
+      () => switcher.rebuild(
+        environment: any(named: 'environment'),
+        waitForCompletion: true,
+      ),
+    );
   });
 
   test('refuses a plaintext server on mainnet', () async {
@@ -133,7 +214,12 @@ void main() {
     verifyNever(
       () => serverSettings.save(any(), isTestnet: any(named: 'isTestnet')),
     );
-    verifyNever(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')));
+    verifyNever(
+      () => switcher.rebuild(
+        environment: any(named: 'environment'),
+        waitForCompletion: true,
+      ),
+    );
   });
 
   test('a swap older than a day does not pin the server', () async {
@@ -145,7 +231,12 @@ void main() {
     final result = await usecase.execute('boltz.example.com/v2');
 
     expect(failureOf(result), isNull);
-    verify(() => switcher.rebuild(isTestnet: false)).called(1);
+    verify(
+      () => switcher.rebuild(
+        environment: NetworkEnv.mainnet,
+        waitForCompletion: true,
+      ),
+    ).called(1);
   });
 
   test('a failed write is a storage failure and leaves the engine', () async {
@@ -155,6 +246,22 @@ void main() {
     final result = await usecase.execute('boltz.example.com/v2');
 
     expect(failureOf(result), isA<SwapStorageFailure>());
-    verifyNever(() => switcher.rebuild(isTestnet: any(named: 'isTestnet')));
+    verifyNever(
+      () => switcher.rebuild(
+        environment: any(named: 'environment'),
+        waitForCompletion: true,
+      ),
+    );
   });
+  test(
+    'regtest refuses server edits before preferences or engine mutation',
+    () async {
+      stubEnvironment(Environment.regtest);
+      final result = await usecase.execute('https://other.example/v2');
+      expect(failureOf(result), isA<SwapUnsupportedNetworkFailure>());
+      verifyZeroInteractions(serverSettings);
+      verifyZeroInteractions(swaps);
+      verifyZeroInteractions(switcher);
+    },
+  );
 }

@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullRefreshIndicator,
         BullShimmerBox,
         BullShimmerLine,
+        BullTopBar,
         BullTransactionDirectionBadge,
         Gap;
 import 'package:material_ui/material_ui.dart';
@@ -116,11 +116,7 @@ class TransactionDetailsPage extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: title,
-            actionIcon: Icons.close,
-            onAction: onClose,
-          ),
+          flexibleSpace: BullTopBar(title: title, onAction: onClose),
           bottom: appBarBottom,
         ),
         body: SafeArea(

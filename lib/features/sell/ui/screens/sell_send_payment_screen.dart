@@ -447,6 +447,7 @@ class _BottomButtons extends StatelessWidget {
             message: context.loc.exchangePaymentSentPastDeadline,
             reference: pastDeadlineTxid,
             copiedMessage: context.loc.copiedToClipboard,
+            copyLabel: context.loc.copyDialogButton,
             actionLabel: context.loc.exchangePaymentSentLeave,
             onAction: () => _leavePastDeadlinePayin(context),
           )

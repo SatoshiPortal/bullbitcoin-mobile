@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_me
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
@@ -19,7 +18,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullInputText, BullShapesX, Gap, BullSnackBar, bullDateLocale;
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
@@ -128,9 +128,9 @@ class _ChatBodyState extends State<_ChatBody> {
                 listener: (context, state) {
                   final failure = state.failure;
                   if (failure != null) {
-                    SnackBarUtils.showSnackBar(
+                    BullSnackBar.show(
                       context,
-                      failure.toTranslated(context),
+                      message: failure.toTranslated(context),
                     );
                   }
                 },
@@ -275,15 +275,16 @@ class _MessageBubble extends StatelessWidget {
   String _formatTime(DateTime dateTime, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
+    final locale = bullDateLocale(context);
 
     if (difference.inDays == 0) {
-      return DateFormat('HH:mm').format(dateTime);
+      return DateFormat.jm(locale).format(dateTime);
     } else if (difference.inDays == 1) {
-      return '${context.loc.exchangeSupportChatYesterday} ${DateFormat('HH:mm').format(dateTime)}';
+      return '${context.loc.exchangeSupportChatYesterday} ${DateFormat.jm(locale).format(dateTime)}';
     } else if (difference.inDays < 7) {
-      return DateFormat('EEE HH:mm').format(dateTime);
+      return DateFormat.E(locale).add_jm().format(dateTime);
     } else {
-      return DateFormat('MMM dd, HH:mm').format(dateTime);
+      return DateFormat.MMMd(locale).add_jm().format(dateTime);
     }
   }
 }

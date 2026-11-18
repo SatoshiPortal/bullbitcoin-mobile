@@ -6,10 +6,11 @@ import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart' as core;
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:bull_ui/bull_ui.dart' show bullTimeAgo;
 import 'package:go_router/go_router.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 /// Feature-side entry point of the core row: maps a [Transaction] to a
 /// [core.TxListItemData] and delegates the rendering.
@@ -92,7 +93,7 @@ class TransactionListItem extends StatelessWidget {
             ),
       labels: labels.isEmpty ? const [] : [LabelsWidget(labels: labels)],
       networkLabel: isOrderType
-          ? transaction.order!.orderTypeLabel
+          ? transaction.order!.typeLabel(context)
           : isLnSwap
           ? context.loc.transactionNetworkLightning
           : isChainSwap
@@ -162,7 +163,8 @@ class _TransactionStatus extends StatelessWidget {
         ? (!tx.isOngoingSwap
               ? (tx.swap?.completionTime != null ||
                         tx.orderSwap?.order?.completedAt != null
-                    ? timeago.format(
+                    ? bullTimeAgo(
+                        context,
                         tx.swap?.completionTime ??
                             tx.orderSwap!.order!.completedAt!,
                       )
@@ -170,16 +172,16 @@ class _TransactionStatus extends StatelessWidget {
               : null)
         : isOrderType
         ? (tx.order?.completedAt != null
-              ? timeago.format(tx.order!.completedAt!)
+              ? bullTimeAgo(context, tx.order!.completedAt!)
               : null)
         : (tx.isBitcoin || tx.isLiquid)
-        ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
+        ? (tx.timestamp != null ? bullTimeAgo(context, tx.timestamp!) : null)
         : null;
 
     if (isOrderType && tx.order!.isCompleted() && date != null) {
       return core.StatusRow(label: date, icon: Icons.check_circle);
     } else if (isOrderType) {
-      return core.StatusRow(label: tx.order!.orderStatus.value);
+      return core.StatusRow(label: tx.order!.orderStatus.toTranslated(context));
     } else if (tx.isSwap &&
         (tx.swap?.completionTime != null ||
             tx.swap?.status == SwapStatus.completed ||

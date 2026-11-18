@@ -12,7 +12,6 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -34,6 +33,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullPickerItem,
         BullShapesX,
         BullShimmerLine,
+        BullSnackBar,
         Gap;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
@@ -209,7 +209,10 @@ class ReceiveQRDetails extends StatelessWidget {
                       : addressOrInvoiceOnly,
                 ),
               );
-              SnackBarUtils.showCopiedSnackBar(context);
+              BullSnackBar.show(
+                context,
+                message: context.loc.copiedToClipboard,
+              );
             },
             child: Row(
               children: [
@@ -710,9 +713,9 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
           final state = context.read<ReceiveBloc>().state;
 
           if (state.wallet == null || state.bitcoinAddress == null) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              context.loc.receiveVerifyAddressError,
+              message: context.loc.receiveVerifyAddressError,
             );
             return;
           }
@@ -754,9 +757,9 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
           final state = context.read<ReceiveBloc>().state;
 
           if (state.wallet == null || state.bitcoinAddress == null) {
-            SnackBarUtils.showSnackBar(
+            BullSnackBar.show(
               context,
-              context.loc.receiveVerifyAddressError,
+              message: context.loc.receiveVerifyAddressError,
             );
             return;
           }

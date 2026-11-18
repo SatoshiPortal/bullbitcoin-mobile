@@ -95,7 +95,7 @@ void main() {
 
   tearDown(() => coordinator.dispose());
 
-  test('regtest syncs Liquid, skips SP and swaps, and logs their configuration once', () async {
+  test('regtest syncs Liquid and swaps, skips SP, and preserves historical admission', () async {
     final directory = await Directory.systemTemp.createTemp(
       'network-sync-logs-',
     );
@@ -119,9 +119,9 @@ void main() {
     await coordinator.sync(
       only: {SyncKind.liquid, SyncKind.sp, SyncKind.swaps},
     );
-    // Liquid regtest is supported since lwk-dart#99; SP and swaps are not.
+    // Liquid and Boltz regtest are supported; Silent Payments is still denied.
     verify(() => getWallets.execute(onlyLiquid: true)).called(greaterThan(0));
-    verifyNever(syncSwaps.call);
+    verify(syncSwaps.call).called(greaterThan(0));
     expect(spRuns, 0);
     final lines = await log.readLogs();
     expect(lines.where((line) => line.contains('kind=sp')), hasLength(1));
@@ -130,8 +130,19 @@ void main() {
     network = NetworkEnv.testnet;
     when(() => getWallets.execute(onlyLiquid: true))
         .thenAnswer((_) async => const Ok(<Wallet>[]));
-    await coordinator.sync();
+    await coordinator.sync(
+      only: {SyncKind.liquid, SyncKind.sp, SyncKind.swaps},
+      trigger: SyncTrigger.user,
+    );
     expect(spRuns, 1);
+    verify(syncSwaps.call).called(1);
+    network = NetworkEnv.mainnet;
+    await coordinator.sync(
+      only: {SyncKind.liquid, SyncKind.sp, SyncKind.swaps},
+      trigger: SyncTrigger.user,
+    );
+    expect(spRuns, 2);
+    verify(syncSwaps.call).called(1);
   });
 
   // Each kind's work is gated behind a Completer so the test controls exactly

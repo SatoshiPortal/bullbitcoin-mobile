@@ -1,5 +1,9 @@
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
     show SqliteArkFundingReservations;
+
+import 'domain/usecases/next_unused_receive_address_usecase.dart';
+import 'domain/usecases/get_receive_address_usecase.dart';
+
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
 import 'data/frozen_utxos_freeze_store.dart';
@@ -124,6 +128,9 @@ class WalletLocator {
     locator.registerLazySingleton<WalletFacade>(
       () => WalletFacade(
         locator<WalletNativeRuntime>().changes,
+        nextReceiveAddress: (id, {excludedAddresses = const {}}) =>
+            NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>())
+                .execute(id, excludedAddresses: excludedAddresses),
         spendStatus: locator<WalletNativeRuntime>().spendStatus,
         broadcastSpend: locator<BroadcastObservationFollowUp>().wrap(
           locator<WalletNativeRuntime>().broadcast,

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/primitives/payment_network.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
 import 'package:bb_mobile/localizations.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -77,6 +78,31 @@ Future<String> _translate(WidgetTester tester, ReceiveFailure failure) async {
 }
 
 void main() {
+  testWidgets(
+    'stale Payjoin runtime uses the existing localized restart message',
+    (tester) async {
+      final actual = await _translate(
+        tester,
+        const ReceivePayjoinUnavailableFailure(_rawReason),
+      );
+      late String expected;
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) {
+              expected = context.loc.appStartupErrorMessage;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+      expect(actual, expected);
+      expect(actual, isNot(contains(_rawReason)));
+    },
+  );
+
   group('ReceiveFailureL10n.toTranslated', () {
     for (final failure in _everyFailure) {
       testWidgets('${failure.runtimeType} resolves to a user-safe message', (
