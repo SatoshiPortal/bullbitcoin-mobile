@@ -184,8 +184,7 @@ List<SettingsItem> settingsItemsOf(
     isSpWalletSetup: isSpWalletSetup,
     accountReady: accountReady,
     environment: context.select(
-      (SettingsCubit cubit) =>
-          cubit.state.storedSettings?.activeNetwork ?? NetworkEnv.mainnet,
+      (SettingsCubit cubit) => cubit.state.storedSettings?.activeNetwork,
     ),
   );
 }
@@ -196,7 +195,7 @@ List<SettingsItem> buildSettingsItems({
   bool isDevModeEnabled = false,
   bool isSpWalletSetup = false,
   bool accountReady = false,
-  NetworkEnv environment = NetworkEnv.mainnet,
+  required NetworkEnv? environment,
 }) {
   final english = AppLocalizationsEn();
   final rootSection = localization.settingsScreenTitle;
@@ -795,6 +794,7 @@ List<SettingsItem> buildSettingsItems({
       _ => null,
     };
     if (capability == null) return true;
+    if (environment == null) return false;
     final network = switch (environment) {
       NetworkEnv.mainnet => BitcoinNetwork.mainnet,
       NetworkEnv.testnet => BitcoinNetwork.testnet,
