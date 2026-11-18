@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
 import 'package:bb_mobile/core/mempool/application/dtos/requests/delete_custom_mempool_server_request.dart';
 import 'package:bb_mobile/core/mempool/application/dtos/requests/load_mempool_server_data_request.dart';
@@ -43,13 +45,16 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
       emit(state.copyWith(isLoading: false));
     }
     // Probe the listed servers so the screen shows a real status on open, as
-    // the Electrum settings do, without waiting for a pull to refresh.
+    // the Electrum settings do. Not awaited: callers (and a save) only wait
+    // for the list, and a late answer is dropped if the list moved on.
     final defaultServer = state.defaultServer;
     final customServer = state.customServer;
-    await Future.wait([
-      if (defaultServer != null) checkServerStatus(defaultServer),
-      if (customServer != null) checkServerStatus(customServer),
-    ]);
+    unawaited(
+      Future.wait([
+        if (defaultServer != null) checkServerStatus(defaultServer),
+        if (customServer != null) checkServerStatus(customServer),
+      ]),
+    );
   }
 
   /// Reload server data from local DB then probe each server's status, all
@@ -142,6 +147,9 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
       network: network,
       enableSsl: server.enableSsl,
     )).fold((_) => true, (_) => false);
+    // The screen may have closed, switched network or deleted this server
+    // while the probe ran; never write a stale server back into the state.
+    if (isClosed || !_shows(server)) return;
 
     final finalServer = server.copyWith(
       status: isValid
@@ -153,6 +161,14 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     } else {
       emit(state.copyWith(defaultServer: finalServer));
     }
+  }
+
+  bool _shows(MempoolServerDto server) {
+    final shown = server.isCustom ? state.customServer : state.defaultServer;
+    return shown != null &&
+        shown.url == server.url &&
+        shown.isLiquid == server.isLiquid &&
+        shown.isTestnet == server.isTestnet;
   }
 
   void clearError() {
