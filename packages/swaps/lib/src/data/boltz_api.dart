@@ -62,6 +62,8 @@ class BoltzDatasource {
   final Set<String> _subscribedSwapIds = {};
 
   final Map<String, Future<void>> _eventChains = {};
+  final List<String> _reconcileQueue = [];
+  Future<void>? _reconcileWork;
 
   int _reconnectAttempt = 0;
   Timer? _reconnectTimer;
@@ -1434,27 +1436,56 @@ class BoltzDatasource {
   /// Fetches each swap's current status over REST and runs it through the same
   /// mapping pipeline as websocket events, so recovery never depends on Boltz
   /// replaying events missed while disconnected.
-  Future<void> reconcileSwaps(List<String> swapIds) async {
-    if (_disposed) return;
+  Future<void> reconcileSwaps(List<String> swapIds) {
+    if (_disposed) return Future<void>.value();
+    final active = _reconcileWork;
+    if (active != null) return active;
+    late final Future<void> work;
+    work = _reconcileSwaps(swapIds).whenComplete(() {
+      if (identical(_reconcileWork, work)) _reconcileWork = null;
+    });
+    _reconcileWork = work;
+    return work;
+  }
+
+  Future<void> _reconcileSwaps(List<String> swapIds) async {
+    // Refresh only between owned passes. Overlapping callers join the active
+    // pass and supply their current membership on their next normal call.
+    final ids = swapIds.toSet();
+    _reconcileQueue.removeWhere((id) => !ids.contains(id));
+    for (final id in ids) {
+      if (!_reconcileQueue.contains(id)) _reconcileQueue.add(id);
+    }
+    final pending = _reconcileQueue.toList();
     final cancellation = CancelToken();
     final deadline = Timer(const Duration(seconds: 30), () {
       cancellation.cancel('status reconciliation deadline');
     });
     try {
-      for (final swapId in swapIds) {
+      for (final swapId in pending) {
         if (_disposed || cancellation.isCancelled) break;
+        var admitted = false;
         try {
           final response = await _http.get<Map<String, dynamic>>(
             '/swap/$swapId',
             cancelToken: cancellation,
           );
           if (_disposed || cancellation.isCancelled) break;
+          admitted = true;
           final data = response.data;
           if (data == null) continue;
           final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
+          // An admitted mutation remains owned even after the HTTP budget.
           await _enqueueEvent(swapId, status.status, status.transaction?.id);
         } catch (e) {
           swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
+        } finally {
+          // Completed failures/null responses also yield their place. Keep an
+          // interrupted HTTP attempt at the head for the next bounded pass.
+          if (admitted || (!_disposed && !cancellation.isCancelled)) {
+            _reconcileQueue.remove(swapId);
+            _reconcileQueue.add(swapId);
+          }
         }
       }
     } finally {

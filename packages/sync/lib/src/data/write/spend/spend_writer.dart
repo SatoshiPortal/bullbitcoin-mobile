@@ -883,7 +883,10 @@ final class SpendWriter implements WalletSpender {
           return Err<SpendReceipt, SyncFailure>(failure);
         }
         accepted = true;
-        final receipt = lease.accepted((sent as Ok<String, SyncFailure>).value);
+        final receipt = lease.accepted(
+          (sent as Ok<String, SyncFailure>).value,
+          inputs: inputs,
+        );
         if (receipt.durable) {
           log.fine('Bitcoin accepted spend recorded');
         } else {

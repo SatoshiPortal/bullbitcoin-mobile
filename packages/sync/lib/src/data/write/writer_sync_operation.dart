@@ -40,8 +40,8 @@ abstract interface class WriterSyncChanges {
 /// evidence. Confirmed canonical membership reconciles native spend safety.
 ///
 /// A tracked spend that is not seen is settled for this pass only when a
-/// confirmed transaction (or a tracked spend observed in this pass) spends one
-/// of its inputs. Absence and eviction prove nothing; nothing is ever forgotten.
+/// canonical confirmed transaction spends one of its known inputs. Unconfirmed
+/// conflicts, absence and eviction prove nothing; nothing is ever forgotten.
 abstract interface class WriterSyncSpendObservation {
   /// Tracked txids with their recorded inputs (`txid:vout`), empty if unknown.
   void trackSpendTransactions(Map<String, Set<String>> inputsByTxid);
