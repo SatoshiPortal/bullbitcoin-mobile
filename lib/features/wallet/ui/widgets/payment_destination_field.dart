@@ -140,8 +140,8 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
       onScan: () => Navigator.of(context).push<void>(
         MaterialPageRoute(
           builder: (_) => FullScreenScannerPage(
-            onScannedPaymentRequest: (result) {
-              if (mounted && widget.enabled) _change(result.$1);
+            onScannedPaymentRequest: (raw) {
+              if (mounted && widget.enabled) _change(raw);
             },
           ),
         ),
