@@ -302,13 +302,7 @@ class SwapStatusMapper {
         }
 
       case boltz.SwapStatus.swapError:
-        switch (swap) {
-          case LnReceiveSwapModel():
-            return swap.copyWith(status: swap_entity.SwapStatus.failed.name);
-          case LnSendSwapModel():
-          case ChainSwapModel():
-            return _failureOutcome(swap, nowMs);
-        }
+        return null;
 
       case boltz.SwapStatus.txnServerMempool:
       case boltz.SwapStatus.txnServerConfirmed:
