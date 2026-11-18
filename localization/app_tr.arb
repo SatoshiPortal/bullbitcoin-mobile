@@ -1102,10 +1102,6 @@
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
-  "walletDetailsCopyButton": "Kopya kopya",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "backupWalletGoogleDrivePrivacyMessage3": "telefonunuzu bırakın ve ",
   "@backupWalletGoogleDrivePrivacyMessage3": {
     "description": "Third part of privacy message"

@@ -1,8 +1,9 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
+import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_cubit.dart';
+import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_failure_l10n.dart';
 import 'package:bb_mobile/features/default_wallets/presentation/default_wallets_state.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -33,8 +34,8 @@ class DefaultWalletsEditor extends StatelessWidget {
           (!previous.saveSuccess && current.saveSuccess) ||
           (previous.saveError == null && current.saveError != null),
       listener: (context, state) {
-        if (state.saveError != null) {
-          BullSnackBar.show(context, message: state.saveError!);
+        if (state.saveError case final error?) {
+          BullSnackBar.show(context, message: error.toTranslated(context));
         } else if (state.saveSuccess) {
           BullSnackBar.show(
             context,
@@ -87,13 +88,13 @@ class _EditorContent extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    if (state.loadError != null) {
+    if (state.loadError case final error?) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BullText(
-              state.loadError!,
+              error.toTranslated(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
@@ -160,11 +161,21 @@ class _EditorContent extends StatelessWidget {
   }
 }
 
-class _WalletAddressField extends StatelessWidget {
+class _WalletAddressField extends StatefulWidget {
   final WalletAddressType type;
   final String label;
 
   const _WalletAddressField({required this.type, required this.label});
+
+  @override
+  State<_WalletAddressField> createState() => _WalletAddressFieldState();
+}
+
+class _WalletAddressFieldState extends State<_WalletAddressField> {
+  bool _isValid = false;
+
+  WalletAddressType get type => widget.type;
+  String get label => widget.label;
 
   @override
   Widget build(BuildContext context) {
@@ -186,15 +197,16 @@ class _WalletAddressField extends StatelessWidget {
             Expanded(
               child: BullText(
                 label,
-                style: context.font.labelMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.onSurface,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
             if (hasAddress && !isEditing)
               TextButton(
-                onPressed: isSaving ? null : () => cubit.deleteWallet(type),
+                onPressed: state.isSaving
+                    ? null
+                    : () => cubit.deleteWallet(type),
                 child: BullText(
                   context.loc.delete,
                   style: context.font.bodySmall?.copyWith(
@@ -205,19 +217,31 @@ class _WalletAddressField extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
+        PaymentDestinationField(
+          value: isEditing ? inputValue : currentAddress,
+          hint: context.loc.exchangeBitcoinWalletsEnterAddressHint,
+          acceptedTypes: {
+            switch (type) {
+              WalletAddressType.bitcoin => PaymentDestinationType.bitcoin,
+              WalletAddressType.liquid => PaymentDestinationType.liquid,
+              WalletAddressType.lightning =>
+                PaymentDestinationType.lightningAddress,
+            },
+          },
+          keyboardType: type == WalletAddressType.lightning
+              ? TextInputType.emailAddress
+              : TextInputType.text,
+          enabled: !state.isSaving,
+          onChanged: (value) {
+            if (!isEditing) cubit.startEditing(type);
+            setState(() => _isValid = false);
+            cubit.updateAddress(type, value);
+          },
+          onValidationChanged: (isValid) {
+            if (_isValid != isValid) setState(() => _isValid = isValid);
+          },
+        ),
         if (isEditing) ...[
-          BullInputText(
-            value: inputValue,
-            onChanged: (value) => cubit.updateAddress(type, value),
-            hint: type.addressHint,
-            hintStyle: context.font.bodyMedium?.copyWith(
-              color: context.appColors.textMuted,
-            ),
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.onSurface,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -255,56 +279,12 @@ class _WalletAddressField extends StatelessWidget {
                     : BullButton.big(
                         label: context.loc.save,
                         onPressed: () => cubit.saveWallet(type),
+                        disabled: !_isValid,
                         bgColor: context.appColors.onSurface,
                         textColor: context.appColors.surface,
                       ),
               ),
             ],
-          ),
-        ] else ...[
-          GestureDetector(
-            onTap: () => cubit.startEditing(type),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: context.appColors.surface,
-                borderRadius: BorderRadius.circular(context.bullShapes.card),
-                boxShadow: [
-                  BoxShadow(
-                    color: context.appColors.overlay.withValues(alpha: 0.05),
-                    spreadRadius: 1,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: hasAddress
-                        ? AddressViewer(
-                            currentAddress,
-                            style: context.font.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
-                            color: context.appColors.onSurface,
-                          )
-                        : BullText(
-                            context.loc.exchangeBitcoinWalletsEnterAddressHint,
-                            style: context.font.bodyMedium?.copyWith(
-                              color: context.appColors.textMuted,
-                            ),
-                          ),
-                  ),
-                  Icon(
-                    Icons.edit,
-                    size: 20,
-                    color: context.appColors.textMuted,
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ],

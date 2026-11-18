@@ -1009,10 +1009,6 @@
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
-  "walletDetailsCopyButton": "Копирай",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "backupWalletGoogleDrivePrivacyMessage3": "напуска телефона ви и е ",
   "@backupWalletGoogleDrivePrivacyMessage3": {
     "description": "Third part of privacy message"

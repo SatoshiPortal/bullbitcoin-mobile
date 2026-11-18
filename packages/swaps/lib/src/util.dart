@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bolt11_decoder/bolt11_decoder.dart';
 import 'package:crypto/crypto.dart';
 
@@ -54,19 +55,32 @@ enum Network {
   bitcoinMainnet,
   bitcoinTestnet,
   liquidMainnet,
-  liquidTestnet;
+  liquidTestnet,
+  bitcoinRegtest,
+  liquidRegtest;
 
   factory Network.fromEnvironment({
-    required bool isTestnet,
+    required NetworkEnv environment,
     required bool isLiquid,
-  }) => isLiquid
-      ? (isTestnet ? Network.liquidTestnet : Network.liquidMainnet)
-      : (isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet);
-
-  bool get isLiquid => this == liquidMainnet || this == liquidTestnet;
+  }) => switch ((environment, isLiquid)) {
+    (NetworkEnv.mainnet, false) => bitcoinMainnet,
+    (NetworkEnv.mainnet, true) => liquidMainnet,
+    (NetworkEnv.testnet, false) => bitcoinTestnet,
+    (NetworkEnv.testnet, true) => liquidTestnet,
+    (NetworkEnv.regtest, false) => bitcoinRegtest,
+    (NetworkEnv.regtest, true) => liquidRegtest,
+    (NetworkEnv.signet, _) => throw ArgumentError('Unsupported swap network'),
+  };
+  NetworkEnv get environment => switch (this) {
+    bitcoinMainnet || liquidMainnet => NetworkEnv.mainnet,
+    bitcoinTestnet || liquidTestnet => NetworkEnv.testnet,
+    bitcoinRegtest || liquidRegtest => NetworkEnv.regtest,
+  };
+  bool get isLiquid =>
+      this == liquidMainnet || this == liquidTestnet || this == liquidRegtest;
   bool get isBitcoin => !isLiquid;
-  bool get isTestnet => this == bitcoinTestnet || this == liquidTestnet;
-  bool get isMainnet => !isTestnet;
+  bool get isTestnet => environment == NetworkEnv.testnet;
+  bool get isMainnet => environment == NetworkEnv.mainnet;
 }
 
 /// One resolved electrum server for a single attempt. Produced by the
@@ -122,7 +136,7 @@ class SwapWalletInfo {
 abstract class ElectrumRunner {
   Future<T> run<T>({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
     required Future<T> Function(ElectrumConnection connection) operation,
     bool Function(Object error)? isTransient,
   });
@@ -133,7 +147,7 @@ abstract class ElectrumRunner {
   /// cannot tell.
   Future<bool> usesCustomServers({
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   });
 }
 
@@ -178,15 +192,18 @@ abstract class LockupChain {
     required String txid,
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
   });
 
   /// Broadcasts our already-signed lockup: a finalized PSBT (base64) on
-  /// Bitcoin, a signed PSET on Liquid.
+  /// Bitcoin, a signed PSET on Liquid. Recheck [requireAdmission] after any
+  /// authorization reads, immediately before admitting the broadcast. A
+  /// refusal throws without submitting or clearing the pending transaction.
   Future<LockupBroadcast> broadcast({
     required String signedTx,
     required bool isLiquid,
-    required bool isTestnet,
+    required NetworkEnv environment,
+    void Function()? requireAdmission,
   });
 }
 

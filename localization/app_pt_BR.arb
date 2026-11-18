@@ -9535,10 +9535,6 @@
   "@fromLabel": {
     "description": "Label for source wallet in transaction details"
   },
-  "walletDetailsCopyButton": "Entendido",
-  "@walletDetailsCopyButton": {
-    "description": "Button label for copying wallet details to clipboard"
-  },
   "walletDetailsAddressTypeLabel": "Tipo de endereço",
   "@walletDetailsAddressTypeLabel": {
     "description": "Label for the address type field in wallet details"

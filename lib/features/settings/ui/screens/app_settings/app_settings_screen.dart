@@ -5,7 +5,6 @@ import '../../widgets/background_preferences.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dark_mode_switch.dart';
@@ -13,7 +12,8 @@ import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
-import 'package:bull_ui/bull_ui.dart' show BullLanguagePicker, BullPickerItem;
+import 'package:bull_ui/bull_ui.dart'
+    show BullLanguagePicker, BullPickerItem, BullSnackBar;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -56,9 +56,9 @@ class AppSettingsScreen extends StatelessWidget {
       // is unloadable but still there; the user is the only one who can retry.
       listenWhen: (previous, current) =>
           !previous.revokeSpFailed && current.revokeSpFailed,
-      listener: (context, state) => SnackBarUtils.showSnackBar(
+      listener: (context, state) => BullSnackBar.show(
         context,
-        context.loc.settingsDevModeSpRevokeFailed,
+        message: context.loc.settingsDevModeSpRevokeFailed,
       ),
       child: Scaffold(
         appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),

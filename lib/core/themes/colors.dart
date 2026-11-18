@@ -22,6 +22,22 @@ class AppColors {
   // Asset colors (same in both themes)
   final Color bitcoinOrange;
 
+  // Action buttons: the main wallet actions (Receive / Send)
+  final Color actionButton;
+  final Color onActionButton;
+  final Color actionButtonOutline;
+
+  // Banner: a card that asks for attention (e.g. the backup reminder)
+  final Color banner;
+  final Color onBanner;
+  final Color bannerOutline;
+
+  // Behind the home header, seen when the page is pulled down
+  final Color homeHeaderBackground;
+
+  // The wallet cards on the home page
+  final Color walletCardBackground;
+
   // Surface colors
   final Color background;
   final Color surface;
@@ -79,6 +95,14 @@ class AppColors {
     required this.onTertiary,
     required this.tertiaryContainer,
     required this.bitcoinOrange,
+    required this.actionButton,
+    required this.onActionButton,
+    required this.actionButtonOutline,
+    required this.banner,
+    required this.onBanner,
+    required this.bannerOutline,
+    required this.homeHeaderBackground,
+    required this.walletCardBackground,
     required this.background,
     required this.surface,
     required this.surfaceContainer,
@@ -124,6 +148,14 @@ class AppColors {
     onTertiary: Color(0xFFFF9500),
     tertiaryContainer: Color(0xFFFFF4E6),
     bitcoinOrange: Color(0xFFF7931A),
+    actionButton: Color(0xFF15171C),
+    onActionButton: Color(0xFFFFFFFF),
+    actionButtonOutline: Color(0xFFFFFFFF),
+    banner: Color(0xFF15171C),
+    onBanner: Color(0xFFFFFFFF),
+    bannerOutline: Color(0x00000000),
+    homeHeaderBackground: Color(0xFF000000),
+    walletCardBackground: Color(0xFFF5F5F5),
     background: Color(0xFFF5F5F5),
     surface: Color(0xFFFFFFFF),
     surfaceContainer: Color(0xFFF5F5F5),
@@ -169,6 +201,14 @@ class AppColors {
     onTertiary: Color(0xFFFF9F0A),
     tertiaryContainer: Color(0xFF3D2D00),
     bitcoinOrange: Color(0xFFF7931A),
+    actionButton: Color(0xFF000000),
+    onActionButton: Color(0xFFFFFFFF),
+    actionButtonOutline: Color(0xFFFFFFFF),
+    banner: Color(0xFFFFFFFF),
+    onBanner: Color(0xFF15171C),
+    bannerOutline: Color(0x00000000),
+    homeHeaderBackground: Color(0xFF000000),
+    walletCardBackground: Color(0xFF000000),
     background: Color(0xFF000000),
     surface: Color(0xFF1C1C1E),
     surfaceContainer: Color(0xFF2C2C2E),

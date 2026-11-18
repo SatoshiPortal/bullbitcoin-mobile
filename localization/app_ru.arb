@@ -361,7 +361,6 @@
   "payPayoutMethod": "Метод выплаты",
   "ledgerVerifyButton": "Верификация Адрес",
   "sendErrorSwapFeesNotLoaded": "Плата за смывку не взимается",
-  "walletDetailsCopyButton": "Копировать",
   "backupWalletGoogleDrivePrivacyMessage3": "оставьте свой телефон и ",
   "backupCompletedDescription": "Теперь давайте проверим вашу резервную копию, чтобы убедиться, что все было сделано правильно.",
   "sendErrorInsufficientFundsForFees": "Недостаточно средств для покрытия суммы и сборов",

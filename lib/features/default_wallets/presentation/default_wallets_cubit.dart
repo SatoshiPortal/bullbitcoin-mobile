@@ -1,5 +1,7 @@
+import 'package:bb_mobile/features/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
+import 'package:bb_mobile/features/default_wallets/domain/default_wallets_failure.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/exchange/domain/usecases/save_default_wallet_usecase.dart';
@@ -9,10 +11,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   DefaultWalletsCubit({
+    ValidateDefaultWalletDestinationUsecase? validateDestination,
     required this._getDefaultWalletsUsecase,
     required this._saveDefaultWalletUsecase,
     required this._deleteDefaultWalletUsecase,
-  }) : super(const DefaultWalletsState());
+  }) : _validateDestination =
+           validateDestination ?? ValidateDefaultWalletDestinationUsecase(),
+       super(const DefaultWalletsState());
+
+  final ValidateDefaultWalletDestinationUsecase _validateDestination;
+  int _destinationGeneration = 0;
 
   final GetDefaultWalletsUsecase _getDefaultWalletsUsecase;
   final SaveDefaultWalletUsecase _saveDefaultWalletUsecase;
@@ -59,17 +67,19 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       emit(
         state.copyWith(
           isLoading: false,
-          loadError: 'Failed to load default wallets',
+          loadError: const DefaultWalletsLoadFailure(),
         ),
       );
     }
   }
 
   void startEditing(WalletAddressType type) {
+    _destinationGeneration++;
     emit(state.copyWith(editingWalletType: type, saveError: null));
   }
 
   void cancelEditing() {
+    _destinationGeneration++;
     emit(
       state.copyWith(
         editingWalletType: null,
@@ -82,14 +92,17 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   }
 
   void updateBitcoinAddress(String value) {
+    _destinationGeneration++;
     emit(state.copyWith(bitcoinAddressInput: value));
   }
 
   void updateLightningAddress(String value) {
+    _destinationGeneration++;
     emit(state.copyWith(lightningAddressInput: value));
   }
 
   void updateLiquidAddress(String value) {
+    _destinationGeneration++;
     emit(state.copyWith(liquidAddressInput: value));
   }
 
@@ -105,25 +118,48 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
   }
 
   Future<void> saveWallet(WalletAddressType type) async {
+    if (state.isSaving) return;
     if (state.saveError != null || state.saveSuccess) {
       emit(state.copyWith(saveError: null, saveSuccess: false));
     }
 
     final address = state.getInputValue(type);
+    final generation = _destinationGeneration;
 
-    if (address.isEmpty) {
-      emit(state.copyWith(saveError: 'Address cannot be empty'));
+    if (address.trim().isEmpty) {
+      emit(
+        state.copyWith(saveError: const DefaultWalletsEmptyAddressFailure()),
+      );
       return;
     }
 
     emit(state.copyWith(isSaving: true));
 
     try {
+      final normalizedAddress = await _validateDestination.execute(
+        type,
+        address,
+      );
+      if (isClosed) return;
+      if (generation != _destinationGeneration ||
+          state.getInputValue(type) != address) {
+        emit(state.copyWith(isSaving: false));
+        return;
+      }
+      if (normalizedAddress == null) {
+        emit(
+          state.copyWith(
+            isSaving: false,
+            saveError: DefaultWalletsInvalidAddressFailure(type),
+          ),
+        );
+        return;
+      }
       final existingWallet = state.defaultWallets?.getWallet(type);
 
       final savedWallet = await _saveDefaultWalletUsecase.execute(
         walletType: type,
-        address: address,
+        address: normalizedAddress,
         existingRecipientId: existingWallet?.recipientId,
       );
 
@@ -157,7 +193,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       emit(
         state.copyWith(
           isSaving: false,
-          saveError: 'Failed to save wallet address',
+          saveError: const DefaultWalletsSaveFailure(),
           saveSuccess: false,
         ),
       );
@@ -212,7 +248,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       emit(
         state.copyWith(
           isSaving: false,
-          saveError: 'Failed to delete wallet address',
+          saveError: const DefaultWalletsDeleteFailure(),
           saveSuccess: false,
         ),
       );

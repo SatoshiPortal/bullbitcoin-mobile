@@ -19,7 +19,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullDropdown,
         bullUiLocalizationsDelegate;
-import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -52,7 +51,48 @@ Wallet _wallet() => Wallet(
 );
 
 void main() {
-  testWidgets('offers Add Recipient on the address page', (tester) async {
+  for (final entry in <String, PaymentRequest>{
+    'PSBT': const PaymentRequest.psbt(psbt: 'cHNidP8='),
+    'Bitcoin address · 2,500 sats from the QR': const PaymentRequest.bip21(
+      network: Network.bitcoinMainnet,
+      uri: 'bitcoin:bc1qfirst?amount=0.000025',
+      address: 'bc1qfirst',
+      amountSat: 2500,
+    ),
+    'Lightning invoice · 2,500 sats': const PaymentRequest.bolt11(
+      invoice: 'lnbc25u1fixture',
+      amountSat: 2500,
+      paymentHash: 'hash',
+      expiresAt: 9999999999,
+      isTestnet: false,
+    ),
+  }.entries) {
+    testWidgets('destination card identifies ${entry.key}', (tester) async {
+      final cubit = _MockSendCubit();
+      when(() => cubit.isSpMode).thenReturn(false);
+      when(() => cubit.state)
+          .thenReturn(SendState(paymentRequest: entry.value));
+      when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: const [
+            bullUiLocalizationsDelegate,
+            ...appLocalizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: BlocProvider<SendCubit>.value(
+            value: cubit,
+            child: const Scaffold(body: AddressField()),
+          ),
+        ),
+      );
+      expect(find.text(entry.key), findsOneWidget);
+    });
+  }
+  testWidgets('offers Add actions after enabling multiple recipients', (
+    tester,
+  ) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(800, 1600);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -91,14 +131,80 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<SendCubit>.value(
           value: cubit,
-          child: const SendAddressScreen(),
+          child: const SendScreen(),
         ),
       ),
     );
     await tester.pump();
 
-    expect(find.text('Add Recipient'), findsOneWidget);
+    expect(find.text('Add'), findsNothing);
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+    expect(find.text('Add'), findsOneWidget);
+    expect(find.text('Recipient'), findsOneWidget);
+    expect(find.text('My wallet'), findsOneWidget);
   });
+
+  testWidgets(
+    'fixed BIP21 amount stays locked and continues with the request amount',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(800, 1200);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      Device.screen = const Size(800, 1200);
+      final wallet = _wallet();
+      final state = SendState(
+        step: SendStep.amount,
+        sendType: SendType.bitcoin,
+        wallets: [wallet],
+        selectedWallet: SendWalletBitcoin(wallet),
+        paymentRequest: const PaymentRequest.bip21(
+          network: Network.bitcoinMainnet,
+          uri: 'bitcoin:bc1qfirst?amount=0.000025',
+          address: 'bc1qfirst',
+          amountSat: 2500,
+        ),
+        bitcoinUnit: BitcoinUnit.sats,
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
+      );
+      final cubit = _MockSendCubit();
+      when(() => cubit.isSpMode).thenReturn(false);
+      when(() => cubit.state).thenReturn(state);
+      when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+      when(() => cubit.onAmountConfirmed()).thenAnswer((_) async {});
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: const [
+            bullUiLocalizationsDelegate,
+            ...appLocalizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: _amountScope,
+          home: BlocProvider<SendCubit>.value(
+            value: cubit,
+            child: const SendAmountScreen(),
+          ),
+        ),
+      );
+      expect(find.text('Amount set by the payment request'), findsOneWidget);
+      expect(find.byType(BullBitcoinAmountInput), findsNothing);
+      expect(find.text('MAX'), findsNothing);
+      final button = tester.widget<BullButton>(
+        find.widgetWithText(BullButton, 'Continue'),
+      );
+      expect(button.disabled, isFalse);
+      await tester.tap(find.text('Continue'));
+      verify(() => cubit.onAmountConfirmed()).called(1);
+      verifyNever(
+        () => cubit.amountChanged(
+          amount: any(named: 'amount'),
+          isMax: any(named: 'isMax'),
+        ),
+      );
+    },
+  );
 
   testWidgets('renders a fixed recipient amount as editable', (tester) async {
     tester.view.devicePixelRatio = 1;
@@ -166,8 +272,12 @@ void main() {
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('Send remaining balance'), findsNothing);
     expect(
-      tester.widget<BalanceRow>(find.byType(BalanceRow)).title,
-      'Selected coins',
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is RichText &&
+            widget.text.toPlainText().contains('Selected coins'),
+      ),
+      findsOneWidget,
     );
     expect(find.byType(BullDropdown<String>), findsNothing);
 
@@ -347,7 +457,13 @@ void main() {
           .value,
       selectedWallet.id,
     );
-    expect(tester.widget<BalanceRow>(find.byType(BalanceRow)).title, 'Balance');
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is RichText && widget.text.toPlainText().contains('Balance'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('renders a single remainder recipient with the MAX UI', (
@@ -484,8 +600,9 @@ void main() {
     await tester.pump();
 
     expect(find.byType(PriceInput), findsNothing);
-    expect(find.text('Send remaining balance'), findsNWidgets(2));
-    expect(find.byType(Switch), findsNWidgets(2));
+    expect(find.text('Rest goes to'), findsOneWidget);
+    expect(find.byType(BullDropdown<int>), findsOneWidget);
+    expect(find.byType(Switch), findsNothing);
     expect(find.byType(Radio<int>), findsNothing);
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('MAX'), findsNothing);
@@ -624,11 +741,15 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Send remaining balance'), findsNWidgets(2));
-      expect(find.byType(Radio<int>), findsNWidgets(2));
+      expect(find.text('Rest goes to'), findsOneWidget);
+      expect(find.byType(BullDropdown<int>), findsOneWidget);
+      expect(find.byType(Radio<int>), findsNothing);
       expect(find.byType(Switch), findsNothing);
-
-      await tester.tap(find.byType(Radio<int>).last);
+      await tester.tap(find.byType(BullDropdown<int>));
+      await tester.pumpAndSettle();
+      expect(find.text('None'), findsNothing);
+      await tester.tap(find.text('Recipient 2').last);
+      await tester.pumpAndSettle();
       verify(() => cubit.setRemainderRecipient(1, true)).called(1);
     },
   );

@@ -30,6 +30,7 @@ typedef PayjoinLifecycleOpener =
 ///   background where a startup or foreground callback drives it.
 final class RecoverablePayjoin implements PayjoinLifecycle {
   final PayjoinLifecycleOpener _open;
+  final Future<bool> Function()? _isCurrent;
   late final Payjoin _publicPayjoin = Payjoin(
     sender: _RecoverablePayjoinSender(this),
     receiver: _RecoverablePayjoinReceiver(this),
@@ -49,7 +50,7 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   bool _openAttempted = false;
   bool _disposed = false;
 
-  RecoverablePayjoin(this._open);
+  RecoverablePayjoin(this._open, {this._isCurrent});
 
   @override
   Payjoin get payjoin => _publicPayjoin;
@@ -76,6 +77,12 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
     // Unlike a role call, a resume retries an open that already failed: it is
     // the app's periodic recovery point (startup and every foreground return).
     await _ensureOpened();
+    final current = _isCurrent;
+    if (current != null && !await current()) {
+      return const Err(
+        PayjoinUnavailableFailure('Payjoin runtime family changed'),
+      );
+    }
     final lifecycle = _lifecycle;
     if (lifecycle == null) return Err(_failure);
     return lifecycle.resume();
@@ -85,12 +92,24 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   /// starting gets the real answer instead of the fail-closed placeholder.
   /// Returns immediately once an open has been attempted and failed — retrying
   /// per call would hammer unreadable storage; [resume] owns the retry.
-  Future<void> _readyForRoleCall() {
-    if (_disposed || _lifecycle != null) return Future<void>.value();
-    final inFlight = _opening;
-    if (inFlight != null) return inFlight;
-    if (_openAttempted) return Future<void>.value();
-    return _ensureOpened();
+  Future<void> _readyForRoleCall() async {
+    if (_disposed) return;
+    if (_lifecycle == null) {
+      final opening = _opening;
+      if (opening != null) {
+        await opening;
+      } else if (!_openAttempted) {
+        await _ensureOpened();
+      }
+    }
+    final lifecycle = _lifecycle;
+    if (lifecycle == null) return;
+    final current = _isCurrent;
+    _delegate = current != null && !await current()
+        ? Payjoin.unavailable(
+            const PayjoinUnavailableFailure('Payjoin runtime family changed'),
+          )
+        : lifecycle.payjoin;
   }
 
   Future<void> _ensureOpened() {

@@ -12,7 +12,7 @@ import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInfoCard, BullScrollableColumn, Gap;
+    show BullButton, BullErrorState, BullInfoCard, BullScrollableColumn, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaScreen extends StatefulWidget {
@@ -176,25 +176,10 @@ class _DcaInitialContent extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              failure!.toTranslated(context),
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.error,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const Gap(16),
-            BullButton.big(
-              label: context.loc.retry,
-              onPressed: () =>
-                  context.read<DcaBloc>().add(const DcaEvent.started()),
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
-            ),
-          ],
+        child: BullErrorState(
+          message: failure!.toTranslated(context),
+          retryLabel: context.loc.retry,
+          onRetry: () => context.read<DcaBloc>().add(const DcaEvent.started()),
         ),
       ),
     );

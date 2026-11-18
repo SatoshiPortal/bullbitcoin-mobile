@@ -248,6 +248,7 @@ m.Widget bullTopBarUseCase(m.BuildContext context) {
         onBack: () {},
         onAction: () {},
         actionIcon: BullIcons.tune,
+        actionTooltip: 'Sort and filter',
         actionBadge: context.knobs.boolean(label: 'action badge'),
       ),
     ),
@@ -998,6 +999,23 @@ m.Widget bullShimmerLineUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullErrorState)
+m.Widget bullErrorStateUseCase(m.BuildContext context) {
+  return _frame(
+    context,
+    BullErrorState(
+      message: context.knobs.string(
+        label: 'message',
+        initialValue: 'Could not load your recipients.',
+      ),
+      retryLabel: 'Retry',
+      onRetry: context.knobs.boolean(label: 'enabled', initialValue: true)
+          ? () {}
+          : null,
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Show (tap)', type: BullSnackBar)
 m.Widget bullSnackBarUseCase(m.BuildContext context) {
   final withAction = context.knobs.boolean(
@@ -1156,6 +1174,31 @@ m.Widget bullDialogUseCase(m.BuildContext context) {
             onPressed: () {},
           ),
         ],
+      ),
+    ),
+  );
+}
+
+@widgetbook.UseCase(name: 'Inline', type: BullConfirmDialog)
+m.Widget bullConfirmDialogUseCase(m.BuildContext context) {
+  return _frame(
+    context,
+    BullDialog(
+      child: BullConfirmDialog(
+        title: context.knobs.string(
+          label: 'title',
+          initialValue: 'Delete custom server?',
+        ),
+        message: context.knobs.string(
+          label: 'message',
+          initialValue: 'This server will no longer be used.',
+        ),
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        destructive: context.knobs.boolean(
+          label: 'destructive',
+          initialValue: true,
+        ),
       ),
     ),
   );

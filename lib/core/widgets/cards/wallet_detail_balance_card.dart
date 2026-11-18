@@ -63,7 +63,7 @@ class WalletDetailBalanceCard extends StatelessWidget {
                   children: [
                     if (eyeToggle != null) const Gap(16),
                     balanceText,
-                    if (eyeToggle != null) ...[const Gap(16), eyeToggle!],
+                    if (eyeToggle case final toggle?) ...[const Gap(7), toggle],
                   ],
                 ),
                 const Gap(12),

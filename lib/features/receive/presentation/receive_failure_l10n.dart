@@ -44,8 +44,8 @@ extension ReceiveFailureL10n on ReceiveFailure {
       context.loc.receiveErrorAddressUnavailable,
     ReceiveBroadcastOriginalTxFailure() =>
       context.loc.receiveErrorBroadcastOriginal,
+    ReceivePayjoinUnavailableFailure() => context.loc.appStartupErrorMessage,
     ReceivePayjoinSettingFailure() ||
-    ReceivePayjoinUnavailableFailure() ||
     ReceivePayjoinPolicyUnavailableFailure() ||
     ReceiveBroadcastOriginalTxUnavailableFailure() =>
       context.loc.oopsSomethingWentWrong,

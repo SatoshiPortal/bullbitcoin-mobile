@@ -139,6 +139,10 @@ final class SendSpendBlockedFailure extends SendFailure {
   const SendSpendBlockedFailure({this.busy = false});
 }
 
+final class SendPayjoinUnavailableFailure extends SendFailure {
+  const SendPayjoinUnavailableFailure([super.logMessage]);
+}
+
 final class SendPayjoinPausedFailure extends SendFailure {
   const SendPayjoinPausedFailure();
 }

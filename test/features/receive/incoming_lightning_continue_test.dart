@@ -1,3 +1,5 @@
+import 'package:primitives/primitives.dart' as primitives;
+import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
@@ -46,6 +48,18 @@ import 'package:bb_mobile/features/receive/domain/usecases/get_receive_swap_rout
 import 'package:swaps/swaps.dart' as swaps;
 
 class _MockSettings extends Mock implements GetSettingsUsecase {}
+
+class _UnsupportedReceiveSettings extends GetReceiveSettingsUsecase {
+  const _UnsupportedReceiveSettings(super.settings);
+  @override
+  Future<primitives.Result<SettingsEntity, ReceiveFailure>> execute({
+    ReceiveNetworkType? mode,
+    primitives.Network? selectedNetwork,
+  }) => super.execute(
+    mode: mode,
+    selectedNetwork: primitives.BitcoinNetwork.signet,
+  );
+}
 
 class _MockGetReceiveWalletsUsecase extends Mock
     implements GetReceiveWalletsUsecase {}
@@ -110,9 +124,7 @@ void main() {
         final settings = _MockSettings();
         when(() => settings.execute()).thenAnswer(
           (_) async => SettingsEntity(
-            environment: unsupported
-                ? Environment.regtest
-                : Environment.mainnet,
+            environment: Environment.mainnet,
             bitcoinUnit: BitcoinUnit.sats,
             currencyCode: 'USD',
           ),
@@ -138,7 +150,9 @@ void main() {
           () {
             bloc = ReceiveBloc(
               getReceiveWalletsUsecase: wallets,
-              getReceiveSettingsUsecase: GetReceiveSettingsUsecase(settings),
+              getReceiveSettingsUsecase: unsupported
+                  ? _UnsupportedReceiveSettings(settings)
+                  : GetReceiveSettingsUsecase(settings),
               convertReceiveAmountUsecase: _MockConvertReceiveAmountUsecase(),
               prepareReceiveAddressUsecase: _MockPrepareReceiveAddressUsecase(),
               createReceiveOrderSwapUsecase: swap,

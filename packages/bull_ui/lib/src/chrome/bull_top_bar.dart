@@ -2,11 +2,8 @@ import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Top bar — back button + centered title + an optional trailing action.
-///
-/// Duplicated from `core/widgets/navbar/top_bar.dart` (the `BB*` original is
-/// left untouched). Adds an optional red-dot badge on the trailing action to
-/// flag an active filter.
+/// Top bar — back button + centered title + an optional trailing action, with
+/// an optional red-dot badge on the trailing action to flag an active filter.
 class BullTopBar extends StatelessWidget {
   const BullTopBar({
     super.key,
@@ -15,9 +12,13 @@ class BullTopBar extends StatelessWidget {
     this.onAction,
     this.actionIcon,
     this.actionBadge = false,
+    this.actionTooltip,
     this.color,
     this.titleWidget,
-  });
+  }) : assert(
+         actionIcon == null || actionTooltip != null,
+         'A custom actionIcon needs an actionTooltip naming it for screen readers',
+       );
 
   /// The centered title text. Ignored when [titleWidget] is supplied.
   final String title;
@@ -35,6 +36,10 @@ class BullTopBar extends StatelessWidget {
   /// that a filter is currently active.
   final bool actionBadge;
 
+  /// Accessible name of the trailing action. Defaults to the localized
+  /// "Close" when [actionIcon] is null; required with a custom [actionIcon].
+  final String? actionTooltip;
+
   /// Optional background colour. Transparent when null.
   final Color? color;
 
@@ -45,6 +50,7 @@ class BullTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final material = MaterialLocalizations.of(context);
     return Container(
       color: color,
       padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
@@ -54,6 +60,7 @@ class BullTopBar extends StatelessWidget {
           if (onBack != null)
             IconButton(
               icon: const BullIcon(BullIcons.arrowBack),
+              tooltip: material.backButtonTooltip,
               onPressed: onBack,
               iconSize: 24,
               color: colors.text,
@@ -67,10 +74,15 @@ class BullTopBar extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child:
                   titleWidget ??
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.headlineMedium
-                        ?.copyWith(color: colors.text),
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(color: colors.text),
+                    ),
                   ),
             ),
           ),
@@ -80,6 +92,9 @@ class BullTopBar extends StatelessWidget {
               children: [
                 IconButton(
                   icon: BullIcon(actionIcon ?? BullIcons.close),
+                  tooltip:
+                      actionTooltip ??
+                      (actionIcon == null ? material.closeButtonTooltip : null),
                   onPressed: onAction,
                   iconSize: 24,
                   color: colors.text,

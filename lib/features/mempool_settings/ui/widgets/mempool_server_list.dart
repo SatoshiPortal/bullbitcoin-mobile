@@ -5,8 +5,7 @@ import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_it
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDialog, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullConfirmDialog, Gap;
 
 class MempoolServerList extends StatelessWidget {
   const MempoolServerList({super.key});
@@ -112,49 +111,17 @@ class MempoolServerList extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context) {
-    BullDialog.show(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(dialogContext.bullShapes.sheet),
-        ),
-        backgroundColor: context.appColors.surface,
-        title: Text(context.loc.mempoolCustomServerDeleteTitle),
-        content: Text(
-          context.loc.mempoolCustomServerDeleteMessage,
-          style: context.font.bodyMedium,
-        ),
-        actions: [
-          Row(
-            children: [
-              Expanded(
-                child: BullButton.small(
-                  label: context.loc.cancel,
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  bgColor: context.appColors.transparent,
-                  outlined: true,
-                  textStyle: context.font.headlineLarge,
-                  textColor: context.appColors.secondary,
-                ),
-              ),
-              const Gap(12),
-              Expanded(
-                child: BullButton.small(
-                  label: context.loc.delete,
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                    context.read<MempoolSettingsCubit>().deleteCustomServer();
-                  },
-                  bgColor: context.appColors.error,
-                  textStyle: context.font.headlineLarge,
-                  textColor: context.appColors.onPrimary,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+  Future<void> _showDeleteConfirmation(BuildContext context) async {
+    final confirmed = await BullConfirmDialog.show(
+      context,
+      title: context.loc.mempoolCustomServerDeleteTitle,
+      message: context.loc.mempoolCustomServerDeleteMessage,
+      confirmLabel: context.loc.delete,
+      cancelLabel: context.loc.cancel,
+      destructive: true,
     );
+    if (confirmed && context.mounted) {
+      await context.read<MempoolSettingsCubit>().deleteCustomServer();
+    }
   }
 }

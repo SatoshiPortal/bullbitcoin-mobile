@@ -46,6 +46,62 @@ void main() {
         .thenAnswer((_) async => const Ok(<Outpoint>{}));
   });
 
+  for (final capturedRegtest in [false, true]) {
+    test(
+      'stale runtime family refuses roles and recovery regtest=$capturedRegtest',
+      () async {
+        var activeRegtest = capturedRegtest;
+        final runtime = RecoverablePayjoin(
+          () async => Ok(lifecycle),
+          isCurrent: () async => activeRegtest == capturedRegtest,
+        );
+        addTearDown(runtime.dispose);
+        expect(await runtime.payjoin.sessions.reservedOutpoints(), isA<Ok>());
+        verify(() => sessions.reservedOutpoints()).called(1);
+        activeRegtest = !capturedRegtest;
+        final result = await runtime.payjoin.sessions.reservedOutpoints();
+        expect(result, isA<Err>());
+        expect(
+          (result as Err<Set<Outpoint>, PayjoinFailure>).failure,
+          isA<PayjoinUnavailableFailure>(),
+        );
+        expect(await runtime.resume(), isA<Err<void, PayjoinFailure>>());
+        final senderResult = await runtime.payjoin.sender.start(
+          StartPayjoinSender(
+            walletId: 'wallet',
+            network: capturedRegtest
+                ? BitcoinNetwork.regtest
+                : BitcoinNetwork.mainnet,
+            bip21Uri: 'bitcoin:fixture',
+            unsignedOriginalPsbt: 'unused',
+            amount: Sats.fromInt(10000),
+            feeRate: FeeRate(1),
+          ),
+        );
+        expect(
+          (senderResult as Err<PayjoinSenderSession, PayjoinFailure>).failure,
+          isA<PayjoinUnavailableFailure>(),
+        );
+        expect(
+          await runtime.payjoin.diagnostics.relayHealth(),
+          isA<Err<PayjoinRelayHealth, PayjoinFailure>>(),
+        );
+        expect(
+          await runtime.payjoin.policy.setActionEnabled(
+            PayjoinAction.send,
+            enabled: false,
+          ),
+          isA<Err<PayjoinPolicy, PayjoinFailure>>(),
+        );
+        verifyZeroInteractions(lifecycle.payjoin.sender);
+        verifyZeroInteractions(lifecycle.payjoin.diagnostics);
+        verifyZeroInteractions(lifecycle.payjoin.policy);
+        verifyNever(() => lifecycle.resume());
+        verifyNoMoreInteractions(sessions);
+      },
+    );
+  }
+
   test('a role call issued before startup finished waits for the open', () async {
     final opening = Completer<Result<PayjoinLifecycle, PayjoinFailure>>();
     final runtime = RecoverablePayjoin(() => opening.future);

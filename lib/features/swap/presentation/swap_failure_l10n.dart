@@ -32,6 +32,12 @@ extension SwapFailureL10n on SwapFailure {
       ),
     SwapNoPaymentOptionFailure() =>
       context.loc.swapErrorRouteUnavailableGeneric,
+    SwapSourceWalletMissingFailure() =>
+      context.loc.swapValidationSelectFromWallet,
+    SwapInvalidExternalAddressFailure(expectsBitcoin: true) =>
+      context.loc.swapErrorInvalidBitcoinAddress,
+    SwapInvalidExternalAddressFailure(expectsBitcoin: false) =>
+      context.loc.swapErrorInvalidLiquidAddress,
     SwapAmountOutOfBoundsFailure() ||
     SwapValidationFailure() ||
     SwapOrderNotFoundFailure() ||

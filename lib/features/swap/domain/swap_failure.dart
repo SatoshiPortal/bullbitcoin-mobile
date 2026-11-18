@@ -111,3 +111,16 @@ final class SwapSpendBlockedFailure extends SwapInvalidStateFailure {
 
   const SwapSpendBlockedFailure(this.status);
 }
+
+/// An external address was entered before a source wallet was picked.
+final class SwapSourceWalletMissingFailure extends SwapValidationFailure {
+  const SwapSourceWalletMissingFailure() : super(field: 'fromWallet');
+}
+
+/// The external address is not on the network the transfer pays out on.
+final class SwapInvalidExternalAddressFailure extends SwapValidationFailure {
+  final bool expectsBitcoin;
+
+  const SwapInvalidExternalAddressFailure({required this.expectsBitcoin})
+    : super(field: 'externalAddress');
+}

@@ -70,3 +70,5 @@ export 'src/public/payjoin_roles.dart'
         PayjoinDiagnostics;
 export 'src/engine/recoverable_payjoin.dart'
     show RecoverablePayjoin, PayjoinLifecycleOpener;
+
+export 'src/domain/payjoin_regtest_profile.dart' show PayjoinRegtestProfile;

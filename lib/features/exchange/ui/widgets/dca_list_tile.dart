@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullShapesX, BullSwitch, BullTypographyX, Gap;
+    show BullConfirmDialog, BullSwitch, BullTypographyX, Gap;
 import 'package:go_router/go_router.dart';
 
 class DcaListTile extends StatefulWidget {
@@ -92,44 +92,7 @@ class _DcaListTileState extends State<DcaListTile> {
                 context.pushNamed(DcaRoute.dca.name);
               } else {
                 // Deactivate DCA - show confirmation dialog
-                BullDialog.show(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        dialogContext.bullShapes.sheet,
-                      ),
-                    ),
-                    backgroundColor: context.appColors.surfaceFixed,
-                    title: Text(
-                      context.loc.exchangeDcaCancelDialogTitle,
-                      style: TextStyle(color: context.appColors.onSurfaceFixed),
-                    ),
-                    content: Text(
-                      context.loc.exchangeDcaCancelDialogMessage,
-                      style: TextStyle(color: context.appColors.onSurfaceFixed),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(dialogContext).pop();
-                        },
-                        child: Text(
-                          context.loc.exchangeDcaCancelDialogCancelButton,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(dialogContext).pop();
-                          context.read<ExchangeCubit>().stopDca();
-                        },
-                        child: Text(
-                          context.loc.exchangeDcaCancelDialogConfirmButton,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                _confirmStopDca(context);
               }
             },
           ),
@@ -142,6 +105,20 @@ class _DcaListTileState extends State<DcaListTile> {
             )
           : null,
     );
+  }
+
+  Future<void> _confirmStopDca(BuildContext context) async {
+    final confirmed = await BullConfirmDialog.show(
+      context,
+      title: context.loc.exchangeDcaCancelDialogTitle,
+      message: context.loc.exchangeDcaCancelDialogMessage,
+      confirmLabel: context.loc.exchangeDcaCancelDialogConfirmButton,
+      cancelLabel: context.loc.exchangeDcaCancelDialogCancelButton,
+      destructive: true,
+    );
+    if (confirmed && context.mounted) {
+      await context.read<ExchangeCubit>().stopDca();
+    }
   }
 }
 

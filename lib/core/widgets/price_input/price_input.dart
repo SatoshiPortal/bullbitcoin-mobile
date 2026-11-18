@@ -62,7 +62,7 @@ class PriceInput extends StatelessWidget {
                     IntrinsicWidth(
                       child: isMax
                           ? Text(
-                              'MAX',
+                              context.loc.swapMax,
                               style: context.bullType.display.copyWith(
                                 color: context.appColors.secondary,
                               ),

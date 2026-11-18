@@ -24,10 +24,7 @@ class ReceiveSendButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = dark
-        ? context.appColors.background
-        : context.appColors.secondaryFixed;
+    final colors = context.appColors;
     return Row(
       children: [
         Expanded(
@@ -36,10 +33,10 @@ class ReceiveSendButtons extends StatelessWidget {
             label: receiveLabel,
             iconFirst: true,
             onPressed: onReceive,
-            bgColor: bgColor,
-            textColor: context.appColors.onSecondaryFixed,
+            bgColor: colors.actionButton,
+            textColor: colors.onActionButton,
             outlined: true,
-            borderColor: context.appColors.onSecondaryFixed,
+            borderColor: colors.actionButtonOutline,
           ),
         ),
         const Gap(4),
@@ -49,10 +46,10 @@ class ReceiveSendButtons extends StatelessWidget {
             label: sendLabel,
             iconFirst: true,
             onPressed: onSend,
-            bgColor: bgColor,
-            textColor: context.appColors.onSecondaryFixed,
+            bgColor: colors.actionButton,
+            textColor: colors.onActionButton,
             outlined: true,
-            borderColor: context.appColors.onSecondaryFixed,
+            borderColor: colors.actionButtonOutline,
             disabled: sendDisabled,
           ),
         ),

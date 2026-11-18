@@ -1,3 +1,5 @@
+import 'package:swaps/src/util.dart' show SwapsException;
+import 'package:primitives/primitives.dart';
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:bull_sdk/boltz.dart' as boltz;
@@ -23,14 +25,15 @@ class SwapMasterKeyModel {
   BoltzNetwork get boltzNetwork => switch (network) {
     'testnet' => BoltzNetwork.testnet,
     'mainnet' => BoltzNetwork.mainnet,
-    _ => throw Exception('Unknown BoltzNetwork value: $network'),
+    'regtest' => BoltzNetwork.regtest,
+    _ => throw const FormatException('Unknown swap key network'),
   };
 
   factory SwapMasterKeyModel.fromDerived(DerivedSwapMasterKey key) {
     return SwapMasterKeyModel(
       xprv: key.xprv,
       xpub: key.xpub,
-      network: key.isTestnet ? 'testnet' : 'mainnet',
+      network: key.environment.name,
       mnemonic: key.mnemonic,
       fingerprint: key.fingerprint,
     );
@@ -40,9 +43,7 @@ class SwapMasterKeyModel {
     return SwapMasterKeyModel(
       xprv: boltzKey.xprv,
       xpub: boltzKey.xpub,
-      network: boltzKey.network == boltz.Network.testnet
-          ? 'testnet'
-          : 'mainnet',
+      network: boltzKey.network.name,
       mnemonic: boltzKey.mnemonic,
       fingerprint: boltzKey.fingerprint,
     );
@@ -52,12 +53,21 @@ class SwapMasterKeyModel {
     return boltz.SwapMasterKey(
       xprv: xprv,
       xpub: xpub,
-      network: network == 'testnet'
-          ? boltz.Network.testnet
-          : boltz.Network.mainnet,
+      network: switch (boltzNetwork) {
+        BoltzNetwork.mainnet => boltz.Network.mainnet,
+        BoltzNetwork.testnet => boltz.Network.testnet,
+        BoltzNetwork.regtest => boltz.Network.regtest,
+      },
       mnemonic: mnemonic,
       fingerprint: fingerprint,
     );
+  }
+
+  SwapMasterKeyModel requireEnvironment(NetworkEnv environment) {
+    if (boltzNetwork.environment != environment) {
+      throw SwapsException('Swap key network does not match its engine');
+    }
+    return this;
   }
 
   factory SwapMasterKeyModel.fromJson(Map<String, dynamic> json) {

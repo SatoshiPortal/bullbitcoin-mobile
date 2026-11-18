@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/swaps_failure_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -24,16 +23,16 @@ class SwapRescueDetailsScreen extends StatelessWidget {
           listenWhen: (a, b) => a.status != b.status,
           listener: (context, state) {
             if (state.status == SwapRescueStatus.success) {
-              SnackBarUtils.showSnackBar(
+              BullSnackBar.show(
                 context,
-                context.loc.swapRescueSuccess,
+                message: context.loc.swapRescueSuccess,
               );
               context.pop();
             } else if (state.status == SwapRescueStatus.error) {
               if (state.error case final error?) {
-                SnackBarUtils.showSnackBar(
+                BullSnackBar.show(
                   context,
-                  error.toTranslated(context),
+                  message: error.toTranslated(context),
                 );
               }
             }
@@ -79,8 +78,10 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                             label: context.loc.swapRescueIdLabel,
                             displayValue: swap.id,
                             copyValue: swap.id,
-                            onCopied: () =>
-                                SnackBarUtils.showCopiedSnackBar(context),
+                            onCopied: () => BullSnackBar.show(
+                              context,
+                              message: context.loc.copiedToClipboard,
+                            ),
                           ),
                         ],
                       ),

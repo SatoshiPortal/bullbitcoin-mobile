@@ -385,6 +385,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullErrorState',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullErrorStateUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullFadingLinearProgress',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -628,6 +638,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Inline',
             builder:
                 _bull_ui_catalogue_use_cases_use_cases.bullBottomSheetUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'BullConfirmDialog',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Inline',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullConfirmDialogUseCase,
           ),
         ],
       ),

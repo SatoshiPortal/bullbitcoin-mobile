@@ -146,6 +146,69 @@ void main() {
     },
   );
 
+  testWidgets('names every top bar button within a 48 dp target', (
+    tester,
+  ) async {
+    final autoBuy = _AutoBuy();
+    when(
+      () => autoBuy.buildHomeCard(
+        isActive: any(named: 'isActive'),
+        isRestricted: any(named: 'isRestricted'),
+        onActivate: any(named: 'onActivate'),
+        onStatusChanged: any(named: 'onStatusChanged'),
+      ),
+    ).thenReturn(const SizedBox.shrink());
+    locator.registerSingleton<AutoBuyFacade>(autoBuy);
+    addTearDown(() => locator.unregister<AutoBuyFacade>());
+    final cubit = _ExchangeCubit();
+    when(() => cubit.state)
+        .thenReturn(const ExchangeState(userSummary: _summary));
+    final chart = _PriceChartCubit();
+    when(() => chart.state).thenReturn(const PriceChartState());
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<ExchangeCubit>.value(value: cubit),
+          BlocProvider<PriceChartCubit>.value(value: chart),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: ExchangeHomeScreen(
+              homeCards: const [],
+              onHomeRefresh: () {},
+              onOpenSettings: () {},
+              onAction: (_) {},
+              onExit: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    for (final tooltip in [
+      'Back',
+      'Show price chart',
+      'Transaction History',
+      'Settings',
+    ]) {
+      expect(find.byTooltip(tooltip), findsOneWidget, reason: tooltip);
+      final button = find
+          .ancestor(
+            of: find.byTooltip(tooltip),
+            matching: find.byType(IconButton),
+          )
+          .first;
+      expect(tester.getSize(button), const Size(48, 48), reason: tooltip);
+    }
+    await tester.pumpWidget(const SizedBox.shrink());
+    await cubit.close();
+    await chart.close();
+  });
+
   group('every Trade state leads back to Wallet Home', () {
     testWidgets('loading', (tester) async {
       await _expectExitLeadsHome(tester, const ExchangeState());

@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:btc_map/src/data/datasources/btc_map_api_datasource.dart';
 import 'package:btc_map/src/data/datasources/merchant_cache_datasource.dart';
 import 'package:btc_map/src/data/merchant_mapper.dart';
@@ -20,6 +22,8 @@ final class MerchantRepositoryImpl implements MerchantRepository {
   /// The cache contents by id, once read. Kept so a sync merges into memory
   /// instead of decoding the file again.
   Map<int, MerchantModel>? _snapshot;
+  Future<Map<int, MerchantModel>>? _snapshotInFlight;
+  Future<List<Merchant>>? _merchantsInFlight;
 
   /// The `updated_at` the next sync starts after: the newest change seen,
   /// deletions included, so an evicted place is not fetched again.
@@ -44,7 +48,7 @@ final class MerchantRepositoryImpl implements MerchantRepository {
   Future<Result<List<Merchant>, BullMapFailure>> cached() async {
     try {
       await _loadSnapshot();
-      return Ok(_currentMerchants());
+      return Ok(await _currentMerchants());
     } on Exception catch (error) {
       return Err(BullMapUnexpectedFailure('${error.runtimeType}'));
     }
@@ -77,7 +81,7 @@ final class MerchantRepositoryImpl implements MerchantRepository {
         for (final place in fetched)
           if (_changes(snapshot, place)) place,
       ];
-      if (changes.isEmpty && !_cacheDirty) return Ok(_currentMerchants());
+      if (changes.isEmpty && !_cacheDirty) return Ok(await _currentMerchants());
 
       for (final place in changes) {
         if (place.isDeleted) {
@@ -88,6 +92,7 @@ final class MerchantRepositoryImpl implements MerchantRepository {
       }
       if (changes.isNotEmpty) {
         _merchants = null;
+        _merchantsInFlight = null;
         _cacheDirty = true;
       }
 
@@ -101,7 +106,7 @@ final class MerchantRepositoryImpl implements MerchantRepository {
         // Keep the downloaded places on screen and retry this write on the
         // next sync, even when the server has no more changes.
       }
-      return Ok(_currentMerchants());
+      return Ok(await _currentMerchants());
     } on Exception catch (error) {
       return Err(BullMapUnexpectedFailure('${error.runtimeType}'));
     }
@@ -110,6 +115,12 @@ final class MerchantRepositoryImpl implements MerchantRepository {
   Future<Map<int, MerchantModel>> _loadSnapshot() async {
     final loaded = _snapshot;
     if (loaded != null) return loaded;
+    return _snapshotInFlight ??= _readSnapshot().whenComplete(
+      () => _snapshotInFlight = null,
+    );
+  }
+
+  Future<Map<int, MerchantModel>> _readSnapshot() async {
     final content = await _cache.read();
     final snapshot = {for (final place in content.places) place.id: place};
     // A cache written before the cursor was stored falls back to its newest
@@ -131,10 +142,19 @@ final class MerchantRepositoryImpl implements MerchantRepository {
     }
   }
 
-  List<Merchant> _currentMerchants() => _merchants ??= [
-    for (final place in _snapshot?.values ?? const <MerchantModel>[])
-      ?place.toDomain(),
-  ];
+  Future<List<Merchant>> _currentMerchants() async {
+    while (true) {
+      final loaded = _merchants;
+      if (loaded != null) return loaded;
+      final places = _snapshot?.values.toList() ?? const <MerchantModel>[];
+      final pending = _merchantsInFlight ??= Isolate.run(
+        () => [for (final place in places) ?place.toDomain()],
+      );
+      final merchants = await pending;
+      // A delta sync may have replaced the snapshot while mapping was running.
+      if (identical(pending, _merchantsInFlight)) return _merchants = merchants;
+    }
+  }
 
   /// Whether [place] differs from what [snapshot] already holds.
   static bool _changes(Map<int, MerchantModel> snapshot, MerchantModel place) {
