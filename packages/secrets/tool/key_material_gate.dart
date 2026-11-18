@@ -499,18 +499,17 @@ bool _isException(String path, AstNode node, String symbol) {
       member == 'Wallet.signTx') {
     return true;
   }
-  // satoshifier decodes extended keys with this mixed decoder; it did so
-  // before moving into the workspace. Listed precisely so that any other use
-  // is still flagged, and so that the private-key acceptance can be removed
-  // here when satoshifier rejects private versions.
+  // satoshifier decodes extended public keys with this mixed decoder: by
+  // prefix in ExtendedPubkey.parse, and by refusing a non-neutered key in
+  // Descriptor._requirePublicKey. Listed precisely so that any other use is
+  // still flagged.
   if (member == 'Bip32Keys.fromBase58' &&
       {
             'packages/satoshifier/lib/extended_pubkey.dart': {
               ('ExtendedPubkey', 'parse'),
             },
             'packages/satoshifier/lib/descriptor.dart': {
-              ('Descriptor', 'fromStrings'),
-              ('Descriptor', 'parseDescriptorWithOrigin'),
+              ('Descriptor', '_requirePublicKey'),
             },
             'packages/satoshifier/lib/utils/bip32_utils.dart': {
               ('Bip32Utils', 'fingerprint'),
