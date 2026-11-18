@@ -457,13 +457,16 @@ integration-test:
 # Plugin integration tests that need hardware, outside `make integration-test`:
 # onion's on a phone (Snowflake is mobile-only), bitbox_transport's on a phone
 # with a BitBox02 attached over USB or reachable over BLE. DEVICE=<flutter device id>.
+# The beta flavor installs beside the production app and leaves its data alone.
+DEVICE_TEST_FLAVOR ?= beta
+
 onion-device-test:
 	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
-	@fvm flutter test integration_test/onion --flavor production -d $(DEVICE) --timeout 5m
+	@fvm flutter test integration_test/onion --flavor $(DEVICE_TEST_FLAVOR) -d $(DEVICE) --timeout 5m
 
 bitbox-device-test:
 	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
-	@fvm flutter test integration_test/bitbox_transport --flavor production -d $(DEVICE) --timeout 5m
+	@fvm flutter test integration_test/bitbox_transport --flavor $(DEVICE_TEST_FLAVOR) -d $(DEVICE) --timeout 5m
 
 # Physical-device credential probes use a separately installed debug APK.
 # The SDK driver connects through VM_SERVICE_URL without installing an app.
