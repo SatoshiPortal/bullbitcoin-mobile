@@ -2,9 +2,6 @@
 
 pub mod api;
 
-#[cfg(not(feature = "bull_sdk"))]
-mod frb_generated;
-
 // When building under the `bull_sdk` feature the full flutter_rust_bridge
 // generated module (`frb_generated.rs`) is intentionally cfg'd out (the
 // aggregator regenerates all wire code). The API layer still references
