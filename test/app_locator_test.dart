@@ -290,6 +290,24 @@ void main() {
         },
       );
     }
+    test(
+      'never-provisioned ordinary regtest signing remains available',
+      () async {
+        await compose();
+        expect(
+          await locator<ArkFundingSigningGuard>().admit(
+            key: fundingKey,
+            unsignedPsbt: publicFundingPsbt,
+          ),
+          isA<Ok>(),
+        );
+        expect(Directory('${directory.path}/ark').existsSync(), isFalse);
+        expect(
+          File('${directory.path}/ark-funding.sqlite').existsSync(),
+          isFalse,
+        );
+      },
+    );
   });
 
   test(
