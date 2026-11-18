@@ -18,8 +18,8 @@ class CreateWalletButton extends StatelessWidget {
 
     return BullButton.big(
       label: context.loc.onboardingCreateNewWallet,
-      bgColor: context.appColors.secondaryFixed,
-      textColor: context.appColors.onSecondaryFixed,
+      bgColor: context.appColors.primary,
+      textColor: context.appColors.onPrimary,
       iconData: Icons.account_balance_wallet_outlined,
       // Visually + functionally disable the button the moment the bloc
       // emits loading. Combined with the bloc-level early-return guard
