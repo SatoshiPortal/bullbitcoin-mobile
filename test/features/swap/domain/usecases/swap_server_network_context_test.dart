@@ -39,6 +39,12 @@ void main() {
           verifyZeroInteractions(servers);
         }
       },
+      // The regtest profile comes from the build define; without it the use
+      // case refuses by design.
+      skip:
+          environment == Environment.regtest && !RegtestHostProfile.isConfigured
+          ? 'requires --dart-define=BULL_REGTEST_HOST'
+          : false,
     );
   }
 }
