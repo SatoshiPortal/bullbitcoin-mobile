@@ -4628,5 +4628,7 @@
   "pinCodeScrambleKeypadHint": "Mezclar los dígitos en cada toque",
   "mnemonicWordCountLabel": "Palabras",
   "passphraseOptionOffSubtitle": "Palabra adicional opcional (BIP39)",
-  "passphraseOptionOnSubtitle": "Se introduce abajo, nunca se muestra"
+  "passphraseOptionOnSubtitle": "Se introduce abajo, nunca se muestra",
+  "serverEncrypted": "Cifrado",
+  "serverUnencrypted": "Sin cifrar"
 }

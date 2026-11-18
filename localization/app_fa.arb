@@ -11270,5 +11270,7 @@
   "settingsSourceCodeTitle": "کد منبع",
   "torSettingsStatusNoInternetOrBlocked": "اینترنت وجود ندارد یا شبکه سانسور شده است",
   "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود."
+  "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود.",
+  "serverEncrypted": "رمزگذاری‌شده",
+  "serverUnencrypted": "رمزگذاری‌نشده"
 }

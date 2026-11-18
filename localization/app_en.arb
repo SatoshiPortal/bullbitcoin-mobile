@@ -15734,5 +15734,13 @@
   "networkRestartDialogAction": "Close the app",
   "@networkRestartDialogAction": {
     "description": "Button of the restart-required dialog that closes the app"
+  },
+  "serverEncrypted": "Encrypted",
+  "@serverEncrypted": {
+    "description": "Badge on a server row: the connection to the server is encrypted"
+  },
+  "serverUnencrypted": "Unencrypted",
+  "@serverUnencrypted": {
+    "description": "Badge on a server row: the connection to the server is not encrypted"
   }
 }

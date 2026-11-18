@@ -3637,5 +3637,7 @@
   "settingsSourceCodeTitle": "საწყისი კოდი",
   "torSettingsStatusNoInternetOrBlocked": "ინტერნეტი არ არის ან ქსელი ცენზურირებულია",
   "torSettingsDescNoInternetOrBlocked": "ამ ქსელს არ აქვს ინტერნეტთან წვდომა, ან ის ბლოკავს Tor-ს.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის."
+  "torSettingsExternalProxyUnavailableDescription": "Bull-მა ვერ დაუკავშირდა კონფიგურირებულ SOCKS5 პროქსის.",
+  "serverEncrypted": "დაშიფრული",
+  "serverUnencrypted": "დაუშიფრავი"
 }

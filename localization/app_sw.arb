@@ -3526,5 +3526,7 @@
   "settingsSourceCodeTitle": "Msimbo chanzo",
   "torSettingsStatusNoInternetOrBlocked": "Hakuna intaneti au mtandao umedhibitiwa",
   "torSettingsDescNoInternetOrBlocked": "Mtandao huu hauna intaneti, au unazuia Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa."
+  "torSettingsExternalProxyUnavailableDescription": "Bull haikuweza kuunganisha kwenye proksi ya SOCKS5 iliyowekwa.",
+  "serverEncrypted": "Imesimbwa kwa njia fiche",
+  "serverUnencrypted": "Haijasimbwa kwa njia fiche"
 }

@@ -11270,5 +11270,7 @@
   "settingsSourceCodeTitle": "소스 코드",
   "torSettingsStatusNoInternetOrBlocked": "인터넷이 없거나 검열된 네트워크",
   "torSettingsDescNoInternetOrBlocked": "이 네트워크는 인터넷에 연결되어 있지 않거나 Tor를 차단합니다.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다."
+  "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
+  "serverEncrypted": "암호화됨",
+  "serverUnencrypted": "암호화되지 않음"
 }

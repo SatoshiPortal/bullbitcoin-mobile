@@ -4659,5 +4659,7 @@
   "settingsSourceCodeTitle": "Código-fonte",
   "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
   "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu ligar-se ao proxy SOCKS5 configurado."
+  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu ligar-se ao proxy SOCKS5 configurado.",
+  "serverEncrypted": "Encriptado",
+  "serverUnencrypted": "Não encriptado"
 }

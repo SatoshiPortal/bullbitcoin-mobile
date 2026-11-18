@@ -11270,5 +11270,7 @@
   "settingsSourceCodeTitle": "Zdrojový kód",
   "torSettingsStatusNoInternetOrBlocked": "Bez internetu nebo cenzurovaná síť",
   "torSettingsDescNoInternetOrBlocked": "Tato síť nemá přístup k internetu, nebo blokuje Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5."
+  "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
+  "serverEncrypted": "Šifrováno",
+  "serverUnencrypted": "Nešifrováno"
 }

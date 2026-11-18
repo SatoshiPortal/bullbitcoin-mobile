@@ -3514,5 +3514,7 @@
   "settingsSourceCodeTitle": "Սկզբնական կոդ",
   "torSettingsStatusNoInternetOrBlocked": "Ինտերնետ չկա կամ ցանցը գրաքննված է",
   "torSettingsDescNoInternetOrBlocked": "Այս ցանցը ինտերնետ հասանելիություն չունի, կամ արգելափակում է Tor-ը։",
-  "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։"
+  "torSettingsExternalProxyUnavailableDescription": "Bull-ը չկարողացավ միանալ կարգավորված SOCKS5 պրոքսիին։",
+  "serverEncrypted": "Գաղտնագրված",
+  "serverUnencrypted": "Չգաղտնագրված"
 }

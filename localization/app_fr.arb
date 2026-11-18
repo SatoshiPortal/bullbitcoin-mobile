@@ -4842,5 +4842,7 @@
   "sendTotalDebited": "Total débité",
   "sendLightningInvoiceAmount": "Facture Lightning · {amount} sats",
   "sendSilentPaymentAddress": "Adresse de paiement silencieux",
-  "sendPsbtRequest": "PSBT"
+  "sendPsbtRequest": "PSBT",
+  "serverEncrypted": "Chiffré",
+  "serverUnencrypted": "Non chiffré"
 }

@@ -11274,5 +11274,7 @@
   "settingsSourceCodeTitle": "ซอร์สโค้ด",
   "torSettingsStatusNoInternetOrBlocked": "ไม่มีอินเทอร์เน็ตหรือเครือข่ายถูกเซ็นเซอร์",
   "torSettingsDescNoInternetOrBlocked": "เครือข่ายนี้ไม่มีการเข้าถึงอินเทอร์เน็ต หรือบล็อก Tor",
-  "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้"
+  "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้",
+  "serverEncrypted": "เข้ารหัสแล้ว",
+  "serverUnencrypted": "ไม่ได้เข้ารหัส"
 }

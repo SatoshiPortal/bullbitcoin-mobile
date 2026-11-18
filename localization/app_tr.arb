@@ -11270,5 +11270,7 @@
   "settingsSourceCodeTitle": "Kaynak kodu",
   "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
   "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı."
+  "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
+  "serverEncrypted": "Şifreli",
+  "serverUnencrypted": "Şifresiz"
 }

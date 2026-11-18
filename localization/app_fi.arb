@@ -4611,5 +4611,7 @@
   "settingsSourceCodeTitle": "Lähdekoodi",
   "torSettingsStatusNoInternetOrBlocked": "Ei internetiä tai sensuroitu verkko",
   "torSettingsDescNoInternetOrBlocked": "Tällä verkolla ei ole internetyhteyttä, tai se estää Torin.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull ei saanut yhteyttä määritettyyn SOCKS5-välityspalvelimeen."
+  "torSettingsExternalProxyUnavailableDescription": "Bull ei saanut yhteyttä määritettyyn SOCKS5-välityspalvelimeen.",
+  "serverEncrypted": "Salattu",
+  "serverUnencrypted": "Salaamaton"
 }

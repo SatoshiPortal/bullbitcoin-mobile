@@ -4629,5 +4629,7 @@
   "settingsSourceCodeTitle": "Исходный код",
   "torSettingsStatusNoInternetOrBlocked": "Нет интернета или сеть под цензурой",
   "torSettingsDescNoInternetOrBlocked": "У этой сети нет доступа к интернету, или она блокирует Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull не удалось подключиться к настроенному прокси SOCKS5."
+  "torSettingsExternalProxyUnavailableDescription": "Bull не удалось подключиться к настроенному прокси SOCKS5.",
+  "serverEncrypted": "Зашифровано",
+  "serverUnencrypted": "Не зашифровано"
 }

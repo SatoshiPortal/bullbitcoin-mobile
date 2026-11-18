@@ -4779,5 +4779,7 @@
   "pinCodeScrambleKeypadHint": "Mescola le cifre a ogni tocco",
   "mnemonicWordCountLabel": "Parole",
   "passphraseOptionOffSubtitle": "Parola aggiuntiva facoltativa (BIP39)",
-  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata"
+  "passphraseOptionOnSubtitle": "Inserita qui sotto, mai mostrata",
+  "serverEncrypted": "Crittografato",
+  "serverUnencrypted": "Non crittografato"
 }

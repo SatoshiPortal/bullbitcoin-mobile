@@ -4847,5 +4847,7 @@
   "pinCodeScrambleKeypadHint": "Ziffern bei jedem Tippen neu anordnen",
   "mnemonicWordCountLabel": "Wörter",
   "passphraseOptionOffSubtitle": "Optionales zusätzliches Wort (BIP39)",
-  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt"
+  "passphraseOptionOnSubtitle": "Unten eingeben, nie angezeigt",
+  "serverEncrypted": "Verschlüsselt",
+  "serverUnencrypted": "Unverschlüsselt"
 }
