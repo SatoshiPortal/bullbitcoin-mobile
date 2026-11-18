@@ -1,7 +1,58 @@
 import 'package:swaps/src/data/boltz_api.dart';
+import 'package:swaps/src/util.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('quote check', () {
+    String? mismatchFor(int fee) => fee == 2 ? null : 'lockup amount';
+
+    test('a match against the cached fees never refetches', () async {
+      var refetches = 0;
+      await requireQuote<int>(
+        fees: () => 2,
+        refetch: () async => refetches++,
+        mismatchFor: mismatchFor,
+      );
+      expect(refetches, 0);
+    });
+
+    test('fees that moved since the quote are refetched once', () async {
+      var cached = 1;
+      var refetches = 0;
+      await requireQuote<int>(
+        fees: () => cached,
+        refetch: () async {
+          refetches++;
+          cached = 2;
+        },
+        mismatchFor: mismatchFor,
+      );
+      expect(refetches, 1);
+    });
+
+    test('a mismatch against fresh fees is refused', () async {
+      await expectLater(
+        requireQuote<int>(
+          fees: () => 1,
+          refetch: () async {},
+          mismatchFor: mismatchFor,
+        ),
+        throwsA(isA<SwapsException>()),
+      );
+    });
+
+    test('fees that cannot be fetched are refused', () async {
+      await expectLater(
+        requireQuote<int>(
+          fees: () => null,
+          refetch: () async {},
+          mismatchFor: mismatchFor,
+        ),
+        throwsA(isA<SwapsException>()),
+      );
+    });
+  });
+
   group('chain swap', () {
     String? check({int lockup = 100000, int? onchain}) => chainQuoteMismatch(
       lockupAmount: lockup,
@@ -22,6 +73,10 @@ void main() {
 
     test('Boltz locking less than the quote allows is refused', () {
       expect(check(onchain: 100000 - 100 - 1500 - 2), 'server lockup amount');
+    });
+
+    test('Boltz leaving out its lockup amount is refused', () {
+      expect(check(), 'server lockup amount');
     });
   });
 
@@ -62,6 +117,10 @@ void main() {
 
     test('a lockup below the quote is refused', () {
       expect(check(onchain: 80000 - 200 - 400 - 2), 'lockup amount');
+    });
+
+    test('Boltz leaving out its lockup amount is refused', () {
+      expect(check(), 'lockup amount');
     });
   });
 }
