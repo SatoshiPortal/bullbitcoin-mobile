@@ -55,7 +55,7 @@ void main() {
   late SpCubit cubit;
 
   setUp(() {
-    fakeRepo = FakeSpAccountRepository();
+    fakeRepo = FakeSpAccountRepository(networkValue: BitcoinNetwork.mainnet);
     locator = GetIt.asNewInstance();
     locator.allowReassignment = true;
 
@@ -91,9 +91,12 @@ void main() {
     locator.registerSingleton<SpScanPort>(fakeRepo);
     locator.registerSingleton<SpScanControlPort>(fakeRepo);
     locator.registerSingleton<SpPaymentsPort>(fakeRepo);
-    locator.registerSingleton<SpBackendConfigRepository>(
-      FakeSpBackendConfigRepository(),
+    // The gate requires a stored config on the active network.
+    final configRepo = FakeSpBackendConfigRepository();
+    unawaited(
+      configRepo.save(spBackendConfig(network: BitcoinNetwork.mainnet)),
     );
+    locator.registerSingleton<SpBackendConfigRepository>(configRepo);
     locator.registerSingleton<SpAutoScanRepository>(FakeSpAutoScanRepository());
 
     cubit = locator<SpCubit>();

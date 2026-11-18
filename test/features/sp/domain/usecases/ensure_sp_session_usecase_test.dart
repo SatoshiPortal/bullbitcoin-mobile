@@ -21,7 +21,7 @@ void main() {
   late EnsureSpSessionUsecase usecase;
 
   setUpAll(() async {
-    registerFallbackValue(BitcoinNetwork.regtest);
+    registerFallbackValue(BitcoinNetwork.mainnet);
     registerFallbackValue(await spSecret());
   });
 
@@ -45,9 +45,13 @@ void main() {
     when(() => repository.hasRevokedSentinel())
         .thenAnswer((_) async => const Ok(false));
     when(() => repository.dispose()).thenAnswer((_) async => const Ok(null));
+    when(() => repository.network())
+        .thenReturn(const Ok(BitcoinNetwork.mainnet));
     when(() => repository.snapshot()).thenReturn(Ok(spWallet()));
     when(() => configRepository.fetch()).thenAnswer(
-      (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
+      (_) async => Ok<SpBackendConfig?, SpFailure>(
+        spBackendConfig(network: BitcoinNetwork.mainnet),
+      ),
     );
     when(() => getSpSecretUsecase.execute(any()))
         .thenAnswer((_) async => Ok(secret));
@@ -86,7 +90,7 @@ void main() {
       final result = await usecase.execute();
 
       expect((result as Ok<SpWallet?, SpFailure>).value, isNull);
-      verifyNever(() => configRepository.fetch());
+      verify(() => configRepository.fetch()).called(1);
     });
 
     test('returns null when no backend config is stored', () async {
@@ -139,7 +143,7 @@ void main() {
       expect((result as Ok<SpWallet?, SpFailure>).value, isNotNull);
       verify(
         () => repository.createFromSecret(
-          network: BitcoinNetwork.regtest,
+          network: BitcoinNetwork.mainnet,
           blindbitUrl: 'http://blindbit.example',
           electrumUrl: 'tcp://electrum.example:50001',
           secret: secret,
@@ -153,7 +157,7 @@ void main() {
       final result = await usecase.execute();
 
       expect((result as Ok<SpWallet?, SpFailure>).value, isNull);
-      verifyNever(() => configRepository.fetch());
+      verify(() => configRepository.fetch()).called(1);
       verifyNever(
         () => repository.createFromSecret(
           network: any(named: 'network'),

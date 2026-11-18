@@ -51,7 +51,7 @@ void main() {
             .thenAnswer((_) async => Ok<List<SpPayment>, SpFailure>(history));
         when(() => repository.coins())
             .thenAnswer((_) async => const Ok<List<SpCoin>, SpFailure>(coins));
-        when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.regtest));
+        when(() => repository.network()).thenReturn(Ok(BitcoinNetwork.mainnet));
         when(() => repository.chainTip()).thenReturn(101);
         when(() => repository.minBirthdayHeight()).thenReturn(const Ok(42));
 
@@ -61,9 +61,10 @@ void main() {
         final data = (result as Ok).value as SpWalletData;
         expect(data.wallet, same(wallet));
         // The repository already flagged each payment, so it passes through.
-        expect(data.history, same(history));
+        expect(data.history.single.txid, history.single.txid);
+        expect(data.history.single.network, BitcoinNetwork.mainnet);
         expect(data.coins, same(coins));
-        expect(data.network, BitcoinNetwork.regtest);
+        expect(data.network, BitcoinNetwork.mainnet);
         expect(data.chainTip, 101);
         expect(data.minBirthdayHeight, 42);
         verify(() => repository.notifyBalanceChanged(Sats.fromInt(700)))

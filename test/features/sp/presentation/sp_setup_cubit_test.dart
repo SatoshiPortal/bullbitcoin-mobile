@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_active_network_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
@@ -14,6 +16,8 @@ import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+class _ActiveNetwork extends Mock implements GetSpActiveNetworkUsecase {}
 
 class MockCreateSpWalletUsecase extends Mock implements CreateSpWalletUsecase {}
 
@@ -82,6 +86,7 @@ void main() {
   );
 
   SpSetupCubit buildSetup({
+    BitcoinNetwork activeNetwork = BitcoinNetwork.mainnet,
     Future<void> Function({required String url})? testBlindbit,
     Future<void> Function({required String url})? testElectrum,
     Result<SpBackendDefaults, SpFailure>? regtest,
@@ -93,7 +98,10 @@ void main() {
       testElectrum: testElectrum,
       regtestGate: regtestGate,
     );
+    final active = _ActiveNetwork();
+    when(active.execute).thenAnswer((_) async => Ok(activeNetwork));
     return SpSetupCubit(
+      getSpActiveNetworkUsecase: active,
       createSpWalletUsecase: mockCreate,
       testSpBackendUsecase: TestSpBackendUsecase(probe: probe),
       getSpBackendDefaultsUsecase: GetSpBackendDefaultsUsecase(probe: probe),
@@ -137,6 +145,18 @@ void main() {
   tearDown(() => cubit.close());
 
   group('SpSetupCubit', () {
+    test('setup initializes from active testnet', () async {
+      final c = buildSetup(activeNetwork: BitcoinNetwork.testnet);
+      addTearDown(c.close);
+      await waitForDefaultTests(c);
+      expect(c.state.network, BitcoinNetwork.testnet);
+      expect(
+        c.state.blindbitUrl,
+        SpConfig.staticDefaults(BitcoinNetwork.testnet)?.blindbitUrl,
+      );
+      expect(c.state.canCreate, isTrue);
+    });
+
     test('initial state is default', () {
       expect(cubit.state.network, BitcoinNetwork.mainnet);
       expect(cubit.state.blindbitUrl, isNotEmpty);
