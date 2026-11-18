@@ -338,6 +338,19 @@ Object? f() => source()?.revealMnemonic;
     );
   });
 
+  test('a dynamic call to a secret-handing member is checked', () async {
+    for (final member in ['revealMnemonic', 'swapKey', 'signPsbt']) {
+      expect(
+        await inspect(
+          'dynamic_$member',
+          'Object? probe(dynamic s) => s.$member();',
+        ),
+        contains(endsWith('unresolved sensitive member $member')),
+        reason: member,
+      );
+    }
+  });
+
   test('a consumer of the word-signing helper is checked', () async {
     expect(
       await inspect('batch_sign_consumer', '''
