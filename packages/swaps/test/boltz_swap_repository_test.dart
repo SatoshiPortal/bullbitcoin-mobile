@@ -668,52 +668,57 @@ void main() {
       ).called(1);
     });
 
-    test(
-      'a lockup not on the server yet makes no script-path attempt',
-      () async {
-        when(
-          () => boltz.getChainClaimTxSize(
-            swapId: any(named: 'swapId'),
-            claimAddress: any(named: 'claimAddress'),
-            isCooperative: any(named: 'isCooperative'),
-            electrum: any(named: 'electrum'),
-          ),
-        ).thenAnswer((_) async => 200);
-        when(
-          () => boltz.claimLbtcToBtcChainSwap(
-            swapId: any(named: 'swapId'),
-            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
-            absoluteFees: any(named: 'absoluteFees'),
-            tryCooperate: any(named: 'tryCooperate'),
-            electrum: any(named: 'electrum'),
-          ),
-        ).thenThrow(Exception('No Bitcoin UTXO detected for this script'));
-        when(
-          () => boltz.checkLockupOutspends(
-            swapId: any(named: 'swapId'),
-            swapType: any(named: 'swapType'),
-            network: any(named: 'network'),
-            swapDirection: any(named: 'swapDirection'),
-            isClaim: any(named: 'isClaim'),
-          ),
-        ).thenAnswer((_) async => []);
+    for (final message in [
+      'No Bitcoin UTXO detected for this script',
+      'Bitcoin lockup not yet confirmed for this script',
+    ]) {
+      test(
+        'a lockup not on the server yet makes no script-path attempt ($message)',
+        () async {
+          when(
+            () => boltz.getChainClaimTxSize(
+              swapId: any(named: 'swapId'),
+              claimAddress: any(named: 'claimAddress'),
+              isCooperative: any(named: 'isCooperative'),
+              electrum: any(named: 'electrum'),
+            ),
+          ).thenAnswer((_) async => 200);
+          when(
+            () => boltz.claimLbtcToBtcChainSwap(
+              swapId: any(named: 'swapId'),
+              claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+              absoluteFees: any(named: 'absoluteFees'),
+              tryCooperate: any(named: 'tryCooperate'),
+              electrum: any(named: 'electrum'),
+            ),
+          ).thenThrow(Exception(message));
+          when(
+            () => boltz.checkLockupOutspends(
+              swapId: any(named: 'swapId'),
+              swapType: any(named: 'swapType'),
+              network: any(named: 'network'),
+              swapDirection: any(named: 'swapDirection'),
+              isClaim: any(named: 'isClaim'),
+            ),
+          ).thenAnswer((_) async => []);
 
-        await expectLater(
-          repo(fastest: 1).claim(chainSwap(status: 'claimable')),
-          throwsA(isA<SwapsException>()),
-        );
+          await expectLater(
+            repo(fastest: 1).claim(chainSwap(status: 'claimable')),
+            throwsA(isA<SwapsException>()),
+          );
 
-        verifyNever(
-          () => boltz.claimLbtcToBtcChainSwap(
-            swapId: any(named: 'swapId'),
-            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
-            absoluteFees: any(named: 'absoluteFees'),
-            tryCooperate: false,
-            electrum: any(named: 'electrum'),
-          ),
-        );
-      },
-    );
+          verifyNever(
+            () => boltz.claimLbtcToBtcChainSwap(
+              swapId: any(named: 'swapId'),
+              claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+              absoluteFees: any(named: 'absoluteFees'),
+              tryCooperate: false,
+              electrum: any(named: 'electrum'),
+            ),
+          );
+        },
+      );
+    }
 
     test(
       'falls back to the stored fee when the claim cannot be sized',
@@ -1535,8 +1540,8 @@ void main() {
           index: any(named: 'index'),
           amountSat: any(named: 'amountSat'),
           environment: any(named: 'environment'),
-          btcElectrumUrl: any(named: 'btcElectrumUrl'),
-          lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
+          btcElectrum: any(named: 'btcElectrum'),
+          lbtcElectrum: any(named: 'lbtcElectrum'),
           receiveWalletId: any(named: 'receiveWalletId'),
           externalRecipientAddress: any(named: 'externalRecipientAddress'),
         ),
@@ -1557,8 +1562,8 @@ void main() {
               index: captureAny(named: 'index'),
               amountSat: any(named: 'amountSat'),
               environment: any(named: 'environment'),
-              btcElectrumUrl: any(named: 'btcElectrumUrl'),
-              lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
+              btcElectrum: any(named: 'btcElectrum'),
+              lbtcElectrum: any(named: 'lbtcElectrum'),
               receiveWalletId: any(named: 'receiveWalletId'),
               externalRecipientAddress: any(named: 'externalRecipientAddress'),
             ),

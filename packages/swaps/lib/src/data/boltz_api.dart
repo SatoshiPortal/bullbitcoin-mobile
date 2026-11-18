@@ -397,7 +397,7 @@ class BoltzDatasource {
     required int index,
     required int outAmount,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
     required String magicRouteHintAddress,
     String? description,
   }) async {
@@ -413,7 +413,8 @@ class BoltzDatasource {
         outAmount: BigInt.from(outAmount),
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: false),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
@@ -485,7 +486,7 @@ class BoltzDatasource {
     required int index,
     required int outAmount,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
     required String magicRouteHintAddress,
     String? description,
   }) async {
@@ -501,7 +502,8 @@ class BoltzDatasource {
         outAmount: BigInt.from(outAmount),
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: true),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
@@ -625,7 +627,7 @@ class BoltzDatasource {
     required int index,
     required String invoice,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
   }) async {
     try {
       if (_submarineFeesAndLimits == null ||
@@ -640,7 +642,8 @@ class BoltzDatasource {
         invoice: invoice,
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: false),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         referralId: boltzReferralId,
       );
@@ -691,7 +694,7 @@ class BoltzDatasource {
     required int index,
     required String invoice,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
   }) async {
     try {
       if (_submarineFeesAndLimits == null ||
@@ -706,7 +709,8 @@ class BoltzDatasource {
         invoice: invoice,
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: true),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         referralId: boltzReferralId,
       );
@@ -863,8 +867,8 @@ class BoltzDatasource {
     required int index,
     required int amountSat,
     required NetworkEnv environment,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
+    required ElectrumConnection btcElectrum,
+    required ElectrumConnection lbtcElectrum,
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
@@ -881,8 +885,10 @@ class BoltzDatasource {
         direction: ChainSwapDirection.btcToLbtc,
         amount: BigInt.from(amountSat),
         network: BoltzNetwork.fromEnvironment(environment).nativeNetwork,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
+        btcElectrumUrl: btcElectrum.url,
+        btcElectrumSettings: _electrumOverride(btcElectrum),
+        lbtcElectrumUrl: lbtcElectrum.url,
+        lbtcElectrumSettings: _electrumOverride(lbtcElectrum),
         referralId: boltzReferralId,
       );
 
@@ -931,8 +937,8 @@ class BoltzDatasource {
     required int index,
     required int amountSat,
     required NetworkEnv environment,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
+    required ElectrumConnection btcElectrum,
+    required ElectrumConnection lbtcElectrum,
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
@@ -950,8 +956,10 @@ class BoltzDatasource {
         direction: ChainSwapDirection.lbtcToBtc,
         amount: BigInt.from(amountSat),
         network: BoltzNetwork.fromEnvironment(environment).nativeNetwork,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
+        btcElectrumUrl: btcElectrum.url,
+        btcElectrumSettings: _electrumOverride(btcElectrum),
+        lbtcElectrumUrl: lbtcElectrum.url,
+        lbtcElectrumSettings: _electrumOverride(lbtcElectrum),
         referralId: boltzReferralId,
       );
 

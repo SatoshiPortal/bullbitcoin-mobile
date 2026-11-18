@@ -168,7 +168,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<LnReceiveSwap> _boltzCreateLightningToBitcoinSwap({
     required String walletId,
     required int amountSat,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
     required String claimAddress,
     String? description,
   }) async {
@@ -179,7 +179,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         index: index,
         outAmount: amountSat,
         environment: _environment,
-        electrumUrl: electrumUrl,
+        electrum: electrum,
         magicRouteHintAddress: claimAddress,
         description: description,
       );
@@ -218,7 +218,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<LnReceiveSwap> _boltzCreateLightningToLiquidSwap({
     required String walletId,
     required int amountSat,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
     required String claimAddress,
     String? description,
   }) async {
@@ -229,7 +229,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         index: index,
         outAmount: amountSat,
         environment: _environment,
-        electrumUrl: electrumUrl,
+        electrum: electrum,
         magicRouteHintAddress: claimAddress,
         description: description,
       );
@@ -269,7 +269,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<LnSendSwap> _boltzCreateBitcoinToLightningSwap({
     required String walletId,
     required String invoice,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
   }) async {
     return _withCreationLock(() async {
       final index = await _reserveSwapKeyIndex(1);
@@ -278,7 +278,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         index: index,
         invoice: invoice,
         environment: _environment,
-        electrumUrl: electrumUrl,
+        electrum: electrum,
       );
 
       return btcLnSwap.toEntity(
@@ -323,7 +323,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<LnSendSwap> _boltzCreateLiquidToLightningSwap({
     required String walletId,
     required String invoice,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
   }) async {
     return _withCreationLock(() async {
       final index = await _reserveSwapKeyIndex(1);
@@ -332,7 +332,7 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         index: index,
         invoice: invoice,
         environment: _environment,
-        electrumUrl: electrumUrl,
+        electrum: electrum,
       );
 
       return lbtcLnSwap.toEntity(
@@ -375,8 +375,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<ChainSwap> _boltzCreateBitcoinToLiquidSwap({
     required String sendWalletId,
     required int amountSat,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
+    required ElectrumConnection btcElectrum,
+    required ElectrumConnection lbtcElectrum,
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
@@ -387,8 +387,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         index: index,
         amountSat: amountSat,
         environment: _environment,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
+        btcElectrum: btcElectrum,
+        lbtcElectrum: lbtcElectrum,
         receiveWalletId: receiveWalletId,
         externalRecipientAddress: externalRecipientAddress,
       );
@@ -402,8 +402,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   Future<ChainSwap> _boltzCreateLiquidToBitcoinSwap({
     required String sendWalletId,
     required int amountSat,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
+    required ElectrumConnection btcElectrum,
+    required ElectrumConnection lbtcElectrum,
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
@@ -414,8 +414,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
         index: index,
         amountSat: amountSat,
         environment: _environment,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
+        btcElectrum: btcElectrum,
+        lbtcElectrum: lbtcElectrum,
         receiveWalletId: receiveWalletId,
         externalRecipientAddress: externalRecipientAddress,
       );
@@ -1983,11 +1983,15 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     classify: classifySwapCreationFailure,
   );
 
-  Future<String> _electrumUrl({required bool isLiquid}) => _electrum.run(
-    isLiquid: isLiquid,
-    environment: _environment,
-    operation: (connection) async => connection.url,
-  );
+  Future<String> _electrumUrl({required bool isLiquid}) async =>
+      (await _electrumConnection(isLiquid: isLiquid)).url;
+
+  Future<ElectrumConnection> _electrumConnection({required bool isLiquid}) =>
+      _electrum.run(
+        isLiquid: isLiquid,
+        environment: _environment,
+        operation: (connection) async => connection,
+      );
 
   /// Refuses a wallet that is unknown or not on [isLiquid]'s chain, before
   /// anything is created.
@@ -2045,21 +2049,21 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     await _requireWallet(walletId, isLiquid: toLiquid);
     await _requireWithinLimits(type, amountSat);
     await _ensureMasterKey();
-    final electrumUrl = await _electrumUrl(isLiquid: toLiquid);
+    final electrum = await _electrumConnection(isLiquid: toLiquid);
     final claimAddress = await _newAddressFor(walletId);
     return _created(
       toLiquid
           ? _boltzCreateLightningToLiquidSwap(
               walletId: walletId,
               amountSat: amountSat,
-              electrumUrl: electrumUrl,
+              electrum: electrum,
               claimAddress: claimAddress,
               description: description,
             )
           : _boltzCreateLightningToBitcoinSwap(
               walletId: walletId,
               amountSat: amountSat,
-              electrumUrl: electrumUrl,
+              electrum: electrum,
               claimAddress: claimAddress,
               description: description,
             ),
@@ -2114,18 +2118,18 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     final decoded = await decodeInvoice(invoice: invoice);
     await _requireWithinLimits(type, decoded.sats);
     await _ensureMasterKey();
-    final electrumUrl = await _electrumUrl(isLiquid: fromLiquid);
+    final electrum = await _electrumConnection(isLiquid: fromLiquid);
     return _created(
       fromLiquid
           ? _boltzCreateLiquidToLightningSwap(
               walletId: walletId,
               invoice: invoice,
-              electrumUrl: electrumUrl,
+              electrum: electrum,
             )
           : _boltzCreateBitcoinToLightningSwap(
               walletId: walletId,
               invoice: invoice,
-              electrumUrl: electrumUrl,
+              electrum: electrum,
             ),
     );
   }, classify: classifySwapCreationFailure);
@@ -2167,8 +2171,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
     }
     await _requireWithinLimits(type, amountSat);
     await _ensureMasterKey();
-    final btcElectrumUrl = await _electrumUrl(isLiquid: false);
-    final lbtcElectrumUrl = await _electrumUrl(isLiquid: true);
+    final btcElectrum = await _electrumConnection(isLiquid: false);
+    final lbtcElectrum = await _electrumConnection(isLiquid: true);
     final (receiveWalletId, externalRecipientAddress) = switch (destination) {
       ToWallet(:final walletId) => (walletId, null),
       ToAddress(:final address) => (null, address),
@@ -2178,16 +2182,16 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
           ? _boltzCreateLiquidToBitcoinSwap(
               sendWalletId: sendWalletId,
               amountSat: amountSat,
-              btcElectrumUrl: btcElectrumUrl,
-              lbtcElectrumUrl: lbtcElectrumUrl,
+              btcElectrum: btcElectrum,
+              lbtcElectrum: lbtcElectrum,
               receiveWalletId: receiveWalletId,
               externalRecipientAddress: externalRecipientAddress,
             )
           : _boltzCreateBitcoinToLiquidSwap(
               sendWalletId: sendWalletId,
               amountSat: amountSat,
-              btcElectrumUrl: btcElectrumUrl,
-              lbtcElectrumUrl: lbtcElectrumUrl,
+              btcElectrum: btcElectrum,
+              lbtcElectrum: lbtcElectrum,
               receiveWalletId: receiveWalletId,
               externalRecipientAddress: externalRecipientAddress,
             ),
@@ -2887,7 +2891,8 @@ class BoltzSwapRepository implements SwapResolver, BoltzSwaps {
   bool _isLockupNotVisible(Object error) {
     final message = _errorMessage(error).toLowerCase();
     return message.contains('not yet visible to the chain client') ||
-        message.contains('no bitcoin utxo detected');
+        message.contains('no bitcoin utxo detected') ||
+        message.contains('bitcoin lockup not yet confirmed');
   }
 
   bool _isNonFinalError(Object error) {
