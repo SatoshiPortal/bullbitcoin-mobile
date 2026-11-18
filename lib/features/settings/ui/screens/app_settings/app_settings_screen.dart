@@ -12,8 +12,10 @@ import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/screen_capture_protection_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bull_pricer/bull_pricer.dart' show SupportedCurrency;
 import 'package:bull_ui/bull_ui.dart'
-    show BullLanguagePicker, BullPickerItem, BullSnackBar;
+    show BullLanguagePicker, BullPickerChip, BullPickerItem, BullSnackBar;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,6 +27,12 @@ class AppSettingsScreen extends StatelessWidget {
     final currentLanguage = context.select(
       (SettingsCubit cubit) =>
           cubit.state.language ?? Language.unitedStatesEnglish,
+    );
+    final currency = context.select(
+      (SettingsCubit cubit) => cubit.state.currencyCode,
+    );
+    final availableCurrencies = context.select(
+      (BitcoinPriceBloc bloc) => bloc.state.availableCurrencies,
     );
     final items = settingsItemsOf(context);
 
@@ -42,6 +50,27 @@ class AppSettingsScreen extends StatelessWidget {
           }
         },
       ),
+      SettingsItemId.currency =>
+        currency == null ||
+                availableCurrencies == null ||
+                availableCurrencies.isEmpty
+            ? null
+            : BullPickerChip<String>(
+                tooltip: context.loc.currencySettingsDefaultFiatCurrencyLabel,
+                value: currency,
+                items: [
+                  for (final code in availableCurrencies)
+                    BullPickerItem(
+                      value: code,
+                      label:
+                          '${SupportedCurrency.tryFromCode(code)?.flag ?? ''} $code',
+                    ),
+                ],
+                onChanged: (picked) {
+                  if (picked == currency) return;
+                  context.read<SettingsCubit>().changeCurrency(picked);
+                },
+              ),
       SettingsItemId.theme => const DarkModeSwitch(),
       SettingsItemId.screenPrivacy => const ScreenCaptureProtectionSwitch(),
       SettingsItemId.devMode => const DevModeSwitch(),

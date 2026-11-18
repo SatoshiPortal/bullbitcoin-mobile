@@ -3,7 +3,6 @@ enum SettingsRoute {
   search('search'),
   pinCode('pin-code'),
   language('language'),
-  currency('currency'),
   backupSettings('backup-settings'),
   walletDetailsSelectedWallet('wallet-details/:walletId'),
   walletAddresses('wallet-details/:walletId/addresses'),

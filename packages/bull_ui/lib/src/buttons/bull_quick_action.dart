@@ -172,28 +172,32 @@ class BullQuickActionBar extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: radius,
+          // A dark shadow is invisible on the black dark-theme page, so the
+          // bar lifts off it with a faint light glow instead.
           boxShadow: [
             BoxShadow(
-              color: colors.scrim,
+              color: dark
+                  ? colors.onSurface.withValues(alpha: 0.12)
+                  : colors.scrim,
               blurRadius: 12,
-              offset: const Offset(0, 4),
+              offset: dark ? Offset.zero : const Offset(0, 4),
             ),
           ],
         ),
         child: Material(
           color: dark ? colors.background : colors.surface,
           clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: radius,
-            side: BorderSide(color: colors.outlineVariant),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: radius),
           child: SizedBox(
             height: height,
             child: Row(
               children: [
                 for (final (index, child) in children.indexed) ...[
                   if (index > 0)
-                    Container(width: 1, color: colors.outlineVariant),
+                    Container(
+                      width: 1,
+                      color: dark ? colors.surface : colors.outlineVariant,
+                    ),
                   Expanded(child: child),
                 ],
               ],
