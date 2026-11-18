@@ -108,7 +108,8 @@ class SpFacade {
 
   /// Whether the SP feature is enabled (superuser + dev mode gate). Cross-feature
   /// consumers (the wallet) read the gate through here instead of the settings.
-  Future<bool> isFeatureEnabled() => _getSpFeatureGateUsecase.execute();
+  Future<bool> isFeatureEnabled() =>
+      _getSpFeatureGateUsecase.execute(allowUnconfigured: true);
 
   /// Whether the SP wallet is set up (gated + sentinel-aware). `Err` when the
   /// stored config or the revoke sentinel could not be read, so a failed read
