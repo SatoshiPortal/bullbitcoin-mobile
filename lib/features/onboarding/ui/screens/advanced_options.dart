@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
@@ -12,7 +11,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullButton,
         BullLanguagePicker,
         BullPickerItem,
         BullSettingsEntryItem,
@@ -58,6 +56,26 @@ class AdvancedOptions extends StatelessWidget {
                       ),
                       const Gap(8),
                       BullSettingsEntryItem(
+                        icon: Icons.language,
+                        title: context.loc.settingsLanguageTitle,
+                        trailing: BullLanguagePicker<Language>(
+                          value: currentLanguage,
+                          languages: [
+                            for (final language in Language.values)
+                              BullPickerItem(
+                                value: language,
+                                label: language.label,
+                              ),
+                          ],
+                          onChanged: (lang) {
+                            context.read<SettingsCubit>().changeLanguage(lang);
+                            if (lang.isMachineTranslated) {
+                              TranslationWarningBottomSheet.show(context);
+                            }
+                          },
+                        ),
+                      ),
+                      BullSettingsEntryItem(
                         icon: Icons.vpn_lock,
                         title: context.loc.torSettingsTitle,
                         onTap: () => context.pushNamed(
@@ -94,26 +112,6 @@ class AdvancedOptions extends StatelessWidget {
                           );
                         },
                       ),
-                      BullSettingsEntryItem(
-                        icon: Icons.language,
-                        title: context.loc.settingsLanguageTitle,
-                        trailing: BullLanguagePicker<Language>(
-                          value: currentLanguage,
-                          languages: [
-                            for (final language in Language.values)
-                              BullPickerItem(
-                                value: language,
-                                label: language.label,
-                              ),
-                          ],
-                          onChanged: (lang) {
-                            context.read<SettingsCubit>().changeLanguage(lang);
-                            if (lang.isMachineTranslated) {
-                              TranslationWarningBottomSheet.show(context);
-                            }
-                          },
-                        ),
-                      ),
                       const Gap(24),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -130,15 +128,6 @@ class AdvancedOptions extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: Device.screen.height * 0.05),
-                child: BullButton.big(
-                  label: context.loc.onboardingAdvancedOptionsDone,
-                  onPressed: () => Navigator.of(context).pop(),
-                  bgColor: context.appColors.onSurface,
-                  textColor: context.appColors.surface,
                 ),
               ),
             ],

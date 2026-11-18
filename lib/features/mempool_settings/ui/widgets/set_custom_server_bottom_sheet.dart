@@ -16,30 +16,16 @@ import 'package:bull_ui/bull_ui.dart'
         BullTypographyX;
 
 class SetCustomServerBottomSheet extends StatefulWidget {
-  final String? initialUrl;
-  final bool? initialEnableSsl;
+  const SetCustomServerBottomSheet({super.key});
 
-  const SetCustomServerBottomSheet({
-    super.key,
-    this.initialUrl,
-    this.initialEnableSsl,
-  });
-
-  static Future<bool?> show(
-    BuildContext context, {
-    String? initialUrl,
-    bool? initialEnableSsl,
-  }) {
+  static Future<bool?> show(BuildContext context) {
     final cubit = context.read<MempoolSettingsCubit>();
 
     return BullBottomSheet.show<bool>(
       context: context,
       child: BlocProvider.value(
         value: cubit,
-        child: SetCustomServerBottomSheet(
-          initialUrl: initialUrl,
-          initialEnableSsl: initialEnableSsl,
-        ),
+        child: const SetCustomServerBottomSheet(),
       ),
     );
   }
@@ -62,17 +48,7 @@ class _SetCustomServerBottomSheetState
   @override
   void initState() {
     super.initState();
-    _urlController = TextEditingController(text: widget.initialUrl ?? '');
-    if (widget.initialEnableSsl != null) {
-      _enableSsl = widget.initialEnableSsl!;
-      _sslAutoDetected = false;
-    } else if (widget.initialUrl != null && widget.initialUrl!.isNotEmpty) {
-      final result = MempoolUrlParser.tryParse(widget.initialUrl!);
-      if (result != null) {
-        _enableSsl = result.enableSsl;
-        _sslAutoDetected = true;
-      }
-    }
+    _urlController = TextEditingController();
     _urlController.addListener(_onUrlChanged);
   }
 
@@ -152,9 +128,7 @@ class _SetCustomServerBottomSheetState
                     children: [
                       Expanded(
                         child: Text(
-                          widget.initialUrl == null
-                              ? context.loc.mempoolCustomServerAdd
-                              : context.loc.mempoolCustomServerEdit,
+                          context.loc.mempoolCustomServerAdd,
                           style: context.bullType.subtitle.copyWith(
                             fontWeight: FontWeight.w500,
                           ),

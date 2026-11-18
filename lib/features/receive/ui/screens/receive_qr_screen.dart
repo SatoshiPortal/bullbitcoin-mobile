@@ -414,6 +414,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                     CurrencyText(
                       amountSat ?? 0,
                       showFiat: false,
+                      interactive: true,
                       style: context.bullType.body,
                       color: context.appColors.secondary,
                     ),
@@ -451,6 +452,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                   CurrencyText(
                     swap!.receieveAmount!,
                     showFiat: false,
+                    interactive: true,
                     style: context.bullType.body,
                     color: context.appColors.secondary,
                   ),

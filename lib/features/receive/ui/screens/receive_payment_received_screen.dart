@@ -79,6 +79,7 @@ class PaymentReceivedPage extends StatelessWidget {
           CurrencyText(
             finalAmount,
             showFiat: false,
+            interactive: true,
             style: context.bullType.headline,
           ),
           const Gap(4),
