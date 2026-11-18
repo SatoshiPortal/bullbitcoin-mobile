@@ -147,7 +147,7 @@ void main() {
         SettingsItemSection.app,
       );
       final theme = items.byId(SettingsItemId.theme);
-      expect(theme.title, 'Dark mode');
+      expect(theme.title, 'Dark Mode');
       expect(theme.isInlineControl, isTrue);
     });
 
