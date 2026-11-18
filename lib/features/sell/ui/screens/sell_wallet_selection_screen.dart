@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullScrollableColumn, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class SellWalletSelectionScreen extends StatefulWidget {
@@ -53,7 +54,7 @@ class _SellWalletSelectionScreenState extends State<SellWalletSelectionScreen> {
                   const Gap(24.0),
                   Text(
                     context.loc.sellWhichWalletQuestion,
-                    style: context.font.labelMedium?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: context.appColors.text,
                     ),
                   ),
@@ -119,9 +120,7 @@ class _SellError extends StatelessWidget {
     return Center(
       child: Text(
         sellError.toTranslated(context),
-        style: context.font.bodyMedium?.copyWith(
-          color: context.appColors.error,
-        ),
+        style: context.bullType.body.copyWith(color: context.appColors.error),
         textAlign: TextAlign.center,
       ),
     );

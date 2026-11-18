@@ -76,8 +76,9 @@ class _LogsViewerWidgetState extends State<LogsViewerWidget> {
                       state.visibleEntries.length,
                       state.entries.length,
                     ),
-                    style: Theme.of(context).textTheme.bodySmall
-                        ?.copyWith(color: context.bull.textMuted),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.bull.textMuted),
                   ),
                 ),
                 BullViewerActionButton(
@@ -113,8 +114,9 @@ class _LogsViewerWidgetState extends State<LogsViewerWidget> {
                   state.entries.isEmpty
                       ? LogsLocalizations.of(context).logsViewerEmpty
                       : LogsLocalizations.of(context).logsViewerNoMatches,
-                  style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: context.bull.textMuted),
+                  style: context.bullType.body.copyWith(
+                    color: context.bull.textMuted,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               );
@@ -483,14 +485,16 @@ Future<void> showConfirmDeleteLogsBottomSheet(BuildContext context) async {
             const Gap(16),
             Text(
               LogsLocalizations.of(context).logsViewerDeleteTitle,
-              style: Theme.of(context).textTheme.headlineMedium
-                  ?.copyWith(color: context.bull.onSurface),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: context.bull.onSurface),
             ),
             const Gap(16),
             Text(
               LogsLocalizations.of(context).logsViewerDeleteConfirmation,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: context.bull.onSurface),
+              style: context.bullType.body.copyWith(
+                color: context.bull.onSurface,
+              ),
             ),
             const Gap(16),
             Row(

@@ -4,7 +4,13 @@ import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullShapesX,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class TorPortInputBottomSheet extends StatefulWidget {
@@ -88,7 +94,9 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
                   Center(
                     child: BullText(
                       context.loc.torSettingsProxyPort,
-                      style: context.font.headlineMedium,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   Positioned(

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 /// Setup choice between a brand new SP wallet and one that already has history.
@@ -33,7 +33,7 @@ class SpScanStartSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(context.loc.spSetupScanStartLabel, style: context.font.bodyMedium),
+        Text(context.loc.spSetupScanStartLabel, style: context.bullType.body),
         const Gap(4),
         RadioGroup<SpScanStart>(
           groupValue: scanStart,
@@ -53,11 +53,15 @@ class SpScanStartSelector extends StatelessWidget {
                   ),
                   title: Text(
                     _title(context, value),
-                    style: context.font.headlineSmall,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   subtitle: Text(
                     _subtitle(context, value),
-                    style: context.font.bodySmall,
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   value: value,
                 ),

@@ -153,7 +153,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                       padding: const EdgeInsets.all(24.0),
                       child: BullText(
                         context.loc.allSeedViewLoadingMessage,
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                         color: context.appColors.onSurface.withValues(
                           alpha: 0.7,
                         ),
@@ -166,7 +166,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                   return Center(
                     child: BullText(
                       state.failure!.toTranslated(context),
-                      style: context.font.bodyLarge,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                       color: context.appColors.error,
                     ),
                   );
@@ -183,7 +185,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                                 state.unreadableEntries,
                               )
                             : context.loc.allSeedViewNoSeedsFound,
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         color: state.unreadableEntries > 0
                             ? context.appColors.error
                             : context.appColors.onSurface,
@@ -231,7 +235,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                           context.loc.allSeedViewUnreadableEntries(
                             state.unreadableEntries,
                           ),
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                           color: context.appColors.error,
                           textAlign: .center,
                           maxLines: 3,
@@ -242,9 +246,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                         context.loc.allSeedViewExistingWallets(
                           state.existingWallets.length,
                         ),
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: .bold,
-                        ),
+                        style: context.bullType.subtitle
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(fontWeight: .bold),
                         color: context.appColors.onSurface,
                       ),
                       const SizedBox(height: 8),
@@ -259,9 +263,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                         context.loc.allSeedViewOldWallets(
                           state.oldWallets.length,
                         ),
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: .bold,
-                        ),
+                        style: context.bullType.subtitle
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(fontWeight: .bold),
                         color: context.appColors.onSurface,
                       ),
                       const SizedBox(height: 8),
@@ -274,9 +278,9 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                       const SizedBox(height: 24),
                       BullText(
                         context.loc.allSeedViewSwapMnemonicTitle,
-                        style: context.font.headlineSmall?.copyWith(
-                          fontWeight: .bold,
-                        ),
+                        style: context.bullType.subtitle
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(fontWeight: .bold),
                         color: context.appColors.onSurface,
                       ),
                       const SizedBox(height: 8),
@@ -374,14 +378,14 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                 swapKey.fingerprint,
                 swapKey.network,
               ),
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.appColors.onSurface.withValues(alpha: 0.7),
             ),
             BullText(
               context.loc.allSeedViewSwapLinkedWallet(
                 swapKey.walletFingerprint,
               ),
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.appColors.onSurface.withValues(alpha: 0.7),
             ),
           ],
@@ -419,13 +423,13 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                         showPassphrase: _shownPassphrases.contains(seed.id.hex),
                         // Keyed by identity so a reordered list never hands one secret's state to another's card.
                         key: ValueKey(seed.id.hex),
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           color: context.appColors.onSurface,
                         ),
                         passphraseLabel: context.loc.allSeedViewPassphraseLabel,
-                        passphraseLabelStyle: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.onSurface,
-                        ),
+                        passphraseLabelStyle: context.bullType.body
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(color: context.appColors.onSurface),
                         failureBuilder: (context, failure, retry) => Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -433,7 +437,7 @@ class _AllSeedViewScreenState extends State<AllSeedViewScreen>
                             BullText(
                               AllSeedViewFetchFailure(failure.logMessage)
                                   .toTranslated(context),
-                              style: context.font.bodyMedium,
+                              style: context.bullType.body,
                               color: context.appColors.error,
                             ),
                             const Gap(16),
@@ -511,13 +515,13 @@ class _SwapMnemonicViewState extends State<_SwapMnemonicView> {
           if (words == null || words.isEmpty) {
             return BullText(
               context.loc.oopsSomethingWentWrong,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.appColors.error,
             );
           }
           return BullText(
             words,
-            style: context.font.bodyMedium,
+            style: context.bullType.body,
             color: context.appColors.onSurface,
             maxLines: 5,
           );

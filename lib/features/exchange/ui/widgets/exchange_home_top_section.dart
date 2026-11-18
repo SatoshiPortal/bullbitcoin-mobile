@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullQuickActionBar, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullQuickActionBar, Gap, BullTypographyX;
 
 class ExchangeHomeTopSection extends StatelessWidget {
   const ExchangeHomeTopSection({required this.onAction, super.key});
@@ -22,16 +23,14 @@ class ExchangeHomeTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
-
     final balances = context.select(
       (ExchangeCubit cubit) => cubit.state.displayBalances,
     );
     final balanceTextStyle = switch (balances.length) {
-      0 => theme.textTheme.displayMedium,
-      1 => theme.textTheme.displayMedium,
-      2 => theme.textTheme.displaySmall,
-      _ => theme.textTheme.headlineLarge,
+      0 => context.bullType.display,
+      1 => context.bullType.display,
+      2 => context.bullType.headline,
+      _ => context.bullType.subtitle.copyWith(fontWeight: FontWeight.w700),
     };
 
     final topGap = balances.length > 3 ? 32.0 : 46.0;

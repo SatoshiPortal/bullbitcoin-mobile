@@ -109,7 +109,7 @@ class MerchantListHeader extends StatelessWidget {
                     child: BullText(
                       _countLine(context),
                       key: const ValueKey('merchant-list-count'),
-                      style: Theme.of(context).textTheme.labelLarge,
+                      style: context.bullType.label,
                       color: colors.textMuted,
                     ),
                   ),

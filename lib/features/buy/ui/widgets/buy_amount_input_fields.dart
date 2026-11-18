@@ -6,7 +6,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDropdown, BullPickerItem, BullShapesX, BullShimmerLine, Gap;
+    show
+        BullDropdown,
+        BullPickerItem,
+        BullShapesX,
+        BullShimmerLine,
+        Gap,
+        BullTypographyX;
 import 'package:intl/intl.dart';
 
 class BuyAmountInputFields extends StatefulWidget {
@@ -61,7 +67,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text(context.loc.buyEnterAmount, style: context.font.bodyMedium),
+        Text(context.loc.buyEnterAmount, style: context.bullType.body),
         const Gap(4.0),
         Card(
           elevation: 1,
@@ -104,14 +110,14 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                                   ),
                                 ]
                               : [FilteringTextInputFormatter.digitsOnly],
-                          style: context.font.displaySmall?.copyWith(
+                          style: context.bullType.headline.copyWith(
                             color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: NumberFormat.decimalPatternDigits(
                               decimalDigits: amountInputDecimals,
                             ).format(0),
-                            hintStyle: context.font.displaySmall?.copyWith(
+                            hintStyle: context.bullType.headline.copyWith(
                               color: context.appColors.onSurfaceVariant,
                             ),
                             border: InputBorder.none,
@@ -121,7 +127,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                       const Gap(8.0),
                       Text(
                         isFiatCurrencyInput ? currency.code : bitcoinUnit.code,
-                        style: context.font.displaySmall?.copyWith(
+                        style: context.bullType.headline.copyWith(
                           color: context.appColors.primary,
                         ),
                       ),
@@ -153,7 +159,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                       const Gap(8.0),
                       Text(
                         isFiatCurrencyInput ? bitcoinUnit.code : currency.code,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           color: context.appColors.outline,
                         ),
                       ),
@@ -191,7 +197,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           },
                           child: Text(
                             context.loc.buyMax,
-                            style: context.font.bodyMedium?.copyWith(
+                            style: context.bullType.body.copyWith(
                               color: context.appColors.primary,
                             ),
                           ),
@@ -204,7 +210,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
           ),
         ),
         const Gap(16.0),
-        Text(context.loc.buyPaymentMethod, style: context.font.bodyMedium),
+        Text(context.loc.buyPaymentMethod, style: context.bullType.body),
         const Gap(4.0),
         BullDropdown<String>(
           value: currency?.code,

@@ -5,7 +5,8 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSegmented, BullShimmerBox, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSegmented, BullShimmerBox, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,7 +29,12 @@ class _SpReceiveScreenState extends State<SpReceiveScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.spReceive, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.spReceive,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -100,7 +106,7 @@ class _SpReusableAddressTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 context.loc.spReceiveReusableUnavailable,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.textMuted,
                 ),
                 textAlign: TextAlign.center,
@@ -139,9 +145,9 @@ class _SpTaprootReceiveTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 context.loc.spReceiveTaprootInfo,
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.textMuted,
-                ),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(color: context.appColors.textMuted),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -150,7 +156,7 @@ class _SpTaprootReceiveTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 context.loc.spReceiveTaprootEmpty,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.textMuted,
                 ),
                 textAlign: TextAlign.center,

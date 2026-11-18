@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullShapesX, Gap;
+    show BullFadingLinearProgress, BullShapesX, Gap, BullTypographyX;
 
 class FundExchangeWarningBottomSheet extends StatefulWidget {
   const FundExchangeWarningBottomSheet({super.key});
@@ -101,13 +101,15 @@ class _FundExchangeWarningBottomSheetState
                 const Gap(8.0),
                 BBText(
                   context.loc.fundExchangeWarningTitle,
-                  style: theme.textTheme.displaySmall,
+                  style: context.bullType.headline,
                   textAlign: TextAlign.center,
                 ),
                 const Gap(4.0),
                 BBText(
                   context.loc.fundExchangeWarningDescription,
-                  style: theme.textTheme.headlineSmall,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const Gap(16.0),
@@ -149,7 +151,9 @@ class _FundExchangeWarningBottomSheetState
                       },
                 title: BBText(
                   context.loc.fundExchangeWarningConfirmation,
-                  style: theme.textTheme.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
@@ -159,7 +163,7 @@ class _FundExchangeWarningBottomSheetState
                   // Through the sealed extension, not a hardcoded key, so the
                   // sheet cannot drift from the failure's own message.
                   _submitConsentFailure!.toTranslated(context),
-                  style: theme.textTheme.bodyMedium,
+                  style: context.bullType.body,
                   color: theme.colorScheme.error,
                   textAlign: TextAlign.center,
                 ),

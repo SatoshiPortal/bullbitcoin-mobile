@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
@@ -11,7 +10,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullSpacing,
         BullSwitch,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class AutoBuyHomeCard extends StatelessWidget {
   final bool isActive;
@@ -90,12 +90,12 @@ class AutoBuyHomeCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.loc.autoBuyCancelTitle, style: context.font.titleMedium),
-          const Gap(BullSpacing.sm),
           Text(
-            context.loc.autoBuyCancelMessage,
-            style: context.font.bodyMedium,
+            context.loc.autoBuyCancelTitle,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           ),
+          const Gap(BullSpacing.sm),
+          Text(context.loc.autoBuyCancelMessage, style: context.bullType.body),
           const Gap(BullSpacing.lg),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,

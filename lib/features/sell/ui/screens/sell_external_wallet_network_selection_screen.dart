@@ -9,7 +9,8 @@ import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullScrollableColumn, Gap, BullTypographyX;
 
 class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
   const SellExternalWalletNetworkSelectionScreen({super.key});
@@ -44,7 +45,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   const Gap(24.0),
                   Text(
                     context.loc.sellHowToPayInvoice,
-                    style: context.font.labelMedium?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: context.appColors.text,
                     ),
                   ),
@@ -115,9 +116,7 @@ class _SellError extends StatelessWidget {
     return Center(
       child: Text(
         sellError.toTranslated(context),
-        style: context.font.bodyMedium?.copyWith(
-          color: context.appColors.error,
-        ),
+        style: context.bullType.body.copyWith(color: context.appColors.error),
         textAlign: TextAlign.center,
       ),
     );

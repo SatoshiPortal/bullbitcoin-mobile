@@ -50,15 +50,15 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 const SizedBox(height: 16),
                 BBText(
                   context.loc.errorReportingProgramTitle,
-                  style: context.font.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: context.bullType.subtitle
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   context.loc.errorReportingProgramDescriptionP1,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.secondary.withValues(alpha: 0.7),
                   ),
                   textAlign: TextAlign.justify,
@@ -66,7 +66,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   context.loc.errorReportingProgramDescriptionP2,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.secondary.withValues(alpha: 0.7),
                     fontWeight: FontWeight.bold,
                   ),
@@ -75,7 +75,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   context.loc.errorReportingProgramDescriptionP3,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.secondary.withValues(alpha: 0.7),
                   ),
                   textAlign: TextAlign.justify,
@@ -83,7 +83,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   context.loc.errorReportingProgramDescriptionP4,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.secondary.withValues(alpha: 0.7),
                   ),
                   textAlign: TextAlign.justify,
@@ -91,7 +91,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   context.loc.errorReportingProgramDescriptionP5,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.secondary.withValues(alpha: 0.7),
                     fontWeight: FontWeight.bold,
                   ),

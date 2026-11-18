@@ -78,9 +78,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
             BullText(
               state.loadFailure?.toTranslated(context) ??
                   context.loc.exchangeAccountInfoLoadErrorMessage,
-              style: context.bullText.bodyMedium?.copyWith(
-                color: context.bull.error,
-              ),
+              style: context.bullType.body.copyWith(color: context.bull.error),
             ),
             const Gap(BullSpacing.md),
             BullButton.big(
@@ -126,9 +124,9 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
             if (hasUnsetValues) ...[
               BullText(
                 context.loc.exchangeAppSettingsValidationWarning,
-                style: context.bullText.bodySmall?.copyWith(
-                  color: context.bull.error,
-                ),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(color: context.bull.error),
               ),
               const Gap(BullSpacing.md),
             ],
@@ -174,7 +172,7 @@ class _ExchangePreferencesScreenState extends State<ExchangePreferencesScreen> {
       children: [
         BullText(
           label,
-          style: context.bullText.labelMedium?.copyWith(
+          style: context.bullType.caption.copyWith(
             color: context.bull.onSurface,
             fontWeight: FontWeight.w500,
           ),
@@ -222,7 +220,7 @@ class _EmailNotificationsToggle extends StatelessWidget {
               children: [
                 BullText(
                   context.loc.exchangeAppSettingsEmailNotificationsLabel,
-                  style: context.bullText.labelMedium?.copyWith(
+                  style: context.bullType.caption.copyWith(
                     color: context.bull.onSurface,
                     fontWeight: FontWeight.w500,
                   ),
@@ -230,9 +228,9 @@ class _EmailNotificationsToggle extends StatelessWidget {
                 const Gap(BullSpacing.xxs),
                 BullText(
                   context.loc.exchangeAppSettingsEmailNotificationsDescription,
-                  style: context.bullText.bodySmall?.copyWith(
-                    color: context.bull.textMuted,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(color: context.bull.textMuted),
                 ),
               ],
             ),

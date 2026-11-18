@@ -4,7 +4,6 @@ import 'package:primitives/primitives.dart' show NetworkCapability;
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -15,7 +14,7 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_ro
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullTabMenuVerticalButton, BullText, Gap;
+    show BullTabMenuVerticalButton, BullText, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ImportWalletPage extends StatelessWidget {
@@ -34,7 +33,9 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(16),
               BullText(
                 context.loc.importWalletSectionGeneric,
-                style: context.font.titleMedium,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const Gap(12),
               BullTabMenuVerticalButton(
@@ -57,7 +58,9 @@ class ImportWalletPage extends StatelessWidget {
                     const Gap(24),
                     BullText(
                       context.loc.importWalletSectionHardware,
-                      style: context.font.titleMedium,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const Gap(12),
                     BullTabMenuVerticalButton(

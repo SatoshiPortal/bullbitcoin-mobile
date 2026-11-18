@@ -1,11 +1,11 @@
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/buy_payout_method_label.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, Gap, BullTypographyX;
 
 class BuyDestinationInputFields extends StatefulWidget {
   const BuyDestinationInputFields({super.key});
@@ -35,7 +35,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text(context.loc.buySelectWallet, style: context.font.bodyMedium),
+        Text(context.loc.buySelectWallet, style: context.bullType.body),
         const Gap(4.0),
         BullDropdown<String?>(
           value: selectedWallet?.id,

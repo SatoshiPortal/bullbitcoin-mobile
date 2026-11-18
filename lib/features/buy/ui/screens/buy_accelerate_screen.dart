@@ -10,14 +10,14 @@ import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullLoader, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullLoader, Gap, BullTypographyX;
 
 class BuyAccelerateScreen extends StatelessWidget {
   const BuyAccelerateScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final BuyFailure? accelerateFailure = context.select(
       (BuyBloc bloc) => bloc.state.accelerateFailure,
     );
@@ -81,7 +81,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                   Text(
                     context.loc.buyNetworkFeeExplanation,
                     textAlign: .center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.text,
                     ),
                   ),
@@ -123,7 +123,7 @@ class BuyAccelerateScreen extends StatelessWidget {
                 if (accelerateFailure != null) ...[
                   Text(
                     accelerateFailure.toTranslated(context),
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.error,
                     ),
                     textAlign: TextAlign.center,

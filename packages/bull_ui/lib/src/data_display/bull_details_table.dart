@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/feedback/bull_shimmer.dart';
 import 'package:bull_ui/src/feedback/bull_snack_bar.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -121,8 +122,9 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                 flex: 2,
                 child: Text(
                   widget.label,
-                  style: Theme.of(context).textTheme.bodyMedium
-                      ?.copyWith(color: colors.onSurface),
+                  style: context.bullType.body.copyWith(
+                    color: colors.onSurface,
+                  ),
                 ),
               ),
 
@@ -140,8 +142,9 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                                   widget.displayValue!,
                                   textAlign: TextAlign.end,
                                   overflow: TextOverflow.clip,
-                                  style: Theme.of(context).textTheme.bodyLarge
-                                      ?.copyWith(
+                                  style: context.bullType.body
+                                      .copyWith(fontWeight: FontWeight.w500)
+                                      .copyWith(
                                         color: colors.onSurface,
                                         decoration: widget.isUnderline
                                             ? TextDecoration.underline

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap, BullTypographyX;
 
 class OpenTheCameraWidget extends StatelessWidget {
   final OnScannedPaymentRequestCallback onScannedPaymentRequest;
@@ -28,7 +28,7 @@ class OpenTheCameraWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Text(
               context.loc.sendScanBitcoinQRCode,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.text,
               ),
               textAlign: .center,

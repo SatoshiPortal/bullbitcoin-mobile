@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullText, Gap, BullTypographyX;
 
 class SellQrBottomSheet extends StatelessWidget {
   const SellQrBottomSheet({super.key, required this.bip21InvoiceData});
@@ -27,7 +28,7 @@ class SellQrBottomSheet extends StatelessWidget {
         child: Center(
           child: BullText(
             context.loc.sellNoInvoiceData,
-            style: context.font.bodyMedium,
+            style: context.bullType.body,
           ),
         ),
       );
@@ -44,7 +45,9 @@ class SellQrBottomSheet extends StatelessWidget {
             children: [
               BullText(
                 context.loc.sellQrCode,
-                style: context.font.headlineSmall,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
                 color: context.appColors.secondary,
               ),
               IconButton(

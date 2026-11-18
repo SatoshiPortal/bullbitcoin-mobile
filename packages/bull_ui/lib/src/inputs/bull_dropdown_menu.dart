@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/inputs/bull_picker_item.dart';
 import 'package:bull_ui/src/layout/gap.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -88,7 +89,7 @@ class BullDropdownRow<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final style = context.bullText.bodyMedium?.copyWith(
+    final style = context.bullType.body.copyWith(
       color: selected ? colors.primary : colors.text,
       fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
     );

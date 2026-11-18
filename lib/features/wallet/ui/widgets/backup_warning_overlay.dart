@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullShapesX, BullText, Gap;
+    show BullButton, BullShapesX, BullText, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class BackupWarningOverlay extends StatelessWidget {
@@ -76,15 +76,15 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                           children: [
                             BullText(
                               context.loc.backupWarningTitle,
-                              style: context.font.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: context.bullType.subtitle
+                                  .copyWith(fontWeight: FontWeight.w500)
+                                  .copyWith(fontWeight: FontWeight.bold),
                               color: context.appColors.onSurface,
                             ),
                             const Gap(16),
                             BullText(
                               context.loc.backupWarningDescription,
-                              style: context.font.bodyMedium,
+                              style: context.bullType.body,
                               color: context.appColors.onSurface,
                             ),
                             const Gap(8),
@@ -102,13 +102,13 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                                   children: [
                                     BullText(
                                       '•  ',
-                                      style: context.font.bodyMedium,
+                                      style: context.bullType.body,
                                       color: context.appColors.onSurface,
                                     ),
                                     Expanded(
                                       child: BullText(
                                         reason,
-                                        style: context.font.bodyMedium,
+                                        style: context.bullType.body,
                                         color: context.appColors.onSurface,
                                       ),
                                     ),
@@ -118,7 +118,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                             const Gap(8),
                             BullText(
                               context.loc.backupWarningNoRecovery,
-                              style: context.font.bodyMedium?.copyWith(
+                              style: context.bullType.body.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                               color: context.appColors.onSurface,

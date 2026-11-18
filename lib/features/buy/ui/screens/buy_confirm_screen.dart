@@ -18,7 +18,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullCountdown,
         BullShimmerLine,
         BullText,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class BuyConfirmScreen extends StatelessWidget {
   const BuyConfirmScreen({super.key});
@@ -100,7 +101,7 @@ class BuyConfirmScreen extends StatelessWidget {
                       child: switch (formattedPayInAmount) {
                         final String amount => BullText(
                           amount,
-                          style: context.font.displaySmall,
+                          style: context.bullType.headline,
                           color: context.appColors.secondary,
                         ),
                         null when isUnavailable => const Text('—'),
@@ -160,7 +161,7 @@ class BuyConfirmScreen extends StatelessWidget {
                     children: [
                       Text(
                         context.loc.buyConfirmAwaitingConfirmation,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           fontWeight: .w500,
                           color: context.appColors.outline,
                         ),
@@ -179,7 +180,7 @@ class BuyConfirmScreen extends StatelessWidget {
                   BullAsyncStatus.progress(
                     label: context.loc.buyConfirmAwaitingConfirmation,
                     color: context.appColors.secondary,
-                    textStyle: context.font.bodyMedium,
+                    textStyle: context.bullType.body,
                   )
                 else
                   BullButton.big(

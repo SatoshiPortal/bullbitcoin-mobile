@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/generated/l10n/bull_ui_localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +8,6 @@ import '../data_display/bull_amount.dart';
 import '../data_display/bull_amount_scope.dart';
 import '../theme/bull_theme.dart';
 import '../theme/bull_tokens.dart';
-import '../theme/bull_typography.dart';
 import 'bull_amount_input_formatter.dart';
 import 'bull_bitcoin_amount_text.dart';
 
@@ -229,11 +229,13 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
       children: [
         Text(
           widget.error ?? '',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: widget.error == null
-                ? context.bull.transparent
-                : theme.colorScheme.error,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(
+                color: widget.error == null
+                    ? context.bull.transparent
+                    : theme.colorScheme.error,
+              ),
           maxLines: 2,
         ),
         const SizedBox(height: BullSpacing.xs),
@@ -278,9 +280,9 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
         const SizedBox(height: BullSpacing.sm),
         Text(
           widget.amountEquivalent.isEmpty ? '' : '~${widget.amountEquivalent}',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
       ],
     );

@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullButton, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullButton, Gap, BullTypographyX;
 
 class PrivacyNoticeBottomSheet extends StatelessWidget {
   const PrivacyNoticeBottomSheet({super.key});
@@ -34,7 +35,9 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                     const Gap(24),
                     Text(
                       context.loc.electrumPrivacyNoticeTitle,
-                      style: context.font.headlineMedium,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.of(context).pop(false),
@@ -54,14 +57,14 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                   children: [
                     Text(
                       context.loc.electrumPrivacyNoticeContent1,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       maxLines: 4,
                     ),
                     const Gap(24),
                     Text(
                       context.loc.electrumPrivacyNoticeContent2,
                       maxLines: 4,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                     ),
                     const Gap(32),
                     Row(
@@ -72,7 +75,9 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                             onPressed: () => Navigator.of(context).pop(false),
                             bgColor: context.appColors.transparent,
                             outlined: true,
-                            textStyle: context.font.headlineLarge,
+                            textStyle: context.bullType.subtitle.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                             textColor: context.appColors.secondary,
                           ),
                         ),
@@ -82,7 +87,9 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                             label: context.loc.electrumPrivacyNoticeSave,
                             onPressed: () => Navigator.of(context).pop(true),
                             bgColor: context.appColors.secondary,
-                            textStyle: context.font.headlineLarge,
+                            textStyle: context.bullType.subtitle.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                             textColor: context.appColors.onSecondary,
                           ),
                         ),

@@ -213,10 +213,9 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
           BullText(
             context.loc.testBackupWriteDownPhrase,
             textAlign: .center,
-            style: context.font.headlineLarge?.copyWith(
-              fontWeight: .w600,
-              color: context.appColors.text,
-            ),
+            style: context.bullType.subtitle
+                .copyWith(fontWeight: FontWeight.w700)
+                .copyWith(fontWeight: .w600, color: context.appColors.text),
             maxLines: 2,
           ),
           const Gap(20),
@@ -404,7 +403,9 @@ class _DisplayError extends StatelessWidget {
       BullText(
         failure?.toTranslated(context) ?? context.loc.oopsSomethingWentWrong,
         textAlign: .center,
-        style: context.font.bodyLarge?.copyWith(color: context.appColors.error),
+        style: context.bullType.body
+            .copyWith(fontWeight: FontWeight.w500)
+            .copyWith(color: context.appColors.error),
       ),
       if (onRetry case final retry?) ...[
         const Gap(16),

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notification.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,7 +25,9 @@ class SpHeaderValidationScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           context.loc.spHeaderValidationTitle,
-          style: context.font.headlineMedium,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
       body: SafeArea(
@@ -44,24 +46,29 @@ class SpHeaderValidationScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(_title(context, state), style: context.font.titleMedium),
+                Text(
+                  _title(context, state),
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 if (state.headerValidationStatus ==
                     SpHeaderValidationStatus.validating) ...[
                   const Gap(8),
                   Text(
                     context.loc.spHeaderValidationDescription,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.textMuted),
                   ),
                 ],
                 if (invalidChain) ...[
                   const Gap(8),
                   Text(
                     context.loc.spHeaderValidationInvalidChainDetail,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.error,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.error),
                   ),
                 ],
                 // The chain was wiped, so there is no progress to show.
@@ -80,20 +87,24 @@ class SpHeaderValidationScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           _progressLabel(context, state),
-                          style: context.font.bodySmall?.copyWith(
-                            color: failed
-                                ? context.appColors.error
-                                : context.appColors.textMuted,
-                          ),
+                          style: context.bullType.label
+                              .copyWith(fontWeight: FontWeight.w400)
+                              .copyWith(
+                                color: failed
+                                    ? context.appColors.error
+                                    : context.appColors.textMuted,
+                              ),
                         ),
                       ),
                       Text(
                         context.loc.spScanPercent('$percent'),
-                        style: context.font.bodySmall?.copyWith(
-                          color: failed
-                              ? context.appColors.error
-                              : context.appColors.textMuted,
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(
+                              color: failed
+                                  ? context.appColors.error
+                                  : context.appColors.textMuted,
+                            ),
                       ),
                     ],
                   ),

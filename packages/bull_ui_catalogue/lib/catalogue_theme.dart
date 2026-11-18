@@ -111,12 +111,17 @@ ThemeData catalogueThemeData(Brightness brightness) {
   final bull = brightness == Brightness.dark
       ? CatalogueColors.dark
       : CatalogueColors.light;
+  final typography = BullTypography.standard.resolved(bull.text);
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
     fontFamily: BullTypography.fontFamily,
-    textTheme: BullTypography.standard.toTextTheme(),
-    extensions: bullUiExtensions(colors: bull, brightness: brightness),
+    textTheme: typography.toTextTheme(),
+    extensions: bullUiExtensions(
+      colors: bull,
+      brightness: brightness,
+      typography: typography,
+    ),
     colorScheme: ColorScheme.fromSeed(
       seedColor: bull.primary,
       brightness: brightness,

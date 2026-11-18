@@ -7,7 +7,13 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_rout
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBackupOptionCard, BullBottomSheet, BullText, BullTopBar, Gap;
+    show
+        BullBackupOptionCard,
+        BullBottomSheet,
+        BullText,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class BackupOptionsScreen extends StatefulWidget {
@@ -42,7 +48,9 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
               BullText(
                 context.loc.backupWalletImportanceWarning,
                 textAlign: .center,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 maxLines: 5,
               ),
               const Gap(16),
@@ -95,9 +103,9 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                 },
                 child: BullText(
                   context.loc.backupWalletHowToDecide,
-                  style: context.font.headlineLarge?.copyWith(
-                    color: context.appColors.primary,
-                  ),
+                  style: context.bullType.subtitle
+                      .copyWith(fontWeight: FontWeight.w700)
+                      .copyWith(color: context.appColors.primary),
                 ),
               ),
             ],

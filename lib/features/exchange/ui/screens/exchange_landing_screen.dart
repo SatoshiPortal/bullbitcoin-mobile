@@ -5,7 +5,8 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullTypography, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullTypography, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ExchangeLandingScreen extends StatelessWidget {
@@ -61,9 +62,9 @@ class ExchangeLandingScreen extends StatelessWidget {
                           const Gap(12),
                           BBText(
                             context.loc.exchangeLandingConnectAccount,
-                            style: context.font.headlineSmall?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
+                            style: context.bullType.subtitle
+                                .copyWith(fontWeight: FontWeight.w400)
+                                .copyWith(color: context.appColors.onSurface),
                           ),
                         ],
                       ),
@@ -86,44 +87,44 @@ class ExchangeLandingScreen extends StatelessWidget {
                         children: [
                           BBText(
                             context.loc.exchangeFeatureSelfCustody,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
+                            style: context.bullType.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: context.appColors.onSurface),
                           ),
                           const Gap(12),
                           BBText(
                             context.loc.exchangeFeatureDcaOrders,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
+                            style: context.bullType.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: context.appColors.onSurface),
                           ),
                           const Gap(12),
                           BBText(
                             context.loc.exchangeFeatureSellBitcoin,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
+                            style: context.bullType.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: context.appColors.onSurface),
                           ),
                           const Gap(12),
                           BBText(
                             context.loc.exchangeFeatureBankTransfers,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
+                            style: context.bullType.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: context.appColors.onSurface),
                           ),
                           const Gap(12),
                           BBText(
                             context.loc.exchangeFeatureCustomerSupport,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
+                            style: context.bullType.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: context.appColors.onSurface),
                           ),
                           const Gap(12),
                           BBText(
                             context.loc.exchangeFeatureUnifiedHistory,
-                            style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
+                            style: context.bullType.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: context.appColors.onSurface),
                           ),
                         ],
                       ),
@@ -139,9 +140,9 @@ class ExchangeLandingScreen extends StatelessWidget {
                       ),
                       child: BBText(
                         context.loc.exchangeLandingDisclaimerLegal,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.onSurface,
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(color: context.appColors.onSurface),
                       ),
                     ),
                   ],

@@ -22,7 +22,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullText,
         Gap,
         BullSnackBar,
-        bullDateLocale;
+        bullDateLocale,
+        BullTypographyX;
 import 'package:intl/intl.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 
@@ -178,7 +179,9 @@ class TransactionDetailsTable extends StatelessWidget {
               showFiat: false,
               interactive: true,
               overrideHideAmounts: true,
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.onSurface,
               textAlign: TextAlign.end,
             ),
@@ -192,7 +195,9 @@ class TransactionDetailsTable extends StatelessWidget {
                 showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.end,
               ),
@@ -205,7 +210,9 @@ class TransactionDetailsTable extends StatelessWidget {
                 showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.end,
               ),
@@ -238,7 +245,9 @@ class TransactionDetailsTable extends StatelessWidget {
               showFiat: false,
               interactive: true,
               overrideHideAmounts: true,
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.onSurface,
               textAlign: TextAlign.end,
             ),
@@ -251,7 +260,9 @@ class TransactionDetailsTable extends StatelessWidget {
                 showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.end,
               ),
@@ -264,7 +275,9 @@ class TransactionDetailsTable extends StatelessWidget {
                 showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.end,
               ),
@@ -317,7 +330,9 @@ class TransactionDetailsTable extends StatelessWidget {
                           showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                           color: context.appColors.onSurface,
                           textAlign: TextAlign.end,
                         )
@@ -338,7 +353,9 @@ class TransactionDetailsTable extends StatelessWidget {
                           showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                           color: context.appColors.onSurface,
                           textAlign: TextAlign.end,
                         )
@@ -402,7 +419,9 @@ class TransactionDetailsTable extends StatelessWidget {
                     showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.onSurface,
                     textAlign: TextAlign.end,
                   ),
@@ -665,7 +684,9 @@ class TransactionDetailsTable extends StatelessWidget {
                           showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                           color: context.appColors.onSurface,
                           textAlign: TextAlign.end,
                         )
@@ -686,7 +707,9 @@ class TransactionDetailsTable extends StatelessWidget {
                           showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                           color: context.appColors.onSurface,
                           textAlign: TextAlign.end,
                         )
@@ -756,7 +779,9 @@ class TransactionDetailsTable extends StatelessWidget {
                           showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                           color: context.appColors.onSurface,
                           textAlign: TextAlign.end,
                         )
@@ -777,7 +802,9 @@ class TransactionDetailsTable extends StatelessWidget {
                           showFiat: false,
                           interactive: true,
                           overrideHideAmounts: true,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                           color: context.appColors.onSurface,
                           textAlign: TextAlign.end,
                         )
@@ -912,9 +939,9 @@ class TransactionDetailsTable extends StatelessWidget {
                 : swap.status.displayName(context),
             expandableChild: BullText(
               swap.getDisplayMessage(context),
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.secondary,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: context.appColors.secondary),
               maxLines: 5,
             ),
           ),
@@ -951,7 +978,9 @@ class TransactionDetailsTable extends StatelessWidget {
                   showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.onSurface,
                   textAlign: TextAlign.end,
                 ),
@@ -964,7 +993,9 @@ class TransactionDetailsTable extends StatelessWidget {
                   showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.onSurface,
                   textAlign: TextAlign.end,
                 ),
@@ -977,7 +1008,9 @@ class TransactionDetailsTable extends StatelessWidget {
                   showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.onSurface,
                   textAlign: TextAlign.end,
                 ),
@@ -990,7 +1023,9 @@ class TransactionDetailsTable extends StatelessWidget {
                   showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.onSurface,
                   textAlign: TextAlign.end,
                 ),
@@ -1005,7 +1040,9 @@ class TransactionDetailsTable extends StatelessWidget {
                   showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.onSurface,
                   textAlign: TextAlign.end,
                 ),
@@ -1018,7 +1055,9 @@ class TransactionDetailsTable extends StatelessWidget {
                     showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.onSurface,
                     textAlign: TextAlign.end,
                   ),
@@ -1031,7 +1070,9 @@ class TransactionDetailsTable extends StatelessWidget {
                     showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.onSurface,
                     textAlign: TextAlign.end,
                   ),
@@ -1044,7 +1085,9 @@ class TransactionDetailsTable extends StatelessWidget {
                   showFiat: false,
                   interactive: true,
                   overrideHideAmounts: true,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.onSurface,
                   textAlign: TextAlign.end,
                 ),
@@ -1057,7 +1100,9 @@ class TransactionDetailsTable extends StatelessWidget {
                     showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.onSurface,
                     textAlign: TextAlign.end,
                   ),
@@ -1070,7 +1115,9 @@ class TransactionDetailsTable extends StatelessWidget {
                     showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.onSurface,
                     textAlign: TextAlign.end,
                   ),
@@ -1084,7 +1131,9 @@ class TransactionDetailsTable extends StatelessWidget {
                     showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.onSurface,
                     textAlign: TextAlign.end,
                   ),
@@ -1097,7 +1146,9 @@ class TransactionDetailsTable extends StatelessWidget {
                     showFiat: false,
                     interactive: true,
                     overrideHideAmounts: true,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.onSurface,
                     textAlign: TextAlign.end,
                   ),
@@ -1116,7 +1167,9 @@ class TransactionDetailsTable extends StatelessWidget {
                 showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.end,
               ),
@@ -1129,7 +1182,7 @@ class TransactionDetailsTable extends StatelessWidget {
                       swap.isLnReceiveSwap
                           ? context.loc.transactionFeesDeductedFrom
                           : context.loc.transactionFeesTotalDeducted,
-                      style: context.font.labelSmall,
+                      style: context.bullType.caption,
                       color: context.appColors.secondary,
                     ),
                   ),
@@ -1204,15 +1257,17 @@ class TransactionDetailsTable extends StatelessWidget {
                 showFiat: false,
                 interactive: true,
                 overrideHideAmounts: true,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.onSurface,
                 textAlign: TextAlign.end,
               ),
               expandableChild: BullText(
                 context.loc.transactionPayjoinFeeContributionExplanation,
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.secondary,
-                ),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(color: context.appColors.secondary),
                 maxLines: 5,
               ),
             ),
@@ -1229,7 +1284,7 @@ Widget _feeRow(BuildContext context, String label, int amt) {
       children: [
         BullText(
           label,
-          style: context.font.bodySmall,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.appColors.secondary,
         ),
         const Spacer(),
@@ -1237,7 +1292,7 @@ Widget _feeRow(BuildContext context, String label, int amt) {
           amt,
           showFiat: false,
           interactive: true,
-          style: context.font.bodySmall,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.appColors.secondary,
         ),
       ],

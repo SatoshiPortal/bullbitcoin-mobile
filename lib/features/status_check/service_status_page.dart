@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:bb_mobile/features/status_check/presentation/status_check_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPullableBody, BullText;
+import 'package:bull_ui/bull_ui.dart'
+    show BullPullableBody, BullText, BullTypographyX;
 
 class ServiceStatusPage extends StatefulWidget {
   const ServiceStatusPage({super.key});
@@ -50,7 +51,7 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                     if (state.failure != null) ...[
                       BullText(
                         state.failure!.toTranslated(context),
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                         color: context.appColors.error,
                       ),
                       const SizedBox(height: 16),
@@ -83,7 +84,9 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                             context.loc.statusCheckLastChecked(
                               _formatDateTime(serviceStatus.lastChecked!),
                             ),
-                            style: context.font.bodySmall,
+                            style: context.bullType.label.copyWith(
+                              fontWeight: FontWeight.w400,
+                            ),
                             color: context.appColors.onSurfaceVariant,
                           ),
                       ],
@@ -96,7 +99,9 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
                         children: [
                           BullText(
                             context.loc.statusCheckResultsMayBeOutdated,
-                            style: context.font.bodySmall,
+                            style: context.bullType.label.copyWith(
+                              fontWeight: FontWeight.w400,
+                            ),
                             color: context.appColors.warning,
                           ),
                         ],
@@ -137,13 +142,13 @@ class _ServiceStatusItem extends StatelessWidget {
         const SizedBox(width: 12),
         BullText(
           service.name,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: context.appColors.onSurface,
         ),
         const Spacer(),
         BullText(
           _getStatusText(context),
-          style: context.font.bodySmall,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.appColors.onSurfaceVariant,
         ),
       ],

@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinAction;
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullSwitch, Gap, BullSnackBar;
+    show BullBorderedTile, BullSwitch, Gap, BullSnackBar, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 /// Payjoin settings: one switch per action, payments with other users
@@ -64,7 +64,12 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     );
     return Row(
       children: [
-        Expanded(child: BBText(label, style: context.font.bodyLarge)),
+        Expanded(
+          child: BBText(
+            label,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+          ),
+        ),
         BullSwitch(
           value: isEnabled,
           onChanged: _updating || !isLoaded
@@ -77,7 +82,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
 
   Widget _sectionTitle(String title) => BBText(
     title,
-    style: context.font.titleSmall,
+    style: context.bullType.label,
     color: context.appColors.secondary,
   );
 
@@ -126,7 +131,9 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                     Expanded(
                       child: BBText(
                         context.loc.settingsPayjoinDisclaimerRowLabel,
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     const Icon(Icons.chevron_right),
@@ -144,7 +151,9 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
                       Expanded(
                         child: BBText(
                           context.loc.settingsPayjoinAdvancedTitle,
-                          style: context.font.bodyLarge,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       const Icon(Icons.chevron_right),

@@ -126,7 +126,9 @@ class _WithdrawPaymentDetailsScreenState
                 children: [
                   BullText(
                     context.loc.recipientsFieldSecurityQuestion,
-                    style: context.bullText.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: colors.text,
                   ),
                   const Gap(8),
@@ -147,14 +149,18 @@ class _WithdrawPaymentDetailsScreenState
                     const Gap(4),
                     BullText(
                       _questionError!,
-                      style: context.bullText.bodySmall,
+                      style: context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                       color: colors.error,
                     ),
                   ],
                   const Gap(20),
                   BullText(
                     context.loc.recipientsFieldSecurityAnswer,
-                    style: context.bullText.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: colors.text,
                   ),
                   const Gap(8),
@@ -181,7 +187,9 @@ class _WithdrawPaymentDetailsScreenState
                     const Gap(4),
                     BullText(
                       _answerError!,
-                      style: context.bullText.bodySmall,
+                      style: context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                       color: colors.error,
                     ),
                   ],
@@ -201,7 +209,7 @@ class _WithdrawPaymentDetailsScreenState
                         Expanded(
                           child: BullText(
                             context.loc.withdrawInteracSaveAsDefault,
-                            style: context.bullText.bodyMedium,
+                            style: context.bullType.body,
                             color: colors.text,
                           ),
                         ),
@@ -212,7 +220,9 @@ class _WithdrawPaymentDetailsScreenState
                     const Gap(16),
                     BullText(
                       withdrawFailure.toTranslated(context),
-                      style: context.bullText.bodySmall,
+                      style: context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                       color: colors.error,
                     ),
                   ],

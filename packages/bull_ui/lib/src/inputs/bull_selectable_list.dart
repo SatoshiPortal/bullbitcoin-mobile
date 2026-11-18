@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/feedback/bull_shimmer.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -111,13 +112,12 @@ class _BullSelectableRow extends StatelessWidget {
                   children: [
                     BullText(
                       item.title,
-                      style: Theme.of(context).textTheme.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const Gap(4),
-                    BullText(
-                      item.subtitle1,
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
+                    BullText(item.subtitle1, style: context.bullType.caption),
                     const Gap(2),
                     if (item.isSubtitle2Loading)
                       const BullShimmerLine(
@@ -126,10 +126,7 @@ class _BullSelectableRow extends StatelessWidget {
                         padding: EdgeInsets.zero,
                       )
                     else
-                      BullText(
-                        item.subtitle2,
-                        style: Theme.of(context).textTheme.labelMedium,
-                      ),
+                      BullText(item.subtitle2, style: context.bullType.caption),
                   ],
                 ),
               ),

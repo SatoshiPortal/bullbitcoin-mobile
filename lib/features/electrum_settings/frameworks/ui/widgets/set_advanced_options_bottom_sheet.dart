@@ -138,7 +138,9 @@ class _SetAdvancedOptionsBottomSheetState
                       Expanded(
                         child: Text(
                           context.loc.electrumAdvancedOptions,
-                          style: context.font.headlineMedium,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -155,7 +157,7 @@ class _SetAdvancedOptionsBottomSheetState
                     children: [
                       Text(
                         context.loc.electrumStopGap,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           fontWeight: .w600,
                         ),
                       ),
@@ -165,10 +167,12 @@ class _SetAdvancedOptionsBottomSheetState
                         focusNode: _stopGapNode,
                         textInputAction: .next,
                         keyboardType: TextInputType.number,
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         decoration: InputDecoration(
                           hintText: context.loc.electrumStopGap,
-                          hintStyle: context.font.bodyMedium?.copyWith(
+                          hintStyle: context.bullType.body.copyWith(
                             color: context.appColors.textMuted,
                           ),
                           fillColor: context.appColors.surface,
@@ -247,7 +251,7 @@ class _SetAdvancedOptionsBottomSheetState
                       const SizedBox(height: 12),
                       Text(
                         context.loc.electrumTimeout,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           fontWeight: .w600,
                         ),
                       ),
@@ -257,10 +261,12 @@ class _SetAdvancedOptionsBottomSheetState
                         focusNode: _timeoutNode,
                         keyboardType: TextInputType.number,
                         textInputAction: .next,
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         decoration: InputDecoration(
                           hintText: context.loc.electrumTimeout,
-                          hintStyle: context.font.bodyMedium?.copyWith(
+                          hintStyle: context.bullType.body.copyWith(
                             color: context.appColors.textMuted,
                           ),
                           fillColor: context.appColors.surface,
@@ -353,7 +359,7 @@ class _SetAdvancedOptionsBottomSheetState
                       const SizedBox(height: 12),
                       Text(
                         context.loc.electrumRetryCount,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           fontWeight: .w600,
                         ),
                       ),
@@ -363,10 +369,12 @@ class _SetAdvancedOptionsBottomSheetState
                         focusNode: _retryNode,
                         keyboardType: TextInputType.number,
                         textInputAction: .done,
-                        style: context.font.bodyLarge,
+                        style: context.bullType.body.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         decoration: InputDecoration(
                           hintText: context.loc.electrumRetryCount,
-                          hintStyle: context.font.bodyMedium?.copyWith(
+                          hintStyle: context.bullType.body.copyWith(
                             color: context.appColors.textMuted,
                           ),
                           fillColor: context.appColors.surface,
@@ -495,7 +503,9 @@ class _SetAdvancedOptionsBottomSheetState
                                   },
                                   bgColor: context.appColors.transparent,
                                   outlined: true,
-                                  textStyle: context.font.headlineLarge,
+                                  textStyle: context.bullType.subtitle.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                   textColor: context.appColors.onSurface,
                                 ),
                               ),
@@ -506,7 +516,9 @@ class _SetAdvancedOptionsBottomSheetState
                                   disabled: state.isSavingAdvancedOptions,
                                   onPressed: _confirm,
                                   bgColor: context.appColors.onSurface,
-                                  textStyle: context.font.headlineLarge,
+                                  textStyle: context.bullType.subtitle.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                   textColor: context.appColors.surface,
                                 ),
                               ),

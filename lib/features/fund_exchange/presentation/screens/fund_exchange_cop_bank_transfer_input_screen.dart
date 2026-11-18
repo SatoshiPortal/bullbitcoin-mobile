@@ -20,7 +20,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullPickerItem,
         BullScrollableColumn,
         BullShapesX,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class FundExchangeCopBankTransferInputScreen extends StatefulWidget {
   const FundExchangeCopBankTransferInputScreen({super.key});
@@ -91,7 +92,6 @@ class _FundExchangeCopBankTransferInputScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final bloc = context.read<FundExchangeBloc>();
     final userSummary = bloc.state.userSummary;
     final institutions = bloc.state.fundingInstitutions ?? [];
@@ -159,7 +159,7 @@ class _FundExchangeCopBankTransferInputScreenState
                           Expanded(
                             child: BBText(
                               context.loc.fundExchangeCopDailyLimitWarning,
-                              style: theme.textTheme.bodyMedium,
+                              style: context.bullType.body,
                             ),
                           ),
                         ],
@@ -169,9 +169,9 @@ class _FundExchangeCopBankTransferInputScreenState
                     // Sender Name (read-only with copy)
                     BBText(
                       context.loc.fundExchangeCopSenderName,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(fontWeight: FontWeight.w500),
                       color: context.appColors.secondary,
                     ),
                     const Gap(8.0),
@@ -213,9 +213,9 @@ class _FundExchangeCopBankTransferInputScreenState
                     // Issuing Bank dropdown
                     BBText(
                       context.loc.fundExchangeCopIssuingBank,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(fontWeight: FontWeight.w500),
                       color: context.appColors.secondary,
                     ),
                     const Gap(8.0),
@@ -241,9 +241,9 @@ class _FundExchangeCopBankTransferInputScreenState
                     // Amount field
                     BBText(
                       context.loc.fundExchangeCopAmount,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(fontWeight: FontWeight.w500),
                       color: context.appColors.secondary,
                     ),
                     const Gap(8.0),

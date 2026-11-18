@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -43,8 +44,10 @@ class BullFilterChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge
-                ?.copyWith(fontWeight: FontWeight.w600, color: colors.primary),
+            style: context.bullType.label.copyWith(
+              fontWeight: FontWeight.w600,
+              color: colors.primary,
+            ),
           ),
           if (onSelected == null) ...[
             const SizedBox(width: 4),
@@ -95,7 +98,7 @@ class BullFilterChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            style: context.bullType.label.copyWith(
               color: selected!
                   ? (selectionColor ?? colors.primary)
                   : colors.onSurface,

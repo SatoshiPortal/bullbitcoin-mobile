@@ -158,14 +158,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         BullText(
           _getMainTextForState(context, state),
           textAlign: .center,
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
         const Gap(16),
         BullText(
           _getSubTextForState(context, state),
           textAlign: .center,
           color: context.appColors.textMuted,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
         ),
         if (widget.action == const BitBoxAction.importWallet() &&
             state.isInitial) ...[
@@ -237,12 +237,14 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           child: BullText(
             state.result?.toString() ?? '',
             textAlign: .center,
-            style: context.font.headlineMedium?.copyWith(
-              fontFamily: 'monospace',
-              fontWeight: .bold,
-              color: context.appColors.primary,
-              letterSpacing: 2,
-            ),
+            style: context.bullType.subtitle
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  fontFamily: 'monospace',
+                  fontWeight: .bold,
+                  color: context.appColors.primary,
+                  letterSpacing: 2,
+                ),
           ),
         ),
         const Gap(20),
@@ -250,7 +252,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           context.loc.bitboxScreenWaitingConfirmation,
           textAlign: TextAlign.center,
           color: context.appColors.textMuted.withValues(alpha: 0.7),
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
         ),
       ],
     );
@@ -297,7 +299,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       children: [
         BullText(
           context.loc.bitboxScreenAddressToVerify,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: context.appColors.textMuted.withValues(alpha: 0.8),
         ),
         const Gap(12),
@@ -337,7 +339,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         const Gap(12),
         BullText(
           context.loc.bitboxScreenVerifyOnDevice,
-          style: context.font.bodySmall,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           color: context.appColors.textMuted.withValues(alpha: 0.6),
           textAlign: TextAlign.center,
         ),
@@ -468,7 +470,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           children: [
             BullText(
               context.loc.bitboxScreenWalletTypeLabel,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.appColors.textMuted,
             ),
             const Gap(12),
@@ -498,9 +500,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                               context,
                               _selectedScriptType,
                             ),
-                            style: context.font.bodyLarge?.copyWith(
-                              fontWeight: .w500,
-                            ),
+                            style: context.bullType.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(fontWeight: .w500),
                           ),
                         ),
                         Icon(
@@ -562,7 +564,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                 const Gap(16),
                 BullText(
                   context.loc.bitboxScreenSelectWalletType,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const Gap(16),
                 BullSelectableList(

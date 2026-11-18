@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_card.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBottomSheet, BullShapesX, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 Future<void> showSinpeReceiptBottomSheet(
@@ -34,7 +35,9 @@ Future<void> showSinpeReceiptBottomSheet(
                   const Spacer(),
                   Text(
                     context.loc.paySinpeReceipt,
-                    style: context.font.headlineMedium,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const Spacer(),
                   IconButton(

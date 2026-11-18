@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart';
 
 /// Outcome of the announcement dismiss dialog.
 enum AnnouncementDismissChoice {
@@ -31,19 +30,21 @@ class _AnnouncementDismissDialogBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.bullType;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           context.loc.announcementDismissConfirmTitle,
-          style: textTheme.titleMedium?.copyWith(color: colors.text),
+          style: textTheme.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: colors.text),
         ),
         const Gap(8),
         Text(
           context.loc.announcementDismissConfirmBody,
-          style: textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+          style: textTheme.body.copyWith(color: colors.onSurfaceVariant),
         ),
         const Gap(20),
         Row(

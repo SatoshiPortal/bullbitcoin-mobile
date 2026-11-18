@@ -15,7 +15,10 @@ void main() {
       () {
         final theme = AppTheme.themeData(type);
         expect(theme.extension<BullShapes>(), same(AppTheme.shapes));
-        expect(theme.extension<BullTypography>(), same(AppTheme.typography));
+        expect(
+          theme.extension<BullTypography>()?.toTextTheme(),
+          theme.textTheme,
+        );
         expect(_radius(theme.cardTheme.shape), AppTheme.shapes.card);
         expect(_radius(theme.listTileTheme.shape), AppTheme.shapes.card);
         expect(

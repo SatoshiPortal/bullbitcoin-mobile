@@ -118,7 +118,7 @@ class TransactionsByDayList<T> extends StatelessWidget {
             BullText(
               dayLabel?.call(context, entry.key) ??
                   _transactionDayLabel(context, date),
-              style: context.font.titleSmall?.copyWith(
+              style: context.bullType.label.copyWith(
                 color: context.appColors.onSurface,
               ),
             ),

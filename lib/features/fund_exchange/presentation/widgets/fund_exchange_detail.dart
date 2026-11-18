@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShimmerLine, Gap, BullTypographyX;
 
 class FundExchangeDetail extends StatelessWidget {
   const FundExchangeDetail({
@@ -18,24 +19,28 @@ class FundExchangeDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: .center,
       crossAxisAlignment: .start,
       children: [
-        BBText(label, style: theme.textTheme.bodyMedium),
+        BBText(label, style: context.bullType.body),
         if (helpText != null) ...[
           const Gap(4.0),
           BBText(
             helpText!,
-            style: theme.textTheme.labelMedium,
+            style: context.bullType.caption,
             color: context.appColors.outline,
           ),
         ],
         const Gap(8.0),
         ListTile(
           title: value != null
-              ? BBText(value!, style: theme.textTheme.bodyLarge)
+              ? BBText(
+                  value!,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
               : const BullShimmerLine(),
           trailing: IconButton(
             onPressed: value != null

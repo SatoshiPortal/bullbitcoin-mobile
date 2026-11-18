@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_it
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullConfirmDialog, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullConfirmDialog, Gap, BullTypographyX;
 
 class MempoolServerList extends StatelessWidget {
   const MempoolServerList({super.key});
@@ -26,7 +27,7 @@ class MempoolServerList extends StatelessWidget {
           children: [
             Text(
               context.loc.mempoolSettingsDefaultServer,
-              style: context.font.titleSmall?.copyWith(
+              style: context.bullType.label.copyWith(
                 color: context.appColors.onSurface.withValues(alpha: 0.7),
               ),
             ),
@@ -48,7 +49,7 @@ class MempoolServerList extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 context.loc.mempoolSettingsCustomServer,
-                style: context.font.titleSmall?.copyWith(
+                style: context.bullType.label.copyWith(
                   color: context.appColors.onSurface.withValues(alpha: 0.7),
                 ),
               ),
@@ -84,7 +85,7 @@ class MempoolServerList extends StatelessWidget {
                 ),
                 label: Text(
                   context.loc.mempoolCustomServerAdd,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.primary,
                   ),
                 ),

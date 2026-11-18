@@ -4,7 +4,8 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_connection_status.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show BullLabeledTextInput, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullLabeledTextInput, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 /// A backend (blindbit/electrum) URL field with an inline "Test connection"
@@ -59,7 +60,7 @@ class SpBackendUrlField extends StatelessWidget {
               disabled: !editable || controller.text.isEmpty,
               bgColor: context.appColors.transparent,
               textColor: context.appColors.secondary,
-              textStyle: context.font.labelMedium,
+              textStyle: context.bullType.caption,
               outlined: true,
             ),
           ],
@@ -85,9 +86,9 @@ class _StatusLine extends StatelessWidget {
           padding: const EdgeInsets.only(top: 2),
           child: Text(
             context.loc.spTestingConnection,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.outline,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.outline),
           ),
         );
       case SpConnectionStatus.ok:
@@ -103,9 +104,9 @@ class _StatusLine extends StatelessWidget {
               const Gap(4),
               Text(
                 context.loc.spConnected,
-                style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.success,
-                ),
+                style: context.bullType.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(color: context.appColors.success),
               ),
             ],
           ),
@@ -115,9 +116,9 @@ class _StatusLine extends StatelessWidget {
           padding: const EdgeInsets.only(top: 2),
           child: Text(
             testError?.toTranslated(context) ?? context.loc.spConnectionFailed,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.error,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.error),
           ),
         );
     }

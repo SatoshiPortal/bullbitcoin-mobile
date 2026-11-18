@@ -254,7 +254,7 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                       if (_passphraseSecret != null) ...[
                         BullText(
                           context.loc.passphraseBackupPrompt,
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                         ),
                         const Gap(16),
                         BullSecretTextInput(
@@ -268,12 +268,12 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                         if (_passphrase != _passphrase.trim())
                           BullText(
                             context.loc.passphraseWhitespaceWarning,
-                            style: context.font.bodyMedium,
+                            style: context.bullType.body,
                           ),
                         if (_passphraseError case final error?)
                           BullText(
                             error,
-                            style: context.font.bodyMedium,
+                            style: context.bullType.body,
                             color: context.appColors.error,
                           ),
                         const Gap(16),
@@ -352,9 +352,9 @@ class _Challenge extends StatelessWidget {
           return BullText(
             failure.toTranslated(context),
             textAlign: .center,
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.error,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(color: context.appColors.error),
           );
         }
         final value = switch (snapshot.data) {
@@ -376,9 +376,9 @@ class _Challenge extends StatelessWidget {
               BullText(
                 context.loc.oopsSomethingWentWrong,
                 textAlign: .center,
-                style: context.font.bodyLarge?.copyWith(
-                  color: context.appColors.error,
-                ),
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(color: context.appColors.error),
               ),
               const Gap(16),
               BullButton.small(

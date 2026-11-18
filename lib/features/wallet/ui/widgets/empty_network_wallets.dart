@@ -53,7 +53,7 @@ class EmptyNetworkWallets extends StatelessWidget {
                 const Gap(BullSpacing.lg),
                 BullText(
                   context.loc.networkWalletSetupTitle,
-                  style: context.bullText.titleLarge,
+                  style: context.bullType.title,
                 ),
                 if (options != null) ...[
                   const Gap(BullSpacing.sm),
@@ -62,7 +62,7 @@ class EmptyNetworkWallets extends StatelessWidget {
                     NetworkEnv.testnet => context.loc.electrumTestnet,
                     NetworkEnv.regtest => context.loc.electrumRegtest,
                     NetworkEnv.signet => context.loc.networkFeatureUnavailable,
-                  }, style: context.bullText.bodyMedium),
+                  }, style: context.bullType.body),
                   if (!NetworkCapabilities.supports(switch (options.network) {
                     NetworkEnv.mainnet => LiquidNetwork.mainnet,
                     NetworkEnv.testnet => LiquidNetwork.testnet,
@@ -72,14 +72,14 @@ class EmptyNetworkWallets extends StatelessWidget {
                     const Gap(BullSpacing.sm),
                     BullText(
                       '${context.loc.receiveLiquid}: ${context.loc.networkFeatureUnavailable}',
-                      style: context.bullText.bodyMedium,
+                      style: context.bullType.body,
                     ),
                   ],
                   const Gap(BullSpacing.lg),
                   if (options.reusable.isNotEmpty) ...[
                     BullText(
                       context.loc.networkWalletReuseSecret,
-                      style: context.bullText.bodyMedium,
+                      style: context.bullType.body,
                     ),
                     const Gap(BullSpacing.sm),
                     for (final fingerprint in options.reusable) ...[
@@ -116,7 +116,7 @@ class EmptyNetworkWallets extends StatelessWidget {
                   const Gap(BullSpacing.md),
                   BullText(
                     failure.toTranslated(context),
-                    style: context.bullText.bodyMedium,
+                    style: context.bullType.body,
                   ),
                   if (options == null)
                     BullButton.big(

@@ -48,17 +48,24 @@ const testBullTheme = BullTheme(
   shimmerHighlight: Color(0xFFF5F5F5),
 );
 
+/// The resolved type scale used by the test theme and its Material projection.
+final testBullTypography = BullTypography.standard.resolved(testBullTheme.text);
+
 /// Every theme extension `bull_ui` components read, for tests that build their
 /// own `ThemeData`: `ThemeData(extensions: testBullExtensions)`.
 final testBullExtensions = bullUiExtensions(
   colors: testBullTheme,
   brightness: Brightness.light,
+  typography: testBullTypography,
 );
 
 /// Wraps [child] in a `MaterialApp` carrying [testBullExtensions].
 Widget wrapWithTheme(Widget child) {
   return MaterialApp(
-    theme: ThemeData(extensions: testBullExtensions),
+    theme: ThemeData(
+      extensions: testBullExtensions,
+      textTheme: testBullTypography.toTextTheme(),
+    ),
     localizationsDelegates: bullUiLocalizationsDelegates,
     supportedLocales: BullUiLocalizations.supportedLocales,
     home: Scaffold(body: child),

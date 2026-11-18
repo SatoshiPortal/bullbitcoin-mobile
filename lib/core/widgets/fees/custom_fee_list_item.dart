@@ -10,7 +10,13 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountInputFormatter, BullShapesX, BullShimmerLine, BullText, Gap;
+    show
+        BullAmountInputFormatter,
+        BullShapesX,
+        BullShimmerLine,
+        BullText,
+        Gap,
+        BullTypographyX;
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
 /// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
@@ -436,11 +442,13 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                       children: [
                         BullText(
                           context.loc.sendCustomFee,
-                          style: context.font.headlineLarge,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         if (subtitle1.isNotEmpty) ...[
                           const Gap(4),
-                          BullText(subtitle1, style: context.font.labelMedium),
+                          BullText(subtitle1, style: context.bullType.caption),
                         ],
                         // Preview line: shimmer while the caller is
                         // building the unsigned PSBT; real fee once
@@ -477,7 +485,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                       _isAbsolute
                           ? context.loc.sendAbsoluteFees
                           : context.loc.sendRelativeFees,
-                      style: context.font.bodySmall,
+                      style: context.bullType.label.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                     const Spacer(),
                     Switch(value: _isAbsolute, onChanged: _onSwitchChanged),
@@ -534,13 +544,13 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   hintText: _isAbsolute
                       ? context.loc.sendEnterAbsoluteFee
                       : context.loc.sendEnterRelativeFee,
-                  hintStyle: context.font.bodyMedium?.copyWith(
+                  hintStyle: context.bullType.body.copyWith(
                     color: context.appColors.onSurface,
                   ),
                   suffixText: _isAbsolute
                       ? context.loc.sendSats
                       : context.loc.sendSatsPerVB,
-                  suffixStyle: context.font.bodyMedium?.copyWith(
+                  suffixStyle: context.bullType.body.copyWith(
                     color: context.appColors.onSurface,
                   ),
                 ),
@@ -557,7 +567,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                 const Gap(8),
                 BullText(
                   context.loc.sendSubSatVbyteWarning,
-                  style: context.font.labelMedium?.copyWith(
+                  style: context.bullType.caption.copyWith(
                     color: context.appColors.warning,
                   ),
                 ),
@@ -566,7 +576,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                 const Gap(8),
                 BullText(
                   context.loc.sendBelowMinFeeRateError,
-                  style: context.font.labelMedium?.copyWith(
+                  style: context.bullType.caption.copyWith(
                     color: context.appColors.error,
                   ),
                 ),
@@ -608,7 +618,7 @@ class _PreviewLine extends StatelessWidget {
     if (previewLoading) {
       return Row(
         children: [
-          BullText(rateLabel, style: context.font.labelMedium),
+          BullText(rateLabel, style: context.bullType.caption),
           const Gap(8),
           // Shimmer fills the rest of the line where "~ X sats" would
           // appear once the real fee lands.
@@ -622,7 +632,7 @@ class _PreviewLine extends StatelessWidget {
     if (previewFeeSat == null) {
       // No preview built yet (e.g. user just typed but debounce hasn't
       // fired). Show only the rate — never compute a fee ourselves.
-      return BullText(rateLabel, style: context.font.labelMedium);
+      return BullText(rateLabel, style: context.bullType.caption);
     }
 
     final rate = exchangeRate;
@@ -643,6 +653,6 @@ class _PreviewLine extends StatelessWidget {
         ..write(fiatCurrencyCode)
         ..write(')');
     }
-    return BullText(text.toString(), style: context.font.labelMedium);
+    return BullText(text.toString(), style: context.bullType.caption);
   }
 }

@@ -1,3 +1,5 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
+
 import 'dart:async';
 import 'dart:ui' show ImageFilter;
 
@@ -184,8 +186,9 @@ class _BullSnackBarContent extends StatelessWidget {
             // Centred in the pill, so a wrapped message stays balanced; with an
             // action the message keeps to the start, next to it.
             textAlign: hasAction ? TextAlign.start : TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: colors.text),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: colors.text),
           ),
         ),
         if (hasAction) ...[
@@ -195,8 +198,9 @@ class _BullSnackBarContent extends StatelessWidget {
             child: Text(
               actionLabel!,
               // Error reads as a warm red on both the light and the dark toast.
-              style: Theme.of(context).textTheme.bodyLarge
-                  ?.copyWith(color: colors.error, fontWeight: FontWeight.w700),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: colors.error, fontWeight: FontWeight.w700),
             ),
           ),
         ],

@@ -7,7 +7,13 @@ import 'package:bb_mobile/features/pay/ui/widgets/pay_amount_input_fields.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInfoCard, BullInputText, BullScrollableColumn, Gap;
+    show
+        BullButton,
+        BullInfoCard,
+        BullInputText,
+        BullScrollableColumn,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class PayAmountScreen extends StatefulWidget {
@@ -85,7 +91,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                     children: [
                       Text(
                         context.loc.payDescriptionLabel,
-                        style: context.font.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
                       ),

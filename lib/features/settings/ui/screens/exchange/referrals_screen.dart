@@ -47,21 +47,21 @@ class ExchangeReferralsScreen extends StatelessWidget {
                   children: [
                     Text(
                       context.loc.exchangeReferralsJoinMissionTitle,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(color: context.appColors.onSurface),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       context.loc.exchangeReferralsContactSupportMessage,
-                      style: context.font.bodyMedium?.copyWith(
+                      style: context.bullType.body.copyWith(
                         color: context.appColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       context.loc.exchangeReferralsApplyToJoinMessage,
-                      style: context.font.bodyMedium?.copyWith(
+                      style: context.bullType.body.copyWith(
                         color: context.appColors.textMuted,
                       ),
                     ),
@@ -77,10 +77,12 @@ class ExchangeReferralsScreen extends StatelessWidget {
                       },
                       child: Text(
                         context.loc.exchangeReferralsMissionLink,
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.primary,
-                          decoration: TextDecoration.underline,
-                        ),
+                        style: context.bullType.body
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(
+                              color: context.appColors.primary,
+                              decoration: TextDecoration.underline,
+                            ),
                       ),
                     ),
                   ],

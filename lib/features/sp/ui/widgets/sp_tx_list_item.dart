@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/tx_list_item.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
-import 'package:bull_ui/bull_ui.dart' show bullTimeAgo;
+import 'package:bull_ui/bull_ui.dart' show bullTimeAgo, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,7 +25,7 @@ TxListItemData spPaymentListItemData(BuildContext context, SpPayment payment) {
       payment.amountSat.value.toInt(),
       showFiat: false,
       interactive: true,
-      style: context.font.bodyLarge,
+      style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
     ),
     labels: const [],
     networkLabel: isSp

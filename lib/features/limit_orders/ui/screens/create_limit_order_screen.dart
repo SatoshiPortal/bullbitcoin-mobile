@@ -215,7 +215,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       const Gap(24),
       Text(
         context.loc.limitOrdersIntroTitle,
-        style: Theme.of(context).textTheme.headlineMedium,
+        style: context.bullType.subtitle.copyWith(fontWeight: FontWeight.w500),
         textAlign: TextAlign.center,
       ),
       const Gap(12),
@@ -251,12 +251,14 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       children: [
         Text(
           context.loc.limitOrdersTargetTitle,
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w400,
+          ),
         ),
         const Gap(24),
         Text(
           context.loc.limitOrdersPaymentMethod,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: context.bullType.body,
         ),
         const Gap(4),
         BullDropdown<FiatCurrency>(
@@ -332,7 +334,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       children: [
         Text(
           context.loc.limitOrdersAmountTitle,
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w400,
+          ),
         ),
         const Gap(12),
         Text(
@@ -364,7 +368,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       children: [
         Text(
           context.loc.limitOrdersWalletTitle,
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w400,
+          ),
         ),
         const Gap(12),
         Text(context.loc.limitOrdersWalletDescription),
@@ -389,7 +395,7 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
         if (state.appWallets.isNotEmpty) ...[
           Text(
             context.loc.limitOrdersYourWalletsTitle,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           ),
           const Gap(8),
           for (final appWallet in state.appWallets) ...[
@@ -486,7 +492,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
       children: [
         Text(
           context.loc.limitOrdersConfirmationTitle,
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w400,
+          ),
         ),
         const Gap(24),
         LimitOrderDetailRow(
@@ -523,10 +531,12 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
             ),
             child: Text(
               context.loc.limitOrdersTermsNotice,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: context.bull.primary,
-                decoration: TextDecoration.underline,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(
+                    color: context.bull.primary,
+                    decoration: TextDecoration.underline,
+                  ),
             ),
           ),
         ),
@@ -551,7 +561,9 @@ final class _CreateLimitOrderScreenState extends State<CreateLimitOrderScreen> {
           const Gap(24),
           Text(
             context.loc.limitOrdersCreatedTitle,
-            style: Theme.of(context).textTheme.headlineMedium,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
             textAlign: TextAlign.center,
           ),
           const Gap(12),

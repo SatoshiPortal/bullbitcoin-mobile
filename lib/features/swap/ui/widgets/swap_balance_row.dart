@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap, BullTypographyX;
 
 class SwapBalanceRow extends StatelessWidget {
   const SwapBalanceRow({super.key, required this.amountController});
@@ -39,12 +39,12 @@ class SwapBalanceRow extends StatelessWidget {
       children: [
         Text(
           context.loc.swapAvailableBalance,
-          style: context.font.labelLarge?.copyWith(
+          style: context.bullType.label.copyWith(
             color: context.appColors.secondary,
           ),
         ),
         const Gap(4),
-        Text(balance, style: context.font.labelLarge),
+        Text(balance, style: context.bullType.label),
         const Spacer(),
         BullButton.small(
           label: context.loc.swapMaxButton,
@@ -52,7 +52,7 @@ class SwapBalanceRow extends StatelessWidget {
           width: 51,
           bgColor: context.appColors.secondaryFixedDim,
           textColor: context.appColors.secondary,
-          textStyle: context.font.labelLarge,
+          textStyle: context.bullType.label,
           disabled: maxAmountSat == null || maxAmountSat <= 0,
           onPressed: () {
             context.read<TransferBloc>().add(

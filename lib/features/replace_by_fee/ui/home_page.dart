@@ -10,7 +10,13 @@ import 'package:bb_mobile/features/replace_by_fee/ui/fee_selector_widget.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullShapesX, BullSupportButton, BullText, Gap;
+    show
+        BullButton,
+        BullShapesX,
+        BullSupportButton,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ReplaceByFeeHomePage extends StatefulWidget {
@@ -67,7 +73,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                     children: [
                       BullText(
                         failure.toTranslated(context),
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                         color: context.appColors.error,
                       ),
                       if (failure
@@ -110,7 +116,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                       const Gap(16),
                       BullText(
                         state.failure!.toTranslated(context),
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                         color: context.appColors.error,
                       ),
                       const Gap(16),
@@ -149,14 +155,16 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
           children: [
             BullText(
               context.loc.replaceByFeeOriginalTransactionTitle,
-              style: context.font.headlineLarge,
+              style: context.bullType.subtitle.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const Gap(16),
             BullText(
               context.loc.replaceByFeeFeeRateDisplay(
                 originalFeeRate.toStringAsFixed(1),
               ),
-              style: context.font.labelMedium,
+              style: context.bullType.caption,
             ),
           ],
         ),

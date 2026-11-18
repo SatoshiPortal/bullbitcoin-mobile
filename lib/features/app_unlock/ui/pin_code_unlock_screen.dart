@@ -7,7 +7,14 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInputText, BullPinPad, BullSnackBar, BullTopBar, Gap;
+    show
+        BullButton,
+        BullInputText,
+        BullPinPad,
+        BullSnackBar,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
@@ -90,9 +97,9 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                         Text(
                           context.loc.appUnlockEnterPinMessage,
                           textAlign: .center,
-                          style: context.font.headlineMedium?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w500)
+                              .copyWith(color: context.appColors.onSurface),
                           maxLines: 3,
                         ),
                         const Gap(30),
@@ -147,7 +154,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                               return Text(
                                 context.loc.appUnlockTryAgainIn(timeoutSeconds),
                                 textAlign: .start,
-                                style: context.font.labelSmall?.copyWith(
+                                style: context.bullType.caption.copyWith(
                                   color: context.appColors.error,
                                 ),
                               );
@@ -161,7 +168,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                                           : context.loc.appUnlockAttemptPlural,
                                     ),
                                     textAlign: .start,
-                                    style: context.font.labelSmall?.copyWith(
+                                    style: context.bullType.caption.copyWith(
                                       color: context.appColors.error,
                                     ),
                                   )
@@ -210,7 +217,9 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
               builder: (context, canSubmit) {
                 return BullButton.big(
                   label: context.loc.appUnlockButton,
-                  textStyle: context.font.headlineLarge,
+                  textStyle: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                   bgColor: canSubmit
                       ? context.appColors.secondary
                       : context.appColors.textMuted,

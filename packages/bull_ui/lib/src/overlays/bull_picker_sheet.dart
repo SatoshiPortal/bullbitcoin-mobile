@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/src/layout/gap.dart';
@@ -47,8 +48,9 @@ class BullPickerSheet<T> extends StatelessWidget {
               const Spacer(),
               Text(
                 title,
-                style: Theme.of(context).textTheme.headlineMedium
-                    ?.copyWith(color: colors.onSurface),
+                style: context.bullType.subtitle
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(color: colors.onSurface),
               ),
               const Spacer(),
               IconButton(
@@ -80,8 +82,9 @@ class BullPickerSheet<T> extends StatelessWidget {
                         Expanded(
                           child: Text(
                             label(option),
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(
+                            style: context.bullType.subtitle
+                                .copyWith(fontWeight: FontWeight.w400)
+                                .copyWith(
                                   color: selected
                                       ? colors.primary
                                       : colors.onSurface,

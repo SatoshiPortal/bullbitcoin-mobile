@@ -15,7 +15,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullFadingLinearProgress,
         BullText,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 /// Shared bottom-sheet editor for user-entered annotations on payment
@@ -190,7 +191,9 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
               const Spacer(),
               BullText(
                 widget.title,
-                style: context.font.headlineMedium,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
               ),
               const Spacer(),
@@ -215,7 +218,9 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
                 Expanded(
                   child: BullText(
                     widget.disclosure!,
-                    style: context.font.bodySmall,
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                     color: context.appColors.onSurfaceVariant,
                     maxLines: 3,
                   ),
@@ -231,7 +236,9 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
               children: [
                 BullText(
                   widget.title,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.secondary,
                 ),
                 const Gap(4),
@@ -244,14 +251,14 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
                     // Strip newline / tab / carriage return on type or paste.
                     FilteringTextInputFormatter.deny(RegExp(r'[\n\t\r]')),
                   ],
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.secondary,
                   ),
                   decoration: InputDecoration(
                     isCollapsed: true,
                     border: InputBorder.none,
                     hintText: widget.hint ?? context.loc.receiveEnterHere,
-                    hintStyle: context.font.bodyMedium?.copyWith(
+                    hintStyle: context.bullType.body.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
                     counterText: '',
@@ -264,7 +271,9 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
             Gap(tightGap),
             BullText(
               failure.toTranslated(context),
-              style: context.font.bodySmall,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
               color: context.appColors.error,
             ),
           ],

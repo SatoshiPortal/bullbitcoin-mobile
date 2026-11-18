@@ -39,7 +39,9 @@ class VaultSelectedPage extends StatelessWidget {
                 BullText(
                   context.loc.recoverbullVaultImportedSuccess,
                   textAlign: .left,
-                  style: context.bullText.bodySmall,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
                 const Gap(16),
                 if (vault != null)
@@ -60,13 +62,17 @@ class VaultSelectedPage extends StatelessWidget {
                       children: [
                         BullText(
                           vault.id,
-                          style: context.bullText.headlineMedium,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         const Gap(16),
                         BullText(
                           DateFormat('yyyy-MMM-dd, HH:mm:ss')
                               .format(vault.createdAt.toLocal()),
-                          style: context.bullText.headlineMedium,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -210,12 +216,14 @@ class _DriveVaultsListPageState extends State<DriveVaultsListPage> {
               children: [
                 BullText(
                   sheet.loc.recoverbullGoogleDriveDeleteVaultTitle,
-                  style: sheet.bullText.headlineMedium,
+                  style: sheet.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const Gap(16),
                 BullText(
                   sheet.loc.recoverbullGoogleDriveDeleteConfirmation,
-                  style: sheet.bullText.bodyMedium,
+                  style: sheet.bullType.body,
                   textAlign: .center,
                 ),
                 const Gap(24),
@@ -284,7 +292,7 @@ class _DriveVaultsListPageState extends State<DriveVaultsListPage> {
                         Center(
                           child: BullText(
                             context.loc.recoverbullGoogleDriveNoBackupsFound,
-                            style: context.bullText.bodyMedium,
+                            style: context.bullType.body,
                           ),
                         ),
                       for (final file in _files)
@@ -293,7 +301,9 @@ class _DriveVaultsListPageState extends State<DriveVaultsListPage> {
                           child: ListTile(
                             title: BullText(
                               '${DateFormat('MMM dd, yyyy • HH:mm').format(file.createdTime.toLocal())} • ${file.name}',
-                              style: context.bullText.bodyLarge,
+                              style: context.bullType.body.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
                               maxLines: 2,
                               overflow: .ellipsis,
                             ),
