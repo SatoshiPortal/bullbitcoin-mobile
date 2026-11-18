@@ -442,7 +442,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
             if (ambiguous)
               Text(
                 context.loc.mnemonicLanguageAmbiguous,
-                style: context.font.bodyMedium,
+                style: context.bullType.body,
               ),
             if (matches.length == 1 && matches.single != _language)
               TextButton(
@@ -558,7 +558,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                                   children: [
                                     BullText(
                                       context.loc.passphraseOption,
-                                      style: context.font.bodyLarge,
+                                      style: context.bullType.body.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                     BullText(
                                       _showPassphrase
@@ -568,7 +570,9 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                                           : context
                                                 .loc
                                                 .passphraseOptionOffSubtitle,
-                                      style: context.font.bodySmall,
+                                      style: context.bullType.label.copyWith(
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                       color: context.appColors.textMuted,
                                     ),
                                   ],
@@ -597,7 +601,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                       if (_passphraseCleared && passphrase.isEmpty) ...[
                         BullText(
                           context.loc.passphraseClearedNotice,
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                         ),
                         TextButton(
                           onPressed: () =>
@@ -608,7 +612,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                       if (passphrase != passphrase.trim())
                         BullText(
                           context.loc.passphraseWhitespaceWarning,
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                         ),
                     ],
                   ],
@@ -629,7 +633,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget>
                     BullText(
                       key: _errorKey,
                       errorMessage,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.error,
                     ),
                   ],

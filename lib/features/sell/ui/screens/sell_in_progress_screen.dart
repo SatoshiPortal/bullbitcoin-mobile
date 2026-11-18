@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullLoader;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullLoader, BullTypographyX;
 
 class SellInProgressScreen extends StatelessWidget {
   const SellInProgressScreen({super.key});
@@ -33,9 +34,9 @@ class SellInProgressScreen extends StatelessWidget {
                     const BullLoader.large(),
                     Text(
                       context.loc.sellInProgress,
-                      style: context.font.headlineLarge?.copyWith(
-                        color: context.appColors.outlineVariant,
-                      ),
+                      style: context.bullType.subtitle
+                          .copyWith(fontWeight: FontWeight.w700)
+                          .copyWith(color: context.appColors.outlineVariant),
                     ),
                   ],
                 ),

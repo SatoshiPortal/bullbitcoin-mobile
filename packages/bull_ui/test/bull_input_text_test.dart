@@ -34,6 +34,39 @@ void main() {
   TextField findTextField(WidgetTester tester) =>
       tester.widget<TextField>(find.byType(TextField));
 
+  testWidgets('default entered values use body at 16/24', (tester) async {
+    await pumpInput(tester);
+    final style = findTextField(tester).style;
+    expect(style?.fontSize, 16);
+    expect(style?.height, 24 / 16);
+    expect(style?.fontWeight, FontWeight.w400);
+    expect(style?.color, testBullTheme.onSurface);
+  });
+
+  testWidgets('an explicit style is preserved and prefix stays body medium', (
+    tester,
+  ) async {
+    final custom = testBullTypography.title;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullInputText(
+          value: '123',
+          fixedPrefix: 'CAD',
+          style: custom,
+          onChanged: (_) {},
+        ),
+      ),
+    );
+    expect(findTextField(tester).style, custom);
+    expect(
+      tester.widget<Text>(find.text('CAD')).style,
+      testBullTypography.body.copyWith(
+        color: testBullTheme.onSurface,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  });
+
   group('BullInputText line behaviour', () {
     testWidgets('numeric fields are single-line', (tester) async {
       await pumpInput(tester, onlyNumbers: true);

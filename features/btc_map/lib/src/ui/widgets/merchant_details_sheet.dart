@@ -23,7 +23,7 @@ class MerchantDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.bullType;
     final colors = context.bull;
     final address = merchant.address;
     final openingHours = merchant.openingHoursRules;
@@ -42,7 +42,7 @@ class MerchantDetailsSheet extends StatelessWidget {
         children: [
           BullText(
             merchant.name ?? context.btcMapLoc.merchantMapUnnamed,
-            style: textTheme.titleLarge,
+            style: textTheme.title,
             color: colors.onSurface,
           ),
           const Gap(8),
@@ -51,7 +51,7 @@ class MerchantDetailsSheet extends StatelessWidget {
             const Gap(12),
             BullText(
               description,
-              style: textTheme.bodyMedium,
+              style: textTheme.body,
               color: colors.onSurface,
             ),
           ],
@@ -171,11 +171,7 @@ class _VerificationRow extends StatelessWidget {
         BullIcon(verification.icon, color: color, size: 20),
         const Gap(8),
         Expanded(
-          child: BullText(
-            text,
-            style: Theme.of(context).textTheme.bodyMedium,
-            color: color,
-          ),
+          child: BullText(text, style: context.bullType.body, color: color),
         ),
       ],
     );
@@ -190,7 +186,7 @@ class _Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.bullType;
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Column(
@@ -198,15 +194,11 @@ class _Field extends StatelessWidget {
         children: [
           BullText(
             label,
-            style: textTheme.labelMedium,
+            style: textTheme.caption,
             color: context.bull.textMuted,
           ),
           const Gap(2),
-          BullText(
-            value,
-            style: textTheme.bodyMedium,
-            color: context.bull.onSurface,
-          ),
+          BullText(value, style: textTheme.body, color: context.bull.onSurface),
         ],
       ),
     );

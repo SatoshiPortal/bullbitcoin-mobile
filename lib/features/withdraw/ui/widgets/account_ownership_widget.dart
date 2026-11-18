@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
 
 class AccountOwnershipWidget extends StatelessWidget {
   const AccountOwnershipWidget({
@@ -21,10 +21,9 @@ class AccountOwnershipWidget extends StatelessWidget {
       children: [
         BBText(
           context.loc.withdrawOwnershipQuestion,
-          style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.secondary,
-            fontWeight: .w500,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.secondary, fontWeight: .w500),
         ),
         const Gap(8),
         _buildRadioOption(
@@ -83,9 +82,9 @@ class AccountOwnershipWidget extends StatelessWidget {
                   Expanded(
                     child: BBText(
                       label,
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.appColors.secondary,
-                      ),
+                      style: context.bullType.subtitle
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(color: context.appColors.secondary),
                     ),
                   ),
                 ],

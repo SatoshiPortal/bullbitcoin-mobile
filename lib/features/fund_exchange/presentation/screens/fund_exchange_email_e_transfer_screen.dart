@@ -7,14 +7,13 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 
 class FundExchangeEmailETransferScreen extends StatelessWidget {
   const FundExchangeEmailETransferScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final details = context.select(
       (FundExchangeBloc bloc) => bloc.state.fundingDetails,
     );
@@ -38,12 +37,14 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
             children: [
               BBText(
                 context.loc.fundExchangeETransferTitle,
-                style: theme.textTheme.displaySmall,
+                style: context.bullType.headline,
               ),
               const Gap(16.0),
               BBText(
                 context.loc.fundExchangeETransferDescription,
-                style: theme.textTheme.headlineSmall,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
               ),
               const Gap(24.0),
               if (failedToLoadFundingDetails ||

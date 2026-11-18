@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_select_tile.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullText, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 bool selectionFailureShowsWarning(SendFailure? failure) {
@@ -85,7 +86,9 @@ class CoinSelectionBottomSheet extends StatelessWidget {
               Center(
                 child: BullText(
                   context.loc.sendSelectAmount,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               Positioned(
@@ -99,19 +102,19 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             ],
           ),
           const Gap(32),
-          BullText(selectedUtxoTotal, style: context.font.displaySmall),
+          BullText(selectedUtxoTotal, style: context.bullType.headline),
           const Gap(8),
           BullText(
             '${context.loc.sendAmountRequested}$amountToSend',
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           ),
           if (selectionIsShort) ...[
             const Gap(8),
             BullText(
               context.loc.sendSelectedUtxosInsufficient,
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.error,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: context.appColors.error),
             ),
           ],
           const Gap(24),

@@ -5,7 +5,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullTypographyX;
 
 /// Callback for when a payment request is detected from a QR code
 typedef OnScannedPaymentRequestCallback = void Function(
@@ -61,7 +61,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
               right: 24,
               child: BullButton.big(
                 iconData: Icons.check_circle,
-                textStyle: context.font.labelMedium,
+                textStyle: context.bullType.caption,
                 textColor: context.appColors.onPrimary,
                 onPressed: () {},
                 label: data.$1.length > 30

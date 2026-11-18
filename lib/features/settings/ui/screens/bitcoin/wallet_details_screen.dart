@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullCopyField, BullIcon, BullIcons, Gap;
+    show BullCopyField, BullIcon, BullIcons, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
@@ -60,7 +60,7 @@ class WalletDetailsScreen extends StatelessWidget {
                     const Gap(16),
                     BBText(
                       context.loc.walletDetailsDeletingMessage,
-                      style: context.font.bodyMedium?.copyWith(
+                      style: context.bullType.body.copyWith(
                         color: context.appColors.textMuted,
                       ),
                     ),
@@ -148,14 +148,14 @@ class _InfoField extends StatelessWidget {
       children: [
         BBText(
           label,
-          style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.textMuted,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.textMuted),
         ),
         const Gap(4),
         BBText(
           value,
-          style: context.font.bodyMedium?.copyWith(
+          style: context.bullType.body.copyWith(
             color: context.appColors.onSurface,
           ),
         ),
@@ -176,9 +176,9 @@ class _CopyField extends StatelessWidget {
       children: [
         BBText(
           label,
-          style: context.font.bodyLarge?.copyWith(
-            color: context.appColors.textMuted,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: context.appColors.textMuted),
         ),
         const Gap(4),
         BullCopyField(

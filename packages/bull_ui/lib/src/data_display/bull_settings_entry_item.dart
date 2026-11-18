@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:material_ui/material_ui.dart';
@@ -72,8 +73,9 @@ class BullSettingsEntryItem extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodyLarge
-            ?.copyWith(color: textColor ?? colors.onSurface),
+        style: context.bullType.body
+            .copyWith(fontWeight: FontWeight.w500)
+            .copyWith(color: textColor ?? colors.onSurface),
       ),
       subtitle: subtitle == null
           ? null
@@ -81,8 +83,9 @@ class BullSettingsEntryItem extends StatelessWidget {
               subtitle!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall
-                  ?.copyWith(color: colors.textMuted),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: colors.textMuted),
             ),
       trailing: trailing ?? const Icon(Icons.chevron_right),
       onTap: onTap,

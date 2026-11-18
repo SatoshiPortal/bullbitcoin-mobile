@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -18,7 +19,12 @@ class SpCoinsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: Text(context.loc.coinsTitle, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.coinsTitle,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
       body: SafeArea(
         child: BlocBuilder<SpCubit, SpState>(
@@ -28,7 +34,7 @@ class SpCoinsScreen extends StatelessWidget {
               return Center(
                 child: Text(
                   context.loc.spCoinsEmpty,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.textMuted,
                   ),
                 ),
@@ -67,9 +73,9 @@ class _SpCoinTile extends StatelessWidget {
               ? context.loc.spBlockLabel('${coin.height}')
               : context.loc.spUnconfirmed,
         ),
-        style: context.font.bodySmall?.copyWith(
-          color: context.appColors.textMuted,
-        ),
+        style: context.bullType.label
+            .copyWith(fontWeight: FontWeight.w400)
+            .copyWith(color: context.appColors.textMuted),
       ),
       trailing: _statusIcon(context, coin.status),
     );

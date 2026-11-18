@@ -186,7 +186,9 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
                   children: [
                     Text(
                       context.loc.withdrawRecipientsPrompt,
-                      style: context.bullText.titleMedium,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const Gap(24),
                     if (payout.failure case final failure?) ...[

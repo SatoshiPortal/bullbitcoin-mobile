@@ -13,7 +13,9 @@ final customShapes = BullShapes.standard.copyWith(
 
 Widget wrapWithCustomShapes(Widget child) {
   return MaterialApp(
-    theme: ThemeData(extensions: [testBullTheme, customShapes]),
+    theme: ThemeData(
+      extensions: [testBullTheme, customShapes, testBullTypography],
+    ),
     home: Scaffold(body: child),
   );
 }

@@ -14,7 +14,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullText,
         BullViewerActionButton,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:satoshifier/satoshifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -49,8 +50,9 @@ class AddressViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = color ?? context.appColors.secondary;
-    final textStyle = style ?? context.font.bodyLarge;
-    final effectiveStyle = (textStyle ?? const TextStyle()).copyWith(
+    final textStyle =
+        style ?? context.bullType.body.copyWith(fontWeight: FontWeight.w500);
+    final effectiveStyle = textStyle.copyWith(
       color: textColor,
       decoration: TextDecoration.underline,
       decorationStyle: TextDecorationStyle.dotted,
@@ -249,7 +251,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           else
             BullText(
               context.loc.addressViewerTitle,
-              style: context.font.titleSmall,
+              style: context.bullType.label,
               color: context.appColors.onSurface,
             ),
           const Gap(16),
@@ -279,10 +281,9 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
       final uri = _activeText;
       final address = widget.data;
       final addressIdx = uri.indexOf(address);
-      final baseStyle = context.font.bodyLarge?.copyWith(
-        color: context.appColors.secondary,
-        letterSpacing: 1.2,
-      );
+      final baseStyle = context.bullType.body
+          .copyWith(fontWeight: FontWeight.w500)
+          .copyWith(color: context.appColors.secondary, letterSpacing: 1.2);
       // Highlight the bare address embedded inside the BIP21 URI so the
       // user can spot it at a glance.
       if (addressIdx == -1) {
@@ -317,14 +318,16 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
         for (int i = 0; i < groups.length; i++)
           Text(
             groups[i],
-            style: context.font.bodyLarge?.copyWith(
-              color: i.isOdd
-                  ? context.appColors.textMuted
-                  : context.appColors.secondary,
-              fontWeight: FontWeight.w700,
-              fontFeatures: [const FontFeature.tabularFigures()],
-              letterSpacing: 1.2,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  color: i.isOdd
+                      ? context.appColors.textMuted
+                      : context.appColors.secondary,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: [const FontFeature.tabularFigures()],
+                  letterSpacing: 1.2,
+                ),
           ),
       ],
     );

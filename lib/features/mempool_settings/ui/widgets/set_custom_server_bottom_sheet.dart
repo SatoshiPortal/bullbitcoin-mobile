@@ -12,7 +12,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullButton,
         BullLowerCaseTextFormatter,
         BullShapesX,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;
@@ -154,7 +155,9 @@ class _SetCustomServerBottomSheetState
                           widget.initialUrl == null
                               ? context.loc.mempoolCustomServerAdd
                               : context.loc.mempoolCustomServerEdit,
-                          style: context.font.headlineMedium,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -169,7 +172,7 @@ class _SetCustomServerBottomSheetState
                   const Gap(8),
                   Text(
                     context.loc.mempoolCustomServerBottomSheetDescription,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.textMuted,
                     ),
                   ),
@@ -195,11 +198,13 @@ class _SetCustomServerBottomSheetState
                         Expanded(
                           child: Text(
                             context.loc.mempoolCustomServerInfoDescription,
-                            style: context.font.bodySmall?.copyWith(
-                              color: context.appColors.onSurface.withValues(
-                                alpha: 0.8,
-                              ),
-                            ),
+                            style: context.bullType.label
+                                .copyWith(fontWeight: FontWeight.w400)
+                                .copyWith(
+                                  color: context.appColors.onSurface.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
                           ),
                         ),
                       ],
@@ -215,7 +220,9 @@ class _SetCustomServerBottomSheetState
                       FilteringTextInputFormatter.deny(RegExp(r'\s')),
                       BullLowerCaseTextFormatter(),
                     ],
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     decoration: InputDecoration(
                       fillColor: context.appColors.surface,
                       filled: true,
@@ -245,7 +252,7 @@ class _SetCustomServerBottomSheetState
                         horizontal: 16.0,
                       ),
                       hintText: 'https://mempool.space',
-                      hintStyle: context.font.bodyMedium?.copyWith(
+                      hintStyle: context.bullType.body.copyWith(
                         color: context.appColors.textMuted,
                       ),
                       errorMaxLines: 3,
@@ -268,17 +275,18 @@ class _SetCustomServerBottomSheetState
                           children: [
                             Text(
                               context.loc.mempoolCustomServerUseSsl,
-                              style: context.font.bodyMedium,
+                              style: context.bullType.body,
                             ),
                             if (_sslAutoDetected) ...[
                               const Gap(2),
                               Text(
                                 context.loc.mempoolCustomServerSslAutoDetected,
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.appColors.onSurface.withValues(
-                                    alpha: 0.6,
-                                  ),
-                                ),
+                                style: context.bullType.label
+                                    .copyWith(fontWeight: FontWeight.w400)
+                                    .copyWith(
+                                      color: context.appColors.onSurface
+                                          .withValues(alpha: 0.6),
+                                    ),
                               ),
                             ],
                           ],
@@ -300,11 +308,13 @@ class _SetCustomServerBottomSheetState
                     padding: const EdgeInsets.only(left: 4.0),
                     child: Text(
                       context.loc.mempoolCustomServerSslHelpText,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.onSurface.withValues(
-                          alpha: 0.6,
-                        ),
-                      ),
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(
+                            color: context.appColors.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
                       textAlign: TextAlign.start,
                     ),
                   ),
@@ -329,9 +339,9 @@ class _SetCustomServerBottomSheetState
                           Expanded(
                             child: Text(
                               _errorMessage!,
-                              style: context.font.bodySmall?.copyWith(
-                                color: context.appColors.error,
-                              ),
+                              style: context.bullType.label
+                                  .copyWith(fontWeight: FontWeight.w400)
+                                  .copyWith(color: context.appColors.error),
                             ),
                           ),
                         ],

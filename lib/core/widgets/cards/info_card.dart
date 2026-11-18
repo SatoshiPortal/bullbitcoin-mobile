@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
 
 class InfoCard extends StatelessWidget {
   const InfoCard({
@@ -57,15 +57,15 @@ class InfoCard extends StatelessWidget {
                             if (title != null && title!.isNotEmpty) ...[
                               Text(
                                 title!,
-                                style: context.font.bodyLarge?.copyWith(
-                                  color: tagColor,
-                                ),
+                                style: context.bullType.body
+                                    .copyWith(fontWeight: FontWeight.w500)
+                                    .copyWith(color: tagColor),
                               ),
                               const Gap(4),
                             ],
                             Text(
                               description,
-                              style: context.font.bodyMedium?.copyWith(
+                              style: context.bullType.body.copyWith(
                                 color: context.appColors.onSurfaceVariant,
                                 fontWeight: boldDescription ? .bold : .normal,
                               ),

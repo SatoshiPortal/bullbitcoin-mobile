@@ -5,7 +5,13 @@ import 'package:bb_mobile/features/sell/ui/widgets/sell_coin_selection_bottom_sh
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText, Gap;
+    show
+        BullBottomSheet,
+        BullButton,
+        BullShapesX,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class SellAdvancedOptionsBottomSheet extends StatelessWidget {
@@ -33,7 +39,9 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
               Center(
                 child: BullText(
                   context.loc.sellAdvancedOptions,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               Positioned(
@@ -52,7 +60,9 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
             children: [
               BullText(
                 context.loc.sellReplaceByFeeActivated,
-                style: context.font.headlineMedium,
+                style: context.bullType.subtitle.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               Switch(
                 value: isRBFEnabled,
@@ -68,7 +78,9 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
           ListTile(
             title: BullText(
               context.loc.sellSelectCoinsManually,
-              style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(fontWeight: .w500),
             ),
             trailing: const Icon(Icons.arrow_forward),
             onTap: () {

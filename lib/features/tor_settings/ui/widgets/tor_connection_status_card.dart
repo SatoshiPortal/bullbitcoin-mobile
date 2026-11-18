@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_tor/tor.dart';
 
@@ -68,7 +68,9 @@ class TorConnectionStatusCard extends StatelessWidget {
               external
                   ? context.loc.torSettingsLocalProxyStatus
                   : context.loc.torSettingsConnectionStatus,
-              style: context.font.titleMedium,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const Gap(16),
             Row(
@@ -81,22 +83,29 @@ class TorConnectionStatusCard extends StatelessWidget {
                     children: [
                       Text(
                         _getStatusTitle(context),
-                        style: context.font.bodyLarge?.copyWith(
-                          fontWeight: .w600,
-                        ),
+                        style: context.bullType.body
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(fontWeight: .w600),
                       ),
                       const Gap(4),
                       Text(
                         _getStatusDescription(context),
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.onSurface.withValues(
-                            alpha: 0.7,
-                          ),
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(
+                              color: context.appColors.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
                       ),
                       if (routeLabel != null) ...[
                         const Gap(4),
-                        Text(routeLabel!, style: context.font.bodySmall),
+                        Text(
+                          routeLabel!,
+                          style: context.bullType.label.copyWith(
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
                       ],
                     ],
                   ),

@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSnackBar, Gap, BullTypographyX;
 
 class BroadcastPayjoinOriginalTxButton extends StatefulWidget {
   final PayjoinSession payjoin;
@@ -165,7 +166,7 @@ class _BroadcastPayjoinOriginalTxButtonState
         if (broadcastFailure != null) ...[
           Text(
             broadcastFailure.toTranslated(context),
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.error,
             ),
             textAlign: .center,

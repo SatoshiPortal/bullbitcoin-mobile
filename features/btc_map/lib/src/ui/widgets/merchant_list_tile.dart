@@ -24,7 +24,7 @@ class MerchantListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.bullType;
     final address = merchant.address;
     final verification = merchant.verificationAt(now);
     final verificationColor = verification.color(context);
@@ -54,9 +54,9 @@ class MerchantListTile extends StatelessWidget {
                 children: [
                   BullText(
                     merchant.name ?? context.btcMapLoc.merchantMapUnnamed,
-                    style: textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: textTheme.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(fontWeight: FontWeight.w600),
                     color: colors.text,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -64,7 +64,9 @@ class MerchantListTile extends StatelessWidget {
                   if (address != null)
                     BullText(
                       address,
-                      style: textTheme.bodySmall,
+                      style: textTheme.label.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                       color: colors.textMuted,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

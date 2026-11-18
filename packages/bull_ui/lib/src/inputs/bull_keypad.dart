@@ -1,3 +1,5 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
+
 import 'dart:math' as math;
 
 import 'package:bull_ui/src/theme/bull_keypad_colors.dart';
@@ -190,8 +192,9 @@ class BullKeyGlyph extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: Theme.of(context).textTheme.headlineLarge
-          ?.copyWith(fontSize: size, color: color),
+      style: context.bullType.subtitle
+          .copyWith(fontWeight: FontWeight.w700)
+          .copyWith(fontSize: size, color: color),
       textScaler: TextScaler.noScaling,
     );
   }

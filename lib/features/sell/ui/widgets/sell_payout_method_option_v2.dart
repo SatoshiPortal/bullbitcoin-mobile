@@ -36,7 +36,14 @@ class SellPayoutMethodOptionV2<T> extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         title: Row(
           children: [
-            Expanded(child: BullText(title, style: context.bullText.bodyLarge)),
+            Expanded(
+              child: BullText(
+                title,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
             if (tag case final tag?) ...[
               const Gap(8),
               BullOptionsTag(text: tag),
@@ -49,7 +56,9 @@ class SellPayoutMethodOptionV2<T> extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 4),
                 child: BullText(
                   description,
-                  style: context.bullText.bodySmall,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
                   color: colors.textMuted,
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -42,7 +43,9 @@ class BullViewerActionButton extends StatelessWidget {
               const Gap(4),
               BullText(
                 label,
-                style: Theme.of(context).textTheme.bodySmall,
+                style: context.bullType.label.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
                 color: colors.secondary,
               ),
             ],

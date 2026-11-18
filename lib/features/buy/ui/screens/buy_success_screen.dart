@@ -114,7 +114,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
             fallbackLabel: context.loc.payjoinBuyRegularSend,
             inProgressColor: context.appColors.secondary,
             successColor: context.appColors.success,
-            textStyle: context.font.bodyMedium,
+            textStyle: context.bullType.body,
           ),
           if (payoutTime != null)
             Row(
@@ -122,7 +122,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
               children: [
                 Text(
                   context.loc.buyPayoutWillBeSentIn,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   textAlign: .center,
                 ),
                 const Gap(4),

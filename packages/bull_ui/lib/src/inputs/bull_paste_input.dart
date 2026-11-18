@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -40,13 +41,14 @@ class BullPasteInput extends StatelessWidget {
             child: text.isEmpty
                 ? BullText(
                     hint,
-                    style: Theme.of(context).textTheme.labelSmall,
+                    style: context.bullType.caption,
                     color: colors.onSurface,
                   )
                 : Text(
                     text.trim(),
-                    style: Theme.of(context).textTheme.bodyLarge
-                        ?.copyWith(color: colors.onSurface),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: colors.onSurface),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

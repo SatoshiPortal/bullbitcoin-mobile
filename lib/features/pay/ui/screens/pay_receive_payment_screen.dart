@@ -18,7 +18,14 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullCountdown, BullSnackBar, BullText, BullTopBar, Gap;
+    show
+        BullButton,
+        BullCountdown,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class PayReceivePaymentScreen extends StatelessWidget {
@@ -115,7 +122,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
               Center(
                 child: BullText(
                   context.loc.payPleasePayInvoice,
-                  style: context.font.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.secondary,
                 ),
               ),
@@ -125,7 +134,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                   children: [
                     BullText(
                       context.loc.payPriceRefreshIn,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.outline,
                     ),
                     if (order.confirmationDeadline case final deadline?)
@@ -293,7 +302,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
         children: [
           BullText(
             label,
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.onSurfaceVariant,
             ),
           ),
@@ -307,7 +316,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     value,
                     textAlign: .end,
                     maxLines: 2,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: isError
                           ? context.appColors.error
                           : context.appColors.secondary,

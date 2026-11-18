@@ -69,7 +69,7 @@ class HomeFiatBalance extends StatelessWidget {
         child: CurrencyText(
           balanceSat,
           showFiat: true,
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.onPrimary,
         ),
       ),

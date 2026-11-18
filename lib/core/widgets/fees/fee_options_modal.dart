@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -9,7 +8,12 @@ import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullSelectableList, BullSelectableListItem, BullText, Gap;
+    show
+        BullSelectableList,
+        BullSelectableListItem,
+        BullText,
+        Gap,
+        BullTypographyX;
 
 /// Shared fee-selection bottom sheet — mounted by both the Bitcoin send
 /// confirm screen and the swap confirm page. The widget depends only on
@@ -103,7 +107,9 @@ class _FeeOptionsModalState extends State<FeeOptionsModal> {
                   const Gap(16),
                   BullText(
                     context.loc.sendSelectNetworkFee,
-                    style: context.font.headlineMedium,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const Gap(16),
                   _PresetList(snapshot: snapshot),

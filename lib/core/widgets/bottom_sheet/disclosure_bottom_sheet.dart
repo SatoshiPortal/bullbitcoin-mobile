@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullShapesX, BullText, Gap;
+    show BullBottomSheet, BullShapesX, BullText, Gap, BullTypographyX;
 
 class DisclosureLink extends StatelessWidget {
   const DisclosureLink({
@@ -41,7 +41,7 @@ class DisclosureLink extends StatelessWidget {
                 Flexible(
                   child: BullText(
                     label,
-                    style: context.font.labelSmall,
+                    style: context.bullType.caption,
                     color: color,
                   ),
                 ),
@@ -97,7 +97,12 @@ class DisclosureBottomSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: BullText(title, style: context.font.headlineMedium),
+                  child: BullText(
+                    title,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
                 IconButton(
                   tooltip: context.loc.closeDialogButton,
@@ -155,7 +160,9 @@ class _DisclosureBody extends StatelessWidget {
         header: true,
         child: BullText(
           block.substring(3),
-          style: context.font.titleMedium?.copyWith(fontWeight: .w600),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(fontWeight: .w600),
           color: context.appColors.text,
         ),
       );
@@ -166,7 +173,9 @@ class _DisclosureBody extends StatelessWidget {
         header: true,
         child: BullText(
           block.substring(4),
-          style: context.font.bodyLarge?.copyWith(fontWeight: .w600),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(fontWeight: .w600),
           color: context.appColors.text,
         ),
       );
@@ -190,7 +199,7 @@ class _DisclosureBody extends StatelessWidget {
 
     return BullText(
       block,
-      style: context.font.bodyMedium,
+      style: context.bullType.body,
       color: context.appColors.text,
     );
   }
@@ -222,13 +231,15 @@ class _DisclosureBody extends StatelessWidget {
               children: [
                 BullText(
                   title,
-                  style: context.font.bodyLarge?.copyWith(fontWeight: .w600),
+                  style: context.bullType.body
+                      .copyWith(fontWeight: FontWeight.w500)
+                      .copyWith(fontWeight: .w600),
                   color: context.appColors.text,
                 ),
                 const Gap(6),
                 BullText(
                   body,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   color: context.appColors.text,
                 ),
               ],
@@ -252,7 +263,7 @@ class _DisclosureBody extends StatelessWidget {
                 width: 18,
                 child: BullText(
                   '•',
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   color: context.appColors.text,
                 ),
               ),
@@ -265,9 +276,7 @@ class _DisclosureBody extends StatelessWidget {
   }
 
   Widget _buildBulletText(BuildContext context, String item) {
-    final style = context.font.bodyMedium?.copyWith(
-      color: context.appColors.text,
-    );
+    final style = context.bullType.body.copyWith(color: context.appColors.text);
     final match = RegExp(r'^\*\*(.+?)\*\*(.*)$').firstMatch(item);
 
     if (match == null) return Text(item, style: style);
@@ -278,7 +287,7 @@ class _DisclosureBody extends StatelessWidget {
         children: [
           TextSpan(
             text: match.group(1),
-            style: style?.copyWith(fontWeight: .w600),
+            style: style.copyWith(fontWeight: .w600),
           ),
           TextSpan(text: match.group(2)),
         ],

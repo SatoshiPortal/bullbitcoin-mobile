@@ -1,4 +1,4 @@
-import 'package:bull_ui/bull_ui.dart' show BullText, BullThemeX;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 
 import 'dart:ui' show Tristate;
 
@@ -58,10 +58,7 @@ void main() {
     final labelText = find.byWidgetPredicate(
       (widget) => widget is BullText && widget.text == label,
     );
-    expect(
-      tester.widget<BullText>(labelText).style,
-      context.bullText.bodyMedium,
-    );
+    expect(tester.widget<BullText>(labelText).style, context.bullType.body);
     expect(
       tester
               .getSemantics(find.bySemanticsLabel(label))

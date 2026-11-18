@@ -10,7 +10,8 @@ import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_s
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullText, Gap, BullTypographyX;
 
 class ShowAnimatedQrWidget extends StatelessWidget {
   final String psbt;
@@ -86,7 +87,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
               child: Text(
                 failure.toTranslated(context),
                 textAlign: TextAlign.center,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.error,
                 ),
               ),
@@ -144,7 +145,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
                     (state.currentIndex + 1).toString(),
                     state.parts.length.toString(),
                   ),
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.secondary,
                   ),
                 ),

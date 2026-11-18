@@ -9,7 +9,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullSwitch, BullSnackBar;
+    show BullBorderedTile, BullSwitch, BullSnackBar, BullTypographyX;
 
 /// Payjoin on/off toggle row for the bitcoin receive screen, shown under the
 /// receive address (product decision 2026-07-25 — previously a TopBar chip).
@@ -64,7 +64,7 @@ class ReceivePayjoinToggleTile extends StatelessWidget {
               Expanded(
                 child: BBText(
                   context.loc.receivePayjoinQrBadge,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   color: context.appColors.secondary,
                 ),
               ),

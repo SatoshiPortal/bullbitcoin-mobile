@@ -1,4 +1,5 @@
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter/widgets.dart';
@@ -34,6 +35,8 @@ class WalletRouter {
               context.goNamed(OnboardingRoute.onboarding.name),
           onImportNetworkWallet: () =>
               context.pushNamed(OnboardingRoute.recoverFromPhysical.name),
+          onRecoverEncryptedVault: () =>
+              RecoverBullFeature.open(context, RecoverBullFlow.recoverVault),
           quickActions: quickActions,
           onQuickAction: onQuickAction,
           onCustomizeQuickActions: onCustomizeQuickActions,

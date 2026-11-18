@@ -26,7 +26,7 @@ class FoundationColours extends m.StatelessWidget {
   @override
   m.Widget build(m.BuildContext context) {
     final b = context.bull;
-    final t = m.Theme.of(context).textTheme;
+    final t = context.bullType;
     final swatches = <(String, m.Color)>[
       ('primary', b.primary),
       ('onPrimary', b.onPrimary),
@@ -84,10 +84,10 @@ class FoundationColours extends m.StatelessWidget {
                     ),
                   ),
                   const m.SizedBox(width: BullSpacing.sm),
-                  m.Expanded(child: m.Text(name, style: t.bodyMedium)),
+                  m.Expanded(child: m.Text(name, style: t.body)),
                   m.Text(
                     _hex(color),
-                    style: t.labelSmall?.copyWith(color: b.textMuted),
+                    style: t.caption.copyWith(color: b.textMuted),
                   ),
                 ],
               ),
@@ -115,7 +115,7 @@ class FoundationRadius extends m.StatelessWidget {
   @override
   m.Widget build(m.BuildContext context) {
     final b = context.bull;
-    final t = m.Theme.of(context).textTheme;
+    final t = context.bullType;
     final shapes = context.bullShapes;
     final steps = <(String, double)>[
       ('button', shapes.button),
@@ -150,10 +150,10 @@ class FoundationRadius extends m.StatelessWidget {
                     ),
                   ),
                   const m.SizedBox(height: BullSpacing.xs),
-                  m.Text(name, style: t.labelMedium),
+                  m.Text(name, style: t.caption),
                   m.Text(
                     '${r.toInt()}px',
-                    style: t.labelSmall?.copyWith(color: b.textMuted),
+                    style: t.caption.copyWith(color: b.textMuted),
                   ),
                 ],
               ),
@@ -182,7 +182,7 @@ class FoundationSpacing extends m.StatelessWidget {
   @override
   m.Widget build(m.BuildContext context) {
     final b = context.bull;
-    final t = m.Theme.of(context).textTheme;
+    final t = context.bullType;
     const steps = <(String, double)>[
       ('zero', BullSpacing.zero),
       ('xxs', BullSpacing.xxs),
@@ -204,10 +204,7 @@ class FoundationSpacing extends m.StatelessWidget {
               padding: const m.EdgeInsets.only(bottom: BullSpacing.sm),
               child: m.Row(
                 children: [
-                  m.SizedBox(
-                    width: 56,
-                    child: m.Text(name, style: t.labelMedium),
-                  ),
+                  m.SizedBox(width: 56, child: m.Text(name, style: t.caption)),
                   m.Container(
                     width: s == 0 ? 1 : s,
                     height: 16,
@@ -216,7 +213,7 @@ class FoundationSpacing extends m.StatelessWidget {
                   const m.SizedBox(width: BullSpacing.sm),
                   m.Text(
                     '${s.toInt()}px',
-                    style: t.labelSmall?.copyWith(color: b.textMuted),
+                    style: t.caption.copyWith(color: b.textMuted),
                   ),
                 ],
               ),
@@ -228,7 +225,7 @@ class FoundationSpacing extends m.StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// TextStyles — the Material TextTheme roles (projected from BullTypography)
+// TextStyles — the Material projection, rendered through BullTypography roles
 // ---------------------------------------------------------------------------
 
 @widgetbook.UseCase(
@@ -245,23 +242,23 @@ class FoundationTextStyles extends m.StatelessWidget {
   @override
   m.Widget build(m.BuildContext context) {
     final b = context.bull;
-    final t = m.Theme.of(context).textTheme;
+    final t = context.bullType;
     final styles = <(String, m.TextStyle?)>[
-      ('displayLarge', t.displayLarge),
-      ('displayMedium', t.displayMedium),
-      ('displaySmall', t.displaySmall),
-      ('headlineLarge', t.headlineLarge),
-      ('headlineMedium', t.headlineMedium),
-      ('headlineSmall', t.headlineSmall),
-      ('titleLarge', t.titleLarge),
-      ('titleMedium', t.titleMedium),
-      ('titleSmall', t.titleSmall),
-      ('bodyLarge', t.bodyLarge),
-      ('bodyMedium', t.bodyMedium),
-      ('bodySmall', t.bodySmall),
-      ('labelLarge', t.labelLarge),
-      ('labelMedium', t.labelMedium),
-      ('labelSmall', t.labelSmall),
+      ('displayLarge', t.display),
+      ('displayMedium', t.display),
+      ('displaySmall', t.headline),
+      ('headlineLarge', t.subtitle.copyWith(fontWeight: m.FontWeight.w700)),
+      ('headlineMedium', t.subtitle.copyWith(fontWeight: m.FontWeight.w500)),
+      ('headlineSmall', t.subtitle.copyWith(fontWeight: m.FontWeight.w400)),
+      ('titleLarge', t.title),
+      ('titleMedium', t.body.copyWith(fontWeight: m.FontWeight.w500)),
+      ('titleSmall', t.label),
+      ('bodyLarge', t.body.copyWith(fontWeight: m.FontWeight.w500)),
+      ('bodyMedium', t.body),
+      ('bodySmall', t.label.copyWith(fontWeight: m.FontWeight.w400)),
+      ('labelLarge', t.label),
+      ('labelMedium', t.caption),
+      ('labelSmall', t.caption),
     ];
     return m.ColoredBox(
       color: b.surface,
@@ -277,7 +274,7 @@ class FoundationTextStyles extends m.StatelessWidget {
                   children: [
                     m.Text(
                       name.toUpperCase(),
-                      style: t.labelSmall?.copyWith(color: b.textMuted),
+                      style: t.caption.copyWith(color: b.textMuted),
                     ),
                     m.Text(
                       'The quick brown fox',

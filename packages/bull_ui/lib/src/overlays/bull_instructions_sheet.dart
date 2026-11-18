@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/overlays/bull_bottom_sheet.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -73,7 +74,9 @@ class BullInstructionsSheet extends StatelessWidget {
                     Expanded(
                       child: BullText(
                         title,
-                        style: Theme.of(context).textTheme.headlineMedium,
+                        style: context.bullType.subtitle.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -89,7 +92,7 @@ class BullInstructionsSheet extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: BullText(
                       subtitle!,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: context.bullType.body,
                       color: colors.text,
                       textAlign: TextAlign.left,
                     ),
@@ -126,11 +129,7 @@ class BullInstructionsSheet extends StatelessWidget {
   Widget _buildInstructionStep(BuildContext context, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: BullText(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-        maxLines: 3,
-      ),
+      child: BullText(text, style: context.bullType.body, maxLines: 3),
     );
   }
 }

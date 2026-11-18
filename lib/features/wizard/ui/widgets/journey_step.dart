@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 
 class JourneyStep extends StatelessWidget {
   const JourneyStep({super.key});
@@ -31,7 +31,7 @@ class JourneyStep extends StatelessWidget {
         children: [
           BullText(
             loc.wizardJourneyBody,
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.onSurfaceVariant,
               height: 1.4,
             ),
@@ -69,7 +69,7 @@ class _Tip extends StatelessWidget {
           Expanded(
             child: BullText(
               text,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.onSurface,
                 height: 1.4,
               ),

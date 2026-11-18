@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
 
 class AnnouncementBanner extends StatelessWidget {
   const AnnouncementBanner({super.key});
@@ -71,7 +71,7 @@ class _AnnouncementItem extends StatelessWidget {
                 children: [
                   BBText(
                     announcement.title,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                     color: isDarkMode
@@ -83,7 +83,9 @@ class _AnnouncementItem extends StatelessWidget {
                   const Gap(4),
                   BBText(
                     announcement.description,
-                    style: context.font.bodySmall,
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                     color: isDarkMode
                         ? context.appColors.onSurface.withValues(alpha: 0.7)
                         : context.appColors.onSecondary,
@@ -156,7 +158,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                   Expanded(
                     child: BBText(
                       announcement.title,
-                      style: context.font.titleLarge?.copyWith(
+                      style: context.bullType.title.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -179,7 +181,7 @@ class _AnnouncementBottomSheet extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                 child: BBText(
                   announcement.description,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.onSurface.withValues(alpha: 0.8),
                     height: 1.5,
                   ),

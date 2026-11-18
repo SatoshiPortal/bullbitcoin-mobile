@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/transactions/presentation/transaction_failure
 import 'package:bull_logger/bull_logger.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSnackBar, Gap, BullTypographyX;
 
 /// Manual "retry now" for a swap stranded because the watcher could not reach
 /// Boltz: drives the claim/refund directly on the script path (no Boltz API,
@@ -47,7 +48,7 @@ class RetrySwapButton extends StatelessWidget {
           const Gap(16),
           Text(
             retryFailure.toTranslated(context),
-            style: context.font.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.error,
             ),
             textAlign: TextAlign.center,

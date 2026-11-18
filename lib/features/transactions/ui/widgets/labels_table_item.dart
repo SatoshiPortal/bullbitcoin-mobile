@@ -5,7 +5,8 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:bb_mobile/features/transactions/presentation/transaction_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullText;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSnackBar, BullText, BullTypographyX;
 
 class LabelsTableItem extends StatelessWidget {
   const LabelsTableItem({super.key, required this.title, required this.labels});
@@ -24,7 +25,7 @@ class LabelsTableItem extends StatelessWidget {
             flex: 2,
             child: BullText(
               title,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.onSurface,
               ),
             ),

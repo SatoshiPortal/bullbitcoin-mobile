@@ -93,6 +93,31 @@ class BullTypography extends ThemeExtension<BullTypography> {
     ),
   );
 
+  /// Resolves the scale once at the theme boundary, before projecting it.
+  ///
+  /// Material must not fill missing properties from slot-specific defaults:
+  /// two slots of the same role must remain identical apart from their weight.
+  /// Explicit colour keeps non-inheriting styles legible in both brightnesses.
+  BullTypography resolved(Color defaultColor) {
+    TextStyle resolve(TextStyle style) => style.copyWith(
+      inherit: false,
+      color: style.color ?? defaultColor,
+      letterSpacing: style.letterSpacing ?? 0,
+      textBaseline: style.textBaseline ?? TextBaseline.alphabetic,
+      leadingDistribution:
+          style.leadingDistribution ?? TextLeadingDistribution.even,
+    );
+    return BullTypography(
+      display: resolve(display),
+      headline: resolve(headline),
+      title: resolve(title),
+      subtitle: resolve(subtitle),
+      body: resolve(body),
+      label: resolve(label),
+      caption: resolve(caption),
+    );
+  }
+
   /// This scale set in [family]: every size, line height and weight stays.
   BullTypography withFamily(String family) => BullTypography(
     display: display.copyWith(fontFamily: family),

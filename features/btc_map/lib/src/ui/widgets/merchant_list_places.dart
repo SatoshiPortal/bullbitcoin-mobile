@@ -21,7 +21,7 @@ class MerchantListPlaces extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final listing = state.listing;
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.bullType;
     final colors = context.bull;
     // The count line already asks the user to zoom in.
     if (listing.isZoomedOut) return const SliverToBoxAdapter();
@@ -33,7 +33,7 @@ class MerchantListPlaces extends StatelessWidget {
             state.isSearching
                 ? context.btcMapLoc.merchantMapNoResults
                 : context.btcMapLoc.merchantMapNoPlacesInView,
-            style: textTheme.bodyMedium,
+            style: textTheme.body,
             color: colors.textMuted,
             textAlign: TextAlign.center,
           ),
@@ -69,7 +69,7 @@ class MerchantListPlaces extends StatelessWidget {
                         listing.places.length,
                         listing.total,
                       ),
-                style: textTheme.bodySmall,
+                style: textTheme.label.copyWith(fontWeight: FontWeight.w400),
                 color: colors.textMuted,
                 textAlign: TextAlign.center,
               ),

@@ -9,7 +9,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullSettingsEntryItem, BullSnackBar, BullTopBar, Gap;
+    show BullSettingsEntryItem, BullSnackBar, BullTopBar, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -156,7 +156,7 @@ class _StatusRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(label, style: context.font.bodyMedium),
+        Text(label, style: context.bullType.body),
         const Spacer(),
         Text(
           isTested
@@ -164,7 +164,7 @@ class _StatusRow extends StatelessWidget {
               : unknown
               ? context.loc.coreScreensUnknown
               : context.loc.backupSettingsNotTested,
-          style: context.font.bodyMedium?.copyWith(
+          style: context.bullType.body.copyWith(
             color: isTested
                 ? context.appColors.success
                 : context.appColors.error,

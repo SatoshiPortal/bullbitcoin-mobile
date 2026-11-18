@@ -9,7 +9,14 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullShimmerLine, BullSnackBar, BullText, BullTopBar, Gap;
+    show
+        BullButton,
+        BullShimmerLine,
+        BullSnackBar,
+        BullText,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class SelectScriptTypePage extends StatelessWidget {
@@ -55,7 +62,7 @@ class SelectScriptTypePage extends StatelessWidget {
                 children: [
                   BullText(
                     context.loc.importMnemonicSyncMessage,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.textMuted,
                     ),
                     textAlign: .center,
@@ -135,7 +142,7 @@ class _WalletTypeCard extends StatelessWidget {
   ];
 
   TextStyle? _mutedStyle(BuildContext context) =>
-      context.font.bodyMedium?.copyWith(color: context.appColors.textMuted);
+      context.bullType.body.copyWith(color: context.appColors.textMuted);
 
   @override
   Widget build(BuildContext context) {
@@ -166,10 +173,12 @@ class _WalletTypeCard extends StatelessWidget {
                 children: [
                   BullText(
                     title,
-                    style: context.font.titleMedium?.copyWith(
-                      fontWeight: .w600,
-                      color: context.appColors.text,
-                    ),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(
+                          fontWeight: .w600,
+                          color: context.appColors.text,
+                        ),
                   ),
                   const Gap(8),
                   ...switch (scan) {

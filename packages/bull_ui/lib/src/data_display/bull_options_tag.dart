@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
@@ -21,7 +22,7 @@ class BullOptionsTag extends StatelessWidget {
           BoxShadow(color: colors.border, offset: const Offset(0, 2)),
         ],
       ),
-      child: BullText(text, style: Theme.of(context).textTheme.labelMedium),
+      child: BullText(text, style: context.bullType.caption),
     );
   }
 }

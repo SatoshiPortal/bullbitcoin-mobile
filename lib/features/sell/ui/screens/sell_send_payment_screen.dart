@@ -27,7 +27,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullCountdown,
         BullReferenceNotice,
         BullSwitch,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class SellSendPaymentScreen extends StatelessWidget {
   const SellSendPaymentScreen({super.key});
@@ -117,7 +118,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                   child: Text(
                     preparationFailure.toTranslated(context),
                     textAlign: TextAlign.center,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.error,
                     ),
                   ),
@@ -131,9 +132,9 @@ class SellSendPaymentScreen extends StatelessWidget {
                       const Gap(24.0),
                       Text(
                         context.loc.sellConfirmPayment,
-                        style: context.font.headlineMedium?.copyWith(
-                          color: context.appColors.secondary,
-                        ),
+                        style: context.bullType.subtitle
+                            .copyWith(fontWeight: FontWeight.w500)
+                            .copyWith(color: context.appColors.secondary),
                       ),
                       const Gap(4.0),
                       Row(
@@ -141,7 +142,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                         children: [
                           Text(
                             context.loc.sellPriceWillRefreshIn,
-                            style: context.font.bodyMedium?.copyWith(
+                            style: context.bullType.body.copyWith(
                               color: context.appColors.outline,
                             ),
                           ),
@@ -256,7 +257,7 @@ class SellSendPaymentScreen extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 context.loc.payjoinUseToggle,
-                                style: context.font.bodyMedium,
+                                style: context.bullType.body,
                               ),
                             ),
                             BullSwitch(
@@ -467,7 +468,7 @@ class _BottomButtons extends StatelessWidget {
                 ? context.loc.exchangePaymentSentRefreshingOrder
                 : context.loc.exchangeSendingPayment,
             color: context.appColors.secondary,
-            textStyle: context.font.bodyMedium,
+            textStyle: context.bullType.body,
           )
         else
           BullButton.big(
@@ -502,9 +503,7 @@ class _SellError extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Text(
           sellError.toTranslated(context),
-          style: context.font.bodyMedium?.copyWith(
-            color: context.appColors.error,
-          ),
+          style: context.bullType.body.copyWith(color: context.appColors.error),
           textAlign: TextAlign.center,
         ),
       ),

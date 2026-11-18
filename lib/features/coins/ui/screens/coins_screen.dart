@@ -220,17 +220,16 @@ class _SelectionTopBar extends StatelessWidget {
           Expanded(
             child: Text(
               context.loc.coinsSelectedCount(state.selectedOutpoints.length),
-              style: context.bullText.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colors.text,
-              ),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(fontWeight: FontWeight.w600, color: colors.text),
             ),
           ),
           GestureDetector(
             onTap: cubit.selectAllUnfrozen,
             child: Text(
               context.loc.coinsSelectAll,
-              style: context.bullText.labelLarge?.copyWith(
+              style: context.bullType.label.copyWith(
                 fontWeight: FontWeight.w600,
                 color: colors.primary,
               ),
@@ -341,7 +340,7 @@ class _SubHeader extends StatelessWidget {
                   onTap: cubit.clearFilters,
                   child: Text(
                     loc.coinsClearAll,
-                    style: context.bullText.labelMedium?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: colors.textMuted,
                       decoration: TextDecoration.underline,
                     ),
@@ -639,9 +638,7 @@ class _ErrorState extends StatelessWidget {
               state.failure?.toTranslated(context) ??
                   context.loc.coinsErrorUnexpected,
               textAlign: TextAlign.center,
-              style: context.bullText.bodyMedium?.copyWith(
-                color: colors.textMuted,
-              ),
+              style: context.bullType.body.copyWith(color: colors.textMuted),
             ),
             const SizedBox(height: 16),
             BullButton.small(

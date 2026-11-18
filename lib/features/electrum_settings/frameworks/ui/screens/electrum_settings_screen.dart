@@ -5,7 +5,12 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/set_a
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/tor_proxy_error_banner.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullPullableBody, BullSegmented, Gap;
+    show
+        BullFadingLinearProgress,
+        BullPullableBody,
+        BullSegmented,
+        Gap,
+        BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -72,7 +77,7 @@ class ElectrumSettingsScreen extends StatelessWidget {
               onPressed: () => SetAdvancedOptionsBottomSheet.show(context),
               child: Text(
                 context.loc.electrumAdvancedOptions,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.primary,
                 ),
               ),

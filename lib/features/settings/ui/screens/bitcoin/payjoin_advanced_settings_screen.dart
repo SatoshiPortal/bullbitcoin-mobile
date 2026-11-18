@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap, BullTypographyX;
 
 /// The thresholds fit in a few digits, so their fields stay narrow.
 const _fieldWidth = 140.0;
@@ -196,13 +196,15 @@ class _PayjoinAdvancedSettingsScreenState
                   const Gap(24),
                   BBText(
                     context.loc.settingsPayjoinServersTitle,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const Gap(8),
                   // Every server is both a directory and a relay; a request
                   // never uses the same domain for both.
                   for (final server in PayjoinConstants.serverUrls)
-                    BBText(server.toString(), style: context.font.bodyMedium),
+                    BBText(server.toString(), style: context.bullType.body),
                 ],
               ),
             ),
@@ -241,11 +243,16 @@ class _ThresholdField extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText(title, style: context.font.bodyLarge),
+                  BBText(
+                    title,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   const Gap(4),
                   BBText(
                     description,
-                    style: context.font.labelSmall?.copyWith(
+                    style: context.bullType.caption.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
                     maxLines: 4,
@@ -261,9 +268,9 @@ class _ThresholdField extends StatelessWidget {
           const Gap(4),
           BBText(
             error,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.error,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.error),
           ),
         ],
       ],

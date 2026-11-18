@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bitcoin_price_failure_l10n.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -46,7 +45,9 @@ class PriceChartWidget extends StatelessWidget {
                 children: [
                   BullText(
                     state.failure!.toTranslated(context),
-                    style: context.font.bodyLarge?.copyWith(color: foreground),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: foreground),
                   ),
                   const Gap(16),
                   IconButton(
@@ -72,9 +73,9 @@ class PriceChartWidget extends StatelessWidget {
                     const Gap(16),
                     BullText(
                       context.loc.priceChartFetchingHistory,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: foreground,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(color: foreground),
                     ),
                   ],
                 ),
@@ -191,14 +192,14 @@ class _PriceDisplay extends StatelessWidget {
               children: [
                 Text(
                   SupportedCurrency.tryFromCode(currency)?.flag ?? '',
-                  style: context.font.headlineSmall?.copyWith(
-                    color: foregroundColor,
-                  ),
+                  style: context.bullType.subtitle
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(color: foregroundColor),
                 ),
                 const Gap(6),
                 BullText(
                   currency,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: foregroundColor.withValues(alpha: 0.7),
                   ),
                 ),
@@ -209,9 +210,7 @@ class _PriceDisplay extends StatelessWidget {
           Center(
             child: BullText(
               NumberFormat.currency(symbol: '', decimalDigits: 2).format(price),
-              style: context.font.displaySmall?.copyWith(
-                color: foregroundColor,
-              ),
+              style: context.bullType.headline.copyWith(color: foregroundColor),
               textAlign: TextAlign.center,
             ),
           ),
@@ -219,9 +218,9 @@ class _PriceDisplay extends StatelessWidget {
           Center(
             child: BullText(
               dateFormat.format(date.toLocal()),
-              style: context.font.bodySmall?.copyWith(
-                color: foregroundColor.withValues(alpha: 0.6),
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: foregroundColor.withValues(alpha: 0.6)),
               textAlign: TextAlign.center,
             ),
           ),

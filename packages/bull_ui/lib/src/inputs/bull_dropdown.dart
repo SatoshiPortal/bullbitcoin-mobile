@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/inputs/bull_dropdown_menu.dart';
 import 'package:bull_ui/src/inputs/bull_picker_item.dart';
 import 'package:bull_ui/src/layout/gap.dart';
@@ -43,7 +44,7 @@ class BullDropdown<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final shapes = context.bullShapes;
-    final text = context.bullText;
+    final text = context.bullType;
     final enabled = onChanged != null;
     final selected = items.where((item) => item.value == value).firstOrNull;
     final labelColor = !enabled || selected == null
@@ -86,7 +87,9 @@ class BullDropdown<T> extends StatelessWidget {
                             selected?.label ?? hint ?? '',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: text.bodyLarge?.copyWith(color: labelColor),
+                            style: text.body
+                                .copyWith(fontWeight: FontWeight.w500)
+                                .copyWith(color: labelColor),
                           ),
                         ),
                         Icon(
@@ -108,7 +111,9 @@ class BullDropdown<T> extends StatelessWidget {
               ),
               child: Text(
                 error,
-                style: text.bodySmall?.copyWith(color: colors.error),
+                style: text.label
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(color: colors.error),
               ),
             ),
         ],

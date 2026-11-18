@@ -12,7 +12,12 @@ import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullRefreshIndicator, BullShapesX, BullShimmerBox, Gap;
+    show
+        BullRefreshIndicator,
+        BullShapesX,
+        BullShimmerBox,
+        Gap,
+        BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -128,7 +133,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         const Gap(16.0),
         Text(
           context.loc.recipientsFilterByJurisdiction,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
         ),
         const Gap(8.0),
         BlocSelector<RecipientsBloc, RecipientsState, String?>(
@@ -180,7 +185,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
                     const Gap(8),
                     Text(
                       context.loc.recipientsTypeConfidentialSepaDescription,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                     ),
                   ],
                 ],
@@ -205,7 +210,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
               widget.hookError!,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),
             ),
@@ -219,7 +224,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               padding: const EdgeInsets.only(bottom: 16.0),
               child: Text(
                 failure.toTranslated(context),
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.error,
                 ),
               ),
@@ -271,13 +276,22 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           const Gap(96.0),
-          Center(child: Text(message, style: context.font.bodyLarge)),
+          Center(
+            child: Text(
+              message,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
           if (failure != null) ...[
             const Gap(8.0),
             Center(
               child: Text(
                 context.loc.recipientsListPullToRetry,
-                style: context.font.bodySmall,
+                style: context.bullType.label.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),

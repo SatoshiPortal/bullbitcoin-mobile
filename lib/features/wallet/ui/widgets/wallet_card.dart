@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullShapesX, Gap;
+    show BullFadingLinearProgress, BullShapesX, Gap, BullTypographyX;
 
 class WalletCard extends StatelessWidget {
   const WalletCard({
@@ -26,8 +26,10 @@ class WalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bodyLarge = context.font.bodyLarge;
-    final label = context.font.labelMedium;
+    final bodyStyle = context.bullType.body.copyWith(
+      fontWeight: FontWeight.w500,
+    );
+    final label = context.bullType.caption;
     final accent = context.appColors.secondary;
     final muted = context.appColors.onSurfaceVariant;
     return Padding(
@@ -64,7 +66,7 @@ class WalletCard extends StatelessWidget {
                           crossAxisAlignment: .start,
                           mainAxisAlignment: .center,
                           children: [
-                            _line(title, bodyLarge, accent, false),
+                            _line(title, bodyStyle, accent, false),
                             const Gap(4),
                             _line(description, label, muted, true),
                           ],

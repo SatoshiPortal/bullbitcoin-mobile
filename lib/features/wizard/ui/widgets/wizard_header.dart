@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 
 /// Top bar shown above the wizard PageView: BULL logo on the left, Skip
 /// action on the right.
@@ -26,9 +26,9 @@ class WizardHeader extends StatelessWidget {
             onPressed: onSkip,
             child: BullText(
               context.loc.wizardSkipButton,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.onSurfaceVariant,
-              ),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: context.appColors.onSurfaceVariant),
             ),
           ),
         ],

@@ -59,7 +59,7 @@ class MempoolServerItem extends StatelessWidget {
                           Flexible(
                             child: Text(
                               server.url,
-                              style: context.font.bodyMedium?.copyWith(
+                              style: context.bullType.body.copyWith(
                                 color: context.appColors.onSurface,
                                 decoration: disabled
                                     ? TextDecoration.lineThrough
@@ -94,11 +94,13 @@ class MempoolServerItem extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         server.fullUrl,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.onSurface.withValues(
-                            alpha: 0.6,
-                          ),
-                        ),
+                        style: context.bullType.label
+                            .copyWith(fontWeight: FontWeight.w400)
+                            .copyWith(
+                              color: context.appColors.onSurface.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
                       ),
                       const SizedBox(height: 6),
                       Row(
@@ -124,12 +126,14 @@ class MempoolServerItem extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           context.loc.mempoolServerNotUsed,
-                          style: context.font.bodySmall?.copyWith(
-                            color: context.appColors.onSurface.withValues(
-                              alpha: 0.6,
-                            ),
-                            fontStyle: FontStyle.italic,
-                          ),
+                          style: context.bullType.label
+                              .copyWith(fontWeight: FontWeight.w400)
+                              .copyWith(
+                                color: context.appColors.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                                fontStyle: FontStyle.italic,
+                              ),
                         ),
                       ],
                     ],
@@ -174,9 +178,9 @@ class MempoolServerItem extends StatelessWidget {
                   Expanded(
                     child: Text(
                       context.loc.mempoolSettingsUseForFeeEstimation,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(color: context.appColors.onSurface),
                     ),
                   ),
                   Switch(

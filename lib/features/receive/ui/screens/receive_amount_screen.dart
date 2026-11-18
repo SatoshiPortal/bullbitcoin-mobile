@@ -12,7 +12,8 @@ import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dar
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBorderedTile, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullBorderedTile, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatefulWidget {
@@ -120,13 +121,15 @@ class _MessageForSenderTile extends StatelessWidget {
                 children: [
                   BBText(
                     title,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                   ),
                   const Gap(4),
                   BBText(
                     note.isEmpty ? context.loc.receiveEnterHere : note,
-                    style: context.font.bodyMedium,
+                    style: context.bullType.body,
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -159,7 +162,7 @@ class _ReceiveFailureMessage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBText(
         failure.toTranslated(context),
-        style: context.font.bodyMedium,
+        style: context.bullType.body,
         color: context.appColors.error,
         textAlign: TextAlign.center,
       ),

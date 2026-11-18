@@ -34,11 +34,11 @@ class BackupMonitoringPanel extends StatelessWidget {
           null || Err() when alertsOnly => const SizedBox.shrink(),
           null => BullText(
             context.loc.recoverbullPleaseWait,
-            style: context.bullText.bodyLarge,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           ),
           Err(:final failure) => BullText(
             failure.toTranslated(context),
-            style: context.bullText.bodyLarge,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           ),
           Ok(:final value) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,21 +46,27 @@ class BackupMonitoringPanel extends StatelessWidget {
               if (value.unknown && !alertsOnly)
                 BullText(
                   context.loc.recoverbullMonitoringUnknown,
-                  style: context.bullText.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               if (value.alerts.any(
                 (alert) => alert.kind == BackupAlertKind.unexplainedActivity,
               ))
                 BullText(
                   context.loc.recoverbullActivityAlert,
-                  style: context.bullText.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               if (value.alerts.any(
                 (alert) => alert.kind == BackupAlertKind.lockout,
               ))
                 BullText(
                   context.loc.recoverbullLockoutAlert,
-                  style: context.bullText.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               if (value.alerts.isNotEmpty)
                 BullButton.small(

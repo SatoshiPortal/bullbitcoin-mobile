@@ -67,6 +67,7 @@ class AppTheme {
         : Brightness.light;
 
     final bullTheme = _bullThemeFrom(colors);
+    final typography = AppTheme.typography.resolved(colors.text);
 
     return ThemeData(
       useMaterial3: true,
@@ -123,10 +124,7 @@ class AppTheme {
       canvasColor: colors.cardBackground,
       scaffoldBackgroundColor: colors.background,
       fontFamily: typography.body.fontFamily,
-      textTheme: typography.toTextTheme().apply(
-        bodyColor: colors.text,
-        displayColor: colors.text,
-      ),
+      textTheme: typography.toTextTheme(),
       appBarTheme: AppBarTheme(
         backgroundColor: colors.transparent,
         systemOverlayStyle: themeType == AppThemeType.dark
@@ -187,7 +185,6 @@ class AppTheme {
 
 extension ThemeEx on BuildContext {
   ThemeData get theme => Theme.of(this);
-  TextTheme get font => theme.textTheme;
   AppColors get appColors =>
       theme.brightness == .dark ? AppColors.dark : AppColors.light;
 }
@@ -202,7 +199,7 @@ class WidgetStyles {
       fillColor: context.appColors.surface,
       filled: true,
       hintText: hintText,
-      hintStyle: context.font.bodyMedium!.copyWith(
+      hintStyle: context.bullType.body.copyWith(
         color: context.appColors.textMuted,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),

@@ -1,11 +1,10 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDropdown, BullPickerItem, BullShimmerLine, Gap;
+    show BullDropdown, BullPickerItem, BullShimmerLine, Gap, BullTypographyX;
 
 class SwapToWalletDropdown extends StatelessWidget {
   const SwapToWalletDropdown();
@@ -17,7 +16,10 @@ class SwapToWalletDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text(context.loc.swapToLabel, style: context.font.bodyLarge),
+        Text(
+          context.loc.swapToLabel,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        ),
         const Gap(4),
         if (wallets.isEmpty)
           const BullShimmerLine()
