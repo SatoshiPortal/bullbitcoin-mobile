@@ -545,6 +545,7 @@ final class BarkArkClient implements ArkClient {
     Uri source, {
     bool commit = true,
     int? revision,
+    void Function(bool)? onNativeStaleness,
     bool authoritativePass = true,
     _SyncFailures? syncFailures,
     Set<String> successfulStages = const {},
@@ -558,6 +559,7 @@ final class BarkArkClient implements ArkClient {
       operations: await _verifiedOperations(store, account),
       previousRecovery: _storedRecovery(store, previous),
     );
+    onNativeStaleness?.call(observed.stale);
     var reserveAddress = store.get('reserve-address')?['address'] as String?;
     if (reserveAddress == null &&
         executionMode == ArkExecutionMode.foreground) {
@@ -1322,6 +1324,7 @@ final class BarkArkClient implements ArkClient {
     if (quote.kind == ArkOperationKind.board) {
       await session.synchronizeStage('server');
     }
+    var nativeStale = true;
     final fresh = await _observe(
       store,
       session,
@@ -1329,12 +1332,13 @@ final class BarkArkClient implements ArkClient {
       quote.chainSource,
       commit: false,
       revision: quote.generation,
+      onNativeStaleness: (stale) => nativeStale = stale,
     );
     final protective =
         quote.kind == ArkOperationKind.emergencyExit ||
         quote.kind == ArkOperationKind.exitProgress ||
         quote.kind == ArkOperationKind.claim;
-    if (fresh.stale ||
+    if ((protective ? nativeStale : fresh.stale) ||
         (!protective &&
             (fresh.recovery != ArkRecoveryStatus.complete ||
                 !fresh.vtxoInventoryComplete)) ||
