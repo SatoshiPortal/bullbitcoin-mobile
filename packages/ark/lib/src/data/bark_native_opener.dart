@@ -307,7 +307,9 @@ final class BarkNativeSession implements ArkNativeSession {
               amount: Sats.fromInt(v.effectiveBalanceSats.abs()),
               fee: Sats.fromInt(v.offchainFeeSats),
               createdAt: DateTime.tryParse(v.createdAt),
-              inputVtxoIds: List.unmodifiable(v.inputVtxoIds),
+              inputVtxoIds: v.subsystemName == 'bark.lightning_receive'
+                  ? _lightningReceiveInputs(v.metadataJson)
+                  : List.unmodifiable(v.inputVtxoIds),
               outputVtxoIds: List.unmodifiable(v.outputVtxoIds),
             ),
           )
@@ -879,6 +881,50 @@ final class BarkNativeSession implements ArkNativeSession {
           net: Sats.fromInt(fee.netAmountSats),
           fee: Sats.fromInt(fee.feeSats),
         );
+    }
+  }
+
+  // bark 0.8.1 stores receive HTLC ids in LightningMovement metadata, not
+  // consumed_vtxos. Never retain or expose the accompanying preimage.
+  List<String> _lightningReceiveInputs(String encoded) {
+    if (encoded.length > 1024 * 1024 ||
+        utf8.encode(encoded).length > 1024 * 1024) {
+      return const [];
+    }
+    try {
+      final data = jsonDecode(encoded);
+      if (data is! Map<String, dynamic> || data.length != 3) return const [];
+      final hash = data['payment_hash'],
+          preimage = data['payment_preimage'],
+          ids = data['htlc_vtxos'];
+      final digest = RegExp(r'^[0-9a-f]{64}$');
+      if (hash is! String ||
+          !digest.hasMatch(hash) ||
+          preimage is! String ||
+          !digest.hasMatch(preimage) ||
+          ids is! List ||
+          ids.isEmpty) {
+        return const [];
+      }
+      final result = <String>[];
+      final seen = <String>{};
+      for (final id in ids) {
+        if (id is! String) return const [];
+        final parts = id.split(':');
+        if (parts.length != 2 ||
+            !digest.hasMatch(parts[0]) ||
+            !RegExp(r'^(0|[1-9][0-9]{0,9})$').hasMatch(parts[1])) {
+          return const [];
+        }
+        final index = int.tryParse(parts[1]);
+        if (index == null || index > 0xffffffff || !seen.add(id)) {
+          return const [];
+        }
+        result.add(id);
+      }
+      return result;
+    } on FormatException {
+      return const [];
     }
   }
 
