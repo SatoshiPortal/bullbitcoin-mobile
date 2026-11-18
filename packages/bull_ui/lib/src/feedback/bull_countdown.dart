@@ -1,3 +1,5 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
+
 import 'dart:async';
 
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -80,8 +82,10 @@ class BullCountdownState extends State<BullCountdown> {
       '${(remainingTime.inSeconds % 60).toString().padLeft(2, '0')}',
       style:
           widget.textStyle ??
-          Theme.of(context).textTheme.bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w500, color: colors.primary),
+          context.bullType.body.copyWith(
+            fontWeight: FontWeight.w500,
+            color: colors.primary,
+          ),
     );
   }
 }

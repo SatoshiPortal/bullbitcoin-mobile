@@ -15,7 +15,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullPasteInput, BullText, BullTopBar, Gap;
+    show BullButton, BullPasteInput, BullText, BullTopBar, Gap, BullTypographyX;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -67,7 +67,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                     const Gap(16),
                     BullText(
                       state.failure!.toTranslated(context),
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.error,
                     ),
                   ],
@@ -222,7 +222,7 @@ class _BroadcastError extends StatelessWidget {
           Expanded(
             child: BullText(
               failure.toTranslated(context),
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.appColors.error,
             ),
           ),

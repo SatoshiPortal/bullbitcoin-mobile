@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:material_ui/material_ui.dart';
 
 /// Passive Payjoin privacy disclosure shared by settings and receive.
 abstract final class PayjoinDisclaimerDialog {
@@ -23,24 +22,26 @@ class _PayjoinDisclaimerBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = context.bullType;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           context.loc.settingsPayjoinDisclaimerTitle,
-          style: textTheme.titleMedium?.copyWith(color: colors.text),
+          style: textTheme.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(color: colors.text),
         ),
         const Gap(8),
         Text(
           context.loc.settingsPayjoinPrivacyGainExplanation,
-          style: textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+          style: textTheme.body.copyWith(color: colors.onSurfaceVariant),
         ),
         const Gap(12),
         Text(
           context.loc.settingsPayjoinV1DirectoryLeakExplanation,
-          style: textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+          style: textTheme.body.copyWith(color: colors.onSurfaceVariant),
         ),
         const Gap(20),
         BullButton.small(

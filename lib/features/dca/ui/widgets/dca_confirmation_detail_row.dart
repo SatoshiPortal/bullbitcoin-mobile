@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, BullTypographyX;
 
 class DcaConfirmationDetailRow extends StatelessWidget {
   final String label;
@@ -9,23 +9,17 @@ class DcaConfirmationDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
-          Text(label, style: theme.textTheme.bodyMedium),
+          Text(label, style: context.bullType.body),
 
           Expanded(
             child: value == null
                 ? const BullShimmerLine()
-                : Text(
-                    value!,
-                    textAlign: .end,
-                    style: theme.textTheme.bodyMedium,
-                  ),
+                : Text(value!, textAlign: .end, style: context.bullType.body),
           ),
         ],
       ),

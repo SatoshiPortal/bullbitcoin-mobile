@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +21,12 @@ class SpScanScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: Text(context.loc.spScan, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.spScan,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
       body: SafeArea(
         child: BlocConsumer<SpCubit, SpState>(
@@ -115,7 +120,7 @@ class _ErrorView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
                     message,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.error,
                     ),
                     textAlign: TextAlign.center,
@@ -167,9 +172,9 @@ class _CaughtUpView extends StatelessWidget {
                     isAutoScanEnabled
                         ? context.loc.spScanSyncedAutoOn
                         : context.loc.spScanSyncedManual,
-                    style: context.font.titleMedium?.copyWith(
-                      color: context.appColors.success,
-                    ),
+                    style: context.bullType.body
+                        .copyWith(fontWeight: FontWeight.w500)
+                        .copyWith(color: context.appColors.success),
                   ),
                   if (duration != null) ...[
                     const Gap(8),
@@ -177,9 +182,9 @@ class _CaughtUpView extends StatelessWidget {
                       context.loc.spScanScannedIn(
                         formatDuration(context.loc, duration),
                       ),
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(color: context.appColors.textMuted),
                     ),
                   ],
                 ],
@@ -219,7 +224,9 @@ class _ResumeView extends StatelessWidget {
                 const Gap(24),
                 Text(
                   context.loc.spScanBlocksBehind(gap),
-                  style: context.font.titleMedium,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const Gap(4),
@@ -231,9 +238,9 @@ class _ResumeView extends StatelessWidget {
                       blocksPerDay: SpConfig.blocksPerDay,
                     ),
                   ),
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.textMuted,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(color: context.appColors.textMuted),
                   textAlign: TextAlign.center,
                 ),
                 if (state.scanLastDurationSecs != null) ...[
@@ -242,9 +249,9 @@ class _ResumeView extends StatelessWidget {
                     context.loc.spScanScannedIn(
                       formatDuration(context.loc, state.scanLastDurationSecs!),
                     ),
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.textMuted),
                   ),
                 ],
               ],
@@ -285,7 +292,7 @@ class _FirstScanView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 context.loc.spScanReadyMessage,
-                style: context.font.bodyMedium,
+                style: context.bullType.body,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -356,7 +363,7 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
               children: [
                 Text(
                   context.loc.spScanChooseStartMessage,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                 ),
                 const Gap(24),
                 Slider(
@@ -381,7 +388,7 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                         onPressed: () => _setHeight(t.height),
                         bgColor: context.appColors.transparent,
                         textColor: context.appColors.secondary,
-                        textStyle: context.font.labelMedium,
+                        textStyle: context.bullType.caption,
                         outlined: true,
                       ),
                   ],
@@ -389,7 +396,7 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                 const Gap(24),
                 Text(
                   context.loc.spScanBlockHeightLabel,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                 ),
                 const Gap(8),
                 BullInputText(
@@ -434,7 +441,7 @@ class _ScanProgressCard extends StatelessWidget {
               2,
               _phaseLabel(context, phase),
             ),
-            style: context.font.titleMedium,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             textAlign: TextAlign.center,
           ),
           const Gap(12),
@@ -456,7 +463,9 @@ class _ScanProgressCard extends StatelessWidget {
               ),
               Text(
                 context.loc.spScanPercent('${(progress * 100).round()}'),
-                style: context.font.titleMedium,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
@@ -466,15 +475,15 @@ class _ScanProgressCard extends StatelessWidget {
           current != null && target != null
               ? context.loc.spScanProgressCount('$current', '$target')
               : context.loc.spScanScanning,
-          style: context.font.titleMedium,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           textAlign: TextAlign.center,
         ),
         const Gap(4),
         Text(
           context.loc.spScanBlocksLabel,
-          style: context.font.bodySmall?.copyWith(
-            color: context.appColors.textMuted,
-          ),
+          style: context.bullType.label
+              .copyWith(fontWeight: FontWeight.w400)
+              .copyWith(color: context.appColors.textMuted),
         ),
         const Gap(8),
         _ScanTimings(
@@ -520,9 +529,9 @@ class _ScanTimingsState extends State<_ScanTimings> {
   Widget build(BuildContext context) {
     final start = widget.startTime;
     final eta = widget.etaSecs;
-    final muted = context.font.bodySmall?.copyWith(
-      color: context.appColors.textMuted,
-    );
+    final muted = context.bullType.label
+        .copyWith(fontWeight: FontWeight.w400)
+        .copyWith(color: context.appColors.textMuted);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -606,9 +615,9 @@ class _AutoScanStatus extends StatelessWidget {
               isEnabled
                   ? context.loc.spScanAutoScanOn
                   : context.loc.spScanCaughtUpManualDetail,
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.textMuted,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: context.appColors.textMuted),
             ),
           ),
         ],

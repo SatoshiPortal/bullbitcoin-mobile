@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDetailsTableItem;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDetailsTableItem, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 /// Destination content while the API has not returned an invoice yet.
@@ -33,7 +34,7 @@ class PaymentPreparationView extends StatelessWidget {
                   child: Text(
                     message,
                     textAlign: TextAlign.center,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.appColors.error,
                     ),
                   ),

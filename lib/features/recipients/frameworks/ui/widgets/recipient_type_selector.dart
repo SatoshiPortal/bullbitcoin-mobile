@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDropdown, BullPickerItem, BullShapesX, Gap;
+    show BullDropdown, BullPickerItem, BullShapesX, Gap, BullTypographyX;
 
 class RecipientTypeSelector extends StatelessWidget {
   const RecipientTypeSelector({
@@ -50,12 +50,14 @@ class RecipientTypeSelector extends StatelessWidget {
                   ),
                   title: RecipientTypeText(
                     recipientType: type,
-                    style: context.font.headlineSmall,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                   subtitle: type == RecipientType.confidentialSepaEur
                       ? Text(
                           context.loc.recipientsTypeConfidentialSepaDescription,
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                         )
                       : null,
                   value: type,

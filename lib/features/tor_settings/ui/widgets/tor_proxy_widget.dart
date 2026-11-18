@@ -10,7 +10,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullPickerItem,
         BullSettingsEntryItem,
         BullSnackBar,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_tor/tor.dart';
@@ -69,9 +70,11 @@ class TorProxyWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             context.loc.torSettingsLocalProxyDescription,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.onSurface.withValues(alpha: 0.7),
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(
+                  color: context.appColors.onSurface.withValues(alpha: 0.7),
+                ),
           ),
         ),
         const Gap(8),
@@ -85,7 +88,9 @@ class TorProxyWidget extends StatelessWidget {
             title: context.loc.torSettingsProxyPort,
             trailing: Text(
               context.loc.torSettingsPortDisplay(torProxyPort),
-              style: context.font.bodySmall,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
             ),
             onTap: () async {
               final newPort = await TorPortInputBottomSheet.show(
@@ -199,7 +204,7 @@ class _EmbeddedTransportCard extends StatelessWidget {
         children: [
           Text(
             context.loc.torSettingsTransportMode,
-            style: context.font.titleMedium,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           ),
           const Gap(12),
           BullDropdown<TorTransportMode>(
@@ -216,7 +221,7 @@ class _EmbeddedTransportCard extends StatelessWidget {
           const Gap(8),
           Text(
             _modeDescription(context, state.transportMode),
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
           ),
         ],
       ),

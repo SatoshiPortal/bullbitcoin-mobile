@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/exchange_support_chat/public/exchange_support
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInputText, BullShapesX, Gap, BullSnackBar;
+    show BullInputText, BullShapesX, Gap, BullSnackBar, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ExchangeSupportLoginScreen extends StatefulWidget {
@@ -50,7 +50,9 @@ class _ExchangeSupportLoginScreenState
       appBar: AppBar(
         title: BBText(
           context.loc.exchangeSupportChatTitle,
-          style: context.font.headlineMedium,
+          style: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
         backgroundColor: context.appColors.background,
       ),
@@ -138,9 +140,9 @@ class _ExchangeSupportLoginScreenState
                             const Gap(16),
                             BBText(
                               context.loc.exchangeSupportLoginChatRequired,
-                              style: context.font.bodyLarge?.copyWith(
-                                color: context.appColors.onSurface,
-                              ),
+                              style: context.bullType.body
+                                  .copyWith(fontWeight: FontWeight.w500)
+                                  .copyWith(color: context.appColors.onSurface),
                               textAlign: TextAlign.center,
                             ),
                             const Gap(24),

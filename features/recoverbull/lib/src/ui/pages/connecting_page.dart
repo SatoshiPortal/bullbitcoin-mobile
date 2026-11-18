@@ -422,7 +422,9 @@ class _Body extends StatelessWidget {
         BullText(
           context.loc.recoverbullCheckingConnection,
           textAlign: .center,
-          style: context.bullText.headlineLarge?.copyWith(fontWeight: .bold),
+          style: context.bullType.subtitle
+              .copyWith(fontWeight: FontWeight.w700)
+              .copyWith(fontWeight: .bold),
         ),
         const Gap(12),
         if (!_hasFailure)
@@ -448,10 +450,12 @@ class _Body extends StatelessWidget {
                     BullText(
                       _blockageStatus(context),
                       textAlign: .center,
-                      style: context.bullText.bodyLarge?.copyWith(
-                        color: context.bull.warning,
-                        fontWeight: .w700,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(
+                            color: context.bull.warning,
+                            fontWeight: .w700,
+                          ),
                     ),
                   if (_mascotState == TorBullState.snowflake)
                     BullText(
@@ -459,17 +463,19 @@ class _Body extends StatelessWidget {
                         context.loc.torSettingsModeSnowflake,
                       ),
                       textAlign: .center,
-                      style: context.bullText.bodyLarge?.copyWith(
-                        color: context.bull.info,
-                        fontWeight: .w700,
-                      ),
+                      style: context.bullType.body
+                          .copyWith(fontWeight: FontWeight.w500)
+                          .copyWith(
+                            color: context.bull.info,
+                            fontWeight: .w700,
+                          ),
                     ),
                   BullText(
                     _connectionNarrative(context),
                     textAlign: .center,
-                    style: context.bullText.bodySmall?.copyWith(
-                      color: context.bull.textMuted,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.bull.textMuted),
                     maxLines: 4,
                   ),
                 ],
@@ -539,7 +545,7 @@ class _Body extends StatelessWidget {
                 ? context.loc.recoverbullLongestStep
                 : context.loc.recoverbullPleaseWait,
             textAlign: .center,
-            style: context.bullText.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.bull.textMuted,
             ),
             maxLines: 3,
@@ -602,14 +608,14 @@ class _PhaseCard extends StatelessWidget {
               Expanded(
                 child: BullText(
                   label,
-                  style: context.bullText.bodyLarge?.copyWith(
-                    color: context.bull.onSurface,
-                  ),
+                  style: context.bullType.body
+                      .copyWith(fontWeight: FontWeight.w500)
+                      .copyWith(color: context.bull.onSurface),
                 ),
               ),
               BullText(
                 _statusLabel(context),
-                style: context.bullText.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: color,
                   fontWeight: .w600,
                 ),
@@ -626,9 +632,9 @@ class _PhaseCard extends StatelessWidget {
                   if (caption case final caption?)
                     BullText(
                       caption,
-                      style: context.bullText.bodySmall?.copyWith(
-                        color: context.bull.textMuted,
-                      ),
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(color: context.bull.textMuted),
                       maxLines: 2,
                     ),
                   if (time case final time?) ...[
@@ -636,9 +642,9 @@ class _PhaseCard extends StatelessWidget {
                     BullText(
                       // A bare timer, deliberately unlocalised.
                       _formatElapsed(time),
-                      style: context.bullText.bodySmall?.copyWith(
-                        color: context.bull.textMuted,
-                      ),
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(color: context.bull.textMuted),
                     ),
                   ],
                 ],
@@ -714,9 +720,7 @@ class _FailurePanel extends StatelessWidget {
         BullText(
           message,
           textAlign: .center,
-          style: context.bullText.bodyMedium?.copyWith(
-            color: context.bull.error,
-          ),
+          style: context.bullType.body.copyWith(color: context.bull.error),
           maxLines: 4,
         ),
         if (detail case final detail?) ...[
@@ -724,15 +728,17 @@ class _FailurePanel extends StatelessWidget {
           BullText(
             detail,
             textAlign: .center,
-            style: context.bullText.bodySmall?.copyWith(
-              color: context.bull.textMuted,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.bull.textMuted),
           ),
         ],
         const Gap(24),
         BullButton.big(
           label: context.loc.recoverbullNewRoute,
-          textStyle: context.bullText.headlineLarge,
+          textStyle: context.bullType.subtitle.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
           bgColor: context.bull.onSurface,
           textColor: context.bull.surface,
           disabled: busy,
@@ -742,7 +748,9 @@ class _FailurePanel extends StatelessWidget {
           const Gap(12),
           BullButton.big(
             label: context.loc.recoverbullUseSnowflake,
-            textStyle: context.bullText.headlineLarge,
+            textStyle: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
             bgColor: context.bull.surface,
             textColor: context.bull.onSurface,
             outlined: true,
@@ -755,7 +763,9 @@ class _FailurePanel extends StatelessWidget {
           const Gap(12),
           BullButton.big(
             label: context.loc.torSettingsTitle,
-            textStyle: context.bullText.headlineLarge,
+            textStyle: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
             bgColor: context.bull.surface,
             textColor: context.bull.onSurface,
             onPressed: onOpenTorSettings,

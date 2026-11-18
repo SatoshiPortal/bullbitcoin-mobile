@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 import 'package:bb_mobile/features/transactions/presentation/order_l10n.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show bullTimeAgo;
+import 'package:bull_ui/bull_ui.dart' show bullTimeAgo, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 /// Feature-side entry point of the core row: maps a [Transaction] to a
@@ -81,7 +81,9 @@ class TransactionListItem extends StatelessWidget {
               showFiat: false,
               fiatAmount: orderAmountAndCurrency.$1.toDouble(),
               fiatCurrency: orderAmountAndCurrency.$2,
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             )
           : CurrencyText(
               isOrderType && orderAmountAndCurrency != null
@@ -89,7 +91,9 @@ class TransactionListItem extends StatelessWidget {
                   : transaction.swapListAmountSat,
               showFiat: false,
               interactive: true,
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
       labels: labels.isEmpty ? const [] : [LabelsWidget(labels: labels)],
       networkLabel: isOrderType

@@ -47,9 +47,9 @@ class RecipientsListTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     name ?? '-',
-                    style: context.font.headlineLarge?.copyWith(
-                      color: context.appColors.secondary,
-                    ),
+                    style: context.bullType.subtitle
+                        .copyWith(fontWeight: FontWeight.w700)
+                        .copyWith(color: context.appColors.secondary),
                   ),
                 ),
                 RadioGroup<bool>(
@@ -66,7 +66,7 @@ class RecipientsListTile extends StatelessWidget {
             ),
             RecipientTypeText(
               recipientType: recipient.type,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.secondary,
               ),
             ),
@@ -159,7 +159,7 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.only(top: 4),
       child: Text(
         '$label: ${value != null && value!.isNotEmpty ? value : '-'}',
-        style: context.font.bodyMedium?.copyWith(
+        style: context.bullType.body.copyWith(
           color: context.appColors.secondary,
         ),
       ),

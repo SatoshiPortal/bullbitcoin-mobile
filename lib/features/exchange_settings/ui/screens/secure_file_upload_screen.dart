@@ -73,9 +73,9 @@ class _ErrorMessage extends StatelessWidget {
           Expanded(
             child: BullText(
               failure.toTranslated(context),
-              style: context.bullText.bodySmall?.copyWith(
-                color: context.bull.error,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: context.bull.error),
             ),
           ),
           IconButton(
@@ -137,7 +137,7 @@ class _UploadOptionCard extends StatelessWidget {
                       children: [
                         BullText(
                           context.loc.exchangeFileUploadDocumentTitle,
-                          style: context.bullText.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             fontWeight: FontWeight.w600,
                             color: context.bull.onSurface,
                           ),
@@ -145,9 +145,9 @@ class _UploadOptionCard extends StatelessWidget {
                         const Gap(BullSpacing.xs),
                         BullText(
                           context.loc.exchangeFileUploadInstructions,
-                          style: context.bullText.bodySmall?.copyWith(
-                            color: context.bull.textMuted,
-                          ),
+                          style: context.bullType.label
+                              .copyWith(fontWeight: FontWeight.w400)
+                              .copyWith(color: context.bull.textMuted),
                         ),
                       ],
                     ),
@@ -241,7 +241,7 @@ class _UploadStatusButton extends StatelessWidget {
                       const Gap(BullSpacing.xxs),
                       BullText(
                         context.loc.exchangeFileUploadButton,
-                        style: context.bullText.labelMedium?.copyWith(
+                        style: context.bullType.caption.copyWith(
                           fontWeight: FontWeight.w600,
                           color: context.bull.onSurface,
                         ),
@@ -266,7 +266,7 @@ class _UploadStatusButton extends StatelessWidget {
           ),
           child: BullText(
             context.loc.exchangeFileUploadStatusInReview,
-            style: context.bullText.labelMedium?.copyWith(
+            style: context.bullType.caption.copyWith(
               fontWeight: FontWeight.w600,
               color: context.bull.warning,
             ),
@@ -285,7 +285,7 @@ class _UploadStatusButton extends StatelessWidget {
           ),
           child: BullText(
             context.loc.exchangeFileUploadStatusAccepted,
-            style: context.bullText.labelMedium?.copyWith(
+            style: context.bullType.caption.copyWith(
               color: context.bull.success,
               fontWeight: FontWeight.w600,
             ),
@@ -332,7 +332,7 @@ class _RejectedStatusWithReupload extends StatelessWidget {
               const Gap(BullSpacing.xxs),
               BullText(
                 context.loc.exchangeFileUploadStatusRejectedBadge,
-                style: context.bullText.labelSmall?.copyWith(
+                style: context.bullType.caption.copyWith(
                   fontWeight: FontWeight.w600,
                   color: context.bull.error,
                 ),
@@ -373,7 +373,7 @@ class _RejectedStatusWithReupload extends StatelessWidget {
                       const Gap(BullSpacing.xs),
                       BullText(
                         context.loc.exchangeFileUploadTapToReupload,
-                        style: context.bullText.labelMedium?.copyWith(
+                        style: context.bullType.caption.copyWith(
                           fontWeight: FontWeight.w600,
                           color: context.bull.onSurface,
                         ),

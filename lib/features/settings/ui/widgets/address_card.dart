@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 
 class AddressCard extends StatelessWidget {
   const AddressCard({
@@ -35,20 +35,22 @@ class AddressCard extends StatelessWidget {
               isUsed
                   ? context.loc.addressCardUsedLabel
                   : context.loc.addressCardUnusedLabel,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.onSurface,
               ),
             ),
             const Gap(8),
             AddressViewer(
               address,
-              style: context.font.headlineMedium,
+              style: context.bullType.subtitle.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.primary,
             ),
             const Gap(8),
             Text(
               '${context.loc.addressCardIndexLabel}$index',
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.textMuted,
               ),
             ),
@@ -57,13 +59,13 @@ class AddressCard extends StatelessWidget {
               children: [
                 Text(
                   context.loc.addressCardBalanceLabel,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.textMuted,
                   ),
                 ),
                 CurrencyText(
                   balanceSat,
-                  style: context.font.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.appColors.textMuted,
                   ),
                   showFiat: false,

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShimmerLine;
+import 'package:bull_ui/bull_ui.dart' show BullShimmerLine, BullTypographyX;
 
 class BuyConfirmDetailRow extends StatelessWidget {
   /// Typographic placeholder, not prose: nothing to translate.
@@ -25,8 +25,6 @@ class BuyConfirmDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -34,7 +32,7 @@ class BuyConfirmDetailRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: context.bullType.body.copyWith(
               color: context.appColors.onSurfaceVariant,
             ),
           ),
@@ -44,14 +42,14 @@ class BuyConfirmDetailRow extends StatelessWidget {
               (final String value, _) => Text(
                 value,
                 textAlign: .end,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.secondary,
                 ),
               ),
               (null, true) => Text(
                 _noValue,
                 textAlign: .end,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.onSurfaceVariant,
                 ),
               ),

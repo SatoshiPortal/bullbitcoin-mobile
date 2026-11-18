@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -67,8 +68,9 @@ class BullInfoBar extends StatelessWidget {
                       Expanded(
                         child: Text(
                           message,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: colors.text),
+                          style: context.bullType.label
+                              .copyWith(fontWeight: FontWeight.w400)
+                              .copyWith(color: colors.text),
                         ),
                       ),
                     ],

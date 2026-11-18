@@ -118,7 +118,9 @@ class _VirtualIbanDetails extends StatelessWidget {
                 children: [
                   BullText(
                     context.loc.recipientsVirtualIbanDetailsDescription,
-                    style: context.bullText.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: colors.text,
                   ),
                   const Gap(16),
@@ -166,7 +168,9 @@ class _VirtualIbanDetails extends StatelessWidget {
                   const Gap(12),
                   BullText(
                     context.loc.recipientsVirtualIbanBankAddressHelp,
-                    style: context.bullText.bodySmall,
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                     color: colors.textMuted,
                   ),
                 ],

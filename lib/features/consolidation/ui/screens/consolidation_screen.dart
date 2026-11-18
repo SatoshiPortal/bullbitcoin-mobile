@@ -8,7 +8,13 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullFadingLinearProgress, BullText, BullTopBar, Gap;
+    show
+        BullButton,
+        BullFadingLinearProgress,
+        BullText,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 
 /// Confirmation + progress screen for consolidating a Liquid wallet. Styled to
 /// match the Send confirm screen (top bar, header, info rows, primary button).
@@ -113,7 +119,7 @@ class _ReviewView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: BullText(
               context.loc.consolidationScreenDescription,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.appColors.onSurfaceVariant,
               textAlign: TextAlign.center,
               maxLines: 5,
@@ -183,7 +189,7 @@ class _ReviewView extends StatelessWidget {
 
   Widget _valueText(BuildContext context, String value) => BullText(
     value,
-    style: context.font.bodyLarge,
+    style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
     color: context.appColors.secondary,
     textAlign: TextAlign.end,
   );
@@ -207,7 +213,7 @@ class _InfoRow extends StatelessWidget {
         children: [
           BullText(
             title,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.onSurfaceVariant,
           ),
           const Gap(24),
@@ -240,13 +246,13 @@ class _Header extends StatelessWidget {
         const Gap(16),
         BullText(
           context.loc.consolidationScreenTitle,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: context.appColors.secondary,
         ),
         const Gap(4),
         BullText(
           FormatAmount.sats(balanceSat),
-          style: context.font.displaySmall,
+          style: context.bullType.headline,
           color: context.appColors.secondary,
         ),
       ],
@@ -267,7 +273,9 @@ class _BroadcastingView extends StatelessWidget {
           const Gap(24),
           BullText(
             context.loc.consolidationInProgress,
-            style: context.font.headlineLarge,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
             color: context.appColors.secondary,
           ),
         ],
@@ -289,14 +297,16 @@ class _SuccessView extends StatelessWidget {
           children: [
             BullText(
               context.loc.consolidationSuccessTitle,
-              style: context.font.headlineLarge,
+              style: context.bullType.subtitle.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
               color: context.appColors.secondary,
               textAlign: TextAlign.center,
             ),
             const Gap(8),
             BullText(
               context.loc.consolidationSuccessBody,
-              style: context.font.bodyMedium,
+              style: context.bullType.body,
               color: context.appColors.onSurfaceVariant,
               textAlign: TextAlign.center,
               maxLines: 4,

@@ -22,6 +22,7 @@ class WalletHomeScreen extends StatefulWidget {
   final NetworkWalletSetupCubit Function() createSetupCubit;
   final VoidCallback onEmptyMainnet;
   final VoidCallback onImportNetworkWallet;
+  final VoidCallback onRecoverEncryptedVault;
   final QuickActionsCubit quickActions;
   final void Function(BuildContext, QuickAction) onQuickAction;
   final void Function(BuildContext) onCustomizeQuickActions;
@@ -31,6 +32,7 @@ class WalletHomeScreen extends StatefulWidget {
     required this.createSetupCubit,
     required this.onEmptyMainnet,
     required this.onImportNetworkWallet,
+    required this.onRecoverEncryptedVault,
     required this.quickActions,
     required this.onQuickAction,
     required this.onCustomizeQuickActions,
@@ -123,6 +125,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
         createSetupCubit: widget.createSetupCubit,
         onMainnet: widget.onEmptyMainnet,
         onImport: widget.onImportNetworkWallet,
+        onRecoverEncryptedVault: widget.onRecoverEncryptedVault,
       );
     }
     final isRefreshing = context.select(

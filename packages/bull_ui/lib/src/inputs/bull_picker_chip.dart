@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/inputs/bull_dropdown_menu.dart';
 import 'package:bull_ui/src/inputs/bull_picker_item.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -94,9 +95,7 @@ class BullPickerChip<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final textStyle = context.bullText.bodyMedium?.copyWith(
-      color: colors.primary,
-    );
+    final textStyle = context.bullType.body.copyWith(color: colors.primary);
     final selected = items.where((item) => item.value == value).firstOrNull;
     return BullPickerMenu<T>(
       items: items,

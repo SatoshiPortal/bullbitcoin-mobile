@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText;
+    show BullBottomSheet, BullButton, BullShapesX, BullText, BullTypographyX;
 
 class TranslationWarningBottomSheet extends StatelessWidget {
   const TranslationWarningBottomSheet({super.key});
@@ -65,15 +65,15 @@ class TranslationWarningBottomSheet extends StatelessWidget {
               SizedBox(height: gapM),
               BullText(
                 context.loc.translationWarningTitle,
-                style: context.font.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: context.bullType.subtitle
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: gapS),
               BullText(
                 context.loc.translationWarningDescription,
-                style: context.font.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,

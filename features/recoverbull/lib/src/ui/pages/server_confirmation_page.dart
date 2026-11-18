@@ -51,7 +51,9 @@ class ServerConfirmationPage extends StatelessWidget {
             ),
             title: BullText(
               context.loc.recoverbullServerConfirmTitle,
-              style: context.bullText.headlineMedium,
+              style: context.bullType.subtitle.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.bull.onSurface,
             ),
           ),
@@ -73,7 +75,9 @@ class ServerConfirmationPage extends StatelessWidget {
                   isDefault
                       ? context.loc.recoverbullServerUsingDefault
                       : context.loc.recoverbullServerUsingCustom,
-                  style: context.bullText.headlineMedium,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   textAlign: .center,
                 ),
                 const Gap(16),
@@ -91,14 +95,14 @@ class ServerConfirmationPage extends StatelessWidget {
                     children: [
                       BullText(
                         context.loc.recoverbullServerUrlLabel,
-                        style: context.bullText.labelSmall?.copyWith(
+                        style: context.bullType.caption.copyWith(
                           color: context.bull.textMuted,
                         ),
                       ),
                       const Gap(8),
                       BullText(
                         server,
-                        style: context.bullText.bodyMedium?.copyWith(
+                        style: context.bullType.body.copyWith(
                           fontFamily: 'monospace',
                         ),
                       ),
@@ -116,7 +120,7 @@ class ServerConfirmationPage extends StatelessWidget {
                 ],
                 BullText(
                   context.loc.recoverbullServerTorNotice,
-                  style: context.bullText.bodyMedium?.copyWith(
+                  style: context.bullType.body.copyWith(
                     color: context.bull.textMuted,
                   ),
                   textAlign: .center,
@@ -125,7 +129,7 @@ class ServerConfirmationPage extends StatelessWidget {
                   const Gap(16),
                   BullText(
                     failure.toTranslated(context),
-                    style: context.bullText.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.bull.error,
                     ),
                     textAlign: .center,
@@ -155,7 +159,7 @@ class ServerConfirmationPage extends StatelessWidget {
                       const Gap(8),
                       BullText(
                         context.loc.recoverbullLearnMore,
-                        style: context.bullText.bodyMedium,
+                        style: context.bullType.body,
                         color: context.bull.primary,
                       ),
                     ],

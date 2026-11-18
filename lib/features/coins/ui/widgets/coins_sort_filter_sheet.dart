@@ -180,7 +180,7 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text.toUpperCase(),
-        style: context.bullText.labelMedium?.copyWith(
+        style: context.bullType.caption.copyWith(
           fontWeight: FontWeight.w600,
           letterSpacing: 0.3,
           color: context.bull.textMuted,
@@ -244,7 +244,7 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: context.bullText.labelMedium?.copyWith(
+          style: context.bullType.caption.copyWith(
             color: active ? colors.primary : colors.text,
             fontWeight: active ? FontWeight.w600 : FontWeight.w400,
           ),
@@ -276,7 +276,7 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
           const SizedBox(width: 5),
           Text(
             label,
-            style: context.bullText.labelMedium?.copyWith(
+            style: context.bullType.caption.copyWith(
               fontWeight: FontWeight.w500,
               color: active ? colors.primary : colors.text,
             ),

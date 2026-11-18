@@ -58,7 +58,7 @@ format-check:
 FONT_SIZE_ALLOWLIST := ^(lib/features/onboarding/ui/screens/onboarding_splash|lib/features/wizard/ui/widgets/welcome_step|lib/features/exchange/ui/screens/exchange_landing_screen(_v2)?)\.dart:[0-9]+: *fontSize: [0-9]+, // Brand wordmark
 BULL_KEYPAD_FILES := packages/bull_ui/lib/src/inputs/bull_keypad.dart packages/bull_ui/lib/src/inputs/bull_mnemonic_keyboard.dart packages/bull_ui/lib/src/inputs/bull_pin_pad.dart
 
-bull-ui-check:
+bull-ui-check: typography-check
 	@echo "🧱 bull_ui import boundary (coins/ui imports only package:bull_ui)"
 	@if grep -rEl "package:(flutter/(material|cupertino|widgets)|material_ui/material_ui|cupertino_ui/cupertino_ui)\.dart" lib/features/coins/ui; then echo "lib/features/coins/ui must import only package:bull_ui/bull_ui.dart, not Flutter UI directly"; exit 1; fi
 	@echo "🧱 corner radius roles (widgets read context.bullShapes, never a typed-in radius)"
@@ -486,3 +486,7 @@ app-icons: app-icons-deps
 app-icons-check: app-icons-deps
 	@cd tools/app_icons && fvm dart analyze --fatal-infos
 	@fvm dart --packages=tools/app_icons/.dart_tool/package_config.json tools/app_icons/bin/generate.dart --help
+
+.PHONY: typography-check
+typography-check:
+	@fvm dart tools/typography_roles.dart

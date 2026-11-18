@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullShapesX, BullText, Gap;
+    show BullButton, BullShapesX, BullText, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class CommonCoinSelectionBottomSheet extends StatefulWidget {
@@ -107,9 +107,9 @@ class _CommonCoinSelectionBottomSheetState
               Center(
                 child: BullText(
                   context.loc.selectAmountTitle,
-                  style: context.font.headlineMedium?.copyWith(
-                    color: context.appColors.secondary,
-                  ),
+                  style: context.bullType.subtitle
+                      .copyWith(fontWeight: FontWeight.w500)
+                      .copyWith(color: context.appColors.secondary),
                 ),
               ),
               Positioned(
@@ -125,7 +125,7 @@ class _CommonCoinSelectionBottomSheetState
           const Gap(32),
           BullText(
             selectedUtxoTotal,
-            style: context.font.displaySmall?.copyWith(
+            style: context.bullType.headline.copyWith(
               color: context.appColors.secondary,
             ),
           ),
@@ -133,25 +133,25 @@ class _CommonCoinSelectionBottomSheetState
             const Gap(4),
             BullText(
               '~$selectedFiatEquivalent',
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.onSurfaceVariant,
-              ),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: context.appColors.onSurfaceVariant),
             ),
           ],
           const Gap(8),
           BullText(
             context.loc.amountRequestedLabel(amountToSend),
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.onSurfaceVariant,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.onSurfaceVariant),
           ),
           if (!isAmountSufficient) ...[
             const Gap(8),
             BullText(
               context.loc.sendSelectedUtxosInsufficient,
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.error,
-              ),
+              style: context.bullType.label
+                  .copyWith(fontWeight: FontWeight.w400)
+                  .copyWith(color: context.appColors.error),
             ),
           ],
           const Gap(24),
@@ -260,7 +260,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                       children: [
                         BullText(
                           '$utxoValue ',
-                          style: context.font.displaySmall?.copyWith(
+                          style: context.bullType.headline.copyWith(
                             color: context.appColors.onSurface,
                             fontWeight: .w500,
                           ),
@@ -279,7 +279,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                   if (fiatEquivalent != null)
                     BullText(
                       '~$fiatEquivalent',
-                      style: context.font.labelSmall?.copyWith(
+                      style: context.bullType.caption.copyWith(
                         color: context.appColors.onSurfaceVariant,
                       ),
                     ),
@@ -291,26 +291,26 @@ class CommonCoinSelectTile extends StatelessWidget {
                     children: [
                       BullText(
                         context.loc.addressLabel,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullType.caption.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       Expanded(
                         child: AddressViewer(
                           address,
-                          style: context.font.labelLarge,
+                          style: context.bullType.label,
                           color: context.appColors.onSurface,
                         ),
                       ),
                       BullText(
                         context.loc.typeLabel,
-                        style: context.font.labelMedium?.copyWith(
+                        style: context.bullType.caption.copyWith(
                           color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       BullText(
                         addressType,
-                        style: context.font.labelLarge?.copyWith(
+                        style: context.bullType.label.copyWith(
                           color: context.appColors.onSurface,
                         ),
                       ),

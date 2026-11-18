@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ExchangeHomeKycCard extends StatelessWidget {
@@ -12,7 +12,6 @@ class ExchangeHomeKycCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isKycLight = context.select(
       (ExchangeCubit cubit) => cubit.state.isLightKycLevel,
     );
@@ -35,14 +34,14 @@ class ExchangeHomeKycCard extends StatelessWidget {
           if (isKycLight)
             Text(
               context.loc.exchangeKycLevelLight,
-              style: theme.textTheme.labelLarge?.copyWith(
+              style: context.bullType.label.copyWith(
                 color: context.appColors.surfaceFixed,
               ),
             ),
           if (isKycLimited)
             Text(
               context.loc.exchangeKycLevelLimited,
-              style: theme.textTheme.labelLarge?.copyWith(
+              style: context.bullType.label.copyWith(
                 color: context.appColors.surfaceFixed,
               ),
             ),
@@ -50,7 +49,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
       ),
       title: Text(
         context.loc.exchangeKycCardTitle,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: context.bullType.body.copyWith(
           color: context.appColors.onPrimary,
           fontWeight: .w500,
         ),
@@ -58,7 +57,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
 
       subtitle: Text(
         context.loc.exchangeKycCardSubtitle,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: context.bullType.body.copyWith(
           color: context.appColors.onPrimaryFixed,
           fontWeight: .w500,
         ),

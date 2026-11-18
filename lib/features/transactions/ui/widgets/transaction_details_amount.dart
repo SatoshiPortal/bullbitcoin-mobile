@@ -1,7 +1,7 @@
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionDetailsAmount extends StatelessWidget {
@@ -36,7 +36,7 @@ class TransactionDetailsAmount extends StatelessWidget {
           CurrencyText(
             0,
             showFiat: false,
-            style: context.font.displaySmall?.copyWith(
+            style: context.bullType.headline.copyWith(
               color: context.appColors.secondary,
               fontWeight: .w500,
             ),
@@ -50,7 +50,7 @@ class TransactionDetailsAmount extends StatelessWidget {
                 : amountSat ?? 0,
             showFiat: false,
             interactive: true,
-            style: context.font.displaySmall?.copyWith(
+            style: context.bullType.headline.copyWith(
               color: context.appColors.secondary,
               fontWeight: .w500,
             ),

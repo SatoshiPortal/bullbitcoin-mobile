@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/buttons/bull_button.dart';
 import 'package:bull_ui/src/data_display/bull_text.dart';
 import 'package:bull_ui/src/layout/gap.dart';
@@ -121,7 +122,7 @@ class BullSupportButton extends StatelessWidget {
             onPressed: onTap,
             child: BullText(
               label,
-              style: context.bullText.bodyMedium,
+              style: context.bullType.body,
               color: context.bull.primary,
             ),
           ),
@@ -142,7 +143,7 @@ class BullSupportButton extends StatelessWidget {
                   const Gap(8),
                   BullText(
                     label,
-                    style: context.bullText.bodyMedium,
+                    style: context.bullType.body,
                     color: foreground,
                   ),
                 ],

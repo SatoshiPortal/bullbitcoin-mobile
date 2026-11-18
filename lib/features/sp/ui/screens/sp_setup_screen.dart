@@ -8,7 +8,8 @@ import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_scan_start_selector.dart';
-import 'package:bull_ui/bull_ui.dart' show BullDropdown, BullPickerItem, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDropdown, BullPickerItem, Gap, BullTypographyX;
 import 'package:primitives/primitives.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,7 +65,7 @@ class SpSetupScreen extends StatelessWidget {
                       children: [
                         Text(
                           context.loc.spNetworkLabel,
-                          style: context.font.bodyMedium,
+                          style: context.bullType.body,
                         ),
                         const Gap(4),
                         BullDropdown<BitcoinNetwork>(

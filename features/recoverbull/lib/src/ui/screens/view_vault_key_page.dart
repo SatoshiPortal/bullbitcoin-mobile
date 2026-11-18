@@ -101,7 +101,9 @@ class _ViewVaultKeyPageState extends State<ViewVaultKeyPage>
               _protected == null
                   ? context.loc.recoverbullPleaseWait
                   : context.loc.recoverbullUnexpectedError,
-              style: context.bullText.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             )
           else ...[
             Padding(

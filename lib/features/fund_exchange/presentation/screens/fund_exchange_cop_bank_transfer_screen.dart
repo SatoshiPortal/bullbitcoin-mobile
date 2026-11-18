@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 
 class FundExchangeCopBankTransferScreen extends StatelessWidget {
   const FundExchangeCopBankTransferScreen({super.key});
@@ -45,7 +45,9 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
                 ] else ...[
                   BBText(
                     context.loc.fundExchangeCopRedirectMessage,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const Gap(24.0),
                   BBButton.big(

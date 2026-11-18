@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX;
+    show BullBottomSheet, BullButton, BullShapesX, BullTypographyX;
 
 class ComingSoonBottomSheet extends StatelessWidget {
   final String description;
@@ -34,8 +34,6 @@ class ComingSoonBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(
@@ -67,15 +65,15 @@ class ComingSoonBottomSheet extends StatelessWidget {
               ],
               Text(
                 context.loc.comingSoonTitle,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: .bold,
-                ),
+                style: context.bullType.subtitle
+                    .copyWith(fontWeight: FontWeight.w400)
+                    .copyWith(fontWeight: .bold),
                 textAlign: .center,
               ),
               const SizedBox(height: 8),
               Text(
                 description,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: context.bullType.body.copyWith(
                   color: context.appColors.onSurface.withValues(alpha: 0.7),
                 ),
                 textAlign: .center,

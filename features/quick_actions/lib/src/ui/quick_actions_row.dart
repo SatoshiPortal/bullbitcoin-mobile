@@ -149,18 +149,12 @@ class _MoreSheet extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: BullText(
-                        l10n.more,
-                        style: context.bullText.titleLarge,
-                      ),
+                      child: BullText(l10n.more, style: context.bullType.title),
                     ),
                     BullInlineTextButton(
                       onPressed: () =>
                           Navigator.pop(context, const _MoreChoice.edit()),
-                      child: BullText(
-                        l10n.edit,
-                        style: context.bullText.labelLarge,
-                      ),
+                      child: BullText(l10n.edit, style: context.bullType.label),
                     ),
                     BullInlineIconButton(
                       tooltip: l10n.close,

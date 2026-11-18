@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullText, Gap, BullTypographyX;
 
 class OngoingSwapsWidget extends StatelessWidget {
   const OngoingSwapsWidget({
@@ -34,10 +35,12 @@ class OngoingSwapsWidget extends StatelessWidget {
               const Gap(8),
               BullText(
                 context.loc.transactionListOngoingTransfersTitle,
-                style: context.font.titleMedium?.copyWith(
-                  color: context.appColors.secondary,
-                  fontWeight: .w600,
-                ),
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(
+                      color: context.appColors.secondary,
+                      fontWeight: .w600,
+                    ),
               ),
               const Spacer(),
               Container(
@@ -48,7 +51,7 @@ class OngoingSwapsWidget extends StatelessWidget {
                 ),
                 child: BullText(
                   ongoingSwaps.length.toString(),
-                  style: context.font.labelSmall?.copyWith(
+                  style: context.bullType.caption.copyWith(
                     color: context.appColors.onSecondary,
                     fontWeight: .w600,
                   ),
@@ -62,10 +65,9 @@ class OngoingSwapsWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: BullText(
             context.loc.transactionListOngoingTransfersDescription,
-            style: context.font.bodySmall?.copyWith(
-              color: context.appColors.outline,
-              fontStyle: .italic,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.outline, fontStyle: .italic),
           ),
         ),
         const Gap(8),

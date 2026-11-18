@@ -5,7 +5,13 @@ import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullSnackBar, BullText, BullViewerActionButton, Gap;
+    show
+        BullDialog,
+        BullSnackBar,
+        BullText,
+        BullViewerActionButton,
+        Gap,
+        BullTypographyX;
 import 'package:url_launcher/url_launcher.dart';
 
 enum _TransactionNetwork { bitcoin, liquid }
@@ -56,8 +62,9 @@ class TransactionViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = color ?? context.appColors.secondary;
-    final textStyle = style ?? context.font.bodyLarge;
-    final effectiveStyle = (textStyle ?? const TextStyle()).copyWith(
+    final textStyle =
+        style ?? context.bullType.body.copyWith(fontWeight: FontWeight.w500);
+    final effectiveStyle = textStyle.copyWith(
       color: textColor,
       decoration: TextDecoration.underline,
       decorationStyle: TextDecorationStyle.dotted,
@@ -176,17 +183,19 @@ class _TransactionDetailSheet extends StatelessWidget {
         children: [
           BullText(
             context.loc.transactionViewerTitle,
-            style: context.font.titleSmall,
+            style: context.bullType.label,
             color: context.appColors.onSurface,
           ),
           const Gap(16),
           SelectableText(
             data,
-            style: context.font.bodyLarge?.copyWith(
-              color: context.appColors.secondary,
-              fontFeatures: [const FontFeature.tabularFigures()],
-              letterSpacing: 1.2,
-            ),
+            style: context.bullType.body
+                .copyWith(fontWeight: FontWeight.w500)
+                .copyWith(
+                  color: context.appColors.secondary,
+                  fontFeatures: [const FontFeature.tabularFigures()],
+                  letterSpacing: 1.2,
+                ),
             textAlign: TextAlign.center,
           ),
           const Gap(24),

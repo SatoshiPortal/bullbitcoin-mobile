@@ -16,7 +16,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullLanguagePicker,
         BullPickerItem,
         BullSettingsEntryItem,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class AdvancedOptions extends StatelessWidget {
@@ -48,7 +49,7 @@ class AdvancedOptions extends StatelessWidget {
                         ),
                         child: Text(
                           context.loc.onboardingAdvancedOptionsDescription,
-                          style: context.font.bodyMedium?.copyWith(
+                          style: context.bullType.body.copyWith(
                             color: context.appColors.onSurface.withValues(
                               alpha: 0.7,
                             ),
@@ -118,11 +119,13 @@ class AdvancedOptions extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           context.loc.onboardingAdvancedOptionsFooter,
-                          style: context.font.bodySmall?.copyWith(
-                            color: context.appColors.onSurface.withValues(
-                              alpha: 0.6,
-                            ),
-                          ),
+                          style: context.bullType.label
+                              .copyWith(fontWeight: FontWeight.w400)
+                              .copyWith(
+                                color: context.appColors.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                              ),
                         ),
                       ),
                     ],

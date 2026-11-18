@@ -16,7 +16,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullLowerCaseTextFormatter,
         BullSettingsEntryItem,
         BullShapesX,
-        Gap;
+        Gap,
+        BullTypographyX;
 
 class CustomServerInput {
   final String url;
@@ -146,7 +147,9 @@ class _AddCustomServerBottomSheetState
                       Expanded(
                         child: Text(
                           context.loc.electrumAddCustomServer,
-                          style: context.font.headlineMedium,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -168,7 +171,9 @@ class _AddCustomServerBottomSheetState
                       // Force lowercase
                       BullLowerCaseTextFormatter(),
                     ],
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     decoration: InputDecoration(
                       fillColor: context.appColors.surface,
                       filled: true,
@@ -203,7 +208,7 @@ class _AddCustomServerBottomSheetState
                             : context.loc.electrumNetworkBitcoin,
                         environment,
                       ),
-                      hintStyle: context.font.bodyMedium?.copyWith(
+                      hintStyle: context.bullType.body.copyWith(
                         color: context.appColors.textMuted,
                       ),
                     ),
@@ -235,16 +240,18 @@ class _AddCustomServerBottomSheetState
                             children: [
                               Text(
                                 context.loc.electrumEnableSsl,
-                                style: context.font.bodyMedium,
+                                style: context.bullType.body,
                               ),
                               if (_sslAutoDetected) ...[
                                 const Gap(2),
                                 Text(
                                   '(Auto-detected)',
-                                  style: context.font.bodySmall?.copyWith(
-                                    color: context.appColors.onSurface
-                                        .withValues(alpha: 0.6),
-                                  ),
+                                  style: context.bullType.label
+                                      .copyWith(fontWeight: FontWeight.w400)
+                                      .copyWith(
+                                        color: context.appColors.onSurface
+                                            .withValues(alpha: 0.6),
+                                      ),
                                 ),
                               ],
                             ],
@@ -285,11 +292,13 @@ class _AddCustomServerBottomSheetState
                       isLiquid
                           ? context.loc.electrumLiquidSslInfo
                           : context.loc.electrumBitcoinServerInfo,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.onSurface.withValues(
-                          alpha: 0.6,
-                        ),
-                      ),
+                      style: context.bullType.label
+                          .copyWith(fontWeight: FontWeight.w400)
+                          .copyWith(
+                            color: context.appColors.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
                       textAlign: .start,
                     ),
                   ),

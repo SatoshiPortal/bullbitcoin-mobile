@@ -15,7 +15,6 @@ class AccelerateTransactionListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.onPrimary, // or Colors.white
@@ -34,15 +33,15 @@ class AccelerateTransactionListTile extends StatelessWidget {
           leading: const BullLoader.small(),
           title: Text(
             context.loc.buyAccelerateTransaction,
-            style: theme.textTheme.headlineLarge?.copyWith(
-              color: context.appColors.secondary,
-            ),
+            style: context.bullType.subtitle
+                .copyWith(fontWeight: FontWeight.w700)
+                .copyWith(color: context.appColors.secondary),
           ),
           subtitle: Text(
             context.loc.buyGetConfirmedFaster,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: context.appColors.secondary,
-            ),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: context.appColors.secondary),
           ),
           trailing: Icon(
             Icons.fast_forward_outlined,

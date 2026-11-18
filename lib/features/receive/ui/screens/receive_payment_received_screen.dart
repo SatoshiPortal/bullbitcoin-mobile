@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullTopBar, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullTopBar, Gap, BullTypographyX;
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,18 +71,20 @@ class PaymentReceivedPage extends StatelessWidget {
           const Gap(20),
           BBText(
             context.loc.receivePaymentReceived,
-            style: context.font.headlineLarge,
+            style: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const Gap(24),
           CurrencyText(
             finalAmount,
             showFiat: false,
-            style: context.font.displaySmall,
+            style: context.bullType.headline,
           ),
           const Gap(4),
           BBText(
             '~$amountFiat',
-            style: context.font.bodyLarge,
+            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),

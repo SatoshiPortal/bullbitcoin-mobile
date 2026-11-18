@@ -41,9 +41,9 @@ class RecoverBullProgress extends StatelessWidget {
             BullText(
               title,
               textAlign: .center,
-              style: context.bullText.headlineLarge?.copyWith(
-                fontWeight: .bold,
-              ),
+              style: context.bullType.subtitle
+                  .copyWith(fontWeight: FontWeight.w700)
+                  .copyWith(fontWeight: .bold),
             ),
           ],
           if (description case final description?) ...[
@@ -51,7 +51,9 @@ class RecoverBullProgress extends StatelessWidget {
             BullText(
               description,
               textAlign: .center,
-              style: context.bullText.bodySmall,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
               maxLines: 3,
             ),
           ],
@@ -151,11 +153,16 @@ class RecoverBullSuccessScreen extends StatelessWidget {
                   ),
                 ),
                 const Gap(8),
-                BullText(title, style: context.bullText.headlineLarge),
+                BullText(
+                  title,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 const Gap(8),
                 BullText(
                   message,
-                  style: context.bullText.bodyMedium,
+                  style: context.bullType.body,
                   textAlign: .center,
                 ),
                 ...extras,
@@ -250,7 +257,7 @@ class RecoverBullAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: BullText(
         title,
-        style: context.bullText.headlineMedium,
+        style: context.bullType.subtitle.copyWith(fontWeight: FontWeight.w500),
         color: context.bull.onSurface,
       ),
       centerTitle: true,
@@ -515,7 +522,9 @@ class _ProviderCardState extends State<_ProviderCard>
                       children: [
                         BullText(
                           widget.provider.displayName(context),
-                          style: context.bullText.headlineMedium,
+                          style: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                         const Gap(10),
                         BullOptionsTag(
@@ -562,7 +571,9 @@ class ViewVaultKeyWarningSheet extends StatelessWidget {
                   const Gap(24),
                   BullText(
                     context.loc.backupSettingsSecurityWarning,
-                    style: context.bullText.headlineMedium,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(false),
@@ -582,7 +593,7 @@ class ViewVaultKeyWarningSheet extends StatelessWidget {
                 children: [
                   BullText(
                     context.loc.backupKeyWarningMessage,
-                    style: context.bullText.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: context.bull.secondary,
                       fontWeight: .bold,
                     ),
@@ -592,13 +603,13 @@ class ViewVaultKeyWarningSheet extends StatelessWidget {
                   BullText(
                     context.loc.backupKeySeparationWarning,
                     maxLines: 4,
-                    style: context.bullText.bodyMedium,
+                    style: context.bullType.body,
                   ),
                   const Gap(16),
                   BullText(
                     context.loc.backupKeyExampleWarning,
                     maxLines: 3,
-                    style: context.bullText.bodyMedium,
+                    style: context.bullType.body,
                   ),
                   const Gap(32),
                   Row(
@@ -609,7 +620,9 @@ class ViewVaultKeyWarningSheet extends StatelessWidget {
                           onPressed: () => Navigator.of(context).pop(false),
                           bgColor: context.bull.transparent,
                           outlined: true,
-                          textStyle: context.bullText.headlineLarge,
+                          textStyle: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                           textColor: context.bull.secondary,
                         ),
                       ),
@@ -619,7 +632,9 @@ class ViewVaultKeyWarningSheet extends StatelessWidget {
                           label: context.loc.recoverbullContinue,
                           onPressed: () => Navigator.of(context).pop(true),
                           bgColor: context.bull.secondary,
-                          textStyle: context.bullText.headlineLarge,
+                          textStyle: context.bullType.subtitle.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                           textColor: context.bull.onSecondary,
                         ),
                       ),

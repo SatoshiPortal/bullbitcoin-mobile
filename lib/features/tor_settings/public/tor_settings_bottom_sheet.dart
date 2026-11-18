@@ -1,10 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/public/tor_settings_panel.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullBottomSheet;
+import 'package:bull_ui/bull_ui.dart' show BullBottomSheet, BullTypographyX;
 
 class TorSettingsBottomSheet extends StatelessWidget {
   const TorSettingsBottomSheet({super.key});
@@ -33,7 +32,9 @@ class TorSettingsBottomSheet extends StatelessWidget {
                 Expanded(
                   child: Text(
                     context.loc.torSettingsTitle,
-                    style: context.font.headlineMedium,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 IconButton(

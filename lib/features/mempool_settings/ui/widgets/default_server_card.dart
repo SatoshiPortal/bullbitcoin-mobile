@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_st
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullTypographyX;
 
 class DefaultServerCard extends StatelessWidget {
   final MempoolServerDto server;
@@ -25,16 +25,16 @@ class DefaultServerCard extends StatelessWidget {
                 children: [
                   Text(
                     server.url,
-                    style: context.font.bodyMedium?.copyWith(
+                    style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     server.fullUrl,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
-                    ),
+                    style: context.bullType.label
+                        .copyWith(fontWeight: FontWeight.w400)
+                        .copyWith(color: context.appColors.textMuted),
                   ),
                   const SizedBox(height: 6),
                   Row(

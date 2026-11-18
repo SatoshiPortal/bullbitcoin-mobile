@@ -771,8 +771,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                     context,
                                                   ),
                                                   style: context
-                                                      .font
-                                                      .headlineSmall,
+                                                      .bullType
+                                                      .subtitle
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -921,7 +925,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           CurrencyText(
                                             amountSat,
                                             showFiat: false,
-                                            style: context.font.bodyMedium,
+                                            style: context.bullType.body,
                                             color: context.appColors.textMuted,
                                           ),
                                     )
@@ -1072,7 +1076,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                         context
                                             .loc
                                             .sendErrorAmountBelowSwapLimitsBitcoin,
-                                        style: context.font.bodySmall,
+                                        style: context.bullType.label.copyWith(
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                         color: context.appColors.error,
                                         maxLines: 3,
                                         textAlign: TextAlign.center,
@@ -1110,7 +1116,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                             children: [
                                               BullText(
                                                 '${context.loc.receiveNote} (optional)',
-                                                style: context.font.bodyLarge,
+                                                style: context.bullType.body
+                                                    .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
                                                 color:
                                                     context.appColors.secondary,
                                               ),
@@ -1121,7 +1131,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                           .loc
                                                           .receiveEnterHere
                                                     : state.label,
-                                                style: context.font.bodyMedium,
+                                                style: context.bullType.body,
                                                 maxLines: 4,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -1366,7 +1376,7 @@ class _SendError extends StatelessWidget {
             context,
             formattedFrozenBalance: frozenBalanceHint,
           ),
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.error,
           maxLines: 5,
           textAlign: .center,
@@ -1380,7 +1390,9 @@ class _SendError extends StatelessWidget {
           children: [
             BullText(
               context.loc.sendErrorConfirmationFailed,
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.error,
               maxLines: 5,
               textAlign: .center,
@@ -1389,7 +1401,7 @@ class _SendError extends StatelessWidget {
               const Gap(8),
               BullText(
                 context.loc.sendErrorBroadcastFailed,
-                style: context.font.bodyMedium,
+                style: context.bullType.body,
                 color: context.appColors.error,
                 maxLines: 5,
                 textAlign: .center,
@@ -1409,7 +1421,7 @@ class _SendError extends StatelessWidget {
             context,
             formattedFrozenBalance: frozenBalanceHint,
           ),
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.error,
           maxLines: 5,
           textAlign: .center,
@@ -1572,7 +1584,7 @@ class _OnchainTransactionReview extends StatelessWidget {
         amountBuilder: (amountSat) => CurrencyText(
           amountSat,
           showFiat: false,
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.secondary,
         ),
         onFeePriorityTap: state.signedBitcoinTx == null
@@ -1696,14 +1708,14 @@ class _SelectedCoinsDetails extends StatelessWidget {
       children: [
         BullText(
           context.loc.coinsSelectedCount(count),
-          style: context.font.bodyLarge,
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.secondary,
           textAlign: TextAlign.end,
         ),
         CurrencyText(
           totalSat,
           showFiat: false,
-          style: context.font.labelSmall,
+          style: context.bullType.caption,
           color: context.appColors.secondary,
         ),
       ],
@@ -1864,7 +1876,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             title: context.loc.sendFrom,
             details: BullText(
               selectedWallet!.displayLabel(context),
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.secondary,
               textAlign: .end,
             ),
@@ -1879,7 +1893,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   Flexible(
                     child: BullText(
                       swapReference,
-                      style: context.font.bodyLarge,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                       color: context.appColors.secondary,
                       textAlign: .end,
                     ),
@@ -1909,7 +1925,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 Expanded(
                   child: AddressViewer(
                     paymentRequestAddress,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                     textAlign: TextAlign.end,
                   ),
@@ -1936,7 +1954,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               title: context.loc.receiveNote,
               details: BullText(
                 label,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
                 textAlign: .end,
               ),
@@ -1952,7 +1972,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     sendAmountSat,
                     showFiat: false,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                   ),
                 ],
@@ -1969,7 +1991,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     receiveAmountSat,
                     showFiat: false,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                   ),
                 ],
@@ -1983,7 +2007,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               details: CurrencyText(
                 networkFee,
                 showFiat: false,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
                 textAlign: TextAlign.end,
               ),
@@ -1996,7 +2022,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               details: CurrencyText(
                 swapFee,
                 showFiat: false,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
                 textAlign: TextAlign.end,
               ),
@@ -2033,14 +2061,14 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
         children: [
           BullText(
             label,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
           CurrencyText(
             amt,
             showFiat: false,
-            style: context.font.bodySmall,
+            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.secondary,
           ),
         ],
@@ -2071,14 +2099,18 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                 children: [
                   BullText(
                     context.loc.sendTransferFee,
-                    style: context.font.bodySmall,
+                    style: context.bullType.label.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
                     color: context.appColors.onSurfaceVariant,
                   ),
                   const Spacer(),
                   CurrencyText(
                     total,
                     showFiat: false,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                   ),
                   const Gap(4),
@@ -2100,7 +2132,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: BullText(
                     context.loc.sendTransferFeeDescription,
-                    style: context.font.labelSmall,
+                    style: context.bullType.caption,
                     color: context.appColors.onSurfaceVariant,
                   ),
                 ),
@@ -2174,7 +2206,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             title: context.loc.sendFrom,
             details: BullText(
               selectedWallet!.displayLabel(context),
-              style: context.font.bodyLarge,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               color: context.appColors.secondary,
               textAlign: .end,
             ),
@@ -2188,7 +2222,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 Flexible(
                   child: BullText(
                     swapId,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                     textAlign: .end,
                   ),
@@ -2217,7 +2253,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 Expanded(
                   child: AddressViewer(
                     paymentRequestAddress,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                     textAlign: TextAlign.end,
                   ),
@@ -2247,7 +2285,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 CurrencyText(
                   sendAmount,
                   showFiat: false,
-                  style: context.font.bodyLarge,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   color: context.appColors.secondary,
                 ),
               ],
@@ -2263,7 +2303,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     receiveAmount,
                     showFiat: false,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                   ),
                 ],
@@ -2279,7 +2321,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     absoluteFees,
                     showFiat: false,
-                    style: context.font.bodyLarge,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     color: context.appColors.secondary,
                   ),
                 ],
@@ -2298,7 +2342,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                         orderSwap.order!.payoutAmountSat)
                     .toInt(),
                 showFiat: false,
-                style: context.font.bodyLarge,
+                style: context.bullType.body.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
                 color: context.appColors.secondary,
                 textAlign: TextAlign.end,
               ),
@@ -2347,13 +2393,13 @@ class SendConfirmTopArea extends StatelessWidget {
         const Gap(16),
         BullText(
           context.loc.sendConfirmSend,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: context.appColors.secondary,
         ),
         const Gap(4),
         BullText(
           amountBitcoin,
-          style: context.font.displaySmall,
+          style: context.bullType.headline,
           color: context.appColors.secondary,
         ),
       ],
@@ -2428,12 +2474,14 @@ class SendSendingScreen extends StatelessWidget {
                 const Gap(8),
                 BullText(
                   context.loc.sendSending,
-                  style: context.font.headlineLarge,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const Gap(8),
                 BullText(
                   context.loc.sendBroadcastingTransaction,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   maxLines: 4,
                   textAlign: .center,
                 ),
@@ -2442,20 +2490,22 @@ class SendSendingScreen extends StatelessWidget {
                 const Gap(8),
                 BullText(
                   context.loc.sendSending,
-                  style: context.font.headlineLarge,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const Gap(8),
                 if (isLiquid)
                   BullText(
                     context.loc.sendSwapInProgressInvoice,
-                    style: context.font.bodyMedium,
+                    style: context.bullType.body,
                     maxLines: 4,
                     textAlign: .center,
                   )
                 else
                   BullText(
                     context.loc.sendSwapInProgressBitcoin,
-                    style: context.font.bodyMedium,
+                    style: context.bullType.body,
                     maxLines: 4,
                     textAlign: .center,
                   ),
@@ -2464,13 +2514,15 @@ class SendSendingScreen extends StatelessWidget {
                 const Gap(8),
                 BullText(
                   context.loc.sendSending,
-                  style: context.font.headlineLarge,
+                  style: context.bullType.subtitle.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const Gap(8),
                 BullText(
                   pausedFailure?.toTranslated(context) ??
                       context.loc.sendCoordinatingPayjoinTransaction,
-                  style: context.font.bodyMedium,
+                  style: context.bullType.body,
                   maxLines: 10,
                   textAlign: TextAlign.center,
                 ),
@@ -2494,7 +2546,7 @@ class SendSendingScreen extends StatelessWidget {
                     children: [
                       BullText(
                         context.loc.sendPayjoinFallbackCountdown,
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                         color: context.appColors.secondary,
                       ),
                       const Gap(4),
@@ -2597,12 +2649,16 @@ class SendSucessScreen extends StatelessWidget {
                   if (expiredBeforePayin) ...[
                     BullText(
                       context.loc.sendSwapExpiredTitle,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     ),
                     BullText(
                       context.loc.sendSwapExpiredMessage,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     ),
                   ] else if (orderSwap?.localStatus ==
@@ -2613,12 +2669,16 @@ class SendSucessScreen extends StatelessWidget {
                       boltzSwap?.status == SwapStatus.refundable) ...[
                     BullText(
                       context.loc.sendSwapRefundInProgress,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     ),
                     BullText(
                       context.loc.sendSwapFailed,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     ),
                   ] else if ((orderSwap != null &&
@@ -2630,12 +2690,16 @@ class SendSucessScreen extends StatelessWidget {
                           chainSwap.refundTxid != null)) ...[
                     BullText(
                       context.loc.sendSwapRefundCompleted,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     ),
                     BullText(
                       context.loc.sendRefundProcessed,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     ),
                   ] else if ((isLnSwap &&
@@ -2651,7 +2715,9 @@ class SendSucessScreen extends StatelessWidget {
                     const Gap(20),
                     BullText(
                       context.loc.sendInvoicePaid,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ] else if ((isLnSwap &&
                           !isBitcoin &&
@@ -2660,27 +2726,35 @@ class SendSucessScreen extends StatelessWidget {
                       (isBoltzLnSwap && !isBitcoin))
                     BullText(
                       context.loc.sendPaymentProcessing,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     )
                   else if ((isLnSwap || isBoltzLnSwap) && isBitcoin)
                     BullText(
                       context.loc.sendPaymentWillTakeTime,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     )
                   else if (isChainSwap) ...[
                     BullText(
                       context.loc.sendSwapInitiated,
-                      style: context.font.bodyLarge,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     BullText(
                       context.loc.sendSwapWillTakeTime,
-                      style: context.font.labelSmall,
+                      style: context.bullType.caption,
                     ),
                   ] else ...[
                     BullText(
                       context.loc.sendSuccessfullySent,
-                      style: context.font.bodyLarge,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     // A payjoin send that completed via the plain-broadcast
                     // fallback (receiver declined/expired or the payjoin
@@ -2692,7 +2766,7 @@ class SendSucessScreen extends StatelessWidget {
                       const Gap(8),
                       BullText(
                         context.loc.sendSentWithoutPayjoin,
-                        style: context.font.bodyMedium,
+                        style: context.bullType.body,
                         color: context.appColors.secondary,
                         maxLines: 4,
                         textAlign: TextAlign.center,
@@ -2702,7 +2776,7 @@ class SendSucessScreen extends StatelessWidget {
                   const Gap(8),
                   BullText(
                     amount,
-                    style: context.font.displaySmall,
+                    style: context.bullType.headline,
                     maxLines: 4,
                     textAlign: .center,
                   ),
@@ -2710,7 +2784,7 @@ class SendSucessScreen extends StatelessWidget {
                     const Gap(4),
                     BullText(
                       '~$fiatEquivalent',
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.secondary,
                       maxLines: 4,
                       textAlign: .center,

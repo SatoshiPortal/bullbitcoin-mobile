@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_failure.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
@@ -22,7 +22,7 @@ class FundExchangeErrorText extends StatelessWidget {
     if (title == null) {
       return BBText(
         message,
-        style: context.font.bodyMedium,
+        style: context.bullType.body,
         color: Theme.of(context).colorScheme.error,
         textAlign: textAlign,
       );
@@ -33,16 +33,18 @@ class FundExchangeErrorText extends StatelessWidget {
       children: [
         BBText(
           title,
-          style: context.font.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.error,
-          ),
+          style: context.bullType.body
+              .copyWith(fontWeight: FontWeight.w500)
+              .copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.error,
+              ),
           textAlign: textAlign,
         ),
         const SizedBox(height: 4),
         BBText(
           message,
-          style: context.font.bodyMedium,
+          style: context.bullType.body,
           color: Theme.of(context).colorScheme.error,
           textAlign: textAlign,
         ),

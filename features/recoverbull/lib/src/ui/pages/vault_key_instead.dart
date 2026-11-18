@@ -30,7 +30,7 @@ class VaultKeyInsteadButton extends StatelessWidget {
       label: context.loc.recoverbullEnterVaultKeyInstead,
       bgColor: context.bull.transparent,
       textColor: context.bull.info,
-      textStyle: context.bullText.labelLarge,
+      textStyle: context.bullType.label,
       onPressed: () {
         onLeave?.call();
         final vault = context.read<VaultFlowCubit>().state.vault;

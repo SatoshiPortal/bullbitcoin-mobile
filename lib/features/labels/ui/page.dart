@@ -16,7 +16,8 @@ import 'package:bull_ui/bull_ui.dart'
         BullSnackBar,
         BullText,
         BullTopBar,
-        Gap;
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class Bip329LabelsPage extends StatelessWidget {
@@ -96,13 +97,17 @@ class Bip329LabelsPage extends StatelessWidget {
                     const Gap(20),
                     BullText(
                       context.loc.bip329LabelsHeading,
-                      style: context.font.headlineLarge,
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: .center,
                     ),
                     const Gap(16),
                     BullText(
                       context.loc.bip329LabelsDescription,
-                      style: context.font.bodyLarge,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                       textAlign: .center,
                     ),
                     const Spacer(),

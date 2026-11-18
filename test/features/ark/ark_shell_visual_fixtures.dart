@@ -155,6 +155,7 @@ class ArkShellVisualFixtures {
                 ),
                 onEmptyMainnet: () {},
                 onImportNetworkWallet: () {},
+                onRecoverEncryptedVault: () {},
                 quickActions: fixture._quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},

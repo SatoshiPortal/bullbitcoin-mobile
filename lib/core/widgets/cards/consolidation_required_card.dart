@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullText, Gap;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullText, Gap, BullTypographyX;
 
 class ConsolidationRequiredCard extends StatelessWidget {
   const ConsolidationRequiredCard({
@@ -38,14 +39,14 @@ class ConsolidationRequiredCard extends StatelessWidget {
                 children: [
                   BullText(
                     title,
-                    style: context.font.bodyMedium,
+                    style: context.bullType.body,
                     color: context.appColors.onSurface,
                   ),
                   if (body != null) ...[
                     const Gap(2),
                     BullText(
                       body!,
-                      style: context.font.bodyMedium,
+                      style: context.bullType.body,
                       color: context.appColors.secondary,
                       maxLines: 4,
                     ),

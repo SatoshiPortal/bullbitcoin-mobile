@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText;
+import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
 
 /// Common scaffold for the body of one wizard PageView page. Renders the
 /// red "PAGE x / total" eyebrow + bold uppercase title, then the page's
@@ -35,7 +35,7 @@ class WizardStepLayout extends StatelessWidget {
         children: [
           BullText(
             context.loc.wizardPageIndicator(page.number, WizardPage.total),
-            style: context.font.labelMedium?.copyWith(
+            style: context.bullType.caption.copyWith(
               color: context.appColors.primary,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
@@ -44,7 +44,7 @@ class WizardStepLayout extends StatelessWidget {
           SizedBox(height: vGapSm),
           BullText(
             title.toUpperCase(),
-            style: context.font.displaySmall?.copyWith(
+            style: context.bullType.headline.copyWith(
               fontWeight: FontWeight.w900,
               color: context.appColors.onSurface,
               height: 1.05,

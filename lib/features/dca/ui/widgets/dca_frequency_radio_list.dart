@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap;
+import 'package:bull_ui/bull_ui.dart' show BullShapesX, Gap, BullTypographyX;
 
 class DcaFrequencyRadioList extends StatelessWidget {
   const DcaFrequencyRadioList({
@@ -27,10 +27,7 @@ class DcaFrequencyRadioList extends StatelessWidget {
       crossAxisAlignment: .start,
       mainAxisSize: .min,
       children: [
-        Text(
-          context.loc.dcaSelectFrequencyLabel,
-          style: context.font.bodyMedium,
-        ),
+        Text(context.loc.dcaSelectFrequencyLabel, style: context.bullType.body),
         const Gap(4),
         RadioGroup<DcaBuyFrequency>(
           groupValue: selectedFrequency,
@@ -46,16 +43,21 @@ class DcaFrequencyRadioList extends StatelessWidget {
                       ),
                       side: BorderSide(color: borderColor),
                     ),
-                    title: Text(switch (frequency) {
-                      DcaBuyFrequency.hourly =>
-                        context.loc.dcaConfirmFrequencyHourly,
-                      DcaBuyFrequency.daily =>
-                        context.loc.dcaConfirmFrequencyDaily,
-                      DcaBuyFrequency.weekly =>
-                        context.loc.dcaConfirmFrequencyWeekly,
-                      DcaBuyFrequency.monthly =>
-                        context.loc.dcaConfirmFrequencyMonthly,
-                    }, style: context.font.headlineSmall),
+                    title: Text(
+                      switch (frequency) {
+                        DcaBuyFrequency.hourly =>
+                          context.loc.dcaConfirmFrequencyHourly,
+                        DcaBuyFrequency.daily =>
+                          context.loc.dcaConfirmFrequencyDaily,
+                        DcaBuyFrequency.weekly =>
+                          context.loc.dcaConfirmFrequencyWeekly,
+                        DcaBuyFrequency.monthly =>
+                          context.loc.dcaConfirmFrequencyMonthly,
+                      },
+                      style: context.bullType.subtitle.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                     value: frequency,
                   ),
                   const Gap(16),
@@ -68,8 +70,9 @@ class DcaFrequencyRadioList extends StatelessWidget {
           const Gap(4),
           Text(
             errorText!,
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: Theme.of(context).colorScheme.error),
+            style: context.bullType.label
+                .copyWith(fontWeight: FontWeight.w400)
+                .copyWith(color: Theme.of(context).colorScheme.error),
           ),
         ],
       ],

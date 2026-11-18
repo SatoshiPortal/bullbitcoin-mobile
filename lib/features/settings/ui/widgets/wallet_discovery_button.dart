@@ -28,12 +28,12 @@ class WalletDiscoveryButton extends StatelessWidget {
               if (state is WalletDiscoverySucceeded)
                 BullText(
                   context.loc.walletDiscoverySucceeded,
-                  style: context.bullText.bodyMedium,
+                  style: context.bullType.body,
                 ),
               if (state case WalletDiscoveryFailed(:final failure))
                 BullText(
                   failure.toTranslated(context),
-                  style: context.bullText.bodyMedium,
+                  style: context.bullType.body,
                 ),
             ],
           );

@@ -5,7 +5,8 @@ import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullShapesX, BullSnackBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullShapesX, BullSnackBar, BullTypographyX;
 
 class LabelsWidget extends StatefulWidget {
   const LabelsWidget({super.key, required this.labels, this.onDelete});
@@ -117,9 +118,9 @@ class LabelChip extends StatelessWidget {
           Flexible(
             child: LabelText(
               label,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.secondary,
-              ),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: context.appColors.secondary),
             ),
           ),
           if (!isSystemLabel && onDelete != null) ...[

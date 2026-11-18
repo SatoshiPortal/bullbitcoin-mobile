@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_payment.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDetailsTable, BullDetailsTableItem, Gap;
+    show BullDetailsTable, BullDetailsTableItem, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -42,7 +42,7 @@ class SpTransactionDetailsScreen extends StatelessWidget {
       status: _SpDetailsStatusLabel(payment: payment),
       amount: Text(
         FormatAmount.sats(payment.amountSat.value.toInt()),
-        style: context.font.displaySmall?.copyWith(
+        style: context.bullType.headline.copyWith(
           color: context.appColors.secondary,
           fontWeight: .w500,
         ),
@@ -89,7 +89,7 @@ class SpTransactionDetailsScreen extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               context.loc.spTransactionIdLabel,
-              style: context.font.bodyMedium?.copyWith(
+              style: context.bullType.body.copyWith(
                 color: context.appColors.textMuted,
               ),
             ),
@@ -117,12 +117,14 @@ class _SpDetailsStatusLabel extends StatelessWidget {
     final clickable =
         payment.status == SpPaymentStatus.confirmedUnverified ||
         payment.status == SpPaymentStatus.verifyFailed;
-    final style = context.font.titleMedium?.copyWith(
-      color: payment.status == SpPaymentStatus.verifyFailed
-          ? context.appColors.error
-          : null,
-      decoration: clickable ? TextDecoration.underline : null,
-    );
+    final style = context.bullType.body
+        .copyWith(fontWeight: FontWeight.w500)
+        .copyWith(
+          color: payment.status == SpPaymentStatus.verifyFailed
+              ? context.appColors.error
+              : null,
+          decoration: clickable ? TextDecoration.underline : null,
+        );
     final label = switch (payment.status) {
       SpPaymentStatus.unconfirmed => context.loc.spUnconfirmed,
       SpPaymentStatus.confirmedUnverified => context.loc.spVerifying,

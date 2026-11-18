@@ -48,12 +48,12 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
             children: [
               BullText(
                 context.loc.exchangeAccessDisableTitle,
-                style: context.bullText.titleLarge,
+                style: context.bullType.title,
               ),
               const Gap(16),
               BullText(
                 context.loc.exchangeAccessDisableBody,
-                style: context.bullText.bodyMedium,
+                style: context.bullType.body,
               ),
               const Gap(16),
               BullButton.big(
@@ -116,7 +116,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                     Expanded(
                                       child: BullText(
                                         context.loc.exchangeAccessSettingsLabel,
-                                        style: context.bullText.bodyMedium,
+                                        style: context.bullType.body,
                                       ),
                                     ),
                                     BullSwitch(
@@ -146,20 +146,20 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                               const Gap(12),
                               BullText(
                                 context.loc.exchangeAccessSettingsDescription,
-                                style: context.bullText.bodyMedium,
+                                style: context.bullType.body,
                               ),
                               const Gap(12),
                               BullText(
                                 enabled
                                     ? context.loc.exchangeAccessSettingsOnHint
                                     : context.loc.exchangeAccessSettingsOffHint,
-                                style: context.bullText.bodyMedium,
+                                style: context.bullType.body,
                               ),
                             ],
                             if (incomplete) ...[
                               BullText(
                                 context.loc.exchangeAccessLogoutIncomplete,
-                                style: context.bullText.bodyMedium,
+                                style: context.bullType.body,
                               ),
                               const Gap(16),
                               BullButton.big(
@@ -173,7 +173,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                             if (unreadable) ...[
                               BullText(
                                 context.loc.exchangeAccessUnreadable,
-                                style: context.bullText.bodyMedium,
+                                style: context.bullType.body,
                               ),
                               const Gap(16),
                               BullButton.big(
@@ -201,7 +201,7 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                               const Gap(16),
                               BullText(
                                 failure.toTranslated(context),
-                                style: context.bullText.bodyMedium,
+                                style: context.bullType.body,
                               ),
                             ],
                             if (!incomplete &&

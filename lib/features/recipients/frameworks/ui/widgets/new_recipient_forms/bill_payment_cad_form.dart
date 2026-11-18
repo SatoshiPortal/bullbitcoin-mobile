@@ -9,7 +9,7 @@ import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.
 import 'package:bb_mobile/features/recipients/presentation/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -133,9 +133,9 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   failure.toTranslated(context),
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.error,
-                  ),
+                  style: context.bullType.label
+                      .copyWith(fontWeight: FontWeight.w400)
+                      .copyWith(color: context.appColors.error),
                 ),
               );
             },

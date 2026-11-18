@@ -4,7 +4,13 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInputText, BullPinPad, BullTopBar, Gap;
+    show
+        BullButton,
+        BullInputText,
+        BullPinPad,
+        BullTopBar,
+        Gap,
+        BullTypographyX;
 
 class ConfirmPinCodeScreen extends StatelessWidget {
   const ConfirmPinCodeScreen({super.key});
@@ -45,9 +51,9 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                         Text(
                           context.loc.pinCodeConfirmTitle,
                           textAlign: .center,
-                          style: context.font.headlineMedium?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w500)
+                              .copyWith(color: context.appColors.onSurface),
                           maxLines: 3,
                         ),
                         const Gap(30),
@@ -93,7 +99,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                                 ? Text(
                                     context.loc.pinCodeMismatchError,
                                     textAlign: .start,
-                                    style: context.font.labelSmall?.copyWith(
+                                    style: context.bullType.caption.copyWith(
                                       color: context.appColors.error,
                                     ),
                                   )
@@ -150,7 +156,9 @@ class _ConfirmButton extends StatelessWidget {
         builder: (context, canConfirm) {
           return BullButton.big(
             label: context.loc.pinCodeConfirm,
-            textStyle: context.font.headlineLarge,
+            textStyle: context.bullType.subtitle.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
             bgColor: canConfirm
                 ? context.appColors.secondary
                 : context.appColors.textMuted,

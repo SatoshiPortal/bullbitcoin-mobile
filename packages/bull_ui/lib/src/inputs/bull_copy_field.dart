@@ -1,3 +1,4 @@
+import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:bull_ui/src/feedback/bull_snack_bar.dart';
@@ -64,9 +65,9 @@ class BullCopyField extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Text(
               text,
-              style: context.bullText.bodyLarge?.copyWith(
-                color: colors.secondary,
-              ),
+              style: context.bullType.body
+                  .copyWith(fontWeight: FontWeight.w500)
+                  .copyWith(color: colors.secondary),
               maxLines: maxLines,
               overflow: overflow,
             ),
@@ -110,7 +111,7 @@ class BullCopyField extends StatelessWidget {
                   ),
                   child: Text(
                     heading,
-                    style: context.bullText.bodyLarge?.copyWith(
+                    style: context.bullType.body.copyWith(
                       color: colors.secondary,
                     ),
                   ),

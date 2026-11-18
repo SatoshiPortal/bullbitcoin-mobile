@@ -223,7 +223,7 @@ class _VaultProviderSelectionPageState
                       children: [
                         BullText(
                           context.loc.recoverbullPendingProviderSave,
-                          style: context.bullText.bodyMedium,
+                          style: context.bullType.body,
                           maxLines: 5,
                         ),
                         const Gap(16),
@@ -258,9 +258,9 @@ class _VaultProviderSelectionPageState
                         ),
                         child: BullText(
                           context.loc.backupWalletHowToDecide,
-                          style: context.bullText.headlineLarge?.copyWith(
-                            color: context.bull.primary,
-                          ),
+                          style: context.bullType.subtitle
+                              .copyWith(fontWeight: FontWeight.w700)
+                              .copyWith(color: context.bull.primary),
                         ),
                       ),
                     ),
@@ -282,13 +282,13 @@ class HowToDecideVaultLocation extends StatelessWidget {
   Widget build(BuildContext context) {
     final body = context.bullType.label.copyWith(height: 1.5);
     TextSpan recommendation(String title, String text) => TextSpan(
-      style: context.bullText.bodyMedium,
+      style: context.bullType.body,
       children: [
         TextSpan(
           text: title,
-          style: context.bullText.labelMedium?.copyWith(fontWeight: .bold),
+          style: context.bullType.caption.copyWith(fontWeight: .bold),
         ),
-        TextSpan(text: text, style: context.bullText.labelMedium),
+        TextSpan(text: text, style: context.bullType.caption),
       ],
     );
     return FractionallySizedBox(
@@ -312,7 +312,9 @@ class HowToDecideVaultLocation extends StatelessWidget {
                   const Spacer(),
                   BullText(
                     context.loc.backupWalletHowToDecideBackupModalTitle,
-                    style: context.bullText.headlineMedium,
+                    style: context.bullType.subtitle.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     textAlign: .center,
                   ),
                   const Spacer(),
