@@ -1,16 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
-import 'package:bull_logger/bull_logger.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullTypographyX;
 
-/// Callback for when a payment request is detected from a QR code
-typedef OnScannedPaymentRequestCallback = void Function(
-  (String, PaymentRequest?) data,
-);
+/// Callback for the raw text detected from a QR code.
+typedef OnScannedPaymentRequestCallback = void Function(String raw);
 
 class FullScreenScannerPage extends StatefulWidget {
   final OnScannedPaymentRequestCallback onScannedPaymentRequest;
@@ -25,25 +21,13 @@ class FullScreenScannerPage extends StatefulWidget {
 }
 
 class _FullScreenScannerState extends State<FullScreenScannerPage> {
-  (String, PaymentRequest?) data = ('', null);
+  String data = '';
 
-  Future<void> _onScanned(String qr) async {
+  void _onScanned(String qr) {
     if (!mounted) return;
-
-    try {
-      final pr = await PaymentRequest.parse(qr);
-      data = (qr, pr);
-      widget.onScannedPaymentRequest(data);
-      if (mounted) context.pop();
-    } catch (e) {
-      log.info(
-        'Scanned QR is not a payment request',
-        error: e.runtimeType.toString(),
-      );
-      data = (qr, null);
-      widget.onScannedPaymentRequest(data);
-      if (mounted) context.pop();
-    }
+    data = qr;
+    widget.onScannedPaymentRequest(qr);
+    if (mounted) context.pop();
   }
 
   @override
@@ -54,7 +38,7 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
         fit: .expand,
         children: [
           QrScannerWidget(onScanned: _onScanned),
-          if (data.$1.isNotEmpty)
+          if (data.isNotEmpty)
             Positioned(
               bottom: MediaQuery.of(context).size.height * 0.25,
               left: 24,
@@ -64,9 +48,9 @@ class _FullScreenScannerState extends State<FullScreenScannerPage> {
                 textStyle: context.bullType.caption,
                 textColor: context.appColors.onPrimary,
                 onPressed: () {},
-                label: data.$1.length > 30
-                    ? '${data.$1.substring(0, 10)}…${data.$1.substring(data.$1.length - 10)}'
-                    : data.$1,
+                label: data.length > 30
+                    ? '${data.substring(0, 10)}…${data.substring(data.length - 10)}'
+                    : data,
                 bgColor: context.appColors.transparent,
               ),
             ),
