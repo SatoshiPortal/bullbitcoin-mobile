@@ -20,6 +20,7 @@ class PaymentDestinationField extends StatefulWidget {
   final ValueChanged<PaymentDestination?>? onValidated;
   final ValueChanged<bool>? onValidationChanged;
   final bool allowLnurl;
+  final bool allowRegtest;
   final bool enabled;
   final String? error;
   final TextInputType? keyboardType;
@@ -34,6 +35,7 @@ class PaymentDestinationField extends StatefulWidget {
     this.onValidated,
     this.onValidationChanged,
     this.allowLnurl = true,
+    this.allowRegtest = true,
     this.enabled = true,
     this.error,
     this.keyboardType,
@@ -65,7 +67,9 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
     if ((widget.value != oldWidget.value &&
             widget.value != _destination?.address) ||
         widget.allowLnurl != oldWidget.allowLnurl ||
+        widget.allowRegtest != oldWidget.allowRegtest ||
         !setEquals(widget.acceptedTypes, oldWidget.acceptedTypes)) {
+      _generation++;
       _value = widget.value;
       _destination = null;
       _validated = false;
@@ -81,6 +85,7 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
       value,
       acceptedTypes: widget.acceptedTypes,
       allowLnurl: widget.allowLnurl,
+      allowRegtest: widget.allowRegtest,
     );
     if (!mounted || generation != _generation || value != _value) return;
     setState(() {

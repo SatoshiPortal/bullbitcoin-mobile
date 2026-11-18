@@ -218,6 +218,7 @@ class _WalletAddressFieldState extends State<_WalletAddressField> {
         ),
         const SizedBox(height: 8),
         PaymentDestinationField(
+          allowRegtest: false,
           value: isEditing ? inputValue : currentAddress,
           hint: context.loc.exchangeBitcoinWalletsEnterAddressHint,
           acceptedTypes: {

@@ -11,6 +11,7 @@ class ValidateBuyDestinationUsecase {
   @useResult
   Future<String?> execute(String input) async => (await _destinations.validate(
     input,
+    allowRegtest: false,
     acceptedTypes: const {PaymentDestinationType.bitcoin},
   ))?.address;
 }

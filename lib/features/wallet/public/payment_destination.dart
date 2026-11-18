@@ -16,9 +16,11 @@ final class WalletPaymentDestinationFacade {
     String raw, {
     required Set<PaymentDestinationType> acceptedTypes,
     bool allowLnurl = true,
+    bool allowRegtest = true,
   }) => const ValidatePaymentDestinationUsecase().execute(
     raw,
     acceptedTypes: acceptedTypes,
     allowLnurl: allowLnurl,
+    allowRegtest: allowRegtest,
   );
 }

@@ -71,6 +71,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
         if (isStarted && selectedWallet == null) ...[
           const Gap(16.0),
           PaymentDestinationField(
+            allowRegtest: false,
             value: _addressInput,
             label: context.loc.buyEnterBitcoinAddress,
             hint: context.loc.buyBitcoinAddressHint,

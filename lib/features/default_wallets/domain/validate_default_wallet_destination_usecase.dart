@@ -13,6 +13,7 @@ class ValidateDefaultWalletDestinationUsecase {
   Future<String?> execute(WalletAddressType type, String input) async =>
       (await _destinations.validate(
         input,
+        allowRegtest: false,
         acceptedTypes: {
           switch (type) {
             WalletAddressType.bitcoin => PaymentDestinationType.bitcoin,
