@@ -94,7 +94,7 @@ class ArkLocalizationsFr extends ArkLocalizations {
   String get exits => 'Sortie d’urgence';
 
   @override
-  String get destination => 'Adresse Ark ou facture BOLT11';
+  String get destination => 'Adresse de paiement ou facture BOLT11';
 
   @override
   String get amount => 'Montant en sats';
@@ -443,6 +443,185 @@ class ArkLocalizationsFr extends ArkLocalizations {
   String get abandonedBoardState => 'Board abandonné (jamais signé)';
 
   @override
+  String walletBalance(String amount) {
+    return '$amount sats';
+  }
+
+  @override
+  String get receiveAddress => 'Adresse de réception';
+
+  @override
+  String get boardToArk => 'Transférer vers Ark';
+
+  @override
+  String get arkInfo => 'Informations Ark';
+
+  @override
+  String fiatAmount(String amount, String currency) {
+    return '$amount $currency';
+  }
+
+  @override
+  String get boardIntro =>
+      'Transférez des bitcoins de votre portefeuille sur chaîne vers Ark.';
+
+  @override
+  String get availableOnchain => 'Disponible sur chaîne';
+
+  @override
+  String get amountToMove => 'Montant à transférer';
+
+  @override
+  String get maxAmount => 'Max';
+
+  @override
+  String get maxUnavailable =>
+      'Max est indisponible sans estimation actuelle des frais rapides.';
+
+  @override
+  String get boardAction => 'Transférer';
+
+  @override
+  String get satsUnit => 'sats';
+
+  @override
+  String get continueAction => 'Continuer';
+
+  @override
+  String get recipientAddress => 'Adresse du destinataire';
+
+  @override
+  String get paymentAddressHint =>
+      'Collez une adresse de paiement ou une facture';
+
+  @override
+  String get paymentScanHint =>
+      'Scannez une adresse de paiement ou une facture.';
+
+  @override
+  String get openCamera => 'Ouvrir la caméra';
+
+  @override
+  String get cameraUnavailable =>
+      'La caméra est indisponible. Saisissez l’adresse du destinataire.';
+
+  @override
+  String get confirmSend => 'Confirmer l’envoi';
+
+  @override
+  String get paymentSent => 'Paiement envoyé';
+
+  @override
+  String get done => 'Terminé';
+
+  @override
+  String get walletLabel => 'Portefeuille :';
+
+  @override
+  String get balanceLabel => 'Solde :';
+
+  @override
+  String get maxPaymentUnavailable =>
+      'Max nécessite un devis actuel des frais du paiement.';
+
+  @override
+  String get fromLabel => 'Depuis';
+
+  @override
+  String get toLabel => 'Vers';
+
+  @override
+  String get amountLabel => 'Montant';
+
+  @override
+  String get networkFees => 'Frais de réseau';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get vtxoDetails => 'Détails du VTXO';
+
+  @override
+  String get vtxoCreated => 'Créé';
+
+  @override
+  String get vtxoAnchor => 'Ancrage';
+
+  @override
+  String get vtxoAll => 'Tous';
+
+  @override
+  String get vtxoExpired => 'Expirés';
+
+  @override
+  String get vtxoBlocksRemaining => 'Blocs restants';
+
+  @override
+  String get vtxoTotal => 'Valeur totale';
+
+  @override
+  String get vtxoEmptyTitle => 'Aucun VTXO';
+
+  @override
+  String get vtxoEmptyBody =>
+      'Vos VTXOs apparaîtront ici après réception de fonds.';
+
+  @override
+  String get vtxoNoMatches => 'Aucun VTXO ne correspond à ce filtre.';
+
+  @override
+  String get vtxoCount => 'VTXOs';
+
+  @override
+  String get emergencyOnlyTitle => 'En cas d’urgence uniquement';
+
+  @override
+  String get emergencyOnlyBody =>
+      'Utilisez une sortie d’urgence uniquement si le serveur Ark est indisponible ou ne répond pas.';
+
+  @override
+  String get emergencySendInstead =>
+      'Lorsque Ark fonctionne, envoyez simplement votre solde Ark vers une adresse Bitcoin on-chain.';
+
+  @override
+  String get startEmergencyExit => 'Démarrer une sortie d’urgence';
+
+  @override
+  String get newEmergencyExit => 'Nouvelle sortie d’urgence';
+
+  @override
+  String get noEmergencyExits => 'Aucune sortie d’urgence';
+
+  @override
+  String get noEmergencyExitsBody =>
+      'Vous n’avez démarré aucune sortie d’urgence. Vos sorties apparaîtront ici.';
+
+  @override
+  String get exitChooseBody =>
+      'Choisissez de sortir tous les VTXOs éligibles ou seulement certains.';
+
+  @override
+  String get exitAllEligible => 'Tous les VTXOs éligibles';
+
+  @override
+  String get exitSelected => 'VTXOs sélectionnés';
+
+  @override
+  String get exitAvailableValue => 'Montant disponible';
+
+  @override
+  String get exitFeesAfterReview =>
+      'Les frais réels et la réserve exposée sont disponibles dans la revue native.';
+
+  @override
+  String get exitProgressTitle => 'Faire avancer les sorties d’urgence';
+
+  @override
+  String get exitProgressBody =>
+      'Choisissez un taux de frais pour demander une revue au premier plan de la progression des sorties.';
+
+  @override
   String get feeReserveTitle => 'Réserve de frais on-chain';
 
   @override
@@ -453,4 +632,22 @@ class ArkLocalizationsFr extends ArkLocalizations {
   String feeReserveAmount(String amount) {
     return '$amount sats';
   }
+
+  @override
+  String get hiddenAmount => '••••';
+
+  @override
+  String get operationRenewalStarted => 'Renouvellement démarré';
+
+  @override
+  String get emergencyExitStarted => 'Sortie d’urgence démarrée';
+
+  @override
+  String get operationEstimatedNet => 'Montant net estimé';
+
+  @override
+  String get arkWalletSubtitle => 'Bitcoin hors chaîne';
+
+  @override
+  String get nextRound => 'Prochain round';
 }

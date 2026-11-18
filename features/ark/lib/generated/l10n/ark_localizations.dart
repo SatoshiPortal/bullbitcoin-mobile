@@ -257,7 +257,7 @@ abstract class ArkLocalizations {
   /// No description provided for @destination.
   ///
   /// In en, this message translates to:
-  /// **'Ark address or BOLT11 invoice'**
+  /// **'Payment address or BOLT11 invoice'**
   String get destination;
 
   /// No description provided for @amount.
@@ -896,23 +896,383 @@ abstract class ArkLocalizations {
   /// **'Abandoned board (never signed)'**
   String get abandonedBoardState;
 
-  /// Observed public on-chain emergency exit fee reserve
+  /// Observed spendable Ark wallet balance with explicit satoshi units
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} sats'**
+  String walletBalance(String amount);
+
+  /// Heading above the current Ark receive address
+  ///
+  /// In en, this message translates to:
+  /// **'Receive Address'**
+  String get receiveAddress;
+
+  /// Navigation action for moving on-chain bitcoin into Ark
+  ///
+  /// In en, this message translates to:
+  /// **'Board to Ark'**
+  String get boardToArk;
+
+  /// Navigation action opening Ark server information
+  ///
+  /// In en, this message translates to:
+  /// **'Ark info'**
+  String get arkInfo;
+
+  /// Fiat equivalent from the app price and selected currency, shown only when available
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} {currency}'**
+  String fiatAmount(String amount, String currency);
+
+  /// Board form introduction
+  ///
+  /// In en, this message translates to:
+  /// **'Move bitcoin from your on-chain wallet into Ark.'**
+  String get boardIntro;
+
+  /// Current observed spendable source wallet balance
+  ///
+  /// In en, this message translates to:
+  /// **'Available on-chain'**
+  String get availableOnchain;
+
+  /// Label for the on-chain amount moved into Ark
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to move'**
+  String get amountToMove;
+
+  /// Maximum spend action
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get maxAmount;
+
+  /// Maximum remains disabled when no applicable miner fee quote exists
+  ///
+  /// In en, this message translates to:
+  /// **'Max is unavailable without a current fast-fee estimate.'**
+  String get maxUnavailable;
+
+  /// Continue from the Board amount form to the actual funding review
+  ///
+  /// In en, this message translates to:
+  /// **'Board'**
+  String get boardAction;
+
+  /// Satoshi unit displayed in an Ark amount field
+  ///
+  /// In en, this message translates to:
+  /// **'sats'**
+  String get satsUnit;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueAction;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient\'s address'**
+  String get recipientAddress;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a payment address or invoice'**
+  String get paymentAddressHint;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a payment address or invoice.'**
+  String get paymentScanHint;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Camera'**
+  String get openCamera;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Camera is unavailable. Enter the recipient\'s address.'**
+  String get cameraUnavailable;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Send'**
+  String get confirmSend;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Payment sent'**
+  String get paymentSent;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet:'**
+  String get walletLabel;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Balance:'**
+  String get balanceLabel;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Max requires a current payment fee quote.'**
+  String get maxPaymentUnavailable;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get fromLabel;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get toLabel;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amountLabel;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Network fees'**
+  String get networkFees;
+
+  /// Ark payment journey label
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'VTXO details'**
+  String get vtxoDetails;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get vtxoCreated;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Anchor'**
+  String get vtxoAnchor;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get vtxoAll;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get vtxoExpired;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Blocks remaining'**
+  String get vtxoBlocksRemaining;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Total value'**
+  String get vtxoTotal;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'No VTXOs'**
+  String get vtxoEmptyTitle;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Your VTXOs will appear here once you receive funds.'**
+  String get vtxoEmptyBody;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'No VTXOs match this filter.'**
+  String get vtxoNoMatches;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'VTXOs'**
+  String get vtxoCount;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'For emergency use only'**
+  String get emergencyOnlyTitle;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Use an emergency exit only if the Ark server is down or not responding.'**
+  String get emergencyOnlyBody;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'When Ark is working, just send to an on-chain address from your Ark balance.'**
+  String get emergencySendInstead;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Start emergency exit'**
+  String get startEmergencyExit;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'New emergency exit'**
+  String get newEmergencyExit;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'No emergency exits'**
+  String get noEmergencyExits;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'You haven’t started an emergency exit. Exits you start will show up here.'**
+  String get noEmergencyExitsBody;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether to exit all eligible VTXOs or only specific ones.'**
+  String get exitChooseBody;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'All eligible VTXOs'**
+  String get exitAllEligible;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Selected VTXOs'**
+  String get exitSelected;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Available value'**
+  String get exitAvailableValue;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Actual fees and reserve exposure are available in the native review.'**
+  String get exitFeesAfterReview;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Progress emergency exits'**
+  String get exitProgressTitle;
+
+  /// Ark VTXO or emergency exit presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a fee rate to request a foreground review of exit progression.'**
+  String get exitProgressBody;
+
+  /// Public funding destination for emergency exit miner fees
   ///
   /// In en, this message translates to:
   /// **'On-chain fee reserve'**
   String get feeReserveTitle;
 
-  /// Observed public on-chain emergency exit fee reserve
+  /// Explains why the native fee reserve must be funded
   ///
   /// In en, this message translates to:
   /// **'Fund this address with on-chain bitcoin before starting an emergency exit when the fee reserve is insufficient.'**
   String get feeReserveHelp;
 
-  /// Observed public on-chain emergency exit fee reserve
+  /// Observed native on-chain fee reserve balance
   ///
   /// In en, this message translates to:
   /// **'{amount} sats'**
   String feeReserveAmount(String amount);
+
+  /// Privacy placeholder for hidden balances
+  ///
+  /// In en, this message translates to:
+  /// **'••••'**
+  String get hiddenAmount;
+
+  /// Native operation review outcome or estimate
+  ///
+  /// In en, this message translates to:
+  /// **'Renewal started'**
+  String get operationRenewalStarted;
+
+  /// Native operation review outcome or estimate
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency exit started'**
+  String get emergencyExitStarted;
+
+  /// Native operation review outcome or estimate
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated net amount'**
+  String get operationEstimatedNet;
+
+  /// Ark account presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Off-chain bitcoin'**
+  String get arkWalletSubtitle;
+
+  /// Ark account presentation
+  ///
+  /// In en, this message translates to:
+  /// **'Next round'**
+  String get nextRound;
 }
 
 class _ArkLocalizationsDelegate
