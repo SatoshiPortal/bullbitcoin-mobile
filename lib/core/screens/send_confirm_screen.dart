@@ -637,7 +637,6 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     (swap as ChainSwap).paymentAmount,
                     showFiat: false,
-                    interactive: true,
                     style: context.bullType.body
                         .copyWith(fontWeight: FontWeight.w500)
                         .copyWith(color: context.appColors.secondary),
@@ -646,7 +645,6 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     (swap as LnSendSwap).paymentAmount,
                     showFiat: false,
-                    interactive: true,
                     style: context.bullType.body
                         .copyWith(fontWeight: FontWeight.w500)
                         .copyWith(color: context.appColors.secondary),
@@ -671,7 +669,6 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     swap.receieveAmount!,
                     showFiat: false,
-                    interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -690,7 +687,6 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     swap.fees!.lockupFee!,
                     showFiat: false,
-                    interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
