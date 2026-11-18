@@ -33,14 +33,10 @@ final class BackgroundPreferencesUsecase {
         return BackgroundPreferencesState(failure: failure);
       }
     }
-    var refused = false;
     if (requestPermission) {
       final result = await _repository.requestNotifications();
-      switch (result) {
-        case Ok(:final value):
-          refused = !value;
-        case Err(:final failure):
-          return BackgroundPreferencesState(failure: failure);
+      if (result case Err(:final failure)) {
+        return BackgroundPreferencesState(failure: failure);
       }
     }
     if (openSettings) {
@@ -60,7 +56,9 @@ final class BackgroundPreferencesUsecase {
       (value) => BackgroundPreferencesState(
         interval: selected,
         allowed: value,
-        refused: refused && !value,
+        // Granted but still not shown, e.g. the payment channel alone is
+        // blocked: only the system settings can change it.
+        refused: requestPermission && !value,
       ),
       (_) => BackgroundPreferencesState(
         interval: selected,
@@ -77,7 +75,8 @@ final class BackgroundPreferencesState {
   /// Read from the system, never remembered by the app.
   final bool allowed;
 
-  /// The system turned down the request just made: it may not ask again.
+  /// Notifications are still not shown after the request just made: the
+  /// system may not ask again, only its settings can change it.
   final bool refused;
   final SettingsFailure? failure;
 

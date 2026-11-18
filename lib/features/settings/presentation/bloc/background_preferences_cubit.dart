@@ -35,7 +35,8 @@ final class BackgroundPreferencesCubit
         // later refresh cannot tell a refused request from one never made.
         emit(
           BackgroundPreferencesState(
-            interval: next.interval,
+            // A failure elsewhere must not show background tasks as off.
+            interval: next.interval ?? state.interval,
             allowed: next.allowed,
             refused: !next.allowed && (next.refused || state.refused),
             failure: next.failure,
@@ -45,7 +46,10 @@ final class BackgroundPreferencesCubit
     } on Exception {
       if (!isClosed && generation == _generation) {
         emit(
-          const BackgroundPreferencesState(failure: SettingsStorageFailure()),
+          BackgroundPreferencesState(
+            interval: state.interval,
+            failure: const SettingsStorageFailure(),
+          ),
         );
       }
     }

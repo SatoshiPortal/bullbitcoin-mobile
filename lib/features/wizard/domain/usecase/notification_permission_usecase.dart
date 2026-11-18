@@ -8,24 +8,19 @@ class NotificationPermissionUsecase {
 
   final NotificationPermissionsFacade _permissions;
 
-  /// `refused` is true when a request just made was turned down: the system
-  /// may not ask again, only its settings can grant it.
+  /// `refused` is true when notifications are still not shown after a
+  /// request: the system may not ask again, or the payment channel alone is
+  /// blocked, and only its settings can change it.
   Future<({bool allowed, bool refused})> execute({
     bool request = false,
     bool openSettings = false,
   }) async {
-    var refused = false;
-    if (request) {
-      refused = switch (await _permissions.request()) {
-        Ok(:final value) => !value,
-        Err() => true,
-      };
-    }
+    if (request) await _permissions.request();
     if (openSettings) await _permissions.openSystemSettings();
     final allowed = switch (await _permissions.isEnabled()) {
       Ok(:final value) => value,
       Err() => false,
     };
-    return (allowed: allowed, refused: refused && !allowed);
+    return (allowed: allowed, refused: request && !allowed);
   }
 }
