@@ -1,5 +1,7 @@
 import 'package:primitives/primitives.dart';
 import 'package:bull_ark/ark_ui.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/ark_debug_notification.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -65,6 +67,7 @@ enum SettingsItemId {
   screenPrivacy,
   devMode,
   testnetCredentials,
+  arkDebugNotification,
   errorReporting,
 }
 
@@ -775,6 +778,17 @@ List<SettingsItem> buildSettingsItems({
         ),
         isSuperuser: true,
         isInlineControl: true,
+      ),
+    if (kDebugMode && isDevModeEnabled)
+      SettingsItem(
+        id: SettingsItemId.arkDebugNotification,
+        section: SettingsItemSection.app,
+        title: localization.localeName.startsWith('fr')
+            ? 'Tester la notification d’échéance Ark'
+            : 'Test Ark expiry notification',
+        path: path(SettingsItemSection.app, 'Ark notification'),
+        icon: Icons.notifications_active_outlined,
+        open: showArkDebugNotification,
       ),
     if (isDevModeEnabled)
       SettingsItem(
