@@ -223,7 +223,28 @@ class _BullMapViewState extends State<BullMapView> {
         _sourceId,
         _clusterCountLayerId,
         SymbolLayerProperties(
-          textField: const ['get', 'point_count_abbreviated'],
+          textField: const [
+            'step',
+            ['get', 'point_count'],
+            [
+              'to-string',
+              ['get', 'point_count'],
+            ],
+            1000,
+            [
+              'concat',
+              [
+                'number-format',
+                [
+                  '/',
+                  ['get', 'point_count'],
+                  1000,
+                ],
+                {'min-fraction-digits': 0, 'max-fraction-digits': 1},
+              ],
+              'k',
+            ],
+          ],
           textFont: _labelFont,
           textSize: 12,
           textColor: _hex(colors.onPrimary),
