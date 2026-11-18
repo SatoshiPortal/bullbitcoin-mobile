@@ -80,7 +80,7 @@ void main() {
           final quote = ok(
             await client.quote(
               account,
-              ArkQuoteRequest.board(amount: Sats.fromInt(20000)),
+              ArkQuoteRequest.board(amount: Sats.fromInt(1000)),
             ),
           );
           if (registration) {
@@ -130,4 +130,34 @@ void main() {
       );
     }
   }
+  test('unchanged complete inventory admits Board registration', () async {
+    final quote = ok(
+      await client.quote(
+        account,
+        ArkQuoteRequest.board(amount: Sats.fromInt(1000)),
+      ),
+    );
+    ok(
+      await client.submit(
+        account,
+        ArkSubmission.boardFunding(
+          quoteId: quote.id,
+          operationId: 'healthy-board',
+        ),
+      ),
+    );
+    ok(
+      await client.submit(
+        account,
+        ArkSubmission.registerBoard(
+          operationId: 'healthy-board',
+          unfinalisedPsbt: 'public',
+          keypairIndex: 4,
+          expiryHeight: 2000,
+        ),
+      ),
+    );
+    expect(native.fundings, 1);
+    expect(native.registrations, 1);
+  });
 }
