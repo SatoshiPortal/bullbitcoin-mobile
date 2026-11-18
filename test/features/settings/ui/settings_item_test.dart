@@ -16,6 +16,21 @@ import 'package:go_router/go_router.dart';
 class _Settings extends Mock implements SettingsCubit {}
 
 void main() {
+  test('Ark notification test is shown only in developer mode', () {
+    final disabled = buildSettingsItems(localization: AppLocalizationsEn());
+    final enabled = buildSettingsItems(
+      localization: AppLocalizationsEn(),
+      isDevModeEnabled: true,
+    );
+    expect(
+      disabled.where((item) => item.id == SettingsItemId.arkDebugNotification),
+      isEmpty,
+    );
+    expect(
+      enabled.where((item) => item.id == SettingsItemId.arkDebugNotification),
+      hasLength(1),
+    );
+  });
   for (final environment in Environment.values) {
     testWidgets('wallet settings skip unavailable entries on $environment', (
       tester,
