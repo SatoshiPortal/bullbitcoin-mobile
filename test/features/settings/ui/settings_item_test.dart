@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, NetworkEnv;
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -68,8 +68,10 @@ void main() {
     tester,
   ) async {
     final localization = AppLocalizationsEn();
-    final item = buildSettingsItems(localization: localization)
-        .byId(SettingsItemId.importWallet);
+    final item = buildSettingsItems(
+      environment: NetworkEnv.mainnet,
+      localization: localization,
+    ).byId(SettingsItemId.importWallet);
     final router = GoRouter(
       routes: [
         GoRoute(
