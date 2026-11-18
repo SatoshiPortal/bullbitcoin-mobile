@@ -2005,15 +2005,18 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           if (networkFee != null) ...[
             SendInfoRow(
               title: context.loc.sendSendNetworkFee,
-              details: CurrencyText(
-                networkFee,
-                showFiat: false,
-                interactive: true,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: CurrencyText(
+                  networkFee,
+                  showFiat: false,
+                  interactive: true,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: context.appColors.secondary,
+                  textAlign: TextAlign.end,
                 ),
-                color: context.appColors.secondary,
-                textAlign: TextAlign.end,
               ),
             ),
             _divider(context),
@@ -2021,15 +2024,18 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           if (swapFee != null)
             SendInfoRow(
               title: context.loc.sendTransferFee,
-              details: CurrencyText(
-                swapFee,
-                showFiat: false,
-                interactive: true,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: CurrencyText(
+                  swapFee,
+                  showFiat: false,
+                  interactive: true,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: context.appColors.secondary,
+                  textAlign: TextAlign.end,
                 ),
-                color: context.appColors.secondary,
-                textAlign: TextAlign.end,
               ),
             ),
           if (showFeeWarning == true) ...[
@@ -2343,17 +2349,20 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   orderSwap.order!.payoutAmountSat)
             SendInfoRow(
               title: context.loc.sendTransferFee,
-              details: CurrencyText(
-                (orderSwap.order!.payinAmountSat -
-                        orderSwap.order!.payoutAmountSat)
-                    .toInt(),
-                showFiat: false,
-                interactive: true,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: CurrencyText(
+                  (orderSwap.order!.payinAmountSat -
+                          orderSwap.order!.payoutAmountSat)
+                      .toInt(),
+                  showFiat: false,
+                  interactive: true,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: context.appColors.secondary,
+                  textAlign: TextAlign.end,
                 ),
-                color: context.appColors.secondary,
-                textAlign: TextAlign.end,
               ),
             ),
           const Gap(16),
