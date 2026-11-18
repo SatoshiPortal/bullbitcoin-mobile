@@ -9,12 +9,23 @@ import 'package:material_ui/material_ui.dart';
 class AddCustomServerButton extends StatelessWidget {
   const AddCustomServerButton({super.key});
 
+  Future<void> _add(BuildContext context) async {
+    final result = await AddCustomServerBottomSheet.show(context);
+    if (result != null && context.mounted) {
+      context.read<ElectrumSettingsBloc>().add(
+        ElectrumCustomServerAdded(url: result.url, enableSsl: result.enableSsl),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // The visible label is short; the accessible name stays explicit.
+    // The visible label is short; the accessible name stays explicit and
+    // keeps the tap action the excluded button would otherwise carry.
     return Semantics(
       label: context.loc.electrumAddCustomServer,
       button: true,
+      onTap: () => _add(context),
       excludeSemantics: true,
       child: BullButton.big(
         label: context.loc.mempoolSettingsCustomServer,
@@ -22,17 +33,7 @@ class AddCustomServerButton extends StatelessWidget {
         iconFirst: true,
         bgColor: context.appColors.primary,
         textColor: context.appColors.onPrimary,
-        onPressed: () async {
-          final result = await AddCustomServerBottomSheet.show(context);
-          if (result != null && context.mounted) {
-            context.read<ElectrumSettingsBloc>().add(
-              ElectrumCustomServerAdded(
-                url: result.url,
-                enableSsl: result.enableSsl,
-              ),
-            );
-          }
-        },
+        onPressed: () => _add(context),
       ),
     );
   }
