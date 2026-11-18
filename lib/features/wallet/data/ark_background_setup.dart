@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/settings/data/settings_datasource.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
+import 'package:ark/ark.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:bb_mobile/features/wallet/data/ark_transaction_verifier.dart';
 import 'package:bull_ark/ark_maintenance_setup.dart';
 import 'package:bull_ark/ark_notification_setup.dart';
@@ -23,8 +25,11 @@ import 'sqlite_ark_funding_reservations.dart';
 /// admitted native work has completed and the runner closes its resources.
 Future<BackgroundTaskHandler> setupArkBackgroundTask(
   BackgroundTaskResources resources,
-  Directory documents,
-) async {
+  Directory documents, {
+  @visibleForTesting
+  ArkClient Function(native.ArkExecutionPolicyPort, native.ArkStageBudget)?
+  existingClient,
+}) async {
   if (!await SqliteDatabase.isAtCurrentSchema()) {
     return () async => const BackgroundTaskExecutionResult.retry();
   }
@@ -35,9 +40,7 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   );
   resources.onClose(settings.close);
   final preferences = await settings.fetch();
-  if (preferences.environment != Environment.regtest) {
-    return () async => const BackgroundTaskExecutionResult.retry();
-  }
+  // Browsing another network does not retire captured regtest obligations.
   final directory = '${documents.path}/ark';
   final registry = switch (SqliteArkAccountRegistry.open(
     '$directory/accounts.sqlite',
@@ -80,20 +83,23 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     foreground: false,
   );
   if (sourceAuthority case Ok(:final value)) resources.onClose(value.close);
-  final client = createArkNativeClient(
-    storagePath: '$directory/native',
-    childProvider: SecretsArkChildProvider(secrets, registry),
-    transactionVerifier: const ArkTransactionVerifier(),
-    boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
-    executionPolicy: const _RegtestBackgroundPolicy(),
-    executionMode: native.ArkExecutionMode.backgroundExisting,
-    stageBudget: budget,
-  );
+  const policy = _RegtestBackgroundPolicy();
+  final client =
+      existingClient?.call(policy, budget) ??
+      createArkNativeClient(
+        storagePath: '$directory/native',
+        childProvider: SecretsArkChildProvider(secrets, registry),
+        transactionVerifier: const ArkTransactionVerifier(),
+        boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
+        executionPolicy: policy,
+        executionMode: native.ArkExecutionMode.backgroundExisting,
+        stageBudget: budget,
+      );
   resources.onClose(client.close);
   final handler = ArkMaintenance(
     client: client,
     reminders: reminders,
-    accounts: registry,
+    accounts: _ExistingRegtestAccounts(registry, policy),
     budget: budget,
   ).backgroundHandler();
   return () async {
@@ -111,6 +117,36 @@ final class _RegtestBackgroundPolicy implements native.ArkExecutionPolicyPort {
   bool mayRun(ArkAccountId account, native.ArkExecutionMode mode) =>
       account.network == BitcoinNetwork.regtest &&
       mode == native.ArkExecutionMode.backgroundExisting;
+}
+
+/// Filter persisted identities before either lane, as well as native admission.
+/// The same canonical capability check also applies to a substituted client.
+final class _ExistingRegtestAccounts implements ArkAccountRegistryRepository {
+  final ArkAccountRegistryRepository _registry;
+  final native.ArkExecutionPolicyPort _policy;
+  const _ExistingRegtestAccounts(this._registry, this._policy);
+
+  @override
+  Future<Result<List<ArkAccountConfig>, ArkFailure>> list() async =>
+      (await _registry.list()).map(
+        (accounts) => accounts
+            .where(
+              (config) =>
+                  NetworkCapabilities.supports(
+                    config.id.network,
+                    NetworkCapability.ark,
+                  ) &&
+                  _policy.mayRun(
+                    config.id,
+                    native.ArkExecutionMode.backgroundExisting,
+                  ),
+            )
+            .toList(),
+      );
+
+  @override
+  Future<Result<void, ArkFailure>> publish(ArkAccountConfig config) async =>
+      const Err(ArkServiceUnavailableFailure());
 }
 
 /// Failure stays visible to the runner without blocking saved-claim delivery.
