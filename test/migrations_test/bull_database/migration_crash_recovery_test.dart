@@ -189,11 +189,21 @@ Future<void> _everyCrashPoint({
   bool expectRegtest = false,
   bool everyLabelSurvives = false,
 }) async {
+  final fixtureDir = await Directory.systemTemp.createTemp(
+    'bull_crash_fixture',
+  );
+  addTearDown(() => fixtureDir.delete(recursive: true));
+  final fixtureFile = File('${fixtureDir.path}/seed.sqlite');
+  // Seed once, then give every crash point an independent copy of the closed
+  // database. Fresh-install cases must still start without a database file.
+  await seed(fixtureFile);
+  final hasFixture = await fixtureFile.exists();
+
   for (var allowed = 0; ; allowed++) {
     final dir = await Directory.systemTemp.createTemp('bull_crash');
     try {
       final file = File('${dir.path}/${SqliteDatabase.name}.sqlite');
-      await seed(file);
+      if (hasFixture) await fixtureFile.copy(file.path);
 
       var remaining = allowed;
       final crashing = crashingOpen(
