@@ -1,0 +1,557 @@
+{
+  "@@locale": "en",
+  "title": "Ark",
+  "@title": {},
+  "loading": "Loading Ark…",
+  "@loading": {},
+  "unavailable": "Ark is unavailable. Try again.",
+  "@unavailable": {},
+  "retry": "Retry",
+  "@retry": {},
+  "refresh": "Refresh",
+  "@refresh": {},
+  "spendable": "Spendable",
+  "@spendable": {},
+  "pending": "Pending",
+  "@pending": {},
+  "reserve": "On-chain fee reserve",
+  "@reserve": {},
+  "stale": "Last observed data. Refresh before reviewing a payment.",
+  "@stale": {},
+  "unknown": "Unavailable",
+  "@unknown": {},
+  "renewalWarning": "Your VTXOs need renewing. Open Ark to protect your funds.",
+  "@renewalWarning": {},
+  "expiryTitle": "Urgent: Ark funds expire soon",
+  "@expiryTitle": {},
+  "expiryBody": "Open Ark to check and renew your VTXOs. Block times and background delivery vary.",
+  "@expiryBody": {},
+  "renewalDelegated": "Renewal started. Your warning stays until replacement VTXOs are observed.",
+  "@renewalDelegated": {},
+  "offFunded": "Ark is off for new payments. Existing funds still need renewal and recovery remains available.",
+  "@offFunded": {},
+  "privacy": "Ark connects directly without Tor. The configured Ark and Esplora providers can see your IP and wallet queries. The fallback is used only if the primary cannot be reached and has the same privacy exposure.",
+  "@privacy": {},
+  "enable": "Enable Ark",
+  "@enable": {},
+  "disable": "Turn off new payments",
+  "@disable": {},
+  "acceptPrivacy": "I understand the direct connection",
+  "@acceptPrivacy": {},
+  "send": "Send",
+  "@send": {},
+  "receive": "Receive",
+  "@receive": {},
+  "board": "Add funds",
+  "@board": {},
+  "vtxos": "VTXOs",
+  "@vtxos": {},
+  "history": "Activity",
+  "@history": {},
+  "info": "Server information",
+  "@info": {},
+  "exits": "Emergency exit",
+  "@exits": {},
+  "destination": "Payment address or BOLT11 invoice",
+  "@destination": {},
+  "amount": "Amount in sats",
+  "@amount": {},
+  "review": "Review",
+  "@review": {},
+  "confirm": "Confirm",
+  "@confirm": {},
+  "fee": "Fee",
+  "@fee": {},
+  "net": "Net amount",
+  "@net": {},
+  "cancel": "Cancel",
+  "@cancel": {},
+  "pendingOperation": "Operation submitted. Completion requires an observed update.",
+  "@pendingOperation": {},
+  "uncertain": "Outcome unknown. Refresh to reconcile this operation before trying again.",
+  "@uncertain": {},
+  "invalid": "Check the destination and amount.",
+  "@invalid": {},
+  "disabled": "Enable Ark before creating a new payment or receive request.",
+  "@disabled": {},
+  "expired": "This review has expired. Request a new quote.",
+  "@expired": {},
+  "busy": "Ark is busy. Wait for the current operation or restart the app if it was interrupted.",
+  "@busy": {},
+  "recovery": "Recovery must finish before spending. Existing funds have been preserved.",
+  "@recovery": {},
+  "insufficient": "Insufficient funds, including fees.",
+  "@insufficient": {},
+  "empty": "No items in this observed inventory.",
+  "@empty": {},
+  "renew": "Review renewal",
+  "@renew": {},
+  "expiryHeight": "Expiry block height",
+  "@expiryHeight": {},
+  "state": "State",
+  "@state": {},
+  "id": "Identifier",
+  "@id": {},
+  "copy": "Copy",
+  "@copy": {},
+  "copied": "Copied",
+  "@copied": {},
+  "arkAddress": "Ark address",
+  "@arkAddress": {},
+  "lightningInvoice": "Lightning invoice",
+  "@lightningInvoice": {},
+  "invoiceExpires": "Invoice expires",
+  "@invoiceExpires": {},
+  "generate": "Create request",
+  "@generate": {},
+  "foregroundExit": "Exit and fee spending require foreground review. Background maintenance never starts or progresses an exit.",
+  "@foregroundExit": {},
+  "nativeUnavailable": "This Ark action is unavailable in this build.",
+  "@nativeUnavailable": {},
+  "notificationsUnavailable": "Expiry reminders could not be scheduled. Check notification permissions and open Ark regularly.",
+  "@notificationsUnavailable": {},
+  "backgroundNotice": "Open Ark regularly. Device restrictions can delay Android background renewal. Scheduled renewal on iOS is unavailable.",
+  "@backgroundNotice": {},
+  "spendableState": "Spendable",
+  "@spendableState": {},
+  "lockedState": "Locked",
+  "@lockedState": {},
+  "spentState": "Spent",
+  "@spentState": {},
+  "exitedState": "Exited",
+  "@exitedState": {},
+  "unknownState": "Unknown",
+  "@unknownState": {},
+  "claimableHeight": "Claimable at block",
+  "@claimableHeight": {},
+  "claimTxid": "Claim transaction",
+  "@claimTxid": {},
+  "renewalSubmitted": "Renewal submitted",
+  "@renewalSubmitted": {},
+  "arkServer": "Ark server",
+  "@arkServer": {},
+  "primaryChainSource": "Primary Esplora",
+  "@primaryChainSource": {},
+  "fallbackChainSource": "Unreachable-only fallback",
+  "@fallbackChainSource": {},
+  "minimumBoard": "Minimum boarding amount (sats)",
+  "@minimumBoard": {},
+  "maximumVtxo": "Maximum VTXO amount (sats)",
+  "@maximumVtxo": {},
+  "boardConfirmations": "Board confirmations",
+  "@boardConfirmations": {},
+  "roundInterval": "Round interval (seconds)",
+  "@roundInterval": {},
+  "vtxoLifetime": "VTXO lifetime (blocks)",
+  "@vtxoLifetime": {},
+  "renewalThreshold": "Renewal threshold (blocks)",
+  "@renewalThreshold": {},
+  "publicServerKey": "Public server key",
+  "@publicServerKey": {},
+  "sendFromArk": "Send from Ark",
+  "@sendFromArk": {},
+  "sendFromArkAccount": "Send from Ark ({account})",
+  "@sendFromArkAccount": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "signedClaimRecovery": "Recover signed claim",
+  "@signedClaimRecovery": {},
+  "reannounceSignedClaim": "Resubmit this signed claim",
+  "@reannounceSignedClaim": {},
+  "sameSignedClaim": "Resubmit the same signed transaction with its saved destination and fee. Its network status is checked before sending.",
+  "@sameSignedClaim": {},
+  "claimDestination": "On-chain return address",
+  "@claimDestination": {},
+  "claimConfirmed": "The saved claim transaction is confirmed.",
+  "@claimConfirmed": {},
+  "claimConflict": "A conflicting transaction was observed. This saved claim cannot be resubmitted.",
+  "@claimConflict": {},
+  "actualVtxos": "Included VTXOs",
+  "@actualVtxos": {},
+  "skippedVtxos": "Skipped VTXOs",
+  "@skippedVtxos": {},
+  "netInSats": "Net amount (sats)",
+  "@netInSats": {},
+  "feeInSats": "Fee (sats)",
+  "@feeInSats": {},
+  "reminderMigrationPending": "Some older Ark reminders remain unresolved. New VTXO reminders can still be scheduled. Open Ark regularly.",
+  "@reminderMigrationPending": {},
+  "exitStatusUnknown": "Unknown exit state",
+  "@exitStatusUnknown": {},
+  "exitStatusNone": "No exit observed",
+  "@exitStatusNone": {},
+  "exitStatusPending": "Exit pending",
+  "@exitStatusPending": {},
+  "exitStatusClaimable": "Exit claimable",
+  "@exitStatusClaimable": {},
+  "exitStatusSubmitted": "Claim submitted",
+  "@exitStatusSubmitted": {},
+  "exitStatusClaimed": "Exit claimed",
+  "@exitStatusClaimed": {},
+  "exitStatusFailed": "Exit needs attention",
+  "@exitStatusFailed": {},
+  "spendableInSats": "Spendable (sats)",
+  "@spendableInSats": {},
+  "pendingInSats": "Pending (sats)",
+  "@pendingInSats": {},
+  "reserveInSats": "On-chain fee reserve (sats)",
+  "@reserveInSats": {},
+  "operationPrepared": "Prepared",
+  "@operationPrepared": {},
+  "operationAdmitted": "Admitted",
+  "@operationAdmitted": {},
+  "operationPending": "Pending",
+  "@operationPending": {},
+  "operationCompleted": "Completed",
+  "@operationCompleted": {},
+  "operationFailed": "Failed",
+  "@operationFailed": {},
+  "operationUnknown": "Outcome unknown",
+  "@operationUnknown": {},
+  "operationConflicted": "Conflicting transaction observed",
+  "@operationConflicted": {},
+  "observedActivity": "Observed activity",
+  "@observedActivity": {},
+  "activityObservationsUnavailable": "Activity observations unavailable",
+  "@activityObservationsUnavailable": {},
+  "movementBoard": "Board funding",
+  "@movementBoard": {},
+  "movementPayment": "Payment",
+  "@movementPayment": {},
+  "movementRenewal": "Renewal",
+  "@movementRenewal": {},
+  "movementExit": "Exit",
+  "@movementExit": {},
+  "movementLightningReceipt": "Lightning receipt",
+  "@movementLightningReceipt": {},
+  "observedTimeUtc": "Observed time (UTC)",
+  "@observedTimeUtc": {},
+  "transactionId": "Transaction ID",
+  "@transactionId": {},
+  "share": "Share",
+  "@share": {},
+  "boardDestination": "Board destination: {account}",
+  "@boardDestination": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "boardFastPolicy": "FAST fee policy only. No fee speed selection.",
+  "@boardFastPolicy": {},
+  "boardFeeReview": "The actual miner fee and source debit are determined in the future funding review.",
+  "@boardFeeReview": {},
+  "boardAmountInvalid": "Enter a positive whole amount in sats within the Bitcoin supply limit.",
+  "@boardAmountInvalid": {},
+  "exitProgressAccount": "Exit progression account: {account}",
+  "@exitProgressAccount": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "exitProgressFeeRate": "Fee rate (sat/vB)",
+  "@exitProgressFeeRate": {},
+  "exitProgressReserveNotice": "Progress may expose the account-wide confirmed exit reserve. A future review must show the actual fee and reserve at risk.",
+  "@exitProgressReserveNotice": {},
+  "exitProgressRateInvalid": "Enter a positive whole rate in sat/vB within the supported exact-integer input range.",
+  "@exitProgressRateInvalid": {},
+  "exitProgressEstimatedFee": "Estimated fee (sats)",
+  "@exitProgressEstimatedFee": {},
+  "exitProgressReserveExposure": "Confirmed reserve at risk (sats)",
+  "@exitProgressReserveExposure": {},
+  "exitProgressReviewWarning": "This one foreground attempt is account-wide and may expose the entire quoted confirmed internal reserve. The fee is an estimate and the returned quote rate is not a strict financial cap. This is not standing consent for later attempts or new deposits.",
+  "@exitProgressReviewWarning": {},
+  "exitProgressReviewIncomplete": "This exit progression review is incomplete or mismatched. Confirmation is unavailable.",
+  "@exitProgressReviewIncomplete": {},
+  "boardSourceWallet": "Source wallet",
+  "@boardSourceWallet": {},
+  "boardMinerFeeInSats": "Miner fee (sats)",
+  "@boardMinerFeeInSats": {},
+  "boardArkFeeInSats": "Ark board fee (sats)",
+  "@boardArkFeeInSats": {},
+  "boardSourceDebitInSats": "Source debit (sats)",
+  "@boardSourceDebitInSats": {},
+  "boardValidUntil": "Review valid until (UTC)",
+  "@boardValidUntil": {},
+  "exitMaximumClaimFee": "Maximum claim fee (sats)",
+  "@exitMaximumClaimFee": {},
+  "abandonedBoardState": "Abandoned board (never signed)",
+  "@abandonedBoardState": {},
+  "walletBalance": "{amount} sats",
+  "@walletBalance": {
+    "description": "Observed spendable Ark wallet balance with explicit satoshi units",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveAddress": "Receive Address",
+  "@receiveAddress": {
+    "description": "Heading above the current Ark receive address"
+  },
+  "boardToArk": "Board to Ark",
+  "@boardToArk": {
+    "description": "Navigation action for moving on-chain bitcoin into Ark"
+  },
+  "arkInfo": "Ark info",
+  "@arkInfo": {
+    "description": "Navigation action opening Ark server information"
+  },
+  "fiatAmount": "{amount} {currency}",
+  "@fiatAmount": {
+    "description": "Fiat equivalent from the app price and selected currency, shown only when available",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "boardIntro": "Move bitcoin from your on-chain wallet into Ark.",
+  "@boardIntro": {
+    "description": "Board form introduction"
+  },
+  "availableOnchain": "Available on-chain",
+  "@availableOnchain": {
+    "description": "Current observed spendable source wallet balance"
+  },
+  "amountToMove": "Amount to move",
+  "@amountToMove": {
+    "description": "Label for the on-chain amount moved into Ark"
+  },
+  "maxAmount": "Max",
+  "@maxAmount": {
+    "description": "Maximum spend action"
+  },
+  "maxUnavailable": "Max is unavailable without a current fast-fee estimate.",
+  "@maxUnavailable": {
+    "description": "Maximum remains disabled when no applicable miner fee quote exists"
+  },
+  "boardAction": "Board",
+  "@boardAction": {
+    "description": "Continue from the Board amount form to the actual funding review"
+  },
+  "satsUnit": "sats",
+  "@satsUnit": {
+    "description": "Satoshi unit displayed in an Ark amount field"
+  },
+  "continueAction": "Continue",
+  "@continueAction": {
+    "description": "Ark payment journey label"
+  },
+  "recipientAddress": "Recipient's address",
+  "@recipientAddress": {
+    "description": "Ark payment journey label"
+  },
+  "paymentAddressHint": "Paste a payment address or invoice",
+  "@paymentAddressHint": {
+    "description": "Ark payment journey label"
+  },
+  "paymentScanHint": "Scan a payment address or invoice.",
+  "@paymentScanHint": {
+    "description": "Ark payment journey label"
+  },
+  "openCamera": "Open the Camera",
+  "@openCamera": {
+    "description": "Ark payment journey label"
+  },
+  "cameraUnavailable": "Camera is unavailable. Enter the recipient's address.",
+  "@cameraUnavailable": {
+    "description": "Ark payment journey label"
+  },
+  "confirmSend": "Confirm Send",
+  "@confirmSend": {
+    "description": "Ark payment journey label"
+  },
+  "paymentSent": "Payment sent",
+  "@paymentSent": {
+    "description": "Ark payment journey label"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Ark payment journey label"
+  },
+  "walletLabel": "Wallet:",
+  "@walletLabel": {
+    "description": "Ark payment journey label"
+  },
+  "balanceLabel": "Balance:",
+  "@balanceLabel": {
+    "description": "Ark payment journey label"
+  },
+  "maxPaymentUnavailable": "Max requires a current payment fee quote.",
+  "@maxPaymentUnavailable": {
+    "description": "Ark payment journey label"
+  },
+  "fromLabel": "From",
+  "@fromLabel": {
+    "description": "Ark payment journey label"
+  },
+  "toLabel": "To",
+  "@toLabel": {
+    "description": "Ark payment journey label"
+  },
+  "amountLabel": "Amount",
+  "@amountLabel": {
+    "description": "Ark payment journey label"
+  },
+  "networkFees": "Network fees",
+  "@networkFees": {
+    "description": "Ark payment journey label"
+  },
+  "totalLabel": "Total",
+  "@totalLabel": {
+    "description": "Ark payment journey label"
+  },
+  "vtxoDetails": "VTXO details",
+  "@vtxoDetails": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoCreated": "Created",
+  "@vtxoCreated": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoAnchor": "Anchor",
+  "@vtxoAnchor": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoAll": "All",
+  "@vtxoAll": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoExpired": "Expired",
+  "@vtxoExpired": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoBlocksRemaining": "Blocks remaining",
+  "@vtxoBlocksRemaining": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoTotal": "Total value",
+  "@vtxoTotal": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoEmptyTitle": "No VTXOs",
+  "@vtxoEmptyTitle": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoEmptyBody": "Your VTXOs will appear here once you receive funds.",
+  "@vtxoEmptyBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoNoMatches": "No VTXOs match this filter.",
+  "@vtxoNoMatches": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "vtxoCount": "VTXOs",
+  "@vtxoCount": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "emergencyOnlyTitle": "For emergency use only",
+  "@emergencyOnlyTitle": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "emergencyOnlyBody": "Use an emergency exit only if the Ark server is down or not responding.",
+  "@emergencyOnlyBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "emergencySendInstead": "When Ark is working, just send to an on-chain address from your Ark balance.",
+  "@emergencySendInstead": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "startEmergencyExit": "Start emergency exit",
+  "@startEmergencyExit": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "newEmergencyExit": "New emergency exit",
+  "@newEmergencyExit": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "noEmergencyExits": "No emergency exits",
+  "@noEmergencyExits": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "noEmergencyExitsBody": "You haven’t started an emergency exit. Exits you start will show up here.",
+  "@noEmergencyExitsBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitChooseBody": "Choose whether to exit all eligible VTXOs or only specific ones.",
+  "@exitChooseBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitAllEligible": "All eligible VTXOs",
+  "@exitAllEligible": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitSelected": "Selected VTXOs",
+  "@exitSelected": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitAvailableValue": "Available value",
+  "@exitAvailableValue": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitFeesAfterReview": "Actual fees and reserve exposure are available in the native review.",
+  "@exitFeesAfterReview": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitProgressTitle": "Progress emergency exits",
+  "@exitProgressTitle": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "exitProgressBody": "Choose a fee rate to request a foreground review of exit progression.",
+  "@exitProgressBody": {
+    "description": "Ark VTXO or emergency exit presentation"
+  },
+  "feeReserveTitle": "On-chain fee reserve",
+  "@feeReserveTitle": {
+    "description": "Public funding destination for emergency exit miner fees"
+  },
+  "feeReserveHelp": "Fund this address with on-chain bitcoin before starting an emergency exit when the fee reserve is insufficient.",
+  "@feeReserveHelp": {
+    "description": "Explains why the native fee reserve must be funded"
+  },
+  "feeReserveAmount": "{amount} sats",
+  "@feeReserveAmount": {
+    "description": "Observed native on-chain fee reserve balance",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "hiddenAmount": "••••",
+  "@hiddenAmount": {
+    "description": "Privacy placeholder for hidden balances"
+  },
+  "operationRenewalStarted": "Renewal started",
+  "@operationRenewalStarted": {
+    "description": "Native operation review outcome or estimate"
+  },
+  "emergencyExitStarted": "Emergency exit started",
+  "@emergencyExitStarted": {
+    "description": "Native operation review outcome or estimate"
+  },
+  "operationEstimatedNet": "Estimated net amount",
+  "@operationEstimatedNet": {
+    "description": "Native operation review outcome or estimate"
+  },
+  "arkWalletSubtitle": "Off-chain bitcoin",
+  "@arkWalletSubtitle": {
+    "description": "Ark account presentation"
+  },
+  "nextRound": "Next round",
+  "@nextRound": {
+    "description": "Ark account presentation"
+  }
+}

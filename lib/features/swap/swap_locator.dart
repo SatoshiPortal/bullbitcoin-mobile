@@ -1,3 +1,9 @@
+import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
+
+import 'domain/usecases/load_internal_ark_transfer_usecase.dart';
+import 'domain/usecases/review_internal_ark_transfer_usecase.dart';
+import 'presentation/internal_ark_transfer_cubit.dart';
+
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/features/fees/domain/get_network_fees_usecase.dart';
@@ -79,6 +85,25 @@ class SwapLocator {
   static const _mainnetExchangeDatasource = 'mainnetExchangeDatasource';
 
   static void setup(GetIt locator) {
+    locator.registerFactory<LoadInternalArkTransferUsecase>(
+      () => LoadInternalArkTransferUsecase(
+        () => locator.isRegistered<ArkTransferFacade>()
+            ? locator<ArkTransferFacade>()
+            : null,
+      ),
+    );
+    locator.registerFactory<ReviewInternalArkTransferUsecase>(
+      () => ReviewInternalArkTransferUsecase(
+        locator<LoadInternalArkTransferUsecase>(),
+        locator<WalletFacade>(),
+      ),
+    );
+    locator.registerFactory<InternalArkTransferCubit>(
+      () => InternalArkTransferCubit(
+        locator<LoadInternalArkTransferUsecase>(),
+        locator<ReviewInternalArkTransferUsecase>(),
+      ),
+    );
     registerOrderSwapFoundation(locator);
     registerUsecases(locator);
     registerBlocs(locator);

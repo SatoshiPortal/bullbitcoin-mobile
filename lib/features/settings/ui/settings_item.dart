@@ -1,4 +1,7 @@
 import 'package:primitives/primitives.dart';
+import 'package:bull_ark/ark_ui.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/ark_debug_notification.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -44,6 +47,7 @@ enum SettingsItemId {
   importWallet,
   broadcastTransaction,
   payjoin,
+  ark,
   autoswap,
   swaps,
   swapRestore,
@@ -63,6 +67,7 @@ enum SettingsItemId {
   screenPrivacy,
   devMode,
   testnetCredentials,
+  arkDebugNotification,
   errorReporting,
 }
 
@@ -75,6 +80,7 @@ const backupSettingsDataItemOrder = [
 
 const walletSettingsItemOrder = [
   SettingsItemId.payjoin,
+  SettingsItemId.ark,
   SettingsItemId.autoswap,
   SettingsItemId.swaps,
   SettingsItemId.swapRestore,
@@ -199,6 +205,7 @@ List<SettingsItem> buildSettingsItems({
   NetworkEnv environment = NetworkEnv.mainnet,
 }) {
   final english = AppLocalizationsEn();
+  final arkTitle = arkLocalizationsForLanguage(localization.localeName).title;
   final rootSection = localization.settingsScreenTitle;
   final backupSection = localization.settingsBackupTitle;
   final walletSection = localization.settingsWalletTitle;
@@ -456,6 +463,14 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchBroadcastTransactionKeywords,
         [english.bitcoinSettingsBroadcastTransactionTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.ark,
+      section: SettingsItemSection.wallet,
+      title: arkTitle,
+      path: path(SettingsItemSection.wallet, arkTitle),
+      icon: Icons.account_balance_wallet_outlined,
+      open: ArkNavigation.open,
     ),
     SettingsItem(
       id: SettingsItemId.payjoin,
@@ -764,6 +779,17 @@ List<SettingsItem> buildSettingsItems({
         isSuperuser: true,
         isInlineControl: true,
       ),
+    if (kDebugMode && isDevModeEnabled)
+      SettingsItem(
+        id: SettingsItemId.arkDebugNotification,
+        section: SettingsItemSection.app,
+        title: localization.localeName.startsWith('fr')
+            ? 'Tester la notification d’échéance Ark'
+            : 'Test Ark expiry notification',
+        path: path(SettingsItemSection.app, 'Ark notification'),
+        icon: Icons.notifications_active_outlined,
+        open: showArkDebugNotification,
+      ),
     if (isDevModeEnabled)
       SettingsItem(
         id: SettingsItemId.testnetCredentials,
@@ -788,6 +814,7 @@ List<SettingsItem> buildSettingsItems({
       SettingsItemId.testnetCredentials => NetworkCapability.exchange,
       SettingsItemId.autoswap => NetworkCapability.swaps,
       SettingsItemId.payjoin => NetworkCapability.payjoin,
+      SettingsItemId.ark => NetworkCapability.ark,
       SettingsItemId.sp => NetworkCapability.silentPayments,
       SettingsItemId.mempool ||
       SettingsItemId.servicesStatus => NetworkCapability.publicFeeEstimates,

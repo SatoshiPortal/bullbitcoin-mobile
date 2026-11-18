@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/data/ark_funding_signing_guard.dart';
+import 'package:sync/sync.dart' show SyncStorageFailure;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:bb_mobile/features/wallet/data/payjoin_wallet_adapter.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_datasource.dart';
@@ -23,6 +25,7 @@ void main() {
         (_) async => status(++checks),
         _Values(),
         metadata,
+        const ArkFundingSigningGuard(Err(SyncStorageFailure())),
       );
 
   Future<void> utxos(PayjoinWalletAdapter adapter) => adapter.spendableUtxos(

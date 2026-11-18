@@ -42,11 +42,11 @@ abstract final class NetworkCapabilities {
         },
         BitcoinNetwork.regtest => switch (capability) {
           NetworkCapability.softwareWallet ||
+          NetworkCapability.ark ||
           NetworkCapability.swaps ||
           NetworkCapability.payjoin => true,
           NetworkCapability.exchange ||
           NetworkCapability.hardwareWallet ||
-          NetworkCapability.ark ||
           NetworkCapability.silentPayments ||
           NetworkCapability.publicExplorer ||
           NetworkCapability.publicFeeEstimates => false,

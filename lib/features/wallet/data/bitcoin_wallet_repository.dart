@@ -1,3 +1,6 @@
+import 'ark_funding_signing_guard.dart';
+
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 import 'package:sync/sync.dart'
     show
@@ -41,12 +44,14 @@ import 'package:bb_mobile/core/wallet/domain/transaction_signature_status.dart';
 class BitcoinWalletRepository implements BitcoinSendPort {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final Secrets _secrets;
+  final ArkFundingSigningGuard _arkFundingGuard;
   final BdkWalletDatasource _bdkWallet;
   final SyncWalletValuesDatasource _values;
 
   BitcoinWalletRepository({
     required this._walletMetadataDatasource,
     required this._secrets,
+    required this._arkFundingGuard,
     required BdkWalletDatasource bdkWalletDatasource,
     required SyncWalletValuesDatasource walletValuesDatasource,
   }) : _bdkWallet = bdkWalletDatasource,
@@ -147,6 +152,13 @@ class BitcoinWalletRepository implements BitcoinSendPort {
   /// reason to exist here.
   Future<String> signPsbt(String psbt, {required String walletId}) async {
     final metadata = await _metadataFor(walletId);
+    final admission = await _arkFundingGuard.admit(
+      key: WalletKey(id: metadata.id, network: metadata.network.shared),
+      unsignedPsbt: psbt,
+    );
+    if (admission case Err()) {
+      throw const WalletSpendBlockedException(BitcoinSpendStatus.unavailable);
+    }
     final secret = await _secretFor(metadata);
 
     return switch (await secret.sign.psbt(

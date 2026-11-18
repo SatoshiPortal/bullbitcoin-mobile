@@ -16,6 +16,8 @@ final backgroundRunBudget = Platform.isIOS
     ? const Duration(seconds: 20)
     : const Duration(minutes: 8);
 
+final Object _invocationClockKey = Object();
+
 typedef BackgroundTaskHandler =
     Future<BackgroundTaskExecutionResult> Function();
 typedef BackgroundTaskSetup = Future<BackgroundTaskHandler> Function(
@@ -42,7 +44,12 @@ Future<bool> mapBackgroundTaskResult(
   // Acknowledge unknown and obsolete work without opening wallet resources.
   if (task == null || task == BackgroundTask.swapsSync) return true;
   try {
-    final result = await (await bootstrap(task)).run(task);
+    // Startup counts against the OS window too. Consumers check admission at
+    // stage boundaries; expiration never abandons an admitted native Future.
+    final result = await runZoned(
+      () async => (await bootstrap(task)).run(task),
+      zoneValues: {_invocationClockKey: Stopwatch()..start()},
+    );
     return !result.shouldRetry;
   } catch (error) {
     log.warning('Background startup failed type=${error.runtimeType}');
@@ -55,7 +62,16 @@ Future<bool> mapBackgroundTaskResult(
 /// Register cleanup immediately after acquisition, before the next await.
 final class BackgroundTaskResources {
   final List<FutureOr<void> Function()> _cleanup = [];
+  final Stopwatch _clock =
+      Zone.current[_invocationClockKey] as Stopwatch? ?? (Stopwatch()..start());
   bool _closed = false;
+
+  Duration get remainingBudget {
+    final remaining = backgroundRunBudget - _clock.elapsed;
+    return remaining.isNegative ? Duration.zero : remaining;
+  }
+
+  bool get mayAdmitNextStage => !_closed && remainingBudget > Duration.zero;
 
   void onClose(FutureOr<void> Function() dispose) {
     if (_closed) throw StateError('Background resources already closed');

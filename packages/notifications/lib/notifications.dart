@@ -7,5 +7,6 @@ export 'src/domain/local_notification.dart';
 export 'src/domain/notifications_failure.dart';
 export 'src/domain/observation.dart';
 export 'src/domain/ports/local_notification_port.dart';
+export 'src/domain/ports/scheduled_notification_port.dart';
 export 'src/domain/ports/notification_permission_port.dart';
 export 'src/domain/repositories/notification_store_repository.dart';

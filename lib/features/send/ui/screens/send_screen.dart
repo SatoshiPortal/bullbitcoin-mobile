@@ -1,3 +1,5 @@
+import '../widgets/send_ark_routing_actions.dart';
+
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 import 'dart:math' as math;
@@ -302,7 +304,9 @@ class SendAddressScreen extends StatelessWidget {
                     ),
                   ),
                   const Gap(16),
-                  const SendContinueWithAddressButton(),
+                  const SendArkRoutingActions(
+                    fallback: SendContinueWithAddressButton(),
+                  ),
                 ],
               ),
             ),
