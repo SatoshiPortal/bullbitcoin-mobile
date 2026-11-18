@@ -75,7 +75,8 @@ class MempoolServerItem extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: context.appColors.tertiaryContainer,
+                                color:
+                                    context.appColors.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(
                                   context.bullShapes.badge,
                                 ),
@@ -83,7 +84,7 @@ class MempoolServerItem extends StatelessWidget {
                               child: Text(
                                 context.loc.mempoolCustomServerLabel,
                                 style: context.bullType.caption.copyWith(
-                                  color: context.appColors.tertiary,
+                                  color: context.appColors.onSurface,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),

@@ -11,34 +11,40 @@ class MempoolServerStatusIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IconData icon;
     Color color;
     String label;
 
     switch (status) {
       case MempoolServerStatus.online:
-        icon = Icons.check_circle;
         color = context.appColors.success;
         label = context.loc.mempoolServerStatusOnline;
       case MempoolServerStatus.offline:
-        icon = Icons.error;
-        color = context.appColors.error;
+        color = context.appColors.warning;
         label = context.loc.mempoolServerStatusOffline;
       case MempoolServerStatus.checking:
-        icon = Icons.sync;
         color = context.appColors.textMuted;
         label = context.loc.mempoolServerStatusChecking;
       case MempoolServerStatus.unknown:
-        icon = Icons.help_outline;
         color = context.appColors.textMuted;
         label = context.loc.mempoolServerStatusUnknown;
     }
 
+    // Same dot and label as the Electrum server rows, so both server
+    // screens speak one status vocabulary.
     return Row(
       children: [
-        Icon(icon, size: 14, color: color),
-        const SizedBox(width: 4),
-        Text(label, style: context.bullType.caption.copyWith(color: color)),
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(shape: .circle, color: color),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: context.bullType.label
+              .copyWith(fontWeight: FontWeight.w400)
+              .copyWith(color: context.appColors.onSurface),
+        ),
       ],
     );
   }
