@@ -176,6 +176,9 @@ class AppRouter {
         },
         routes: [
           WalletRouter.walletHomeRoute(
+            arkHost: locator.isRegistered<ArkForegroundHost>()
+                ? locator<ArkForegroundHost>()
+                : null,
             quickActions: locator<QuickActionsCubit>(),
             onQuickAction: _openQuickAction,
             onCustomizeQuickActions: (context) =>

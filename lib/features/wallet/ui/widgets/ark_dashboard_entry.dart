@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/features/settings/public/network_capability_visibility.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bull_ark/ark_ui.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:primitives/primitives.dart';
@@ -14,15 +13,20 @@ import '../../presentation/bloc/wallet_bloc.dart';
 import '../../domain/wallet.dart' as wallet_model;
 
 class ArkDashboardEntry extends StatelessWidget {
+  final ArkForegroundHost? host;
   final int refresh;
-  const ArkDashboardEntry({super.key, required this.refresh});
+  const ArkDashboardEntry({
+    super.key,
+    required this.host,
+    required this.refresh,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (!locator.isRegistered<ArkForegroundHost>()) {
+    final host = this.host;
+    if (host == null) {
       return const SizedBox.shrink();
     }
-    final host = locator<ArkForegroundHost>();
     final sources = context.select(
       (WalletBloc bloc) => bloc.state.wallets
           .where(
