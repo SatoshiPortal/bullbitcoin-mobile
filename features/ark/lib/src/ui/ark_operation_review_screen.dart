@@ -4,6 +4,7 @@ import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 import '../domain/ark_display_data_port.dart';
+import '../domain/ark_failure.dart';
 import '../presentation/ark_failure_l10n.dart';
 import '../presentation/ark_l10n.dart';
 import '../presentation/ark_operation_cubit.dart';
@@ -173,12 +174,24 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     unawaited(widget.cubit.confirm());
   }
 
+  bool _initialExitRefusal(
+    ArkOperationCubit owner,
+    ArkOperationFailed failure,
+  ) =>
+      owner.request is ArkEmergencyExitQuoteRequest &&
+      failure.failure is ArkPaymentInsufficientFundsFailure &&
+      !owner.confirmationAttempted;
+
   void _retry(
     ArkOperationCubit owner,
     ArkAccountId account,
     ArkOperationFailed rendered,
   ) {
-    if (_current(owner, account, rendered)) unawaited(widget.cubit.load());
+    if (_current(owner, account, rendered) &&
+        (!_initialExitRefusal(owner, rendered) ||
+            ModalRoute.of(context)?.isCurrent == true)) {
+      unawaited(owner.load());
+    }
   }
 
   void _reconcile(
@@ -302,13 +315,23 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                                 state is ArkOperationSubmitting)
                               BullText(l10n.loading, style: null),
                             if (state case final ArkOperationFailed failed) ...[
+                              if (_initialExitRefusal(owner, failed))
+                                Semantics(
+                                  header: true,
+                                  child: BullText(
+                                    l10n.exitNotStarted,
+                                    role: BullTextRole.title,
+                                  ),
+                                ),
                               BullInfoBar(
                                 message: failed.failure.toTranslated(context),
                                 tone: BullInfoTone.warning,
                               ),
                               _button(
                                 context,
-                                l10n.review,
+                                _initialExitRefusal(owner, failed)
+                                    ? l10n.retry
+                                    : l10n.review,
                                 () => _retry(owner, account, failed),
                               ),
                             ],
