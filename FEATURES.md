@@ -44,6 +44,8 @@ graph TB
     ELECTRUM_SETTINGS --> SYNC
     LABELS --> SYNC
     WALLETS --> SYNC
+    CORE -->|public custom fee input| FEES
+    FEES --> BULL_UI
     CORE --> SYNC
     SEND --> SYNC
     FEES --> SYNC

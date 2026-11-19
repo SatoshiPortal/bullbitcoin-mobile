@@ -1,7 +1,6 @@
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/generated/l10n/bull_ui_localizations.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:primitives/primitives.dart';
 
 import '../data_display/bull_amount.dart';
@@ -255,7 +254,7 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
                         keyboardType: TextInputType.numberWithOptions(
                           decimal: _unit == BitcoinUnit.btc,
                         ),
-                        inputFormatters: [_BitcoinEditingFormatter(_unit)],
+                        inputFormatters: [BullAmountInputFormatter(_unit.code)],
                         readOnly: widget.readOnly,
                         style: style,
                         textAlign: TextAlign.center,
@@ -286,33 +285,5 @@ class _BullBitcoinAmountInputState extends State<BullBitcoinAmountInput> {
         ),
       ],
     );
-  }
-}
-
-/// Keep IME composition intact and reject truncated pastes rather than
-/// silently changing their value.
-class _BitcoinEditingFormatter extends TextInputFormatter {
-  _BitcoinEditingFormatter(this.unit);
-
-  final BitcoinUnit unit;
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    if (newValue.composing.isValid && !newValue.composing.isCollapsed) {
-      return newValue;
-    }
-    final formatted = BullAmountInputFormatter(unit.code)
-        .formatEditUpdate(oldValue, newValue);
-    var normalized = unit == BitcoinUnit.btc
-        ? newValue.text.replaceAll(',', '.')
-        : newValue.text;
-    // The shared formatter completes a leading separator: ".01" is "0.01".
-    if (unit == BitcoinUnit.btc && normalized.startsWith('.')) {
-      normalized = '0$normalized';
-    }
-    return formatted.text == normalized ? formatted : oldValue;
   }
 }
