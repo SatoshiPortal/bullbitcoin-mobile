@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
@@ -207,7 +208,10 @@ void main() {
           MaterialApp.router(
             routerConfig: router,
             theme: AppTheme.themeData(AppThemeType.light),
-            localizationsDelegates: appLocalizationsDelegates,
+            localizationsDelegates: const [
+              bullUiLocalizationsDelegate,
+              ...appLocalizationsDelegates,
+            ],
             supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) {
               Device.init(context);
