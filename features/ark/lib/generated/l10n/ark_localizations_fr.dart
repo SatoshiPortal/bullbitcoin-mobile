@@ -650,4 +650,10 @@ class ArkLocalizationsFr extends ArkLocalizations {
 
   @override
   String get nextRound => 'Prochain round';
+
+  @override
+  String get boardDetails => 'Détails de la transaction';
+
+  @override
+  String get boardConfirmation => 'Confirmer le dépôt';
 }

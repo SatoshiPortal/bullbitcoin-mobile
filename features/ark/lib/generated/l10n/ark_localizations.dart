@@ -1273,6 +1273,18 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Next round'**
   String get nextRound;
+
+  /// Expandable technical details of a Board funding review.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction details'**
+  String get boardDetails;
+
+  /// No description provided for @boardConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm board'**
+  String get boardConfirmation;
 }
 
 class _ArkLocalizationsDelegate
