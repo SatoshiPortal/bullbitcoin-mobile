@@ -8,6 +8,7 @@ class BullPickerItem<T> {
     this.leading,
     this.enabled = true,
     this.disabledReason,
+    this.subtitle,
     this.checked,
     this.dividerBefore = false,
   });
@@ -22,6 +23,9 @@ class BullPickerItem<T> {
   final Widget? leading;
   final bool enabled;
   final String? disabledReason;
+
+  /// Supporting text for a choice, independent of its disabled state.
+  final String? subtitle;
   final bool? checked;
   final bool dividerBefore;
 }

@@ -521,11 +521,11 @@ class _BullAmountInputState extends State<BullAmountInput> {
       BullPickerItem(
         value: _bitcoinChoice,
         label: l10n.amountBitcoin,
-        disabledReason: l10n.amountBitcoinUnits(
+        subtitle: l10n.amountBitcoinUnits(
           _bitcoinCode(BitcoinUnit.btc),
           _bitcoinCode(BitcoinUnit.sats),
         ),
-        enabled: _canChangeRepresentation || _canRecoverBitcoin,
+        enabled: _canChangeRepresentation || _canRecoverBitcoin || _showMax,
       ),
       for (final (index, currency) in ordered.indexed)
         BullPickerItem(
@@ -534,7 +534,11 @@ class _BullAmountInputState extends State<BullAmountInput> {
           dividerBefore: first != null && index == 1,
           enabled: currency.hasPrice && _canChangeRepresentation,
           disabledReason: currency.hasPrice
-              ? (_canChangeRepresentation ? null : l10n.amountIncomplete)
+              ? (_showMax
+                    ? l10n.amountLeaveMax
+                    : _canChangeRepresentation
+                    ? null
+                    : l10n.amountIncomplete)
               : currency.loading
               ? l10n.amountLoadingPrice
               : l10n.amountNoPrice,
@@ -548,7 +552,8 @@ class _BullAmountInputState extends State<BullAmountInput> {
         options: items,
         isSelected: (item) => item.value == current,
         label: (item) => item.label,
-        subtitle: (item) => item.disabledReason,
+        subtitle: (item) =>
+            item.enabled ? item.subtitle : item.disabledReason ?? item.subtitle,
         isEnabled: (item) => item.enabled,
         onSelected: (sheetContext, item) =>
             Navigator.pop(sheetContext, item.value),
@@ -609,9 +614,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
         const cursorWidth = 2.0;
         const caretMargin = 1.0 + cursorWidth;
         final number = _shown;
-        final unitPadding =
-            BullSpacing.xs +
-            (_fiatCurrency == null ? BullSpacing.zero : BullSpacing.lg);
+        const unitPadding = BullSpacing.xs;
         final available = constraints.maxWidth - BullSpacing.xxs;
         final numberWidth = measure(number).width;
         final unitWidth = measure(_unitCode).width;
@@ -790,7 +793,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
             children: [
               if (widget.showControls) const SizedBox(width: BullSpacing.xxl),
               Expanded(child: _numberRow(context, equivalent)),
-              if (widget.showControls)
+              if (widget.showControls && widget.currencies.isEmpty)
+                const SizedBox(width: BullSpacing.xxl),
+              if (widget.showControls && widget.currencies.isNotEmpty)
                 BullFieldAction(
                   label: l10n.amountCurrency(
                     _fiatCurrency ?? l10n.amountBitcoin,

@@ -6,6 +6,8 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../theme/bull_selection_fill.dart';
+
 /// The one menu behind every Bull dropdown: a flat [BullTheme.surface] panel
 /// with a hairline [BullTheme.primary] outline and the [BullShapes.input]
 /// corner, opened directly under [anchor], the selected row in bold
@@ -63,7 +65,7 @@ Future<int?> showBullDropdownMenu<T>({
           value: i,
           enabled: items[i].enabled,
           height: BullSpacing.xxl,
-          padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
+          padding: EdgeInsets.zero,
           child: Semantics(
             selected: items[i].checked == null ? i == selectedIndex : null,
             checked: items[i].checked,
@@ -108,20 +110,16 @@ class BullDropdownRow<T> extends StatelessWidget {
           : colors.text,
       fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
     );
-    final dark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: selected
-          ? dark
-                ? colors.surfaceContainer
-                : colors.textMuted.withValues(alpha: 0.1)
-          : colors.transparent,
+      color: selected ? bullSelectionFill(context) : colors.transparent,
       width: fillWidth ? double.infinity : null,
+      constraints: const BoxConstraints(minHeight: BullSpacing.xxl),
       padding: const EdgeInsets.symmetric(
-        horizontal: BullSpacing.xs,
+        horizontal: BullSpacing.md,
         vertical: BullSpacing.xxs,
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: [
           if (item.checked case final checked?) ...[
             SizedBox(
@@ -152,7 +150,7 @@ class BullDropdownRow<T> extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: style,
                 ),
-                if (item.disabledReason case final reason?)
+                if (item.disabledReason ?? item.subtitle case final reason?)
                   Text(
                     reason,
                     style: context.bullType.caption.copyWith(

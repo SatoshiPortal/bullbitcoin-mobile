@@ -25,73 +25,93 @@ class BullStepBar extends StatelessWidget {
       horizontal: BullSpacing.md,
       vertical: BullSpacing.xs,
     ),
-    child: Row(
-      children: [
-        for (var i = 0; i < labels.length; i++) ...[
-          if (i > 0)
-            Expanded(
-              child: Container(
-                height: 2,
-                margin: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
-                color: context.bull.border,
-              ),
-            ),
-          Flexible(
-            flex: MediaQuery.textScalerOf(context).scale(1) > 1.3 ? 4 : 0,
-            child: Semantics(
-              label: semanticLabel(i, labels[i]),
-              selected: i == currentStep,
-              excludeSemantics: true,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: BullSpacing.lg,
-                    height: BullSpacing.lg,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: i < currentStep
-                          ? context.bull.secondary
-                          : i == currentStep
-                          ? context.bull.primary
-                          : context.bull.transparent,
-                      border: i > currentStep
-                          ? Border.all(color: context.bull.border)
-                          : null,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        var labelWidth = 0.0;
+        for (final label in labels) {
+          final painter = TextPainter(
+            text: TextSpan(text: label, style: context.bullType.label),
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout();
+          labelWidth += painter.width;
+          painter.dispose();
+        }
+        final markerWidth = labels.length * (BullSpacing.lg + BullSpacing.xxs);
+        final connectorSpace = (labels.length - 1) * BullSpacing.md;
+        final wrapLabels =
+            labelWidth + markerWidth + connectorSpace > constraints.maxWidth;
+        return Row(
+          children: [
+            for (var i = 0; i < labels.length; i++) ...[
+              if (i > 0)
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: BullSpacing.xs,
                     ),
-                    child: i < currentStep
-                        ? Icon(
-                            Icons.check,
-                            size: BullSpacing.md,
-                            color: context.bull.onSecondary,
-                          )
-                        : Text(
-                            '${i + 1}',
-                            style: context.bullType.caption.copyWith(
-                              color: i == currentStep
-                                  ? context.bull.onPrimary
-                                  : context.bull.textMuted,
-                            ),
-                          ),
+                    color: context.bull.border,
                   ),
-                  const SizedBox(width: BullSpacing.xxs),
-                  Flexible(
-                    child: Text(
-                      labels[i],
-                      style: context.bullType.label.copyWith(
-                        color: i <= currentStep
-                            ? context.bull.text
-                            : context.bull.textMuted,
+                ),
+              Flexible(
+                flex: wrapLabels ? 4 : 0,
+                child: Semantics(
+                  label: semanticLabel(i, labels[i]),
+                  selected: i == currentStep,
+                  excludeSemantics: true,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: BullSpacing.lg,
+                        height: BullSpacing.lg,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: i < currentStep
+                              ? context.bull.secondary
+                              : i == currentStep
+                              ? context.bull.primary
+                              : context.bull.transparent,
+                          border: i > currentStep
+                              ? Border.all(color: context.bull.border)
+                              : null,
+                        ),
+                        child: i < currentStep
+                            ? Icon(
+                                Icons.check,
+                                size: BullSpacing.md,
+                                color: context.bull.onSecondary,
+                              )
+                            : Text(
+                                '${i + 1}',
+                                style: context.bullType.caption.copyWith(
+                                  color: i == currentStep
+                                      ? context.bull.onPrimary
+                                      : context.bull.textMuted,
+                                ),
+                              ),
                       ),
-                    ),
+                      const SizedBox(width: BullSpacing.xxs),
+                      Flexible(
+                        child: Text(
+                          labels[i],
+                          style: context.bullType.label.copyWith(
+                            color: i <= currentStep
+                                ? context.bull.text
+                                : context.bull.textMuted,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
-      ],
+            ],
+          ],
+        );
+      },
     ),
   );
 }

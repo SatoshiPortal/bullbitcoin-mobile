@@ -28,32 +28,46 @@ class BullFieldAction extends StatelessWidget {
     excludeSemantics: true,
     child: Tooltip(
       message: label,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(context.bullShapes.button),
-        child: SizedBox(
-          width: BullSpacing.xxl,
-          height: BullSpacing.xxl,
-          child: Center(
-            child: Container(
-              width: BullSpacing.xxl,
-              height: BullSpacing.xl + BullSpacing.xs,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: onPressed == null
-                    ? context.bull.secondary.withValues(alpha: 0.5)
-                    : context.bull.secondary,
-                borderRadius: BorderRadius.circular(context.bullShapes.button),
-              ),
-              child: icon != null
-                  ? Icon(icon, color: context.bull.onSecondary)
-                  : Text(
-                      label,
-                      maxLines: 1,
-                      style: context.bullType.label.copyWith(
-                        color: context.bull.onSecondary,
-                      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onPressed,
+          highlightColor: context.bull.onSecondary.withValues(alpha: 0.16),
+          splashColor: context.bull.onSecondary.withValues(alpha: 0.24),
+          borderRadius: BorderRadius.circular(context.bullShapes.button),
+          child: SizedBox(
+            width: BullSpacing.xxl,
+            height: BullSpacing.xxl,
+            child: Center(
+              child: SizedBox(
+                width: BullSpacing.xxl,
+                height: BullSpacing.xl + BullSpacing.xs,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: onPressed == null
+                        ? context.bull.secondary.withValues(alpha: 0.5)
+                        : context.bull.secondary,
+                    borderRadius: BorderRadius.circular(
+                      context.bullShapes.button,
                     ),
+                  ),
+                  child: Center(
+                    child: icon != null
+                        ? Icon(icon, color: context.bull.onSecondary)
+                        : FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.bullType.label.copyWith(
+                                color: context.bull.onSecondary,
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),

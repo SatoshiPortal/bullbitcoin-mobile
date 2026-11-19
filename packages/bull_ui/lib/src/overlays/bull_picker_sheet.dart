@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../generated/l10n/bull_ui_localizations.dart';
 import '../layout/gap.dart';
 import '../theme/bull_shapes.dart';
+import '../theme/bull_selection_fill.dart';
 import '../theme/bull_theme.dart';
 import '../theme/bull_tokens.dart';
 import '../theme/bull_typography.dart';
@@ -108,21 +109,17 @@ class BullPickerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final dark = Theme.of(context).brightness == Brightness.dark;
     return Semantics(
       selected: selected,
       inMutuallyExclusiveGroup: true,
       button: true,
       enabled: onPressed != null,
       child: Material(
-        color: selected
-            ? dark
-                  ? colors.surfaceContainer
-                  : colors.textMuted.withValues(alpha: 0.1)
-            : colors.transparent,
+        color: selected ? bullSelectionFill(context) : colors.transparent,
         borderRadius: BorderRadius.circular(context.bullShapes.input),
         child: InkWell(
           onTap: onPressed,
+          borderRadius: BorderRadius.circular(context.bullShapes.input),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 56),
             child: Padding(

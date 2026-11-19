@@ -52,16 +52,6 @@
       }
     }
   },
-  "amountEnterFiat": "Enter the amount in {currency}",
-  "@amountEnterFiat": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
-  "amountEnterBitcoin": "Enter the amount in bitcoin",
-  "@amountEnterBitcoin": {},
   "amountNoPrice": "No price available",
   "@amountNoPrice": {},
   "amountLoadingPrice": "Loading price…",
@@ -109,5 +99,9 @@
         "type": "String"
       }
     }
+  },
+  "amountLeaveMax": "Leave MAX to enter a fiat amount",
+  "@amountLeaveMax": {
+    "description": "Why fiat currency choices are disabled while sending the whole balance"
   }
 }
