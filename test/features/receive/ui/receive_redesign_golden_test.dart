@@ -222,23 +222,24 @@ void main() {
                 ...appLocalizationsDelegates,
               ],
               supportedLocales: AppLocalizations.supportedLocales,
+              builder: (context, child) => BullAmountScope(
+                snapshot: const BullAmountSnapshot(
+                  unit: BitcoinUnit.sats,
+                  hideAmounts: false,
+                  isReady: true,
+                  defaultCurrencyCode: 'CAD',
+                ),
+                writeUnit: (_) async => true,
+                writeInputMode: (_) async => true,
+                child: child ?? const SizedBox.shrink(),
+              ),
               home: BlocProvider<ReceiveBloc>.value(
                 value: bloc,
-                child: BullAmountScope(
-                  snapshot: const BullAmountSnapshot(
-                    unit: BitcoinUnit.sats,
-                    hideAmounts: false,
-                    isReady: true,
-                    defaultCurrencyCode: 'CAD',
-                  ),
-                  writeUnit: (_) async => true,
-                  writeInputMode: (_) async => true,
-                  child: _Frame(
-                    state: state,
-                    screen: amountStep
-                        ? const ReceiveAmountScreen()
-                        : const ReceiveQrPage(),
-                  ),
+                child: _Frame(
+                  state: state,
+                  screen: amountStep
+                      ? const ReceiveAmountScreen()
+                      : const ReceiveQrPage(),
                 ),
               ),
             ),
@@ -254,6 +255,13 @@ void main() {
         } else if (name == 'lightning-fees') {
           await tester.tap(find.text('Fees'));
           await tester.pumpAndSettle();
+          expect(
+            find.descendant(
+              of: find.byType(ReceiveLnFeesDetails),
+              matching: find.text('1,300 sats'),
+            ),
+            findsOneWidget,
+          );
         }
         expect(tester.takeException(), isNull);
         await expectLater(
