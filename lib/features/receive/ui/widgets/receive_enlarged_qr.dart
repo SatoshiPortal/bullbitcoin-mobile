@@ -41,21 +41,27 @@ class ReceiveEnlargedQr extends StatelessWidget {
       SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: BullInlineIconButton(
-                tooltip: context.loc.closeDialogButton,
-                onPressed: () => Navigator.of(context).pop(),
-                icon: BullIcon(
-                  BullIcons.close,
-                  color: context.appColors.surfaceFixed,
+            SizedBox(
+              height: 56,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: BullInlineIconButton(
+                    tooltip: context.loc.closeDialogButton,
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: BullIcon(
+                      BullIcons.close,
+                      color: context.appColors.surfaceFixed,
+                    ),
+                  ),
                 ),
               ),
             ),
             Expanded(
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -89,6 +95,7 @@ class ReceiveEnlargedQr extends StatelessWidget {
                 ),
               ),
             ),
+            const Gap(92),
           ],
         ),
       ),
