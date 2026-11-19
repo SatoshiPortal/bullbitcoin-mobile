@@ -35,9 +35,7 @@ void main() {
     );
   });
 
-  testWidgets('currency and conversion icons use the amount text color', (
-    tester,
-  ) async {
+  testWidgets('currency action uses the secondary field style', (tester) async {
     final canonical = TextEditingController(text: '25000');
     addTearDown(canonical.dispose);
     await tester.pumpWidget(
@@ -59,16 +57,16 @@ void main() {
     );
     void expectIcons() {
       final context = tester.element(find.byType(BullAmountInput));
-      for (final icon in [Icons.arrow_drop_down, Icons.swap_vert]) {
-        final widget = tester.widget<Icon>(find.byIcon(icon));
-        expect(widget.color, context.bull.text);
-        expect(widget.size, 24);
-      }
+      final icon = tester.widget<Icon>(find.byIcon(Icons.expand_more));
+      expect(icon.color, context.bull.onSecondary);
+      expect(find.byIcon(Icons.swap_vert), findsNothing);
     }
 
     expectIcons();
-    await tester.tap(find.byTooltip('Enter the amount in CAD'));
-    await tester.pump();
+    await tester.tap(find.byTooltip('Currency: Bitcoin'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('CAD'));
+    await tester.pumpAndSettle();
     expectIcons();
   });
 
@@ -96,13 +94,17 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.byTooltip('Enter the amount in CAD'));
-    await tester.pump();
+    await tester.tap(find.byTooltip('Currency: Bitcoin'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('CAD'));
+    await tester.pumpAndSettle();
     expect(canonical.text, '1');
     expect(entry?.sats, BigInt.one);
     expect(entry?.isEdit, isFalse);
-    await tester.tap(find.byTooltip('Enter the amount in bitcoin'));
-    await tester.pump();
+    await tester.tap(find.byTooltip('Currency: CAD'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bitcoin'));
+    await tester.pumpAndSettle();
     expect(canonical.text, '1');
     expect(entry?.sats, BigInt.one);
   });
@@ -202,8 +204,10 @@ void main() {
     await tester.enterText(find.byType(TextField), '12.50');
     expect(canonical.text, isEmpty);
     expect(entry?.isValid, isFalse);
-    await tester.tap(find.byTooltip('Enter the amount in bitcoin'));
-    await tester.pump();
+    await tester.tap(find.byTooltip('Currency: CAD'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bitcoin'));
+    await tester.pumpAndSettle();
     expect(canonical.text, isEmpty);
     expect(entry?.sats, isNull);
   });
@@ -281,7 +285,7 @@ void main() {
   });
 
   testWidgets(
-    'currency menu disables unavailable quotes and persists the default with Undo',
+    'currency sheet disables unavailable quotes without changing preferences',
     (tester) async {
       final canonical = TextEditingController(text: '25001');
       addTearDown(canonical.dispose);
@@ -335,77 +339,73 @@ void main() {
       expect(canonical.text, '25001');
       await tester.tap(find.byTooltip('Currency: CAD'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Always start in CAD'));
-      await tester.pumpAndSettle();
-      expect(writes, [true]);
-      expect(startsInFiat, isTrue);
-      await tester.tap(find.text('Undo'));
-      await tester.pumpAndSettle();
-      expect(writes, [true, false]);
+      expect(find.text('Always start in CAD'), findsNothing);
+      expect(writes, isEmpty);
       expect(startsInFiat, isFalse);
       expect(canonical.text, '25001');
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
 
-  testWidgets(
-    'on a phone the whole currency list and its preference fit on screen',
-    (tester) async {
-      tester.view.physicalSize = const Size(1080, 2340);
-      tester.view.devicePixelRatio = 2.75;
-      addTearDown(tester.view.reset);
-      final canonical = TextEditingController();
-      addTearDown(canonical.dispose);
-      await tester.pumpWidget(
-        wrapWithTheme(
-          BullAmountScope(
-            snapshot: const BullAmountSnapshot(
-              unit: BitcoinUnit.sats,
-              hideAmounts: false,
-              isReady: true,
-              defaultCurrencyCode: 'USD',
-              startInFiat: false,
-            ),
-            writeUnit: (_) async => true,
-            writeInputMode: (_) async => true,
-            child: Column(
-              children: [
-                const SizedBox(height: 380),
-                BullAmountInput(
-                  canonicalUnit: BitcoinUnit.sats,
-                  amountController: canonical,
-                  currencies: [
-                    for (final code in [
-                      'USD',
-                      'CAD',
-                      'MXN',
-                      'CRC',
-                      'EUR',
-                      'ARS',
-                      'COP',
-                    ])
-                      BullAmountCurrency(
-                        code: code,
-                        decimals: 2,
-                        price: 100000,
-                        priceAt: quotedAt,
-                      ),
-                  ],
-                ),
-              ],
-            ),
+  testWidgets('on a phone the currency sheet scrolls through all choices', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 2.75;
+    addTearDown(tester.view.reset);
+    final canonical = TextEditingController();
+    addTearDown(canonical.dispose);
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullAmountScope(
+          snapshot: const BullAmountSnapshot(
+            unit: BitcoinUnit.sats,
+            hideAmounts: false,
+            isReady: true,
+            defaultCurrencyCode: 'USD',
+            startInFiat: false,
+          ),
+          writeUnit: (_) async => true,
+          writeInputMode: (_) async => true,
+          child: Column(
+            children: [
+              const SizedBox(height: 380),
+              BullAmountInput(
+                canonicalUnit: BitcoinUnit.sats,
+                amountController: canonical,
+                currencies: [
+                  for (final code in [
+                    'USD',
+                    'CAD',
+                    'MXN',
+                    'CRC',
+                    'EUR',
+                    'ARS',
+                    'COP',
+                  ])
+                    BullAmountCurrency(
+                      code: code,
+                      decimals: 2,
+                      price: 100000,
+                      priceAt: quotedAt,
+                    ),
+                ],
+              ),
+            ],
           ),
         ),
-      );
-      await tester.tap(find.byTooltip('Currency: Bitcoin'));
-      await tester.pumpAndSettle();
-      final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
-      final preference = tester.getRect(find.text('Always start in Bitcoin'));
-      expect(preference.bottom, lessThanOrEqualTo(screen.height));
-      expect(find.byType(PopupMenuDivider), findsNWidgets(2));
-      await tester.pumpWidget(const SizedBox.shrink());
-    },
-  );
+      ),
+    );
+    await tester.tap(find.byTooltip('Currency: Bitcoin'));
+    await tester.pumpAndSettle();
+    final screen = tester.view.physicalSize / tester.view.devicePixelRatio;
+    expect(find.text('Always start in Bitcoin'), findsNothing);
+    await tester.ensureVisible(find.text('COP'));
+    final last = tester.getRect(find.text('COP'));
+    expect(last.bottom, lessThanOrEqualTo(screen.height));
+    expect(find.byIcon(Icons.check), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 
   testWidgets('a compact row puts its number on the line of its unit', (
     tester,

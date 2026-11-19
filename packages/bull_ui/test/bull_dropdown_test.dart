@@ -97,7 +97,7 @@ void main() {
       final apple = tester.widget<Text>(find.text('Apple').last);
       final banana = tester.widget<Text>(find.text('Banana'));
       expect(apple.style?.color, testBullTheme.primary);
-      expect(apple.style?.fontWeight, FontWeight.w600);
+      expect(apple.style?.fontWeight, FontWeight.w500);
       expect(banana.style?.color, testBullTheme.text);
       expect(banana.style?.fontWeight, FontWeight.w400);
     });
