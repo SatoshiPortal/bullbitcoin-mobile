@@ -34,7 +34,7 @@ class SwapSettingsCubit extends Cubit<SwapSettingsState> {
     emit(
       state.copyWith(
         swapServer: swapServer.server,
-        swapServerIsTestnet: swapServer.isTestnet,
+        swapServerEnvironment: swapServer.environment,
       ),
     );
     final routeSettings = await _getSwapRouteSettingsUsecase.execute();

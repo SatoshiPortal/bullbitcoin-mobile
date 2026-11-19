@@ -27,10 +27,18 @@ void main() {
     expect(profile?.liquidExplorer.toString(), 'http://localhost:3001');
   });
 
-  test('regtest uses loopback by default', () {
-    expect(
-      RegtestBoltzProfile.forNetwork(NetworkEnv.regtest)?.api.host,
-      '127.0.0.1',
-    );
+  test('regtest requires an explicit build host', () {
+    const host = String.fromEnvironment('BULL_REGTEST_HOST');
+    if (host.isEmpty) {
+      expect(
+        () => RegtestBoltzProfile.forNetwork(NetworkEnv.regtest),
+        throwsArgumentError,
+      );
+    } else {
+      expect(
+        RegtestBoltzProfile.forNetwork(NetworkEnv.regtest)?.api.host,
+        Uri.parse('http://$host').host,
+      );
+    }
   });
 }

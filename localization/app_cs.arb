@@ -640,10 +640,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "mempoolServerNotUsed": "Nepoužívejte (aktivní server)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
-  },
   "exchangeLandingRecommendedExchange": "Doporučené Bitcoin burza",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
@@ -5573,10 +5569,6 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "mempoolCustomServerLabel": "ČEŠTINA",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "Transfer poplatek",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -7200,10 +7192,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "Pokud je povoleno, bude tento server použit pro odhad poplatků. Pokud je zapnuto, bude se místo toho použít bul Bitcoinový server.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "Vlastní poplatek",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -8691,10 +8679,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "Editace",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "Klepněte na tlačítko Rozšířený veřejný klíč",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -8755,10 +8739,6 @@
   "transactionSwapDescChainPaid": "Vaše transakce byla vysílána. Nyní čekáme na uzavření transakce.",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
-  },
-  "mempoolSettingsUseForFeeEstimation": "Použití pro stanovení cen",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "Způsob platby",
   "@buyPaymentMethod": {
@@ -10472,7 +10452,6 @@
   "homeActionTransfer": "Swap",
   "backupCardTitle": "Chraňte své bitcoiny.",
   "backupCardSubtitle": "Zazálohujte si peněženku hned teď.",
-  "mempoolCustomServerNoSsl": "Bez SSL",
   "autoswapTargetBalanceLabel": "Cílový zůstatek okamžité peněženky",
   "autoswapMaximumBalanceLabel": "Maximální zůstatek okamžité peněženky",
   "onboardingAdvancedOptionsTitle": "Pokročilé možnosti",
@@ -10481,7 +10460,6 @@
   "onboardingAdvancedOptionsCustomMempool": "Vlastní server Mempool",
   "onboardingAdvancedOptionsCustomRecoverbull": "Vlastní server Recoverbull",
   "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
-  "onboardingAdvancedOptionsDone": "Hotovo",
   "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu",
   "pinCodeSaveError": "PIN nelze uložit. Zkuste to prosím znovu.",
@@ -10933,7 +10911,6 @@
   "backupWarningBackupNow": "ANO",
   "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
   "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Došlo k neočekávané chybě",
   "mempoolErrorUpdateSettingsFailed": "Nepodařilo se aktualizovat nastavení: {error}",
@@ -11270,5 +11247,16 @@
   "settingsSourceCodeTitle": "Zdrojový kód",
   "torSettingsStatusNoInternetOrBlocked": "Bez internetu nebo cenzurovaná síť",
   "torSettingsDescNoInternetOrBlocked": "Tato síť nemá přístup k internetu, nebo blokuje Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5."
+  "torSettingsExternalProxyUnavailableDescription": "Bull se nepodařilo připojit k nastavenému proxy SOCKS5.",
+  "serverEncrypted": "Šifrováno",
+  "serverUnencrypted": "Nešifrováno",
+  "backgroundTasksTitle": "Úlohy na pozadí",
+  "blockedInSystemSettings": "Zablokováno v nastavení systému",
+  "notificationsBlockedMessage": "Oznámení jsou v nastavení systému zablokována.",
+  "notificationsTitle": "Oznámení",
+  "openSystemSettings": "Otevřít nastavení systému",
+  "permissionsTitle": "Oprávnění",
+  "settingsSearchPermissionsKeywords": "oznámení|úlohy na pozadí|baterie|upozornění",
+  "wizardBackgroundTasksDescription": "Kontroluje platby při zavřené aplikaci.",
+  "wizardNotificationsDescription": "Dozvíte se, když dorazí platba."
 }

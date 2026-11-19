@@ -539,21 +539,9 @@
   "@mempoolCustomServerAdd": {
     "description": "Button text to add custom mempool server"
   },
-  "mempoolCustomServerEdit": "Edit",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "mempoolCustomServerDelete": "Delete",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "mempoolCustomServerLabel": "CUSTOM",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
-  "mempoolServerNotUsed": "Not used (custom server active)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
   },
   "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
   "@mempoolCustomServerDeleteTitle": {
@@ -578,14 +566,6 @@
   "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
-  },
-  "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
-  },
-  "mempoolSettingsUseForFeeEstimationDescription": "When enabled, this server will be used for fee estimation. When disabled, Bull Bitcoin's mempool server will be used instead.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
   },
   "mempoolServerStatusOnline": "Online",
   "@mempoolServerStatusOnline": {
@@ -12068,14 +12048,6 @@
   "@backupCardSubtitle": {
     "description": "Subtitle of the backup reminder card on the home screen"
   },
-  "mempoolCustomServerSsl": "SSL",
-  "@mempoolCustomServerSsl": {
-    "description": "Badge shown when a custom mempool server uses SSL"
-  },
-  "mempoolCustomServerNoSsl": "No SSL",
-  "@mempoolCustomServerNoSsl": {
-    "description": "Badge shown when a custom mempool server does not use SSL"
-  },
   "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
   "@autoswapTargetBalanceLabel": {
     "description": "Label for the target instant wallet balance setting in autoswap"
@@ -12107,10 +12079,6 @@
   "onboardingAdvancedOptionsFooter": "You can change these settings later in App Settings",
   "@onboardingAdvancedOptionsFooter": {
     "description": "Footer note on the onboarding advanced options screen"
-  },
-  "onboardingAdvancedOptionsDone": "Done",
-  "@onboardingAdvancedOptionsDone": {
-    "description": "Button to dismiss the onboarding advanced options screen"
   },
   "appStartupContactSupportMessage": "Contact support at app.bullbitcoin.com/support",
   "@appStartupContactSupportMessage": {
@@ -15364,38 +15332,6 @@
   "@walletDiscoveryFailed": {
     "description": "Recoverable failure of a manual wallet discovery scan"
   },
-  "backgroundSyncTitle": "Background synchronization",
-  "@backgroundSyncTitle": {},
-  "backgroundSyncDescription": "Check for incoming payments while the app is closed. Your system may delay checks.",
-  "@backgroundSyncDescription": {},
-  "backgroundSyncOff": "Off",
-  "@backgroundSyncOff": {},
-  "backgroundSyncMinutes": "Every {count} minutes",
-  "@backgroundSyncMinutes": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "backgroundSyncHours": "{count, plural, =1{Every hour} other{Every {count} hours}}",
-  "@backgroundSyncHours": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "backgroundNotificationsTitle": "Payment notifications",
-  "@backgroundNotificationsTitle": {},
-  "backgroundNotificationsAllowed": "Allowed by system settings",
-  "@backgroundNotificationsAllowed": {},
-  "backgroundNotificationsDenied": "Not allowed by system settings",
-  "@backgroundNotificationsDenied": {},
-  "backgroundNotificationsRequest": "Allow notifications",
-  "@backgroundNotificationsRequest": {},
-  "backgroundNotificationsSettings": "Open notification settings",
-  "@backgroundNotificationsSettings": {},
   "backgroundPaymentCount": "{count, plural, =1{You received a payment} other{You received {count} payments}}",
   "@backgroundPaymentCount": {
     "placeholders": {
@@ -15768,5 +15704,49 @@
   "networkRestartDialogAction": "Close the app",
   "@networkRestartDialogAction": {
     "description": "Button of the restart-required dialog that closes the app"
+  },
+  "serverEncrypted": "Encrypted",
+  "@serverEncrypted": {
+    "description": "Badge on a server row: the connection to the server is encrypted"
+  },
+  "serverUnencrypted": "Unencrypted",
+  "@serverUnencrypted": {
+    "description": "Badge on a server row: the connection to the server is not encrypted"
+  },
+  "backgroundTasksTitle": "Background Tasks",
+  "@backgroundTasksTitle": {
+    "description": "Switch that lets the app check for payments while it is closed."
+  },
+  "blockedInSystemSettings": "Blocked in system settings",
+  "@blockedInSystemSettings": {
+    "description": "Shown under a switch when the system refused the permission."
+  },
+  "notificationsBlockedMessage": "Notifications are blocked in system settings.",
+  "@notificationsBlockedMessage": {
+    "description": "Warning on the permissions screen after the system refused notifications."
+  },
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": "Switch for the system permission to show payment notifications."
+  },
+  "openSystemSettings": "Open system settings",
+  "@openSystemSettings": {
+    "description": "Button that opens the app's page in the system settings."
+  },
+  "permissionsTitle": "Permissions",
+  "@permissionsTitle": {
+    "description": "Title of the settings screen for background tasks and notifications."
+  },
+  "settingsSearchPermissionsKeywords": "notifications|background tasks|battery|alerts",
+  "@settingsSearchPermissionsKeywords": {
+    "description": "Pipe-separated search aliases for the permissions screen. Search metadata; not displayed."
+  },
+  "wizardBackgroundTasksDescription": "Check payments while closed.",
+  "@wizardBackgroundTasksDescription": {
+    "description": "Short line under the background tasks switch of the wizard."
+  },
+  "wizardNotificationsDescription": "Know when a payment arrives.",
+  "@wizardNotificationsDescription": {
+    "description": "Short line under the notifications switch of the wizard."
   }
 }

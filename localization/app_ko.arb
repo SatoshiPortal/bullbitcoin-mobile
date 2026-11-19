@@ -122,7 +122,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "주문 서버",
+  "mempoolSettingsCustomServer": "사용자 지정 서버",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },
@@ -389,10 +389,6 @@
   "transactionFilterTransfer": "스왑",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "mempoolServerNotUsed": "사용되지 않음 (custom server active)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
   },
   "exchangeLandingRecommendedExchange": "Bitcoin 교환",
   "@exchangeLandingRecommendedExchange": {
@@ -5565,10 +5561,6 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "mempoolCustomServerLabel": "제품정보",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "송금 수수료",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -7265,10 +7257,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "사용할 때, 이 서버는 수수료 추정에 사용됩니다. 비활성화되면 Bull Bitcoin의 mempool 서버가 대신 사용됩니다.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "회사 소개",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -8844,10 +8832,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "제품정보",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "Extended Public Key를 클릭하십시오",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -8908,10 +8892,6 @@
   "transactionSwapDescChainPaid": "귀하의 거래는 방송되었습니다. 우리는 이제 잠금 거래를 기다리고 있습니다.",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
-  },
-  "mempoolSettingsUseForFeeEstimation": "이용 약관",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "지불 방법",
   "@buyPaymentMethod": {
@@ -10356,7 +10336,6 @@
   "homeActionTransfer": "스왑",
   "backupCardTitle": "비트코인을 보호하세요.",
   "backupCardSubtitle": "지금 지갑을 백업하세요.",
-  "mempoolCustomServerNoSsl": "SSL 없음",
   "autoswapTargetBalanceLabel": "목표 즉시 지갑 잔액",
   "autoswapMaximumBalanceLabel": "최대 즉시 지갑 잔액",
   "onboardingAdvancedOptionsTitle": "고급 옵션",
@@ -10365,7 +10344,6 @@
   "onboardingAdvancedOptionsCustomMempool": "사용자 지정 Mempool 서버",
   "onboardingAdvancedOptionsCustomRecoverbull": "사용자 지정 Recoverbull 서버",
   "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
-  "onboardingAdvancedOptionsDone": "완료",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
   "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다",
   "pinCodeSaveError": "PIN을 저장할 수 없습니다. 다시 시도해 주세요.",
@@ -10680,7 +10658,6 @@
   "mempoolErrorSaveServerFailed": "서버 저장에 실패했습니다",
   "mempoolErrorLoadFailed": "Mempool 서버 데이터를 불러오지 못했습니다",
   "mempoolErrorDeleteFailed": "사용자 지정 서버 삭제에 실패했습니다",
-  "mempoolCustomServerSsl": "SSL",
   "mempoolErrorUnexpected": "예기치 않은 오류가 발생했습니다",
   "mempoolErrorUpdateSettingsFailed": "설정을 업데이트하지 못했습니다: {error}",
   "exchangeStatisticsBuySellRatioDesc": "매수 대비 매도 비율(전체 거래량 대비 백분율)",
@@ -11270,5 +11247,16 @@
   "settingsSourceCodeTitle": "소스 코드",
   "torSettingsStatusNoInternetOrBlocked": "인터넷이 없거나 검열된 네트워크",
   "torSettingsDescNoInternetOrBlocked": "이 네트워크는 인터넷에 연결되어 있지 않거나 Tor를 차단합니다.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다."
+  "torSettingsExternalProxyUnavailableDescription": "Bull이 설정된 SOCKS5 프록시에 연결하지 못했습니다.",
+  "serverEncrypted": "암호화됨",
+  "serverUnencrypted": "암호화되지 않음",
+  "backgroundTasksTitle": "백그라운드 작업",
+  "blockedInSystemSettings": "시스템 설정에서 차단됨",
+  "notificationsBlockedMessage": "시스템 설정에서 알림이 차단되어 있습니다.",
+  "notificationsTitle": "알림",
+  "openSystemSettings": "시스템 설정 열기",
+  "permissionsTitle": "권한",
+  "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고",
+  "wizardBackgroundTasksDescription": "앱이 닫혀 있어도 결제를 확인합니다.",
+  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다."
 }

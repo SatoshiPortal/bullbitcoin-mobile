@@ -170,26 +170,35 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.lightning:
         return lightningInvoiceNormalized;
       case ReceiveType.liquid:
-        if (liquidAddress == null) return '';
-
-        if (confirmedAmountSat == null && note.isEmpty) {
-          return liquidAddress!.address;
+        final address = liquidAddress;
+        final network = wallet?.network;
+        if (address == null || network == null || !network.isLiquid) return '';
+        final profile = switch (network) {
+          Network.liquidMainnet => (
+            scheme: 'liquidnetwork',
+            asset: AssetConstants.lbtcMainnet,
+          ),
+          Network.liquidTestnet => (
+            scheme: 'liquidtestnet',
+            asset: AssetConstants.lbtcTestnet,
+          ),
+          Network.liquidRegtest => null,
+          _ => null,
+        };
+        // Regtest has no supported URI scheme/asset contract: amount and note
+        // remain on screen, but are deliberately absent from the raw address.
+        if (profile == null || (confirmedAmountSat == null && note.isEmpty)) {
+          return address.address;
         }
-        final bip21Uri = Uri(
-          scheme: wallet?.network == Network.liquidTestnet
-              ? 'liquidtestnet'
-              : 'liquidnetwork',
-          path: liquidAddress!.address,
+        return Uri(
+          scheme: profile.scheme,
+          path: address.address,
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (note.isNotEmpty) 'message': note,
-            'assetid':
-                wallet != null && wallet!.network == Network.liquidMainnet
-                ? AssetConstants.lbtcMainnet
-                : AssetConstants.lbtcTestnet,
+            'assetid': profile.asset,
           },
-        );
-        return bip21Uri.toString();
+        ).toString();
       case _:
         return '';
     }

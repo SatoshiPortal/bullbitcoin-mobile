@@ -14,6 +14,9 @@ enum SpPaymentStatus {
 /// `SpPaymentView` FFI struct; the wire type stays in `data/` behind
 /// `SpPaymentMapper`.
 class SpPayment {
+  /// Network proven when this history snapshot was loaded. Unknown is never
+  /// sufficient to construct an explorer action.
+  final BitcoinNetwork? network;
   final String txid;
   final SpPaymentDirection direction;
   final SpPaymentStatus status;
@@ -24,6 +27,7 @@ class SpPayment {
   final bool hasSpOutput;
 
   SpPayment({
+    this.network,
     required this.txid,
     required this.direction,
     required this.status,
@@ -41,10 +45,10 @@ class SpPayment {
     }
   }
 
-  /// Only [hasSpOutput] is ever recomputed after mapping (the coin set says
-  /// whether a payment landed on the SP sub-account), so that is the one field
-  /// worth a copy. Everything else comes straight from bwk.
-  SpPayment copyWith({bool? hasSpOutput}) => SpPayment(
+  /// Attach proven network provenance or the recomputed sub-account flag
+  /// without changing transaction data from bwk.
+  SpPayment copyWith({bool? hasSpOutput, BitcoinNetwork? network}) => SpPayment(
+    network: network ?? this.network,
     txid: txid,
     direction: direction,
     status: status,

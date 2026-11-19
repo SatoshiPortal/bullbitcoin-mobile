@@ -481,10 +481,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "mempoolServerNotUsed": "Не се използва (активен е персонализираният сървър)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
-  },
   "receiveConfirming": "Потвърждаване... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
@@ -4293,10 +4289,6 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "mempoolCustomServerLabel": "Потребителски",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "Такса за прехвърляне",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -5544,10 +5536,6 @@
   "@receiveDetails": {
     "description": "Label for viewing transaction details"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "Когато е включено, този сървър ще се използва за оценка на таксите. При изключване ще се използва мемпул сървърът на Bull Bitcoin.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "Персонализирана такса",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -6702,10 +6690,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "Редактирай",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "recoverButton": "Възстанови",
   "@recoverButton": {
     "description": "Button label to recover wallet"
@@ -6758,10 +6742,6 @@
   "transactionSwapDescChainPaid": "Вашата транзакция е излъчена. Сега очакваме потвърждението на транзакцията за заключване.",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
-  },
-  "mempoolSettingsUseForFeeEstimation": "Използвай за оценка на таксите",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "Начин на плащане",
   "@buyPaymentMethod": {
@@ -8031,7 +8011,6 @@
   "homeActionTransfer": "Обмени",
   "backupCardTitle": "Защитете своите биткойни.",
   "backupCardSubtitle": "Архивирайте портфейла си сега.",
-  "mempoolCustomServerNoSsl": "Без SSL",
   "autoswapTargetBalanceLabel": "Целеви баланс на незабавния портфейл",
   "autoswapMaximumBalanceLabel": "Максимален баланс на незабавния портфейл",
   "onboardingAdvancedOptionsTitle": "Разширени опции",
@@ -8040,7 +8019,6 @@
   "onboardingAdvancedOptionsCustomMempool": "Персонализиран сървър Mempool",
   "onboardingAdvancedOptionsCustomRecoverbull": "Персонализиран сървър Recoverbull",
   "onboardingAdvancedOptionsFooter": "Можете да промените тези настройки по-късно в настройките на приложението",
-  "onboardingAdvancedOptionsDone": "Готово",
   "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox се поддържа само на Android",
   "pinCodeSaveError": "Неуспешно запазване на вашия ПИН. Моля, опитайте отново.",
@@ -9052,7 +9030,6 @@
   "backupWarningBackupNow": "ДА",
   "backupWarningBackupLater": "НЕ, РАЗБИРАМ РИСКА",
   "transactionSwapOpenWithin24h": "Отворете приложението в рамките на 24 часа, за да завършите обмена си.",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Възникна неочаквана грешка",
   "mempoolErrorUpdateSettingsFailed": "Неуспешно актуализиране на настройките: {error}",
@@ -9389,5 +9366,16 @@
   "settingsSourceCodeTitle": "Изходен код",
   "torSettingsStatusNoInternetOrBlocked": "Няма интернет или мрежата е цензурирана",
   "torSettingsDescNoInternetOrBlocked": "Тази мрежа няма достъп до интернет или блокира Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси."
+  "torSettingsExternalProxyUnavailableDescription": "Bull не успя да се свърже с конфигурирания SOCKS5 прокси.",
+  "serverEncrypted": "Криптирано",
+  "serverUnencrypted": "Некриптирано",
+  "backgroundTasksTitle": "Фонови задачи",
+  "blockedInSystemSettings": "Блокирано в системните настройки",
+  "notificationsBlockedMessage": "Известията са блокирани в системните настройки.",
+  "notificationsTitle": "Известия",
+  "openSystemSettings": "Отвори системните настройки",
+  "permissionsTitle": "Разрешения",
+  "settingsSearchPermissionsKeywords": "известия|фонови задачи|батерия|сигнали",
+  "wizardBackgroundTasksDescription": "Проверява плащания при затворено приложение.",
+  "wizardNotificationsDescription": "Разберете, когато пристигне плащане."
 }

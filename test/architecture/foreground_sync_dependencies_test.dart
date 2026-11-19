@@ -48,7 +48,7 @@ const _allowedTargets = <String, String>{
   'mempool_settings': 'settings',
   'onboarding': 'electrum_settings import_mnemonic mempool_settings recoverbull settings tor_settings wallet',
   'pay': 'bitcoin_price exchange fees recipients send settings transactions wallet',
-  'pin_code': 'app_unlock settings test_wallet_backup wallet',
+  'pin_code': 'app_unlock settings test_wallet_backup',
   'psbt_flow': 'broadcast_signed_tx wallet',
   'receive': 'bitbox labels ledger settings swap transactions wallet',
   'recipients': 'exchange settings',

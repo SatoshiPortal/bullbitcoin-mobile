@@ -287,6 +287,7 @@ class PayjoinInProgressPage extends StatelessWidget {
                   CurrencyText(
                     amountSat,
                     showFiat: false,
+                    interactive: true,
                     style: context.bullType.headline,
                     textAlign: .center,
                   ),

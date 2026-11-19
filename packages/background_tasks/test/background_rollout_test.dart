@@ -35,9 +35,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
   test(
-    'rollout is OFF and cancels persisted work without registering anything',
+    'disabled schedule cancels persisted work without registering anything',
     () async {
-      expect(backgroundSyncEnabled, isFalse);
       final scheduler = Scheduler();
       await applyBackgroundTaskSchedule(
         dispatcher: () {},

@@ -12,6 +12,7 @@ enum WizardField {
   defaultCurrency,
   reportingConsent,
   exchangeAccess,
+  backgroundTasks,
 }
 
 /// Tagged variant for the `reportingConsent` parameter of
@@ -45,6 +46,7 @@ class WizardChoices {
     this.defaultCurrency = 'USD',
     this.reportingConsent,
     this.exchangeAccess = true,
+    this.backgroundTasks = true,
     this.touched = const <WizardField>{},
   });
 
@@ -56,6 +58,9 @@ class WizardChoices {
   // be completed via Next/Skip/Get started.
   final bool? reportingConsent;
   final bool exchangeAccess;
+
+  /// Shown from the stored interval until the user picks it.
+  final bool backgroundTasks;
 
   /// Tracks which fields the user explicitly picked via the wizard's UI
   /// controls (theme/language/currency pickers, mission Yes/No buttons).
@@ -75,6 +80,7 @@ class WizardChoices {
     ConsentArg reportingConsent = _consentUnset,
     bool? exchangeAccess,
     bool confirmExchange = false,
+    bool? backgroundTasks,
   }) {
     final t = Set<WizardField>.from(touched);
     if (language != null) t.add(WizardField.language);
@@ -84,8 +90,10 @@ class WizardChoices {
       t.add(WizardField.reportingConsent);
     }
     if (confirmExchange) t.add(WizardField.exchangeAccess);
+    if (backgroundTasks != null) t.add(WizardField.backgroundTasks);
     return WizardChoices(
       exchangeAccess: exchangeAccess ?? this.exchangeAccess,
+      backgroundTasks: backgroundTasks ?? this.backgroundTasks,
       language: language ?? this.language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
@@ -97,13 +105,17 @@ class WizardChoices {
     );
   }
 
-  /// System-initiated theme update (brightness detection). Updates the
-  /// value for display purposes only — does NOT mark the field as
+  /// System-initiated update (brightness detection, stored background
+  /// interval). Updates the value for display purposes only — does NOT mark the field as
   /// touched, so it won't be committed to settings unless the user
   /// later confirms via the theme picker.
-  WizardChoices copyWithSilent({AppThemeMode? themeMode}) {
+  WizardChoices copyWithSilent({
+    AppThemeMode? themeMode,
+    bool? backgroundTasks,
+  }) {
     return WizardChoices(
       exchangeAccess: exchangeAccess,
+      backgroundTasks: backgroundTasks ?? this.backgroundTasks,
       language: language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency,

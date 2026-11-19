@@ -2,12 +2,19 @@ import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('uses the build host with the loopback default', () {
-    const expected = String.fromEnvironment(
-      'BULL_REGTEST_HOST',
-      defaultValue: '127.0.0.1',
-    );
-    expect(RegtestHostProfile.forNetwork(NetworkEnv.regtest)?.host, expected);
+  test('requires the explicit build host', () {
+    const expected = String.fromEnvironment('BULL_REGTEST_HOST');
+    if (expected.isEmpty) {
+      expect(
+        () => RegtestHostProfile.forNetwork(NetworkEnv.regtest),
+        throwsArgumentError,
+      );
+    } else {
+      expect(
+        RegtestHostProfile.forNetwork(NetworkEnv.regtest)?.host,
+        Uri.parse('http://$expected').host,
+      );
+    }
   });
 
   test('both regtest chains share the captured host', () {

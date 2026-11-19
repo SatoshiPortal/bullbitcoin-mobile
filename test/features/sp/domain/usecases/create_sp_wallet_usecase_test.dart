@@ -19,7 +19,7 @@ SettingsEntity _settings({
   bool? isSuperuser = true,
   bool? isDevModeEnabled = true,
 }) => const SettingsEntity(
-  environment: Environment.mainnet,
+  environment: Environment.testnet,
   bitcoinUnit: BitcoinUnit.sats,
   currencyCode: 'USD',
   isSuperuser: null,

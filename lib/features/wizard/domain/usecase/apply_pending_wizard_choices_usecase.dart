@@ -1,3 +1,4 @@
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_store_failure.dart';
 import 'package:primitives/primitives.dart';
@@ -14,11 +15,13 @@ class ApplyPendingWizardChoicesUsecase {
   ApplyPendingWizardChoicesUsecase({
     required this._wizardRepository,
     required this._settingsRepository,
+    required this._intervals,
     this.applyExchangeAccess,
   });
 
   final WizardRepository _wizardRepository;
   final SettingsRepository _settingsRepository;
+  final BackgroundSyncIntervalRepository _intervals;
 
   /// Returns false when the choice could not be persisted and needs a retry.
   final Future<bool> Function(bool enabled)? applyExchangeAccess;
@@ -73,6 +76,24 @@ class ApplyPendingWizardChoicesUsecase {
       }
     }
 
+    if (choices.touched.contains(WizardField.backgroundTasks)) {
+      // Runs before the app first schedules background tasks, which then
+      // follows the stored interval.
+      try {
+        final current = await _intervals.read();
+        final next = current.withEnabled(choices.backgroundTasks);
+        if (next != current) {
+          final written = await _intervals.write(next);
+          if (written is Err) failed.add(WizardField.backgroundTasks);
+        }
+      } on Exception {
+        failed.add(WizardField.backgroundTasks);
+      }
+      if (failed.contains(WizardField.backgroundTasks)) {
+        log.warning('Wizard choice "backgroundTasks" could not be applied');
+      }
+    }
+
     // Keep only the choices that failed pending, so the next launch retries
     // just those. Clearing everything would drop what the user picked during
     // onboarding on a transient storage error; keeping everything would
@@ -92,6 +113,7 @@ class ApplyPendingWizardChoicesUsecase {
       await _wizardRepository.savePending(
         WizardChoices(
           exchangeAccess: choices.exchangeAccess,
+          backgroundTasks: choices.backgroundTasks,
           language: choices.language,
           themeMode: choices.themeMode,
           defaultCurrency: choices.defaultCurrency,

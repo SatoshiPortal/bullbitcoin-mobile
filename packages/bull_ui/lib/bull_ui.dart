@@ -209,6 +209,7 @@ export 'src/data_display/bull_options_tag.dart';
 export 'src/data_display/bull_price_card.dart';
 export 'src/data_display/bull_qr_code.dart';
 export 'src/data_display/bull_settings_entry_item.dart';
+export 'src/data_display/bull_server_tile.dart';
 export 'src/data_display/bull_stat_tile.dart';
 export 'src/data_display/bull_text.dart';
 export 'src/data_display/bull_time_ago.dart';

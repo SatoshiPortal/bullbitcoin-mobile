@@ -441,21 +441,9 @@
   "@mempoolCustomServerAdd": {
     "description": "Button text to add custom mempool server"
   },
-  "mempoolCustomServerEdit": "Edit Karo",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "mempoolCustomServerDelete": "Delete Karo",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
-  },
-  "mempoolCustomServerLabel": "CUSTOM",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
-  "mempoolServerNotUsed": "Upyog nahi (custom server chalu hai)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
   },
   "mempoolCustomServerDeleteTitle": "Custom Server Delete Karen?",
   "@mempoolCustomServerDeleteTitle": {
@@ -480,14 +468,6 @@
   "mempoolCustomServerBottomSheetDescription": "Apne custom mempool server ka URL darj karo. Save karne se pehle server verify kiya jaayega.",
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
-  },
-  "mempoolSettingsUseForFeeEstimation": "Fee Estimation Ke Liye Upyog Karo",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
-  },
-  "mempoolSettingsUseForFeeEstimationDescription": "Jab on ho, toh yeh server fee estimation ke liye use hoga. Jab off ho, toh Bull Bitcoin ka mempool server use hoga.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
   },
   "mempoolServerStatusOnline": "Online",
   "@mempoolServerStatusOnline": {
@@ -10712,7 +10692,6 @@
   "homeActionTransfer": "Swap Karo",
   "backupCardTitle": "Apne bitcoin ko surakshit rakho.",
   "backupCardSubtitle": "Abhi apne wallet ka backup lo.",
-  "mempoolCustomServerNoSsl": "Koi SSL nahi",
   "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
   "autoswapMaximumBalanceLabel": "Maximum Instant Wallet Balance",
   "onboardingAdvancedOptionsTitle": "Advanced Options",
@@ -10721,7 +10700,6 @@
   "onboardingAdvancedOptionsCustomMempool": "Custom Mempool Server",
   "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
   "onboardingAdvancedOptionsFooter": "Aap in settings ko baad mein App Settings mein badal sakte hain",
-  "onboardingAdvancedOptionsDone": "Done",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support par support se contact karo",
   "importWalletBitboxAndroidOnly": "BitBox sirf Android par supported hai",
   "pinCodeSaveError": "Aapka PIN save nahi ho saka. Kripya dobara koshish karein.",
@@ -11242,7 +11220,6 @@
   "exchangeSupportChatAttachLogsFailed": "Logs attach nahi ho sake. Kripya dobara try karein.",
   "exchangeSupportChatFetchFileDataFailed": "File data fetch nahi ho saka",
   "importMnemonicDuplicateError": "Ye mnemonic pehle se maujood hai",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "Sub-1 sat/vB transactions confirm hone mein zyada time le sakte hain aur sabhi nodes tak propagate nahi ho sakte.",
   "sendBelowMinFeeRateError": "Fee rate kam se kam 0.1 sat/vB honi chahiye.",
@@ -11577,5 +11554,16 @@
   "settingsSourceCodeTitle": "Source code",
   "torSettingsStatusNoInternetOrBlocked": "Internet nahin hai ya network censored hai",
   "torSettingsDescNoInternetOrBlocked": "Is network mein internet nahin hai, ya yeh Tor ko block karta hai.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka."
+  "torSettingsExternalProxyUnavailableDescription": "Bull configured SOCKS5 proxy se connect nahin kar saka.",
+  "serverEncrypted": "Encrypted",
+  "serverUnencrypted": "Encrypted nahi",
+  "backgroundTasksTitle": "Background kaam",
+  "blockedInSystemSettings": "System settings mein blocked",
+  "notificationsBlockedMessage": "Notifications system settings mein blocked hain.",
+  "notificationsTitle": "Notifications",
+  "openSystemSettings": "System settings kholein",
+  "permissionsTitle": "Anumatiyan",
+  "settingsSearchPermissionsKeywords": "notifications|background kaam|battery|alerts",
+  "wizardBackgroundTasksDescription": "App band hone par payment check karta hai.",
+  "wizardNotificationsDescription": "Payment aane par jaanein."
 }

@@ -1,4 +1,6 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import '../../sp_fakes.dart';
+
+import 'package:primitives/primitives.dart' show BitcoinUnit, BitcoinNetwork;
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/sp/domain/usecases/get_sp_feature_gate_usecase.dart';
@@ -19,9 +21,14 @@ void main() {
   late _MockSettingsRepository settingsRepo;
   late GetSpFeatureGateUsecase usecase;
 
-  setUp(() {
+  setUp(() async {
     settingsRepo = _MockSettingsRepository();
-    usecase = GetSpFeatureGateUsecase(settingsRepository: settingsRepo);
+    final config = FakeSpBackendConfigRepository();
+    await config.save(spBackendConfig(network: BitcoinNetwork.mainnet));
+    usecase = GetSpFeatureGateUsecase(
+      settingsRepository: settingsRepo,
+      configRepository: config,
+    );
   });
 
   Future<bool> gateWith({bool? isSuperuser, bool? isDevModeEnabled}) {

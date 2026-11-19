@@ -94,12 +94,15 @@ void main() {
       expect(find.text('Create'), findsOneWidget);
     });
 
-    testWidgets('renders network dropdown', (tester) async {
+    testWidgets('renders the active network without a selector', (
+      tester,
+    ) async {
       final cubit = _FakeSpSetupCubit(const SpSetupState());
 
       await tester.pumpWidget(_buildPage(cubit));
 
-      expect(find.byType(BullDropdown<BitcoinNetwork>), findsOneWidget);
+      expect(find.byType(BullDropdown<BitcoinNetwork>), findsNothing);
+      expect(find.text(BitcoinNetwork.mainnet.name), findsOneWidget);
     });
 
     testWidgets('shows Fetch defaults button for regtest network', (
@@ -367,7 +370,7 @@ void main() {
           .called(1);
     });
 
-    testWidgets('selecting a network calls cubit.setNetwork', (tester) async {
+    testWidgets('shows the active network without a selector', (tester) async {
       seed(
         const SpSetupState(
           form: SpBackendForm(network: BitcoinNetwork.regtest),
@@ -376,16 +379,9 @@ void main() {
 
       await tester.pumpWidget(buildMockPage(cubit));
 
-      expect(find.byType(BullDropdown<BitcoinNetwork>), findsOneWidget);
-      await tester.tap(find.byType(BullDropdown<BitcoinNetwork>));
-      await tester.pumpAndSettle();
-
-      // The dropdown menu lists every network; pick one that differs from
-      // the current selection. Menu items render the network name as text.
-      await tester.tap(find.text(BitcoinNetwork.mainnet.name).last);
-      await tester.pumpAndSettle();
-
-      verify(() => cubit.setNetwork(BitcoinNetwork.mainnet)).called(1);
+      expect(find.byType(BullDropdown<BitcoinNetwork>), findsNothing);
+      expect(find.text(BitcoinNetwork.regtest.name), findsOneWidget);
+      verifyNever(() => cubit.setNetwork(any()));
     });
 
     testWidgets('tapping Fetch regtest defaults calls fetchRegtestDefaults', (

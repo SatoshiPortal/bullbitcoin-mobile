@@ -34,33 +34,47 @@ class LoadSpWalletDataUsecase {
       final coinsResult = await _repository.coins();
       final networkResult = _repository.network();
       final minBirthdayResult = _repository.minBirthdayHeight();
-      return switch ((
-        historyResult,
-        coinsResult,
-        networkResult,
-        minBirthdayResult,
-      )) {
-        (Err(failure: final f), _, _, _) => Err(f),
-        (_, Err(failure: final f), _, _) => Err(f),
-        (_, _, Err(failure: final f), _) => Err(f),
-        (_, _, _, Err(failure: final f)) => Err(f),
-        (
+      switch ((historyResult, coinsResult, networkResult, minBirthdayResult)) {
+        case (Err(failure: final f), _, _, _):
+          return Err(f);
+        case (_, Err(failure: final f), _, _):
+          return Err(f);
+        case (_, _, Err(failure: final f), _):
+          return Err(f);
+        case (_, _, _, Err(failure: final f)):
+          return Err(f);
+        case (
           Ok(value: final history),
           Ok(value: final coins),
           Ok(value: final network),
           Ok(value: final minBirthdayHeight),
-        ) =>
-          Ok(
+        ):
+          if (network == null || network != wallet.network) {
+            return const Err(SpUnsupportedNetwork());
+          }
+          switch (await _ensureSpSessionUsecase.execute()) {
+            case Err(:final failure):
+              return Err(failure);
+            case Ok(value: final current?)
+                when current.network == wallet.network:
+              break;
+            case Ok():
+              return const Err(SpUnsupportedNetwork());
+          }
+          return Ok(
             SpWalletData(
               wallet: wallet,
-              history: history,
+              history: [
+                for (final payment in history)
+                  payment.copyWith(network: network),
+              ],
               coins: coins,
               network: network,
               chainTip: _repository.chainTip(),
               minBirthdayHeight: minBirthdayHeight,
             ),
-          ),
-      };
+          );
+      }
     } catch (e) {
       return Err(SpUnexpected('SP wallet data load failed: $e'));
     }

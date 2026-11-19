@@ -51,26 +51,19 @@ class CreateSpWalletUsecase {
         return const Err(SpRequiresDevMode());
       }
 
-      if (!NetworkCapabilities.supports(
-            network,
-            NetworkCapability.silentPayments,
-          ) ||
-          !NetworkCapabilities.supports(
-            BitcoinNetwork.values.firstWhere(
-              (network) => network.env == settings.environment.networkEnv,
-            ),
-            NetworkCapability.silentPayments,
-          )) {
+      final active = BitcoinNetwork.values.firstWhere(
+        (network) => network.env == settings.environment.networkEnv,
+      );
+      if (network != active) {
         log.warning('Capability refused feature=sp reason=unsupported');
         return const Err(SpUnsupportedNetwork());
       }
-
-      final Secret secret;
-      switch (await _getSpSecretUsecase.execute(network)) {
-        case Ok(:final value):
-          secret = value;
-        case Err(:final failure):
-          return Err(failure);
+      if (!NetworkCapabilities.supports(
+        network,
+        NetworkCapability.silentPayments,
+      )) {
+        log.warning('Capability refused feature=sp reason=unsupported');
+        return const Err(SpUnsupportedNetwork());
       }
 
       final bool hasSentinel;
@@ -91,6 +84,9 @@ class CreateSpWalletUsecase {
         case Ok(:final value):
           storedConfig = value;
       }
+      if (storedConfig != null && storedConfig.network != network) {
+        return const Err(SpUnsupportedNetwork());
+      }
       if (!hasSentinel && storedConfig != null) {
         return const Err(SpAlreadySetUp('SP wallet already set up'));
       }
@@ -99,6 +95,17 @@ class CreateSpWalletUsecase {
       // still hold an account.sqlite + sentinel. Leaving it would make setup
       // "succeed" yet be unreachable, since loads are blocked while the
       // sentinel exists.
+      final Secret secret;
+      switch (await _getSpSecretUsecase.execute(network)) {
+        case Ok(:final value):
+          secret = value;
+        case Err(:final failure):
+          return Err(failure);
+      }
+
+      if (!await _hasConfig(storedConfig) || !await _isActive(network)) {
+        return const Err(SpUnsupportedNetwork());
+      }
       if (hasSentinel) {
         if (await _files.deleteAccountDir() case Err(:final failure)) {
           return Err(
@@ -157,14 +164,34 @@ class CreateSpWalletUsecase {
       }
       // Set before returning so a redirect in the same turn as the navigation
       // that follows already sees the wallet as set up.
-      _configRepository.setIsSetUpNow(isSetUp: true);
+      if (!await _isActive(network)) {
+        return const Err(SpUnsupportedNetwork());
+      }
       if (scanFromNow) await _seedScanCursor();
+      if (!await _isActive(network)) {
+        return const Err(SpUnsupportedNetwork());
+      }
+      _configRepository.setIsSetUpNow(isSetUp: true);
       return const Ok(null);
     } on Exception catch (_) {
       // Fixed text: this block opens the account from the secret, so the
       // caught exception never reaches a log.
       return const Err(SpUnexpected('SP wallet create failed'));
     }
+  }
+
+  Future<bool> _hasConfig(SpBackendConfig? captured) async =>
+      switch (await _configRepository.fetchOrNull()) {
+        Ok(:final value) => value == captured,
+        Err() => false,
+      };
+
+  Future<bool> _isActive(BitcoinNetwork network) async {
+    final settings = await _settingsRepository.fetch();
+    return settings.isSuperuser == true &&
+        settings.isDevModeEnabled == true &&
+        network.env == settings.environment.networkEnv &&
+        NetworkCapabilities.supports(network, NetworkCapability.silentPayments);
   }
 
   /// Scan tip to tip, which covers roughly no blocks and exists only to record

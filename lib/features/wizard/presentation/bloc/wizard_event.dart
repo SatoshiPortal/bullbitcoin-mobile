@@ -12,6 +12,13 @@ sealed class WizardEvent with _$WizardEvent {
   const factory WizardEvent.exchangePicked(bool enabled) =
       _WizardExchangePicked;
   const factory WizardEvent.exchangeConfirmed() = _WizardExchangeConfirmed;
+  const factory WizardEvent.started() = _WizardStarted;
+  const factory WizardEvent.backgroundTasksPicked(bool enabled) =
+      _WizardBackgroundTasksPicked;
+  const factory WizardEvent.notificationsPicked(bool enabled) =
+      _WizardNotificationsPicked;
+  const factory WizardEvent.notificationsRefreshed() =
+      _WizardNotificationsRefreshed;
   const factory WizardEvent.completed() = _WizardCompleted;
   const WizardEvent._();
 }

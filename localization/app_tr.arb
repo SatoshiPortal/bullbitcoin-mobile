@@ -122,7 +122,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Özel Server",
+  "mempoolSettingsCustomServer": "Özel Sunucu",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },
@@ -389,10 +389,6 @@
   "transactionFilterTransfer": "Takas",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "mempoolServerNotUsed": "Not used (custom server aktif)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
   },
   "exchangeLandingRecommendedExchange": "Önerilen Bitcoin Exchange",
   "@exchangeLandingRecommendedExchange": {
@@ -5537,10 +5533,6 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "mempoolCustomServerLabel": "CUSTOM",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "Transfer Ücreti",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -7194,10 +7186,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "Etkinleştirildiğinde, bu sunucu ücret tahminleri için kullanılacaktır. Engelli olduğunda, Bull Bitcoin'in mempool sunucusu bunun yerine kullanılacaktır.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "Özel Ücretler",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -8769,10 +8757,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "Edit",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "Genişletilmiş Halk Anahtar",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -8829,10 +8813,6 @@
   "transactionSwapDescChainPaid": "İşleminiz yayınlandı. Artık kilit işlemin doğrulanması için bekliyoruz.",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
-  },
-  "mempoolSettingsUseForFeeEstimation": "Fee Estimation için kullanım",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "Ödeme yöntemi",
   "@buyPaymentMethod": {
@@ -10356,7 +10336,6 @@
   "homeActionTransfer": "Takas",
   "backupCardTitle": "Bitcoin'inizi koruyun.",
   "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin.",
-  "mempoolCustomServerNoSsl": "SSL Yok",
   "autoswapTargetBalanceLabel": "Hedef Anlık Cüzdan Bakiyesi",
   "autoswapMaximumBalanceLabel": "Maksimum Anlık Cüzdan Bakiyesi",
   "onboardingAdvancedOptionsTitle": "Gelişmiş Seçenekler",
@@ -10365,7 +10344,6 @@
   "onboardingAdvancedOptionsCustomMempool": "Özel Mempool Sunucusu",
   "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
   "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
-  "onboardingAdvancedOptionsDone": "Tamam",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
   "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir",
   "pinCodeSaveError": "PIN kodunuz kaydedilemedi. Lütfen tekrar deneyin.",
@@ -10933,7 +10911,6 @@
   "exchangeSupportChatPickFilesFailed": "Dosyalar seçilemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatAttachLogsFailed": "Günlükler eklenemedi. Lütfen tekrar deneyin.",
   "exchangeSupportChatFetchFileDataFailed": "Dosya verisi alınamadı",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Beklenmeyen bir hata oluştu",
   "mempoolErrorUpdateSettingsFailed": "Ayarlar güncellenemedi: {error}",
@@ -11270,5 +11247,16 @@
   "settingsSourceCodeTitle": "Kaynak kodu",
   "torSettingsStatusNoInternetOrBlocked": "İnternet yok veya ağ sansürlü",
   "torSettingsDescNoInternetOrBlocked": "Bu ağın internet erişimi yok veya Tor'u engelliyor.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı."
+  "torSettingsExternalProxyUnavailableDescription": "Bull, yapılandırılan SOCKS5 proxy'sine bağlanamadı.",
+  "serverEncrypted": "Şifreli",
+  "serverUnencrypted": "Şifresiz",
+  "backgroundTasksTitle": "Arka plan görevleri",
+  "blockedInSystemSettings": "Sistem ayarlarında engellendi",
+  "notificationsBlockedMessage": "Bildirimler sistem ayarlarında engellendi.",
+  "notificationsTitle": "Bildirimler",
+  "openSystemSettings": "Sistem ayarlarını aç",
+  "permissionsTitle": "İzinler",
+  "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar",
+  "wizardBackgroundTasksDescription": "Uygulama kapalıyken ödemeleri kontrol eder.",
+  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun."
 }

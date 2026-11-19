@@ -149,7 +149,9 @@ void main() {
     when(() => getSpSecretUsecase.execute(any()))
         .thenAnswer((_) async => Ok(secret));
     when(() => configRepository.fetch()).thenAnswer(
-      (_) async => Ok<SpBackendConfig?, SpFailure>(spBackendConfig()),
+      (_) async => Ok<SpBackendConfig?, SpFailure>(
+        spBackendConfig(network: BitcoinNetwork.testnet),
+      ),
     );
     when(() => configRepository.save(any()))
         .thenAnswer((_) async => const Ok(null));

@@ -1,3 +1,4 @@
+import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
@@ -12,9 +13,31 @@ class _MockWizardRepository extends Mock implements WizardRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
+class _Intervals implements BackgroundSyncIntervalRepository {
+  _Intervals(this.stored);
+
+  BackgroundSyncInterval stored;
+  bool failWrite = false;
+  int writes = 0;
+
+  @override
+  Future<BackgroundSyncInterval> read() async => stored;
+
+  @override
+  Future<Result<void, BackgroundTasksFailure>> write(
+    BackgroundSyncInterval interval,
+  ) async {
+    writes++;
+    if (failWrite) return const Err(BackgroundSyncIntervalFailure());
+    stored = interval;
+    return const Ok(null);
+  }
+}
+
 void main() {
   late _MockWizardRepository wizard;
   late _MockSettingsRepository settings;
+  late _Intervals intervals;
   late ApplyPendingWizardChoicesUsecase usecase;
 
   setUpAll(() {
@@ -26,9 +49,11 @@ void main() {
   setUp(() {
     wizard = _MockWizardRepository();
     settings = _MockSettingsRepository();
+    intervals = _Intervals(BackgroundSyncInterval.hours6);
     usecase = ApplyPendingWizardChoicesUsecase(
       wizardRepository: wizard,
       settingsRepository: settings,
+      intervals: intervals,
     );
     when(() => wizard.clearPending()).thenAnswer((_) async {});
     when(() => wizard.savePending(any())).thenAnswer((_) async {});
@@ -205,6 +230,7 @@ void main() {
     final applying = ApplyPendingWizardChoicesUsecase(
       wizardRepository: wizard,
       settingsRepository: settings,
+      intervals: intervals,
       applyExchangeAccess: (enabled) async {
         applied = enabled;
         return true;
@@ -214,4 +240,57 @@ void main() {
     expect(applied, isTrue);
     verify(() => wizard.clearPending()).called(1);
   });
+
+  for (final (stored, enabled, expected) in [
+    (BackgroundSyncInterval.hours6, false, BackgroundSyncInterval.off),
+    (BackgroundSyncInterval.off, true, BackgroundSyncInterval.fallback),
+    (BackgroundSyncInterval.hours6, true, BackgroundSyncInterval.hours6),
+  ]) {
+    test(
+      'background tasks $enabled over ${stored.name} store ${expected.name}',
+      () async {
+        intervals.stored = stored;
+        when(() => wizard.readPending()).thenAnswer(
+          (_) async => WizardChoices(
+            backgroundTasks: enabled,
+            touched: const {WizardField.backgroundTasks},
+          ),
+        );
+        await usecase.execute();
+        expect(intervals.stored, expected);
+        expect(intervals.writes, stored == expected ? 0 : 1);
+        verify(() => wizard.clearPending()).called(1);
+      },
+    );
+  }
+
+  test('untouched background tasks keep the stored interval', () async {
+    intervals.stored = BackgroundSyncInterval.off;
+    when(() => wizard.readPending()).thenAnswer(
+      (_) async => const WizardChoices(touched: {WizardField.language}),
+    );
+    await usecase.execute();
+    expect(intervals.stored, BackgroundSyncInterval.off);
+    expect(intervals.writes, 0);
+  });
+
+  test(
+    'keeps the background choice pending when it cannot be stored',
+    () async {
+      intervals.failWrite = true;
+      when(() => wizard.readPending()).thenAnswer(
+        (_) async => const WizardChoices(
+          backgroundTasks: false,
+          touched: {WizardField.backgroundTasks},
+        ),
+      );
+      await usecase.execute();
+      final staged =
+          verify(() => wizard.savePending(captureAny())).captured.single
+              as WizardChoices;
+      expect(staged.touched, {WizardField.backgroundTasks});
+      expect(staged.backgroundTasks, isFalse);
+      verifyNever(() => wizard.clearPending());
+    },
+  );
 }

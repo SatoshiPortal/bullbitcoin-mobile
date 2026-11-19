@@ -13,4 +13,14 @@ enum BackgroundSyncInterval {
   const BackgroundSyncInterval(this.frequency);
 
   static const fallback = hour1;
+
+  bool get isEnabled => this != off;
+
+  /// Turning background tasks on keeps the interval already chosen, or uses
+  /// [fallback] when they were off.
+  BackgroundSyncInterval withEnabled(bool enabled) => switch ((enabled, this)) {
+    (false, _) => off,
+    (true, off) => fallback,
+    (true, final current) => current,
+  };
 }

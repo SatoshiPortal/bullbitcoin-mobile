@@ -391,10 +391,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "mempoolServerNotUsed": "उपयोग नहीं हो रहा (कस्टम सर्वर सक्रिय)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
-  },
   "exchangeLandingRecommendedExchange": "बिटकॉइन एक्सचेंज",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
@@ -5565,10 +5561,6 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "mempoolCustomServerLabel": "कस्टम",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "स्थानांतरण शुल्क",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -7265,10 +7257,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "सक्षम होने पर, इस सर्वर का उपयोग शुल्क अनुमान के लिए किया जाएगा। अक्षम होने पर, Bull Bitcoin के mempool सर्वर का उपयोग किया जाएगा।",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "कस्टम शुल्क",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -8844,10 +8832,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "संपादित करें",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "विस्तारित सार्वजनिक कुंजी पर क्लिक करें",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -8908,10 +8892,6 @@
   "transactionSwapDescChainPaid": "आपका लेनदेन प्रसारित कर दिया गया है। हम अब lockup लेनदेन की पुष्टि की प्रतीक्षा कर रहे हैं।",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
-  },
-  "mempoolSettingsUseForFeeEstimation": "शुल्क अनुमान के लिए उपयोग करें",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "भुगतान विधि",
   "@buyPaymentMethod": {
@@ -10612,7 +10592,6 @@
   "homeActionTransfer": "स्वैप करें",
   "backupCardTitle": "अपने बिटकॉइन को सुरक्षित रखें।",
   "backupCardSubtitle": "अभी अपने वॉलेट का बैकअप लें।",
-  "mempoolCustomServerNoSsl": "कोई SSL नहीं",
   "autoswapTargetBalanceLabel": "लक्षित Instant Wallet बैलेंस",
   "autoswapMaximumBalanceLabel": "अधिकतम Instant Wallet बैलेंस",
   "onboardingAdvancedOptionsTitle": "उन्नत विकल्प",
@@ -10621,7 +10600,6 @@
   "onboardingAdvancedOptionsCustomMempool": "कस्टम Mempool सर्वर",
   "onboardingAdvancedOptionsCustomRecoverbull": "कस्टम Recoverbull सर्वर",
   "onboardingAdvancedOptionsFooter": "आप इन सेटिंग्स को बाद में App Settings में बदल सकते हैं",
-  "onboardingAdvancedOptionsDone": "पूर्ण",
   "appStartupContactSupportMessage": "app.bullbitcoin.com/support पर सपोर्ट से संपर्क करें",
   "importWalletBitboxAndroidOnly": "BitBox केवल Android पर समर्थित है",
   "pinCodeSaveError": "आपका PIN सेव नहीं हो सका। कृपया पुनः प्रयास करें।",
@@ -11122,7 +11100,6 @@
   "exchangeSupportChatPickFilesFailed": "फ़ाइलें चुनने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatAttachLogsFailed": "लॉग संलग्न करने में विफल। कृपया फिर से प्रयास करें।",
   "exchangeSupportChatFetchFileDataFailed": "फ़ाइल डेटा प्राप्त करने में विफल",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "sendSubSatVbyteWarning": "1 sat/vB से कम वाले लेनदेन की पुष्टि होने में अधिक समय लग सकता है और हो सकता है कि वे सभी नोड्स तक प्रसारित न हों।",
   "sendBelowMinFeeRateError": "शुल्क दर कम से कम 0.1 sat/vB होनी चाहिए।",
@@ -11457,5 +11434,16 @@
   "settingsSourceCodeTitle": "सोर्स कोड",
   "torSettingsStatusNoInternetOrBlocked": "इंटरनेट नहीं है या नेटवर्क सेंसर है",
   "torSettingsDescNoInternetOrBlocked": "इस नेटवर्क में इंटरनेट नहीं है, या यह Tor को ब्लॉक करता है।",
-  "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।"
+  "torSettingsExternalProxyUnavailableDescription": "Bull कॉन्फ़िगर किए गए SOCKS5 प्रॉक्सी से कनेक्ट नहीं कर सका।",
+  "serverEncrypted": "एन्क्रिप्टेड",
+  "serverUnencrypted": "एन्क्रिप्टेड नहीं",
+  "backgroundTasksTitle": "बैकग्राउंड कार्य",
+  "blockedInSystemSettings": "सिस्टम सेटिंग्स में अवरुद्ध",
+  "notificationsBlockedMessage": "सूचनाएँ सिस्टम सेटिंग्स में अवरुद्ध हैं।",
+  "notificationsTitle": "सूचनाएँ",
+  "openSystemSettings": "सिस्टम सेटिंग्स खोलें",
+  "permissionsTitle": "अनुमतियाँ",
+  "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
+  "wizardBackgroundTasksDescription": "ऐप बंद होने पर भुगतान जाँचता है।",
+  "wizardNotificationsDescription": "भुगतान आने पर जानें।"
 }

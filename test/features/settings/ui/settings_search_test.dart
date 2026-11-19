@@ -1,3 +1,4 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:bb_mobile/features/settings/ui/settings_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_search.dart';
 import 'package:bb_mobile/generated/l10n/localization_as.dart';
@@ -26,7 +27,10 @@ void main() {
 
     test('matches a dedicated Assamese keyword', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(localization: localization);
+      final items = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: localization,
+      );
 
       final results = searchSettings(items, 'ব্লক এক্সপ্লোৰাৰ');
 
@@ -36,7 +40,10 @@ void main() {
 
     test('matches dedicated metadata for another localized setting', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(localization: localization);
+      final items = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: localization,
+      );
 
       final results = searchSettings(items, 'আন্ধাৰ');
 
@@ -45,7 +52,10 @@ void main() {
 
     test('keeps English terms as a fallback in another locale', () {
       final localization = AppLocalizationsAs();
-      final items = buildSettingsItems(localization: localization);
+      final items = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: localization,
+      );
 
       final results = searchSettings(items, 'transaction fees');
 
@@ -68,6 +78,7 @@ void main() {
         isSuperuser: true,
         isDevModeEnabled: true,
         accountReady: true,
+        backgroundTasksAvailable: true,
       );
       final expectedIds = {
         'dev mode': SettingsItemId.devMode,
@@ -153,8 +164,12 @@ void main() {
     });
 
     test('account settings is listed only when exchange is ready', () {
-      final hidden = buildSettingsItems(localization: AppLocalizationsEn());
+      final hidden = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
+        localization: AppLocalizationsEn(),
+      );
       final ready = buildSettingsItems(
+        environment: NetworkEnv.mainnet,
         localization: AppLocalizationsEn(),
         accountReady: true,
       );
@@ -194,6 +209,7 @@ void main() {
         isSuperuser: true,
         isDevModeEnabled: true,
         accountReady: true,
+        backgroundTasksAvailable: true,
       );
       final expectedIds = {
         'trading': SettingsItemId.exchange,
@@ -326,6 +342,20 @@ void main() {
       );
     });
 
+    test('permissions are found by their keywords where tasks run', () {
+      expect(
+        searchSettings(
+          _englishItems(backgroundTasksAvailable: true),
+          'notifications',
+        ).map((item) => item.id),
+        contains(SettingsItemId.permissions),
+      );
+      expect(
+        _englishItems().map((item) => item.id),
+        isNot(contains(SettingsItemId.permissions)),
+      );
+    });
+
     test('still reports no match for a query nothing contains', () {
       expect(searchSettings(_frenchItems(), 'zzz'), isEmpty);
     });
@@ -335,6 +365,7 @@ void main() {
         isSuperuser: true,
         isDevModeEnabled: true,
         accountReady: true,
+        backgroundTasksAvailable: true,
       );
 
       expect(
@@ -350,22 +381,31 @@ List<SettingsItem> _englishItems({
   bool isSuperuser = false,
   bool isDevModeEnabled = false,
   bool accountReady = false,
+  bool backgroundTasksAvailable = false,
 }) {
   final localization = AppLocalizationsEn();
   return buildSettingsItems(
+    environment: NetworkEnv.mainnet,
     localization: localization,
     isSuperuser: isSuperuser,
     isDevModeEnabled: isDevModeEnabled,
     accountReady: accountReady,
+    backgroundTasksAvailable: backgroundTasksAvailable,
   );
 }
 
 List<SettingsItem> _frenchItems() {
   final localization = AppLocalizationsFr();
-  return buildSettingsItems(localization: localization);
+  return buildSettingsItems(
+    environment: NetworkEnv.mainnet,
+    localization: localization,
+  );
 }
 
 List<SettingsItem> _germanItems() {
   final localization = AppLocalizationsDe();
-  return buildSettingsItems(localization: localization);
+  return buildSettingsItems(
+    environment: NetworkEnv.mainnet,
+    localization: localization,
+  );
 }

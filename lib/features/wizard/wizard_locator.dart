@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasourc
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:background_tasks/background_tasks.dart';
 import 'package:get_it/get_it.dart';
 
 /// The wizard runs pre-locator (during startup) for the gating check and
@@ -29,6 +30,7 @@ class WizardLocator {
         },
         wizardRepository: locator<WizardRepository>(),
         settingsRepository: locator<SettingsRepository>(),
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
       ),
     );
   }
