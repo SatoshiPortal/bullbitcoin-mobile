@@ -8,6 +8,26 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
+## [6.15.1] - Unreleased
+
+### Bug Fixes
+
+- **Expired quotes when the device clock is ahead**: Sell, Pay, and Buy no longer refuse to confirm a fresh quote with “This price has expired” when the phone's clock runs ahead of the exchange's. The app measures the gap between the two clocks from exchange responses and judges price-lock deadlines against the exchange's time. Gaps of 10 seconds or less are ignored, so devices with a correct clock behave as before. ([#3098](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3098))
+- **Sell and Pay stuck waiting with Payjoin**: while the device clock is off from the exchange's, Sell and Pay orders are paid with a normal transaction instead of Payjoin, because the Payjoin request would be refused after the session starts and the payment screen would wait forever. Buy is unaffected. ([#3098](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3098))
+- **Confidential SEPA sales for already-active users**: users with Confidential SEPA already active no longer get “Recipient not activated” or “Activating recipient” followed by an error when they sell. Saved SEPA recipients with only one name are kept instead of hidden, the virtual IBAN is found without requiring an owner flag, activation is requested only once rather than at each status check, and the activation screen keeps checking after a failed request instead of ending with an error. ([#3101](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3101))
+- **Order times in local time**: transaction details show exchange order creation and completion times in the device's time zone instead of UTC. ([#3093](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3093), included through [#3098](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3098))
+- **Email Money Transfer wording**: the Canadian email transfer option in Sell, Pay, Withdraw, and recipients is now called “Email Money Transfer” in every language. ([#3094](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3094), included through [#3098](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3098))
+
+### Diagnostics
+
+- Exported logs record when the device clock drifts from the exchange's and when it matches again, and why a Sell, Pay, or Buy confirmation was refused, using fixed labels and seconds only, with no amounts, addresses, or personal data. ([#3098](https://github.com/SatoshiPortal/bullbitcoin-mobile/pull/3098))
+
+### Known Limitations
+
+- Transfer and Lightning-receive order swaps still compare their deadline with the device clock; a device whose clock runs ahead can still see them as expired.
+
+---
+
 ## [6.15.0] - 2026-10-22
 
 ### New Features
