@@ -777,7 +777,6 @@
   "pinCodeAuthentication": "ავთენტიფიკაცია",
   "pinCodeCreateTitle": "ახალი PIN-ის შექმნა",
   "pinCodeCreateDescription": "თქვენი PIN იცავს წვდომას თქვენს საფულესა და პარამეტრებზე. აირჩიეთ ისეთი, რომლის დამახსოვრებაც ადვილია.",
-  "pinCodeMinLengthError": "PIN უნდა შედგებოდეს მინიმუმ {minLength} ციფრისგან",
   "pinCodeConfirmTitle": "დაადასტურეთ ახალი PIN",
   "pinCodeMismatchError": "PIN კოდები არ ემთხვევა",
   "pinCodeSecurityPinTitle": "უსაფრთხოების PIN",
@@ -3640,5 +3639,6 @@
   "permissionsTitle": "ნებართვები",
   "settingsSearchPermissionsKeywords": "შეტყობინებები|ფონური ამოცანები|ბატარეა|გაფრთხილებები",
   "wizardBackgroundTasksDescription": "ამოწმებს გადახდებს, როცა აპი დახურულია.",
-  "wizardNotificationsDescription": "გაიგეთ, როცა გადახდა შემოვა."
+  "wizardNotificationsDescription": "გაიგეთ, როცა გადახდა შემოვა.",
+  "pinCodeLengthHint": "შეიყვანეთ {min}-დან {max}-მდე ციფრი"
 }

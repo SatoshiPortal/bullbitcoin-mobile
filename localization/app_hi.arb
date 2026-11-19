@@ -447,15 +447,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN कम से कम {minLength} अंकों का होना चाहिए",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "सटीक राशि प्राप्त करें",
   "swapInsufficientFunds": "अपर्याप्त धनराशि",
   "@swapReceiveExactAmountLabel": {
@@ -11445,5 +11436,6 @@
   "permissionsTitle": "अनुमतियाँ",
   "settingsSearchPermissionsKeywords": "सूचनाएँ|बैकग्राउंड कार्य|बैटरी|अलर्ट",
   "wizardBackgroundTasksDescription": "ऐप बंद होने पर भुगतान जाँचता है।",
-  "wizardNotificationsDescription": "भुगतान आने पर जानें।"
+  "wizardNotificationsDescription": "भुगतान आने पर जानें।",
+  "pinCodeLengthHint": "{min} से {max} अंक दर्ज करें"
 }

@@ -35,14 +35,6 @@
   "pinCodeAuthentication": "Tunnistautuminen",
   "pinCodeCreateTitle": "Luo uusi PIN",
   "pinCodeCreateDescription": "PIN suojaa pääsyn lompakkoosi ja asetuksiin. Pidä se muistettavana.",
-  "pinCodeMinLengthError": "PIN-koodin on oltava vähintään {minLength} numeroa pitkä",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "pinCodeConfirmTitle": "Vahvista uusi PIN",
   "pinCodeMismatchError": "PIN-koodit eivät täsmää",
   "pinCodeSecurityPinTitle": "PIN",
@@ -4614,5 +4606,6 @@
   "permissionsTitle": "Käyttöoikeudet",
   "settingsSearchPermissionsKeywords": "ilmoitukset|taustatehtävät|akku|hälytykset",
   "wizardBackgroundTasksDescription": "Tarkistaa maksut, kun sovellus on suljettu.",
-  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu."
+  "wizardNotificationsDescription": "Tiedät, kun maksu saapuu.",
+  "pinCodeLengthHint": "Syötä {min}–{max} numeroa"
 }

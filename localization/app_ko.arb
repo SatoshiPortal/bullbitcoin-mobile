@@ -447,15 +447,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN은 적어도이어야 합니다 {minLength} 손가락 긴",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "정확한 금액",
   "swapInsufficientFunds": "잔액 부족",
   "@swapReceiveExactAmountLabel": {
@@ -11258,5 +11249,6 @@
   "permissionsTitle": "권한",
   "settingsSearchPermissionsKeywords": "알림|백그라운드 작업|배터리|경고",
   "wizardBackgroundTasksDescription": "앱이 닫혀 있어도 결제를 확인합니다.",
-  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다."
+  "wizardNotificationsDescription": "결제가 도착하면 알려 드립니다.",
+  "pinCodeLengthHint": "{min}~{max}자리 숫자를 입력하세요"
 }

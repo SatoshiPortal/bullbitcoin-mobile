@@ -447,15 +447,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN en az {minLength} basamakları uzun süre olmalıdır",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "Tam miktar alın",
   "swapInsufficientFunds": "Yetersiz bakiye",
   "@swapReceiveExactAmountLabel": {
@@ -11258,5 +11249,6 @@
   "permissionsTitle": "İzinler",
   "settingsSearchPermissionsKeywords": "bildirimler|arka plan görevleri|pil|uyarılar",
   "wizardBackgroundTasksDescription": "Uygulama kapalıyken ödemeleri kontrol eder.",
-  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun."
+  "wizardNotificationsDescription": "Bir ödeme geldiğinde haberdar olun.",
+  "pinCodeLengthHint": "{min} ile {max} arasında rakam girin"
 }

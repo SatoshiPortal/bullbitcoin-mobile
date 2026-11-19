@@ -155,14 +155,6 @@
     }
   },
   "sendBroadcastingTransaction": "Trasmissione della transazione in corso.",
-  "pinCodeMinLengthError": "Il PIN deve essere di almeno {minLength} cifre",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "Ricevi la quantità esatta",
   "swapInsufficientFunds": "Fondi insufficienti",
   "ledgerImportButton": "Inizio Importazione",
@@ -4782,5 +4774,6 @@
   "permissionsTitle": "Autorizzazioni",
   "settingsSearchPermissionsKeywords": "notifiche|attività in background|batteria|avvisi",
   "wizardBackgroundTasksDescription": "Controlla i pagamenti ad app chiusa.",
-  "wizardNotificationsDescription": "Sappi quando arriva un pagamento."
+  "wizardNotificationsDescription": "Sappi quando arriva un pagamento.",
+  "pinCodeLengthHint": "Inserisci da {min} a {max} cifre"
 }
