@@ -148,7 +148,7 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                 child: _paymentButton(
                   context,
                   l10n.send,
-                  BullIcons.qrCodeScanner,
+                  BullIcons.cropFree,
                   () => _open(owner, account, _AccountAction.send),
                 ),
               ),
@@ -178,7 +178,7 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
               Container(
                 key: const ValueKey('ark-wallet-balance'),
                 width: double.infinity,
-                constraints: const BoxConstraints(minHeight: 180),
+                constraints: const BoxConstraints(minHeight: 188),
                 padding: const EdgeInsets.all(BullSpacing.lg),
                 decoration: BoxDecoration(
                   color: context.bull.secondaryFixed,
@@ -533,7 +533,7 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
               ),
             ),
           ],
-          const Gap(BullSpacing.md),
+          const Gap(BullSpacing.xs),
         ],
       ],
     );

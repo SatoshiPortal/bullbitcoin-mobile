@@ -569,7 +569,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
                   ),
                   child: ExcludeSemantics(
                     child: BullIcon(
-                      BullIcons.qrCodeScanner,
+                      BullIcons.qrCode,
                       size: 70,
                       color: context.bull.text,
                     ),
@@ -582,21 +582,27 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const Gap(BullSpacing.lg),
-                BullButton.big(
-                  label: l10n.openCamera,
-                  compact: true,
-                  height: 56,
-                  disabled:
-                      scanner == null ||
-                      _scanInFlight != null ||
-                      state is! ArkPaymentEditing,
-                  onPressed: () {
-                    if (scanner != null && state is ArkPaymentEditing) {
-                      unawaited(_scan(owner, account, state, phase, scanner));
-                    }
-                  },
-                  bgColor: context.bull.secondary,
-                  textColor: context.bull.onSecondary,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 196),
+                  child: BullButton.big(
+                    label: l10n.openCamera,
+                    compact: true,
+                    height: 52,
+                    textStyle: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    disabled:
+                        scanner == null ||
+                        _scanInFlight != null ||
+                        state is! ArkPaymentEditing,
+                    onPressed: () {
+                      if (scanner != null && state is ArkPaymentEditing) {
+                        unawaited(_scan(owner, account, state, phase, scanner));
+                      }
+                    },
+                    bgColor: context.bull.secondary,
+                    textColor: context.bull.onSecondary,
+                  ),
                 ),
                 if (_scanFailed) ...[
                   const Gap(BullSpacing.md),
@@ -607,7 +613,10 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
           ),
         ),
         Container(
-          padding: const EdgeInsets.all(BullSpacing.md),
+          padding: const EdgeInsets.symmetric(
+            horizontal: BullSpacing.md,
+            vertical: BullSpacing.lg,
+          ),
           decoration: BoxDecoration(
             color: context.bull.surface,
             borderRadius: BorderRadius.vertical(
@@ -637,7 +646,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
                   message: failure.toTranslated(context),
                   tone: BullInfoTone.warning,
                 ),
-              const Gap(BullSpacing.md),
+              const Gap(BullSpacing.sm),
               _action(
                 context,
                 l10n.continueAction,
@@ -896,7 +905,7 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
             color: context.bull.surfaceContainerHighest,
           ),
           child: BullIcon(
-            BullIcons.arrowUpward,
+            BullIcons.chevronRight,
             size: 28,
             color: context.bull.text,
           ),
@@ -915,7 +924,6 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
         fontWeight: FontWeight.w700,
         textAlign: TextAlign.center,
       ),
-      ArkFiatAmount(amount: quote.net, price: price),
       const Gap(BullSpacing.lg),
       BullDetailsTable(
         flat: true,
@@ -934,6 +942,16 @@ class _ArkPaymentScreenState extends State<ArkPaymentScreen> {
           BullDetailsTableItem(
             label: l10n.amountLabel,
             displayValue: formatArkSats(context, quote.net),
+            displayWidget: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BullText(
+                  formatArkSats(context, quote.net),
+                  role: BullTextRole.body,
+                ),
+                ArkFiatAmount(amount: quote.net, price: price),
+              ],
+            ),
           ),
           BullDetailsTableItem(
             label: l10n.networkFees,

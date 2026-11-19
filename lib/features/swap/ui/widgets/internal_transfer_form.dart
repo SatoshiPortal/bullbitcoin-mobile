@@ -101,6 +101,7 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
   Widget _picker(TransferWallet selected, bool from) => BullDropdown<String>(
     key: ValueKey(from ? 'transfer-from' : 'transfer-to'),
     value: selected.id,
+    coverAnchor: !from,
     onChanged: widget.busy ? null : (id) => _pick(id, from: from),
     items: [
       for (final wallet in _wallets)
@@ -160,6 +161,7 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
         failure != null &&
         (_amount.isNotEmpty || failure is SwapUnsupportedNetworkFailure);
     return BullScaffold(
+      backgroundColor: context.bull.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -181,7 +183,8 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                   children: [
                     const Gap(BullSpacing.xs),
                     Container(
-                      padding: const EdgeInsets.all(BullSpacing.xs),
+                      constraints: const BoxConstraints(minHeight: 104),
+                      padding: const EdgeInsets.all(BullSpacing.sm),
                       decoration: BoxDecoration(
                         color: context.bull.surfaceContainerHighest,
                         border: Border(
@@ -207,9 +210,14 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        BullText(
-                          context.loc.swapInternalTransferTitle,
-                          role: BullTextRole.body,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: BullSpacing.sm,
+                          ),
+                          child: BullText(
+                            context.loc.swapInternalTransferTitle,
+                            role: BullTextRole.body,
+                          ),
                         ),
                         BullSwitch(
                           value: true,

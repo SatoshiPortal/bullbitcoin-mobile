@@ -195,6 +195,12 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
                             clipboardText: destination.value,
                             copiedMessage: l10n.copied,
                             onCopy: () => _copyPage(owner, account, ready),
+                            labelPadding: const EdgeInsets.fromLTRB(
+                              BullSpacing.md,
+                              BullSpacing.xxs,
+                              BullSpacing.md,
+                              BullSpacing.zero,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             backgroundColor:
@@ -233,6 +239,10 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
                         ),
                       const Gap(BullSpacing.sm),
                       BullBorderedTile(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: BullSpacing.md,
+                          vertical: BullSpacing.md + BullSpacing.xxs,
+                        ),
                         onTap: () {
                           if (!_pageCurrent(owner, account, ready)) {
                             return;
