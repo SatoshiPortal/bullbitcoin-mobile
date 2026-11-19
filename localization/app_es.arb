@@ -73,14 +73,6 @@
   "pinCodeAuthentication": "Autenticación",
   "pinCodeCreateTitle": "Crear nuevo PIN",
   "pinCodeCreateDescription": "Su PIN protege el acceso a su billetera y ajustes. Manténgalo memorable.",
-  "pinCodeMinLengthError": "El PIN debe tener al menos {minLength} dígitos",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "pinCodeConfirmTitle": "Confirmar nuevo PIN",
   "pinCodeMismatchError": "Los PIN no coinciden",
   "pinCodeSecurityPinTitle": "PIN de Seguridad",
@@ -5078,6 +5070,9 @@
   "amountInputStartChanged": "Los importes ahora comienzan en {currency}",
   "amountEnteredAtRate": "Ingresaste {amount} {currency} · tipo de cambio de las {time}",
   "amountInputHeader": "Importes en",
+  "pinCodeLengthHint": "Introduce de {min} a {max} dígitos",
+  "pinCodeShowPin": "Mostrar PIN",
+  "pinCodeHidePin": "Ocultar PIN",
   "exchangeSupportChatAttachFileTooltip": "Adjuntar un archivo",
   "exchangeSupportChatAttachLogsTooltip": "Adjuntar registros",
   "exchangeSupportChatSendTooltip": "Enviar mensaje"

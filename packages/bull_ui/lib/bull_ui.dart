@@ -166,6 +166,7 @@ export 'src/inputs/bull_lowercase_input_formatter.dart';
 export 'src/inputs/bull_mnemonic_keyboard.dart';
 export 'src/inputs/bull_paste_input.dart';
 export 'src/inputs/bull_search_bar.dart';
+export 'src/inputs/bull_pin_dots.dart';
 export 'src/inputs/bull_pin_pad.dart';
 export 'src/inputs/bull_secret_text_input.dart';
 export 'src/inputs/bull_selectable_list.dart';

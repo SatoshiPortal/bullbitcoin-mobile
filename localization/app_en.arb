@@ -330,15 +330,6 @@
   "@pinCodeCreateDescription": {
     "description": "Description explaining the purpose of the PIN code"
   },
-  "pinCodeMinLengthError": "PIN must be at least {minLength} digits long",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "pinCodeConfirmTitle": "Confirm new pin",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
@@ -15781,6 +15772,26 @@
   "amountInputHeader": "Amounts in",
   "@amountInputHeader": {
     "description": "Shared input unit heading for multiple send recipients."
+  },
+  "pinCodeLengthHint": "Enter {min} to {max} digits",
+  "@pinCodeLengthHint": {
+    "description": "Hint under the PIN being created: how many digits it may have",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "pinCodeShowPin": "Show PIN",
+  "@pinCodeShowPin": {
+    "description": "Button that reveals the typed PIN digits"
+  },
+  "pinCodeHidePin": "Hide PIN",
+  "@pinCodeHidePin": {
+    "description": "Button that hides the typed PIN digits again"
   },
   "exchangeSupportChatAttachFileTooltip": "Attach a file",
   "@exchangeSupportChatAttachFileTooltip": {

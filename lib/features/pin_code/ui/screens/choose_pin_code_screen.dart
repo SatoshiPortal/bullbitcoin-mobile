@@ -4,13 +4,7 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullInputText,
-        BullPinPad,
-        BullTopBar,
-        Gap,
-        BullTypographyX;
+    show BullButton, BullPinDots, BullPinPad, BullTopBar, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ChoosePinCodeScreen extends StatelessWidget {
@@ -19,6 +13,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.appColors.surface,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -52,68 +47,35 @@ class ChoosePinCodeScreen extends StatelessWidget {
                         context.loc.pinCodeCreateDescription,
                         textAlign: .center,
                         style: context.bullType.body.copyWith(
-                          color: context.appColors.textMuted,
+                          color: context.appColors.onSurface,
                         ),
                       ),
                       const Gap(30),
                       BlocSelector<
                         PinCodeSettingBloc,
                         PinCodeSettingState,
-                        (String, bool)
+                        (String, bool, int, int)
                       >(
-                        selector: (state) =>
-                            (state.pinCode, state.obscurePinCode),
+                        selector: (state) => (
+                          state.pinCode,
+                          state.obscurePinCode,
+                          state.minPinCodeLength,
+                          state.maxPinCodeLength,
+                        ),
                         builder: (context, data) {
-                          final (pinCode, obscurePinCode) = data;
-                          return BullInputText(
+                          final (pinCode, obscurePinCode, min, max) = data;
+                          return BullPinDots(
+                            showLabel: context.loc.pinCodeShowPin,
+                            hint: context.loc.pinCodeLengthHint(min, max),
+                            hideLabel: context.loc.pinCodeHidePin,
                             value: pinCode,
                             obscure: obscurePinCode,
-                            onRightTap: () =>
+                            semanticLabel: context.loc.pinCodeCreateTitle,
+                            onToggleObscure: () =>
                                 context.read<PinCodeSettingBloc>().add(
                                   const PinCodeSettingPinCodeObscureToggled(),
                                 ),
-                            rightIcon: obscurePinCode
-                                ? Icon(
-                                    Icons.visibility_off_outlined,
-                                    color: context.appColors.onSurface,
-                                  )
-                                : Icon(
-                                    Icons.visibility_outlined,
-                                    color: context.appColors.onSurface,
-                                  ),
-                            onlyNumbers: true,
-                            onChanged: (value) {},
                           );
-                        },
-                      ),
-                      const Gap(2),
-                      BlocSelector<
-                        PinCodeSettingBloc,
-                        PinCodeSettingState,
-                        bool
-                      >(
-                        selector: (state) => state.isValidPinCode,
-                        builder: (context, isValidPinCode) {
-                          return !isValidPinCode &&
-                                  context
-                                      .read<PinCodeSettingBloc>()
-                                      .state
-                                      .pinCode
-                                      .isNotEmpty
-                              ? Text(
-                                  context.loc.pinCodeMinLengthError(
-                                    context
-                                        .read<PinCodeSettingBloc>()
-                                        .state
-                                        .minPinCodeLength
-                                        .toString(),
-                                  ),
-                                  textAlign: .start,
-                                  style: context.bullType.caption.copyWith(
-                                    color: context.appColors.error,
-                                  ),
-                                )
-                              : const SizedBox.shrink();
                         },
                       ),
                     ],
@@ -133,7 +95,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Gap(16),
+            const Gap(32),
           ],
         ),
       ),

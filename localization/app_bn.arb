@@ -448,14 +448,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN কমপক্ষে {minLength} সংখ্যা দীর্ঘ হতে হবে",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "নির্দিষ্ট পরিমাণ গ্রহণ করুন",
   "swapInsufficientFunds": "অপর্যাপ্ত তহবিল",
   "@swapReceiveExactAmountLabel": {
@@ -11464,5 +11456,6 @@
   "permissionsTitle": "অনুমতি",
   "settingsSearchPermissionsKeywords": "বিজ্ঞপ্তি|ব্যাকগ্রাউন্ড কাজ|ব্যাটারি|সতর্কতা",
   "wizardBackgroundTasksDescription": "অ্যাপ বন্ধ থাকলেও পেমেন্ট দেখে।",
-  "wizardNotificationsDescription": "পেমেন্ট এলে জানুন।"
+  "wizardNotificationsDescription": "পেমেন্ট এলে জানুন।",
+  "pinCodeLengthHint": "{min} থেকে {max}টি সংখ্যা লিখুন"
 }

@@ -617,7 +617,6 @@
   "pinCodeAuthentication": "Նույնականացում",
   "pinCodeCreateTitle": "Ստեղծել նոր PIN",
   "pinCodeCreateDescription": "Ձեր PIN-ը պաշտպանում է ձեր դրամապանակի և կարգավորումների հասանելիությունը։ Պահեք այն հիշվող։",
-  "pinCodeMinLengthError": "PIN-ը պետք է պարունակի առնվազն {minLength} նիշ",
   "pinCodeConfirmTitle": "Հաստատեք նոր PIN-ը",
   "pinCodeMismatchError": "PIN-երը չեն համընկնում",
   "pinCodeSecurityPinTitle": "Անվտանգության PIN",
@@ -3517,5 +3516,6 @@
   "permissionsTitle": "Թույլտվություններ",
   "settingsSearchPermissionsKeywords": "ծանուցումներ|ֆոնային առաջադրանքներ|մարտկոց|ազդանշաններ",
   "wizardBackgroundTasksDescription": "Ստուգում է վճարումները, երբ հավելվածը փակ է։",
-  "wizardNotificationsDescription": "Իմացեք, երբ վճարում է ստացվում։"
+  "wizardNotificationsDescription": "Իմացեք, երբ վճարում է ստացվում։",
+  "pinCodeLengthHint": "Մուտքագրեք {min}-ից {max} թվանշան"
 }

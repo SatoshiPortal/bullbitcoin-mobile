@@ -1315,15 +1315,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN باید حداقل {minLength} رقم داشته باشد",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "دریافت مقدار دقیق",
   "swapInsufficientFunds": "وجوه ناکافی",
   "@swapReceiveExactAmountLabel": {
@@ -11258,5 +11249,6 @@
   "permissionsTitle": "مجوزها",
   "settingsSearchPermissionsKeywords": "اعلان‌ها|وظایف پس‌زمینه|باتری|هشدارها",
   "wizardBackgroundTasksDescription": "بررسی پرداخت‌ها وقتی برنامه بسته است.",
-  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید."
+  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید.",
+  "pinCodeLengthHint": "{min} تا {max} رقم وارد کنید"
 }

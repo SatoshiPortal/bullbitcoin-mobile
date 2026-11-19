@@ -4,13 +4,7 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullButton,
-        BullInputText,
-        BullPinPad,
-        BullTopBar,
-        Gap,
-        BullTypographyX;
+    show BullButton, BullPinDots, BullPinPad, BullTopBar, Gap, BullTypographyX;
 
 class ConfirmPinCodeScreen extends StatelessWidget {
   const ConfirmPinCodeScreen({super.key});
@@ -28,6 +22,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
         backHandler();
       },
       child: Scaffold(
+        backgroundColor: context.appColors.surface,
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -66,24 +61,16 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                               (state.pinCodeConfirmation, state.obscurePinCode),
                           builder: (context, data) {
                             final (pinCode, obscurePinCode) = data;
-                            return BullInputText(
+                            return BullPinDots(
+                              showLabel: context.loc.pinCodeShowPin,
+                              hideLabel: context.loc.pinCodeHidePin,
                               value: pinCode,
                               obscure: obscurePinCode,
-                              onRightTap: () =>
+                              semanticLabel: context.loc.pinCodeConfirmTitle,
+                              onToggleObscure: () =>
                                   context.read<PinCodeSettingBloc>().add(
                                     const PinCodeSettingPinCodeObscureToggled(),
                                   ),
-                              rightIcon: obscurePinCode
-                                  ? Icon(
-                                      Icons.visibility_off_outlined,
-                                      color: context.appColors.onSurface,
-                                    )
-                                  : Icon(
-                                      Icons.visibility_outlined,
-                                      color: context.appColors.onSurface,
-                                    ),
-                              onlyNumbers: true,
-                              onChanged: (value) {},
                             );
                           },
                         ),
@@ -123,7 +110,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Gap(16),
+              const Gap(32),
             ],
           ),
         ),

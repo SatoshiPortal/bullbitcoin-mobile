@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
-        BullInputText,
+        BullPinDots,
         BullPinPad,
         BullSnackBar,
         BullTopBar,
@@ -74,6 +74,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
     return PopScope(
       canPop: canPop,
       child: Scaffold(
+        backgroundColor: context.appColors.surface,
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -112,23 +113,16 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                               (state.pinCode, state.obscurePinCode),
                           builder: (context, data) {
                             final (pinCode, obscurePinCode) = data;
-                            return BullInputText(
+                            return BullPinDots(
+                              showLabel: context.loc.pinCodeShowPin,
+                              hideLabel: context.loc.pinCodeHidePin,
                               value: pinCode,
                               obscure: obscurePinCode,
-                              onRightTap: () => context
+                              semanticLabel:
+                                  context.loc.appUnlockEnterPinMessage,
+                              onToggleObscure: () => context
                                   .read<AppUnlockBloc>()
                                   .add(AppUnlockPinCodeObscureToggled()),
-                              rightIcon: obscurePinCode
-                                  ? Icon(
-                                      Icons.visibility_off_outlined,
-                                      color: context.appColors.onSurface,
-                                    )
-                                  : Icon(
-                                      Icons.visibility_outlined,
-                                      color: context.appColors.onSurface,
-                                    ),
-                              onlyNumbers: true,
-                              onChanged: (value) {},
                             );
                           },
                         ),
@@ -199,7 +193,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   },
                 ),
               ),
-              const Gap(16),
+              const Gap(32),
             ],
           ),
         ),

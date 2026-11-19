@@ -617,7 +617,6 @@
   "pinCodeAuthentication": "Xác thực",
   "pinCodeCreateTitle": "Tạo PIN mới",
   "pinCodeCreateDescription": "Mã PIN bảo vệ quyền truy cập vào ví và cài đặt của bạn. Hãy chọn một mã dễ nhớ.",
-  "pinCodeMinLengthError": "PIN phải có ít nhất {minLength} chữ số",
   "pinCodeConfirmTitle": "Xác nhận PIN mới",
   "pinCodeMismatchError": "Các mã PIN không khớp",
   "pinCodeSecurityPinTitle": "Mã PIN bảo mật",
@@ -3517,5 +3516,6 @@
   "permissionsTitle": "Quyền",
   "settingsSearchPermissionsKeywords": "thông báo|tác vụ nền|pin|cảnh báo",
   "wizardBackgroundTasksDescription": "Kiểm tra thanh toán khi ứng dụng đóng.",
-  "wizardNotificationsDescription": "Biết khi có khoản thanh toán đến."
+  "wizardNotificationsDescription": "Biết khi có khoản thanh toán đến.",
+  "pinCodeLengthHint": "Nhập từ {min} đến {max} chữ số"
 }

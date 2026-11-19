@@ -403,15 +403,6 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "Το PIN πρέπει να είναι τουλάχιστον {minLength} ψηφία",
-  "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "Λήψη ακριβούς ποσότητας",
   "swapInsufficientFunds": "Ανεπαρκή κεφάλαια",
   "@swapReceiveExactAmountLabel": {
@@ -11258,5 +11249,6 @@
   "permissionsTitle": "Άδειες",
   "settingsSearchPermissionsKeywords": "ειδοποιήσεις|εργασίες παρασκηνίου|μπαταρία|ειδοποιήσεις πληρωμών",
   "wizardBackgroundTasksDescription": "Ελέγχει πληρωμές με κλειστή την εφαρμογή.",
-  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή."
+  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή.",
+  "pinCodeLengthHint": "Εισαγάγετε {min} έως {max} ψηφία"
 }
