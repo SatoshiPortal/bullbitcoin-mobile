@@ -91,9 +91,7 @@ class SwapRescueDetailsScreen extends StatelessWidget {
                         label: context.loc.swapRescueButton,
                         onPressed: (!swap.recoverable || !state.canRescue)
                             ? null
-                            : swap.recoverable && state.canRescue
-                            ? () => context.read<SwapRescueCubit>().rescue()
-                            : () {},
+                            : () => context.read<SwapRescueCubit>().rescue(),
                       ),
                     ],
                   ),

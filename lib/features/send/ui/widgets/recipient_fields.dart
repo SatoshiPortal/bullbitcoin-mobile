@@ -190,7 +190,7 @@ class _RecipientRow extends StatelessWidget {
         if (onRemove != null)
           SizedBox(
             width: 44,
-            height: 44,
+            height: 48,
             child: IconButton(
               tooltip: context.loc.sendRemoveRecipient,
               onPressed: onRemove,
@@ -233,7 +233,7 @@ class AddRecipientButton extends StatelessWidget {
                   onPressed: onAdd,
                   iconData: Icons.person,
                   iconFirst: true,
-                  height: 44,
+                  height: 48,
                   textStyle: style,
                 ),
               ),
@@ -241,10 +241,10 @@ class AddRecipientButton extends StatelessWidget {
               Expanded(
                 child: BullButton.secondary(
                   label: context.loc.sendMyWallet,
-                  onPressed: (onMyWallet == null) ? null : onMyWallet ?? () {},
+                  onPressed: onMyWallet,
                   iconData: Icons.account_balance_wallet,
                   iconFirst: true,
-                  height: 44,
+                  height: 48,
                   textStyle: style,
                 ),
               ),

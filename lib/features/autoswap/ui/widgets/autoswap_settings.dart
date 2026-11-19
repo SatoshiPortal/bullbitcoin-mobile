@@ -637,8 +637,6 @@ class _SaveButton extends StatelessWidget {
       label: context.loc.autoswapSaveButton,
       onPressed: (isDisabled)
           ? null
-          : isDisabled
-          ? () {}
           : () => context.read<AutoSwapSettingsCubit>().updateSettings(),
       textStyle: context.bullType.subtitle.copyWith(
         fontWeight: FontWeight.w700,

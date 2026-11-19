@@ -327,7 +327,6 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                 BullButton.secondary(
                                   size: BullButtonSize.small,
                                   label: context.loc.recoverbullGoBackEdit,
-                                  textStyle: context.bullType.caption,
                                   onPressed: () => setState(() {
                                     _validatedPassword = '';
                                     _inputController.clear();
@@ -345,7 +344,6 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                             : context
                                                   .loc
                                                   .recoverbullSwitchToPIN,
-                                        textStyle: context.bullType.caption,
                                         onPressed: () => _switchTo(
                                           _inputType == InputType.pin
                                               ? InputType.password
@@ -354,18 +352,19 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                       ),
                                     ),
                                     if (_inputType != InputType.vaultKey &&
-                                        hasVaultKeyInput)
+                                        hasVaultKeyInput) ...[
+                                      const Gap(8),
                                       Expanded(
                                         child: BullButton.secondary(
                                           size: BullButtonSize.small,
                                           label: context
                                               .loc
                                               .recoverbullEnterVaultKeyInstead,
-                                          textStyle: context.bullType.caption,
                                           onPressed: () =>
                                               _switchTo(InputType.vaultKey),
                                         ),
                                       ),
+                                    ],
                                   ],
                                 ),
                               if (needsPassphraseAck) ...[

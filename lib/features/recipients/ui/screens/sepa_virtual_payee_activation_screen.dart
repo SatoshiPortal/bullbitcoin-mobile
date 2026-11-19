@@ -163,7 +163,7 @@ class SepaVirtualPayeeActivationView extends StatelessWidget {
                         ),
                         if (onReturnHome != null) ...[
                           const Gap(12),
-                          BullButton.primary(
+                          BullButton.secondary(
                             label: context.loc.recipientsReturnHome,
                             onPressed: onReturnHome,
                           ),

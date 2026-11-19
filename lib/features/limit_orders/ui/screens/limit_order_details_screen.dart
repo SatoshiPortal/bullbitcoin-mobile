@@ -55,8 +55,6 @@ final class LimitOrderDetailsScreen extends StatelessWidget {
             label: context.loc.limitOrderCancel,
             onPressed: (state.isCancelling)
                 ? null
-                : state.isCancelling
-                ? () {}
                 : () => _confirmCancel(context),
           )
         : BullButton.secondary(

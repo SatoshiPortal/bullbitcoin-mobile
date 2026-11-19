@@ -101,8 +101,6 @@ class _SpBackendConfigFormState<S extends SpBackendFormState<S>>
           BullButton.secondary(
             onPressed: (state.isFetchingDefaults || widget.isBusy)
                 ? null
-                : state.isFetchingDefaults
-                ? () {}
                 : widget.onFetchDefaults,
             label: context.loc.spFetchRegtestDefaults,
           ),

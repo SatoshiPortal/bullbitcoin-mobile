@@ -93,8 +93,6 @@ class _ScanningView extends StatelessWidget {
         _BottomAction(
           label: context.loc.spScanStopButton,
           onPressed: () => unawaited(context.read<SpCubit>().stopScan()),
-          bgColor: context.appColors.error,
-          textColor: context.appColors.onError,
         ),
       ],
     );
@@ -558,20 +556,12 @@ String _phaseLabel(BuildContext context, SpScanPhase phase) => switch (phase) {
   SpScanPhase.spend => context.loc.spScanPhaseCheckingSpends,
 };
 
-/// The bottom-pinned action button shared by every scan-page view. Defaults to
-/// the secondary colours; the stop action overrides them.
+/// The bottom-pinned secondary action shared by every scan-page view.
 class _BottomAction extends StatelessWidget {
-  const _BottomAction({
-    required this.label,
-    required this.onPressed,
-    this.bgColor,
-    this.textColor,
-  });
+  const _BottomAction({required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
-  final Color? bgColor;
-  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {

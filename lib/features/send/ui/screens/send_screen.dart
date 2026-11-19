@@ -1540,7 +1540,7 @@ class ConfirmSendButton extends StatelessWidget {
     final disableSendButton = context.select(
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
-    return BullButton.secondary(
+    return BullButton.primary(
       label: hasFinalizedTx
           ? context.loc.sendBroadcastTransaction
           : context.loc.sendConfirm,
@@ -2886,7 +2886,7 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
     );
 
-    return BullButton.secondary(
+    return BullButton.primary(
       label: context.loc.sendShowPsbt,
       onPressed: () {
         // The PSBT route and the broadcast after signing take the wallet
@@ -2929,7 +2929,7 @@ class SignLedgerButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BullButton.secondary(
+    return BullButton.primary(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -2981,7 +2981,7 @@ class SignBitBoxButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BullButton.secondary(
+    return BullButton.primary(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
         if (unsignedPsbt == null) return;

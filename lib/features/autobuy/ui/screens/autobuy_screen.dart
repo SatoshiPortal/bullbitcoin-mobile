@@ -216,7 +216,7 @@ class _IntroStep extends StatelessWidget {
                 tagColor: context.appColors.error,
               )
             else
-              BullButton.secondary(
+              BullButton.primary(
                 label: context.loc.autoBuyGetStarted,
                 onPressed: () => context.read<AutoBuyCubit>().showWallets(),
               ),

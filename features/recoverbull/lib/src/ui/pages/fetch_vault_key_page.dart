@@ -391,7 +391,6 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
                     if (!_confirmWithout)
                       BullButton.secondary(
                         label: context.loc.recoverbullContinueWithoutPassphrase,
-                        textStyle: context.bullType.caption,
                         onPressed: () => setState(() => _confirmWithout = true),
                       )
                     else ...[

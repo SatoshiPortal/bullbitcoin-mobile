@@ -50,7 +50,7 @@ class SwapBalanceRow extends StatelessWidget {
         BullButton.secondary(
           size: BullButtonSize.small,
           label: context.loc.swapMaxButton,
-          height: 30,
+          height: 48,
           width: 51,
           textStyle: context.bullType.label,
           onPressed: (maxAmountSat == null || maxAmountSat <= 0)
