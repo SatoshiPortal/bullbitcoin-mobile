@@ -978,4 +978,7 @@ class ArkLocalizationsFr extends ArkLocalizations {
   @override
   String get operationRequestCompleted =>
       'Demande terminée. Le règlement on-chain et la fin du round restent distincts.';
+
+  @override
+  String get exitNotStarted => 'Sortie non démarrée';
 }

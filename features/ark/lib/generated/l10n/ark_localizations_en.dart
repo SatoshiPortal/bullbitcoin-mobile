@@ -966,4 +966,7 @@ class ArkLocalizationsEn extends ArkLocalizations {
   @override
   String get operationRequestCompleted =>
       'Request completed. Chain settlement and round completion are separate.';
+
+  @override
+  String get exitNotStarted => 'Exit not started';
 }

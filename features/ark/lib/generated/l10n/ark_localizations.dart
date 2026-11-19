@@ -1843,6 +1843,12 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Request completed. Chain settlement and round completion are separate.'**
   String get operationRequestCompleted;
+
+  /// Heading for an emergency exit quote refused before any confirmation attempt.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit not started'**
+  String get exitNotStarted;
 }
 
 class _ArkLocalizationsDelegate
