@@ -1,5 +1,13 @@
-import 'domain/usecases/next_unused_receive_address_usecase.dart';
+import 'package:primitives/primitives.dart';
+
+import 'data/ark_installation_state.dart';
 import 'domain/usecases/get_receive_address_usecase.dart';
+import 'domain/usecases/get_transfer_receive_address_usecase.dart';
+
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
+    show SqliteArkFundingReservations;
+
+import 'domain/usecases/next_unused_receive_address_usecase.dart';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
@@ -76,6 +84,10 @@ import 'package:bb_mobile/features/wallet/public/default_wallets_facade.dart';
 
 class WalletLocator {
   static void setup(GetIt locator) {
+    locator.registerFactory<GetTransferReceiveAddressUsecase>(
+      () =>
+          GetTransferReceiveAddressUsecase(locator<GetReceiveAddressUsecase>()),
+    );
     locator.registerFactory<WalletSecretReferencesRepository>(
       () => CatalogWalletSecretReferencesRepository(
         locator<WalletMetadataDatasource>(),
@@ -129,6 +141,8 @@ class WalletLocator {
             NextUnusedReceiveAddressUsecase(locator<GetReceiveAddressUsecase>())
                 .execute(id, excludedAddresses: excludedAddresses),
         spendStatus: locator<WalletNativeRuntime>().spendStatus,
+        receiveAddress: (id) =>
+            locator<GetTransferReceiveAddressUsecase>().execute(id),
         broadcastSpend: locator<BroadcastObservationFollowUp>().wrap(
           locator<WalletNativeRuntime>().broadcast,
         ),
@@ -162,6 +176,10 @@ class WalletLocator {
             (await getApplicationDocumentsDirectory()).path,
         freezes: FrozenUtxosFreezeStore(sqlite: locator<SqliteDatabase>()),
         connections: locator<WalletConnectionPort>(),
+        fundingReservations:
+            locator.isRegistered<SqliteArkFundingReservations>()
+            ? locator<SqliteArkFundingReservations>()
+            : null,
       ),
     );
     locator.registerLazySingleton<BdkWalletDatasource>(
@@ -266,12 +284,21 @@ class WalletLocator {
         mayCreate: true,
       ),
     );
-    locator.registerLazySingleton<SeedReferences>(
-      () => SeedReferences(
+    locator.registerLazySingleton<SeedReferences>(() {
+      final references = SeedReferences(
         locator<WalletRepository>(),
         admission: locator<ParentCustodyAdmissionPort>(),
-      ),
-    );
+      );
+      // Ark funding holds keep their source seed referenced.
+      if (locator.isRegistered<SqliteArkFundingReservations>()) {
+        references.register(locator<SqliteArkFundingReservations>());
+      } else {
+        references.register(
+          _UnavailableArkFundingReferences(locator<ArkInstallationState>()),
+        );
+      }
+      return references;
+    });
     locator.registerFactory<core.DeleteWalletUsecase>(
       () => core.DeleteWalletUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -350,4 +377,16 @@ class WalletLocator {
       ),
     );
   }
+}
+
+/// An opening failure remains an owner; only proven absence has no references.
+final class _UnavailableArkFundingReferences implements SeedReferencePort {
+  final ArkInstallationState _installation;
+  const _UnavailableArkFundingReferences(this._installation);
+
+  @override
+  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
+      await _installation.remainsUnprovisioned()
+      ? const Ok({})
+      : const Err(SeedReferencesUnavailable());
 }

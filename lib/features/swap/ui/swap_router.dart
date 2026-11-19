@@ -2,9 +2,9 @@ import 'package:swaps/swaps.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
-import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_settings_page.dart';
+import 'package:bb_mobile/features/swap/ui/pages/internal_transfer_page.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +48,7 @@ class SwapRouter {
             extra: context.read<TransferBloc>(),
           );
         },
-        child: const SwapPage(),
+        child: const InternalTransferPage(),
       ),
     ),
     routes: [

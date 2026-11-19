@@ -76,6 +76,11 @@ final class SendSwapRouteUnavailableFailure extends SendFailure {
   }) : super(logMessage);
 }
 
+/// Ark routing is disabled, unavailable, or incompatible with this send mode.
+final class SendArkRouteUnavailableFailure extends SendFailure {
+  const SendArkRouteUnavailableFailure();
+}
+
 final class SendRateLimitedFailure extends SendFailure {
   final Duration? retryAfter;
 

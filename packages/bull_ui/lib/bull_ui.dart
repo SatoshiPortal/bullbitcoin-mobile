@@ -59,6 +59,7 @@ export 'package:flutter/widgets.dart'
         Key,
         LayoutBuilder,
         Locale,
+        Localizations,
         LocalizationsDelegate,
         ListView,
         LongPressDraggable,
@@ -74,6 +75,7 @@ export 'package:flutter/widgets.dart'
         PageScrollPhysics,
         PageView,
         Positioned,
+        PopScope,
         Radius,
         Row,
         SafeArea,
@@ -106,7 +108,12 @@ export 'package:flutter/widgets.dart'
 
 // Material/services symbols required by component public APIs.
 export 'package:material_ui/material_ui.dart'
-    show FormFieldValidator, RefreshCallback, RefreshIndicatorState, TextTheme;
+    show
+        FormFieldValidator,
+        MaterialPageRoute,
+        RefreshCallback,
+        RefreshIndicatorState,
+        TextTheme;
 export 'package:flutter/services.dart' show TextInputFormatter;
 export 'package:flutter/widgets.dart' show FocusNode;
 
@@ -200,6 +207,7 @@ export 'src/data_display/bull_info_card.dart';
 export 'src/data_display/bull_label_chip.dart';
 export 'src/data_display/bull_options_tag.dart';
 export 'src/data_display/bull_price_card.dart';
+export 'src/data_display/bull_qr_code.dart';
 export 'src/data_display/bull_settings_entry_item.dart';
 export 'src/data_display/bull_server_tile.dart';
 export 'src/data_display/bull_stat_tile.dart';

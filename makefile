@@ -142,7 +142,12 @@ translations:
 	@(cd features/quick_actions && fvm flutter gen-l10n)
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
+	@$(MAKE) ark-translations
 	@$(MAKE) novlang-bridge
+
+.PHONY: ark-translations
+ark-translations:
+	@(cd features/ark && fvm flutter gen-l10n)
 
 .PHONY: bull-ui-translations
 bull-ui-translations:
@@ -373,7 +378,7 @@ verify-rustc-pins:
 		actual=$$($(CONTAINER) run --rm bull-app rustup run $$version rustc --version); \
 		case "$$actual" in "rustc $$version ("*) ;; *) echo "Unexpected Rust compiler: $$actual" >&2; exit 1 ;; esac; \
 	done; \
-	bash tools/verify_rustc_pins.sh "$(APK)" "$(RUST_VERSION)" "$(PAYJOIN_RUST_VERSION)" $(EXPECTED_ABIS)
+	bash tools/verify_rustc_pins.sh --require-bark "$(APK)" "$(RUST_VERSION)" "$(PAYJOIN_RUST_VERSION)" $(EXPECTED_ABIS)
 
 rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins

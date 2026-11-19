@@ -15655,6 +15655,40 @@
   "@sendPsbtRequest": {
     "description": "Interpreted type of a partially signed Bitcoin transaction in Send"
   },
+  "swapTransferDirection": "Swap From and To",
+  "@swapTransferDirection": {
+    "description": "Accessibility label for swapping the internal transfer source and destination."
+  },
+  "swapArkMinimum": "Minimum amount {amount} sats + network fees",
+  "@swapArkMinimum": {
+    "description": "Board minimum reported by the Ark server. The amount is a formatted satoshi string.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "swapArkBelowMinimum": "Amount is too low. Minimum is {amount} sats + fees",
+  "@swapArkBelowMinimum": {
+    "description": "Shown when the transfer amount is below the real Board minimum. The amount is a formatted satoshi string.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "swapArkFeeReview": "Fees and the amount received are confirmed in the next review.",
+  "@swapArkFeeReview": {
+    "description": "Explains that the native quote determines fees and the amount received before confirmation."
+  },
+  "swapArkRouteUnavailable": "This transfer is unavailable.",
+  "@swapArkRouteUnavailable": {
+    "description": "Shown for an internal transfer pair without a supported native operation."
+  },
+  "swapInternalTransferDescription": "Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.",
+  "@swapInternalTransferDescription": {
+    "description": "Introduction to internal wallet transfers and everyday spending funds."
+  },
   "networkRelaunchRequiredError": "The network changed since the app started. Close and reopen the app, then try again.",
   "@networkRelaunchRequiredError": {
     "description": "Error shown when a payment cannot start because the app is still running on the network it was launched with"

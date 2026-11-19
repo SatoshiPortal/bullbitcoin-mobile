@@ -1,3 +1,7 @@
+import 'package:bull_ark/bull_ark.dart' show ArkFacade;
+
+import 'domain/usecases/recognize_ark_address_usecase.dart';
+import 'presentation/send_ark_cubit.dart';
 import 'domain/usecases/prepare_internal_recipient_usecase.dart';
 
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
@@ -251,6 +255,13 @@ class SendLocator {
   }
 
   static void registerBlocs(GetIt locator) {
+    locator.registerFactory<SendArkCubit>(
+      () => SendArkCubit(
+        locator.isRegistered<ArkFacade>()
+            ? RecognizeArkAddressUsecase(locator<ArkFacade>())
+            : null,
+      ),
+    );
     locator.registerFactoryParam<
       SendCubit,
       Wallet?,

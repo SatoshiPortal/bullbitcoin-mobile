@@ -36,6 +36,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final WalletCatalogPort _catalog;
   final ReservedAddressPort _reserved;
   final InputReservationPort _inputReservations;
+  final FundingReservationPort? _fundingReservations;
   final WalletMetadataDatasource _metadata;
   final ElectrumSync _sync;
   final Future<String> Function() _documentsDirectory;
@@ -52,6 +53,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     required this._catalog,
     required this._reserved,
     required this._inputReservations,
+    this._fundingReservations,
     required this._metadata,
     required this._sync,
     required this._documentsDirectory,
@@ -61,6 +63,10 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   });
 
   Stream<WalletRevisionState> get changes => _changes.stream;
+
+  /// Privileged wallet composition must bind the exact same durable authority.
+  bool usesFundingReservations(FundingReservationPort authority) =>
+      identical(_fundingReservations, authority);
 
   Future<Result<WalletRevisionState, SyncFailure>> readRevision(
     WalletKey key,
@@ -79,6 +85,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       reservedAddresses: _reserved,
       freezes: _freezes,
       inputReservations: _inputReservations,
+      fundingReservations: _fundingReservations,
       connections: _connections,
     );
     StreamSubscription<WalletRevisionState>? subscription;

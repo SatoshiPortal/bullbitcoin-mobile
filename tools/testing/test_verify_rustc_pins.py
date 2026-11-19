@@ -47,7 +47,7 @@ class VerifyRustcPinsTest(unittest.TestCase):
             )
         return result
 
-    def test_android_verification_accepts_app_without_bark_dependency(self):
+    def test_android_verification_requires_the_app_bark_dependency(self):
         root = SCRIPT.parents[1]
         plan = subprocess.run(
             ["make", "-n", "android", "release"], cwd=root,
@@ -55,8 +55,14 @@ class VerifyRustcPinsTest(unittest.TestCase):
         )
         self.assertEqual(plan.returncode, 0, plan.stderr)
         self.assertIn('verify-rustc-pins APK=', plan.stdout)
-        result = self.check_apk(via_make=True)
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        missing = self.check_apk(via_make=True)
+        self.assertNotEqual(missing.returncode, 0)
+        self.assertIn("Missing tracked Rust library: arm64-v8a/libbark_ffi_dart.so", missing.stderr)
+        present = self.check_apk(
+            via_make=True,
+            changed={"lib/arm64-v8a/libbark_ffi_dart.so": b"rustc version 1.90.0\n"},
+        )
+        self.assertEqual(present.returncode, 0, present.stdout + present.stderr)
 
     def test_accepts_arm64_only_when_requested(self):
         self.assertEqual(self.check_apk().returncode, 0)

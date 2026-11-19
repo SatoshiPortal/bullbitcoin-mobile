@@ -111,6 +111,7 @@ void main() {
       ]);
       expect(walletSettingsItemOrder, [
         SettingsItemId.payjoin,
+        SettingsItemId.ark,
         SettingsItemId.autoswap,
         SettingsItemId.swaps,
         SettingsItemId.swapRestore,

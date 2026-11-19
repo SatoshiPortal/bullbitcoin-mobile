@@ -16,6 +16,7 @@ dependencies:
   primitives:
   sqlite3: ^3.5.2
   flutter_local_notifications: ^23.0.2
+  timezone: ^0.11.2
   permission_handler: ^13.0.2
 
 dev_dependencies:

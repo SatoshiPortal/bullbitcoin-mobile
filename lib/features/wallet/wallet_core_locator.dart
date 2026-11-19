@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
+    show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
 
 import 'data/wallet_native_runtime.dart';
@@ -49,6 +51,7 @@ class WalletLocator {
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepository(
+        arkFundingGuard: locator<ArkFundingSigningGuard>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),

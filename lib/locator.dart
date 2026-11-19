@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
     show ElectrumFailure;
 import 'package:bb_mobile/background_setup.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/features/wallet/public/recoverbull_bindings.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 import 'package:bb_mobile/features/settings/public/settings_facade.dart';
 import 'package:bb_mobile/features/transactions/public/transactions_facade.dart';
@@ -65,6 +67,7 @@ import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secrets/secrets.dart';
+import 'package:sync/sync.dart' show SyncFailure, SyncStorageFailure;
 
 final GetIt locator = GetIt.instance;
 
@@ -103,6 +106,8 @@ class AppLocator {
     bool startPayjoinRecovery = true,
     bool startOrderSwapWatcher = true,
     bool startAutoswapWatcher = true,
+    String? arkFundingDatabasePath,
+    bool initializeArkFunding = false,
   }) async {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
@@ -114,6 +119,39 @@ class AppLocator {
         scratchDirectory: () async => (await getTemporaryDirectory()).path,
       ),
     );
+
+    // One Ark funding authority for the app, opened before any repository:
+    // Sync, ordinary signing and Ark Board funding must share this instance.
+    // Without it the guard refuses signing on networks where Ark is admitted.
+    final documents = await getApplicationDocumentsDirectory();
+    final installation = await ArkInstallationState.inspect(
+      documents: documents,
+      fundingPath:
+          arkFundingDatabasePath ?? '${documents.path}/ark-funding.sqlite',
+    );
+    locator.registerSingleton<ArkInstallationState>(installation);
+    final arkFunding = arkFundingDatabasePath == null
+        ? const Err<SqliteArkFundingReservations, SyncFailure>(
+            SyncStorageFailure(),
+          )
+        : SqliteArkFundingReservations.open(
+            arkFundingDatabasePath,
+            foreground: true,
+            initializeNew:
+                initializeArkFunding && installation.wasNeverProvisioned,
+          );
+    locator.registerSingleton<ArkFundingSigningGuard>(
+      ArkFundingSigningGuard(
+        arkFunding,
+        arkFundingDatabasePath == null ? null : installation,
+      ),
+    );
+    if (arkFunding case Ok(:final value)) {
+      locator.registerSingleton<SqliteArkFundingReservations>(
+        value,
+        dispose: (authority) => authority.close(),
+      );
+    }
 
     // Register core dependencies first
     CoreLocator.register(locator, database);
@@ -152,6 +190,11 @@ class AppLocator {
     // SP starts watchers eagerly, so its wallet infrastructure must exist.
     // Wallet's SP use cases resolve the facade lazily, after registration.
     WalletLocator.setup(locator);
+    // Inventory survives disabled routing and missing endpoint build defines.
+    final _ = await prepareArkCustodyReferences(
+      locator,
+      initializeNew: initializeArkFunding && installation.wasNeverProvisioned,
+    );
     SpLocator.setup(locator, startForegroundWatchers: true);
     SettingsLocator.setup(locator);
     setupBackgroundPreferences(

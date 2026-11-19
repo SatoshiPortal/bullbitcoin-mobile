@@ -9,7 +9,9 @@ import 'dart:async';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 
+import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/background_setup.dart';
+import 'package:bb_mobile/background_entrypoint.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_reporting/bull_reporting.dart';
@@ -66,9 +68,13 @@ class Bull {
       locator,
       SqliteDatabase(),
       payjoinDatabasePath: payjoinDatabasePath,
+      arkFundingDatabasePath: p.join(bullDirectory.path, 'ark-funding.sqlite'),
+      initializeArkFunding: _arkProfileAdmitted && _arkInitializeNew,
     );
     if (setup case Err()) return setup;
     await initializeWalletRuntime(locator);
+    // Custody inventory is already installed, independently of this profile.
+    await _setupArkRegtestProfile();
     Bloc.observer = AppBlocObserver();
 
     // Flush wizard pending values (if any) to SQLite now that the
@@ -92,4 +98,29 @@ class Bull {
     await Report.recordMigration();
     return const Ok(null);
   }
+}
+
+/// Explicit regtest Ark profile supplied at build time. Builds without both
+/// endpoints keep the unavailable Ark routes; existing custody is still read.
+/// BULL_ARK_REGTEST_INITIALIZE_NEW authorizes creating the account registry
+/// and funding authority of a fresh, controlled regtest profile; it is never
+/// inferred from files.
+const _arkUrl = String.fromEnvironment('BULL_ARK_REGTEST_URL');
+const _arkEsploraUrl = String.fromEnvironment('BULL_ARK_REGTEST_ESPLORA_URL');
+const _arkInitializeNew = bool.fromEnvironment(
+  'BULL_ARK_REGTEST_INITIALIZE_NEW',
+);
+const _arkProfileAdmitted = _arkUrl != '' && _arkEsploraUrl != '';
+
+Future<void> _setupArkRegtestProfile() async {
+  final arkUrl = Uri.tryParse(_arkUrl);
+  final esploraUrl = Uri.tryParse(_arkEsploraUrl);
+  if (!_arkProfileAdmitted || arkUrl == null || esploraUrl == null) return;
+  await setupArkForeground(
+    locator,
+    arkUrl: arkUrl,
+    primaryEsploraUrl: esploraUrl,
+    initializeNew: _arkInitializeNew,
+    dispatcher: backgroundTasksHandler,
+  );
 }

@@ -1,3 +1,5 @@
+export 'data/ark_background_setup.dart' show setupArkBackgroundTask;
+
 import 'dart:io';
 
 import 'package:background_tasks/background_tasks.dart';

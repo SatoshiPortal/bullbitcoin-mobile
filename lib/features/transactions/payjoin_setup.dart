@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart'
+    show ArkFundingSigningGuard;
 import 'package:bb_mobile/features/wallet/public/wallet_facade.dart';
 
 import 'dart:async';
@@ -71,6 +73,7 @@ abstract final class PayjoinSetup {
           locator<WalletNativeRuntime>().spendStatus,
           locator<SyncWalletValuesDatasource>(),
           locator<WalletMetadataDatasource>(),
+          locator<ArkFundingSigningGuard>(),
         ),
         blockchain: AppPayjoinBlockchainAdapter(
           locator<BdkBitcoinBlockchainDatasource>(),

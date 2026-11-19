@@ -1,3 +1,6 @@
+import 'ark_funding_signing_guard.dart';
+
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:secrets/secrets.dart';
 import 'package:bb_mobile/features/wallet/data/bdk_wallet_datasource.dart'
     show SpendWallet;
@@ -13,6 +16,7 @@ import 'package:sync/sync.dart' show BitcoinSpendStatus;
 
 final class PayjoinWalletAdapter implements PayjoinWalletPort {
   final Secrets _secrets;
+  final ArkFundingSigningGuard _arkFundingGuard;
   final SpendWallet _wallet;
   final Future<BitcoinSpendStatus> Function(String walletId) _spendStatus;
   final SyncWalletValuesDatasource _values;
@@ -25,6 +29,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     this._spendStatus,
     this._values,
     this._metadata,
+    this._arkFundingGuard,
   );
 
   /// Contention is transient and each check already waits for the wallet:
@@ -48,7 +53,15 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     required String psbt,
   }) async {
     await _requireSpend(walletId);
-    final (secret, metadata) = await _loadSecret(walletId, network);
+    final metadata = await _loadMetadata(walletId, network);
+    if (await _arkFundingGuard.admit(
+          key: WalletKey(id: walletId, network: network),
+          unsignedPsbt: psbt,
+        )
+        case Err()) {
+      throw const PayjoinSpendBlockedException(busy: false);
+    }
+    final secret = await _loadSecret(metadata);
     // The receiver's own input in a payjoin proposal carries no derivation
     // path, and the package signs only what it can derive: sync adds the
     // paths first, from the public descriptors.
@@ -115,11 +128,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     return metadata;
   }
 
-  Future<(Secret, WalletMetadataModel)> _loadSecret(
-    String walletId,
-    BitcoinNetwork network,
-  ) async {
-    final metadata = await _loadMetadata(walletId, network);
+  Future<Secret> _loadSecret(WalletMetadataModel metadata) async {
     final fingerprint = metadata.seedFingerprint;
     if (fingerprint == null) {
       throw Exception('No secret for wallet: not a seed-derived wallet');
@@ -128,7 +137,7 @@ final class PayjoinWalletAdapter implements PayjoinWalletPort {
     if (!secret.info.isMnemonic) {
       throw StateError('Payjoin requires a local mnemonic wallet');
     }
-    return (secret, metadata);
+    return secret;
   }
 
   /// This adapter already reports every problem by throwing — the port has no failure type — so a package failure becomes a `StateError` naming its kind, never its message.
