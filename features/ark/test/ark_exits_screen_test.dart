@@ -137,7 +137,7 @@ void main() {
     await tester.pump();
     final amount = items(tester)
         .singleWhere((i) => i.label == 'Amount in sats');
-    expect(amount.displayValue, '1234');
+    expect(amount.displayValue, '1,234');
     final txid = items(tester)
         .singleWhere((i) => i.label == 'Claim transaction');
     expect(txid.displayValue, 'observed-txid');
