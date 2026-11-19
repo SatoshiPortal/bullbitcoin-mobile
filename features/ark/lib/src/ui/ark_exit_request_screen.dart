@@ -155,7 +155,7 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
             BullSpacing.lg,
           ),
           child: BullButton.big(
-            label: l10n.review,
+            label: widget.claimIds == null ? l10n.exitReviewTitle : l10n.review,
             disabled: _consumed || _request() == null,
             onPressed: () => _review(rendered, revision),
             bgColor: context.bull.inverseSurface,
@@ -179,9 +179,8 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
                 ),
                 onBack: () => Navigator.pop(context),
               ),
-              BullInfoBar(message: l10n.foregroundExit),
-              if (widget.claimIds == null)
-                BullInfoBar(message: l10n.exitProgressReviewWarning),
+              if (widget.claimIds != null)
+                BullInfoBar(message: l10n.foregroundExit),
               if (widget.claimIds == null) ...[
                 BullText(
                   l10n.exitChooseBody,
@@ -268,8 +267,11 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
               ),
               BullInfoBar(message: l10n.exitFeesAfterReview),
               const Gap(BullSpacing.md),
-              for (final id in ids) BullText(id, role: BullTextRole.caption),
+              if (widget.claimIds != null)
+                for (final id in ids) BullText(id, role: BullTextRole.caption),
               const Gap(BullSpacing.sm),
+              if (widget.claimIds == null)
+                BullText(l10n.claimDestination, role: BullTextRole.label),
               BullInputText(
                 value: _destination,
                 hint: l10n.claimDestination,
@@ -277,7 +279,9 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
                 onChanged: (value) =>
                     _edit(rendered, revision, () => _destination = value),
               ),
-              if (widget.claimIds == null)
+              if (widget.claimIds == null) ...[
+                const Gap(BullSpacing.md),
+                BullText(l10n.exitProgressFeeRate, role: BullTextRole.label),
                 BullInputText(
                   value: _rate,
                   hint: l10n.exitProgressFeeRate,
@@ -287,6 +291,11 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
                   onChanged: (value) =>
                       _edit(rendered, revision, () => _rate = value),
                 ),
+              ],
+              if (widget.claimIds == null) ...[
+                const Gap(BullSpacing.md),
+                BullText(l10n.exitMaximumClaimFee, role: BullTextRole.label),
+              ],
               BullInputText(
                 value: _maximum,
                 hint: l10n.exitMaximumClaimFee,
@@ -296,6 +305,11 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
                 onChanged: (value) =>
                     _edit(rendered, revision, () => _maximum = value),
               ),
+              if (widget.claimIds == null) ...[
+                const Gap(BullSpacing.md),
+                BullInfoBar(message: l10n.foregroundExit),
+                BullInfoBar(message: l10n.exitProgressReviewWarning),
+              ],
             ],
           ),
         ),
