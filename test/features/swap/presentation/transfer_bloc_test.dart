@@ -1,4 +1,4 @@
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
 import '../../../frozen_outpoints_fixture.dart';
 

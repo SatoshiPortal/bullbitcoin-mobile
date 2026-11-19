@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bull_sdk/boltz.dart' as boltz;
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+import 'package:rust_bindings/boltz.dart' as boltz;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:fake_async/fake_async.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
