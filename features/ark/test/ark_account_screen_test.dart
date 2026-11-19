@@ -9,6 +9,7 @@ import 'package:bull_ark/src/ui/ark_account_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullBorderedTile,
+        BullBottomSheet,
         BullButton,
         BullDetailsTable,
         BullDetailsTableItem,
@@ -102,6 +103,17 @@ Map<String, String?> amounts(WidgetTester tester) => {
     for (final item in table.items.whereType<BullDetailsTableItem>())
       item.label: item.displayValue,
 };
+Future<void> openActions(WidgetTester tester) async {
+  await tester.tap(find.byTooltip('Ark actions'));
+  await tester.pumpAndSettle();
+}
+
+Future<void> pickAction(WidgetTester tester, String label) async {
+  await openActions(tester);
+  await tester.tap(find.widgetWithText(BullButton, label));
+  await tester.pumpAndSettle();
+}
+
 const historical = 'Last observed data. Refresh before reviewing a payment.';
 
 void main() {
@@ -115,8 +127,8 @@ void main() {
     await tester.pump();
     expect(client.calls, ['read']);
     expect(calls, isEmpty);
+    expect(find.text('1,234 sats'), findsOneWidget);
     expect(amounts(tester), {
-      'Spendable (sats)': '1234',
       'Pending (sats)': '42',
       'On-chain fee reserve (sats)': '56',
     });
@@ -131,10 +143,8 @@ void main() {
       final cubit = controller(client);
       await tester.pumpWidget(app(screen(cubit, [])));
       await tester.pump();
-      final refresh = button(tester, 'Refresh').onPressed;
-      refresh();
-      refresh();
-      await tester.pump();
+      await pickAction(tester, 'Refresh');
+      await pickAction(tester, 'Refresh');
       expect(client.calls, ['read', 'sync']);
       expect(client.arguments.last, (account(), false));
       reply.complete(Ok(ArkPassOutcome(snapshot: observation())));
@@ -170,7 +180,7 @@ void main() {
     await tester.pump();
     expect((cubit.state as ArkViewFailed).lastObserved?.stale, false);
     expect(find.text(historical), findsOneWidget);
-    expect(amounts(tester)['Spendable (sats)'], '1234');
+    expect(find.text('1,234 sats'), findsOneWidget);
   });
   testWidgets('stale observed data is qualified separately from failure', (
     tester,
@@ -224,7 +234,10 @@ void main() {
         final newCalls = <String>[];
         await tester.pumpWidget(app(screen(a, oldCalls)));
         await tester.pump();
-        final old = buttons(tester).map((b) => b.onPressed).toList();
+        await openActions(tester);
+        final oldSend = button(tester, 'Send').onPressed;
+        final oldReceive = button(tester, 'Receive').onPressed;
+        final oldBoard = button(tester, 'Board to Ark').onPressed;
         final attention = tester
             .widget<BullBorderedTile>(find.byType(BullBorderedTile))
             .onTap;
@@ -240,9 +253,14 @@ void main() {
         final b = controller(client, owner: owner);
         await tester.pumpWidget(app(screen(b, newCalls)));
         await tester.pump();
-        for (final callback in old) {
+        for (final callback in [oldSend, oldReceive, oldBoard]) {
           callback();
         }
+        await tester.pumpAndSettle();
+        expect(find.byType(BullBottomSheet), findsOneWidget);
+        await tester.tap(find.widgetWithText(BullButton, 'VTXOs'));
+        await tester.pumpAndSettle();
+        expect(find.byType(BullBottomSheet), findsOneWidget);
         attention?.call();
         await tester.pump();
         expect(oldCalls, isEmpty);
@@ -278,22 +296,38 @@ void main() {
         final calls = <String>[];
         await tester.pumpWidget(app(screen(cubit, calls)));
         await tester.pump();
+        await openActions(tester);
         final oldPayments = [
           'Send',
           'Receive',
           'Board to Ark',
         ].map((label) => button(tester, label).onPressed).toList();
         await tester.pumpWidget(app(screen(cubit, calls, enabled: false)));
+        await tester.pump();
         for (final callback in oldPayments) {
           callback();
         }
-        for (final label in ['Send', 'Receive', 'Board to Ark']) {
+        await tester.pumpAndSettle();
+        expect(find.byType(BullBottomSheet), findsOneWidget);
+        expect(calls, isEmpty);
+        await tester.tapAt(const Offset(5, 5));
+        await tester.pumpAndSettle();
+        for (final label in ['Send', 'Receive']) {
           expect(button(tester, label).disabled, true);
           button(tester, label).onPressed();
         }
+        await openActions(tester);
+        expect(button(tester, 'Board to Ark').disabled, true);
+        await tester.tap(
+          find.widgetWithText(BullButton, 'Board to Ark'),
+          warnIfMissed: false,
+        );
+        await tester.pumpAndSettle();
         expect(calls, isEmpty);
-        for (final label in ['VTXOs', 'Emergency exit', 'Ark info']) {
-          button(tester, label).onPressed();
+        await tester.tap(find.widgetWithText(BullButton, 'VTXOs'));
+        await tester.pumpAndSettle();
+        for (final label in ['Emergency exit', 'Ark info']) {
+          await pickAction(tester, label);
         }
         expect(calls, ['vtxos', 'exits', 'info']);
       },

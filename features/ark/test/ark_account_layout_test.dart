@@ -28,16 +28,11 @@ void main() {
     expect(receiveBefore.bottom, lessThanOrEqualTo(844));
     expect(receive.hitTestable(), findsOneWidget);
     expect(send.hitTestable(), findsOneWidget);
-    final refreshBefore = tester.getTopLeft(find.text('Refresh'));
     await tester.drag(
       find.byType(SingleChildScrollView),
       const Offset(0, -500),
     );
     await tester.pumpAndSettle();
-    expect(
-      tester.getTopLeft(find.text('Refresh')).dy,
-      lessThan(refreshBefore.dy),
-    );
     expect(tester.getRect(receive), receiveBefore);
     expect(tester.getRect(send), sendBefore);
     await tester.tap(receive);
