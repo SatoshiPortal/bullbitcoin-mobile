@@ -672,8 +672,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
                   builder: (anchor) => IconButton(
                     tooltip: l10n.amountCurrency(l10n.amountBitcoin),
                     onPressed: () => _openMenu(anchor),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_drop_down,
+                      color: context.bull.text,
                       size: BullSpacing.lg,
                     ),
                     constraints: const BoxConstraints(
@@ -699,7 +700,11 @@ class _BullAmountInputState extends State<BullAmountInput> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(_unitCode, style: style),
-                        const Icon(Icons.arrow_drop_down, size: BullSpacing.lg),
+                        Icon(
+                          Icons.arrow_drop_down,
+                          color: context.bull.text,
+                          size: BullSpacing.lg,
+                        ),
                       ],
                     ),
                   ),
@@ -775,7 +780,11 @@ class _BullAmountInputState extends State<BullAmountInput> {
                       : () => _selectCurrency(
                           _fiatCurrency == null ? flipTarget : null,
                         ),
-                  icon: const Icon(Icons.swap_vert, size: BullSpacing.lg),
+                  icon: Icon(
+                    Icons.swap_vert,
+                    color: context.bull.text,
+                    size: BullSpacing.lg,
+                  ),
                   constraints: const BoxConstraints(
                     minWidth: BullSpacing.xxl,
                     minHeight: BullSpacing.xxl,
