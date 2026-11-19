@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Impostazioni account",
   "app__exchangeTestnetBasicAuthTitle_apple": "Credenziali dell'account testnet",
   "app__exchangeTestnetBasicAuthDescription_apple": "Autenticazione HTTP basic per le pagine web dell'account testnet (accesso e KYC).",
-  "app__exchangeAccountTitle_apple": "Account",
-  "app__exchangeAccountSettingsTitle_apple": "Impostazioni account",
   "app__walletDeletionErrorOngoingSwaps_apple": "Impossibile eliminare un portafoglio con trasferimenti in corso.",
   "app__onboardingSplashDescription_apple": "Portafoglio Bitcoin in autocustodia e servizi solo Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "I trasferimenti Bitcoin richiedono un po' di tempo per essere confermati.",

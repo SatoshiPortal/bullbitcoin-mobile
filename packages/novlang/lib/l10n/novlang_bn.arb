@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "অ্যাকাউন্ট সেটিংস",
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet অ্যাকাউন্টের শংসাপত্র",
   "app__exchangeTestnetBasicAuthDescription_apple": "Testnet অ্যাকাউন্টের ওয়েব পৃষ্ঠার জন্য HTTP বেসিক অথ (লগইন এবং KYC)।",
-  "app__exchangeAccountTitle_apple": "অ্যাকাউন্ট",
-  "app__exchangeAccountSettingsTitle_apple": "অ্যাকাউন্ট সেটিংস",
   "app__walletDeletionErrorOngoingSwaps_apple": "চলমান ট্রান্সফার থাকলে ওয়ালেট মুছতে পারবেন না।",
   "app__onboardingSplashDescription_apple": "সার্বভৌম সেলফ-কাস্টডি Bitcoin ওয়ালেট এবং শুধুমাত্র Bitcoin-ভিত্তিক সেবা।",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin ট্রান্সফার নিশ্চিত হতে সময় লাগবে।",

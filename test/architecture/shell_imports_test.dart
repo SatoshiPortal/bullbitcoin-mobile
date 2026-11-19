@@ -48,7 +48,6 @@ const _legacyImports = {
   'lib/features/wallet/ui/widgets/home_errors.dart -> locator.dart',
   'lib/features/settings/ui/settings_router.dart -> locator.dart',
   'lib/features/settings/ui/widgets/settings_failure_listener.dart -> router.dart',
-  'lib/features/settings/ui/screens/exchange/transactions_screen.dart -> locator.dart',
   'lib/features/swap/ui/swap_router.dart -> locator.dart',
   'lib/features/ledger/ui/screens/ledger_action_screen.dart -> locator.dart',
   'lib/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart -> locator.dart',

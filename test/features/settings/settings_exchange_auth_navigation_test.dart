@@ -1,4 +1,5 @@
-import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_settings_screen.dart';
+import 'package:bb_mobile/features/exchange_settings/public/exchange_settings_facade.dart';
+import 'package:bb_mobile/features/exchange_settings/ui/screens/exchange_settings_screen.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
@@ -168,7 +169,7 @@ void main() {
       (route) => route.name == SettingsRoute.exchangeAccess.name,
     );
     final account = settingsRoute.routes.whereType<GoRoute>().singleWhere(
-      (route) => route.name == SettingsRoute.exchangeSettings.name,
+      (route) => route.name == ExchangeSettingsRoute.home.name,
     );
     final router = GoRouter(
       initialLocation: '/manage',
@@ -180,7 +181,7 @@ void main() {
         ),
         GoRoute(
           path: '/account',
-          name: SettingsRoute.exchangeSettings.name,
+          name: ExchangeSettingsRoute.home.name,
           builder: account.builder,
         ),
         GoRoute(
@@ -190,7 +191,7 @@ void main() {
         ),
         GoRoute(
           path: '/security',
-          name: SettingsRoute.exchangeSecurity.name,
+          name: ExchangeSettingsRoute.security.name,
           builder: (_, _) => const Scaffold(body: Text('Security destination')),
         ),
       ],
