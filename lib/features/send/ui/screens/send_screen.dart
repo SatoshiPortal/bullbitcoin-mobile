@@ -924,6 +924,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           CurrencyText(
                                             amountSat,
                                             showFiat: false,
+                                            interactive: true,
                                             style: context.bullType.body,
                                             color: context.appColors.textMuted,
                                           ),
@@ -935,6 +936,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                         CurrencyText(
                                           state.effectiveAmountSat,
                                           showFiat: false,
+                                          interactive: true,
                                           style: context.bullType.display,
                                           color: context.appColors.text,
                                           overrideHideAmounts: true,
@@ -1583,6 +1585,7 @@ class _OnchainTransactionReview extends StatelessWidget {
         amountBuilder: (amountSat) => CurrencyText(
           amountSat,
           showFiat: false,
+          interactive: true,
           style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
           color: context.appColors.secondary,
         ),
@@ -1714,6 +1717,7 @@ class _SelectedCoinsDetails extends StatelessWidget {
         CurrencyText(
           totalSat,
           showFiat: false,
+          interactive: true,
           style: context.bullType.caption,
           color: context.appColors.secondary,
         ),
@@ -1971,6 +1975,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     sendAmountSat,
                     showFiat: false,
+                    interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -1990,6 +1995,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     receiveAmountSat,
                     showFiat: false,
+                    interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -2003,14 +2009,18 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           if (networkFee != null) ...[
             SendInfoRow(
               title: context.loc.sendSendNetworkFee,
-              details: CurrencyText(
-                networkFee,
-                showFiat: false,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: CurrencyText(
+                  networkFee,
+                  showFiat: false,
+                  interactive: true,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: context.appColors.secondary,
+                  textAlign: TextAlign.end,
                 ),
-                color: context.appColors.secondary,
-                textAlign: TextAlign.end,
               ),
             ),
             _divider(context),
@@ -2018,14 +2028,18 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           if (swapFee != null)
             SendInfoRow(
               title: context.loc.sendTransferFee,
-              details: CurrencyText(
-                swapFee,
-                showFiat: false,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: CurrencyText(
+                  swapFee,
+                  showFiat: false,
+                  interactive: true,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: context.appColors.secondary,
+                  textAlign: TextAlign.end,
                 ),
-                color: context.appColors.secondary,
-                textAlign: TextAlign.end,
               ),
             ),
           if (showFeeWarning == true) ...[
@@ -2284,6 +2298,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                 CurrencyText(
                   sendAmount,
                   showFiat: false,
+                  interactive: true,
                   style: context.bullType.body.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -2302,6 +2317,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     receiveAmount,
                     showFiat: false,
+                    interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -2320,6 +2336,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   CurrencyText(
                     absoluteFees,
                     showFiat: false,
+                    interactive: true,
                     style: context.bullType.body.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -2336,16 +2353,20 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   orderSwap.order!.payoutAmountSat)
             SendInfoRow(
               title: context.loc.sendTransferFee,
-              details: CurrencyText(
-                (orderSwap.order!.payinAmountSat -
-                        orderSwap.order!.payoutAmountSat)
-                    .toInt(),
-                showFiat: false,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: CurrencyText(
+                  (orderSwap.order!.payinAmountSat -
+                          orderSwap.order!.payoutAmountSat)
+                      .toInt(),
+                  showFiat: false,
+                  interactive: true,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: context.appColors.secondary,
+                  textAlign: TextAlign.end,
                 ),
-                color: context.appColors.secondary,
-                textAlign: TextAlign.end,
               ),
             ),
           const Gap(16),
