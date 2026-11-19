@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/domain/usecases/get_send_amount_quotes_usecase.dart';
 import 'package:bb_mobile/features/send/domain/send_amount_conversion.dart';
 
 import 'send_qr_network_regression.dart';
@@ -276,12 +277,16 @@ class _MockDropPendingSwapLockupUsecase extends Mock
 
 class _MockWatchSwapUsecase extends Mock implements boltz.WatchSwapUsecase {}
 
+class _MockGetSendAmountQuotes extends Mock
+    implements GetSendAmountQuotesUsecase {}
+
 class _MockPrepareInternalRecipient extends Mock
     implements PrepareInternalRecipientUsecase {}
 
 class _TestableSendCubit extends SendCubit {
   _TestableSendCubit({
     super.prepareInternalRecipientUsecase,
+    super.getSendAmountQuotesUsecase,
     super.mode,
     super.watchWalletRevisionsUsecase,
     super.wallet,
@@ -544,6 +549,7 @@ void main() {
   _TestableSendCubit buildCubit({
     DetectBitcoinStringUsecase? detector,
     PrepareInternalRecipientUsecase? prepareInternalRecipientUsecase,
+    GetSendAmountQuotesUsecase? getSendAmountQuotesUsecase,
     Wallet? wallet,
     Set<Outpoint> initialSweepOutpoints = const {},
     Set<Outpoint> initialSelectedOutpoints = const {},
@@ -559,6 +565,7 @@ void main() {
     ValidateSpRecipientForSendUsecase? validateSpRecipientForSendUsecase,
   }) => _TestableSendCubit(
     prepareInternalRecipientUsecase: prepareInternalRecipientUsecase,
+    getSendAmountQuotesUsecase: getSendAmountQuotesUsecase,
     watchWalletRevisionsUsecase: watchWalletRevisionsUsecase,
     mode: isSpMode
         ? SendModeSp(walletLabel: spWalletLabel)
@@ -915,6 +922,20 @@ void main() {
       expect(cubit.state.failure, isA<SendAmountOutOfBoundsFailure>());
     },
   );
+
+  test('returning from confirmation refreshes the fiat quotes', () async {
+    final quotes = _MockGetSendAmountQuotes();
+    when(quotes.execute).thenAnswer((_) async => const Ok({}));
+    final cubit = buildCubit(getSendAmountQuotesUsecase: quotes);
+    addTearDown(cubit.close);
+    cubit.setStateForTest(
+      const SendState(step: SendStep.confirm, amountConfirmedClicked: true),
+    );
+    cubit.backClicked();
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.step, SendStep.amount);
+    verify(quotes.execute).called(1);
+  });
 
   test('Max discards the previous typed fiat conversion', () async {
     final cubit = buildCubit();
