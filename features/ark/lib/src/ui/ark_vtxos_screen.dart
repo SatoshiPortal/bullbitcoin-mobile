@@ -199,7 +199,19 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
     final selection = _selected.intersection(eligible);
     final details = _uniqueVtxo(_detailsId);
     final values = snapshot.vtxos.where((v) => _matches(v, _filter));
-    final total = snapshot.vtxos.fold<BigInt>(
+    final live = snapshot.vtxos
+        .where(
+          (vtxo) => switch (vtxo.state) {
+            ArkVtxoState.spent ||
+            ArkVtxoState.exited ||
+            ArkVtxoState.abandonedBoard => false,
+            ArkVtxoState.spendable ||
+            ArkVtxoState.locked ||
+            ArkVtxoState.unknown => true,
+          },
+        )
+        .toList();
+    final total = live.fold<BigInt>(
       BigInt.zero,
       (sum, vtxo) => sum + vtxo.amount.value,
     );
@@ -285,7 +297,7 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                   ),
                                   const Gap(BullSpacing.xs),
                                   BullText(
-                                    '${snapshot.vtxos.length} ${l10n.vtxoCount}',
+                                    '${live.length} ${l10n.vtxoCount}',
                                     role: BullTextRole.label,
                                     color: context.bull.textMuted,
                                   ),
