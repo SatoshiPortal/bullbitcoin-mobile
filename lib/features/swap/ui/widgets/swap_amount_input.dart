@@ -1,147 +1,75 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show
-        BullAmountInputFormatter,
-        BullShapesX,
-        BullShimmerLine,
-        Gap,
-        BullTypographyX;
 
 class SwapAmountInput extends StatelessWidget {
   const SwapAmountInput({
     super.key,
     required this.amountController,
-    required this.amountSat,
     required this.focusNode,
   });
 
   final TextEditingController amountController;
-  final int amountSat;
   final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select(
-      (TransferBloc bloc) => bloc.state.isStarting,
+    final state = context.watch<TransferBloc>().state;
+    final limits = state.swapLimits;
+    final max = state.maxAmountSat;
+    final error = switch (state.amountValidationError) {
+      AmountValidationError.minimum when limits != null =>
+        context.loc.swapErrorAmountBelowMinimum('${limits.min}'),
+      AmountValidationError.maximum when limits != null =>
+        context.loc.swapErrorAmountAboveMaximum('${limits.max}'),
+      _ =>
+        state.isInsufficientBalance ? context.loc.swapInsufficientFunds : null,
+    };
+    final input = BullAmountInput(
+      canonicalUnit: state.bitcoinUnit,
+      amountController: amountController,
+      focusNode: focusNode,
+      defaultCurrencyCode: state.fiatCurrencyCode,
+      isLiquid: state.fromWallet?.isLiquid == true,
+      isMax: state.isMaxSelected,
+      maxLoading: state.isMaxSelected && state.maxAmountSat == null,
+      maxAmountSat: max == null ? null : BigInt.from(max),
+      currencies: [
+        for (final currency in SupportedCurrency.values)
+          BullAmountCurrency(
+            code: currency.code,
+            decimals: currency.decimals,
+            price: state.amountQuotes[currency]?.fiatAmount,
+            priceAt: state.amountQuotes[currency]?.fetchedAt,
+          ),
+      ],
+      onEntryChanged: (entry) => context.read<TransferBloc>().add(
+        TransferAmountEntryChanged(
+          sats: entry.sats,
+          currencyCode: entry.currencyCode,
+          text: entry.text,
+          rate: entry.price,
+          quotedAt: entry.priceAt,
+          isValid: entry.isValid,
+          isEdit: entry.isEdit,
+        ),
+      ),
+      error: error,
     );
-    final bitcoinUnit = context.select(
-      (TransferBloc bloc) => bloc.state.bitcoinUnit,
-    );
-    final fromCurrency = context.select(
-      (TransferBloc bloc) => bloc.state.displayFromCurrencyCode,
-    );
-    final amountValidationError = context.select(
-      (TransferBloc bloc) => bloc.state.amountValidationError,
-    );
-    final isInsufficientBalance = context.select(
-      (TransferBloc bloc) => bloc.state.isInsufficientBalance,
-    );
-    final swapLimits = context.select(
-      (TransferBloc bloc) => bloc.state.swapLimits,
-    );
-
     return Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           context.loc.swapAmountLabel,
           style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
-        const Gap(8),
-        Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(context.bullShapes.input),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 16.0,
-            ),
-            child: Column(
-              mainAxisSize: .min,
-              crossAxisAlignment: .start,
-              children: [
-                if (isLoading)
-                  const BullShimmerLine(
-                    padding: EdgeInsets.symmetric(vertical: 12.0),
-                  )
-                else
-                  Row(
-                    mainAxisSize: .min,
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: amountController,
-                          focusNode: focusNode,
-                          keyboardType: TextInputType.numberWithOptions(
-                            decimal: bitcoinUnit == BitcoinUnit.btc,
-                          ),
-                          inputFormatters: [
-                            BullAmountInputFormatter(bitcoinUnit.code),
-                          ],
-                          style: context.bullType.headline.copyWith(
-                            color: context.appColors.primary,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: '0',
-                            hintStyle: context.bullType.headline.copyWith(
-                              color: context.appColors.primary,
-                            ),
-                            border: InputBorder.none,
-                          ),
-                          onChanged: (value) {
-                            context.read<TransferBloc>().add(
-                              TransferEvent.amountChanged(value),
-                            );
-                          },
-                        ),
-                      ),
-                      const Gap(8.0),
-                      Text(
-                        fromCurrency,
-                        style: context.bullType.headline.copyWith(
-                          color: context.appColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
+        const Gap(BullSpacing.xs),
+        BullBorderedTile(
+          padding: const EdgeInsets.all(BullSpacing.xs),
+          child: input,
         ),
-        if (amountValidationError != null || isInsufficientBalance) ...[
-          const Gap(8),
-          Text(
-            switch (amountValidationError) {
-              AmountValidationError.minimum =>
-                context.loc.swapErrorAmountBelowMinimum(
-                  (bitcoinUnit == BitcoinUnit.btc
-                          ? ConvertAmount.satsToBtc(swapLimits!.min)
-                          : swapLimits!.min)
-                      .toString(),
-                ),
-              AmountValidationError.maximum =>
-                context.loc.swapErrorAmountAboveMaximum(
-                  (bitcoinUnit == BitcoinUnit.btc
-                          ? ConvertAmount.satsToBtc(swapLimits!.max)
-                          : swapLimits!.max)
-                      .toString(),
-                ),
-              null => context.loc.swapInsufficientFunds,
-            },
-            style: context.bullType.label.copyWith(
-              color: context.appColors.error,
-            ),
-          ),
-        ],
       ],
     );
   }
