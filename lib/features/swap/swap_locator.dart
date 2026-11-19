@@ -1,3 +1,5 @@
+import 'domain/usecases/get_swap_amount_quotes_usecase.dart';
+
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
 
 import 'domain/usecases/load_internal_ark_transfer_usecase.dart';
@@ -365,6 +367,10 @@ class SwapLocator {
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<TransferBloc>(
       () => TransferBloc(
+        getSwapAmountQuotesUsecase: GetSwapAmountQuotesUsecase(
+          settings: locator<GetSettingsUsecase>(),
+          read: Pricer.getIndexPrices,
+        ),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),

@@ -150,8 +150,8 @@ export 'src/buttons/bull_quick_action.dart';
 export 'src/buttons/bull_viewer_action_button.dart';
 
 // Inputs.
-export 'src/inputs/bull_bitcoin_amount_input.dart';
-export 'src/inputs/bull_bitcoin_amount_text.dart';
+export 'src/inputs/bull_amount_input.dart';
+export 'src/inputs/bull_amount_input_value.dart';
 export 'src/inputs/bull_amount_input_formatter.dart';
 export 'src/inputs/bull_checkbox.dart';
 export 'src/inputs/bull_copy_field.dart';

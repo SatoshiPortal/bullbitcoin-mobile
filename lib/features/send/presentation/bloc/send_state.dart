@@ -1,3 +1,7 @@
+import 'package:bull_pricer/bull_pricer.dart';
+
+import '../../domain/send_amount_conversion.dart';
+
 import 'package:primitives/primitives.dart'
     show
         BitcoinTransactionRecipient,
@@ -124,6 +128,13 @@ abstract class SendState with _$SendState {
     // is not needed — the cubit lives per send flow.
     @Default(false) bool payjoinOptedOut,
     @Default('') String amount,
+    @Default({}) Map<SupportedCurrency, BitcoinPrice> amountQuotes,
+    SendAmountConversion? amountConversion,
+    SendAmountConversion? confirmedConversion,
+    @Default({}) Map<int, SendAmountConversion> recipientConversions,
+    @Default({}) Map<int, SendAmountConversion> confirmedRecipientConversions,
+    @Default(true) bool amountEntryValid,
+    @Default({}) Set<int> invalidAmountRecipientIds,
     @Default([]) List<SendRecipientDraft> recipientDrafts,
     @Default({}) Map<int, Wallet> internalRecipientWallets,
     @Default({}) Set<int> qrAmountRecipientIds,
@@ -289,6 +300,14 @@ abstract class SendState with _$SendState {
   bool get isMaxSend =>
       recipientDrafts.isNotEmpty ? hasRemainderRecipient : sendMax;
 
+  bool get hasValidAmountEntry =>
+      hasFixedRequestAmount ||
+      (showsRecipientAmountList
+          ? recipientDrafts
+                .where((r) => !r.receivesRemainder)
+                .every((r) => !invalidAmountRecipientIds.contains(r.id))
+          : amountEntryValid);
+
   bool get hasValidRecipientDrafts =>
       const BitcoinRecipientListPolicy().hasValidRecipients(
         recipients: recipientDrafts.map(
@@ -410,25 +429,19 @@ abstract class SendState with _$SendState {
   }
 
   int _amountSat(String value) {
-    int amountSat = 0;
-    final rate = exchangeRate;
-    if (value.isNotEmpty) {
-      if (isInputAmountFiat && rate != null) {
-        final amountFiat = double.tryParse(value) ?? 0;
-        amountSat = ConvertAmount.fiatToSats(amountFiat, rate);
-      } else if (!_isBitcoinUnit(inputAmountCurrencyCode)) {
-        // A fiat amount with no price has no sats value. Reading it as BTC
-        // would turn 0.01 typed in a USD field into 0.01 BTC.
-        amountSat = 0;
-      } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        amountSat = int.tryParse(value) ?? 0;
-      } else {
-        final amountBtc = double.tryParse(value) ?? 0;
-        amountSat = ConvertAmount.btcToSats(amountBtc);
-      }
+    if (value.isEmpty) return 0;
+    if (isInputAmountFiat) {
+      final rate = exchangeRate;
+      return rate == null
+          ? 0
+          : Sats.tryFromFiat(value, rate)?.value.toInt() ?? 0;
     }
-
-    return amountSat;
+    final unit = BitcoinUnit.values
+        .where((unit) => unit.code == inputAmountCurrencyCode)
+        .firstOrNull;
+    return unit == null
+        ? 0
+        : Sats.tryParseBitcoin(value, unit)?.value.toInt() ?? 0;
   }
 
   List<BitcoinTransactionRecipient> get bitcoinTransactionRecipients => [
@@ -505,13 +518,7 @@ abstract class SendState with _$SendState {
       ConvertAmount.satsToBtc(lightningPayinAmountSat ?? 0);
 
   String get formattedConfirmedAmountBitcoin {
-    if (bitcoinUnit == null) {
-      return '';
-    } else if (bitcoinUnit == BitcoinUnit.sats) {
-      return FormatAmount.sats(confirmedAmountSat ?? 0);
-    } else {
-      return FormatAmount.btc(confirmedAmountBtc);
-    }
+    return FormatAmount.sats(confirmedAmountSat ?? 0);
   }
 
   String get formattedSwapAmountBitcoin {
@@ -546,9 +553,6 @@ abstract class SendState with _$SendState {
     final fiat = inputAmountFiat;
     return fiat == null ? '' : FormatAmount.fiat(fiat, fiatCurrencyCode);
   }
-
-  static bool _isBitcoinUnit(String code) =>
-      code == BitcoinUnit.btc.code || code == BitcoinUnit.sats.code;
 
   String formattedWalletBalance() {
     if (selectedWallet?.balanceSat == null) return '—';

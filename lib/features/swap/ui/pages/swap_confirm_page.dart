@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/widgets/fees/fee_selection_label.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullFadingLinearProgress, Gap;
+    show BullBottomSheet, BullFadingLinearProgress, BullTypographyX, Gap;
 
 class SwapConfirmPage extends StatelessWidget {
   const SwapConfirmPage({super.key});
@@ -72,6 +72,24 @@ class SwapConfirmPage extends StatelessWidget {
                   sendType: SendType.swap,
                   sendToExternal: sendToExternal,
                 ),
+                if (context.select(
+                      (TransferBloc bloc) => bloc.state.confirmedConversion,
+                    )
+                    case final conversion?)
+                  Text(
+                    context.loc.amountEnteredAtRate(
+                      conversion.enteredText,
+                      conversion.currencyCode,
+                      MaterialLocalizations.of(context).formatTimeOfDay(
+                        TimeOfDay.fromDateTime(conversion.quotedAt.toLocal()),
+                        alwaysUse24HourFormat: true,
+                      ),
+                    ),
+                    style: context.bullType.label.copyWith(
+                      color: context.appColors.textMuted,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 const Gap(40),
                 BlocSelector<TransferBloc, TransferState, bool>(
                   selector: (state) => state.isSameChainTransfer,

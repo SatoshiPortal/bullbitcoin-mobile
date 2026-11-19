@@ -12,7 +12,7 @@ void main() {
       addTearDown(controller.dispose);
       await tester.pumpWidget(
         wrapInput(
-          BullBitcoinAmountInput(
+          BullAmountInput(
             canonicalUnit: BitcoinUnit.sats,
             amountController: controller,
             amountEquivalent: '',
@@ -42,7 +42,7 @@ void main() {
     addTearDown(controller.dispose);
     await tester.pumpWidget(
       wrapInput(
-        BullBitcoinAmountInput(
+        BullAmountInput(
           canonicalUnit: BitcoinUnit.btc,
           amountController: controller,
           amountEquivalent: '',
@@ -60,17 +60,18 @@ void main() {
     await tester.enterText(find.byType(TextField), '1.2');
     expect(controller.text, '1.2');
   });
-  testWidgets('empty and MAX toggle without changing canonical amount', (
+  testWidgets('empty toggles and Max shows the exact amount after fees', (
     tester,
   ) async {
     final controller = TextEditingController();
     addTearDown(controller.dispose);
     Widget input({bool max = false}) => wrapInput(
-      BullBitcoinAmountInput(
+      BullAmountInput(
         canonicalUnit: BitcoinUnit.sats,
         amountController: controller,
         amountEquivalent: '',
         isMax: max,
+        maxAmountSat: max ? BigInt.from(123) : null,
         readOnly: max,
       ),
     );
@@ -82,8 +83,9 @@ void main() {
     controller.text = '123';
     await tester.pumpWidget(input(max: true));
     await tester.pump();
-    expect(find.text('MAX'), findsOneWidget);
-    await tester.tap(find.text('BTC'));
+    expect(_displayController(tester).text, '123');
+    expect(find.text('MAX · balance minus fees'), findsOneWidget);
+    await tester.tap(find.text('sats'));
     await tester.pump();
     expect(controller.text, '123');
   });
@@ -93,7 +95,7 @@ void main() {
     addTearDown(controller.dispose);
     await tester.pumpWidget(
       wrapInput(
-        BullBitcoinAmountInput(
+        BullAmountInput(
           canonicalUnit: BitcoinUnit.btc,
           amountController: controller,
           amountEquivalent: '',
@@ -131,7 +133,7 @@ void main() {
     addTearDown(controller.dispose);
     await tester.pumpWidget(
       wrapInput(
-        BullBitcoinAmountInput(
+        BullAmountInput(
           canonicalUnit: BitcoinUnit.btc,
           amountController: controller,
           amountEquivalent: '',
@@ -150,7 +152,7 @@ void main() {
     addTearDown(controller.dispose);
     await tester.pumpWidget(
       wrapInput(
-        BullBitcoinAmountInput(
+        BullAmountInput(
           canonicalUnit: BitcoinUnit.btc,
           amountController: controller,
           amountEquivalent: '',
@@ -177,7 +179,7 @@ void main() {
           isReady: true,
         ),
         writeUnit: (_) async => true,
-        child: BullBitcoinAmountInput(
+        child: BullAmountInput(
           canonicalUnit: BitcoinUnit.sats,
           amountController: canonical,
           amountEquivalent: '',
@@ -222,7 +224,7 @@ void main() {
             isReady: true,
           ),
           writeUnit: (_) async => true,
-          child: BullBitcoinAmountInput(
+          child: BullAmountInput(
             canonicalUnit: BitcoinUnit.sats,
             amountController: canonical,
             amountEquivalent: '',
@@ -252,7 +254,7 @@ void main() {
           isReady: true,
         ),
         writeUnit: (_) async => true,
-        child: BullBitcoinAmountInput(
+        child: BullAmountInput(
           canonicalUnit: BitcoinUnit.btc,
           amountController: canonical,
           amountEquivalent: '',
@@ -293,7 +295,7 @@ void main() {
           isReady: true,
         ),
         writeUnit: (_) async => true,
-        child: BullBitcoinAmountInput(
+        child: BullAmountInput(
           canonicalUnit: BitcoinUnit.sats,
           amountController: canonical,
           amountEquivalent: '',
@@ -324,7 +326,7 @@ void main() {
           isReady: true,
         ),
         writeUnit: (_) async => true,
-        child: BullBitcoinAmountInput(
+        child: BullAmountInput(
           canonicalUnit: BitcoinUnit.sats,
           amountController: canonical,
           amountEquivalent: '',
@@ -355,7 +357,7 @@ void main() {
           isReady: true,
         ),
         writeUnit: (_) async => true,
-        child: BullBitcoinAmountInput(
+        child: BullAmountInput(
           canonicalUnit: BitcoinUnit.btc,
           amountController: canonical,
           amountEquivalent: '',
@@ -373,7 +375,7 @@ void main() {
     expect(canonical.text, isEmpty);
   });
 
-  testWidgets('MAX follows global unit without changing canonical value', (
+  testWidgets('Max remains exact sats when the global default changes', (
     tester,
   ) async {
     final canonical = TextEditingController(text: '10000');
@@ -386,19 +388,21 @@ void main() {
           isReady: true,
         ),
         writeUnit: (_) async => true,
-        child: BullBitcoinAmountInput(
+        child: BullAmountInput(
           canonicalUnit: BitcoinUnit.sats,
           amountController: canonical,
           amountEquivalent: '',
           isMax: true,
+          maxAmountSat: BigInt.from(9580),
           readOnly: true,
         ),
       ),
     );
     await tester.pumpWidget(host(BitcoinUnit.sats));
     await tester.pumpWidget(host(BitcoinUnit.btc));
-    expect(find.text('MAX'), findsOneWidget);
-    expect(find.text('BTC'), findsOneWidget);
+    expect(_displayController(tester).text, '9,580');
+    expect(find.text('MAX · balance minus fees'), findsOneWidget);
+    expect(find.text('sats'), findsOneWidget);
     expect(canonical.text, '10000');
   });
 
@@ -420,7 +424,7 @@ void main() {
             writes++;
             return true;
           },
-          child: BullBitcoinAmountInput(
+          child: BullAmountInput(
             canonicalUnit: BitcoinUnit.sats,
             amountController: canonical,
             amountEquivalent: '',
@@ -448,7 +452,7 @@ void main() {
     expect(writes, 2);
     focus.unfocus();
     await tester.pump();
-    expect(find.text('10000'), findsOneWidget);
+    expect(find.text('10,000'), findsOneWidget);
     expect(find.text('sats'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -468,7 +472,7 @@ void main() {
               isReady: true,
             ),
             writeUnit: (_) async => true,
-            child: BullBitcoinAmountInput(
+            child: BullAmountInput(
               canonicalUnit: BitcoinUnit.btc,
               amountController: canonical,
               amountEquivalent: '',
@@ -507,7 +511,7 @@ void main() {
             isReady: true,
           ),
           writeUnit: (_) async => true,
-          child: BullBitcoinAmountInput(
+          child: BullAmountInput(
             canonicalUnit: BitcoinUnit.btc,
             amountController: canonical,
             amountEquivalent: '',
@@ -531,7 +535,7 @@ void main() {
       focus.unfocus();
       await tester.pump();
       await tester.pump();
-      expect(_displayController(tester).text, '200000000');
+      expect(_displayController(tester).text, '200,000,000');
       expect(find.text('sats'), findsOneWidget);
       expect(canonical.text, '2');
     },

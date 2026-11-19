@@ -3,10 +3,10 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmountInputFormatter,
         BullDropdown,
         BullPickerItem,
         BullShapesX,
@@ -99,17 +99,14 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          inputFormatters: amountInputDecimals > 0
-                              ? [
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(
-                                      r'^\d+\.?\d{0,'
-                                      '$amountInputDecimals'
-                                      '}',
-                                    ),
-                                  ),
-                                ]
-                              : [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            BullAmountInputFormatter(
+                              isFiatCurrencyInput
+                                  ? currency.code
+                                  : bitcoinUnit.code,
+                              maxDecimals: amountInputDecimals,
+                            ),
+                          ],
                           style: context.bullType.headline.copyWith(
                             color: context.appColors.primary,
                           ),

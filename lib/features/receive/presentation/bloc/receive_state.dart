@@ -15,6 +15,10 @@ abstract class ReceiveState with _$ReceiveState {
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
     double? exchangeRate,
+    @Default({}) Map<SupportedCurrency, BitcoinPrice> amountQuotes,
+    @Default(true) bool amountEntryValid,
+    ReceiveAmountConversion? amountConversion,
+    ReceiveAmountConversion? confirmedConversion,
     @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
     int? confirmedAmountSat,
@@ -58,7 +62,10 @@ abstract class ReceiveState with _$ReceiveState {
   const ReceiveState._();
 
   bool get canConfirmAmount =>
-      walletAdmitted && wallet != null && admissionFailure == null;
+      walletAdmitted &&
+      wallet != null &&
+      admissionFailure == null &&
+      amountEntryValid;
 
   /// True while the entered amount itself is invalid, so continuing cannot
   /// possibly succeed. Distinct from any other [failure] — a failed swap

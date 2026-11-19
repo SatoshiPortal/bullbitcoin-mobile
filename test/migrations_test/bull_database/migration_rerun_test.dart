@@ -134,7 +134,7 @@ void _seedUserData(File file) {
     db.execute(
       "UPDATE settings SET theme_mode = 'dark', use_tor_proxy = 1, "
       'tor_proxy_port = 9150, is_dev_mode_enabled = 1, '
-      'is_error_reporting_enabled = 1',
+      'is_error_reporting_enabled = 1, start_amounts_in_fiat = 1',
     );
     for (var i = 0; i < 5; i++) {
       db.execute(
@@ -192,6 +192,7 @@ void _expectUserData(File file) {
   try {
     final settings = db.select('SELECT * FROM settings').single;
     expect(settings['theme_mode'], 'dark');
+    expect(settings['start_amounts_in_fiat'], 1);
     expect(settings['use_tor_proxy'], 1);
     expect(settings['tor_proxy_port'], 9150);
     expect(db.select('SELECT * FROM labels'), hasLength(5));

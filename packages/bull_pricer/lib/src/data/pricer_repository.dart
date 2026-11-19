@@ -39,6 +39,32 @@ final class PricerRepository {
     );
   }
 
+  /// Successful quotes in supported-currency order. Missing quotes stay missing; partial success remains usable. When every lookup fails, a rate limit takes precedence, otherwise the first failure in currency order is returned.
+  @useResult
+  Future<Result<Map<SupportedCurrency, BitcoinPrice>, PricerFailure>>
+  indexPrices({required BitcoinNetwork network}) async {
+    final results = await Future.wait([
+      for (final currency in SupportedCurrency.values)
+        indexPrice(network: network, currency: currency),
+    ]);
+    final prices = <SupportedCurrency, BitcoinPrice>{};
+    PricerFailure? firstFailure;
+    PricerRateLimitedFailure? rateLimited;
+    for (var i = 0; i < results.length; i++) {
+      switch (results[i]) {
+        case Ok(:final value):
+          prices[SupportedCurrency.values[i]] = value;
+        case Err(:final failure):
+          firstFailure ??= failure;
+          if (failure is PricerRateLimitedFailure) rateLimited ??= failure;
+      }
+    }
+    if (prices.isNotEmpty) return Ok(Map.unmodifiable(prices));
+    final failure = rateLimited ?? firstFailure;
+    if (failure == null) throw StateError('No supported price currencies');
+    return Err(failure);
+  }
+
   Future<Result<BitcoinPrice, PricerFailure>> _price({
     required BitcoinNetwork network,
     required SupportedCurrency currency,

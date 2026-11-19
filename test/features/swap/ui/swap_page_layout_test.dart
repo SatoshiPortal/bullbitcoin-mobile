@@ -1,3 +1,6 @@
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountInput, bullUiLocalizationsDelegate;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/entities/signer_entity.dart';
@@ -36,7 +39,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<TransferBloc>.value(
           value: bloc,
@@ -112,7 +118,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.themeData(AppThemeType.light),
-        localizationsDelegates: appLocalizationsDelegates,
+        localizationsDelegates: const [
+          bullUiLocalizationsDelegate,
+          ...appLocalizationsDelegates,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<TransferBloc>.value(
           value: bloc,
@@ -135,5 +144,18 @@ void main() {
     final error = tester.getRect(find.text('Insufficient Funds'));
     final actions = tester.getRect(find.text('Continue'));
     expect(error.bottom, lessThanOrEqualTo(actions.top));
+  });
+
+  testWidgets('the amount cannot be edited while the swap is created', (
+    tester,
+  ) async {
+    await continueRect(
+      tester,
+      TransferState(fromWallet: _wallet, isCreatingSwap: true),
+    );
+    expect(
+      tester.widget<BullAmountInput>(find.byType(BullAmountInput)).readOnly,
+      isTrue,
+    );
   });
 }

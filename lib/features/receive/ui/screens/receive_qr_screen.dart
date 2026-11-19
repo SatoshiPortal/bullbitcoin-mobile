@@ -1,6 +1,4 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -272,18 +270,9 @@ class ReceiveInfoDetails extends StatelessWidget {
     final type = context.select<ReceiveBloc, ReceiveType?>(
       (bloc) => bloc.state.type,
     );
-    final enteredUnitSuffix = context.select<ReceiveBloc, String>((bloc) {
-      final state = bloc.state;
-      final sats = state.confirmedAmountSat;
-      if (sats == null ||
-          state.inputAmountCurrencyCode == BitcoinUnit.btc.code) {
-        return '';
-      }
-      if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        return ' (${FormatAmount.sats(sats)})';
-      }
-      return ' (~${state.formattedConfirmedAmountFiat})';
-    });
+    final conversion = context.select(
+      (ReceiveBloc bloc) => bloc.state.confirmedConversion,
+    );
 
     if (type == ReceiveType.lightning) return const ReceiveLnInfoDetails();
 
@@ -317,17 +306,29 @@ class ReceiveInfoDetails extends StatelessWidget {
                         color: context.appColors.secondary,
                       ),
                       const Gap(4),
-                      // Amount row: the BIP21 string always carries BTC, so
-                      // always show the BTC value; when the user entered in
-                      // another unit (sats or fiat), show that alongside.
                       if (amountSat != null)
                         BBText(
                           '${context.loc.coreScreensAmountLabel}: '
-                          '${FormatAmount.btc(ConvertAmount.satsToBtc(amountSat))}'
-                          '$enteredUnitSuffix',
+                          '${FormatAmount.sats(amountSat)}',
                           style: context.bullType.body,
                           maxLines: 1,
                           overflow: .ellipsis,
+                        ),
+                      if (conversion != null)
+                        BBText(
+                          context.loc.amountEnteredAtRate(
+                            conversion.enteredText,
+                            conversion.currencyCode,
+                            MaterialLocalizations.of(context).formatTimeOfDay(
+                              TimeOfDay.fromDateTime(
+                                conversion.quotedAt.toLocal(),
+                              ),
+                              alwaysUse24HourFormat: true,
+                            ),
+                          ),
+                          style: context.bullType.label.copyWith(
+                            color: context.appColors.textMuted,
+                          ),
                         ),
                       if (note.isNotEmpty)
                         BBText(
@@ -392,6 +393,23 @@ class ReceiveLnInfoDetails extends StatelessWidget {
         children: [
           const Gap(12),
           const ReceiveLnSwapID(),
+          if (context.select(
+                (ReceiveBloc bloc) => bloc.state.confirmedConversion,
+              )
+              case final conversion?)
+            BBText(
+              context.loc.amountEnteredAtRate(
+                conversion.enteredText,
+                conversion.currencyCode,
+                MaterialLocalizations.of(context).formatTimeOfDay(
+                  TimeOfDay.fromDateTime(conversion.quotedAt.toLocal()),
+                  alwaysUse24HourFormat: true,
+                ),
+              ),
+              style: context.bullType.label.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            ),
           const Gap(12),
 
           Container(color: context.appColors.surface, height: 1),

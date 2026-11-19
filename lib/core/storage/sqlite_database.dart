@@ -18,7 +18,7 @@ import 'package:bb_mobile/core/storage/tables/mempool_settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/storage/tables/recoverbull_table.dart';
-import 'package:bb_mobile/core/storage/tables/settings_table.dart';
+import 'package:bb_mobile/features/settings/data/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';

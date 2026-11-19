@@ -10,7 +10,17 @@ typedef ReceiveDetailsTarget = ({
 
 bool canReuseConfirmedReceiveDetails(ReceiveState state) {
   final confirmedAmountSat = state.confirmedAmountSat;
-  if (confirmedAmountSat == null ||
+  if (state.type != ReceiveType.lightning &&
+      state.amountEntryValid &&
+      confirmedAmountSat == null &&
+      state.inputAmountSat == 0 &&
+      state.amountConversion == null &&
+      state.confirmedConversion == null) {
+    return true;
+  }
+  if (!state.amountEntryValid ||
+      state.amountConversion != state.confirmedConversion ||
+      confirmedAmountSat == null ||
       state.inputAmountSat != confirmedAmountSat) {
     return false;
   }

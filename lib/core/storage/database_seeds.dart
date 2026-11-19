@@ -1,35 +1,9 @@
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_server_network.dart';
-import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bull_logger/bull_logger.dart';
 
 class DatabaseSeeds {
-  static Future<void> seedDefaultSettings(SqliteDatabase db) async {
-    log.info('[SqliteDatabase] seeding default settings...');
-    await db
-        .into(db.settings)
-        .insert(
-          SettingsRow(
-            id: 1,
-            environment: Environment.mainnet.name,
-            bitcoinUnit: BitcoinUnit.sats.name,
-            language: Language.unitedStatesEnglish.name,
-            currency: 'USD',
-            hideAmounts: false,
-            isSuperuser: false,
-            isDevModeEnabled: false,
-            useTorProxy: false,
-            torProxyPort: 9050,
-            torTransportMode: 'automatic',
-            themeMode: 'system',
-            isErrorReportingEnabled: false,
-            screenCaptureProtectionEnabled: true,
-          ),
-        );
-  }
-
   static Future<void> seedDefaultElectrumServers(SqliteDatabase db) async {
     final serversData = [
       (ApiServiceConstants.fulcrumElectrumUrl, false, false, 0),

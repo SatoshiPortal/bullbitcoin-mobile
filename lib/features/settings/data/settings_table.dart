@@ -5,6 +5,8 @@ class Settings extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get environment => text()();
   TextColumn get bitcoinUnit => text()();
+  BoolColumn get startAmountsInFiat =>
+      boolean().withDefault(const Constant(false))();
   TextColumn get language => text()();
   TextColumn get currency => text()();
   BoolColumn get hideAmounts => boolean()();

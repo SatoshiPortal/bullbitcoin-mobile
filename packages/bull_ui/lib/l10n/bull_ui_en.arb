@@ -39,5 +39,55 @@
   "amountHidden": "**",
   "@amountHidden": {
     "description": "Shared Bitcoin amount control."
-  }
+  },
+  "amountField": "Amount",
+  "@amountField": {},
+  "amountBitcoin": "Bitcoin",
+  "@amountBitcoin": {},
+  "amountCurrency": "Currency: {currency}",
+  "@amountCurrency": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "amountEnterFiat": "Enter the amount in {currency}",
+  "@amountEnterFiat": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "amountEnterBitcoin": "Enter the amount in bitcoin",
+  "@amountEnterBitcoin": {},
+  "amountNoPrice": "No price available",
+  "@amountNoPrice": {},
+  "amountLoadingPrice": "Loading price…",
+  "@amountLoadingPrice": {},
+  "amountPriceUnavailable": "Price unavailable. Enter the amount in bitcoin or try again.",
+  "@amountPriceUnavailable": {},
+  "amountAlwaysStartIn": "Always start in {currency}",
+  "@amountAlwaysStartIn": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "amountStartChanged": "Amounts now start in {currency}",
+  "@amountStartChanged": {
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "amountMaxAfterFees": "MAX · balance minus fees",
+  "@amountMaxAfterFees": {},
+  "amountPreferenceChangeFailed": "Could not change the amount preference. Please try again.",
+  "@amountPreferenceChangeFailed": {},
+  "amountIncomplete": "Finish entering the amount",
+  "@amountIncomplete": {}
 }

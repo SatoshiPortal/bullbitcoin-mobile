@@ -9,7 +9,8 @@ import 'package:material_ui/material_ui.dart';
 /// The one menu behind every Bull dropdown: a flat [BullTheme.surface] panel
 /// with a hairline [BullTheme.primary] outline and the [BullShapes.input]
 /// corner, opened directly under [anchor], the selected row in bold
-/// [BullTheme.primary] text. Scrolls past half the screen.
+/// [BullTheme.primary] text. Scrolls past [maxHeightFactor] of the screen;
+/// the menu moves up when it would not fit under [anchor].
 ///
 /// Resolves with the index of the tapped item, or null when dismissed, so an
 /// item whose value is null stays distinguishable from a dismissal.
@@ -19,6 +20,7 @@ Future<int?> showBullDropdownMenu<T>({
   required T? value,
   bool matchAnchorWidth = false,
   bool coverAnchor = false,
+  double maxHeightFactor = 0.5,
 }) {
   final colors = anchor.bull;
   final shapes = anchor.bullShapes;
@@ -53,19 +55,28 @@ Future<int?> showBullDropdownMenu<T>({
       maxWidth: matchAnchorWidth
           ? box.size.width
           : overlay.size.width - 2 * BullSpacing.md,
-      maxHeight: overlay.size.height * 0.5,
+      maxHeight: overlay.size.height * maxHeightFactor,
     ),
     items: [
-      for (var i = 0; i < items.length; i++)
+      for (var i = 0; i < items.length; i++) ...[
+        if (items[i].dividerBefore)
+          const PopupMenuDivider(height: BullSpacing.xs),
         PopupMenuItem<int>(
           value: i,
+          enabled: items[i].enabled,
+          height: BullSpacing.xxl,
           padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
-          child: BullDropdownRow(
-            item: items[i],
-            selected: i == selectedIndex,
-            fillWidth: matchAnchorWidth,
+          child: Semantics(
+            selected: items[i].checked == null ? i == selectedIndex : null,
+            checked: items[i].checked,
+            child: BullDropdownRow(
+              item: items[i],
+              selected: i == selectedIndex,
+              fillWidth: matchAnchorWidth,
+            ),
           ),
         ),
+      ],
     ],
   );
 }
@@ -92,7 +103,11 @@ class BullDropdownRow<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final style = context.bullType.body.copyWith(
-      color: selected ? colors.primary : colors.text,
+      color: !item.enabled
+          ? colors.textMuted
+          : selected
+          ? colors.primary
+          : colors.text,
       fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
     );
     return Container(
@@ -104,16 +119,43 @@ class BullDropdownRow<T> extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (item.checked case final checked?) ...[
+            SizedBox(
+              width: BullSpacing.md,
+              height: BullSpacing.md,
+              child: checked
+                  ? Icon(
+                      Icons.check,
+                      size: BullSpacing.md,
+                      color: colors.primary,
+                    )
+                  : null,
+            ),
+            const Gap(BullSpacing.xs),
+          ],
           if (item.leading case final leading?) ...[
             leading,
             const Gap(BullSpacing.xs),
           ],
           Flexible(
-            child: Text(
-              item.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: style,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: style,
+                ),
+                if (item.disabledReason case final reason?)
+                  Text(
+                    reason,
+                    style: context.bullType.caption.copyWith(
+                      color: colors.textMuted,
+                    ),
+                  ),
+              ],
             ),
           ),
         ],

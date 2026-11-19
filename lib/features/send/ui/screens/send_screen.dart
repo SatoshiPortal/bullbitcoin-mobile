@@ -4,6 +4,8 @@ import 'package:primitives/primitives.dart' show BitcoinUnit;
 
 import 'dart:math' as math;
 
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
+
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/domain/internal_recipient_policy.dart';
 
@@ -23,7 +25,6 @@ import 'package:bull_logger/bull_logger.dart';
 
 import 'package:bb_mobile/core/widgets/cards/consolidation_required_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
@@ -53,7 +54,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullBitcoinAmountInput,
+        BullAmountInput,
+        BullAmountCurrency,
+        BullAmountInputValue,
+        BullAmountUnitToggle,
+        BullAmountScope,
+        showBullDropdownMenu,
+        BullUiLocalizations,
         BullBorderedTile,
         BullBottomSheet,
         BullButton,
@@ -67,7 +74,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullInfoCard,
         BullLoader,
         BullPickerItem,
-        BullPickerMenu,
         BullSegmented,
         BullSnackBar,
         BullText,
@@ -540,6 +546,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   late TextEditingController _amountController;
   late FocusNode _amountFocusNode;
   final Map<int, FocusNode> _recipientAmountFocusNodes = {};
+  String? _multiCurrency;
+  BitcoinUnit? _multiGlobalUnit;
+  int? _multiGlobalGeneration;
 
   @override
   void initState() {
@@ -552,16 +561,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       ),
     );
     _amountFocusNode = FocusNode();
-    _amountController.addListener(() {
-      final text = _amountController.text;
-      final cubit = context.read<SendCubit>();
-      final fixedAmount = cubit.state.hasFixedRequestAmount;
-      if (text != cubit.state.amount &&
-          !cubit.state.isMaxSend &&
-          !fixedAmount) {
-        cubit.amountChanged(amount: text);
-      }
-    });
   }
 
   @override
@@ -574,8 +573,120 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
     super.dispose();
   }
 
+  Widget _multiAmountHeader(BuildContext context, SendState state) {
+    final code = _multiCurrency ?? state.bitcoinUnit?.code ?? 'sats';
+    final bitcoin = code == 'BTC' || code == 'sats';
+    final unit = code == 'BTC' ? BitcoinUnit.btc : BitcoinUnit.sats;
+    final style = context.bullType.body.copyWith(fontWeight: FontWeight.w500);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          context.loc.amountInputHeader,
+          style: context.bullType.label.copyWith(
+            color: context.appColors.textMuted,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const Gap(4),
+        if (bitcoin)
+          BullAmountUnitToggle(
+            text: code,
+            unit: unit,
+            style: style,
+            onPressed: () => setState(
+              () => _multiCurrency = unit == BitcoinUnit.btc ? 'sats' : 'BTC',
+            ),
+          ),
+        Builder(
+          builder: (anchor) => IconButton(
+            tooltip: context.loc.settingsCurrencyTitle,
+            icon: bitcoin
+                ? Icon(
+                    Icons.arrow_drop_down,
+                    color: context.appColors.text,
+                    size: 24,
+                  )
+                : Text('$code ▾', style: style),
+            onPressed: () async {
+              final l10n = BullUiLocalizations.of(context);
+              final scope = BullAmountScope.maybeOf(context);
+              final showPreference =
+                  scope?.snapshot.isReady == true &&
+                  scope?.canWriteInputMode == true &&
+                  (bitcoin || code == state.fiatCurrencyCode);
+              final checked = scope?.snapshot.startInFiat == !bitcoin;
+              final items = [
+                BullPickerItem(value: 'bitcoin', label: l10n.amountBitcoin),
+                for (final currency in [
+                  ...SupportedCurrency.values.where(
+                    (c) => c.code == state.fiatCurrencyCode,
+                  ),
+                  ...SupportedCurrency.values.where(
+                    (c) => c.code != state.fiatCurrencyCode,
+                  ),
+                ])
+                  BullPickerItem(
+                    value: currency.code,
+                    label: currency.code,
+                    enabled: state.amountQuotes.containsKey(currency),
+                    disabledReason: state.amountQuotes.containsKey(currency)
+                        ? null
+                        : l10n.amountNoPrice,
+                  ),
+                if (showPreference)
+                  BullPickerItem(
+                    value: 'initial-mode',
+                    label: l10n.amountAlwaysStartIn(
+                      bitcoin ? l10n.amountBitcoin : code,
+                    ),
+                    checked: checked,
+                    dividerBefore: true,
+                  ),
+              ];
+              final index = await showBullDropdownMenu<String>(
+                anchor: anchor,
+                value: bitcoin ? 'bitcoin' : code,
+                items: items,
+              );
+              final selected = index == null ? null : items[index].value;
+              if (selected == null || !mounted) return;
+              if (selected == 'initial-mode' && scope != null) {
+                await scope.changeDefaultInputMode(
+                  checked ? bitcoin : !bitcoin,
+                  bitcoinMessage: l10n.amountStartChanged(l10n.amountBitcoin),
+                  fiatMessage: l10n.amountStartChanged(state.fiatCurrencyCode),
+                  failureMessage: l10n.amountPreferenceChangeFailed,
+                );
+                return;
+              }
+              setState(
+                () => _multiCurrency = selected == 'bitcoin'
+                    ? (state.bitcoinUnit?.code ?? 'sats')
+                    : selected,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final scopeData = BullAmountScope.maybeOf(context);
+    final scope = scopeData?.snapshot;
+    if (scope != null &&
+        scope.isReady &&
+        (scope.unit != _multiGlobalUnit ||
+            scopeData?.generation != _multiGlobalGeneration)) {
+      final first = _multiGlobalUnit == null;
+      _multiGlobalUnit = scope.unit;
+      _multiGlobalGeneration = scopeData?.generation;
+      _multiCurrency = first && scope.startInFiat
+          ? scope.defaultCurrencyCode
+          : scope.unit.code;
+    }
     final recipientDrafts = context.select(
       (SendCubit cubit) => cubit.state.recipientDrafts,
     );
@@ -652,10 +763,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                       (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
                     );
 
-                    final availableInputCurrencies = context
-                        .select<SendCubit, List<String>>(
-                          (bloc) => bloc.state.inputAmountCurrencyCodes,
-                        );
+                    final totalCurrency =
+                        SupportedCurrency.tryFromCode(_multiCurrency ?? '') ??
+                        SupportedCurrency.tryFromCode(state.fiatCurrencyCode);
+                    final totalQuote = totalCurrency == null
+                        ? null
+                        : state.amountQuotes[totalCurrency];
                     final buildError = context.select(
                       (SendCubit cubit) => cubit.state.hasBuildFailure,
                     );
@@ -882,6 +995,41 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   ),
                                   if (state.showsRecipientAmountList)
                                     RecipientAmounts(
+                                      amountHeader: _multiAmountHeader(
+                                        context,
+                                        state,
+                                      ),
+                                      amountFieldBuilder:
+                                          (recipient, focusNode) =>
+                                              _RecipientKitAmount(
+                                                key: ValueKey(recipient.id),
+                                                amount: recipient.amount,
+                                                canonicalUnit:
+                                                    BitcoinUnit.fromCode(
+                                                      inputCurrency,
+                                                    ),
+                                                currencyCode:
+                                                    _multiCurrency ??
+                                                    state.bitcoinUnit?.code ??
+                                                    'sats',
+                                                defaultCurrencyCode:
+                                                    state.fiatCurrencyCode,
+                                                quotes: state.amountQuotes,
+                                                focusNode: focusNode,
+                                                onChanged: (entry) => context
+                                                    .read<SendCubit>()
+                                                    .recipientEntryChanged(
+                                                      recipient.id,
+                                                      entry.sats,
+                                                      isValid: entry.isValid,
+                                                      isEdit: entry.isEdit,
+                                                      currencyCode:
+                                                          entry.currencyCode,
+                                                      text: entry.text,
+                                                      rate: entry.price,
+                                                      quotedAt: entry.priceAt,
+                                                    ),
+                                              ),
                                       recipients: state.recipientDrafts,
                                       preparedAmounts:
                                           state.recipientAmountsSat,
@@ -920,14 +1068,28 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       onRemainderChanged: context
                                           .read<SendCubit>()
                                           .setRemainderRecipient,
-                                      amountBuilder: (amountSat) =>
+                                      amountBuilder: (amountSat) => Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
                                           CurrencyText(
                                             amountSat,
                                             showFiat: false,
-                                            interactive: true,
-                                            style: context.bullType.body,
                                             color: context.appColors.textMuted,
+                                            style: context.bullType.body,
                                           ),
+                                          if (totalQuote case final quote?)
+                                            Text(
+                                              '≈ ${FormatAmount.fiat(quote.fiatValueOf(BigInt.from(amountSat)), quote.currency.code)}',
+                                              style: context.bullType.caption
+                                                  .copyWith(
+                                                    color: context
+                                                        .appColors
+                                                        .textMuted,
+                                                  ),
+                                            ),
+                                        ],
+                                      ),
                                     )
                                   else if (fixedAmount)
                                     Column(
@@ -974,100 +1136,61 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        if (inputCurrency ==
-                                                BitcoinUnit.btc.code ||
-                                            inputCurrency ==
-                                                BitcoinUnit.sats.code) ...[
-                                          BullBitcoinAmountInput(
-                                            canonicalUnit: BitcoinUnit.fromCode(
-                                              inputCurrency,
-                                            ),
-                                            amountController: _amountController,
-                                            amountEquivalent: state
-                                                .formattedAmountInputEquivalent,
-                                            error:
-                                                balanceError && failure != null
-                                                ? failure.toTranslated(
-                                                    context,
-                                                    formattedFrozenBalance:
-                                                        frozenBalanceHint,
-                                                  )
-                                                : (!walletHasBalance &&
-                                                      amountConfirmedClicked)
-                                                ? context
-                                                      .loc
-                                                      .sendInsufficientBalance
-                                                : failure?.toTranslated(
-                                                    context,
-                                                  ),
-                                            focusNode: _amountFocusNode,
-                                            readOnly: state.isMaxSend,
-                                            isMax: state.isMaxSend,
+                                        BullAmountInput(
+                                          canonicalUnit: BitcoinUnit.fromCode(
+                                            inputCurrency,
                                           ),
-                                          if (availableInputCurrencies.any(
-                                            (code) =>
-                                                code != 'BTC' && code != 'sats',
-                                          ))
-                                            BullPickerMenu<String>(
-                                              value: inputCurrency,
-                                              tooltip: context
-                                                  .loc
-                                                  .settingsCurrencyTitle,
-                                              items: [
-                                                for (final code
-                                                    in availableInputCurrencies)
-                                                  if (code != 'BTC' &&
-                                                      code != 'sats')
-                                                    BullPickerItem(
-                                                      value: code,
-                                                      label:
-                                                          '${SupportedCurrency.tryFromCode(code)?.flag ?? ''} $code',
-                                                    ),
-                                              ],
-                                              onChanged: context
-                                                  .read<SendCubit>()
-                                                  .onCurrencyChanged,
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(8),
-                                                child: Icon(
-                                                  Icons.arrow_drop_down,
-                                                ),
+                                          amountController: _amountController,
+                                          defaultCurrencyCode:
+                                              state.fiatCurrencyCode,
+                                          currencies: [
+                                            for (final currency
+                                                in SupportedCurrency.values)
+                                              BullAmountCurrency(
+                                                code: currency.code,
+                                                decimals: currency.decimals,
+                                                price: state
+                                                    .amountQuotes[currency]
+                                                    ?.fiatAmount,
+                                                priceAt: state
+                                                    .amountQuotes[currency]
+                                                    ?.fetchedAt,
                                               ),
-                                            ),
-                                        ] else
-                                          PriceInput(
-                                            currency: inputCurrency,
-                                            amountEquivalent: state
-                                                .formattedAmountInputEquivalent,
-                                            availableCurrencies:
-                                                availableInputCurrencies,
-                                            amountController: _amountController,
-                                            onCurrencyChanged: (currencyCode) {
-                                              context
-                                                  .read<SendCubit>()
-                                                  .onCurrencyChanged(
-                                                    currencyCode,
-                                                  );
-                                            },
-                                            error:
-                                                balanceError && failure != null
-                                                ? failure.toTranslated(
-                                                    context,
-                                                    formattedFrozenBalance:
-                                                        frozenBalanceHint,
-                                                  )
-                                                : (!walletHasBalance &&
-                                                      amountConfirmedClicked)
-                                                ? context
-                                                      .loc
-                                                      .sendInsufficientBalance
-                                                : failure?.toTranslated(
-                                                    context,
-                                                  ),
-                                            focusNode: _amountFocusNode,
-                                            readOnly: state.isMaxSend,
-                                            isMax: state.isMaxSend,
+                                          ],
+                                          onEntryChanged: (entry) => context
+                                              .read<SendCubit>()
+                                              .amountEntryChanged(
+                                                sats: entry.sats,
+                                                currencyCode:
+                                                    entry.currencyCode,
+                                                text: entry.text,
+                                                rate: entry.price,
+                                                quotedAt: entry.priceAt,
+                                                isValid: entry.isValid,
+                                                isEdit: entry.isEdit,
+                                              ),
+                                          error: failure?.toTranslated(
+                                            context,
+                                            formattedFrozenBalance:
+                                                frozenBalanceHint,
                                           ),
+                                          focusNode: _amountFocusNode,
+                                          isMax: state.isMaxSend,
+                                          maxLoading:
+                                              state.isMaxSend &&
+                                              context
+                                                      .read<SendCubit>()
+                                                      .preparedMaxAmountSat ==
+                                                  null,
+                                          maxAmountSat: switch (context
+                                              .read<SendCubit>()
+                                              .preparedMaxAmountSat) {
+                                            final amount? => BigInt.from(
+                                              amount,
+                                            ),
+                                            null => null,
+                                          },
+                                        ),
                                       ],
                                     ),
                                   if (suggestsInstantPayments)
@@ -1237,6 +1360,9 @@ class SendAmountConfirmButton extends StatelessWidget {
           amountConfirmedClicked ||
           creatingSwap ||
           loadingBestWallet ||
+          !context.select(
+            (SendCubit cubit) => cubit.state.hasValidAmountEntry,
+          ) ||
           !recipientAmountsValid ||
           (!usesRecipientList && inputAmountSat <= 0),
       bgColor: context.appColors.primary,
@@ -1323,6 +1449,29 @@ class SendConfirmScreen extends StatelessWidget {
                   children: [
                     // const Gap(24),
                     const SendConfirmTopArea(),
+                    if (context.select(
+                          (SendCubit cubit) => cubit.state.confirmedConversion,
+                        )
+                        case final conversion?) ...[
+                      const Gap(8),
+                      Text(
+                        context.loc.amountEnteredAtRate(
+                          conversion.enteredText,
+                          conversion.currencyCode,
+                          MaterialLocalizations.of(context).formatTimeOfDay(
+                            TimeOfDay.fromDateTime(
+                              conversion.quotedAt.toLocal(),
+                            ),
+                            alwaysUse24HourFormat: true,
+                          ),
+                        ),
+                        style: context.bullType.label.copyWith(
+                          color: context.appColors.textMuted,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                     const Gap(40),
                     if (isLnSwap)
                       const _LnSwapSendInfoSection()
@@ -1578,6 +1727,7 @@ class _OnchainTransactionReview extends StatelessWidget {
       return MultiRecipientTransactionReview(
         walletLabel: state.selectedWallet?.displayLabel(context) ?? '',
         recipients: state.recipientDrafts,
+        conversions: state.confirmedRecipientConversions,
         recipientAmountsSat: state.recipientAmountsSat,
         label: state.label,
         formattedAbsoluteFees: state.formattedAbsoluteFees,
@@ -3046,4 +3196,72 @@ class SignBitBoxButton extends StatelessWidget {
       Error.throwWithStackTrace(e, st);
     }
   }
+}
+
+class _RecipientKitAmount extends StatefulWidget {
+  final String amount;
+  final BitcoinUnit canonicalUnit;
+  final String currencyCode;
+  final String defaultCurrencyCode;
+  final Map<SupportedCurrency, BitcoinPrice> quotes;
+  final FocusNode? focusNode;
+  final ValueChanged<BullAmountInputValue> onChanged;
+
+  const _RecipientKitAmount({
+    super.key,
+    required this.amount,
+    required this.canonicalUnit,
+    required this.currencyCode,
+    required this.defaultCurrencyCode,
+    required this.quotes,
+    required this.focusNode,
+    required this.onChanged,
+  });
+
+  @override
+  State<_RecipientKitAmount> createState() => _RecipientKitAmountState();
+}
+
+class _RecipientKitAmountState extends State<_RecipientKitAmount> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.amount);
+  }
+
+  @override
+  void didUpdateWidget(_RecipientKitAmount oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_controller.text != widget.amount) _controller.text = widget.amount;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => BullAmountInput(
+    key: ValueKey(widget.currencyCode),
+    compact: true,
+    showControls: false,
+    canonicalUnit: widget.canonicalUnit,
+    initialCurrencyCode: widget.currencyCode,
+    defaultCurrencyCode: widget.defaultCurrencyCode,
+    amountController: _controller,
+    focusNode: widget.focusNode,
+    currencies: [
+      for (final currency in SupportedCurrency.values)
+        BullAmountCurrency(
+          code: currency.code,
+          decimals: currency.decimals,
+          price: widget.quotes[currency]?.fiatAmount,
+          priceAt: widget.quotes[currency]?.fetchedAt,
+        ),
+    ],
+    onEntryChanged: widget.onChanged,
+  );
 }

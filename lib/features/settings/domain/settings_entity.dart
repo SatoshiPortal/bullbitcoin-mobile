@@ -143,6 +143,7 @@ abstract class SettingsEntity with _$SettingsEntity {
   const factory SettingsEntity({
     required Environment environment,
     required BitcoinUnit bitcoinUnit,
+    @Default(false) bool startAmountsInFiat,
     Language? language,
     required String currencyCode,
     bool? hideAmounts,
