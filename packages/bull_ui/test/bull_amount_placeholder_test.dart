@@ -5,6 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 
+double alphabeticBaseline(RenderBox box) {
+  final baseline = box.getDryBaseline(
+    BoxConstraints.tight(box.size),
+    TextBaseline.alphabetic,
+  );
+  if (baseline == null) throw StateError('Expected a text baseline');
+  return box.localToGlobal(Offset(0, baseline)).dy;
+}
+
 void main() {
   testWidgets(
     'empty and filled numbers have the same unit gap and visual centre',
@@ -35,6 +44,13 @@ void main() {
       final hintLeft = hint.localToGlobal(Offset(hintBox.left, 0)).dx;
       final hintRight = hint.localToGlobal(Offset(hintBox.right, 0)).dx;
       final emptyUnit = tester.getRect(find.text('sats'));
+      final unitParagraph = tester.renderObject<RenderParagraph>(
+        find.text('sats'),
+      );
+      expect(
+        alphabeticBaseline(hint),
+        closeTo(alphabeticBaseline(unitParagraph), 0.1),
+      );
       final emptyGap = emptyUnit.left - hintRight;
       final centre = tester.getRect(find.byType(BullAmountInput)).center.dx;
       final emptyCentre = (hintLeft + emptyUnit.right) / 2;
@@ -55,6 +71,13 @@ void main() {
           .localToGlobal(Offset(boxes.last.right, 0))
           .dx;
       final filledUnit = tester.getRect(find.text('sats'));
+      final filledUnitParagraph = tester.renderObject<RenderParagraph>(
+        find.text('sats'),
+      );
+      expect(
+        alphabeticBaseline(editable),
+        closeTo(alphabeticBaseline(filledUnitParagraph), 0.1),
+      );
       final filledGap = filledUnit.left - numberRight;
       expect(emptyGap, closeTo(filledGap, 0.1));
       expect(emptyCentre, closeTo(centre, 2.1));
