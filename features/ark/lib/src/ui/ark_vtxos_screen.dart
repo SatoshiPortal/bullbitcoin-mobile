@@ -5,80 +5,129 @@ import 'package:primitives/primitives.dart' show Sats;
 import '../presentation/ark_l10n.dart';
 import 'ark_amount.dart';
 
-enum _VtxoFilter { all, spendable, locked, expired }
+enum _VtxoFilter { all, active, expiring, expired, locked }
 
 class ArkVtxosScreen extends StatefulWidget {
   final ArkSnapshot snapshot;
   final ValueChanged<List<String>> onRenew;
   final VoidCallback? onBoard;
+  final int? renewalThresholdBlocks;
+
   const ArkVtxosScreen({
     super.key,
     required this.snapshot,
     required this.onRenew,
     this.onBoard,
+    this.renewalThresholdBlocks,
   });
+
   @override
   State<ArkVtxosScreen> createState() => _ArkVtxosScreenState();
 }
 
 class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
-  final Set<String> _selected = {};
   _VtxoFilter _filter = _VtxoFilter.all;
   String? _detailsId;
+  Object _detailsPublication = Object();
 
-  bool _current(ArkSnapshot snapshot) =>
+  bool _observed(ArkSnapshot snapshot) =>
       !snapshot.stale &&
       snapshot.vtxoInventoryComplete &&
-      snapshot.tipHeight != null &&
+      snapshot.tipHeight != null;
+
+  bool _current(ArkSnapshot snapshot) =>
+      _observed(snapshot) &&
       snapshot.recovery == ArkRecoveryStatus.complete &&
       snapshot.renewal != ArkRenewalStatus.delegated;
 
-  Set<String> _eligible(ArkSnapshot snapshot) {
-    final tip = snapshot.tipHeight;
-    if (!_current(snapshot) || tip == null) return {};
-    return {
-      for (final v in snapshot.vtxos)
-        if (v.eligibleAt(tip)) v.id,
-    };
-  }
+  bool _retired(ArkVtxo vtxo) => switch (vtxo.state) {
+    ArkVtxoState.spent ||
+    ArkVtxoState.exited ||
+    ArkVtxoState.abandonedBoard => true,
+    _ => false,
+  };
 
   ArkVtxo? _uniqueVtxo(String? id) {
     if (id == null) return null;
     final matches = widget.snapshot.vtxos.where((v) => v.id == id);
-    return matches.length == 1 ? matches.single : null;
+    if (matches.length != 1 || _retired(matches.single)) return null;
+    return matches.single;
   }
 
   @override
   void didUpdateWidget(ArkVtxosScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.snapshot.account != widget.snapshot.account) {
-      _selected.clear();
       _detailsId = null;
       _filter = _VtxoFilter.all;
     }
     if (_uniqueVtxo(_detailsId) == null) _detailsId = null;
-    _selected.retainAll(_eligible(widget.snapshot));
+    // Any new publication retires actions saved from the previous frame.
+    _detailsPublication = Object();
   }
 
-  void _toggle(ArkAccountId account, String id) {
-    if (widget.snapshot.account != account ||
-        !_eligible(widget.snapshot).contains(id)) {
-      return;
+  int? _blocks(ArkVtxo vtxo) {
+    final tip = widget.snapshot.tipHeight;
+    return widget.snapshot.stale || tip == null
+        ? null
+        : vtxo.expiryHeight - tip;
+  }
+
+  _VtxoFilter? _kind(ArkVtxo vtxo) {
+    if (vtxo.state == ArkVtxoState.locked) return _VtxoFilter.locked;
+    final blocks = _blocks(vtxo);
+    if (vtxo.state != ArkVtxoState.spendable ||
+        vtxo.pendingRound ||
+        blocks == null) {
+      return null;
     }
-    setState(() {
-      if (!_selected.add(id)) _selected.remove(id);
-    });
+    if (blocks <= 0) return _VtxoFilter.expired;
+    return blocks <= 144 ? _VtxoFilter.expiring : _VtxoFilter.active;
+  }
+
+  bool _matches(ArkVtxo vtxo, _VtxoFilter filter) =>
+      !_retired(vtxo) && (filter == _VtxoFilter.all || _kind(vtxo) == filter);
+
+  bool _eligible(ArkVtxo vtxo) {
+    final tip = widget.snapshot.tipHeight;
+    return _current(widget.snapshot) &&
+        tip != null &&
+        _uniqueVtxo(vtxo.id) != null &&
+        vtxo.eligibleAt(tip);
   }
 
   void _openDetails(ArkAccountId account, String id) {
-    if (widget.snapshot.account != account || _uniqueVtxo(id) == null) return;
-    setState(() => _detailsId = id);
+    if (!mounted ||
+        widget.snapshot.account != account ||
+        _uniqueVtxo(id) == null) {
+      return;
+    }
+    setState(() {
+      _detailsId = id;
+      _detailsPublication = Object();
+    });
   }
 
-  void _review(ArkAccountId account) {
-    if (widget.snapshot.account != account) return;
-    final ids = _selected.intersection(_eligible(widget.snapshot));
-    if (ids.isNotEmpty) widget.onRenew(List.unmodifiable(ids));
+  void _closeDetails() => setState(() {
+    _detailsId = null;
+    _detailsPublication = Object();
+  });
+
+  void _review(
+    ArkSnapshot publication,
+    Object detailsPublication,
+    String id,
+    ValueChanged<List<String>> capability,
+  ) {
+    if (!mounted ||
+        !identical(widget.snapshot, publication) ||
+        !identical(_detailsPublication, detailsPublication) ||
+        !identical(widget.onRenew, capability) ||
+        _detailsId != id) {
+      return;
+    }
+    final vtxo = _uniqueVtxo(id);
+    if (vtxo != null && _eligible(vtxo)) capability(List.unmodifiable([id]));
   }
 
   void _board(ArkAccountId account, VoidCallback capability) {
@@ -92,64 +141,95 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
     capability();
   }
 
-  bool _expired(ArkVtxo vtxo) {
-    final tip = widget.snapshot.tipHeight;
-    return !widget.snapshot.stale &&
-        tip != null &&
-        vtxo.state == ArkVtxoState.spendable &&
-        vtxo.expiryHeight <= tip;
-  }
-
-  bool _matches(ArkVtxo vtxo, _VtxoFilter filter) => switch (filter) {
-    _VtxoFilter.all => true,
-    _VtxoFilter.spendable =>
-      vtxo.state == ArkVtxoState.spendable && !_expired(vtxo),
-    _VtxoFilter.locked => vtxo.state == ArkVtxoState.locked,
-    _VtxoFilter.expired => _expired(vtxo),
-  };
-
-  String _state(BuildContext context, ArkVtxo vtxo) {
-    final l10n = arkLocalizationsOf(context);
-    return switch (vtxo.state) {
-      ArkVtxoState.spendable => l10n.spendableState,
-      ArkVtxoState.locked => l10n.lockedState,
-      ArkVtxoState.spent => l10n.spentState,
-      ArkVtxoState.exited => l10n.exitedState,
-      ArkVtxoState.unknown => l10n.unknownState,
-      ArkVtxoState.abandonedBoard => l10n.abandonedBoardState,
+  String _label(BuildContext context, _VtxoFilter filter) {
+    final l10n = context.loc;
+    return switch (filter) {
+      _VtxoFilter.all => l10n.vtxoAll,
+      _VtxoFilter.active => l10n.inventoryActive,
+      _VtxoFilter.expiring => l10n.inventoryExpiring,
+      _VtxoFilter.expired => l10n.vtxoExpired,
+      _VtxoFilter.locked => l10n.lockedState,
     };
   }
 
+  String _status(BuildContext context, ArkVtxo vtxo) {
+    final l10n = context.loc;
+    final blocks = _blocks(vtxo);
+    return switch (_kind(vtxo)) {
+      _VtxoFilter.locked => l10n.lockedState,
+      _VtxoFilter.expired => l10n.vtxoExpired,
+      _VtxoFilter.expiring => l10n.inventoryExpiringIn(blocks.toString()),
+      _VtxoFilter.active => l10n.inventoryExpiresIn(blocks.toString()),
+      _ => l10n.unknown,
+    };
+  }
+
+  Color _statusColor(BuildContext context, ArkVtxo vtxo) =>
+      switch (_kind(vtxo)) {
+        _VtxoFilter.expired => context.bull.error,
+        _VtxoFilter.expiring => context.bull.warning,
+        _ => context.bull.textMuted,
+      };
+
+  Widget _filters(
+    BuildContext context,
+    List<ArkVtxo> inventory,
+  ) => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      children: [
+        for (final filter in _VtxoFilter.values)
+          Padding(
+            padding: const EdgeInsets.only(right: BullSpacing.sm),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: BullFilterChip.selectable(
+                label:
+                    '${_label(context, filter)} ${inventory.where((v) => _matches(v, filter)).length}',
+                selected: _filter == filter,
+                selectionColor: context.bull.secondary,
+                onSelected: (_) => setState(() => _filter = filter),
+              ),
+            ),
+          ),
+      ],
+    ),
+  );
+
   Widget _details(BuildContext context, ArkVtxo vtxo) {
-    final l10n = arkLocalizationsOf(context);
-    final snapshot = widget.snapshot;
-    final tip = snapshot.tipHeight;
-    final blocks = !snapshot.stale && tip != null
-        ? (vtxo.expiryHeight - tip).clamp(0, vtxo.expiryHeight).toString()
-        : l10n.unknown;
+    final l10n = context.loc;
+    final blocks = _blocks(vtxo);
+    final kind = _kind(vtxo);
+    final tip = widget.snapshot.tipHeight;
+    final threshold = widget.renewalThresholdBlocks;
+    final renewalDue =
+        _eligible(vtxo) &&
+        tip != null &&
+        threshold != null &&
+        vtxo.renewalDueAt(tip, threshold);
+    final note = switch (kind) {
+      _VtxoFilter.expired => l10n.inventoryExpiredNote,
+      _VtxoFilter.locked => l10n.inventoryLockedNote,
+      _ when renewalDue => l10n.inventoryRenewNote(threshold.toString()),
+      _ => null,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BullTopBar(
-          title: l10n.vtxoDetails,
-          onBack: () => setState(() => _detailsId = null),
-        ),
-        if (snapshot.stale) BullInfoBar(message: l10n.stale),
-        if (!_current(snapshot)) BullInfoBar(message: l10n.unknown),
         const Gap(BullSpacing.lg),
         Center(
           child: Container(
-            padding: const EdgeInsets.all(BullSpacing.md),
+            padding: const EdgeInsets.all(BullSpacing.lg),
             decoration: BoxDecoration(
               color: context.bull.surfaceContainer,
               shape: BoxShape.circle,
             ),
             child: BullIcon(
-              vtxo.state == ArkVtxoState.locked
+              kind == _VtxoFilter.locked
                   ? BullIcons.lockOpen
                   : BullIcons.schedule,
-              size: 32,
-              color: context.bull.textMuted,
+              size: 28,
+              color: _statusColor(context, vtxo),
             ),
           ),
         ),
@@ -160,79 +240,115 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
           textAlign: TextAlign.center,
           fontWeight: FontWeight.w700,
         ),
-        const Gap(BullSpacing.xs),
+        const Gap(BullSpacing.sm),
         BullText(
-          _expired(vtxo) ? l10n.vtxoExpired : _state(context, vtxo),
+          _status(context, vtxo),
           role: BullTextRole.body,
           textAlign: TextAlign.center,
-          color: context.bull.textMuted,
+          color: _statusColor(context, vtxo),
         ),
         const Gap(BullSpacing.lg),
         BullDetailsTable(
+          flat: true,
           items: [
             BullDetailsTableItem(
               label: l10n.state,
-              displayValue: _state(context, vtxo),
+              displayValue:
+                  kind == _VtxoFilter.active || kind == _VtxoFilter.expiring
+                  ? l10n.spendableState
+                  : _status(context, vtxo),
             ),
             BullDetailsTableItem(
-              label: l10n.expiryHeight,
-              displayValue: vtxo.expiryHeight.toString(),
+              label: l10n.inventoryExpires,
+              displayValue: l10n.inventoryBlocks(vtxo.expiryHeight.toString()),
             ),
             BullDetailsTableItem(
-              label: l10n.vtxoBlocksRemaining,
-              displayValue: blocks,
+              label: l10n.inventoryBlocksLeft,
+              displayValue: blocks == null
+                  ? l10n.unknown
+                  : (blocks < 0 ? 0 : blocks).toString(),
             ),
             BullDetailsTableItem(
               label: l10n.vtxoCreated,
               displayValue: l10n.unknown,
             ),
             BullDetailsTableItem(
-              label: l10n.id,
-              displayValue: vtxo.id,
+              label: l10n.inventoryVtxoId,
+              displayValue: _short(vtxo.id),
               copyValue: vtxo.id,
               copiedMessage: l10n.copied,
             ),
             BullDetailsTableItem(
-              label: l10n.vtxoAnchor,
-              displayValue: vtxo.anchor ?? l10n.unknown,
+              label: l10n.inventoryAnchor,
+              displayValue: switch (vtxo.anchor) {
+                final anchor? => _short(anchor),
+                null => l10n.unknown,
+              },
               copyValue: vtxo.anchor,
               copiedMessage: l10n.copied,
             ),
           ],
         ),
+        if (note != null) ...[
+          const Gap(BullSpacing.md),
+          BullInfoBar(message: note),
+        ],
       ],
     );
   }
 
+  String _short(String value) => value.length <= 22
+      ? value
+      : '${value.substring(0, 10)}…${value.substring(value.length - 8)}';
+
   @override
   Widget build(BuildContext context) {
-    final l10n = arkLocalizationsOf(context);
+    final l10n = context.loc;
     final snapshot = widget.snapshot;
     final board = widget.onBoard;
-    final eligible = _eligible(snapshot);
-    final selection = _selected.intersection(eligible);
+    final capability = widget.onRenew;
+    final publication = _detailsPublication;
     final details = _uniqueVtxo(_detailsId);
-    final values = snapshot.vtxos.where((v) => _matches(v, _filter));
-    final live = snapshot.vtxos
+    final inventory = snapshot.vtxos.where((v) => !_retired(v)).toList()
+      ..sort((a, b) {
+        final order = a.expiryHeight.compareTo(b.expiryHeight);
+        return order == 0 ? a.id.compareTo(b.id) : order;
+      });
+    final values = inventory.where((v) => _matches(v, _filter));
+    final live = inventory
         .where(
-          (vtxo) => switch (vtxo.state) {
-            ArkVtxoState.spent ||
-            ArkVtxoState.exited ||
-            ArkVtxoState.abandonedBoard => false,
-            ArkVtxoState.spendable ||
-            ArkVtxoState.locked ||
-            ArkVtxoState.unknown => true,
+          (v) => switch (_kind(v)) {
+            _VtxoFilter.active ||
+            _VtxoFilter.expiring ||
+            _VtxoFilter.locked => true,
+            _ => false,
           },
         )
         .toList();
     final total = live.fold<BigInt>(
       BigInt.zero,
-      (sum, vtxo) => sum + vtxo.amount.value,
+      (sum, v) => sum + v.amount.value,
     );
+    final complete =
+        _observed(snapshot) && inventory.every((v) => _kind(v) != null);
+    final upcoming = live
+        .where((v) => _kind(v) != _VtxoFilter.locked)
+        .firstOrNull;
+    final nextBlocks = upcoming == null ? null : _blocks(upcoming);
+    final rawEmpty = snapshot.vtxos.isEmpty && _current(snapshot);
     return BullScaffold(
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: BullSpacing.md),
+              child: BullTopBar(
+                title: details == null ? l10n.vtxos : l10n.vtxoDetails,
+                onBack: details == null
+                    ? () => Navigator.pop(context)
+                    : _closeDetails,
+              ),
+            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(BullSpacing.md),
@@ -241,60 +357,10 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          BullTopBar(
-                            title: l10n.vtxos,
-                            onBack: () => Navigator.pop(context),
-                          ),
                           if (snapshot.stale) BullInfoBar(message: l10n.stale),
-                          if (!_current(snapshot))
+                          if (!_observed(snapshot))
                             BullInfoBar(message: l10n.unknown),
-                          if (snapshot.vtxos.isEmpty && _current(snapshot))
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: BullSpacing.xxl,
-                              ),
-                              child: Column(
-                                children: [
-                                  BullIcon(
-                                    BullIcons.accountBalanceWallet,
-                                    size: 48,
-                                    color: context.bull.textMuted,
-                                  ),
-                                  const Gap(BullSpacing.lg),
-                                  BullText(
-                                    l10n.vtxoEmptyTitle,
-                                    role: BullTextRole.subtitle,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const Gap(BullSpacing.sm),
-                                  BullText(
-                                    l10n.vtxoEmptyBody,
-                                    role: BullTextRole.body,
-                                    textAlign: TextAlign.center,
-                                    color: context.bull.textMuted,
-                                  ),
-                                  const Gap(BullSpacing.sm),
-                                  BullText(
-                                    l10n.empty,
-                                    role: BullTextRole.caption,
-                                    textAlign: TextAlign.center,
-                                    color: context.bull.textMuted,
-                                  ),
-                                  if (board != null) ...[
-                                    const Gap(BullSpacing.lg),
-                                    BullButton.big(
-                                      label: l10n.boardToArk,
-                                      onPressed: () =>
-                                          _board(snapshot.account, board),
-                                      outlined: true,
-                                      bgColor: context.bull.surface,
-                                      textColor: context.bull.text,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          if (snapshot.vtxos.isNotEmpty) ...[
+                          if (inventory.isNotEmpty) ...[
                             Container(
                               padding: const EdgeInsets.all(BullSpacing.lg),
                               decoration: BoxDecoration(
@@ -307,7 +373,7 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   BullText(
-                                    l10n.vtxoTotal,
+                                    l10n.inventoryTotal,
                                     role: BullTextRole.label,
                                     color: context.bull.textMuted,
                                   ),
@@ -315,83 +381,100 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                   BullText(
                                     formatArkObservedSats(
                                       context,
-                                      _current(snapshot) ? Sats(total) : null,
+                                      complete ? Sats(total) : null,
                                     ),
                                     role: BullTextRole.headline,
                                     fontWeight: FontWeight.w700,
                                   ),
-                                  const Gap(BullSpacing.xs),
                                   BullText(
-                                    '${live.length} ${l10n.vtxoCount}',
+                                    complete
+                                        ? '${live.length} ${l10n.vtxoCount}'
+                                        : l10n.unknown,
                                     role: BullTextRole.label,
                                     color: context.bull.textMuted,
                                   ),
-                                ],
-                              ),
-                            ),
-                            const Gap(BullSpacing.md),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  for (final filter in _VtxoFilter.values)
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: BullSpacing.sm,
+                                  if (complete && nextBlocks != null)
+                                    BullText(
+                                      l10n.inventoryNextExpiry(
+                                        nextBlocks.toString(),
                                       ),
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                          minHeight: 44,
-                                        ),
-                                        child: BullFilterChip.selectable(
-                                          label:
-                                              '${switch (filter) {
-                                                _VtxoFilter.all => l10n.vtxoAll,
-                                                _VtxoFilter.spendable => l10n.spendableState,
-                                                _VtxoFilter.locked => l10n.lockedState,
-                                                _VtxoFilter.expired => l10n.vtxoExpired,
-                                              }} ${snapshot.vtxos.where((v) => _matches(v, filter)).length}',
-                                          selected: _filter == filter,
-                                          selectionColor: context.bull.text,
-                                          onSelected: (_) =>
-                                              setState(() => _filter = filter),
-                                        ),
-                                      ),
+                                      role: BullTextRole.label,
+                                      color: context.bull.textMuted,
                                     ),
                                 ],
                               ),
                             ),
                             const Gap(BullSpacing.md),
-                            if (values.isEmpty)
-                              Padding(
-                                padding: const EdgeInsets.all(BullSpacing.lg),
-                                child: BullText(
-                                  l10n.vtxoNoMatches,
-                                  role: BullTextRole.body,
-                                  textAlign: TextAlign.center,
-                                ),
+                          ],
+                          _filters(context, inventory),
+                          const Gap(BullSpacing.md),
+                          if (rawEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: BullSpacing.xxl,
                               ),
-                            for (final v in values)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: BullSpacing.xs,
-                                ),
+                              child: Column(
+                                children: [
+                                  BullIcon(
+                                    BullIcons.accountTree,
+                                    size: 48,
+                                    color: context.bull.textMuted,
+                                  ),
+                                  const Gap(BullSpacing.lg),
+                                  BullText(
+                                    _filter == _VtxoFilter.all
+                                        ? l10n.inventoryEmptyTitle
+                                        : l10n.vtxoNoMatches,
+                                    role: BullTextRole.subtitle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const Gap(BullSpacing.sm),
+                                  BullText(
+                                    l10n.inventoryEmptyBody,
+                                    role: BullTextRole.body,
+                                    textAlign: TextAlign.center,
+                                    color: context.bull.textMuted,
+                                  ),
+                                  if (board != null) ...[
+                                    const Gap(BullSpacing.lg),
+                                    BullButton.big(
+                                      label: l10n.boardToArk,
+                                      onPressed: () =>
+                                          _board(snapshot.account, board),
+                                      bgColor: context.bull.secondary,
+                                      textColor: context.bull.onSecondary,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            )
+                          else if (values.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.all(BullSpacing.lg),
+                              child: BullText(
+                                _current(snapshot)
+                                    ? l10n.vtxoNoMatches
+                                    : l10n.unknown,
+                                role: BullTextRole.body,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          for (final vtxo in values)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                bottom: BullSpacing.xs,
+                              ),
+                              child: Semantics(
+                                button: true,
+                                label:
+                                    '${formatArkObservedSats(context, vtxo.amount)}, ${_status(context, vtxo)}, ${l10n.vtxoDetails}',
                                 child: BullBorderedTile(
-                                  onTap: eligible.contains(v.id)
-                                      ? () => _toggle(snapshot.account, v.id)
-                                      : null,
-                                  backgroundColor: _selected.contains(v.id)
-                                      ? context.bull.surfaceContainer
-                                      : context.bull.surface,
+                                  key: ValueKey('vtxo-details-${vtxo.id}'),
+                                  onTap: () =>
+                                      _openDetails(snapshot.account, vtxo.id),
+                                  backgroundColor: context.bull.surface,
                                   child: Row(
                                     children: [
-                                      if (_selected.contains(v.id)) ...[
-                                        BullIcon(
-                                          BullIcons.check,
-                                          color: context.bull.text,
-                                        ),
-                                        const Gap(BullSpacing.sm),
-                                      ],
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -400,47 +483,28 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                             BullText(
                                               formatArkObservedSats(
                                                 context,
-                                                v.amount,
+                                                vtxo.amount,
                                               ),
                                               role: BullTextRole.body,
                                               fontWeight: FontWeight.w700,
                                             ),
                                             BullText(
-                                              _expired(v)
-                                                  ? l10n.vtxoExpired
-                                                  : _state(context, v),
+                                              _status(context, vtxo),
                                               role: BullTextRole.caption,
-                                              color: context.bull.textMuted,
-                                            ),
-                                            BullText(
-                                              v.id,
-                                              role: BullTextRole.caption,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              color: context.bull.textMuted,
+                                              color: _statusColor(
+                                                context,
+                                                vtxo,
+                                              ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      Semantics(
-                                        button: true,
-                                        label: '${l10n.vtxoDetails}: ${v.id}',
-                                        child: GestureDetector(
-                                          key: ValueKey('vtxo-details-${v.id}'),
-                                          behavior: HitTestBehavior.opaque,
-                                          onTap: () => _openDetails(
-                                            snapshot.account,
-                                            v.id,
-                                          ),
-                                          child: SizedBox(
-                                            width: 48,
-                                            height: 48,
-                                            child: Center(
-                                              child: BullIcon(
-                                                BullIcons.chevronRight,
-                                                color: context.bull.textMuted,
-                                              ),
-                                            ),
+                                      const SizedBox(
+                                        width: 48,
+                                        height: 48,
+                                        child: Center(
+                                          child: BullIcon(
+                                            BullIcons.chevronRight,
                                           ),
                                         ),
                                       ),
@@ -448,20 +512,20 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                   ),
                                 ),
                               ),
-                          ],
+                            ),
                         ],
                       ),
               ),
             ),
-            if (snapshot.vtxos.isNotEmpty || !_current(snapshot))
+            if (details != null && _eligible(details))
               Padding(
                 padding: const EdgeInsets.all(BullSpacing.md),
                 child: BullButton.big(
-                  label: l10n.renew,
-                  onPressed: () => _review(snapshot.account),
-                  disabled: selection.isEmpty,
-                  bgColor: context.bull.text,
-                  textColor: context.bull.background,
+                  label: l10n.inventoryRenew,
+                  onPressed: () =>
+                      _review(snapshot, publication, details.id, capability),
+                  bgColor: context.bull.secondary,
+                  textColor: context.bull.onSecondary,
                 ),
               ),
           ],
