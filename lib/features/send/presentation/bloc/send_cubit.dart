@@ -471,6 +471,9 @@ class SendCubit extends Cubit<SendState>
           amountConfirmedClicked: false,
         ),
       );
+      // Quotes are not refreshed on the confirm step; editing resumes with a
+      // current rate rather than the one from before the confirmation.
+      unawaited(refreshAmountQuotes());
     }
   }
 
