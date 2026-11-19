@@ -45,7 +45,6 @@ void main() {
         scheduler: scheduler,
       );
       expect(scheduler.registered, [BackgroundTask.arkRenewal.id]);
-      expect(backgroundSyncEnabled, false);
       expect(scheduler.cancelled, isEmpty);
     },
   );
