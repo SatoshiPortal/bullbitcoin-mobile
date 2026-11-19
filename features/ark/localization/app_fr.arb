@@ -292,5 +292,6 @@
   "inventoryRoundNonceCount": "Nonces par round",
   "inventoryBlockHeight": "Bloc {height}",
   "operationDetails": "Détails de l’opération",
-  "operationRequestCompleted": "Demande terminée. Le règlement on-chain et la fin du round restent distincts."
+  "operationRequestCompleted": "Demande terminée. Le règlement on-chain et la fin du round restent distincts.",
+  "exitNotStarted": "Sortie non démarrée"
 }

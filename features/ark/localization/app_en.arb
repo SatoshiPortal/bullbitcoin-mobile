@@ -991,5 +991,9 @@
   "operationRequestCompleted": "Request completed. Chain settlement and round completion are separate.",
   "@operationRequestCompleted": {
     "description": "Operation result presentation; this does not assert chain settlement or round completion."
+  },
+  "exitNotStarted": "Exit not started",
+  "@exitNotStarted": {
+    "description": "Heading for an emergency exit quote refused before any confirmation attempt."
   }
 }
