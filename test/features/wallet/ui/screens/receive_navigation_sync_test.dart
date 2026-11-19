@@ -81,6 +81,7 @@ void main() {
             GoRoute(
               path: '/wallet',
               builder: (_, _) => WalletHomeScreen(
+                arkHost: null,
                 createSetupCubit: createSetupCubit,
                 onEmptyMainnet: () {},
                 onImportNetworkWallet: () {},
