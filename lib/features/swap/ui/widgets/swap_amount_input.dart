@@ -32,6 +32,7 @@ class SwapAmountInput extends StatelessWidget {
       amountController: amountController,
       focusNode: focusNode,
       inCard: true,
+      framed: true,
       readOnly: state.continueClicked || state.isCreatingSwap,
       defaultCurrencyCode: state.fiatCurrencyCode,
       isLiquid: state.fromWallet?.isLiquid == true,
@@ -68,10 +69,7 @@ class SwapAmountInput extends StatelessWidget {
           style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
         ),
         const Gap(BullSpacing.xs),
-        BullBorderedTile(
-          padding: const EdgeInsets.all(BullSpacing.xs),
-          child: input,
-        ),
+        input,
       ],
     );
   }
