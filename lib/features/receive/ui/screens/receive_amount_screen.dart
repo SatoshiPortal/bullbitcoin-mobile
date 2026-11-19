@@ -76,7 +76,11 @@ class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
                         color: context.appColors.textMuted,
                       ),
                     ),
-                  if (showLimits && state.inputAmountSat > 0 && outsideLimits)
+                  if (showLimits &&
+                      state.amountEntryValid &&
+                      !state.hasAmountInputFailure &&
+                      state.inputAmount.isNotEmpty &&
+                      outsideLimits)
                     Text(
                       state.isInputAmountBelowLimit
                           ? context.loc.receiveBelowMinimum(
