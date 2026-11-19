@@ -432,4 +432,32 @@ void main() {
     final unit = tester.getCenter(find.text('sats'));
     expect((number.dy - unit.dy).abs(), lessThan(4));
   });
+
+  testWidgets('in a card the error line takes room only with an error', (
+    tester,
+  ) async {
+    final canonical = TextEditingController(text: '25000');
+    addTearDown(canonical.dispose);
+    Future<double> height({String? error}) async {
+      await tester.pumpWidget(
+        wrapWithTheme(
+          Center(
+            child: BullAmountInput(
+              canonicalUnit: BitcoinUnit.sats,
+              amountController: canonical,
+              inCard: true,
+              error: error,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return tester.getSize(find.byType(BullAmountInput)).height;
+    }
+
+    final plain = await height();
+    final withError = await height(error: 'Amount too low');
+    expect(find.text('Amount too low'), findsOneWidget);
+    expect(withError, greaterThan(plain + 40));
+  });
 }
