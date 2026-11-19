@@ -13,28 +13,33 @@ import 'package:bull_ui/src/layout/gap.dart';
 /// [BullTheme.surface], the border and dividers use [BullTheme.outline], and a
 /// soft drop shadow derives from [BullTheme.onSurface].
 class BullDetailsTable extends StatelessWidget {
-  const BullDetailsTable({super.key, required this.items});
+  const BullDetailsTable({super.key, required this.items, this.flat = false});
 
   /// The rows to render (typically [BullDetailsTableItem]s), separated by
   /// dividers.
   final List<Widget> items;
 
+  /// Omits only the outer frame, fill, shadow and padding.
+  final bool flat;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border.all(color: colors.outline),
-        boxShadow: [
-          BoxShadow(
-            color: colors.onSurface.withValues(alpha: 0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      padding: flat ? EdgeInsets.zero : const EdgeInsets.all(16),
+      decoration: flat
+          ? null
+          : BoxDecoration(
+              color: colors.surface,
+              border: Border.all(color: colors.outline),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.onSurface.withValues(alpha: 0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
