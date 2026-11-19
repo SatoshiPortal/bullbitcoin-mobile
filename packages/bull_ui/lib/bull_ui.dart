@@ -68,6 +68,7 @@ export 'package:flutter/widgets.dart'
         LongPressDraggable,
         MainAxisAlignment,
         MainAxisSize,
+        MediaQuery,
         Navigator,
         NeverScrollableScrollPhysics,
         Opacity,
