@@ -81,31 +81,66 @@ void main() {
               app(screen, amountPreferences: preferences[index]),
             );
             await tester.pumpAndSettle();
-            for (final amount in [
-              '1,234 sats',
-              '1234 sats',
-              '1234',
-              '1,000 sats',
-              '1000 sats',
-              '1000',
-              '42',
-              '56',
-            ]) {
-              expect(
-                find.text(amount),
-                findsNothing,
-                reason: screen.runtimeType.toString(),
+            void expectPrivateValues() {
+              for (final amount in [
+                '1,234 sats',
+                '1234 sats',
+                '1234',
+                '1,000 sats',
+                '1000 sats',
+                '1000',
+                '42',
+                '56',
+              ]) {
+                expect(
+                  find.text(amount),
+                  findsNothing,
+                  reason: screen.runtimeType.toString(),
+                );
+              }
+              // Include values embedded in compact balance labels, not only
+              // standalone Text widgets.
+              final amounts = RegExp(
+                r'1,234\s*sats|1234\s*sats|\b1234\b|1,000\s*sats|'
+                r'1000\s*sats|\b1000\b|\b42\b|\b56\b',
               );
+              expect(find.textContaining(amounts), findsNothing);
+              expect(find.bySemanticsLabel(amounts), findsNothing);
+              expect(
+                find.bySemanticsLabel(RegExp(r'1,234 sats|1234 sats')),
+                findsNothing,
+              );
+            }
+
+            expectPrivateValues();
+            if (screen is ArkPaymentScreen) {
+              expect(find.text('Balance: ••••'), findsOneWidget);
+              expect(sender.client.calls, isEmpty);
+              // The fixture already enters Amount; Pay from exposes its
+              // standalone balance without requesting a quote or submission.
+              await tester.tap(
+                find.byKey(const ValueKey('ark-payment-pay-from')),
+              );
+              await tester.pumpAndSettle();
+              expect(find.text('Pay from'), findsOneWidget);
+              expectPrivateValues();
+              expect(sender.client.calls, isEmpty);
+              expect(sender.ids, 0);
             }
             expect(
               find.text('••••'),
               findsWidgets,
               reason: screen.runtimeType.toString(),
             );
-            expect(
-              find.bySemanticsLabel(RegExp(r'1,234 sats|1234 sats')),
-              findsNothing,
-            );
+            expect(tester.takeException(), isNull);
+            if (screen is ArkPaymentScreen) {
+              Navigator.of(tester.element(find.text('Pay from'))).pop();
+              await tester.pumpAndSettle();
+              expect(find.text('Pay from'), findsNothing);
+              expectPrivateValues();
+              expect(find.text('Balance: ••••'), findsOneWidget);
+              expect(sender.client.calls, isEmpty);
+            }
           }
         } finally {
           semantics.dispose();

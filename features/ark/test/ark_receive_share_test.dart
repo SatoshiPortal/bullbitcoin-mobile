@@ -2,7 +2,7 @@ import 'package:ark/ark.dart';
 import 'package:bull_ark/src/presentation/ark_receive_cubit.dart';
 import 'package:bull_ark/src/ui/ark_receive_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullQrCode, BullCopyField, SizedBox;
+    show BullButton, BullQrCode, BullCopyField, SizedBox, ValueKey;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -15,7 +15,11 @@ Future<void> frame(WidgetTester tester) async {
   await tester.pump();
 }
 
-BullButton share(WidgetTester tester) {
+Future<BullButton> share(WidgetTester tester) async {
+  if (find.widgetWithText(BullButton, 'Share').evaluate().isEmpty) {
+    await tester.tap(find.byKey(const ValueKey('ark-receive-address-actions')));
+    await tester.pumpAndSettle();
+  }
   final found = find.widgetWithText(BullButton, 'Share');
   expect(
     found,
@@ -64,9 +68,9 @@ void main() {
           tester.widget<BullQrCode>(find.byType(BullQrCode)).data,
           destination.value,
         );
-        expect(share(tester).disabled, false);
-        share(tester).onPressed();
-        share(tester).onPressed();
+        expect((await share(tester)).disabled, false);
+        (await share(tester)).onPressed();
+        (await share(tester)).onPressed();
         expect(received, [destination.value, destination.value]);
         expect(client.calls, ['receive']);
         expect(cubit.state, isA<ArkReceiveReady>());
@@ -82,8 +86,8 @@ void main() {
       final received = <String>[];
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: cubit)));
       await frame(tester);
-      expect(share(tester).disabled, true);
-      share(tester).onPressed();
+      expect((await share(tester)).disabled, true);
+      (await share(tester)).onPressed();
       expect(
         find.text('This Ark action is unavailable in this build.'),
         findsOneWidget,
@@ -92,10 +96,12 @@ void main() {
         app(ArkReceiveScreen(cubit: cubit, onShare: received.add)),
       );
       await frame(tester);
-      final old = share(tester).onPressed;
+      expect((await share(tester)).disabled, false);
+      final old = (await share(tester)).onPressed;
       await tester.pumpWidget(app(ArkReceiveScreen(cubit: cubit)));
       await frame(tester);
       old();
+      expect((await share(tester)).disabled, true);
       expect(received, isEmpty);
       expect(client.calls, ['receive']);
     },
@@ -111,8 +117,8 @@ void main() {
         app(ArkReceiveScreen(cubit: cubit, onShare: received.add)),
       );
       await frame(tester);
-      expect(share(tester).disabled, true);
-      share(tester).onPressed();
+      expect((await share(tester)).disabled, true);
+      (await share(tester)).onPressed();
       expect(find.text('Unavailable'), findsOneWidget);
       expect(find.text('Ark is unavailable. Try again.'), findsNothing);
       expect(received, isEmpty);
@@ -155,7 +161,7 @@ void main() {
         app(ArkReceiveScreen(cubit: cubit, onShare: received.add)),
       );
       await frame(tester);
-      final old = share(tester).onPressed;
+      final old = (await share(tester)).onPressed;
       cubit.edit();
       old();
       expect(received, isEmpty);
@@ -168,7 +174,9 @@ void main() {
       old();
       expect(received, isEmpty);
       expect(identical(cubit.state, original), false);
-      share(tester).onPressed();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      (await share(tester)).onPressed();
       expect(received, [destination.value]);
       expect(client.calls, ['receive']);
     },
@@ -184,7 +192,7 @@ void main() {
           app(ArkReceiveScreen(cubit: a, onShare: received.add)),
         );
         await frame(tester);
-        final old = share(tester).onPressed;
+        final old = (await share(tester)).onPressed;
         final original = account();
         final b = ready(
           FakeArkClient(),
@@ -204,7 +212,9 @@ void main() {
         old();
         expect(received, isEmpty);
         expect(a.isClosed, false);
-        final closed = share(tester).onPressed;
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        final closed = (await share(tester)).onPressed;
         await b.close();
         closed();
         expect(received, isEmpty);
@@ -227,7 +237,7 @@ void main() {
         app(ArkReceiveScreen(cubit: cubit, onShare: received.add)),
       );
       await frame(tester);
-      final current = share(tester).onPressed;
+      final current = (await share(tester)).onPressed;
       expect(cubit.isClosed, false);
       await tester.pumpWidget(app(const SizedBox.shrink()));
       expect(current, returnsNormally);
@@ -249,7 +259,7 @@ void main() {
         app(ArkReceiveScreen(cubit: cubit, onShare: oldReceived.add)),
       );
       await frame(tester);
-      final old = share(tester).onPressed;
+      final old = (await share(tester)).onPressed;
       await tester.pumpWidget(
         app(ArkReceiveScreen(cubit: cubit, onShare: current.add)),
       );

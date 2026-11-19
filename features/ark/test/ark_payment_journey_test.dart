@@ -158,7 +158,10 @@ void main() {
           : findsNothing;
       expect(find.text('Payment sent'), count);
       expect(find.widgetWithText(BullButton, 'Done'), count);
-      expect(find.text('actual-operation'), findsOneWidget);
+      expect(
+        find.text('actual-operation'),
+        kind == ArkOperationKind.payment ? findsNothing : findsOneWidget,
+      );
       expect(rig.client.calls, isEmpty);
     }
   });

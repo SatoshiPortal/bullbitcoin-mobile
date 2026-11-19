@@ -169,7 +169,7 @@ void main() {
       expect(r.cubit.state, isA<ArkPaymentQuoting>());
       oldField('2000');
       await frame(tester);
-      expect(input(tester, 1).value, '2000');
+      expect(input(tester, 1).value, '2,000');
       reply.complete(Ok(paymentQuote(r.cubit.account)));
       await frame(tester);
       expect(r.cubit.state, isA<ArkPaymentEditing>());
@@ -182,7 +182,7 @@ void main() {
       expect(details(tester)['Total'], '2,000 sats');
       cancelAction(tester)();
       await frame(tester);
-      expect(input(tester, 1).value, '2000');
+      expect(input(tester, 1).value, '2,000');
       expect(r.client.calls, ['quote', 'quote']);
     },
   );
@@ -365,10 +365,15 @@ void main() {
         );
         await tester.pumpWidget(app(page(r)));
         await frame(tester);
-        expect(
-          details(tester).values,
-          containsAll(['backend-original', labels[i]]),
-        );
+        if (ArkOperationStatus.values[i] == ArkOperationStatus.succeeded) {
+          expect(details(tester), isEmpty);
+          expect(find.text('Payment sent'), findsOneWidget);
+        } else {
+          expect(
+            details(tester).values,
+            containsAll(['backend-original', labels[i]]),
+          );
+        }
         r.cubit.edit();
         await r.cubit.confirm();
         await r.cubit.review(destination: destination, amount: '1000');
@@ -376,11 +381,7 @@ void main() {
         expect(r.ids, 0);
         expect(
           tester.widgetList<BullButton>(find.byType(BullButton)),
-          hasLength(
-            ArkOperationStatus.values[i] == ArkOperationStatus.succeeded
-                ? 2
-                : 1,
-          ),
+          hasLength(1),
         );
       }
     },

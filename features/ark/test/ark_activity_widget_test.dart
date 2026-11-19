@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
 import 'package:bull_ark/src/presentation/ark_cubit.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullDetailsTable, BullDetailsTableItem;
+import 'package:bull_ui/bull_ui.dart' show ValueKey, Semantics;
+import 'package:intl/intl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -50,43 +50,110 @@ Future<void> frame(WidgetTester tester) async {
   await tester.pump();
 }
 
-List<List<BullDetailsTableItem>> rows(WidgetTester tester) => [
-  for (final table in tester.widgetList<BullDetailsTable>(
-    find.byType(BullDetailsTable),
-  ))
-    if (table.items.whereType<BullDetailsTableItem>().any(
-      (i) => i.label == 'Identifier',
-    ))
-      table.items.whereType<BullDetailsTableItem>().toList(),
-];
-String? value(List<BullDetailsTableItem> row, String label) =>
-    row.singleWhere((i) => i.label == label).displayValue;
+Finder activityRows() => find.byWidgetPredicate(
+  (widget) =>
+      widget is Semantics && widget.properties.label == 'Observed activity',
+);
 
 void main() {
   testWidgets(
-    'all kinds and statuses remain ordered observations with exact sats and no row actions',
+    'compact observations group genuine dates without technical identifiers',
+    (tester) async {
+      final time = DateTime(2026, 11, 4, 12, 30);
+      final movements = [
+        movement(
+          id: 'private-record-one',
+          txid: 'public-but-technical-txid',
+          time: time,
+          kind: ArkMovementKind.board,
+          status: ArkMovementStatus.successful,
+          amount: Sats.fromInt(50000),
+        ),
+        movement(
+          id: 'private-record-two',
+          time: time.add(const Duration(hours: 1)),
+          kind: ArkMovementKind.payment,
+          status: ArkMovementStatus.pending,
+          amount: Sats.fromInt(5000),
+        ),
+        movement(id: 'unknown-date'),
+      ];
+      final client = Client()..snapshot = Ok(observed(movements));
+      await tester.pumpWidget(app(screen(controller(client), [])));
+      await frame(tester);
+      expect(tester.takeException(), isNull);
+      expect(activityRows(), findsNWidgets(3));
+      expect(find.text(DateFormat.yMMMMd('en').format(time)), findsOneWidget);
+      expect(find.text('50,000 sats'), findsOneWidget);
+      expect(find.text('5,000 sats'), findsOneWidget);
+      expect(find.text('Payment'), findsNWidgets(2));
+      for (final (anchor, labels) in [
+        ('50,000 sats', ['Boarded', '12:30']),
+        ('5,000 sats', ['Payment', 'Pending', '13:30']),
+        ('Unknown', ['Payment', 'Unavailable']),
+      ]) {
+        final row = find.ancestor(
+          of: find.text(anchor),
+          matching: activityRows(),
+        );
+        expect(row, findsOneWidget);
+        for (final label in labels) {
+          expect(
+            find.descendant(of: row, matching: find.text(label)),
+            findsOneWidget,
+          );
+        }
+      }
+      final boarded = find.ancestor(
+        of: find.text('50,000 sats'),
+        matching: activityRows(),
+      );
+      expect(
+        find.descendant(
+          of: boarded,
+          matching: find.byWidgetPredicate(
+            (widget) =>
+                widget is Semantics && widget.properties.label == 'Completed',
+          ),
+        ),
+        findsOneWidget,
+      );
+      for (final raw in [
+        'private-record-one',
+        'private-record-two',
+        'public-but-technical-txid',
+        'Identifier',
+        'Transaction ID',
+        'Observed time (UTC)',
+      ]) {
+        expect(find.text(raw), findsNothing);
+      }
+      expect(
+        find.text(DateFormat.yMMMMd('en').format(DateTime(2026, 11, 17))),
+        findsNothing,
+      );
+      expect(client.calls, ['read']);
+    },
+  );
+
+  testWidgets(
+    'every observed kind and status stays visible with unknown fields explicit',
     (tester) async {
       final data = [
         for (var i = 0; i < ArkMovementKind.values.length; i++)
           movement(
-            id: i < 2 ? 'duplicate' : 'id-$i',
+            id: 'technical-$i',
             kind: ArkMovementKind.values[i],
-            status: ArkMovementStatus.values[i % 4],
-            amount: Sats.fromInt(1000 + i),
-            fee: Sats.fromInt(10 + i),
-            txid: i == 0 ? 'supplied-public-txid' : null,
-            time: i == 0
-                ? DateTime.parse('2026-11-16T16:00:00+02:00')
-                : i == 1
-                ? DateTime.utc(2020)
-                : null,
+            status:
+                ArkMovementStatus.values[i % ArkMovementStatus.values.length],
+            amount: i == 0 ? null : Sats.fromInt(1000 + i),
           ),
       ];
       final client = Client()..snapshot = Ok(observed(data));
-      final calls = <String>[];
-      await tester.pumpWidget(app(screen(controller(client), calls)));
+      await tester.pumpWidget(app(screen(controller(client), [])));
       await frame(tester);
-      expect(find.text('Observed activity'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      expect(activityRows(), findsNWidgets(6));
       for (final label in [
         'Board funding',
         'Payment',
@@ -94,76 +161,30 @@ void main() {
         'Exit',
         'Lightning receipt',
         'Unknown',
+        'Pending',
+        'Failed',
+        'Unavailable',
       ]) {
         expect(find.text(label), findsWidgets);
       }
-      final actual = rows(tester);
-      expect(actual, hasLength(6));
-      for (var i = 0; i < 6; i++) {
-        expect(value(actual[i], 'Identifier'), data[i].id);
-        expect(value(actual[i], 'Amount in sats'), '${1000 + i}');
-        expect(value(actual[i], 'Fee (sats)'), '${10 + i}');
-        expect(
-          value(actual[i], 'Transaction ID'),
-          i == 0 ? 'supplied-public-txid' : 'Unavailable',
-        );
-        expect(
-          value(actual[i], 'State'),
-          ['Pending', 'Completed', 'Failed', 'Unknown'][i % 4],
-        );
-        expect(actual[i].map((item) => item.copyValue), everyElement(isNull));
-      }
       expect(
-        value(actual[0], 'Observed time (UTC)'),
-        '2026-11-16T14:00:00.000Z',
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics && widget.properties.label == 'Completed',
+        ),
+        findsNWidgets(2),
       );
-      expect(
-        value(actual[1], 'Observed time (UTC)'),
-        '2020-01-01T00:00:00.000Z',
-      );
-      expect(value(actual[2], 'Observed time (UTC)'), 'Unavailable');
+      expect(find.text('1,001 sats'), findsOneWidget);
+      expect(find.text('0 sats'), findsNothing);
+      expect(find.text('technical-0'), findsNothing);
       expect(client.calls, ['read']);
-      expect(calls, isEmpty);
-      expect(
-        tester.widgetList<BullButton>(find.byType(BullButton)),
-        hasLength(7),
-      );
-      expect(find.text('Activity observations unavailable'), findsNothing);
     },
   );
-  testWidgets(
-    'missing fields are unavailable, not zero or snapshot observation time',
-    (tester) async {
-      final client = Client()
-        ..snapshot = Ok(
-          observed([
-            movement(id: '', txid: ''),
-            movement(id: '   ', txid: '   ', fee: Sats.fromInt(0)),
-          ]),
-        );
-      await tester.pumpWidget(app(screen(controller(client), [])));
-      await frame(tester);
-      final actual = rows(tester);
-      expect(actual, hasLength(2));
-      for (final row in actual) {
-        for (final label in [
-          'Identifier',
-          'Transaction ID',
-          'Observed time (UTC)',
-          'Amount in sats',
-        ]) {
-          expect(value(row, label), 'Unavailable');
-        }
-      }
-      expect(value(actual[0], 'Fee (sats)'), 'Unavailable');
-      expect(value(actual[1], 'Fee (sats)'), '0');
-      expect(find.text('2026-11-17T00:00:00.000Z'), findsNothing);
-    },
-  );
+
   for (final stale in [false, true]) {
     for (final complete in [false, true]) {
       testWidgets(
-        'empty history is unavailable stale=$stale completeVtxos=$complete even after complete recovery',
+        'empty history remains unavailable stale=$stale completeVtxos=$complete',
         (tester) async {
           final client = Client()
             ..snapshot = Ok(
@@ -177,82 +198,75 @@ void main() {
             );
           await tester.pumpWidget(app(screen(controller(client), [])));
           await frame(tester);
-          expect(find.text('Observed activity'), findsOneWidget);
+          expect(
+            find.byKey(const ValueKey('ark-empty-activity')),
+            findsOneWidget,
+          );
           expect(
             find.text('Activity observations unavailable'),
             findsOneWidget,
           );
-          expect(
-            find.text('No items in this observed inventory.'),
-            findsNothing,
-          );
-          expect(rows(tester), isEmpty);
+          expect(find.text('No transactions yet'), findsNothing);
+          expect(activityRows(), findsNothing);
           expect(client.calls, ['read']);
         },
       );
     }
   }
-  testWidgets(
-    'failed refresh keeps stale=false activity explicitly historical and funded-off protective',
-    (tester) async {
-      final client = Client()
-        ..snapshot = Ok(observed([movement()]))
-        ..pass = const Err(ArkUnavailableFailure());
-      final cubit = controller(client);
-      final calls = <String>[];
-      await tester.pumpWidget(app(screen(cubit, calls, enabled: false)));
-      await frame(tester);
-      await cubit.refresh();
-      await frame(tester);
-      expect((cubit.state as ArkViewFailed).lastObserved?.stale, false);
-      expect(find.text(historical), findsOneWidget);
-      expect(rows(tester), hasLength(1));
-      for (final label in ['Send', 'Receive', 'Board to Ark']) {
-        expect(button(tester, label).disabled, true);
-        button(tester, label).onPressed();
-      }
-      expect(calls, isEmpty);
-      for (final label in ['VTXOs', 'Emergency exit', 'Ark info']) {
-        button(tester, label).onPressed();
-      }
-      expect(calls, ['vtxos', 'exits', 'info']);
-      expect(client.calls, ['read', 'sync']);
-    },
-  );
+
+  testWidgets('failed refresh preserves historical activity and off guards', (
+    tester,
+  ) async {
+    final client = Client()
+      ..snapshot = Ok(observed([movement()]))
+      ..pass = const Err(ArkUnavailableFailure());
+    final cubit = controller(client);
+    final calls = <String>[];
+    await tester.pumpWidget(app(screen(cubit, calls, enabled: false)));
+    await frame(tester);
+    await cubit.refresh();
+    await frame(tester);
+    expect(find.text(historical), findsOneWidget);
+    expect(activityRows(), findsOneWidget);
+    for (final label in ['Send', 'Receive']) {
+      expect(button(tester, label).disabled, isTrue);
+      button(tester, label).onPressed();
+    }
+    expect(calls, isEmpty);
+    expect(client.calls, ['read', 'sync']);
+  });
+
   for (final failed in [false, true]) {
-    testWidgets(
-      'foreign activity is suppressed in failed=$failed observations',
-      (tester) async {
-        final client = Client()..snapshot = Ok(observed([movement()]));
-        final cubit = controller(client);
-        await tester.pumpWidget(app(screen(cubit, [])));
-        await frame(tester);
-        final original = account();
-        final foreign = observed(
-          [movement(id: 'foreign')],
-          owner: ArkAccountId(
-            parent: original.parent,
-            network: original.network,
-            serverIdentity: 'foreign',
-          ),
-        );
-        cubit.emit(
-          failed
-              ? ArkViewFailed(
-                  const ArkServiceUnavailableFailure(),
-                  lastObserved: foreign,
-                )
-              : ArkObserved(foreign),
-        );
-        await frame(tester);
-        expect(rows(tester), isEmpty);
-        expect(find.text('foreign'), findsNothing);
-        expect(find.text('Observed activity'), findsNothing);
-      },
-    );
+    testWidgets('foreign activity suppressed failed=$failed', (tester) async {
+      final client = Client()..snapshot = Ok(observed([movement()]));
+      final cubit = controller(client);
+      await tester.pumpWidget(app(screen(cubit, [])));
+      await frame(tester);
+      final original = account();
+      final foreign = observed(
+        [movement(amount: Sats.fromInt(987654))],
+        owner: ArkAccountId(
+          parent: original.parent,
+          network: original.network,
+          serverIdentity: 'foreign',
+        ),
+      );
+      cubit.emit(
+        failed
+            ? ArkViewFailed(
+                const ArkServiceUnavailableFailure(),
+                lastObserved: foreign,
+              )
+            : ArkObserved(foreign),
+      );
+      await frame(tester);
+      expect(activityRows(), findsNothing);
+      expect(find.text('987,654 sats'), findsNothing);
+    });
   }
+
   testWidgets(
-    'rebound owner never displays late old account rows while new read is pending',
+    'rebound owner rejects late rows and displays only its current observation',
     (tester) async {
       final oldReply = Completer<Result<ArkSnapshot, ArkWalletFailure>>();
       final newReply = Completer<Result<ArkSnapshot, ArkWalletFailure>>();
@@ -262,14 +276,14 @@ void main() {
       await frame(tester);
       await tester.pumpWidget(app(screen(b, [])));
       await frame(tester);
-      oldReply.complete(Ok(observed([movement(id: 'old-private-row')])));
+      oldReply.complete(Ok(observed([movement(amount: Sats.fromInt(111))])));
       await frame(tester);
-      expect(rows(tester), isEmpty);
-      expect(find.text('old-private-row'), findsNothing);
-      newReply.complete(Ok(observed([movement(id: 'current-row')])));
+      expect(activityRows(), findsNothing);
+      newReply.complete(Ok(observed([movement(amount: Sats.fromInt(222))])));
       await frame(tester);
-      expect(rows(tester), hasLength(1));
-      expect(find.text('current-row'), findsOneWidget);
+      expect(activityRows(), findsOneWidget);
+      expect(find.text('222 sats'), findsOneWidget);
+      expect(find.text('111 sats'), findsNothing);
       expect(a.isClosed, false);
       expect(b.isClosed, false);
     },
