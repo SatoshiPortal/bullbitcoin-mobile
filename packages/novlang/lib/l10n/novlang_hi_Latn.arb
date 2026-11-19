@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Account Settings",
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet account credentials",
   "app__exchangeTestnetBasicAuthDescription_apple": "Testnet account web pages (login aur KYC) ke liye HTTP basic auth.",
-  "app__exchangeAccountTitle_apple": "Account",
-  "app__exchangeAccountSettingsTitle_apple": "Account Settings",
   "app__walletDeletionErrorOngoingSwaps_apple": "Jis wallet mein transfers chal rahe hain, use delete nahi kiya ja sakta.",
   "app__onboardingSplashDescription_apple": "Sovereign self-custody Bitcoin wallet aur Bitcoin-only services.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin transfers ko confirm hone mein samay lagega.",

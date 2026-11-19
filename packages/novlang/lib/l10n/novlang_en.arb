@@ -153,14 +153,6 @@
   "@app__exchangeTestnetBasicAuthDescription_apple": {
     "description": "Apple (App Store) wording for the root catalogue key exchangeTestnetBasicAuthDescription."
   },
-  "app__exchangeAccountTitle_apple": "Account",
-  "@app__exchangeAccountTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeAccountTitle."
-  },
-  "app__exchangeAccountSettingsTitle_apple": "Account Settings",
-  "@app__exchangeAccountSettingsTitle_apple": {
-    "description": "Apple (App Store) wording for the root catalogue key exchangeAccountSettingsTitle."
-  },
   "app__walletDeletionErrorOngoingSwaps_apple": "You cannot delete a wallet with ongoing transfers.",
   "@app__walletDeletionErrorOngoingSwaps_apple": {
     "description": "Apple (App Store) wording for the root catalogue key walletDeletionErrorOngoingSwaps."

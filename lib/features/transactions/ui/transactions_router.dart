@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 
 enum TransactionsRoute {
   transactions('/transactions'),
+  exchangeTransactions('/transactions/exchange'),
   exportTransactions('/transactions/export'),
   transactionDetails('/transaction/:txId'),
   swapTransactionDetails('/transaction/swap/:swapId'),
@@ -40,6 +41,15 @@ class TransactionsRouter {
           );
         },
       );
+
+  static final exchangeTransactionsRoute = GoRoute(
+    name: TransactionsRoute.exchangeTransactions.name,
+    path: TransactionsRoute.exchangeTransactions.path,
+    builder: (context, state) => BlocProvider(
+      create: (context) => locator<TransactionsCubit>(param2: true)..loadTxs(),
+      child: const TransactionsScreen(),
+    ),
+  );
 
   static final exportTransactionsRoute = GoRoute(
     name: TransactionsRoute.exportTransactions.name,

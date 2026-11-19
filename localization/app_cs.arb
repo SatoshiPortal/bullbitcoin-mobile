@@ -2528,10 +2528,6 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "Linky",
-  "@exchangeLegacyTransactionsTitle": {
-    "description": "Title for the legacy transactions section in exchange"
-  },
   "autoswapWarningDontShowAgain": "Nevykazujte tuto varování znovu.",
   "@autoswapWarningDontShowAgain": {
     "description": "Checkbox label for dismissing the autoswap warning"
@@ -3611,10 +3607,6 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "Nastavení směnného účtu",
-  "@exchangeAccountSettingsTitle": {
-    "description": "Title for the exchange account settings screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "Nahrajte až {maxFiles} soubory. Podporované formáty: PDF, JPG, PNG, GIF, HEIC. Maximální velikost souboru: 10MB na soubor.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
@@ -3927,10 +3919,6 @@
   "sellSendPaymentEurBalance": "Kč Čeština",
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
-  },
-  "exchangeAccountTitle": "Směnný účet",
-  "@exchangeAccountTitle": {
-    "description": "Title for the exchange account section"
   },
   "swapProgressCompleted": "Swap dokončen",
   "@swapProgressCompleted": {
@@ -6981,10 +6969,6 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "Linky - Brzy",
-  "@exchangeLegacyTransactionsComingSoon": {
-    "description": "Message indicating that the legacy transactions feature is coming soon"
-  },
   "buyProofOfAddress": "Důkaz adresy",
   "@buyProofOfAddress": {
     "description": "Type of document required"
@@ -7345,10 +7329,6 @@
   "sendConfirmSwap": "Potvrzení Swapu",
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
-  },
-  "exchangeLogoutComingSoon": "Přihlásit se - Brzy",
-  "@exchangeLogoutComingSoon": {
-    "description": "Message indicating that the log out feature is coming soon"
   },
   "exchangeStatisticsTotalVolume": "Celkový objem obchodování",
   "@exchangeStatisticsTotalVolume": {
@@ -9113,10 +9093,6 @@
   "payPayee": "Čeština",
   "@payPayee": {
     "description": "Label for payee details"
-  },
-  "exchangeAccountComingSoon": "Tato funkce se brzy blíží.",
-  "@exchangeAccountComingSoon": {
-    "description": "Message indicating that a feature is coming soon"
   },
   "sellInProgress": "Prodej v průběhu...",
   "@sellInProgress": {

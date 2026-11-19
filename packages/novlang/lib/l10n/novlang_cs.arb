@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Nastavení účtu",
   "app__exchangeTestnetBasicAuthTitle_apple": "Přihlašovací údaje k testnet účtu",
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth pro webové stránky testnet účtu (přihlášení a KYC).",
-  "app__exchangeAccountTitle_apple": "Účet",
-  "app__exchangeAccountSettingsTitle_apple": "Nastavení účtu",
   "app__walletDeletionErrorOngoingSwaps_apple": "Nemůžete smazat peněženku s probíhajícími převody.",
   "app__onboardingSplashDescription_apple": "Bitcoinová peněženka s vlastní úschovou a služby pouze pro Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Potvrzení bitcoinových převodů nějakou dobu potrvá.",

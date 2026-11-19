@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Mipangilio ya Akaunti",
   "app__exchangeTestnetBasicAuthTitle_apple": "Kitambulisho cha akaunti ya testnet",
   "app__exchangeTestnetBasicAuthDescription_apple": "Uthibitishaji wa msingi wa HTTP kwa kurasa za wavuti za akaunti ya testnet (kuingia na KYC).",
-  "app__exchangeAccountTitle_apple": "Akaunti",
-  "app__exchangeAccountSettingsTitle_apple": "Mipangilio ya Akaunti",
   "app__walletDeletionErrorOngoingSwaps_apple": "Huwezi kufuta pochi yenye uhamisho unaoendelea.",
   "app__onboardingSplashDescription_apple": "Pochi huru ya Bitcoin ya kujitunza mwenyewe na huduma za Bitcoin pekee.",
   "app__sendSlowPaymentWarningDescription_apple": "Uhamisho wa Bitcoin utachukua muda kuthibitishwa.",

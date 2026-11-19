@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "खाता सेटिंग्स",
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet खाते के क्रेडेंशियल",
   "app__exchangeTestnetBasicAuthDescription_apple": "Testnet खाते के वेब पेजों (लॉगिन और KYC) के लिए HTTP बेसिक ऑथ।",
-  "app__exchangeAccountTitle_apple": "खाता",
-  "app__exchangeAccountSettingsTitle_apple": "खाता सेटिंग्स",
   "app__walletDeletionErrorOngoingSwaps_apple": "आप चल रहे ट्रांसफ़र वाला वॉलेट नहीं हटा सकते।",
   "app__onboardingSplashDescription_apple": "संप्रभु स्व-संरक्षण वाला Bitcoin वॉलेट और केवल Bitcoin सेवाएँ।",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin ट्रांसफ़र की पुष्टि में समय लगेगा।",

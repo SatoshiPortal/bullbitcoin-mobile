@@ -17,7 +17,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 export '../exchange_settings_locator.dart' show ExchangeSettingsLocator;
 export '../ui/exchange_settings_router.dart'
-    show ExchangeSettingsRoute, ExchangeSettingsRouter;
+    show
+        ExchangeSettingsRoute,
+        ExchangeSettingsRouter,
+        ExchangeSettingsRouterConfig;
 
 class ExchangeSettingsFacade {
   final GetAccountInfoUsecase _getAccountInfoUsecase;

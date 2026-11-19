@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Настройки аккаунта",
   "app__exchangeTestnetBasicAuthTitle_apple": "Учётные данные аккаунта testnet",
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth для веб-страниц аккаунта testnet (вход и KYC).",
-  "app__exchangeAccountTitle_apple": "Аккаунт",
-  "app__exchangeAccountSettingsTitle_apple": "Настройки аккаунта",
   "app__walletDeletionErrorOngoingSwaps_apple": "Вы не можете удалить кошелёк с текущими переводами.",
   "app__onboardingSplashDescription_apple": "Кошелёк Bitcoin с суверенным самостоятельным хранением и сервисы только для Bitcoin.",
   "app__sendSlowPaymentWarningDescription_apple": "Переводы Bitcoin потребуют времени для подтверждения.",

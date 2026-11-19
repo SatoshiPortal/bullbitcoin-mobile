@@ -201,6 +201,7 @@ class AppRouter {
       TransactionsRouter.transactionsRoute(
         scope: (child) => ActiveNetworkScope(child: child),
       ),
+      TransactionsRouter.exchangeTransactionsRoute,
       TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
