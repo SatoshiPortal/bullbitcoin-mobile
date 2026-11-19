@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_coin_selection_bottom_sheet.dart';
@@ -95,11 +94,9 @@ class SwapAdvancedOptionsBottomSheet extends StatelessWidget {
             },
           ),
           const Gap(24),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.sendDone,
             onPressed: context.pop,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

@@ -332,11 +332,9 @@ class _SetCustomServerBottomSheetState
                       ),
                     )
                   else
-                    BullButton.big(
+                    BullButton.primary(
                       label: context.loc.save,
                       onPressed: _saveServer,
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
                     ),
                 ],
               ),

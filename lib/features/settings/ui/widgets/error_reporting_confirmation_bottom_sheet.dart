@@ -100,19 +100,16 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: BullButton.big(
+                      child: BullButton.secondary(
                         label: context.loc.errorReportingCancelButton,
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        bgColor: context.appColors.surface,
-                        textColor: context.appColors.text,
-                        borderColor: context.appColors.border,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: BullButton.big(
+                      child: BullButton.primary(
                         label: context.loc.errorReportingAcceptButton,
                         onPressed: () {
                           context.read<SettingsCubit>().toggleErrorReporting(
@@ -124,8 +121,6 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                             message: context.loc.errorReportingRestartSnackbar,
                           );
                         },
-                        bgColor: context.appColors.primary,
-                        textColor: context.appColors.onPrimary,
                       ),
                     ),
                   ],

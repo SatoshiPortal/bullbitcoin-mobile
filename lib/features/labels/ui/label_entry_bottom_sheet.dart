@@ -278,12 +278,9 @@ class _LabelEntryBottomSheetState extends State<LabelEntryBottomSheet> {
             ),
           ],
           Gap(gap),
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.receiveSave,
-            disabled: !_canSave,
-            onPressed: _save,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
+            onPressed: (!_canSave) ? null : _save,
           ),
           Gap(gap),
         ],

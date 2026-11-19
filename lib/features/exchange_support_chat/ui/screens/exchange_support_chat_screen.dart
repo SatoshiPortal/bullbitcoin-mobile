@@ -19,7 +19,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullButton,
+        BullInlineIconButton,
         BullInputText,
         BullShapesX,
         Gap,
@@ -377,34 +377,26 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BullButton.big(
-                    label: '',
-                    iconData: Icons.attach_file,
-                    disabled: false,
+                  child: BullInlineIconButton(
+                    icon: Icon(Icons.attach_file),
+                    tooltip: context.loc.exchangeSupportChatAttachFileTooltip,
+
                     onPressed: () {
                       context.read<ExchangeSupportChatCubit>().addAttachment();
                     },
-                    bgColor: context.appColors.surfaceContainer,
-                    textColor: context.appColors.onSurface,
-                    width: 52,
-                    height: 52,
                   ),
                 ),
                 const Gap(8),
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BullButton.big(
-                    label: '',
-                    iconData: Icons.description,
-                    disabled: false,
+                  child: BullInlineIconButton(
+                    icon: Icon(Icons.description),
+                    tooltip: context.loc.exchangeSupportChatAttachLogsTooltip,
+
                     onPressed: () {
                       context.read<ExchangeSupportChatCubit>().attachLogs();
                     },
-                    bgColor: context.appColors.surfaceContainer,
-                    textColor: context.appColors.onSurface,
-                    width: 52,
-                    height: 52,
                   ),
                 ),
                 const Gap(8),
@@ -428,25 +420,19 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BullButton.big(
-                    label: '',
-                    iconData: Icons.send,
-                    disabled:
-                        state.sendingMessage ||
-                        state.newMessageText.trim().isEmpty,
-                    onPressed: () {
-                      context.read<ExchangeSupportChatCubit>().sendMessage();
-                    },
-                    bgColor:
-                        Color.lerp(
-                          context.appColors.primary,
-                          context.appColors.secondaryFixed,
-                          0.2,
-                        ) ??
-                        context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
-                    width: 52,
-                    height: 52,
+                  child: BullInlineIconButton(
+                    icon: Icon(Icons.send),
+                    tooltip: context.loc.exchangeSupportChatSendTooltip,
+
+                    onPressed:
+                        (state.sendingMessage ||
+                            state.newMessageText.trim().isEmpty)
+                        ? null
+                        : () {
+                            context
+                                .read<ExchangeSupportChatCubit>()
+                                .sendMessage();
+                          },
                   ),
                 ),
               ],

@@ -1239,10 +1239,6 @@ m.Widget bullConfirmDialogUseCase(m.BuildContext context) {
         ),
         confirmLabel: 'Delete',
         cancelLabel: 'Cancel',
-        destructive: context.knobs.boolean(
-          label: 'destructive',
-          initialValue: true,
-        ),
       ),
     ),
   );

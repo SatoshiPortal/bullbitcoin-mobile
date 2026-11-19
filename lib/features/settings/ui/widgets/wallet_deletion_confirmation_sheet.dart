@@ -55,23 +55,17 @@ class WalletDeletionConfirmationSheet extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const Gap(24),
-            BullButton.big(
+            BullButton.primary(
               label: loc.walletDeletionConfirmationDeleteButton,
               onPressed: () {
                 Navigator.of(context).pop();
                 onConfirm();
               },
-              bgColor: colors.error,
-              textColor: colors.onError,
             ),
             const Gap(12),
-            BullButton.big(
+            BullButton.secondary(
               label: loc.walletDeletionConfirmationCancelButton,
               onPressed: () => Navigator.of(context).pop(),
-              bgColor: colors.transparent,
-              textColor: colors.text,
-              outlined: true,
-              borderColor: colors.outlineVariant,
             ),
           ],
         ),

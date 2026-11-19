@@ -44,11 +44,10 @@ class _PayjoinDisclaimerBody extends StatelessWidget {
           style: textTheme.body.copyWith(color: colors.onSurfaceVariant),
         ),
         const Gap(20),
-        BullButton.small(
+        BullButton.primary(
+          size: BullButtonSize.small,
           label: context.loc.okButton,
           onPressed: () => Navigator.of(dialogContext).pop(true),
-          bgColor: colors.primary,
-          textColor: colors.onPrimary,
         ),
       ],
     );

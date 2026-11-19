@@ -82,14 +82,12 @@ class TranslationWarningBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: gapL),
 
-              BullButton.big(
+              BullButton.secondary(
                 label: context.loc.translationWarningContributeButton,
                 onPressed: () async {
                   Navigator.of(context).pop();
                   await _openGithub();
                 },
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

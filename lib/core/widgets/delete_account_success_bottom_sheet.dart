@@ -2,7 +2,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText, BullTypographyX;
+    show
+        BullButtonSize,
+        BullBottomSheet,
+        BullButton,
+        BullShapesX,
+        BullText,
+        BullTypographyX;
 
 class DeleteAccountSuccessBottomSheet extends StatelessWidget {
   const DeleteAccountSuccessBottomSheet({super.key});
@@ -64,11 +70,10 @@ class DeleteAccountSuccessBottomSheet extends StatelessWidget {
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
-                child: BullButton.small(
+                child: BullButton.secondary(
+                  size: BullButtonSize.small,
                   label: context.loc.deleteAccountSuccessClose,
                   onPressed: () => Navigator.of(context).pop(),
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ),
             ],

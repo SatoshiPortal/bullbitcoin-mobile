@@ -63,14 +63,12 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                 overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
-              BullButton.big(
+              BullButton.secondary(
                 label: context.loc.loginButton,
                 onPressed: () {
                   Navigator.of(context).pop();
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

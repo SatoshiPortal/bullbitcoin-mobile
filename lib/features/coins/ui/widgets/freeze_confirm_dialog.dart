@@ -71,25 +71,17 @@ class FreezeConfirmDialog extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: BullButton.big(
+              child: BullButton.secondary(
                 label: loc.cancel,
                 onPressed: onCancel,
-                bgColor: colors.transparent,
-                textColor: colors.text,
-                outlined: true,
-                borderColor: colors.outlineVariant,
                 height: 46,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: BullButton.big(
+              child: BullButton.primary(
                 label: loc.coinsFreeze,
                 onPressed: onConfirm,
-                bgColor: colors.primary,
-                textColor: colors.onPrimary,
-                iconData: BullIcons.acUnit,
-                iconFirst: true,
                 height: 46,
               ),
             ),

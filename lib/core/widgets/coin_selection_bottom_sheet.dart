@@ -175,18 +175,13 @@ class _CommonCoinSelectionBottomSheetState
             shrinkWrap: true,
           ),
           const Gap(24),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.doneButton,
-            onPressed: selectedUtxoTotalSat >= widget.amountToSendSat
+            onPressed: (selectedUtxoTotalSat < widget.amountToSendSat)
+                ? null
+                : selectedUtxoTotalSat >= widget.amountToSendSat
                 ? _onDonePressed
                 : () {},
-            disabled: selectedUtxoTotalSat < widget.amountToSendSat,
-            bgColor: selectedUtxoTotalSat >= widget.amountToSendSat
-                ? context.appColors.secondary
-                : context.appColors.outlineVariant,
-            textColor: selectedUtxoTotalSat >= widget.amountToSendSat
-                ? context.appColors.onSecondary
-                : context.appColors.outline,
           ),
           const Gap(24),
         ],

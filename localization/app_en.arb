@@ -15748,5 +15748,17 @@
   "wizardNotificationsDescription": "Know when a payment arrives.",
   "@wizardNotificationsDescription": {
     "description": "Short line under the notifications switch of the wizard."
+  },
+  "exchangeSupportChatAttachFileTooltip": "Attach a file",
+  "@exchangeSupportChatAttachFileTooltip": {
+    "description": "Accessible tooltip for the support chat file attachment button."
+  },
+  "exchangeSupportChatAttachLogsTooltip": "Attach logs",
+  "@exchangeSupportChatAttachLogsTooltip": {
+    "description": "Accessible tooltip for the support chat log attachment button."
+  },
+  "exchangeSupportChatSendTooltip": "Send message",
+  "@exchangeSupportChatSendTooltip": {
+    "description": "Accessible tooltip for the support chat send button."
   }
 }

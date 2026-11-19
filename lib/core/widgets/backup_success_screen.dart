@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -62,10 +61,8 @@ class BackupSuccessScreen extends StatelessWidget {
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).size.height * 0.05,
               ),
-              child: BullButton.big(
+              child: BullButton.secondary(
                 label: buttonLabel,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
                 onPressed: () {
                   context.read<WalletBloc>().add(const VerifyBackupStatus());
                   context.goNamed(WalletRoute.walletHome.name);

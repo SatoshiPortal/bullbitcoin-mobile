@@ -8,6 +8,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullInlineIconButton,
         BullButton,
         BullInputText,
         BullShapesX,
@@ -153,12 +154,9 @@ class _ExchangeSupportLoginScreenState
                             const Gap(24),
                             SizedBox(
                               width: double.infinity,
-                              child: BullButton.big(
+                              child: BullButton.primary(
                                 label: context.loc.exchangeLoginButton,
-                                disabled: _busy,
-                                onPressed: _login,
-                                bgColor: context.appColors.primary,
-                                textColor: context.appColors.onPrimary,
+                                onPressed: (_busy) ? null : _login,
                               ),
                             ),
                           ],
@@ -233,30 +231,22 @@ class _DisabledMessageInput extends StatelessWidget {
             SizedBox(
               width: 52,
               height: 52,
-              child: BullButton.big(
-                label: '',
-                iconData: Icons.attach_file,
-                disabled: true,
-                onPressed: () {},
-                bgColor: context.appColors.surfaceContainer,
-                textColor: context.appColors.onSurface,
-                width: 52,
-                height: 52,
+              child: BullInlineIconButton(
+                icon: Icon(Icons.attach_file),
+                tooltip: context.loc.exchangeSupportChatAttachFileTooltip,
+
+                onPressed: null,
               ),
             ),
             const Gap(8),
             SizedBox(
               width: 52,
               height: 52,
-              child: BullButton.big(
-                label: '',
-                iconData: Icons.description,
-                disabled: true,
-                onPressed: () {},
-                bgColor: context.appColors.surfaceContainer,
-                textColor: context.appColors.onSurface,
-                width: 52,
-                height: 52,
+              child: BullInlineIconButton(
+                icon: Icon(Icons.description),
+                tooltip: context.loc.exchangeSupportChatAttachLogsTooltip,
+
+                onPressed: null,
               ),
             ),
             const Gap(8),
@@ -274,21 +264,11 @@ class _DisabledMessageInput extends StatelessWidget {
             SizedBox(
               width: 52,
               height: 52,
-              child: BullButton.big(
-                label: '',
-                iconData: Icons.send,
-                disabled: true,
-                onPressed: () {},
-                bgColor:
-                    Color.lerp(
-                      context.appColors.primary,
-                      context.appColors.secondaryFixed,
-                      0.2,
-                    ) ??
-                    context.appColors.primary,
-                textColor: context.appColors.onPrimary,
-                width: 52,
-                height: 52,
+              child: BullInlineIconButton(
+                icon: Icon(Icons.send),
+                tooltip: context.loc.exchangeSupportChatSendTooltip,
+
+                onPressed: null,
               ),
             ),
           ],

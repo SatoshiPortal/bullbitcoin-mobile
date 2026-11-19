@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
@@ -82,11 +81,9 @@ class _NfcPageState extends State<NfcScannerWidget> {
         if (_tag == null) loadingWidget,
 
         if (_tag != null)
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.scanNfcButton,
             onPressed: _scan,
-            bgColor: context.appColors.onPrimary,
-            textColor: context.appColors.secondary,
             iconData: Icons.nfc,
           ),
       ],

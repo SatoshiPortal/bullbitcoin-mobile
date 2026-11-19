@@ -4841,5 +4841,8 @@
   "permissionsTitle": "Autorisations",
   "settingsSearchPermissionsKeywords": "notifications|tâches en arrière-plan|batterie|alertes",
   "wizardBackgroundTasksDescription": "Vérifie les paiements app fermée.",
-  "wizardNotificationsDescription": "Sachez quand un paiement arrive."
+  "wizardNotificationsDescription": "Sachez quand un paiement arrive.",
+  "exchangeSupportChatAttachFileTooltip": "Joindre un fichier",
+  "exchangeSupportChatAttachLogsTooltip": "Joindre les journaux",
+  "exchangeSupportChatSendTooltip": "Envoyer le message"
 }

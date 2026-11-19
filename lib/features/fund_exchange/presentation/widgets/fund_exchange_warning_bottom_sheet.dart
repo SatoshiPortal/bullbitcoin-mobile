@@ -173,18 +173,17 @@ class _FundExchangeWarningBottomSheetState
                 ),
                 const Gap(8.0),
               ],
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.fundExchangeContinueButton,
-                disabled: !_hasConfirmedNoCoercion || _isLoading,
-                onPressed: () {
-                  if (_hasConfirmedNoCoercion) {
-                    context.read<FundExchangeBloc>().add(
-                      const FundExchangeEvent.scamWarningConsentSubmitted(),
-                    );
-                  }
-                },
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
+                onPressed: (!_hasConfirmedNoCoercion || _isLoading)
+                    ? null
+                    : () {
+                        if (_hasConfirmedNoCoercion) {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.scamWarningConsentSubmitted(),
+                          );
+                        }
+                      },
               ),
               const Gap(8.0),
             ],

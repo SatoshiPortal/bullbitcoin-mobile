@@ -60,11 +60,10 @@ class BullScreenPrivacyGate extends StatelessWidget {
                         .copyWith(color: context.bull.error),
                   ),
                   const Gap(BullSpacing.md),
-                  BullButton.small(
+                  BullButton.secondary(
+                    size: BullButtonSize.small,
                     label: retryLabel,
                     onPressed: onRetry,
-                    bgColor: context.bull.secondary,
-                    textColor: context.bull.onSecondary,
                   ),
                 ],
               ),

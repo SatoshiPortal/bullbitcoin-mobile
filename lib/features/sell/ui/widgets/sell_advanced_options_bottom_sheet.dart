@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_coin_selection_bottom_sheet.dart';
@@ -94,11 +93,9 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
             },
           ),
           const Gap(24),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.sellDone,
             onPressed: context.pop,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
         ],
       ),

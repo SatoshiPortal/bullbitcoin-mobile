@@ -2,7 +2,13 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBottomSheet, BullButton, BullShapesX, BullText, BullTypographyX;
+    show
+        BullButtonSize,
+        BullBottomSheet,
+        BullButton,
+        BullShapesX,
+        BullText,
+        BullTypographyX;
 
 class LogoutConfirmationBottomSheet extends StatelessWidget {
   final Future<void> Function() onConfirm;
@@ -65,25 +71,21 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: BullButton.small(
+                    child: BullButton.secondary(
+                      size: BullButtonSize.small,
                       label: context.loc.logoutConfirmationCancel,
                       onPressed: () => Navigator.of(context).pop(),
-                      outlined: true,
-                      bgColor: Colors.transparent,
-                      textColor: context.appColors.secondary,
-                      borderColor: context.appColors.outline,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: BullButton.small(
+                    child: BullButton.primary(
+                      size: BullButtonSize.small,
                       label: context.loc.logoutConfirmationLogout,
                       onPressed: () async {
                         Navigator.of(context).pop();
                         await onConfirm();
                       },
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
                     ),
                   ),
                 ],
