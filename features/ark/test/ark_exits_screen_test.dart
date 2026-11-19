@@ -191,7 +191,7 @@ void main() {
       ]);
     },
   );
-  testWidgets('same-account old row callback uses current handler', (
+  testWidgets('same-account old row callback refuses the replacement handler', (
     tester,
   ) async {
     final a = Harness(view());
@@ -201,6 +201,8 @@ void main() {
     await tester.pumpWidget(app(b.screen));
     old();
     expect(a.untouched, true);
+    expect(b.claims, isEmpty);
+    buttons(tester).first.onPressed();
     expect(b.claims, [
       ['shared'],
     ]);

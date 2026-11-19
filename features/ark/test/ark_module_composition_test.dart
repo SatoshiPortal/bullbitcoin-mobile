@@ -1,4 +1,5 @@
 import 'package:bull_ark/src/ui/ark_vtxos_screen.dart';
+import 'package:bull_ark/src/ui/ark_information_screen.dart';
 
 import 'ark_vtxos_screen_test.dart' as vtxos;
 
@@ -30,7 +31,12 @@ import 'package:bull_ark/src/ui/ark_snapshot_page.dart';
 import 'package:bull_ark/src/ui/ark_unavailable_screen.dart';
 import 'package:bull_ark/ark_ui.dart' show ArkPaymentEntry, ArkAccountEntry;
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullBorderedTile, BullAmountScope, BullAmountSnapshot;
+    show
+        BullButton,
+        BullBorderedTile,
+        BullAmountScope,
+        BullAmountSnapshot,
+        BullSwitch;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -147,11 +153,15 @@ class Rig {
     ])
       _record(route),
   ];
-  GoRoute _copy(GoRoute route, {GoRouterWidgetBuilder? builder}) => GoRoute(
+  GoRoute _copy(
+    GoRoute route, {
+    GoRouterWidgetBuilder? builder,
+    GoRouterPageBuilder? pageBuilder,
+  }) => GoRoute(
     path: route.path,
     name: route.name,
     builder: builder ?? route.builder,
-    pageBuilder: route.pageBuilder,
+    pageBuilder: pageBuilder ?? route.pageBuilder,
     parentNavigatorKey: route.parentNavigatorKey,
     redirect: route.redirect,
     metadata: route.metadata,
@@ -161,10 +171,32 @@ class Rig {
   );
   GoRoute _record(GoRoute route) {
     final source = route.builder;
-    if (source == null ||
-        route.pageBuilder != null ||
-        route.routes.isNotEmpty) {
+    if (source == null || route.routes.isNotEmpty) {
       throw StateError('Fixture expects flat widget-builder routes');
+    }
+    final pageBuilder = route.pageBuilder;
+    if (pageBuilder != null) {
+      return _copy(
+        route,
+        pageBuilder: (context, state) {
+          final page = pageBuilder(context, state);
+          if (page is! ArkReviewPage || page.barrierColor == null) {
+            throw StateError('Fixture expects the shared Ark Review page');
+          }
+          final color = page.barrierColor;
+          if (color == null) throw StateError('Missing Review barrier');
+          return ArkReviewPage(
+            key: state.pageKey,
+            context: context,
+            child: Builder(
+              builder: (context) {
+                (builds[route.path] ??= []).add((source: source, state: state));
+                return page.child;
+              },
+            ),
+          );
+        },
+      );
     }
     return _copy(
       route,
@@ -243,7 +275,7 @@ T page<T extends Widget>(WidgetTester tester) =>
 Future<void> accountPage(WidgetTester tester, Rig r) async {
   await tester.pumpWidget(r.app());
   await frame(tester);
-  button(tester, 'Ark').onPressed();
+  button(tester, 'Open Ark wallet').onPressed();
   await frame(tester);
 }
 
@@ -449,7 +481,11 @@ void main() {
       expect(request.maxClaimFee, Sats.fromInt(500));
       expect(r.client.calls.where((call) => call == 'quote'), hasLength(1));
       expect(r.client.calls.where((call) => call == 'submit'), isEmpty);
-      button(tester, 'Confirm').onPressed();
+      final hold = find.text('Hold to start exit');
+      expect(hold, findsOneWidget);
+      final gesture = await tester.startGesture(tester.getCenter(hold));
+      await tester.pump(const Duration(milliseconds: 1520));
+      await gesture.up();
       await frame(tester);
       expect(r.client.calls.where((call) => call == 'submit'), hasLength(1));
       expect(operation.state, isA<ArkOperationUncertain>());
@@ -619,7 +655,7 @@ void main() {
       ); // The old Ready must not retarget the new same-config Ready.
       expect(r.router.routeInformationProvider.value.uri.path, '/ark');
       expect(owners.created, hasLength(1));
-      button(tester, 'Ark').onPressed();
+      button(tester, 'Open Ark wallet').onPressed();
       await frame(tester);
       final account = page<ArkAccountScreen>(tester);
       final oldVtxos = account.onVtxos;
@@ -661,7 +697,8 @@ void main() {
       expect(protective.enabled, false);
       await accountAction(tester, 'VTXOs');
       await frame(tester);
-      expect(find.text('Review renewal'), findsOneWidget);
+      expect(find.byType(ArkVtxosScreen), findsOneWidget);
+      expect(find.widgetWithText(BullButton, 'Renew'), findsNothing);
       expect(r.client.calls.where((c) => c != 'read'), isEmpty);
     },
   );
@@ -682,7 +719,7 @@ void main() {
       r.client.quoteReply = quote;
       r.client.beforeQuote = () =>
           expect(find.byType(ArkOperationReviewScreen), findsNothing);
-      button(tester, 'Review renewal').onPressed();
+      button(tester, 'Renew').onPressed();
       await frame(tester);
       expect(r.client.calls.where((c) => c == 'quote'), hasLength(1));
       final screen = page<ArkOperationReviewScreen>(tester);
@@ -730,7 +767,7 @@ void main() {
       await frame(tester);
       final reply = Completer<Result<ArkQuote, ArkWalletFailure>>();
       r.client.quoteReply = reply;
-      button(tester, 'Review renewal').onPressed();
+      button(tester, 'Renew').onPressed();
       await frame(tester);
       final owner = page<ArkOperationReviewScreen>(tester).cubit;
       final pending = owner.state;
@@ -829,7 +866,7 @@ void main() {
       await tester.pumpWidget(r.app());
       await frame(tester);
       final settings = page<ArkSettingsScreen>(tester).cubit;
-      button(tester, 'Ark').onPressed();
+      button(tester, 'Open Ark wallet').onPressed();
       await frame(tester);
       final account = page<ArkAccountScreen>(tester).cubit;
       owners.failClose = settings;
@@ -866,16 +903,95 @@ void main() {
         ),
       );
       await frame(tester);
+      await tester.tap(
+        find.byKey(const ValueKey('ark-receive-address-actions')),
+      );
+      await tester.pumpAndSettle();
       expect(button(tester, 'Share').disabled, true);
+      r.router.pop();
+      await tester.pumpAndSettle();
       r.router.go('/ark/vtxos', extra: account());
       await frame(tester);
       expect(find.byType(ArkUnavailableScreen), findsOneWidget);
       r.router.go('/ark/claim-recovery', extra: Object());
       await frame(tester);
       expect(find.byType(ArkUnavailableScreen), findsOneWidget);
+      expect(r.client.calls, ['read', 'read', 'receive']);
+    },
+  );
+  testWidgets(
+    'Info keeps loading and failure in its own view without synthetic snapshots',
+    (tester) async {
+      final r = Rig();
+      final reply = Completer<Result<ArkSnapshot, ArkWalletFailure>>();
+      r.client.readReply = reply;
+      await tester.pumpWidget(r.app());
+      await frame(tester);
+      page<ArkSettingsScreen>(tester).onInfo?.call();
+      await frame(tester);
+      final loading = page<ArkInformationScreen>(tester);
+      expect(loading.loading, true);
+      expect(loading.snapshot, isNull);
+      expect(r.client.calls, ['read']);
+      reply.complete(const Err(ArkUnavailableFailure()));
+      await frame(tester);
+      final failed = page<ArkInformationScreen>(tester);
+      expect(failed.failure, isNotNull);
+      expect(failed.snapshot, isNull);
+      expect(r.client.calls, ['read']);
+      final oldRetry = failed.onRetry;
+      r.feature.invalidate();
+      oldRetry?.call();
+      await frame(tester);
       expect(r.client.calls, ['read']);
     },
   );
+
+  testWidgets(
+    'old exit claim refuses a new publication before the widget rebuild',
+    (tester) async {
+      final r = Rig();
+      r.client.snapshot = Ok(
+        ArkSnapshot(
+          account: account(),
+          revision: 8,
+          observedAt: DateTime.utc(2026),
+          stale: false,
+          tipHeight: 100,
+          exits: ArkExitStatus.claimable,
+          exitDetails: [
+            ArkExit(
+              id: 'exit',
+              amount: Sats.fromInt(1200),
+              status: ArkExitStatus.claimable,
+            ),
+          ],
+        ),
+      );
+      await accountPage(tester, r);
+      page<ArkAccountScreen>(tester).onExits();
+      await frame(tester);
+      final oldClaim = tester
+          .widget<BullButton>(find.widgetWithText(BullButton, 'Review').first)
+          .onPressed;
+      final owner = owners.created.whereType<ArkCubit>().last;
+      final publication = owner.state as ArkObserved;
+      owner.emit(ArkObserved(publication.snapshot));
+      oldClaim();
+      await frame(tester);
+      expect(find.byType(ArkExitRequestScreen), findsNothing);
+      expect(
+        r.client.calls.where((call) => call == 'quote' || call == 'submit'),
+        isEmpty,
+      );
+      tester
+          .widget<BullButton>(find.widgetWithText(BullButton, 'Review').first)
+          .onPressed();
+      await frame(tester);
+      expect(page<ArkExitRequestScreen>(tester).claimIds, ['exit']);
+    },
+  );
+
   testWidgets(
     'SnapshotPage owns one read and guards foreign rows, old Retry and replaced owner',
     (tester) async {
@@ -947,6 +1063,8 @@ void main() {
       await tester.pumpWidget(r.app());
       await frame(tester);
       expect(r.client.calls, isEmpty);
+      tester.widget<BullSwitch>(find.byType(BullSwitch)).onChanged?.call(true);
+      await frame(tester);
       final disabledEnable = button(tester, 'Enable Ark');
       expect(disabledEnable.disabled, true);
       disabledEnable.onPressed();
@@ -960,7 +1078,7 @@ void main() {
       await frame(tester);
       expect(r.client.calls, ['create']);
       expect(r.preferences.enabled, true);
-      button(tester, 'Ark').onPressed();
+      button(tester, 'Open Ark wallet').onPressed();
       await frame(tester);
       expect(find.byType(ArkAccountScreen), findsOneWidget);
       expect(find.text('1,234 sats'), findsOneWidget);
