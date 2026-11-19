@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_ark/generated/l10n/ark_localizations.dart';
+import 'package:bull_ark/ark_ui.dart';
 import 'package:bull_ui/bull_ui.dart' show BullAmountScope, BullAmountSnapshot;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

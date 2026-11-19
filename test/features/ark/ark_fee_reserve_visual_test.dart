@@ -1,13 +1,15 @@
 import 'package:ark/ark.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bull_ark/generated/l10n/ark_localizations.dart';
-import 'package:bull_ark/src/ui/ark_information_screen.dart';
+import 'package:bull_ark/ark_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullAmountScope, BullAmountSnapshot, BullQrCode, BullCopyField;
+
+import '../../../features/ark/test/support/ark_host_component_probes.dart'
+    show informationFixture;
 
 import '../../../features/ark/test/ark_information_widget_test.dart'
     show config;
@@ -91,7 +93,7 @@ void main() {
                 isReady: true,
               ),
               writeUnit: (_) async => false,
-              child: ArkInformationScreen(
+              child: informationFixture(
                 config: source,
                 snapshot: ArkSnapshot(
                   account: source.id,

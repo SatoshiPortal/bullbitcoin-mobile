@@ -1,10 +1,11 @@
 import 'package:bb_mobile/features/wallet/data/ark_source_label.dart';
-import 'package:bull_ark/src/ui/ark_board_screen.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../../../features/ark/test/ark_board_screen_test.dart' show Rig;
+import '../../../../features/ark/test/support/ark_host_component_probes.dart'
+    show labelledBoardFixture;
 import '../../../../features/ark/test/ark_information_widget_test.dart'
     show app;
 
@@ -23,10 +24,9 @@ void main() {
     await rig.cubit.prepare(Sats.fromInt(1000));
     await tester.pumpWidget(
       app(
-        ArkBoardScreen(
-          cubit: rig.cubit,
+        labelledBoardFixture(
+          rig,
           sourceLabel: (walletId: 'source-wallet', label: 'Current source'),
-          onReconcile: () {},
         ),
       ),
     );
@@ -34,10 +34,9 @@ void main() {
     expect(find.text('Current source'), findsOneWidget);
     await tester.pumpWidget(
       app(
-        ArkBoardScreen(
-          cubit: rig.cubit,
+        labelledBoardFixture(
+          rig,
           sourceLabel: (walletId: 'replaced-source', label: 'Retired source'),
-          onReconcile: () {},
         ),
       ),
     );

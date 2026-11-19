@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/features/wallet/data/ark_display_data.dart';
-import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
 import 'package:bull_ui/bull_ui.dart' show BullAmountScope, BullAmountSnapshot;
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,6 +9,8 @@ import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
 import 'ark_board_source_test_support.dart';
+import '../../../../features/ark/test/support/ark_host_component_probes.dart'
+    show boardAmountStateToken;
 
 T _ok<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Ok(:final value) => value,
@@ -92,7 +93,7 @@ Future<void> navigateBoardSource(
         reason: 'The ordinary amount form must be reached before Red',
       );
       await Future<void>.delayed(Duration.zero);
-      final mountedForm = tester.state(find.byType(ArkBoardAmountScreen));
+      final mountedForm = boardAmountStateToken(tester);
       if (retry) {
         final deadline = Stopwatch()..start();
         while ((scans == 0 || source.isSyncing()) &&
@@ -119,10 +120,7 @@ Future<void> navigateBoardSource(
             'Form reached; source scans=$scans, syncing=${source.isSyncing()}, waited=${elapsed.elapsed}',
       );
       expect(scans, retry ? 2 : 1);
-      expect(
-        tester.state(find.byType(ArkBoardAmountScreen)),
-        same(mountedForm),
-      );
+      expect(boardAmountStateToken(tester), same(mountedForm));
       expect(funding.calls, isEmpty);
       expect(
         (await server.requests()).counts['blockchain.transaction.broadcast'] ??

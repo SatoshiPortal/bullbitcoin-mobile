@@ -4,13 +4,8 @@ import 'package:bb_mobile/features/wallet/ui/widgets/ark_receive_share.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_ark/bull_ark.dart';
-import 'package:bull_ark/src/ui/ark_account_screen.dart';
-import 'package:bull_ark/src/presentation/ark_receive_cubit.dart'
-    show ArkReceiveReady;
-import 'package:bull_ark/src/ui/ark_board_screen.dart';
-import 'package:bull_ark/src/ui/ark_receive_screen.dart';
-import 'package:bull_ark/src/ui/ark_settings_screen.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullSnackBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullSnackBar, BullBorderedTile;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +21,7 @@ import '../../../../../features/ark/test/ark_operations_test.dart'
 import '../../../../../features/ark/test/ark_settings_flow_test.dart'
     show config, Selection, Preferences;
 import '../../../../../features/ark/test/fake_ark_board_funding.dart';
+import '../../../../../features/ark/test/support/ark_host_component_probes.dart';
 
 class _Display implements ArkBoardSourcePort {
   final events = StreamController<void>.broadcast();
@@ -125,21 +121,15 @@ void main() {
           );
         },
       );
-      tester
-          .widget<ArkSettingsScreen>(find.byType(ArkSettingsScreen))
-          .onOpenAccount(config());
+      final open = find.widgetWithText(BullButton, 'Open Ark wallet');
+      await tester.ensureVisible(open);
+      await tester.tap(open);
       await tester.pumpAndSettle();
-      final account = tester.widget<ArkAccountScreen>(
-        find.byType(ArkAccountScreen),
-      );
-      account.onReceive();
+      await tester.tap(find.widgetWithText(BullButton, 'Receive'));
       await tester.pumpAndSettle();
-      final page = tester.widget<ArkReceiveScreen>(
-        find.byType(ArkReceiveScreen),
-      );
-      final owner = page.cubit;
-      final ready = owner.state;
-      expect(ready, isA<ArkReceiveReady>());
+      final page = receiveFixtureObservation(tester);
+      final owner = page.owner;
+      final ready = page.state;
       expect(
         host.client.calls.where((call) => call == 'receive'),
         hasLength(1),
@@ -153,29 +143,17 @@ void main() {
       final context = invokedContext;
       if (context == null) throw StateError('Missing live sheet context');
       final message = AppLocalizations.of(context).oopsSomethingWentWrong;
-      final callback = tester
-          .widget<ArkReceiveScreen>(find.byType(ArkReceiveScreen))
-          .share;
+      final callback = receiveFixtureObservation(tester).share;
       if (mode == 'same-ready-rebuild') {
         display.events.add(null);
         await tester.pumpAndSettle();
-        final rebuilt = tester.widget<ArkReceiveScreen>(
-          find.byType(ArkReceiveScreen),
-        );
-        expect(identical(rebuilt, page), false);
-        expect(identical(rebuilt.cubit, owner), true);
-        expect(identical(owner.state, ready), true);
-        expect(
-          identical(
-            tester
-                .widget<ArkReceiveScreen>(find.byType(ArkReceiveScreen))
-                .share,
-            callback,
-          ),
-          true,
-        );
+        final rebuilt = receiveFixtureObservation(tester);
+        expect(identical(rebuilt.widget, page.widget), false);
+        expect(identical(rebuilt.owner, owner), true);
+        expect(identical(rebuilt.state, ready), true);
+        expect(identical(rebuilt.share, callback), true);
       } else if (mode == 'edited-ready') {
-        owner.edit();
+        page.edit();
         await tester.pumpAndSettle();
       } else if (mode == 'closed-sheet') {
         Navigator.of(context).pop();
@@ -207,26 +185,16 @@ void main() {
         final display = _Display();
         addTearDown(display.events.close);
         await _mount(tester, display, explicitSource: explicit);
-        tester
-            .widget<ArkSettingsScreen>(find.byType(ArkSettingsScreen))
-            .onBoard
-            ?.call();
+        final board = find.widgetWithText(BullBorderedTile, 'Board to Ark');
+        await tester.ensureVisible(board);
+        await tester.tap(board);
         await tester.pumpAndSettle();
-        expect(
-          tester
-              .widget<ArkBoardScreen>(find.byType(ArkBoardScreen))
-              .sourceLabel
-              ?.label,
-          'Current source',
-        );
+        expectBoardSourceLabel(tester, 'Current source');
         display.accepted = false;
         display.events.add(null);
         await tester.pumpAndSettle();
-        final board = tester.widget<ArkBoardScreen>(
-          find.byType(ArkBoardScreen),
-        );
-        expect(board.sourceLabel?.label, explicit ? null : 'Current source');
-        expect(board.displayData?.available, Sats.fromInt(100000));
+        expectBoardSourceLabel(tester, explicit ? null : 'Current source');
+        expectBoardAvailable(tester, Sats.fromInt(100000));
       },
     );
   }
