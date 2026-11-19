@@ -232,6 +232,12 @@ Future<void> frame(WidgetTester tester) async {
 
 BullButton button(WidgetTester tester, String label) =>
     tester.widget<BullButton>(find.widgetWithText(BullButton, label));
+Future<void> accountAction(WidgetTester tester, String label) async {
+  await tester.tap(find.byTooltip('Ark actions'));
+  await frame(tester);
+  await tester.tap(find.widgetWithText(BullButton, label));
+}
+
 T page<T extends Widget>(WidgetTester tester) =>
     tester.widget<T>(find.byType(T));
 Future<void> accountPage(WidgetTester tester, Rig r) async {
@@ -653,7 +659,7 @@ void main() {
       await frame(tester);
       final protective = page<ArkAccountScreen>(tester);
       expect(protective.enabled, false);
-      button(tester, 'VTXOs').onPressed();
+      await accountAction(tester, 'VTXOs');
       await frame(tester);
       expect(find.text('Review renewal'), findsOneWidget);
       expect(r.client.calls.where((c) => c != 'read'), isEmpty);
@@ -664,7 +670,7 @@ void main() {
     (tester) async {
       final r = Rig();
       await accountPage(tester, r);
-      button(tester, 'VTXOs').onPressed();
+      await accountAction(tester, 'VTXOs');
       await frame(tester);
       expect(r.client.calls.where((c) => c == 'quote'), isEmpty);
       tester
@@ -715,7 +721,7 @@ void main() {
     (tester) async {
       final r = Rig();
       await accountPage(tester, r);
-      button(tester, 'VTXOs').onPressed();
+      await accountAction(tester, 'VTXOs');
       await frame(tester);
       tester
           .widget<BullBorderedTile>(find.byType(BullBorderedTile))
@@ -842,7 +848,7 @@ void main() {
     (tester) async {
       final r = Rig();
       await accountPage(tester, r);
-      button(tester, 'Board to Ark').onPressed();
+      await accountAction(tester, 'Board to Ark');
       await frame(tester);
       expect(find.byType(ArkBoardAmountScreen), findsOneWidget);
       expect(r.boardFunding.calls, isEmpty);
@@ -957,7 +963,7 @@ void main() {
       button(tester, 'Ark').onPressed();
       await frame(tester);
       expect(find.byType(ArkAccountScreen), findsOneWidget);
-      expect(find.text('1234'), findsOneWidget);
+      expect(find.text('1,234 sats'), findsOneWidget);
       expect(r.client.calls, ['create', 'read']);
     },
   );
