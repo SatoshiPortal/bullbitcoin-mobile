@@ -21,6 +21,8 @@ abstract final class BullIcons {
   static const IconData arrowDownward = Icons.arrow_downward;
   static const IconData tune = Icons.tune;
   static const IconData acUnit = Icons.ac_unit;
+  static const IconData edit = Icons.edit;
+  static const IconData expandMore = Icons.expand_more;
   static const IconData lockOpen = Icons.lock_open;
   static const IconData sync = Icons.sync;
   static const IconData checkCircle = Icons.check_circle;
