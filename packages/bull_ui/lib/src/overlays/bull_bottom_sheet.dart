@@ -2,6 +2,8 @@ import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'bull_sheet_style.dart';
+
 /// Modal bottom sheet.
 ///
 /// Use [BullBottomSheet.show] to present a sheet with app-consistent chrome:
@@ -22,6 +24,9 @@ class BullBottomSheet extends StatelessWidget {
     bool isScrollControlled = true,
     bool isDismissible = true,
     bool avoidKeyboard = false,
+    BullSheetStyle? style,
+    Color? barrierColor,
+    Color? backgroundColor,
   }) {
     final colors = context.bull;
     return showModalBottomSheet<T>(
@@ -29,8 +34,10 @@ class BullBottomSheet extends StatelessWidget {
       isScrollControlled: isScrollControlled,
       isDismissible: isDismissible,
       useSafeArea: true,
-      backgroundColor: colors.background,
-      barrierColor: colors.surface.withAlpha(100),
+      backgroundColor:
+          backgroundColor ?? style?.backgroundColor ?? colors.background,
+      barrierColor:
+          barrierColor ?? style?.barrierColor ?? colors.surface.withAlpha(100),
       // The sheet owns the shape and clips its content to it, so a child's
       // own decoration can never show a mismatched corner.
       clipBehavior: Clip.antiAlias,

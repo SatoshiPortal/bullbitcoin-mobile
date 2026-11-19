@@ -15,6 +15,7 @@ import 'bull_amount_input_value.dart';
 import '../buttons/bull_field_action.dart';
 import '../overlays/bull_bottom_sheet.dart';
 import '../overlays/bull_picker_sheet.dart';
+import '../overlays/bull_sheet_style.dart';
 import 'bull_picker_item.dart';
 
 /// One amount editor. The controller is canonical; changing its representation never writes rounded fiat digits back into it. The caller owns prices, validation, Max calculation and the conversion record.
@@ -25,6 +26,7 @@ class BullAmountInput extends StatefulWidget {
     required this.amountController,
     this.amountEquivalent = '',
     this.emptyEquivalent,
+    this.currencySheetStyle,
     this.currencies = const [],
     this.defaultCurrencyCode,
     this.initialCurrencyCode,
@@ -49,6 +51,9 @@ class BullAmountInput extends StatefulWidget {
   /// Supporting text for an empty editor (for example a localized “Optional”).
   /// An explicit zero and MAX still show their calculated equivalent.
   final String? emptyEquivalent;
+
+  /// Opt-in colors for the currency picker sheet.
+  final BullSheetStyle? currencySheetStyle;
   final List<BullAmountCurrency> currencies;
   final String? defaultCurrencyCode;
   final String? initialCurrencyCode;
@@ -536,6 +541,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
         ),
     ];
     final chosen = await BullBottomSheet.show<String>(
+      style: widget.currencySheetStyle,
       context: context,
       child: BullPickerSheet<BullPickerItem<String>>(
         title: l10n.amountEnterIn,

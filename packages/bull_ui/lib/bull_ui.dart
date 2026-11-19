@@ -232,5 +232,6 @@ export 'src/overlays/bull_confirm_dialog.dart';
 export 'src/overlays/bull_dialog.dart';
 export 'src/overlays/bull_instructions_sheet.dart';
 export 'src/overlays/bull_picker_sheet.dart';
+export 'src/overlays/bull_sheet_style.dart';
 
 export 'src/localization/bull_ui_localizations_delegate.dart';
