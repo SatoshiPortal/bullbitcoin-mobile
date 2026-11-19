@@ -42,8 +42,12 @@ ArkSnapshot inventory({bool stale = false, bool complete = true}) =>
         ),
       ],
     );
-BullButton review(WidgetTester tester) =>
-    tester.widget<BullButton>(find.widgetWithText(BullButton, 'Review'));
+BullButton review(WidgetTester tester) => tester.widget<BullButton>(
+  find.ancestor(
+    of: find.textContaining(RegExp(r'^Review(?: exit)?$')),
+    matching: find.byType(BullButton),
+  ),
+);
 Future<void> edit(WidgetTester tester, String hint, String value) async {
   tester
       .widgetList<BullInputText>(find.byType(BullInputText))

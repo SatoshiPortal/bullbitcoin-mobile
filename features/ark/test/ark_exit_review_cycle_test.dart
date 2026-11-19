@@ -81,7 +81,10 @@ BullButton review(WidgetTester tester, String kind) =>
     tester.widget<BullButton>(
       find.descendant(
         of: formFor(kind),
-        matching: find.widgetWithText(BullButton, 'Review'),
+        matching: find.ancestor(
+          of: find.textContaining(RegExp(r'^Review(?: exit)?$')),
+          matching: find.byType(BullButton),
+        ),
       ),
     );
 
