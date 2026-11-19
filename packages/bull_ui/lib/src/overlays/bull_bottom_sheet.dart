@@ -14,11 +14,14 @@ class BullBottomSheet extends StatelessWidget {
   final Widget child;
 
   /// Present [child] as a modal bottom sheet.
+  /// With [avoidKeyboard], inset the sheet above the IME. Leave it off when
+  /// [child] already consumes viewInsets to avoid adding the inset twice.
   static Future<T?> show<T>({
     required BuildContext context,
     required Widget child,
     bool isScrollControlled = true,
     bool isDismissible = true,
+    bool avoidKeyboard = false,
   }) {
     final colors = context.bull;
     return showModalBottomSheet<T>(
@@ -37,7 +40,14 @@ class BullBottomSheet extends StatelessWidget {
         ),
         side: BorderSide(color: colors.secondaryFixedDim),
       ),
-      builder: (_) => BullBottomSheet(child: child),
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.only(
+          bottom: avoidKeyboard
+              ? MediaQuery.viewInsetsOf(sheetContext).bottom
+              : 0,
+        ),
+        child: BullBottomSheet(child: child),
+      ),
     );
   }
 
