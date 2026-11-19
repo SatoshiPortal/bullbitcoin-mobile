@@ -30,6 +30,7 @@ void main() {
       'no-price',
       'picker',
       'currency',
+      'settings',
     ]) {
       testWidgets('$state ${dark ? 'dark' : 'light'}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
@@ -138,6 +139,14 @@ void main() {
                                 ),
                               ],
                             ),
+                            if (state == 'settings') ...[
+                              const Gap(16),
+                              BullSettingsEntryTile(
+                                label: 'Advanced settings',
+                                summary: 'Fast',
+                                onPressed: () {},
+                              ),
+                            ],
                             if (state == 'picker') ...[
                               const Gap(16),
                               BullPickerRow(
