@@ -587,11 +587,17 @@ class _BullAmountInputState extends State<BullAmountInput> {
             .copyWith(fontWeight: FontWeight.w500, color: context.bull.text);
     return LayoutBuilder(
       builder: (context, constraints) {
-        double measure(String text) => (TextPainter(
-          text: TextSpan(text: text, style: base),
-          textDirection: Directionality.of(context),
-          textScaler: MediaQuery.textScalerOf(context),
-        )..layout()).width;
+        Size measure(String text, {TextStyle? textStyle}) {
+          final painter = TextPainter(
+            text: TextSpan(text: text, style: textStyle ?? base),
+            textDirection: Directionality.of(context),
+            textScaler: MediaQuery.textScalerOf(context),
+          )..layout();
+          final size = painter.size;
+          painter.dispose();
+          return size;
+        }
+
         // RenderEditable reserves one pixel plus the cursor width at the
         // trailing edge; the hint needs the same inset as the entered digits.
         const cursorWidth = 2.0;
@@ -601,8 +607,8 @@ class _BullAmountInputState extends State<BullAmountInput> {
             BullSpacing.xs +
             (_fiatCurrency == null ? BullSpacing.zero : BullSpacing.lg);
         final available = constraints.maxWidth - BullSpacing.xxs;
-        final numberWidth = measure(number);
-        final unitWidth = measure(_unitCode);
+        final numberWidth = measure(number).width;
+        final unitWidth = measure(_unitCode).width;
         final needed = numberWidth + unitWidth;
         var scale = constraints.maxWidth.isFinite && needed > 0
             ? math.min(1.0, math.max(0.0, available - unitPadding) / needed)
@@ -619,6 +625,10 @@ class _BullAmountInputState extends State<BullAmountInput> {
         final style = size == null
             ? base
             : base.copyWith(fontSize: size * scale);
+        final verticalPadding = math.max(
+          0.0,
+          (BullSpacing.xxl - measure(number, textStyle: style).height) / 2,
+        );
         return Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -662,25 +672,28 @@ class _BullAmountInputState extends State<BullAmountInput> {
                             ? const EdgeInsets.symmetric(
                                 vertical: BullSpacing.sm,
                               )
-                            : EdgeInsets.zero,
+                            : EdgeInsets.symmetric(vertical: verticalPadding),
                         isDense: true,
-                        hint: Padding(
-                          padding: EdgeInsetsDirectional.only(
-                            end: widget.compact ? 0 : caretMargin,
-                          ),
-                          child: Text(
-                            _showMax &&
-                                    (widget.maxLoading ||
-                                        widget.maxAmountSat == null)
-                                ? '—'
-                                : '0',
-                            textAlign: widget.compact
-                                ? TextAlign.center
-                                : TextAlign.end,
-                            style: style.copyWith(
-                              color: context.bull.textMuted,
+                        hint: Row(
+                          mainAxisAlignment: widget.compact
+                              ? MainAxisAlignment.center
+                              : MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              _showMax &&
+                                      (widget.maxLoading ||
+                                          widget.maxAmountSat == null)
+                                  ? '—'
+                                  : '0',
+                              style: style.copyWith(
+                                color: context.bull.textMuted,
+                              ),
                             ),
-                          ),
+                            if (!widget.compact)
+                              const SizedBox(width: caretMargin),
+                          ],
                         ),
                         hintStyle: style.copyWith(
                           color: context.bull.textMuted,
