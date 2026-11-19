@@ -51,6 +51,21 @@ final class Sats implements Comparable<Sats> {
     return Sats(sats);
   }
 
+  /// Formats the fiat equivalent with decimal half-up rounding, without a binary floating-point intermediate.
+  String? toFiatText(double fiatPerBitcoin, {required int decimals}) {
+    if (decimals < 0) throw ArgumentError.value(decimals, 'decimals');
+    if (!fiatPerBitcoin.isFinite || fiatPerBitcoin <= 0) return null;
+    final rate = _decimalRatio(fiatPerBitcoin.toString(), exponent: true);
+    if (rate == null) return null;
+    final (numerator, denominator) = rate;
+    final scaled = value * numerator * BigInt.from(10).pow(decimals);
+    final divisor = denominator * BigInt.from(100000000);
+    final rounded = (scaled * BigInt.two + divisor) ~/ (divisor * BigInt.two);
+    if (decimals == 0) return rounded.toString();
+    final digits = rounded.toString().padLeft(decimals + 1, '0');
+    return '${digits.substring(0, digits.length - decimals)}.${digits.substring(digits.length - decimals)}';
+  }
+
   static (BigInt, BigInt)? _decimalRatio(String text, {bool exponent = false}) {
     final pattern = exponent
         ? RegExp(r'^(\d+)(?:\.(\d+))?(?:[eE]([+-]?\d+))?$')

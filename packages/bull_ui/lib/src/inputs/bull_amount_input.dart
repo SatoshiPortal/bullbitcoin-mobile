@@ -297,8 +297,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
   String? _fiatText(BigInt sats, BullAmountCurrency? currency) {
     final rate = currency?.price;
     if (currency == null || !currency.hasPrice || rate == null) return null;
-    final value = sats.toDouble() / 100000000 * rate;
-    return value.isFinite ? value.toStringAsFixed(currency.decimals) : null;
+    return Sats(sats).toFiatText(rate, decimals: currency.decimals);
   }
 
   BigInt? _parseFiat(String text, BullAmountCurrency? currency) {
