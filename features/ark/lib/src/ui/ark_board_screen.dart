@@ -27,6 +27,7 @@ class ArkBoardScreen extends StatefulWidget {
 
 class _ArkBoardScreenState extends State<ArkBoardScreen> {
   late StreamSubscription<ArkBoardState> _subscription;
+  bool _detailsExpanded = false;
   bool _current(ArkBoardCubit owner, ArkBoardState rendered) =>
       mounted &&
       identical(owner, widget.cubit) &&
@@ -50,6 +51,7 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.cubit, widget.cubit)) {
       unawaited(_subscription.cancel());
+      _detailsExpanded = false;
       _listen();
     }
   }
@@ -58,6 +60,51 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
   void dispose() {
     unawaited(_subscription.cancel());
     super.dispose();
+  }
+
+  Widget? _footer(
+    BuildContext context,
+    ArkBoardCubit owner,
+    ArkBoardState rendered,
+  ) {
+    final l10n = arkLocalizationsOf(context);
+    final label = switch (rendered) {
+      ArkBoardReviewed() => l10n.confirm,
+      ArkBoardPending(:final operationId) when operationId != null =>
+        l10n.refresh,
+      ArkBoardSubmitted() => l10n.refresh,
+      _ => null,
+    };
+    if (label == null) return null;
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          BullSpacing.lg,
+          BullSpacing.sm,
+          BullSpacing.lg,
+          BullSpacing.lg,
+        ),
+        child: BullButton.big(
+          label: label,
+          onPressed: () {
+            if (!_current(owner, rendered)) return;
+            switch (rendered) {
+              case ArkBoardReviewed():
+                unawaited(owner.confirm());
+              case ArkBoardPending():
+                unawaited(owner.reconcile());
+              case ArkBoardSubmitted():
+                widget.onReconcile();
+              default:
+                return;
+            }
+          },
+          bgColor: context.bull.text,
+          textColor: context.bull.surface,
+        ),
+      ),
+    );
   }
 
   @override
@@ -79,6 +126,8 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
       );
     }
     return BullScaffold(
+      backgroundColor: context.bull.background,
+      bottomNavigationBar: _footer(context, owner, state),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(BullSpacing.md),
@@ -89,9 +138,33 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
                 title: l10n.boardToArk,
                 onBack: () => Navigator.pop(context),
               ),
-              BullInfoBar(message: l10n.boardFastPolicy),
+              if (state is! ArkBoardReviewed)
+                BullInfoBar(message: l10n.boardFastPolicy),
               if (state is ArkBoardBusy) BullText(l10n.loading, style: null),
               if (state case ArkBoardReviewed(:final preparation)) ...[
+                const Gap(BullSpacing.lg),
+                Center(
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: context.bull.surfaceContainer,
+                    ),
+                    child: BullIcon(
+                      BullIcons.arrowUpward,
+                      size: 32,
+                      color: context.bull.text,
+                    ),
+                  ),
+                ),
+                const Gap(BullSpacing.lg),
+                BullText(
+                  l10n.boardConfirmation,
+                  textAlign: TextAlign.center,
+                  role: BullTextRole.body,
+                ),
+                const Gap(BullSpacing.sm),
                 Center(
                   child: BullText(
                     formatArkSats(context, preparation.fundingAmount),
@@ -104,12 +177,16 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
                       ? widget.displayData?.price
                       : null,
                 ),
-                const Gap(BullSpacing.md),
+                const Gap(BullSpacing.xl),
                 BullDetailsTable(
                   items: [
                     BullDetailsTableItem(
                       label: l10n.boardSourceWallet,
                       displayValue: preparation.sourceWalletId,
+                    ),
+                    BullDetailsTableItem(
+                      label: l10n.toLabel,
+                      displayValue: l10n.title,
                     ),
                     BullDetailsTableItem(
                       label: l10n.amount,
@@ -131,34 +208,56 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
                       label: l10n.netInSats,
                       displayValue: preparation.net.value.toString(),
                     ),
-                    BullDetailsTableItem(
-                      label: l10n.exitProgressFeeRate,
-                      displayValue: preparation.feeRate.satsPerVbyte.toString(),
-                    ),
-                    BullDetailsTableItem(
-                      label: l10n.transactionId,
-                      displayValue: preparation.unsignedTxid,
-                    ),
-                    BullDetailsTableItem(
-                      label: l10n.expiryHeight,
-                      displayValue: preparation.expiryHeight.toString(),
-                    ),
-                    BullDetailsTableItem(
-                      label: l10n.boardValidUntil,
-                      displayValue: preparation.validUntil
-                          .toUtc()
-                          .toIso8601String(),
-                    ),
                   ],
                 ),
-                BullButton.big(
-                  label: l10n.confirm,
-                  onPressed: () {
-                    if (_current(owner, state)) unawaited(owner.confirm());
-                  },
-                  bgColor: context.bull.primary,
-                  textColor: context.bull.onPrimary,
+                const Gap(BullSpacing.md),
+                Semantics(
+                  button: true,
+                  expanded: _detailsExpanded,
+                  child: BullBorderedTile(
+                    onTap: () =>
+                        setState(() => _detailsExpanded = !_detailsExpanded),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: BullText(
+                            l10n.boardDetails,
+                            role: BullTextRole.body,
+                          ),
+                        ),
+                        BullIcon(
+                          _detailsExpanded
+                              ? BullIcons.removeCircleOutline
+                              : BullIcons.addCircleOutline,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
+                if (_detailsExpanded)
+                  BullDetailsTable(
+                    items: [
+                      BullDetailsTableItem(
+                        label: l10n.exitProgressFeeRate,
+                        displayValue: preparation.feeRate.satsPerVbyte
+                            .toString(),
+                      ),
+                      BullDetailsTableItem(
+                        label: l10n.transactionId,
+                        displayValue: preparation.unsignedTxid,
+                      ),
+                      BullDetailsTableItem(
+                        label: l10n.expiryHeight,
+                        displayValue: preparation.expiryHeight.toString(),
+                      ),
+                      BullDetailsTableItem(
+                        label: l10n.boardValidUntil,
+                        displayValue: preparation.validUntil
+                            .toUtc()
+                            .toIso8601String(),
+                      ),
+                    ],
+                  ),
               ],
               if (state case ArkBoardPending(
                 :final operationId,
@@ -178,14 +277,6 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
                       ),
                     ],
                   ),
-                  BullButton.big(
-                    label: l10n.refresh,
-                    onPressed: () {
-                      if (_current(owner, state)) unawaited(owner.reconcile());
-                    },
-                    bgColor: context.bull.primary,
-                    textColor: context.bull.onPrimary,
-                  ),
                 ],
               ],
               if (state case ArkBoardSubmitted(:final operation)) ...[
@@ -200,14 +291,6 @@ class _ArkBoardScreenState extends State<ArkBoardScreen> {
                       displayValue: operation.status.toTranslated(context),
                     ),
                   ],
-                ),
-                BullButton.big(
-                  label: l10n.refresh,
-                  onPressed: () {
-                    if (_current(owner, state)) widget.onReconcile();
-                  },
-                  bgColor: context.bull.primary,
-                  textColor: context.bull.onPrimary,
                 ),
               ],
             ],

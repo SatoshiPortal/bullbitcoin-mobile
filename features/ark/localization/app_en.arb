@@ -553,5 +553,11 @@
   "nextRound": "Next round",
   "@nextRound": {
     "description": "Ark account presentation"
-  }
+  },
+  "boardDetails": "Transaction details",
+  "@boardDetails": {
+    "description": "Expandable technical details of a Board funding review."
+  },
+  "boardConfirmation": "Confirm board",
+  "@boardConfirmation": {}
 }

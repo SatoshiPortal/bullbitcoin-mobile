@@ -197,5 +197,7 @@
   "emergencyExitStarted": "Sortie d’urgence démarrée",
   "operationEstimatedNet": "Montant net estimé",
   "arkWalletSubtitle": "Bitcoin hors chaîne",
-  "nextRound": "Prochain round"
+  "nextRound": "Prochain round",
+  "boardDetails": "Détails de la transaction",
+  "boardConfirmation": "Confirmer le dépôt"
 }
