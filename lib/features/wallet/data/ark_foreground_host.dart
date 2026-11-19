@@ -333,6 +333,18 @@ final class ArkForegroundHost {
     for (final path in arkHostPaths)
       GoRoute(
         path: path,
+        pageBuilder: path != '/ark/review'
+            ? null
+            : (context, state) => ArkReviewPage(
+                key: state.pageKey,
+                context: context,
+                child: _ArkHostPage(
+                  key: state.pageKey,
+                  host: this,
+                  path: path,
+                  state: state,
+                ),
+              ),
         builder: (_, state) => _ArkHostPage(
           key: state.pageKey,
           host: this,

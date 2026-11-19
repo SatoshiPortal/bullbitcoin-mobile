@@ -10,11 +10,13 @@ class ArkExitRequestScreen extends StatefulWidget {
   final ArkSnapshot snapshot;
   final List<String>? claimIds;
   final ValueChanged<ArkQuoteRequest> onReview;
+  final int reviewCycle;
   const ArkExitRequestScreen({
     super.key,
     required this.snapshot,
     required this.onReview,
     this.claimIds,
+    this.reviewCycle = 0,
   });
   @override
   State<ArkExitRequestScreen> createState() => _ArkExitRequestScreenState();
@@ -114,6 +116,11 @@ class _ArkExitRequestScreenState extends State<ArkExitRequestScreen> {
   @override
   void didUpdateWidget(ArkExitRequestScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.snapshot.account == widget.snapshot.account &&
+        widget.reviewCycle > oldWidget.reviewCycle) {
+      _consumed = false;
+      ++_revision;
+    }
     if (oldWidget.snapshot.account != widget.snapshot.account) {
       _destination = _rate = _maximum = '';
       _selectedOnly = false;

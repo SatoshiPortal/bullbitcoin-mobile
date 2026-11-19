@@ -45,6 +45,8 @@ final class ArkOperationCubit extends Cubit<ArkOperationState> {
   final ConfirmArkOperationUsecase _confirm;
   final String Function() _operationId;
   bool _loading = false;
+  bool _confirmationAttempted = false;
+  bool get confirmationAttempted => _confirmationAttempted;
   ArkOperationCubit(
     this._quote,
     this._confirm,
@@ -76,6 +78,7 @@ final class ArkOperationCubit extends Cubit<ArkOperationState> {
   Future<void> confirm() async {
     final current = state;
     if (current is! ArkOperationReview || isClosed) return;
+    _confirmationAttempted = true;
     emit(const ArkOperationSubmitting());
     final id = _operationId();
     final result = await _confirm.execute(account, current.quote, id);

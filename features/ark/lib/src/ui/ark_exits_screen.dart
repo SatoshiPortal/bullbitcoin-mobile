@@ -29,14 +29,15 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
   @override
   void didUpdateWidget(ArkExitsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.snapshot.account != widget.snapshot.account) {
+    if (!identical(oldWidget.snapshot, widget.snapshot)) {
       _expanded.clear();
     }
   }
 
-  void _details(ArkAccountId account, String id) {
+  void _details(ArkExitsScreen rendered, String id) {
     if (!mounted ||
-        widget.snapshot.account != account ||
+        !identical(rendered, widget) ||
+        ModalRoute.of(context)?.isCurrent != true ||
         !widget.snapshot.exitDetails.any((exit) => exit.id == id)) {
       return;
     }
@@ -66,8 +67,13 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
         rows.single.status == ArkExitStatus.claimable;
   }
 
-  void _review(ArkAccountId account, {bool progress = false}) {
-    if (!mounted || widget.snapshot.account != account || !_current) return;
+  void _review(ArkExitsScreen rendered, {bool progress = false}) {
+    if (!mounted ||
+        !identical(rendered, widget) ||
+        !_current ||
+        ModalRoute.of(context)?.isCurrent != true) {
+      return;
+    }
     if (progress) {
       if (_hasDetails) widget.onReviewProgress();
     } else {
@@ -75,8 +81,11 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     }
   }
 
-  void _claim(ArkAccountId account, String id) {
-    if (!mounted || widget.snapshot.account != account || !_claimable(id)) {
+  void _claim(ArkExitsScreen rendered, String id) {
+    if (!mounted ||
+        !identical(rendered, widget) ||
+        !_claimable(id) ||
+        ModalRoute.of(context)?.isCurrent != true) {
       return;
     }
     widget.onReviewClaim(List.unmodifiable([id]));
@@ -86,7 +95,7 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
   Widget build(BuildContext context) {
     final l10n = arkLocalizationsOf(context);
     final snapshot = widget.snapshot;
-    final account = snapshot.account;
+    final rendered = widget;
     return BullScaffold(
       backgroundColor: context.bull.background,
       bottomNavigationBar: SafeArea(
@@ -100,11 +109,10 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
           ),
           child: BullButton.big(
             label: l10n.startEmergencyExit,
-            onPressed: () => _review(account),
+            onPressed: () => _review(rendered),
             disabled: !_current,
-            bgColor: context.bull.surface,
-            textColor: context.bull.primary,
-            outlined: true,
+            bgColor: context.bull.secondary,
+            textColor: context.bull.onSecondary,
           ),
         ),
       ),
@@ -159,10 +167,8 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                 ),
               ),
               const Gap(BullSpacing.md),
-              BullInfoBar(
-                message: l10n.foregroundExit,
-                tone: BullInfoTone.warning,
-              ),
+              BullText(l10n.exitYourExits, role: BullTextRole.subtitle),
+              const Gap(BullSpacing.md),
               if (snapshot.stale) BullInfoBar(message: l10n.stale),
               if (snapshot.recovery != ArkRecoveryStatus.complete)
                 BullInfoBar(message: l10n.recovery),
@@ -205,7 +211,7 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
               const Gap(BullSpacing.md),
               for (final exit in snapshot.exitDetails) ...[
                 BullBorderedTile(
-                  onTap: () => _details(account, exit.id),
+                  onTap: () => _details(rendered, exit.id),
                   backgroundColor: context.bull.surface,
                   child: Row(
                     children: [
@@ -233,8 +239,10 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                     ],
                   ),
                 ),
-                if (_expanded.contains(exit.id))
+                if (_expanded.contains(exit.id)) ...[
+                  _timeline(context, exit),
                   BullDetailsTable(
+                    flat: true,
                     items: [
                       BullDetailsTableItem(
                         label: l10n.id,
@@ -279,28 +287,142 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                       ),
                     ],
                   ),
+                ],
                 const Gap(BullSpacing.xs),
                 if (exit.status == ArkExitStatus.claimable)
                   _button(
                     context,
                     l10n.review,
-                    () => _claim(account, exit.id),
+                    () => _claim(rendered, exit.id),
                     disabled: !_claimable(exit.id),
                   ),
               ],
               if (widget.onRefresh case final refresh?)
                 _button(context, l10n.refresh, () {
-                  if (mounted && widget.snapshot.account == account) refresh();
+                  if (mounted &&
+                      identical(rendered, widget) &&
+                      identical(widget.onRefresh, refresh) &&
+                      ModalRoute.of(context)?.isCurrent == true) {
+                    refresh();
+                  }
                 }, disabled: false),
+              if (_hasDetails) BullInfoBar(message: l10n.foregroundExit),
               _button(
                 context,
                 l10n.review,
-                () => _review(account, progress: true),
+                () => _review(rendered, progress: true),
                 disabled: !_current || !_hasDetails,
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _timeline(BuildContext context, ArkExit exit) {
+    final l10n = arkLocalizationsOf(context);
+    final phase = exit.phase;
+    if (phase == ArkExitPhase.failed || phase == ArkExitPhase.canceled) {
+      return BullInfoBar(
+        message: phase == ArkExitPhase.canceled
+            ? l10n.exitCanceled
+            : _status(context, ArkExitStatus.failed),
+        tone: BullInfoTone.warning,
+      );
+    }
+    final unrolled = const {
+      ArkExitPhase.delay,
+      ArkExitPhase.claimable,
+      ArkExitPhase.claiming,
+      ArkExitPhase.claimed,
+    }.contains(phase);
+    final delayed = const {
+      ArkExitPhase.claimable,
+      ArkExitPhase.claiming,
+      ArkExitPhase.claimed,
+    }.contains(phase);
+    final claimed =
+        phase == ArkExitPhase.claimed &&
+        exit.status == ArkExitStatus.claimed &&
+        exit.claimTxid?.isNotEmpty == true;
+    Widget step(String title, bool complete, {String? detail}) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: BullSpacing.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BullIcon(
+            complete ? BullIcons.check : BullIcons.schedule,
+            color: complete ? context.bull.text : context.bull.textMuted,
+          ),
+          const Gap(BullSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BullText(title, role: BullTextRole.body),
+                if (detail != null)
+                  BullText(
+                    detail,
+                    role: BullTextRole.label,
+                    color: context.bull.textMuted,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    final tip = widget.snapshot.tipHeight;
+    final height = exit.claimableHeight;
+    final remaining =
+        phase == ArkExitPhase.delay &&
+            tip != null &&
+            height != null &&
+            !widget.snapshot.stale
+        ? (height > tip ? height - tip : 0)
+        : null;
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: BullSpacing.sm),
+      padding: const EdgeInsets.all(BullSpacing.md),
+      decoration: BoxDecoration(
+        color: context.bull.surface,
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BullText(l10n.exitDetailsTitle, role: BullTextRole.subtitle),
+          step(
+            l10n.emergencyExitStarted,
+            phase != null &&
+                phase != ArkExitPhase.failed &&
+                phase != ArkExitPhase.canceled,
+          ),
+          step(
+            l10n.exitUnrolling,
+            unrolled,
+            detail: phase == null ? l10n.unknown : null,
+          ),
+          step(
+            l10n.exitDelay,
+            delayed,
+            detail: remaining == null
+                ? null
+                : l10n.exitBlocksRemaining(remaining.toString()),
+          ),
+          if (phase == ArkExitPhase.delay && exit.confirmedHeight != null)
+            BullText(
+              l10n.exitConfirmedAtBlock(exit.confirmedHeight.toString()),
+              role: BullTextRole.label,
+              color: context.bull.textMuted,
+            ),
+          step(
+            l10n.exitClaimAction,
+            claimed,
+            detail: claimed ? null : l10n.exitManualClaim,
+          ),
+        ],
       ),
     );
   }
@@ -329,9 +451,8 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
       label: label,
       onPressed: onPressed,
       disabled: disabled,
-      bgColor: context.bull.surface,
-      textColor: context.bull.text,
-      outlined: true,
+      bgColor: context.bull.secondary,
+      textColor: context.bull.onSecondary,
     ),
   );
 }

@@ -12,10 +12,12 @@ import 'ark_unavailable_screen.dart';
 class ArkSnapshotPage extends StatefulWidget {
   final ArkCubit cubit;
   final Widget Function(ArkSnapshot) builder;
+  final Widget Function(ArkViewState)? stateBuilder;
   const ArkSnapshotPage({
     super.key,
     required this.cubit,
     required this.builder,
+    this.stateBuilder,
   });
   @override
   State<ArkSnapshotPage> createState() => _ArkSnapshotPageState();
@@ -72,6 +74,8 @@ class _ArkSnapshotPageState extends State<ArkSnapshotPage> {
     final generation = _generation;
     final l10n = arkLocalizationsOf(context);
     if (!_current(owner, generation)) return const ArkUnavailableScreen();
+    final stateBuilder = widget.stateBuilder;
+    if (stateBuilder != null) return stateBuilder(owner.state);
     return switch (owner.state) {
       ArkObserved(:final snapshot) when snapshot.account == owner.account =>
         widget.builder(snapshot),

@@ -8,12 +8,14 @@ import 'ark_connection_details.dart';
 /// Fee input handoff only; no reserve, exit inventory or spending authority.
 class ArkExitProgressFeeScreen extends StatefulWidget {
   final ArkAccountConfig config;
+  final int reviewCycle;
   final void Function(ArkAccountConfig config, FeeRate feeRate)?
   onReviewRequest;
   const ArkExitProgressFeeScreen({
     super.key,
     required this.config,
     this.onReviewRequest,
+    this.reviewCycle = 0,
   });
   @override
   State<ArkExitProgressFeeScreen> createState() =>
@@ -58,6 +60,11 @@ class _ArkExitProgressFeeScreenState extends State<ArkExitProgressFeeScreen> {
   void didUpdateWidget(ArkExitProgressFeeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     final changedConfig = _binding(oldWidget.config) != _binding(widget.config);
+    if (!changedConfig && widget.reviewCycle > oldWidget.reviewCycle) {
+      _consumed = false;
+      ++_epoch;
+      _inputToken = null;
+    }
     if (changedConfig ||
         !identical(oldWidget.onReviewRequest, widget.onReviewRequest)) {
       ++_epoch;

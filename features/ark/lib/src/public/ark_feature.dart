@@ -12,6 +12,7 @@ import '../data/create_ark_facade.dart';
 import '../domain/ark_account_selection_port.dart';
 import '../domain/ark_board_funding_port.dart';
 import '../domain/ark_display_data_port.dart';
+import '../domain/ark_board_minimum.dart';
 import '../domain/ark_board_source_port.dart';
 import '../domain/usecases/refresh_ark_board_source_usecase.dart';
 import '../domain/usecases/read_ark_display_data_usecase.dart';
@@ -55,6 +56,7 @@ import '../ui/ark_exit_progress_fee_screen.dart';
 import 'ark_facade.dart';
 import 'ark_transfer_facade.dart';
 import 'ark_navigation.dart';
+import 'ark_review_page.dart';
 
 enum _Kind {
   settings,
@@ -121,6 +123,18 @@ final class ArkFeature {
     for (final entry in _paths.entries)
       GoRoute(
         path: entry.value,
+        pageBuilder: entry.key != _Kind.review
+            ? null
+            : (context, state) => ArkReviewPage(
+                key: state.pageKey,
+                context: context,
+                child: _ArkPage(
+                  key: state.pageKey,
+                  feature: this,
+                  kind: entry.key,
+                  entry: state.extra,
+                ),
+              ),
         builder: (_, state) => _ArkPage(
           key: state.pageKey,
           feature: this,
@@ -240,6 +254,9 @@ final class _Entry {
   final ArkQuoteRequest? request;
   final List<String>? claimIds;
   bool consumed = false;
+  final bool receiveIntent;
+  bool receiveRequested = false;
+  ArkOperationCubit? reviewOwner;
   _Entry(
     this.feature,
     this.config,
@@ -247,7 +264,15 @@ final class _Entry {
     this.origin, {
     this.request,
     this.claimIds,
+    this.receiveIntent = false,
   });
+}
+
+final class _ReviewCancelled {
+  final _Entry entry;
+  final ArkOperationCubit owner;
+  final ArkOperationReview review;
+  const _ReviewCancelled(this.entry, this.owner, this.review);
 }
 
 class _ArkPage extends StatefulWidget {
@@ -267,10 +292,16 @@ class _ArkPage extends StatefulWidget {
 class _ArkPageState extends State<_ArkPage> {
   BlocBase<Object?>? _owner;
   ArkDisplayDataCubit? _displayOwner;
+  ArkCubit? _boardMinimumOwner;
+  StreamSubscription<ArkViewState>? _boardMinimumSubscription;
   StreamSubscription<ArkDisplayDataState>? _displaySubscription;
   StreamSubscription<ArkSettingsState>? _originSubscription;
   int _generation = 0;
   bool _loading = false, _enabled = false;
+  bool _navigating = false;
+  int _navigationEpoch = 0;
+  int _reviewCycle = 0;
+
   _Origin? get _origin => switch (widget.entry) {
     _Entry(:final origin) => origin,
     _ => null,
@@ -336,8 +367,18 @@ class _ArkPageState extends State<_ArkPage> {
 
   void _retire() {
     ++_generation;
+    ++_navigationEpoch;
+    _navigating = false;
     final owner = _owner;
     _owner = null;
+    final minimum = _boardMinimumOwner;
+    _boardMinimumOwner = null;
+    final minimumSubscription = _boardMinimumSubscription;
+    _boardMinimumSubscription = null;
+    if (minimumSubscription != null) {
+      _observeCleanup(minimumSubscription.cancel());
+    }
+    if (minimum != null) _observeCleanup(minimum.close());
     final display = _displayOwner;
     _displayOwner = null;
     final displaySubscription = _displaySubscription;
@@ -410,6 +451,7 @@ class _ArkPageState extends State<_ArkPage> {
         request: request,
       );
       _owner = cubit;
+      if (entry is _Entry) entry.reviewOwner = cubit;
       unawaited(cubit.load()); // Parent load BEFORE passive A child mounts.
     } else {
       if (widget.entry case ArkTransferBoardEntry entry) {
@@ -464,6 +506,10 @@ class _ArkPageState extends State<_ArkPage> {
     }
     if (!mounted || generation != _generation || !_validEntry()) return;
     switch ((_owner, widget.entry)) {
+      case (ArkReceiveCubit owner, _Entry entry)
+          when entry.receiveIntent && !entry.receiveRequested:
+        entry.receiveRequested = true;
+        unawaited(owner.request(lightning: false, amount: ''));
       case (ArkBoardCubit owner, ArkTransferBoardEntry entry):
         unawaited(
           owner.prepare(
@@ -473,6 +519,23 @@ class _ArkPageState extends State<_ArkPage> {
         );
       default:
         break;
+    }
+    if (_ordinaryBoard && _owner is ArkBoardCubit) {
+      final minimum = ArkCubit(
+        ReadArkUsecase(repository),
+        SynchronizeArkUsecase(repository),
+        account: account,
+      );
+      _boardMinimumOwner = minimum;
+      _boardMinimumSubscription = minimum.stream.listen((_) {
+        if (mounted &&
+            generation == _generation &&
+            identical(minimum, _boardMinimumOwner) &&
+            _validEntry()) {
+          setState(() {});
+        }
+      });
+      unawaited(minimum.load());
     }
     final boardSource = _ordinaryBoard ? feature._boardSource : null;
     final displayPort = boardSource ?? feature._displayData;
@@ -532,8 +595,13 @@ class _ArkPageState extends State<_ArkPage> {
     ArkQuoteRequest? request,
     List<String>? claimIds,
     ArkSettingsState? publication,
+    bool receiveIntent = false,
   }) {
-    if (!_live(owner)) return;
+    if (!_live(owner) ||
+        _navigating ||
+        ModalRoute.of(context)?.isCurrent != true) {
+      return;
+    }
     if (owner is ArkSettingsCubit) {
       final settings = publication?.settings;
       if (publication is! ArkSettingsReady ||
@@ -558,9 +626,84 @@ class _ArkPageState extends State<_ArkPage> {
       origin,
       request: request,
       claimIds: claimIds == null ? null : List.unmodifiable(claimIds),
+      receiveIntent: receiveIntent,
     );
     final path = _paths[kind];
-    if (path != null) unawaited(context.push(path, extra: entry));
+    if (path != null) {
+      _navigating = true;
+      unawaited(_push(path, entry, ++_navigationEpoch));
+    }
+  }
+
+  Future<void> _push(String path, _Entry entry, int ticket) async {
+    final route = ModalRoute.of(context);
+    final navigator = route?.navigator;
+    final publication = _owner?.state;
+    try {
+      final result = await context.push<Object?>(path, extra: entry);
+      if (mounted &&
+          ticket == _navigationEpoch &&
+          identical(ModalRoute.of(context), route) &&
+          route?.isCurrent == true &&
+          identical(route?.navigator, navigator) &&
+          entry.origin.valid &&
+          identical(_owner?.state, publication) &&
+          result is _ReviewCancelled &&
+          identical(result.entry, entry) &&
+          identical(result.owner, entry.reviewOwner) &&
+          identical(result.owner.state, result.review) &&
+          !result.owner.confirmationAttempted) {
+        setState(() => ++_reviewCycle);
+      }
+    } finally {
+      if (mounted && ticket == _navigationEpoch) _navigating = false;
+    }
+  }
+
+  void _cancelReview(ArkOperationCubit owner, ArkOperationReview review) {
+    final entry = widget.entry;
+    if (_live(owner) &&
+        identical(owner.state, review) &&
+        !owner.confirmationAttempted &&
+        entry is _Entry &&
+        identical(entry.reviewOwner, owner) &&
+        ModalRoute.of(context)?.isCurrent == true) {
+      context.pop(_ReviewCancelled(entry, owner, review));
+    }
+  }
+
+  void _finishOperation(ArkOperationCubit owner) {
+    if (!_live(owner) ||
+        owner.state is! ArkOperationSubmitted ||
+        ModalRoute.of(context)?.isCurrent != true) {
+      return;
+    }
+    final router = GoRouter.of(context);
+    final origin = _origin;
+    final previous = origin != null && origin.valid
+        ? ModalRoute.of(origin.page.context)
+        : null;
+    final navigator = ModalRoute.of(context)?.navigator;
+    final skipForm =
+        origin != null &&
+        origin.valid &&
+        origin.parent?.valid == true &&
+        const {
+          _Kind.exitRequest,
+          _Kind.progressFee,
+        }.contains(origin.page.widget.kind);
+    if (!router.canPop()) {
+      router.go('/ark');
+      return;
+    }
+    router.pop();
+    if (skipForm &&
+        previous?.isCurrent == true &&
+        identical(previous?.navigator, navigator) &&
+        identical(previous, ModalRoute.of(origin.page.context)) &&
+        router.canPop()) {
+      router.pop();
+    }
   }
 
   Widget _observed(ArkCubit owner, ArkSnapshot snapshot) {
@@ -568,9 +711,15 @@ class _ArkPageState extends State<_ArkPage> {
       return const ArkUnavailableScreen();
     }
     final publication = owner.state;
+    bool current() =>
+        _live(owner) &&
+        publication is ArkObserved &&
+        identical(owner.state, publication) &&
+        identical(publication.snapshot, snapshot);
     return switch (widget.kind) {
       _Kind.vtxos => ArkVtxosScreen(
         snapshot: snapshot,
+        renewalThresholdBlocks: widget.feature._config.renewalThresholdBlocks,
         onBoard:
             _enabled &&
                 publication is ArkObserved &&
@@ -584,7 +733,9 @@ class _ArkPageState extends State<_ArkPage> {
               }
             : null,
         onRenew: (ids) {
-          if (_live(owner)) {
+          if (_live(owner) &&
+              publication is ArkObserved &&
+              identical(owner.state, publication)) {
             _open(
               owner,
               _Kind.review,
@@ -595,24 +746,36 @@ class _ArkPageState extends State<_ArkPage> {
       ),
       _Kind.exitRequest => ArkExitRequestScreen(
         snapshot: snapshot,
+        reviewCycle: _reviewCycle,
         claimIds: switch (widget.entry) {
           _Entry(:final claimIds) => claimIds,
           _ => null,
         },
-        onReview: (request) => _open(owner, _Kind.review, request: request),
+        onReview: (request) {
+          if (current()) _open(owner, _Kind.review, request: request);
+        },
       ),
       _Kind.info => ArkInformationScreen(
         snapshot: snapshot,
         config: widget.feature._config,
+        onRetry: () {
+          if (_live(owner)) unawaited(owner.load());
+        },
       ),
       _ => ArkExitsScreen(
         snapshot: snapshot,
         onRefresh: () {
-          if (_live(owner)) unawaited(owner.refresh());
+          if (current()) unawaited(owner.refresh());
         },
-        onReviewExit: () => _open(owner, _Kind.exitRequest),
-        onReviewProgress: () => _open(owner, _Kind.progressFee),
-        onReviewClaim: (ids) => _open(owner, _Kind.exitRequest, claimIds: ids),
+        onReviewExit: () {
+          if (current()) _open(owner, _Kind.exitRequest);
+        },
+        onReviewProgress: () {
+          if (current()) _open(owner, _Kind.progressFee);
+        },
+        onReviewClaim: (ids) {
+          if (current()) _open(owner, _Kind.exitRequest, claimIds: ids);
+        },
       ),
     };
   }
@@ -685,9 +848,21 @@ class _ArkPageState extends State<_ArkPage> {
       ArkReceiveCubit() => ArkReceiveScreen(
         cubit: owner,
         displayData: displayData,
-      ), // Share honestly absent.
+      ),
       ArkBoardCubit() => ArkBoardScreen(
         cubit: owner,
+        minimum: switch (_boardMinimumOwner?.state) {
+          ArkObserved(:final snapshot) => ArkBoardMinimum.fromSnapshot(
+            widget.feature._config,
+            snapshot,
+          ),
+          _ => null,
+        },
+        onDone: () {
+          if (_live(owner) && ModalRoute.of(context)?.isCurrent == true) {
+            context.pop();
+          }
+        },
         onSourceEntry: !_ordinaryBoard || widget.feature._boardSource == null
             ? null
             : () async {
@@ -718,6 +893,11 @@ class _ArkPageState extends State<_ArkPage> {
       ),
       ArkOperationCubit() => ArkOperationReviewScreen(
         cubit: owner,
+        modalReview: true,
+        onCancelReview: widget.entry is _Entry
+            ? (review) => _cancelReview(owner, review)
+            : null,
+        onDone: () => _finishOperation(owner),
         displayData: displayData,
         onReconcile: () => _open(
           owner,
@@ -733,7 +913,7 @@ class _ArkPageState extends State<_ArkPage> {
         displayData: displayData,
         enabled: _enabled,
         onSend: () => _open(owner, _Kind.payment),
-        onReceive: () => _open(owner, _Kind.receive),
+        onReceive: () => _open(owner, _Kind.receive, receiveIntent: true),
         onBoard: () => _open(owner, _Kind.board),
         onVtxos: () => _open(owner, _Kind.vtxos),
         onExits: () => _open(owner, _Kind.exits),
@@ -742,6 +922,7 @@ class _ArkPageState extends State<_ArkPage> {
       ArkCubit() when widget.kind == _Kind.progressFee =>
         ArkExitProgressFeeScreen(
           config: widget.feature._config,
+          reviewCycle: _reviewCycle,
           onReviewRequest: (config, rate) {
             if (_live(owner) && identical(config, widget.feature._config)) {
               _open(
@@ -755,6 +936,41 @@ class _ArkPageState extends State<_ArkPage> {
       ArkCubit() => ArkSnapshotPage(
         cubit: owner,
         builder: (snapshot) => _observed(owner, snapshot),
+        stateBuilder: widget.kind != _Kind.info
+            ? null
+            : (state) {
+                if (!_live(owner)) return const ArkUnavailableScreen();
+                final snapshot = switch (state) {
+                  ArkObserved(:final snapshot) => snapshot,
+                  ArkViewFailed(:final lastObserved) => lastObserved,
+                  _ => null,
+                };
+                return ArkInformationScreen(
+                  config: widget.feature._config,
+                  snapshot: snapshot,
+                  serverExitDelta: switch (snapshot?.serverInfo) {
+                    ArkServerInfo(:final serverUri, :final vtxoExitDelta?)
+                        when snapshot?.account == widget.feature._config.id &&
+                            serverUri == widget.feature._config.arkUrl =>
+                      (
+                        widget.feature._config.id,
+                        serverUri as Uri,
+                        vtxoExitDelta,
+                      ),
+                    _ => null,
+                  },
+                  loading: state is ArkLoading,
+                  failure: switch (state) {
+                    ArkViewFailed(:final failure) => failure,
+                    _ => null,
+                  },
+                  onRetry: () {
+                    if (_live(owner) && identical(owner.state, state)) {
+                      unawaited(owner.load());
+                    }
+                  },
+                );
+              },
       ),
       _ when _loading => BullScaffold(
         body: Center(
