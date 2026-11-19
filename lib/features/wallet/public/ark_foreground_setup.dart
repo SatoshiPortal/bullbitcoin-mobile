@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 
 import '../data/ark_foreground_host.dart';
 import '../ui/widgets/ark_payment_scanner.dart';
+import '../ui/widgets/ark_receive_share.dart';
 
 export '../data/ark_foreground_runtime.dart'
     show
@@ -33,4 +34,5 @@ Future<void> setupArkForeground(
   preferences: preferences,
   dispatcher: dispatcher,
   scanner: scanArkPayment,
+  share: shareArkReceive,
 );

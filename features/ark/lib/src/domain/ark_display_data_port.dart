@@ -11,12 +11,14 @@ final class ArkDisplayData {
   final String walletId;
   final Sats? available;
   final BitcoinPrice? price;
+  final String? sourceLabel;
 
   const ArkDisplayData({
     required this.account,
     required this.walletId,
     required this.available,
     this.price,
+    this.sourceLabel,
   });
 }
 

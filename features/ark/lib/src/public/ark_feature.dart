@@ -43,6 +43,7 @@ import '../ui/ark_settings_screen.dart';
 import '../ui/ark_account_screen.dart';
 import '../ui/ark_payment_screen.dart';
 import '../ui/ark_scanner.dart';
+import '../ui/ark_share.dart';
 import '../ui/ark_receive_screen.dart';
 import '../ui/ark_vtxos_screen.dart';
 import '../ui/ark_information_screen.dart';
@@ -115,6 +116,7 @@ final class ArkFeature {
   final ArkDisplayDataPort? _displayData;
   final ArkBoardSourcePort? _boardSource;
   final ArkScanner? _scanner;
+  final ArkShare? _share;
   final ArkRepositoryImpl _repository;
   final ArkFacade facade;
   final _ownerListeners = <VoidCallback>{};
@@ -157,6 +159,7 @@ final class ArkFeature {
     this._displayData,
     this._boardSource,
     this._scanner,
+    this._share,
   }) : _client = client,
        _preferences = preferences,
        _provisioning = provisioning,
@@ -301,6 +304,7 @@ class _ArkPageState extends State<_ArkPage> {
   bool _navigating = false;
   int _navigationEpoch = 0;
   int _reviewCycle = 0;
+  late final ArkShare _shareReceive = _shareFromSheet;
 
   _Origin? get _origin => switch (widget.entry) {
     _Entry(:final origin) => origin,
@@ -807,6 +811,33 @@ class _ArkPageState extends State<_ArkPage> {
     return null;
   }
 
+  Future<void> _shareFromSheet(
+    BuildContext context,
+    String value, {
+    required bool Function() isCurrent,
+  }) async {
+    final owner = _owner;
+    final feature = widget.feature;
+    final share = feature._share;
+    if (owner is! ArkReceiveCubit ||
+        share == null ||
+        !_live(owner) ||
+        !isCurrent()) {
+      return;
+    }
+    final publication = owner.state;
+    await share(
+      context,
+      value,
+      isCurrent: () =>
+          _live(owner) &&
+          identical(widget.feature, feature) &&
+          identical(widget.feature._share, share) &&
+          identical(owner.state, publication) &&
+          isCurrent(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_validEntry()) return const ArkUnavailableScreen();
@@ -848,9 +879,20 @@ class _ArkPageState extends State<_ArkPage> {
       ArkReceiveCubit() => ArkReceiveScreen(
         cubit: owner,
         displayData: displayData,
+        share: widget.feature._share == null ? null : _shareReceive,
       ),
       ArkBoardCubit() => ArkBoardScreen(
         cubit: owner,
+        sourceLabel: switch (displayData) {
+          ArkDisplayData(:final walletId, sourceLabel: final label?)
+              when label.trim().isNotEmpty &&
+                  (!_ordinaryBoard ||
+                      widget.feature._boardSource == null ||
+                      (identical(displayOwner, _displayOwner) &&
+                          (displayOwner?.accepts(displayData) ?? false))) =>
+            (walletId: walletId, label: label),
+          _ => null,
+        },
         minimum: switch (_boardMinimumOwner?.state) {
           ArkObserved(:final snapshot) => ArkBoardMinimum.fromSnapshot(
             widget.feature._config,

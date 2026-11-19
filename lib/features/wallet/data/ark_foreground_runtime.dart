@@ -30,6 +30,7 @@ import 'package:secrets/secrets.dart';
 import 'ark_board_abandonment.dart';
 import 'ark_installation_state.dart';
 import 'ark_display_data.dart';
+import 'ark_source_label.dart';
 import 'ark_board_source_data.dart';
 import 'foreground_wallet_sync.dart';
 import 'wallet_native_runtime.dart';
@@ -263,6 +264,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
   ArkPreferencesRepository? preferences,
   BackgroundTaskDispatcher? dispatcher,
   ArkScanner? scanner,
+  ArkShare? share,
 }) async {
   try {
     final selection = _WalletArkSelection(
@@ -336,6 +338,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
           runtime: locator<WalletNativeRuntime>(),
           account: config.id,
           selectedSource: selection.displaySourceWalletId,
+          sourceLabel: selection.sourceLabel,
           currency: () async => (await settings.fetch()).currencyCode,
           currencyChanges: settings.currencyChangeStream,
           isActive: () => policy.active,
@@ -369,6 +372,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         displayData: displayData,
         boardSource: boardSource,
         scanner: scanner,
+        share: share,
       );
       final runtime = ArkForegroundRuntime._(
         feature,
@@ -495,12 +499,16 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
   final Uri _arkUrl;
   final Uri _esploraUrl;
 
-  const _WalletArkSelection(
+  final _sourceLabels = ArkSourceLabelCache();
+
+  _WalletArkSelection(
     this._settings,
     this._wallets,
     this._arkUrl,
     this._esploraUrl,
   );
+
+  String? sourceLabel(String walletId) => _sourceLabels.read(walletId);
 
   @override
   Future<Result<ArkAccountConfig, ArkFailure>> selectedAccount() async {
@@ -548,6 +556,7 @@ final class _WalletArkSelection implements ArkAccountSelectionPort {
       if (eligible.length != 1) return const Err(ArkAccountRecoveryFailure());
       final parent = eligible.single.seedFingerprint;
       if (parent == null) return const Err(ArkAccountRecoveryFailure());
+      _sourceLabels.observe(eligible.single.id, eligible.single.label);
       return Ok((
         ArkAccountConfig(
           id: ArkAccountId(

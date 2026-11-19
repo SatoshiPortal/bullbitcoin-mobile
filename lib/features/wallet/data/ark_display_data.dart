@@ -15,6 +15,7 @@ import 'package:sync/sync.dart';
 import 'package:sync/write.dart' show SyncForegroundStores;
 
 import 'wallet_native_runtime.dart';
+import 'ark_source_label.dart';
 
 /// Observations only: no coin selection, address allocation or funding writes.
 final class WalletArkDisplayData implements ArkDisplayDataPort {
@@ -24,6 +25,7 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
   _selectedSource;
   final Future<String> Function() _currency;
   final IndexPriceReader _price;
+  final String? Function(String)? _sourceLabel;
   final bool Function() _isActive;
   final _pending = <Future<Result<ArkDisplayData, ArkFailure>>>{};
   final _changes = StreamController<void>.broadcast();
@@ -40,6 +42,7 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
     required this._currency,
     required this._isActive,
     this._price = _readIndexPrice,
+    this._sourceLabel,
   }) {
     _currencySubscription = currencyChanges.listen((_) {
       if (_live) _changes.add(null);
@@ -167,6 +170,7 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
         ArkDisplayData(
           account: account,
           walletId: id,
+          sourceLabel: optionalArkSourceLabel(id, _sourceLabel),
           available: available,
           price: price,
         ),

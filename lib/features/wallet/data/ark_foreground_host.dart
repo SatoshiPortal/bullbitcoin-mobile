@@ -52,6 +52,7 @@ final class ArkForegroundHost {
   final bool _initialize;
   final ArkPreferencesRepository? _preferences;
   final ArkScanner? _scanner;
+  final ArkShare? _share;
   final BackgroundTaskDispatcher? dispatcher;
   final ArkBoardFundingBinding Function() _boardFunding;
   ArkForegroundRuntime? _runtime;
@@ -70,6 +71,7 @@ final class ArkForegroundHost {
     required this._boardFunding,
     this._preferences,
     this._scanner,
+    this._share,
     this.dispatcher,
   }) : _ark = arkUrl,
        _esplora = primaryEsploraUrl,
@@ -88,6 +90,7 @@ final class ArkForegroundHost {
     ArkPreferencesRepository? preferences,
     BackgroundTaskDispatcher? dispatcher,
     ArkScanner? scanner,
+    ArkShare? share,
   }) async {
     final host = ArkForegroundHost(
       locator,
@@ -96,6 +99,7 @@ final class ArkForegroundHost {
       initializeNew: initializeNew,
       preferences: preferences,
       scanner: scanner,
+      share: share,
       dispatcher: dispatcher,
       boardFunding: () {
         final factory = WalletArkFundingFactory(
@@ -291,6 +295,7 @@ final class ArkForegroundHost {
       preferences: _preferences,
       dispatcher: dispatcher,
       scanner: _scanner,
+      share: _share,
     );
     if (opened case Ok(:final value)) {
       if (_closed || generation != _generation) {

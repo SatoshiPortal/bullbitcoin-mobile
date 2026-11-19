@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 
 import '../domain/ark_display_data_port.dart';
 import 'ark_amount.dart';
+import 'ark_share.dart';
 
 import '../presentation/ark_l10n.dart';
 import '../presentation/ark_receive_cubit.dart';
@@ -16,11 +17,13 @@ import '../presentation/ark_failure_l10n.dart';
 class ArkReceiveScreen extends StatefulWidget {
   final ArkReceiveCubit cubit;
   final ValueChanged<String>? onShare;
+  final ArkShare? share;
   final ArkDisplayData? displayData;
   const ArkReceiveScreen({
     super.key,
     required this.cubit,
     this.onShare,
+    this.share,
     this.displayData,
   });
   @override
@@ -358,11 +361,13 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
         currentReady: () => _current(owner, account, ready),
         changes: _sheetChanges.stream,
         canCopy: () => _shareable(ready),
-        hasShare: () => mounted && widget.onShare != null,
+        hasShare: () =>
+            mounted && (widget.share != null || widget.onShare != null),
         onCopy: () => unawaited(
           Clipboard.setData(ClipboardData(text: ready.destination.value)),
         ),
-        onShare: () => _share(owner, account, ready),
+        onShare: (sheetContext, isCurrent) =>
+            _share(owner, account, ready, sheetContext, isCurrent),
       ),
     );
   }
@@ -377,6 +382,8 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
     ArkReceiveCubit owner,
     ArkAccountId account,
     ArkReceiveReady rendered,
+    BuildContext sheetContext,
+    bool Function() sheetCurrent,
   ) {
     if (!mounted || owner.isClosed) {
       return;
@@ -391,6 +398,20 @@ class _ArkReceiveScreenState extends State<ArkReceiveScreen> {
         current.destination.kind != rendered.destination.kind ||
         current.destination.value != rendered.destination.value ||
         !_shareable(rendered)) {
+      return;
+    }
+    final hostShare = widget.share;
+    if (hostShare != null) {
+      unawaited(
+        hostShare(
+          sheetContext,
+          rendered.destination.value,
+          isCurrent: () =>
+              sheetCurrent() &&
+              _current(owner, account, rendered) &&
+              identical(widget.share, hostShare),
+        ),
+      );
       return;
     }
     final callback = widget.onShare;
@@ -479,7 +500,7 @@ class _ReceiveAddressSheet extends StatefulWidget {
   final bool Function() canCopy;
   final bool Function() hasShare;
   final VoidCallback onCopy;
-  final VoidCallback onShare;
+  final void Function(BuildContext, bool Function()) onShare;
   const _ReceiveAddressSheet({
     required this.currentReady,
     required this.changes,
@@ -534,7 +555,7 @@ class _ReceiveAddressSheetState extends State<_ReceiveAddressSheet> {
 
   void _share() {
     if (!_mayAct() || !widget.canCopy() || !widget.hasShare()) return;
-    widget.onShare();
+    widget.onShare(context, _mayAct);
   }
 
   @override
