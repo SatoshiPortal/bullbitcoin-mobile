@@ -30,6 +30,14 @@ import workmanager_apple
     // scene apps to call this here.
     WorkmanagerPlugin.registerLaunchHandlers()
 
+    // A fresh install has no saved tasks, so register the ones Dart schedules on iOS (they must be in Info.plist).
+    for identifier in [
+      "com.bullbitcoin.mobile.wallets-sync-id",
+      "com.bullbitcoin.mobile.logs-prune-id",
+    ] {
+      WorkmanagerPlugin.registerPeriodicTask(withIdentifier: identifier)
+    }
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
