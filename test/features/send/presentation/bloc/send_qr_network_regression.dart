@@ -11,7 +11,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
