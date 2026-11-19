@@ -406,4 +406,30 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
+
+  testWidgets('a compact row puts its number on the line of its unit', (
+    tester,
+  ) async {
+    final canonical = TextEditingController(text: '40000');
+    addTearDown(canonical.dispose);
+    await tester.pumpWidget(
+      wrapWithTheme(
+        Center(
+          child: SizedBox(
+            width: 150,
+            child: BullAmountInput(
+              canonicalUnit: BitcoinUnit.sats,
+              amountController: canonical,
+              compact: true,
+              showControls: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final number = tester.getCenter(find.byType(EditableText));
+    final unit = tester.getCenter(find.text('sats'));
+    expect((number.dy - unit.dy).abs(), lessThan(4));
+  });
 }
