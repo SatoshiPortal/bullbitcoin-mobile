@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `BullPinDots`, the typed PIN as one small dot per digit in a box outlined in `text`, with a show/hide eye and an optional hint under it; it never suggests a PIN length, and the digits never reach the semantics tree.
 - Size `BullQuickActionBar` from `BullQuickActionBar.minHeight` (90, shared with the home wallet cards). `BullQuickActionBar.heightOf(context)` keeps the icon and label centred in it and grows the bar when a large text scale needs more room, so the label is never clipped. Replaces the `BullQuickActionBar.height` constant.
 - Drop the background tint behind the selected row of the Bull menu (`BullDropdown`, `BullPickerMenu`, `BullPickerChip`, `BullLanguagePicker`): the selection now reads from its bold `primary` text alone.
 - Rebuild `BullDropdown` on one Bull menu and open every inline picker (`BullPickerMenu`, `BullPickerChip`, `BullLanguagePicker`) on the same one: a flat `surface` panel with a hairline `primary` outline and the `input` corner, anchored right under its trigger, the selected row tinted and in bold, read from the palette so light and dark mode both fit. `BullDropdown` now takes `BullPickerItem`s (with an optional `leading`) and a `String` hint, fires `onChanged` only on a pick (a null-valued item is a pick), and is disabled by a null `onChanged`; `BullPickerChip` reads in `primary` with a chevron. `DropdownMenuItem` is no longer re-exported.
