@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
@@ -15,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullDropdown,
         BullFadingLinearProgress,
         BullPickerItem,
@@ -310,7 +310,7 @@ class _FundExchangeCopBankTransferInputScreenState
                       FundExchangeErrorText(failure: _fundingDetailsFailure!),
                       const Gap(8.0),
                     ],
-                    BBButton.big(
+                    BullButton.big(
                       label: context.loc.fundExchangeCopGeneratePaymentLink,
                       disabled:
                           isLoadingFundingDetails ||

@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_mes
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
@@ -20,6 +19,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullInputText,
         BullShapesX,
         Gap,
@@ -377,7 +377,7 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: '',
                     iconData: Icons.attach_file,
                     disabled: false,
@@ -394,7 +394,7 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: '',
                     iconData: Icons.description,
                     disabled: false,
@@ -428,7 +428,7 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
+                  child: BullButton.big(
                     label: '',
                     iconData: Icons.send,
                     disabled:

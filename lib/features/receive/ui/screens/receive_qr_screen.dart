@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/disclosure_bottom_sheet.dart';
@@ -28,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullBorderedTile,
         BullDropdown,
         BullPickerItem,
@@ -129,7 +129,7 @@ class ReceiveQRDetails extends StatelessWidget {
           children: [
             BBText(failure.toTranslated(context), style: context.bullType.body),
             const Gap(16),
-            BBButton.big(
+            BullButton.big(
               label: context.loc.retry,
               onPressed: () => context.read<ReceiveBloc>().add(
                 isBitcoin
@@ -706,7 +706,7 @@ class ReceiveNewAddressButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBButton.big(
+      child: BullButton.big(
         label: context.loc.receiveNewAddress,
         onPressed: () {
           context.read<ReceiveBloc>().add(
@@ -727,7 +727,7 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBButton.big(
+      child: BullButton.big(
         label: context.loc.receiveVerifyAddressLedger,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
@@ -771,7 +771,7 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBButton.big(
+      child: BullButton.big(
         label: context.loc.bitboxActionVerifyAddressTitle,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;

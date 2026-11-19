@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_route.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_deletion_confirmation_sheet.dart';
@@ -9,7 +8,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullCopyField, BullIcon, BullIcons, Gap, BullTypographyX;
+    show BullButton, BullCopyField, BullIcon, BullIcons, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/wallet_discovery_button.dart';
 
@@ -119,7 +118,7 @@ class WalletDetailsScreen extends StatelessWidget {
                   const Gap(32),
                   WalletDiscoveryButton(walletId: walletId),
                   const Gap(16),
-                  BBButton.big(
+                  BullButton.big(
                     label: context.loc.addressViewAddressesTitle,
                     onPressed: () => context.pushNamed(
                       SettingsRoute.walletAddresses.name,

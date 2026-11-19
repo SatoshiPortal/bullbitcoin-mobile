@@ -2,7 +2,6 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:material_ui/material_ui.dart';
@@ -101,7 +100,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: BBButton.big(
+                      child: BullButton.big(
                         label: context.loc.errorReportingCancelButton,
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -113,7 +112,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: BBButton.big(
+                      child: BullButton.big(
                         label: context.loc.errorReportingAcceptButton,
                         onPressed: () {
                           context.read<SettingsCubit>().toggleErrorReporting(

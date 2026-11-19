@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullShapesX, BullTypography, Gap, BullTypographyX;
+    show BullButton, BullShapesX, BullTypography, Gap, BullTypographyX;
 import 'package:url_launcher/url_launcher.dart';
 
 class ExchangeLandingScreenV2 extends StatelessWidget {
@@ -160,7 +159,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
               // Call-to-Action Button
               SizedBox(
                 width: double.infinity,
-                child: BBButton.big(
+                child: BullButton.big(
                   label: context.loc.exchangeGoToWebsiteButton,
                   onPressed: () async {
                     final Uri url = Uri.parse('https://app.bullbitcoin.com');

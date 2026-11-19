@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_notification_console_text.dart';
@@ -13,6 +12,7 @@ import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullConfirmDialog,
         BullSettingsEntryItem,
         BullShapesX,
@@ -140,7 +140,7 @@ class _BackendConfigSection extends StatelessWidget {
               helperText: context.loc.spSettingsNetworkHelper,
             ),
           ),
-          submit: BBButton.big(
+          submit: BullButton.big(
             onPressed: () async {
               final confirmed = await _confirm(
                 context,
@@ -304,7 +304,7 @@ class _NotificationConsoleSection extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            BBButton.small(
+            BullButton.small(
               compact: true,
               label: context.loc.spClearButton,
               onPressed: cubit.clearConsole,

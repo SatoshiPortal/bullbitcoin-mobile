@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullShapesX, BullTypography, Gap, BullTypographyX;
+    show BullButton, BullShapesX, BullTypography, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ExchangeLandingScreen extends StatelessWidget {
@@ -153,7 +152,7 @@ class ExchangeLandingScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 13.0),
               child: SizedBox(
                 width: double.infinity,
-                child: BBButton.big(
+                child: BullButton.big(
                   label: context.loc.exchangeLoginButton,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeAuth.name);

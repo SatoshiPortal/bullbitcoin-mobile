@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_setup_state.dart';
 import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_scan_start_selector.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -74,7 +73,7 @@ class SpSetupScreen extends StatelessWidget {
                       onChanged: cubit.setScanStart,
                       isBusy: state.isCreating,
                     ),
-                    submit: BBButton.big(
+                    submit: BullButton.big(
                       onPressed: cubit.create,
                       label: context.loc.spCreateButton,
                       bgColor: context.appColors.primary,
