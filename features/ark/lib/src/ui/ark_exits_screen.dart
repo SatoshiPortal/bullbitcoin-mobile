@@ -24,25 +24,52 @@ class ArkExitsScreen extends StatefulWidget {
 }
 
 class _ArkExitsScreenState extends State<ArkExitsScreen> {
-  final Set<String> _expanded = {};
+  String? _selectedId;
+  int _viewEpoch = 0;
+  final _scroll = ScrollController(keepScrollOffset: false);
+
+  ArkExit? _unique(String? id) {
+    if (id == null || id.isEmpty) return null;
+    final rows = widget.snapshot.exitDetails.where((row) => row.id == id);
+    return rows.length == 1 ? rows.single : null;
+  }
+
+  bool _view(ArkExitsScreen rendered, int epoch, {String? id}) =>
+      mounted &&
+      identical(rendered, widget) &&
+      epoch == _viewEpoch &&
+      _selectedId == id &&
+      ModalRoute.of(context)?.isCurrent == true;
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(ArkExitsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.snapshot, widget.snapshot)) {
-      _expanded.clear();
+    ++_viewEpoch;
+    if (oldWidget.snapshot.account != widget.snapshot.account ||
+        _unique(_selectedId) == null) {
+      _selectedId = null;
     }
   }
 
-  void _details(ArkExitsScreen rendered, String id) {
-    if (!mounted ||
-        !identical(rendered, widget) ||
-        ModalRoute.of(context)?.isCurrent != true ||
-        !widget.snapshot.exitDetails.any((exit) => exit.id == id)) {
-      return;
-    }
+  void _details(ArkExitsScreen rendered, int epoch, String id) {
+    if (!_view(rendered, epoch) || _unique(id) == null) return;
     setState(() {
-      if (!_expanded.add(id)) _expanded.remove(id);
+      _selectedId = id;
+      ++_viewEpoch;
+    });
+  }
+
+  void _back(ArkExitsScreen rendered, int epoch, String id) {
+    if (!_view(rendered, epoch, id: id)) return;
+    setState(() {
+      _selectedId = null;
+      ++_viewEpoch;
     });
   }
 
@@ -67,11 +94,8 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
         rows.single.status == ArkExitStatus.claimable;
   }
 
-  void _review(ArkExitsScreen rendered, {bool progress = false}) {
-    if (!mounted ||
-        !identical(rendered, widget) ||
-        !_current ||
-        ModalRoute.of(context)?.isCurrent != true) {
+  void _review(ArkExitsScreen rendered, int epoch, {bool progress = false}) {
+    if (!_view(rendered, epoch) || !_current) {
       return;
     }
     if (progress) {
@@ -81,11 +105,8 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     }
   }
 
-  void _claim(ArkExitsScreen rendered, String id) {
-    if (!mounted ||
-        !identical(rendered, widget) ||
-        !_claimable(id) ||
-        ModalRoute.of(context)?.isCurrent != true) {
+  void _claim(ArkExitsScreen rendered, int epoch, String id, String? viewId) {
+    if (!_view(rendered, epoch, id: viewId) || !_claimable(id)) {
       return;
     }
     widget.onReviewClaim(List.unmodifiable([id]));
@@ -96,7 +117,9 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
     final l10n = arkLocalizationsOf(context);
     final snapshot = widget.snapshot;
     final rendered = widget;
-    return BullScaffold(
+    final epoch = _viewEpoch;
+    final detail = _unique(_selectedId);
+    final scaffold = BullScaffold(
       backgroundColor: context.bull.background,
       bottomNavigationBar: SafeArea(
         top: false,
@@ -108,9 +131,11 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
             BullSpacing.lg,
           ),
           child: BullButton.big(
-            label: l10n.startEmergencyExit,
-            onPressed: () => _review(rendered),
-            disabled: !_current,
+            label: detail == null ? l10n.startEmergencyExit : l10n.done,
+            onPressed: () => detail == null
+                ? _review(rendered, epoch)
+                : _back(rendered, epoch, detail.id),
+            disabled: detail == null && !_current,
             bgColor: context.bull.secondary,
             textColor: context.bull.onSecondary,
           ),
@@ -118,15 +143,38 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          key: ValueKey((snapshot.account, detail?.id)),
+          controller: _scroll,
+          primary: false,
           padding: const EdgeInsets.all(BullSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BullTopBar(
-                title: l10n.exits,
-                titleWidget: BullText(l10n.exits, role: BullTextRole.subtitle),
-                onBack: () => Navigator.pop(context),
+                title: detail == null ? l10n.exits : l10n.exitDetailsTitle,
+                titleWidget: BullText(
+                  detail == null ? l10n.exits : l10n.exitDetailsTitle,
+                  role: BullTextRole.subtitle,
+                ),
+                onBack: () {
+                  if (detail != null) {
+                    _back(rendered, epoch, detail.id);
+                  } else if (_view(rendered, epoch)) {
+                    Navigator.pop(context);
+                  }
+                },
               ),
+              if (detail != null) ...[
+                BullText(
+                  formatArkObservedSats(context, detail.amount),
+                  role: BullTextRole.headline,
+                ),
+                BullText(
+                  _status(context, detail.status),
+                  role: BullTextRole.body,
+                ),
+                _timeline(context, detail),
+              ],
               Container(
                 padding: const EdgeInsets.all(BullSpacing.md),
                 decoration: BoxDecoration(
@@ -167,7 +215,8 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                 ),
               ),
               const Gap(BullSpacing.md),
-              BullText(l10n.exitYourExits, role: BullTextRole.subtitle),
+              if (detail == null)
+                BullText(l10n.exitYourExits, role: BullTextRole.subtitle),
               const Gap(BullSpacing.md),
               if (snapshot.stale) BullInfoBar(message: l10n.stale),
               if (snapshot.recovery != ArkRecoveryStatus.complete)
@@ -209,38 +258,39 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                   ),
                 ),
               const Gap(BullSpacing.md),
-              for (final exit in snapshot.exitDetails) ...[
-                BullBorderedTile(
-                  onTap: () => _details(rendered, exit.id),
-                  backgroundColor: context.bull.surface,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: BullText(
-                          formatArkObservedSats(context, exit.amount),
-                          role: BullTextRole.subtitle,
+              for (final exit
+                  in detail == null ? snapshot.exitDetails : [detail]) ...[
+                if (detail == null)
+                  BullBorderedTile(
+                    onTap: () => _details(rendered, epoch, exit.id),
+                    backgroundColor: context.bull.surface,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: BullText(
+                            formatArkObservedSats(context, exit.amount),
+                            role: BullTextRole.subtitle,
+                          ),
                         ),
-                      ),
-                      BullBadge(
-                        label: _status(context, exit.status),
-                        background: context.bull.transparent,
-                        foreground: switch (exit.status) {
-                          ArkExitStatus.failed => context.bull.error,
-                          ArkExitStatus.pending ||
-                          ArkExitStatus.claimable ||
-                          ArkExitStatus.submitted => context.bull.warning,
-                          _ => context.bull.textMuted,
-                        },
-                      ),
-                      BullIcon(
-                        BullIcons.chevronRight,
-                        color: context.bull.textMuted,
-                      ),
-                    ],
+                        BullBadge(
+                          label: _status(context, exit.status),
+                          background: context.bull.transparent,
+                          foreground: switch (exit.status) {
+                            ArkExitStatus.failed => context.bull.error,
+                            ArkExitStatus.pending ||
+                            ArkExitStatus.claimable ||
+                            ArkExitStatus.submitted => context.bull.warning,
+                            _ => context.bull.textMuted,
+                          },
+                        ),
+                        BullIcon(
+                          BullIcons.chevronRight,
+                          color: context.bull.textMuted,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                if (_expanded.contains(exit.id)) ...[
-                  _timeline(context, exit),
+                if (detail != null) ...[
                   BullDetailsTable(
                     flat: true,
                     items: [
@@ -293,31 +343,36 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                   _button(
                     context,
                     l10n.exitClaimAction,
-                    () => _claim(rendered, exit.id),
+                    () => _claim(rendered, epoch, exit.id, detail?.id),
                     disabled: !_claimable(exit.id),
                   ),
               ],
-              if (widget.onRefresh case final refresh?)
+              if (widget.onRefresh case final refresh? when detail == null)
                 _button(context, l10n.refresh, () {
-                  if (mounted &&
-                      identical(rendered, widget) &&
-                      identical(widget.onRefresh, refresh) &&
-                      ModalRoute.of(context)?.isCurrent == true) {
+                  if (_view(rendered, epoch) &&
+                      identical(widget.onRefresh, refresh)) {
                     refresh();
                   }
                 }, disabled: false),
               if (_hasDetails) BullInfoBar(message: l10n.foregroundExit),
-              if (_hasDetails)
+              if (detail == null && _hasDetails)
                 _button(
                   context,
                   l10n.exitProgressTitle,
-                  () => _review(rendered, progress: true),
+                  () => _review(rendered, epoch, progress: true),
                   disabled: !_current || !_hasDetails,
                 ),
             ],
           ),
         ),
       ),
+    );
+    return PopScope<Object?>(
+      canPop: detail == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && detail != null) _back(rendered, epoch, detail.id);
+      },
+      child: scaffold,
     );
   }
 
@@ -393,7 +448,6 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BullText(l10n.exitDetailsTitle, role: BullTextRole.subtitle),
           step(
             l10n.emergencyExitStarted,
             phase != null &&
