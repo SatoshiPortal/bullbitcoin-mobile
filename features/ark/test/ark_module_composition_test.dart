@@ -1,3 +1,7 @@
+import 'package:bull_ark/src/ui/ark_vtxos_screen.dart';
+
+import 'ark_vtxos_screen_test.dart' as vtxos;
+
 import 'package:bull_ark/src/ui/ark_exit_request_screen.dart';
 
 import 'ark_exit_request_screen_test.dart' as exit_input;
@@ -247,6 +251,124 @@ void main() {
       Bloc.observer = previous;
     });
   });
+  testWidgets('current empty VTXOs open Board form without preparing funding', (
+    tester,
+  ) async {
+    final r = Rig();
+    r.client.snapshot = Ok(vtxos.view(values: []));
+    await tester.pumpWidget(r.app());
+    await frame(tester);
+    page<ArkSettingsScreen>(tester).onVtxos?.call();
+    await frame(tester);
+    expect(find.byType(ArkVtxosScreen), findsOneWidget);
+    final board = find.widgetWithText(BullButton, 'Board to Ark');
+    expect(board, findsOneWidget);
+    await tester.tap(board);
+    await frame(tester);
+    expect(find.byType(ArkBoardAmountScreen), findsOneWidget);
+    expect(r.router.state.uri.path, '/ark/board');
+    expect(r.boardFunding.calls, isEmpty);
+  });
+
+  testWidgets('disabled empty VTXO observation has no Board capability', (
+    tester,
+  ) async {
+    final r = Rig();
+    r.preferences.enabled = false;
+    r.client.snapshot = Ok(vtxos.view(values: []));
+    await tester.pumpWidget(r.app());
+    await frame(tester);
+    page<ArkSettingsScreen>(tester).onVtxos?.call();
+    await frame(tester);
+    expect(page<ArkVtxosScreen>(tester).onBoard, isNull);
+    expect(find.widgetWithText(BullButton, 'Board to Ark'), findsNothing);
+    expect(r.boardFunding.calls, isEmpty);
+  });
+
+  for (final change in ['preferences', 'selection']) {
+    testWidgets('Board admission rechecks $change after empty VTXO tap', (
+      tester,
+    ) async {
+      final r = Rig();
+      r.client.snapshot = Ok(vtxos.view(values: []));
+      await tester.pumpWidget(r.app());
+      await frame(tester);
+      page<ArkSettingsScreen>(tester).onVtxos?.call();
+      await frame(tester);
+      final board = page<ArkVtxosScreen>(tester).onBoard;
+      expect(board, isNotNull);
+      if (change == 'preferences') {
+        r.preferences.enabled = false;
+      } else {
+        r.selection.current = config(chain: 'https://changed.example');
+      }
+      board?.call();
+      await frame(tester);
+      expect(find.byType(ArkBoardAmountScreen), findsNothing);
+      expect(find.byType(ArkUnavailableScreen), findsOneWidget);
+      expect(r.boardFunding.calls, isEmpty);
+    });
+  }
+
+  for (final change in ['stale', 'replaced']) {
+    testWidgets(
+      'old Board capability refuses $change observation before rebuild',
+      (tester) async {
+        final r = Rig();
+        r.client.snapshot = Ok(vtxos.view(values: []));
+        await tester.pumpWidget(r.app());
+        await frame(tester);
+        page<ArkSettingsScreen>(tester).onVtxos?.call();
+        await frame(tester);
+        final board = page<ArkVtxosScreen>(tester).onBoard;
+        expect(board, isNotNull);
+        final owner = page<ArkSnapshotPage>(tester).cubit;
+        r.client.snapshot = Ok(
+          vtxos.view(values: [], stale: change == 'stale'),
+        );
+        await owner.load();
+        final before = r.router.routeInformationProvider.value;
+        board?.call();
+        expect(
+          identical(r.router.routeInformationProvider.value, before),
+          true,
+        );
+        expect(r.count('/ark/board'), 0);
+        expect(r.boardFunding.calls, isEmpty);
+        await frame(tester);
+      },
+    );
+  }
+
+  for (final change in ['replacement', 'disposal']) {
+    testWidgets('old Board capability refuses owner $change', (tester) async {
+      final r = Rig();
+      r.client.snapshot = Ok(vtxos.view(values: []));
+      await tester.pumpWidget(r.app());
+      await frame(tester);
+      page<ArkSettingsScreen>(tester).onVtxos?.call();
+      await frame(tester);
+      final board = page<ArkVtxosScreen>(tester).onBoard;
+      expect(board, isNotNull);
+      final owner = page<ArkSnapshotPage>(tester).cubit;
+      if (change == 'replacement') {
+        final next = Client()..snapshot = Ok(vtxos.view(values: []));
+        r.routing.value = RoutingConfig(
+          routes: r.routes(r.make(config(), next)),
+        );
+      } else {
+        r.router.go('/');
+      }
+      await frame(tester);
+      expect(owner.isClosed, true);
+      final before = r.router.routeInformationProvider.value;
+      board?.call();
+      expect(identical(r.router.routeInformationProvider.value, before), true);
+      expect(r.count('/ark/board'), 0);
+      expect(r.boardFunding.calls, isEmpty);
+    });
+  }
+
   testWidgets('dashboard account selector opens only the captured account', (
     tester,
   ) async {

@@ -226,6 +226,7 @@ void main() {
         ArkVtxosScreen(
           snapshot: vtxos.view(values: []),
           onRenew: (_) {},
+          onBoard: () {},
         ),
       );
       await capture('EmergencyExit', exits.Harness(exits.view()).screen);

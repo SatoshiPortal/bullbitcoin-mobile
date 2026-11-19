@@ -8,7 +8,8 @@ import 'package:bull_ui/bull_ui.dart'
         ValueKey,
         GestureDetector,
         BullText,
-        BullTextRole;
+        BullTextRole,
+        VoidCallback;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -56,10 +57,13 @@ BullButton renew(WidgetTester tester) => tester.widget<BullButton>(
 Future<void> paint(
   WidgetTester tester,
   ArkSnapshot snapshot,
-  List<List<String>> calls,
-) async {
+  List<List<String>> calls, {
+  VoidCallback? onBoard,
+}) async {
   await tester.pumpWidget(
-    app(ArkVtxosScreen(snapshot: snapshot, onRenew: calls.add)),
+    app(
+      ArkVtxosScreen(snapshot: snapshot, onRenew: calls.add, onBoard: onBoard),
+    ),
   );
   await tester.pumpAndSettle();
 }
@@ -76,6 +80,99 @@ void main() {
     network: BitcoinNetwork.regtest,
     serverIdentity: 'other-server',
   );
+  testWidgets('confirmed empty inventory offers Board instead of renewal', (
+    tester,
+  ) async {
+    var boards = 0;
+    final renewals = <List<String>>[];
+    await paint(tester, view(values: []), renewals, onBoard: () => boards++);
+    expect(find.widgetWithText(BullButton, 'Review renewal'), findsNothing);
+    await tester.tap(find.widgetWithText(BullButton, 'Board to Ark'));
+    expect(boards, 1);
+    expect(renewals, isEmpty);
+    await paint(tester, view(values: []), renewals);
+    expect(find.widgetWithText(BullButton, 'Board to Ark'), findsNothing);
+  });
+
+  testWidgets(
+    'old Board button cannot invoke a replacement non-null capability',
+    (tester) async {
+      var first = 0, second = 0;
+      await paint(tester, view(values: []), [], onBoard: () => first++);
+      final oldBoard = tester
+          .widget<BullButton>(find.widgetWithText(BullButton, 'Board to Ark'))
+          .onPressed;
+      await paint(tester, view(values: []), [], onBoard: () => second++);
+      oldBoard();
+      expect(first, 0);
+      expect(second, 0);
+      await tester.tap(find.widgetWithText(BullButton, 'Board to Ark'));
+      expect(first, 0);
+      expect(second, 1);
+    },
+  );
+
+  testWidgets('Board is absent for unproven empty or retired-only inventory', (
+    tester,
+  ) async {
+    var boards = 0;
+    for (final snapshot in [
+      view(values: [], stale: true),
+      view(values: [], completeness: ArkSectionCompleteness.incomplete),
+      view(values: [], tip: null),
+      view(values: [], recovery: ArkRecoveryStatus.unknown),
+      view(values: [], renewal: ArkRenewalStatus.delegated),
+      view(values: [coin('retired', state: ArkVtxoState.spent)]),
+    ]) {
+      await paint(tester, snapshot, [], onBoard: () => boards++);
+      expect(find.widgetWithText(BullButton, 'Board to Ark'), findsNothing);
+    }
+    await paint(tester, view(), [], onBoard: () => boards++);
+    await tester.tap(find.text('Locked 0'));
+    await tester.pumpAndSettle();
+    expect(find.text('No VTXOs match this filter.'), findsOneWidget);
+    expect(find.widgetWithText(BullButton, 'Board to Ark'), findsNothing);
+    expect(boards, 0);
+  });
+
+  for (final change in [
+    'account',
+    'stale',
+    'populated',
+    'capability',
+    'disposed',
+  ]) {
+    testWidgets('old empty Board click refuses $change widget context', (
+      tester,
+    ) async {
+      var boards = 0;
+      await paint(tester, view(values: []), [], onBoard: () => boards++);
+      final oldBoard = tester
+          .widget<BullButton>(find.widgetWithText(BullButton, 'Board to Ark'))
+          .onPressed;
+      if (change == 'disposed') {
+        await tester.pumpWidget(app(const BullText('gone')));
+        await tester.pumpAndSettle();
+      } else {
+        final snapshot = switch (change) {
+          'account' => view(owner: other, values: []),
+          'stale' => view(values: [], stale: true),
+          'populated' => view(),
+          _ => view(values: []),
+        };
+        await paint(
+          tester,
+          snapshot,
+          [],
+          onBoard: change == 'capability' ? null : () => boards++,
+        );
+      }
+      oldBoard();
+      expect(boards, 0);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('retired VTXOs do not inflate the total or live count', (
     tester,
   ) async {
