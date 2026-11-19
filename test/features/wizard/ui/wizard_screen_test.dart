@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:background_tasks/background_tasks.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -220,6 +222,47 @@ void main() {
     expect(saved?.backgroundTasks, isFalse);
     await tester.pump(const Duration(seconds: 3));
   });
+
+  for (final consent in <bool?>[null, true, false]) {
+    testWidgets('consent selection is announced once: $consent', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        var yesTaps = 0;
+        var noTaps = 0;
+        await _pump(
+          tester,
+          Scaffold(
+            body: MissionConsentRow(
+              consent: consent,
+              onYes: () => yesTaps++,
+              onNo: () => noTaps++,
+              yesFirst: true,
+            ),
+          ),
+        );
+        for (final answer in [true, false]) {
+          final label = answer ? 'Yes' : 'No';
+          final nodes = find.semantics.byPredicate(
+            (node) => node.label == label && node.flagsCollection.isButton,
+          );
+          expect(nodes, findsOne);
+          final node = nodes.evaluate().single;
+          expect(
+            node.flagsCollection.isSelected,
+            consent == answer ? Tristate.isTrue : Tristate.isFalse,
+          );
+        }
+        await tester.tap(find.text('Yes'));
+        await tester.tap(find.text('No'));
+        expect(yesTaps, 1);
+        expect(noTaps, 1);
+      } finally {
+        semantics.dispose();
+      }
+    });
+  }
 
   for (final yesFirst in [true, false]) {
     testWidgets('the consent row puts Yes on the left: $yesFirst', (

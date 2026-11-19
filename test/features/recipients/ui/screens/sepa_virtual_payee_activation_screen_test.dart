@@ -1,3 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullThemeX;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -24,7 +26,10 @@ void main() {
   late int activated;
   late int usedRegularSepa;
 
-  Future<AppLocalizations> pumpView(WidgetTester tester) async {
+  Future<AppLocalizations> pumpView(
+    WidgetTester tester, {
+    bool withReturnHome = false,
+  }) async {
     events = StreamController<_Event>();
     final usecase = _MockWatchSepaVirtualPayeeActivationUsecase();
     when(() => usecase.execute(recipientId: any(named: 'recipientId')))
@@ -47,6 +52,7 @@ void main() {
           child: SepaVirtualPayeeActivationView(
             onActivated: () => activated++,
             onUseRegularSepa: () => usedRegularSepa++,
+            onReturnHome: withReturnHome ? () {} : null,
           ),
         ),
       ),
@@ -62,6 +68,47 @@ void main() {
     await tester.pump();
     await tester.pump();
   }
+
+  testWidgets('retry is the only primary when return home is available', (
+    tester,
+  ) async {
+    final loc = await pumpView(tester, withReturnHome: true);
+    await emit(tester, const Err(RecipientsNetworkFailure()));
+    final colors = tester.element(find.byType(BullButton).first).bull;
+    final fills = [
+      for (final element in find.byType(BullButton).evaluate())
+        (tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: find.byWidget(element.widget),
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration)
+            .color,
+    ];
+    expect(fills.where((color) => color == colors.primary), hasLength(1));
+    final returnHome = find.ancestor(
+      of: find.text(loc.recipientsReturnHome),
+      matching: find.byType(BullButton),
+    );
+    final fill =
+        tester
+                .widget<Container>(
+                  find
+                      .descendant(
+                        of: returnHome,
+                        matching: find.byType(Container),
+                      )
+                      .first,
+                )
+                .decoration
+            as BoxDecoration;
+    expect(fill.color, colors.secondary);
+  });
 
   testWidgets('an initially active recipient shows Continue', (tester) async {
     final loc = await pumpView(tester);

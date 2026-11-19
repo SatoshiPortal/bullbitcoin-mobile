@@ -117,10 +117,13 @@ void main() {
       expect(tester.takeException(), isNull);
       final context = tester.element(find.byType(SendConfirmScreen));
       final label = AppLocalizations.of(context).sendAdvancedSettings;
-      final button = tester.widget<BullButton>(
-        find.ancestor(of: find.text(label), matching: find.byType(BullButton)),
+      final link = tester.widget<BullAdvancedOptionsLink>(
+        find.ancestor(
+          of: find.text(label),
+          matching: find.byType(BullAdvancedOptionsLink),
+        ),
       );
-      expect(button.disabled, phase != 'idle');
+      expect(link.onPressed == null, phase != 'idle');
     });
   }
 }

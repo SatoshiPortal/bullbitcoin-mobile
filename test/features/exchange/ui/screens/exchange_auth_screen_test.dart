@@ -198,11 +198,19 @@ void main() {
         expect(find.byType(AlertDialog), findsNothing);
       } else {
         expect(find.byType(AlertDialog), findsOneWidget);
-        final buttons = find.descendant(
-          of: find.byType(AlertDialog),
-          matching: find.byType(TextButton),
+        final loc = AppLocalizations.of(
+          tester.element(find.byType(AlertDialog)),
         );
-        await tester.tap(scenario == 'retry' ? buttons.last : buttons.first);
+        await tester.tap(
+          find.descendant(
+            of: find.byType(AlertDialog),
+            matching: find.text(
+              scenario == 'retry'
+                  ? loc.retry
+                  : loc.exchangeAuthLoginFailedOkButton,
+            ),
+          ),
+        );
         await tester.pumpAndSettle();
         expect(find.byType(AlertDialog), findsNothing);
       }
