@@ -52,9 +52,21 @@ void main() {
       final card = tester.widget<BullInfoCard>(find.byType(BullInfoCard));
       expect(card.tagColor, testBullTheme.tertiary);
       expect(card.bgColor, testBullTheme.tertiaryContainer);
-      final button = tester.widget<BullButton>(find.byType(BullButton));
-      expect(button.bgColor, testBullTheme.secondary);
-      expect(button.textColor, testBullTheme.onSecondary);
+      final scope = find.byType(BullButton);
+      final fill =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(of: scope, matching: find.byType(Container))
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      final text = tester.widget<BullText>(
+        find.descendant(of: scope, matching: find.byType(BullText)),
+      );
+      expect(fill.color, testBullTheme.secondary);
+      expect(text.color, testBullTheme.onSecondary);
     });
   });
 }
