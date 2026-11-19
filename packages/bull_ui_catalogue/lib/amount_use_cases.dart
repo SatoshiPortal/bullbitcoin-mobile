@@ -38,7 +38,7 @@ class _AmountExampleState extends State<_AmountExample> {
       children: [
         BullAmount(magnitude: Sats.fromInt(12345)),
         BullAmount(magnitude: Sats.fromInt(12), isNegative: true),
-        BullBitcoinAmountInput(
+        BullAmountInput(
           canonicalUnit: BitcoinUnit.sats,
           amountController: _controller,
           amountEquivalent: '',

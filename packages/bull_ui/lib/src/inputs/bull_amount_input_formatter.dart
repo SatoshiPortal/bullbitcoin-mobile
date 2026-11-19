@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 /// Restricts a text field to a well-formed monetary amount for a currency.
 ///
@@ -24,8 +25,6 @@ class BullAmountInputFormatter extends TextInputFormatter {
 
   /// False for rates (for example sat/vByte), which are not bitcoin amounts.
   final bool enforceBitcoinSupply;
-
-  static const _maxBtc = 21000000;
 
   bool get _isSats =>
       inputCurrencyCode == 'sats' || inputCurrencyCode == 'L-sats';
@@ -93,10 +92,10 @@ class BullAmountInputFormatter extends TextInputFormatter {
     if (!enforceBitcoinSupply || (!_isSats && !_isBtc)) return false;
     final wholeValue = BigInt.parse(whole);
     if (_isSats) {
-      return wholeValue > BigInt.from(_maxBtc) * BigInt.from(100000000);
+      return wholeValue > Sats.maxBitcoinSupply;
     }
     if (!_isBtc) return false;
-    final max = BigInt.from(_maxBtc);
+    final max = Sats.maxBitcoinSupply ~/ BigInt.from(100000000);
     if (wholeValue > max) return true;
     return wholeValue == max && (fraction ?? '').replaceAll('0', '').isNotEmpty;
   }

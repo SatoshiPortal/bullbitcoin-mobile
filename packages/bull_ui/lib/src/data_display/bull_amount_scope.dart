@@ -57,6 +57,7 @@ class BullAmountScopeData {
     bool fiat, {
     required String bitcoinMessage,
     required String fiatMessage,
+    required String failureMessage,
   })
   changeDefaultInputMode;
 }
@@ -194,6 +195,7 @@ class _BullAmountScopeState extends State<BullAmountScope> {
     bool fiat, {
     required String bitcoinMessage,
     required String fiatMessage,
+    required String failureMessage,
   }) {
     if (!widget.snapshot.isReady || widget.writeInputMode == null) {
       return Future<void>.value();
@@ -209,7 +211,7 @@ class _BullAmountScopeState extends State<BullAmountScope> {
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted || command != _command) return;
       if (!success) {
-        _showFailure();
+        _show(failureMessage);
         return;
       }
       final committedRevision = _modeRevision;
@@ -234,7 +236,7 @@ class _BullAmountScopeState extends State<BullAmountScope> {
             if (restored) {
               _announce(previous ? fiatMessage : bitcoinMessage);
             } else {
-              _showFailure();
+              _show(failureMessage);
             }
           });
           _pending = undo.catchError((Object error, StackTrace stack) {});

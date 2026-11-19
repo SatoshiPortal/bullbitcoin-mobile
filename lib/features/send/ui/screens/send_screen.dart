@@ -53,7 +53,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
-        BullBitcoinAmountInput,
+        BullAmountInput,
         BullBorderedTile,
         BullBottomSheet,
         BullButton,
@@ -978,7 +978,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                                 BitcoinUnit.btc.code ||
                                             inputCurrency ==
                                                 BitcoinUnit.sats.code) ...[
-                                          BullBitcoinAmountInput(
+                                          BullAmountInput(
                                             canonicalUnit: BitcoinUnit.fromCode(
                                               inputCurrency,
                                             ),

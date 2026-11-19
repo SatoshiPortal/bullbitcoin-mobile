@@ -31,6 +31,12 @@ abstract final class Pricer {
     (repository) => repository.indexPrice(network: network, currency: currency),
   );
 
+  /// Available index quotes for one captured network. Individual failures never borrow another currency's price.
+  @useResult
+  static Future<Result<Map<SupportedCurrency, BitcoinPrice>, PricerFailure>>
+  getIndexPrices({required BitcoinNetwork network}) =>
+      _call((repository) => repository.indexPrices(network: network));
+
   /// The price history of a chart, oldest first: the daily prices of the
   /// last 90 days and those of the last 15 minutes, fetched and stored. When
   /// a fetch fails, the stored history is used; when one of the two is still
