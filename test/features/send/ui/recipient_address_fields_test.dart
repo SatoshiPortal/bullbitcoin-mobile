@@ -53,6 +53,25 @@ void main() {
     },
   );
 
+  testWidgets('valid extra recipient keeps a 48dp remove target', (
+    tester,
+  ) async {
+    final second = (
+      id: 2,
+      address: 'bc1qsecond',
+      amount: '',
+      receivesRemainder: false,
+      isValid: true,
+    );
+    await tester.pumpWidget(app([first, second], multi: true));
+    final remove = find.byTooltip('Remove Recipient');
+    expect(remove, findsOneWidget);
+    final button = find.byWidgetPredicate(
+      (widget) => widget is IconButton && widget.tooltip == 'Remove Recipient',
+    );
+    expect(tester.getSize(button), const Size(48, 48));
+  });
+
   testWidgets('single mode keeps the primary editor', (tester) async {
     await tester.pumpWidget(app([first]));
     expect(find.text('Primary editor'), findsOneWidget);
