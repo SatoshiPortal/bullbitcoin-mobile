@@ -19,6 +19,7 @@ import 'package:primitives/primitives.dart';
 import 'package:bull_ui/bull_ui.dart' show BullAmountScope, BullAmountSnapshot;
 
 import 'ark_shell_visual_fixtures.dart';
+import 'ark_fee_reserve_visual_test.dart' show revealFeeReserve;
 import 'ark_flow_visual_fixtures.dart';
 
 import '../../../features/ark/test/ark_account_screen_test.dart' as wallet;
@@ -130,6 +131,10 @@ void main() {
             reserveAddress: 'bcrt1qpublicfeereservefixtureforhostrenderonly',
           ),
           config: information.config(),
+        ),
+        arrange: (tester) => revealFeeReserve(
+          tester,
+          'bcrt1qpublicfeereservefixtureforhostrenderonly',
         ),
       );
       final client = wallet.Client()..snapshot = Ok(wallet.observation());

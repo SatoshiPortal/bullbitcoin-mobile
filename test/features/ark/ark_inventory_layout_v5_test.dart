@@ -5,10 +5,13 @@ import 'package:bull_ark/src/ui/ark_information_screen.dart';
 import 'package:bull_ark/src/ui/ark_vtxos_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart'
     show
         Builder,
+        InkWell,
+        RichText,
         MaterialLocalizations,
         MediaQuery,
         TextScaler,
@@ -261,6 +264,56 @@ void main() {
           );
           expect(details(tester), containsPair('Round interval', '3,600 sec'));
           expect(details(tester), containsPair('Required confirmations', '0'));
+          expect(tester.takeException(), isNull);
+        },
+      );
+
+      testWidgets(
+        'nominal unknown server keeps its dot and whole status together',
+        (tester) async {
+          viewport(tester);
+          await tester.pumpWidget(
+            app(
+              ArkInformationScreen(
+                snapshot: view(values: []),
+                config: config(),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+          final server = find.byWidgetPredicate(
+            (widget) =>
+                widget is BullDetailsTableItem &&
+                widget.label == config().arkUrl.host,
+          );
+          final row = tester.widget<BullDetailsTableItem>(server);
+          final status = row.displayWidget;
+          if (status is! Wrap) throw StateError('Missing server status group');
+          final dot = status.children.whereType<Container>().single;
+          final label = status.children.whereType<BullText>().single;
+          expect(label.text, 'Unavailable');
+          final paragraph = tester.renderObject<RenderParagraph>(
+            find.descendant(
+              of: find.byWidget(label),
+              matching: find.byType(RichText),
+            ),
+          );
+          expect(paragraph.text.toPlainText(), 'Unavailable');
+          expect(
+            paragraph.getBoxesForSelection(
+              const TextSelection(baseOffset: 0, extentOffset: 11),
+            ),
+            hasLength(1),
+          );
+          expect(paragraph.didExceedMaxLines, isFalse);
+          final dotRect = tester.getRect(find.byWidget(dot));
+          final labelRect = tester.getRect(find.byWidget(label));
+          expect(dotRect.center.dy, closeTo(labelRect.center.dy, 0.1));
+          final copy = tester.getRect(
+            find.descendant(of: server, matching: find.byType(InkWell)),
+          );
+          expect(copy.width, greaterThanOrEqualTo(48));
+          expect(copy.height, greaterThanOrEqualTo(48));
           expect(tester.takeException(), isNull);
         },
       );

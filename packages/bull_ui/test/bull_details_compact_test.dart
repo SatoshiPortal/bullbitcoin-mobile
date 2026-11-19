@@ -110,7 +110,7 @@ void main() {
               find.descendant(of: item, matching: find.byType(Expanded)),
             )
             .map((column) => column.flex),
-        [3, 2],
+        [2, 3],
       );
       expect(tester.widget<Divider>(find.byType(Divider)).height, 1);
       final copy = find.bySemanticsLabel('Copy');

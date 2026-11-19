@@ -6,10 +6,51 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bull_ui/bull_ui.dart' show BullAmountScope, BullAmountSnapshot;
+import 'package:bull_ui/bull_ui.dart'
+    show BullAmountScope, BullAmountSnapshot, BullQrCode, BullCopyField;
 
 import '../../../features/ark/test/ark_information_widget_test.dart'
     show config;
+
+Future<void> revealFeeReserve(WidgetTester tester, String address) async {
+  final section = find.byKey(const ValueKey('ark-fee-reserve'));
+  expect(section, findsOneWidget);
+  await tester.ensureVisible(section);
+  await tester.pumpAndSettle();
+  final qr = find.descendant(of: section, matching: find.byType(BullQrCode));
+  final field = find.descendant(
+    of: section,
+    matching: find.byType(BullCopyField),
+  );
+  expect(qr.hitTestable(), findsOneWidget);
+  expect(field.hitTestable(), findsOneWidget);
+  expect(tester.widget<BullQrCode>(qr).data, address);
+  final copy = tester.widget<BullCopyField>(field);
+  expect(copy.text, address);
+  expect(copy.clipboardText, address);
+  final image = find.descendant(
+    of: qr,
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.image == true,
+    ),
+  );
+  expect(image, findsOneWidget);
+  final viewport = tester.getRect(find.byType(SingleChildScrollView));
+  for (final target in [image, field]) {
+    final bounds = tester.getRect(target);
+    expect(bounds.top, greaterThanOrEqualTo(viewport.top));
+    expect(bounds.bottom, lessThanOrEqualTo(viewport.bottom));
+    expect(bounds.left, greaterThanOrEqualTo(viewport.left));
+    expect(bounds.right, lessThanOrEqualTo(viewport.right));
+  }
+  final imageSize = tester.getSize(image);
+  expect(imageSize.width, greaterThan(0));
+  expect(
+    imageSize.width,
+    lessThanOrEqualTo(tester.widget<BullQrCode>(qr).size),
+  );
+  expect(imageSize.height, imageSize.width);
+}
 
 void main() {
   setUpAll(() async {
@@ -67,6 +108,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await revealFeeReserve(
+        tester,
+        'bcrt1qpublicfeereservefixtureforhostrenderonly',
+      );
       expect(tester.takeException(), isNull);
       await expectLater(
         find.byKey(boundary),
