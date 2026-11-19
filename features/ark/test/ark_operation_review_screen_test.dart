@@ -263,6 +263,11 @@ void main() {
                 ? findsOneWidget
                 : findsNothing,
           );
+          if (status == ArkOperationStatus.succeeded &&
+              kind != ArkOperationKind.payment) {
+            button(tester, 'Operation details').onPressed();
+            await pumpState(tester);
+          }
           expect(details(tester)['Identifier'], 'native-id');
           expect(find.widgetWithText(BullButton, 'Confirm'), findsNothing);
           expect(find.text('900 sats'), findsNothing);
@@ -512,7 +517,10 @@ void main() {
       ArkOperationStatus.prepared: ('Prepared', 'Préparée'),
       ArkOperationStatus.admitted: ('Admitted', 'Admise'),
       ArkOperationStatus.pending: ('Pending', 'En attente'),
-      ArkOperationStatus.succeeded: ('Completed', 'Terminée'),
+      ArkOperationStatus.succeeded: (
+        'Request completed. Chain settlement and round completion are separate.',
+        'Demande terminée. Le règlement on-chain et la fin du round restent distincts.',
+      ),
       ArkOperationStatus.failed: ('Failed', 'Échec'),
       ArkOperationStatus.outcomeUnknown: (
         'Outcome unknown',
@@ -538,6 +546,16 @@ void main() {
       for (final locale in ['en', 'fr']) {
         await tester.pumpWidget(app(r.screen, language: locale));
         await pumpState(tester);
+        if (entry.key == ArkOperationStatus.succeeded) {
+          final detail = find.widgetWithText(
+            BullButton,
+            locale == 'en' ? 'Operation details' : 'Détails de l’opération',
+          );
+          if (tester.any(detail)) {
+            tester.widget<BullButton>(detail).onPressed();
+            await pumpState(tester);
+          }
+        }
         expect(
           details(tester).values,
           containsAll([
