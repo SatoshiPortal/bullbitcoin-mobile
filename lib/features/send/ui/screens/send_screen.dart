@@ -1075,7 +1075,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                           CurrencyText(
                                             amountSat,
                                             showFiat: false,
-                                            interactive: true,
                                             color: context.appColors.textMuted,
                                             style: context.bullType.body,
                                           ),
