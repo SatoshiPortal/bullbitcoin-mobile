@@ -39,6 +39,9 @@ class BullInputText extends StatefulWidget {
     this.maxLines,
     this.minLines,
     this.fixedPrefix,
+    this.textAlign = TextAlign.left,
+    this.filled = true,
+    this.contentPadding = const EdgeInsets.all(16),
   });
 
   /// Key applied to the inner [TextField] (for widget tests).
@@ -121,6 +124,11 @@ class BullInputText extends StatefulWidget {
 
   /// A fixed, non-editable prefix shown inside the field.
   final String? fixedPrefix;
+
+  /// Presentation overrides; legacy field layout remains the default.
+  final TextAlign textAlign;
+  final bool filled;
+  final EdgeInsetsGeometry contentPadding;
 
   @override
   State<BullInputText> createState() => _BullInputTextState();
@@ -212,7 +220,7 @@ class _BullInputTextState extends State<BullInputText> {
           context.bullType.body.copyWith(color: colors.onSurface),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
-      textAlign: TextAlign.left,
+      textAlign: widget.textAlign,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
@@ -248,8 +256,8 @@ class _BullInputTextState extends State<BullInputText> {
         enabledBorder: _getBorder(context),
         focusedBorder: _getBorder(context),
         disabledBorder: _getBorder(context),
-        contentPadding: const EdgeInsets.all(16),
-        filled: true,
+        contentPadding: widget.contentPadding,
+        filled: widget.filled,
         fillColor: colors.surface,
       ),
     );

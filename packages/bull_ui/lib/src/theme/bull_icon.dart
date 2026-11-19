@@ -48,6 +48,10 @@ abstract final class BullIcons {
   static const IconData currencyBitcoin = Icons.currency_bitcoin;
   static const IconData sailing = Icons.sailing;
   static const IconData info = Icons.info;
+  static const IconData edit = Icons.edit;
+  static const IconData expandMore = Icons.expand_more;
+  static const IconData contentPaste = Icons.content_paste;
+  static const IconData swapVert = Icons.swap_vert;
   static const IconData restaurant = Icons.restaurant;
   static const IconData storefront = Icons.storefront;
   static const IconData localGroceryStore = Icons.local_grocery_store;
