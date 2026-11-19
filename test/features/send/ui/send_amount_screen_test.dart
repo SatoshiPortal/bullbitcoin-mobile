@@ -525,7 +525,8 @@ void main() {
     final input = tester.widget<BullAmountInput>(find.byType(BullAmountInput));
     expect(input.readOnly, isTrue);
     expect(input.isMax, isTrue);
-    expect(find.text('MAX'), findsNWidgets(2));
+    expect(find.text('MAX'), findsOneWidget);
+    expect(find.text('MAX · balance minus fees'), findsOneWidget);
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('Send remaining balance'), findsNothing);
 
