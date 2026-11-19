@@ -1,5 +1,5 @@
 import 'package:swaps/swaps.dart';
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

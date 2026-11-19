@@ -1,4 +1,4 @@
-.PHONY: native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -112,12 +112,23 @@ pr-governance-ci-test:
 	@echo "🛡️ Testing PR governance and custody policy (CI only)"
 	@node --test tools/pr_governance/policy.test.js tools/pr_governance/custody.test.js
 
+# Regenerate the flutter_rust_bridge bindings after changing a Rust API. Needs
+# flutter_rust_bridge_codegen 2.13.0, the Flutter of .fvmrc on PATH and libclang
+# (LLVM_PATH=<llvm dir> when it is not found). Commit the output on its own.
+rust-bindings-codegen:
+	@bash packages/rust_bindings/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
+onion-codegen:
+	@bash packages/onion/codegen.sh $(if $(LLVM_PATH),--llvm-path $(LLVM_PATH))
+
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@fvm dart run build_runner build --force-jit
 	@(cd packages/bull_payjoin && fvm dart run build_runner build --force-jit)
 	@(cd packages/bull_pricer && fvm dart run build_runner build --force-jit)
 	@(cd packages/swaps && fvm dart run build_runner build --force-jit)
+	@(cd packages/rust_bindings && fvm dart run build_runner build --force-jit)
+	@(cd packages/satoshifier && fvm dart run build_runner build --force-jit)
 	@$(MAKE) recoverbull-build-runner
 	@$(MAKE) btc-map-build-runner
 
@@ -450,6 +461,20 @@ integration-test:
 	@echo "🧪 integration tests"
 	@fvm dart run tools/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
+
+# Plugin integration tests that need hardware, outside `make integration-test`:
+# onion's on a phone (Snowflake is mobile-only), bitbox_transport's on a phone
+# with a BitBox02 attached over USB or reachable over BLE. DEVICE=<flutter device id>.
+# The beta flavor installs beside the production app and leaves its data alone.
+DEVICE_TEST_FLAVOR ?= beta
+
+onion-device-test:
+	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
+	@fvm flutter test integration_test/onion --flavor $(DEVICE_TEST_FLAVOR) -d $(DEVICE) --timeout 5m
+
+bitbox-device-test:
+	@test -n "$(DEVICE)" || { echo "DEVICE=<id> is required" >&2; exit 1; }
+	@fvm flutter test integration_test/bitbox_transport --flavor $(DEVICE_TEST_FLAVOR) -d $(DEVICE) --timeout 5m
 
 # Physical-device credential probes use a separately installed debug APK.
 # The SDK driver connects through VM_SERVICE_URL without installing an app.

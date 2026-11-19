@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 import 'package:primitives/primitives.dart';
 
 /// Maps the bwk FFI `UnifiedCoinView`/`CoinSource` into the domain [SpCoin].

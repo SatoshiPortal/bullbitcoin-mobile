@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/sp/data/sp_storage_names.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_tx_draft.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/bwk.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

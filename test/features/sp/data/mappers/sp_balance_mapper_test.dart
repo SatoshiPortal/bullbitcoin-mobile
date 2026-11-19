@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/sp/data/mappers/sp_balance_mapper.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

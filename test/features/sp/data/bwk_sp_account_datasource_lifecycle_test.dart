@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';
-import 'package:bull_sdk/bwk.dart';
-import 'package:bull_sdk/src/rust/frb_generated.dart';
+import 'package:rust_bindings/bwk.dart';
+import 'package:rust_bindings/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';

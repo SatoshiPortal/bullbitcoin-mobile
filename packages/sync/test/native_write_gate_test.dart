@@ -29,7 +29,7 @@ void main() {
       ..createSync(recursive: true)
       ..writeAsStringSync(jsonEncode(config));
     File('${fixture.path}/bridge.dart')
-        .writeAsStringSync("export 'package:bull_sdk/bdk.dart';");
+        .writeAsStringSync("export 'package:rust_bindings/bdk.dart';");
     collection = AnalysisContextCollection(
       includedPaths: [fixture.path],
       sdkPath: dartSdkPath(root.path),
@@ -79,8 +79,8 @@ final create = Store.newSqlite;
     'wallet mutation tear-offs and Liquid entry points are rejected',
     () async {
       final violations = await inspect('mutations', '''
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 Object persist(bdk.Wallet wallet) => wallet.persist;
 Object update(bdk.WalletInterface wallet) => wallet.applyUpdate;
 final load = bdk.Wallet.load;
@@ -101,7 +101,7 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
 
   test('the writer is privileged, other package code is not', () async {
     const source =
-        "import 'package:bull_sdk/lwk.dart' as lwk; final init = lwk.Wallet.init;";
+        "import 'package:rust_bindings/lwk.dart' as lwk; final init = lwk.Wallet.init;";
     for (final folder in ['data/write', 'data/write/sync']) {
       expect(
         await inspect(
@@ -130,15 +130,15 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
   test('outside the writer, hydration never extends to mutation', () async {
     const package = 'packages/sync/lib/src';
     final mutation = await inspect('read_mutation', '''
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 Object persist(bdk.Wallet wallet) => wallet.persist;
 Object sync(lwk.Wallet wallet) => wallet.sync_;
 ''', path: '$package/data/read/other.dart');
     expect(mutation, contains(contains('Wallet.persist')));
     expect(mutation, contains(contains('Wallet.sync_')));
     const hydration =
-        "import 'package:bull_sdk/lwk.dart' as lwk; final init = lwk.Wallet.init;";
+        "import 'package:rust_bindings/lwk.dart' as lwk; final init = lwk.Wallet.init;";
     for (final path in [
       '$package/domain/other.dart',
       '$package/data/other.dart',
@@ -172,7 +172,7 @@ void remove(String root, WalletKey key) {
     'memory decoy cannot authorize persistence of a supplied wallet',
     () async {
       final violations = await inspect('decoy', """
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 void _performDryScan(bdk.Wallet wallet, bdk.Persister disk) {
   final decoy = bdk.Persister.newInMemory();
   wallet.persist(persister: disk);
@@ -187,7 +187,7 @@ void _performDryScan(bdk.Wallet wallet, bdk.Persister disk) {
     'memory decoy cannot authorize a shorthand persistent wallet load',
     () async {
       final violations = await inspect('shorthand_decoy', """
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 void _performDryScan(bdk.Descriptor descriptor, bdk.Persister diskStore) {
   final decoy = bdk.Persister.newInMemory();
   bdk.Wallet wallet = .load(descriptor: descriptor, changeDescriptor: descriptor,
@@ -214,7 +214,7 @@ void update(Document doc) { doc.persist(); doc.applyUpdate(); }
     () async {
       const path = 'packages/sync/lib/src/data/chain/bitcoin_prescan.dart';
       const memory = '''
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 void _performDryScan(bdk.Descriptor descriptor) {
   final store = bdk.Persister.newInMemory();
   final wallet = bdk.Wallet(descriptor: descriptor, changeDescriptor: descriptor,
@@ -258,8 +258,8 @@ void _performDryScan(bdk.Descriptor descriptor) {
   test('read modules allow hydration but never mutation or deletion', () async {
     final violations = await inspect('read_mutations', '''
 import 'dart:io';
-import 'package:bull_sdk/bdk.dart' as bdk;
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 void mutate(bdk.Wallet wallet, bdk.Persister store) {
   wallet.persist(persister: store);
   wallet.revealNextAddress(keychain: bdk.KeychainKind.external_);
@@ -285,7 +285,7 @@ Object sync(lwk.Wallet wallet) => wallet.sync_;
       String source(String initializer, {bool sync = false}) =>
           '''
 import 'dart:io';
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 class LiquidSigner {
   Future<void> signPset(Directory parent, lwk.Descriptor descriptor) async {
     final scratch = $initializer;
@@ -323,7 +323,7 @@ class LiquidSigner {
         'packages/secrets/lib/src/crypto/signers/bitcoin_signer.dart';
     String source(String factory) =>
         '''
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 class BitcoinSigner {
   bdk.Wallet _wallet(bdk.Descriptor descriptor) {
     bdk.Persister? persister;
@@ -391,11 +391,11 @@ analyzer:
     - lib/**/*.g.dart
 ''');
     write('lib/generated/native_bridge.dart', '''
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 bool owns(Object wallet) => wallet is bdk.Wallet;
 ''');
     write('lib/wallet_store.g.dart', '''
-import 'package:bull_sdk/bdk.dart' as bdk;
+import 'package:rust_bindings/bdk.dart' as bdk;
 void save(bdk.Wallet wallet, bdk.Persister store) =>
     wallet.persist(persister: store);
 ''');
@@ -432,7 +432,8 @@ final store = save;
   });
 
   group('native import ratchet', () {
-    const direct = "import 'package:bull_sdk/bdk.dart' as bdk; bdk.Network? n;";
+    const direct =
+        "import 'package:rust_bindings/bdk.dart' as bdk; bdk.Network? n;";
     const bridged = "import 'bridge.dart' as sdk; sdk.Network? n;";
 
     test('rejects BDK or LWK outside sync, even through a bridge', () async {
@@ -441,7 +442,7 @@ final store = save;
         ('import_bridge', bridged),
         (
           'import_lwk',
-          "import 'package:bull_sdk/lwk.dart' as lwk; lwk.Wallet? w;",
+          "import 'package:rust_bindings/lwk.dart' as lwk; lwk.Wallet? w;",
         ),
       ]) {
         expect(
@@ -479,6 +480,25 @@ final store = save;
       );
     });
 
+    test('rust_bindings declares the bindings, satoshifier only its listed parsers', () async {
+      expect(
+        await inspectImports(
+          'import_provider',
+          direct,
+          'packages/rust_bindings/lib/src/lwk_consolidate.dart',
+        ),
+        isEmpty,
+      );
+      expect(
+        await inspectImports(
+          'import_satoshifier_unlisted',
+          direct,
+          'packages/satoshifier/lib/new_parser.dart',
+        ),
+        contains(contains('native import ratchet')),
+      );
+    });
+
     test('a listed file that stopped using BDK must leave the list', () {
       final listed = nativeImportAllowlist.first;
       expect(staleNativeImportEntries(nativeImportAllowlist.skip(1).toSet()), [
@@ -488,12 +508,17 @@ final store = save;
     });
   });
 
-  test('outside sync, only secrets may use BDK or LWK', () {
+  test('outside sync, only secrets and four satoshifier parsers may use BDK or LWK', () {
     expect(
       nativeImportAllowlist.where(
         (path) => !path.startsWith('packages/secrets/'),
       ),
-      isEmpty,
+      unorderedEquals([
+        'packages/satoshifier/lib/enums/network.dart',
+        'packages/satoshifier/lib/parsers/bitcoin_address_parser.dart',
+        'packages/satoshifier/lib/parsers/liquid_address_parser.dart',
+        'packages/satoshifier/lib/parsers/psbt_parser.dart',
+      ]),
     );
   });
 }

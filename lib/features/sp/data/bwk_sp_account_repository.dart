@@ -31,7 +31,7 @@ import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_notif_log.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_update.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_wallet.dart';
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/bwk.dart';
 import 'package:meta/meta.dart';
 
 /// Secondary (driven) adapter that owns the single live `SpAccount` FFI

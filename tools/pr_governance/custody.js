@@ -18,12 +18,18 @@ const FSS_IMPORTERS_ALLOWED = new Set([
 
 const inSecrets = (path) => path.startsWith('packages/secrets/');
 const isDart = (path) => path.endsWith('.dart');
+// The bindings packages must never reach package:secrets (`bindings-secrets` below, enforced on resolved
+// libraries by packages/secrets/tool/key_material_gate.dart). That keeps the
+// suppression flutter_rust_bridge writes into every file it generates, for its own runtime's internal
+// members, unable to silence the seal; hand-written files there stay checked.
+const inBindings = (path) => /^packages\/(rust_bindings|onion)\//.test(path);
+const isGeneratedBridge = (path) => /^packages\/(rust_bindings|onion)\/lib\/src\/rust\/.+\.dart$/.test(path);
 const isPubspec = (path) => /(^|\/)pubspec\.yaml$/.test(path);
 
 const RULES = [
   {
     id: 'seal-ignore',
-    applies: isDart,
+    applies: (path) => isDart(path) && !isGeneratedBridge(path),
     matches: (text) => /\bignore(_for_file)?\s*:.*\binvalid_use_of_internal_member\b/.test(text),
     why: 'silences `invalid_use_of_internal_member`, the analyzer seal on package:secrets (`Secret.revealMnemonic`, every constructor the package does not export)',
   },
@@ -39,6 +45,20 @@ const RULES = [
     applies: (path) => isDart(path) && !inSecrets(path),
     matches: (text) => /['"]package:secrets\/src\//.test(text),
     why: 'imports package:secrets internals instead of `package:secrets/secrets.dart`',
+  },
+  {
+    id: 'bindings-secrets',
+    applies: (path) => inBindings(path) && isDart(path),
+    // Comments the plain spelling on a pull request. `make custody-check` enforces the boundary on
+    // resolved libraries, so relative or encoded spellings and inferred types are caught there.
+    matches: (text) => /['"]package:secrets[/'"]/.test(text),
+    why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
+  },
+  {
+    id: 'bindings-secrets-dependency',
+    applies: (path) => inBindings(path) && isPubspec(path),
+    matches: (text) => /^\s*secrets\s*:/.test(text),
+    why: 'makes the Rust bindings reach package:secrets, whose seal their generated files may silence',
   },
   {
     id: 'fss-dependency',

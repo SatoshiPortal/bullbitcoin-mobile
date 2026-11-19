@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/sp/domain/entities/sp_backend_kind.dart';
 import 'package:bb_mobile/features/sp/domain/ports/sp_backend_probe_port.dart';
 import 'package:bb_mobile/features/sp/domain/sp_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/bwk.dart';
 
 /// Talks to the SP backends through bwk's standalone free functions, with no
 /// account and no session.

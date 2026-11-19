@@ -100,7 +100,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'packages/rust_bindings/rust/Cargo.lock', 'packages/onion/rust/Cargo.lock') }}
 
       # Install the pinned native FVM binary without executing the mutable
       # fvm.app installer script on a runner that later receives signing keys.

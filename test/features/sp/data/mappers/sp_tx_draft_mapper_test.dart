@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/sp/data/mappers/sp_tx_draft_mapper.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_coin.dart';
 import 'package:bb_mobile/features/sp/domain/entities/sp_recipient.dart';
-import 'package:bull_sdk/bwk.dart' as bwk;
+import 'package:rust_bindings/bwk.dart' as bwk;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:bb_mobile/features/sp/data/datasources/bwk_sp_account_datasource.dart';
-import 'package:bull_sdk/bull_sdk.dart';
-import 'package:bull_sdk/bwk.dart';
+import 'package:rust_bindings/rust_bindings.dart';
+import 'package:rust_bindings/bwk.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../sp_fakes.dart';

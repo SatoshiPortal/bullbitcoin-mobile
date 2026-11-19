@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bull_sdk/lwk.dart' as lwk;
+import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
 import '../../../domain/public_wallet_descriptor.dart';

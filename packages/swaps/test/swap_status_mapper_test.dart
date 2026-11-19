@@ -1,4 +1,4 @@
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 import 'package:swaps/src/data/models/swap_model.dart';
 import 'package:swaps/src/data/swap_status_mapper.dart';
 import 'package:swaps/src/domain/entities/swap.dart';

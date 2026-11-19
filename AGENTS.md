@@ -41,7 +41,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 
 ## Monorepo / melos
 
-The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. The Flutter app remains at the repo root through `useRootAsPackage: true`. Current `workspace:` members (checked 2026-11-17, see ARCHITECTURE.md "Monorepo Migration" for what each one owns): `secrets`, `bull_ui`, `bull_ui_catalogue`, `primitives`, `bull_payjoin`, `bull_tor`, `screen_privacy`, `bull_logger`, `bull_pricer`, `btc_map`, `bull_reporting`, `background_tasks`, `notifications`, `sync`, `screen_awake`, `novlang`, `swaps`, `bull_logs`, `bull_quick_actions`, `bull_recoverbull`. The makefile remains the canonical entry point across the workspace.
+The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. The Flutter app remains at the repo root through `useRootAsPackage: true`. Current `workspace:` members (checked 2026-11-17, see ARCHITECTURE.md "Monorepo Migration" for what each one owns): `secrets`, `bull_ui`, `bull_ui_catalogue`, `primitives`, `bull_payjoin`, `bull_tor`, `screen_privacy`, `bull_logger`, `bull_pricer`, `btc_map`, `bull_reporting`, `background_tasks`, `notifications`, `sync`, `screen_awake`, `novlang`, `swaps`, `bull_logs`, `bull_quick_actions`, `bull_recoverbull`, `rust_bindings`, `onion`, `boltz_stream`, `bitbox_transport`, `satoshifier`. The makefile remains the canonical entry point across the workspace.
 
 - **Run melos through the makefile** (`make bootstrap`), which wraps `fvm dart run melos` so the pinned SDK ([`.fvmrc`](.fvmrc)) is used. Never type bare `melos` (wrong SDK). For melos subcommands without a make target yet, use `fvm dart run melos <cmd>` — and add a make wrapper if it becomes routine.
 - **The makefile stays canonical** for daily commands. melos does not replace it: `make deps` is still `fvm flutter pub get --enforce-lockfile`, and the reproducible build chain ([Containerfile.app](Containerfile.app), [build-android.yml](.github/workflows/build-android.yml)) does not run melos. melos is a `dev_dependency` only — never compiled into the app, so the reproducible APK is unaffected.
@@ -227,6 +227,7 @@ Rules:
 ## Dependencies (pubspec)
 
 - **GitHub refs only, never `path:` deps.** All cross-repo packages are pinned via `git: { url, ref }` ([example](pubspec.yaml#L11-L14)).
+- **Our Rust bindings live in this repo.** `packages/rust_bindings` (Boltz, LWK, BWK, BBQR, BitBox, verify_tx; one native library, `rust_lib_bull_sdk`) and `packages/onion` replaced the bull_sdk repository and its binding repositories on 2026-11-17: change them here, never in those repositories, and regenerate with `make rust-bindings-codegen` / `make onion-codegen`. Their upstream libraries (boltz-rust, LWK, BWK, bbqr-rust, bitbox-api-rs, BDK, payjoin) stay pinned by revision in Cargo.toml or pubspec.
 - Adding a dep? Bump `pubspec.yaml`, run `make deps`, commit `pubspec.lock` in the same commit.
 
 ## Verify before suggesting

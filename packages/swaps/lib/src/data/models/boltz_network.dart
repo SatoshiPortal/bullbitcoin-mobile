@@ -1,5 +1,5 @@
 import 'package:primitives/primitives.dart';
-import 'package:bull_sdk/boltz.dart' as native;
+import 'package:rust_bindings/boltz.dart' as native;
 
 enum BoltzNetwork {
   mainnet,

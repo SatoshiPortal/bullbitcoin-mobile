@@ -3,7 +3,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/utils/msats.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
-import 'package:bull_sdk/boltz.dart' as boltz;
+import 'package:rust_bindings/boltz.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, LiquidNetwork, Ok;

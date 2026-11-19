@@ -5,8 +5,8 @@ import 'package:primitives/primitives.dart' show Err;
 
 import 'dart:io';
 
-import 'package:bull_sdk/lwk.dart' as lwk;
-import 'package:bull_sdk/src/rust/frb_generated.dart' show BullSdk, BullSdkApi;
+import 'package:rust_bindings/lwk.dart' as lwk;
+import 'package:rust_bindings/testing.dart' show BullSdk, BullSdkApi;
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'

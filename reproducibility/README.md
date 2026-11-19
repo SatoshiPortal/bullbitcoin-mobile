@@ -124,16 +124,12 @@ SatoshiPortal GitHub org) — tracked here rather than silently dropped:
   they are absent otherwise) may be pushed or saved. Confirm the keystore and
   properties are not in the image before archiving.
 - **Mirror personal-account git dependencies into the SatoshiPortal org.**
-  `bull_sdk`'s `Cargo.toml` pins `bitbox-api-rs` from
+  `packages/rust_bindings/rust/crates/bitbox/Cargo.toml` pins `bitbox-api-rs` from
   `github.com/ben-kaufman/bitbox-api-rs`, a personal account. Commit-SHA pinning
   makes these resolve to exact bytes today, but a pin doesn't survive the
   commit becoming unreachable (account deleted, repo force-pushed/rewritten).
   Mirroring these forks under the SatoshiPortal org removes that single
-  point of failure. The same applies with lower urgency to `bull_sdk`'s three
-  `branch = "migrate-to-bull-sdk"` cargo dependencies (already SatoshiPortal
-  repos) — convert to `rev =` once that branch is merged/retired upstream so
-  a future branch deletion can't break the pin (already fixed in the current
-  `migrate-to-bull-sdk` checkout; needs review/merge in `bull_sdk`).
+  point of failure.
 - **Publish build provenance from `build-android.yml`.** The workflow now
   prints the built artifact's sha256 to the job summary, but there's no
   cryptographic attestation tying "this GitHub Actions run, at this commit,

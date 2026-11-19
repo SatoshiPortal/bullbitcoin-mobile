@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart' show NetworkEnv;
 
 import 'dart:async';
 
-import 'package:bull_sdk/boltz.dart' as native;
+import 'package:rust_bindings/boltz.dart' as native;
 import 'package:mocktail/mocktail.dart';
 import 'package:swaps/src/data/boltz_api.dart';
 import 'package:swaps/swaps.dart';
