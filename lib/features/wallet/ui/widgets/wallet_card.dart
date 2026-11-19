@@ -73,9 +73,9 @@ class WalletCard extends StatelessWidget {
                           crossAxisAlignment: .start,
                           mainAxisAlignment: .center,
                           children: [
-                            _line(title, bodyStyle, accent, false),
+                            _line(context, title, bodyStyle, accent, false),
                             const Gap(4),
-                            _line(description, label, muted, true),
+                            _line(context, description, label, muted, true),
                           ],
                         ),
                       ),
@@ -108,35 +108,42 @@ class WalletCard extends StatelessWidget {
   }
 
   // A long label gives way to the balance, and a balance too wide for the
-  // card scales down rather than overflowing it.
-  Widget _line(String text, TextStyle? style, Color color, bool showFiat) =>
-      LayoutBuilder(
-        builder: (context, constraints) => Row(
-          children: [
-            Expanded(
-              child: Text(
-                text,
-                style: style?.copyWith(color: color),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const Gap(4),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.7),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerRight,
-                child: CurrencyText(
-                  balanceSat,
-                  showFiat: showFiat,
-                  fiatCurrency: fiatCurrency,
-                  style: style,
-                  color: color,
-                ),
-              ),
-            ),
-          ],
+  // card scales down rather than overflowing it. The cap follows the screen,
+  // not a LayoutBuilder: cards sit in intrinsic-height columns, which cannot
+  // measure a LayoutBuilder.
+  Widget _line(
+    BuildContext context,
+    String text,
+    TextStyle? style,
+    Color color,
+    bool showFiat,
+  ) => Row(
+    children: [
+      Expanded(
+        child: Text(
+          text,
+          style: style?.copyWith(color: color),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-      );
+      ),
+      const Gap(4),
+      ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.sizeOf(context).width * 0.5,
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerRight,
+          child: CurrencyText(
+            balanceSat,
+            showFiat: showFiat,
+            fiatCurrency: fiatCurrency,
+            style: style,
+            color: color,
+          ),
+        ),
+      ),
+    ],
+  );
 }

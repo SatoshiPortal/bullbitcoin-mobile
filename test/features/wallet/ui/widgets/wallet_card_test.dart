@@ -4,7 +4,11 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmountScope, BullAmountSnapshot, bullUiLocalizationsDelegate;
+    show
+        BullAmountScope,
+        BullAmountSnapshot,
+        BullScrollableColumn,
+        bullUiLocalizationsDelegate;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -20,6 +24,7 @@ Future<void> _pumpCard(
   required String title,
   required String description,
   required int balanceSat,
+  bool inScrollableColumn = false,
 }) async {
   tester.view.physicalSize = const Size(360, 640);
   tester.view.devicePixelRatio = 1;
@@ -52,16 +57,27 @@ Future<void> _pumpCard(
           ),
           writeUnit: (_) async => true,
           child: Scaffold(
-            body: Column(
-              children: [
-                WalletCard(
-                  tagColor: const Color(0xFF000000),
-                  title: title,
-                  description: description,
-                  balanceSat: balanceSat,
-                ),
-              ],
-            ),
+            body: inScrollableColumn
+                ? BullScrollableColumn(
+                    children: [
+                      WalletCard(
+                        tagColor: const Color(0xFF000000),
+                        title: title,
+                        description: description,
+                        balanceSat: balanceSat,
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      WalletCard(
+                        tagColor: const Color(0xFF000000),
+                        title: title,
+                        description: description,
+                        balanceSat: balanceSat,
+                      ),
+                    ],
+                  ),
           ),
         ),
       ),
@@ -70,6 +86,21 @@ Future<void> _pumpCard(
 }
 
 void main() {
+  testWidgets('can be measured inside an intrinsic-height scrollable column', (
+    tester,
+  ) async {
+    await _pumpCard(
+      tester,
+      title: 'Instant payments',
+      description: 'Liquid and Lightning',
+      balanceSat: 66000,
+      inScrollableColumn: true,
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Instant payments'), findsOneWidget);
+  });
+
   testWidgets('a long label and a large balance fit a phone-width card', (
     tester,
   ) async {
