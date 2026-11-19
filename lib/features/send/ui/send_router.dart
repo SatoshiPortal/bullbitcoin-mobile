@@ -1,3 +1,5 @@
+import '../presentation/send_ark_cubit.dart';
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -20,16 +22,21 @@ class SendRouter {
       final wallet =
           args?.wallet ??
           (state.extra is Wallet ? state.extra! as Wallet : null);
-      return BlocProvider(
-        create: (_) => locator<SendCubit>(
-          param1: wallet,
-          param2: (
-            args: args,
-            spWalletLabel: args?.isSpMode == true
-                ? context.loc.walletSpTitle
-                : null,
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider<SendArkCubit>(create: (_) => locator<SendArkCubit>()),
+          BlocProvider<SendCubit>(
+            create: (_) => locator<SendCubit>(
+              param1: wallet,
+              param2: (
+                args: args,
+                spWalletLabel: args?.isSpMode == true
+                    ? context.loc.walletSpTitle
+                    : null,
+              ),
+            )..loadWalletWithRatesAndFees(),
           ),
-        )..loadWalletWithRatesAndFees(),
+        ],
         child: const SendScreen(),
       );
     },

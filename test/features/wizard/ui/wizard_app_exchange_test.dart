@@ -18,7 +18,9 @@ void main() {
     ) async {
       debugDefaultTargetPlatformOverride = platform;
       try {
-        await tester.pumpWidget(WizardApp(onDone: (_) {}));
+        await tester.pumpWidget(
+          WizardApp(notificationChannelId: 'payments', onDone: (_) {}),
+        );
         await tester.pumpAndSettle();
 
         final screen = tester.widget<WizardScreen>(find.byType(WizardScreen));

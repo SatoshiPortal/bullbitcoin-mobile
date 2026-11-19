@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/consolidation/public/consolidation_facade.dar
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/ark_dashboard_entry.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_quick_actions.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -47,6 +48,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   GoRouter? _router;
   bool _homeVisible = false;
+  int _arkRefresh = 0;
 
   @override
   void initState() {
@@ -102,6 +104,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
 
   void _refreshOnVisible() {
     if (!mounted) return;
+    setState(() => ++_arkRefresh);
     context.read<WalletBloc>().add(const RefreshSpWallet());
     context.read<WalletBloc>().add(const WalletRefreshed());
     // Only a price that never loaded (e.g. an offline start) is retried here:
@@ -141,8 +144,8 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             right: 0,
             child: ColoredBox(
               color: context.appColors.homeHeaderBackground,
-              child: const SizedBox(
-                height: WalletHomeTopSection.minBackgroundHeight,
+              child: SizedBox(
+                height: WalletHomeTopSection.minBackgroundHeight(context),
               ),
             ),
           ),
@@ -150,6 +153,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
             isRefreshing: isRefreshing,
             waitForRefresh: context.read<WalletBloc>().waitForRefresh,
             onRefresh: () {
+              setState(() => ++_arkRefresh);
               context.read<BitcoinPriceBloc>().add(const BitcoinPriceFetched());
               return context.read<WalletBloc>().refresh();
             },
@@ -182,6 +186,9 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                     );
                   },
                 ),
+              ),
+              SliverToBoxAdapter(
+                child: ArkDashboardEntry(refresh: _arkRefresh),
               ),
             ],
           ),

@@ -62,6 +62,8 @@ class BoltzDatasource {
   final Set<String> _subscribedSwapIds = {};
 
   final Map<String, Future<void>> _eventChains = {};
+  final List<String> _reconcileQueue = [];
+  Future<void>? _reconcileWork;
 
   int _reconnectAttempt = 0;
   Timer? _reconnectTimer;
@@ -990,6 +992,20 @@ class BoltzDatasource {
     }
   }
 
+  /// Settings for the chain a chain-swap call does NOT operate on. The native
+  /// side builds a client for both chains and, given none, dials the stored
+  /// URL over TLS with the scheme still attached — which fails on a plain
+  /// `tcp://` server (regtest) with "unexpected end of file" before the real
+  /// chain is ever queried.
+  @visibleForTesting
+  static ElectrumSettings storedElectrumSettings(String url) =>
+      ElectrumSettings(
+        url: url,
+        validateDomain: true,
+        tls: !url.startsWith('tcp://'),
+        timeout: 10,
+      );
+
   /// The swap object carries the electrum URLs baked in at creation time;
   /// [electrum] overrides them with a currently-working server so refunds
   /// are not pinned to a host that has since become unreachable.
@@ -1046,6 +1062,7 @@ class BoltzDatasource {
         outAddress: claimLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: storedElectrumSettings(chainSwap.btcElectrumUrl),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
     } catch (e) {
@@ -1073,6 +1090,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
+        lbtcElectrumSettings: storedElectrumSettings(chainSwap.lbtcElectrumUrl),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1126,6 +1144,7 @@ class BoltzDatasource {
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
         btcElectrumSettings: _electrumOverride(electrum),
+        lbtcElectrumSettings: storedElectrumSettings(chainSwap.lbtcElectrumUrl),
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -1152,6 +1171,7 @@ class BoltzDatasource {
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: storedElectrumSettings(chainSwap.btcElectrumUrl),
         lbtcElectrumSettings: _electrumOverride(electrum),
       );
       return signedTxHex;
@@ -1269,8 +1289,12 @@ class BoltzDatasource {
     final size = await chainSwap.claimTxSize(
       outAddress: claimAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: claimOnLiquid ? null : override,
-      lbtcElectrumSettings: claimOnLiquid ? override : null,
+      btcElectrumSettings: claimOnLiquid
+          ? storedElectrumSettings(chainSwap.btcElectrumUrl)
+          : override,
+      lbtcElectrumSettings: claimOnLiquid
+          ? override
+          : storedElectrumSettings(chainSwap.lbtcElectrumUrl),
     );
     return size.toInt();
   }
@@ -1314,8 +1338,12 @@ class BoltzDatasource {
     final size = await chainSwap.refundTxSize(
       refundAddress: refundAddress,
       tryCooperate: isCooperative,
-      btcElectrumSettings: refundOnLiquid ? null : override,
-      lbtcElectrumSettings: refundOnLiquid ? override : null,
+      btcElectrumSettings: refundOnLiquid
+          ? storedElectrumSettings(chainSwap.btcElectrumUrl)
+          : override,
+      lbtcElectrumSettings: refundOnLiquid
+          ? override
+          : storedElectrumSettings(chainSwap.lbtcElectrumUrl),
     );
     return size.toInt();
   }
@@ -1434,27 +1462,56 @@ class BoltzDatasource {
   /// Fetches each swap's current status over REST and runs it through the same
   /// mapping pipeline as websocket events, so recovery never depends on Boltz
   /// replaying events missed while disconnected.
-  Future<void> reconcileSwaps(List<String> swapIds) async {
-    if (_disposed) return;
+  Future<void> reconcileSwaps(List<String> swapIds) {
+    if (_disposed) return Future<void>.value();
+    final active = _reconcileWork;
+    if (active != null) return active;
+    late final Future<void> work;
+    work = _reconcileSwaps(swapIds).whenComplete(() {
+      if (identical(_reconcileWork, work)) _reconcileWork = null;
+    });
+    _reconcileWork = work;
+    return work;
+  }
+
+  Future<void> _reconcileSwaps(List<String> swapIds) async {
+    // Refresh only between owned passes. Overlapping callers join the active
+    // pass and supply their current membership on their next normal call.
+    final ids = swapIds.toSet();
+    _reconcileQueue.removeWhere((id) => !ids.contains(id));
+    for (final id in ids) {
+      if (!_reconcileQueue.contains(id)) _reconcileQueue.add(id);
+    }
+    final pending = _reconcileQueue.toList();
     final cancellation = CancelToken();
     final deadline = Timer(const Duration(seconds: 30), () {
       cancellation.cancel('status reconciliation deadline');
     });
     try {
-      for (final swapId in swapIds) {
+      for (final swapId in pending) {
         if (_disposed || cancellation.isCancelled) break;
+        var admitted = false;
         try {
           final response = await _http.get<Map<String, dynamic>>(
             '/swap/$swapId',
             cancelToken: cancellation,
           );
           if (_disposed || cancellation.isCancelled) break;
+          admitted = true;
           final data = response.data;
           if (data == null) continue;
           final status = SwapStatusResponse.fromJson(json: jsonEncode(data));
+          // An admitted mutation remains owned even after the HTTP budget.
           await _enqueueEvent(swapId, status.status, status.transaction?.id);
         } catch (e) {
           swapsLog.warning('[Boltz] reconcile failed for swap $swapId: $e');
+        } finally {
+          // Completed failures/null responses also yield their place. Keep an
+          // interrupted HTTP attempt at the head for the next bounded pass.
+          if (admitted || (!_disposed && !cancellation.isCancelled)) {
+            _reconcileQueue.remove(swapId);
+            _reconcileQueue.add(swapId);
+          }
         }
       }
     } finally {

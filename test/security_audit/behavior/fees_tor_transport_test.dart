@@ -4,10 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/entities/mempool_settings.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -17,8 +15,6 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
-
-class _MempoolSettings extends Mock implements MempoolSettingsRepository {}
 
 class _MempoolServers extends Mock implements MempoolServerRepository {}
 
@@ -82,7 +78,6 @@ void main() {
     final locator = GetIt.asNewInstance();
     final globalSettings = _GlobalSettings();
     final electrumServers = _ElectrumServers();
-    final mempoolSettings = _MempoolSettings();
     final mempoolServers = _MempoolServers();
     final network = MempoolServerNetwork.fromEnvironment(
       isTestnet: false,
@@ -97,16 +92,10 @@ void main() {
 
     when(() => globalSettings.fetch())
         .thenAnswer((_) async => _torSettings(socks.port));
-    when(() => mempoolSettings.fetchByNetwork(network)).thenAnswer(
-      (_) async => Ok(
-        MempoolSettings.existing(network: network, useForFeeEstimation: true),
-      ),
-    );
     when(() => mempoolServers.fetchCustomServer(network))
         .thenAnswer((_) async => Ok(server));
 
     locator.registerSingleton<SettingsRepository>(globalSettings);
-    locator.registerSingleton<MempoolSettingsRepository>(mempoolSettings);
     locator.registerSingleton<MempoolServerRepository>(mempoolServers);
     locator.registerSingleton<ElectrumServersPort>(electrumServers);
     FeesLocator.registerDatasources(locator);

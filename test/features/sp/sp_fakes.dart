@@ -68,20 +68,35 @@ SpBackendConfig spBackendConfig({
 );
 
 SpWallet spWallet({
+  BitcoinNetwork? network = BitcoinNetwork.mainnet,
   String spAddress = 'sp1qexample',
   Sats? confirmedSat,
   Sats? totalUnifiedSat,
   bool isScanning = false,
   int? lastScannedHeight,
-}) => SpWallet(
-  spAddress: spAddress,
-  balance: SpBalance(
+}) {
+  final balance = SpBalance(
     confirmedSat: confirmedSat ?? Sats.fromInt(10),
     totalUnifiedSat: totalUnifiedSat ?? Sats.fromInt(20),
-  ),
-  isScanning: isScanning,
-  lastScannedHeight: lastScannedHeight,
-);
+  );
+  // The exact regression suite also runs against the pre-provenance API.
+  try {
+    return Function.apply(SpWallet.new, const [], {
+      #network: network,
+      #spAddress: spAddress,
+      #balance: balance,
+      #isScanning: isScanning,
+      #lastScannedHeight: lastScannedHeight,
+    }) as SpWallet;
+  } on NoSuchMethodError {
+    return SpWallet(
+      spAddress: spAddress,
+      balance: balance,
+      isScanning: isScanning,
+      lastScannedHeight: lastScannedHeight,
+    );
+  }
+}
 
 /// In-memory fake of [SpAccountRepository]. The repo-rule prefers fakes over
 /// mocks for a datasource/repository: this behaves like a set-up, non-revoked
@@ -494,5 +509,9 @@ class FakeSpFeatureGateUsecase implements GetSpFeatureGateUsecase {
   bool allowed;
   FakeSpFeatureGateUsecase({this.allowed = true});
   @override
-  Future<bool> execute() async => allowed;
+  Future<bool> execute({
+    BitcoinNetwork? network,
+    SpBackendConfig? config,
+    bool allowUnconfigured = false,
+  }) async => allowed;
 }

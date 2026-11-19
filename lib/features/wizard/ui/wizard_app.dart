@@ -1,3 +1,9 @@
+import 'package:background_tasks/background_tasks.dart'
+    show
+        SharedPreferencesBackgroundSyncIntervalRepository,
+        backgroundSyncAvailable;
+import 'package:notifications/notifications.dart'
+    show NotificationPermissionsFacade, notificationPermissions;
 import 'package:bb_mobile/features/exchange/public/exchange_facade.dart'
     show ExchangeAvailability, ExchangeAccessResolving;
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -7,6 +13,8 @@ import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasourc
 import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/mark_wizard_complete_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/notification_permission_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/read_background_tasks_usecase.dart';
 import 'package:bb_mobile/features/wizard/domain/usecase/save_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/screens/wizard_screen.dart';
@@ -30,9 +38,14 @@ import 'package:novlang/novlang.dart';
 /// while on page 1 (so consent collection can't be skipped before
 /// migrations / Sentry init run).
 class WizardApp extends StatelessWidget {
-  const WizardApp({super.key, required this.onDone});
+  const WizardApp({
+    super.key,
+    required this.onDone,
+    required this.notificationChannelId,
+  });
 
   final ValueChanged<WizardChoices> onDone;
+  final String notificationChannelId;
 
   WizardBloc _createBloc() {
     final datasource = WizardLocalDatasourceImpl();
@@ -40,13 +53,26 @@ class WizardApp extends StatelessWidget {
     return WizardBloc(
       savePending: SavePendingWizardChoicesUsecase(repository: repository),
       markComplete: MarkWizardCompleteUsecase(repository: repository),
+      readBackgroundTasks: ReadBackgroundTasksUsecase(
+        intervals: const SharedPreferencesBackgroundSyncIntervalRepository(),
+      ),
+      notificationPermission: NotificationPermissionUsecase(
+        permissions: NotificationPermissionsFacade(
+          gateway: notificationPermissions(channelId: notificationChannelId),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<WizardBloc>(
-      create: (_) => _createBloc(),
+      create: (_) {
+        final bloc = _createBloc();
+        // Without background tasks there is nothing to read nor to offer.
+        if (backgroundSyncAvailable) bloc.add(const WizardEvent.started());
+        return bloc;
+      },
       child: _WizardAppView(onDone: onDone),
     );
   }
@@ -88,6 +114,7 @@ class _WizardAppView extends StatelessWidget {
           ),
           supportedLocales: AppLocalizations.supportedLocales,
           home: WizardScreen(
+            backgroundTasksAvailable: backgroundSyncAvailable,
             exchangeAllowed:
                 ExchangeAvailability.resolve(
                   platformAllowed: defaultTargetPlatform != TargetPlatform.iOS,

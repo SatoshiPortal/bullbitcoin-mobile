@@ -1,4 +1,9 @@
+import 'package:background_tasks/background_tasks.dart'
+    show backgroundSyncAvailable;
 import 'package:primitives/primitives.dart';
+import 'package:bull_ark/ark_ui.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/ark_debug_notification.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
@@ -44,6 +49,7 @@ enum SettingsItemId {
   importWallet,
   broadcastTransaction,
   payjoin,
+  ark,
   autoswap,
   swaps,
   swapRestore,
@@ -63,7 +69,9 @@ enum SettingsItemId {
   screenPrivacy,
   devMode,
   testnetCredentials,
+  arkDebugNotification,
   errorReporting,
+  permissions,
 }
 
 enum SettingsItemSection { root, backup, wallet, app }
@@ -75,6 +83,7 @@ const backupSettingsDataItemOrder = [
 
 const walletSettingsItemOrder = [
   SettingsItemId.payjoin,
+  SettingsItemId.ark,
   SettingsItemId.autoswap,
   SettingsItemId.swaps,
   SettingsItemId.swapRestore,
@@ -183,9 +192,9 @@ List<SettingsItem> settingsItemsOf(
     isDevModeEnabled: isDevModeEnabled,
     isSpWalletSetup: isSpWalletSetup,
     accountReady: accountReady,
+    backgroundTasksAvailable: backgroundSyncAvailable,
     environment: context.select(
-      (SettingsCubit cubit) =>
-          cubit.state.storedSettings?.activeNetwork ?? NetworkEnv.mainnet,
+      (SettingsCubit cubit) => cubit.state.storedSettings?.activeNetwork,
     ),
   );
 }
@@ -196,9 +205,11 @@ List<SettingsItem> buildSettingsItems({
   bool isDevModeEnabled = false,
   bool isSpWalletSetup = false,
   bool accountReady = false,
-  NetworkEnv environment = NetworkEnv.mainnet,
+  bool backgroundTasksAvailable = false,
+  required NetworkEnv? environment,
 }) {
   final english = AppLocalizationsEn();
+  final arkTitle = arkLocalizationsForLanguage(localization.localeName).title;
   final rootSection = localization.settingsScreenTitle;
   final backupSection = localization.settingsBackupTitle;
   final walletSection = localization.settingsWalletTitle;
@@ -456,6 +467,14 @@ List<SettingsItem> buildSettingsItems({
         english.settingsSearchBroadcastTransactionKeywords,
         [english.bitcoinSettingsBroadcastTransactionTitle],
       ),
+    ),
+    SettingsItem(
+      id: SettingsItemId.ark,
+      section: SettingsItemSection.wallet,
+      title: arkTitle,
+      path: path(SettingsItemSection.wallet, arkTitle),
+      icon: Icons.account_balance_wallet_outlined,
+      open: ArkNavigation.open,
     ),
     SettingsItem(
       id: SettingsItemId.payjoin,
@@ -730,6 +749,20 @@ List<SettingsItem> buildSettingsItems({
       ),
       isInlineControl: true,
     ),
+    if (backgroundTasksAvailable)
+      SettingsItem(
+        id: SettingsItemId.permissions,
+        section: SettingsItemSection.app,
+        title: localization.permissionsTitle,
+        path: path(SettingsItemSection.app, localization.permissionsTitle),
+        icon: Icons.verified_user_outlined,
+        open: (context) => context.pushNamed(SettingsRoute.permissions.name),
+        keywords: _keywords(
+          localization.settingsSearchPermissionsKeywords,
+          english.settingsSearchPermissionsKeywords,
+          [english.permissionsTitle],
+        ),
+      ),
     if (isSuperuser)
       SettingsItem(
         id: SettingsItemId.devMode,
@@ -765,6 +798,17 @@ List<SettingsItem> buildSettingsItems({
         isSuperuser: true,
         isInlineControl: true,
       ),
+    if (kDebugMode && isDevModeEnabled)
+      SettingsItem(
+        id: SettingsItemId.arkDebugNotification,
+        section: SettingsItemSection.app,
+        title: localization.localeName.startsWith('fr')
+            ? 'Tester la notification d’échéance Ark'
+            : 'Test Ark expiry notification',
+        path: path(SettingsItemSection.app, 'Ark notification'),
+        icon: Icons.notifications_active_outlined,
+        open: showArkDebugNotification,
+      ),
     if (isDevModeEnabled)
       SettingsItem(
         id: SettingsItemId.testnetCredentials,
@@ -787,14 +831,16 @@ List<SettingsItem> buildSettingsItems({
       SettingsItemId.exchange ||
       SettingsItemId.exchangeAccountSettings ||
       SettingsItemId.testnetCredentials => NetworkCapability.exchange,
-      SettingsItemId.autoswap => NetworkCapability.swaps,
+      SettingsItemId.autoswap => NetworkCapability.automaticSwaps,
       SettingsItemId.payjoin => NetworkCapability.payjoin,
+      SettingsItemId.ark => NetworkCapability.ark,
       SettingsItemId.sp => NetworkCapability.silentPayments,
       SettingsItemId.mempool ||
       SettingsItemId.servicesStatus => NetworkCapability.publicFeeEstimates,
       _ => null,
     };
     if (capability == null) return true;
+    if (environment == null) return false;
     final network = switch (environment) {
       NetworkEnv.mainnet => BitcoinNetwork.mainnet,
       NetworkEnv.testnet => BitcoinNetwork.testnet,

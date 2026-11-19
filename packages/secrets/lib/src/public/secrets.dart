@@ -164,6 +164,13 @@ final class Secrets {
   /// Public derivations from words that are not stored, such as a scan before import.
   SecretPreview get preview => SecretPreview._(this);
 
+  /// Bark m/350h identity of an already scoped child, without storage access.
+  @internal
+  @useResult
+  Future<Result<Fingerprint, SecretFailure>> previewArkFingerprint({
+    required List<String> words,
+  }) => _repository.previewArkFingerprint(words: words);
+
   /// External and internal public descriptors of account 0 for words that are not stored, in [language] and with [passphrase], keyed by each of [scriptTypes].
   ///
   /// Stateless: the keystore is neither read nor written, and the seed is derived once for every script type, used and wiped in a separate isolate. Only public descriptor strings leave it. Invalid words return [InvalidMnemonicFailure]. They equal those of the same words once imported in the same language (`secret.derive.descriptors.bitcoin`).
@@ -308,6 +315,14 @@ extension type const Recoverbull._(Secrets _secrets) {
 
 /// Public derivations from words that are not stored. Nothing is written and no material is returned.
 extension type const SecretPreview._(Secrets _secrets) {
+  /// Public consistency identity of an already scoped Ark child at m/350h. English and the empty passphrase preserve existing Bark identities.
+  ///
+  /// This 32-bit discriminator is not cryptographic authentication. No keystore is accessed; invalid words return a typed failure without exposing them.
+  @useResult
+  Future<Result<Fingerprint, SecretFailure>> arkFingerprint({
+    required List<String> words,
+  }) => _secrets.previewArkFingerprint(words: words);
+
   /// Public Bitcoin descriptors of account 0 for unstored words, one pair per script type. See [Secrets.previewBitcoinDescriptors].
   @useResult
   Future<Result<Map<ScriptType, Descriptors>, SecretFailure>>

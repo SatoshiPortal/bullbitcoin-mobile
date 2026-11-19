@@ -8,6 +8,8 @@ environment:
   sdk: "3.14.0"
   flutter: "3.50.0"
 workspace:
+  - features/ark
+  - packages/ark
   - packages/secrets
   - packages/bull_payjoin
   - packages/bull_ui
@@ -33,6 +35,8 @@ workspace:
   - features/recoverbull
 
 dependencies:
+  ark:
+  bull_ark:
   cupertino_ui: ^1.1.6
   material_ui: ^1.11.0
   flutter:
@@ -64,6 +68,7 @@ dependencies:
   flutter_secure_storage: ^10.3.3
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
+  shared_preferences_platform_interface: ^2.4.2
   qr_flutter: ^4.1.0
   decimal: ^3.2.4
   clock: ^1.1.2

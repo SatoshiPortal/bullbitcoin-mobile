@@ -390,10 +390,6 @@
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
   },
-  "mempoolServerNotUsed": "ไม่ใช้ (เซิร์ฟเวอร์ที่เหมาะสม)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
-  },
   "exchangeLandingRecommendedExchange": "อัตราแลกเปลี่ยน Bitcoin",
   "@exchangeLandingRecommendedExchange": {
     "description": "Subtitle on landing screen v2 describing Bull Bitcoin as recommended"
@@ -5565,10 +5561,6 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "mempoolCustomServerLabel": "ลูกค้า",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "ค่าธรรมเนียม",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -7265,10 +7257,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "เมื่อเปิดใช้งานเซิร์ฟเวอร์นี้ถูกนํามาใช้สําหรับค่าธรรมเนียม เมื่อปิดสัญญาณ Bitcoin''s จะเปิด.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "ค่าธรรมเนียมที่กําหนดเอง",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -8844,10 +8832,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "แก้ไข",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "คลิกขยายสาธารณะ",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -8908,10 +8892,6 @@
   "transactionSwapDescChainPaid": "การทําธุรกรรมของคุณถูกออกอากาศ ตอนนี้เรารอรายการล็อคเพื่อได้รับการยืนยัน.",
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
-  },
-  "mempoolSettingsUseForFeeEstimation": "ใช้ค่าธรรมเนียมของ Estimation",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "วิธีการชําระเงิน",
   "@buyPaymentMethod": {
@@ -10360,7 +10340,6 @@
   "homeActionTransfer": "Swap",
   "backupCardTitle": "ปกป้องบิตคอยน์ของคุณ",
   "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้",
-  "mempoolCustomServerNoSsl": "ไม่มี SSL",
   "autoswapTargetBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีเป้าหมาย",
   "autoswapMaximumBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีสูงสุด",
   "onboardingAdvancedOptionsTitle": "ตัวเลือกขั้นสูง",
@@ -10369,7 +10348,6 @@
   "onboardingAdvancedOptionsCustomMempool": "เซิร์ฟเวอร์ Mempool ที่กำหนดเอง",
   "onboardingAdvancedOptionsCustomRecoverbull": "เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง",
   "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
-  "onboardingAdvancedOptionsDone": "เสร็จสิ้น",
   "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น",
   "pinCodeSaveError": "ไม่สามารถบันทึก PIN ของคุณได้ กรุณาลองใหม่อีกครั้ง",
@@ -10937,7 +10915,6 @@
   "exchangeSupportChatPickFilesFailed": "เลือกไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatAttachLogsFailed": "แนบบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   "exchangeSupportChatFetchFileDataFailed": "ดึงข้อมูลไฟล์ไม่สำเร็จ",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
   "mempoolErrorUpdateSettingsFailed": "อัปเดตการตั้งค่าไม่สำเร็จ: {error}",
@@ -11274,5 +11251,16 @@
   "settingsSourceCodeTitle": "ซอร์สโค้ด",
   "torSettingsStatusNoInternetOrBlocked": "ไม่มีอินเทอร์เน็ตหรือเครือข่ายถูกเซ็นเซอร์",
   "torSettingsDescNoInternetOrBlocked": "เครือข่ายนี้ไม่มีการเข้าถึงอินเทอร์เน็ต หรือบล็อก Tor",
-  "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้"
+  "torSettingsExternalProxyUnavailableDescription": "Bull ไม่สามารถเชื่อมต่อกับพร็อกซี SOCKS5 ที่ตั้งค่าไว้ได้",
+  "serverEncrypted": "เข้ารหัสแล้ว",
+  "serverUnencrypted": "ไม่ได้เข้ารหัส",
+  "backgroundTasksTitle": "งานเบื้องหลัง",
+  "blockedInSystemSettings": "ถูกบล็อกในการตั้งค่าระบบ",
+  "notificationsBlockedMessage": "การแจ้งเตือนถูกบล็อกในการตั้งค่าระบบ",
+  "notificationsTitle": "การแจ้งเตือน",
+  "openSystemSettings": "เปิดการตั้งค่าระบบ",
+  "permissionsTitle": "สิทธิ์",
+  "settingsSearchPermissionsKeywords": "การแจ้งเตือน|งานเบื้องหลัง|แบตเตอรี่|การเตือน",
+  "wizardBackgroundTasksDescription": "ตรวจสอบการชำระเงินขณะปิดแอป",
+  "wizardNotificationsDescription": "รู้ทันทีเมื่อมีการชำระเงินเข้า"
 }

@@ -83,6 +83,7 @@ class PaymentInProgressPage extends StatelessWidget {
           CurrencyText(
             amountSat ?? 0,
             showFiat: false,
+            interactive: true,
             style: context.bullType.subtitle.copyWith(
               fontWeight: FontWeight.w700,
             ),

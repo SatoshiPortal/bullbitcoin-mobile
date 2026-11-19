@@ -130,12 +130,15 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> toggleTestnetMode(bool active) =>
       selectNetwork(active ? Environment.testnet : Environment.mainnet);
 
-  Future<void> selectNetwork(Environment environment) async {
+  /// Returns true when the switch changes a runtime family captured at
+  /// launch, so the app must restart before it is used again.
+  Future<bool> selectNetwork(Environment environment) async {
     final settings = state.storedSettings;
+    final previous = settings?.environment;
     final result = await _setEnvironmentUsecase.execute(environment);
     if (result case Err(:final failure)) {
       emit(state.copyWith(failure: failure));
-      return;
+      return false;
     }
 
     emit(
@@ -143,6 +146,8 @@ class SettingsCubit extends Cubit<SettingsState> {
         storedSettings: settings?.copyWith(environment: environment),
       ),
     );
+    return previous != null &&
+        environment.requiresRestartWhenSwitchedFrom(previous);
   }
 
   Future<Result<void, SettingsFailure>> setBitcoinUnit(BitcoinUnit unit) async {

@@ -46,24 +46,29 @@ class EnsureSpSessionUsecase {
   Future<Result<SpWallet?, SpFailure>> execute({
     bool allowDuringTeardown = false,
   }) async {
-    if (!await _getSpFeatureGateUsecase.execute()) {
+    if (!await _getSpFeatureGateUsecase.execute(allowUnconfigured: true)) {
       return const Err(SpUnsupportedNetwork());
     }
-    // A recreate/revoke is disposing (and maybe re-establishing) the session;
-    // do not start a competing establishment while it runs.
+    final SpBackendConfig config;
+    switch (await _configRepository.fetchOrNull()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: final stored?):
+        config = stored;
+      case Ok():
+        return const Ok(null);
+    }
+    if (!await _getSpFeatureGateUsecase.execute(config: config)) {
+      return const Err(SpUnsupportedNetwork());
+    }
     if (!allowDuringTeardown && _repository.teardownInProgress) {
       return const Ok(null);
     }
     if (_repository.hasSession) {
-      // A live session can outlive a revoke by a beat (the revoke writes the
-      // sentinel before disposing). Re-check it so a zombie session is torn
-      // down instead of serving a revoked wallet until app restart.
       switch (await _files.hasRevokedSentinel()) {
         case Err(:final failure):
           return Err(failure);
         case Ok(value: true):
-          // A dispose failure leaves the zombie up; report it rather than
-          // handing back a snapshot of a revoked wallet.
           if (await _repository.dispose() case Err(:final failure)) {
             return Err(failure);
           }
@@ -71,15 +76,60 @@ class EnsureSpSessionUsecase {
         case Ok():
           break;
       }
-      return _repository.snapshot();
+      return _snapshot(config);
     }
-    return _inFlight ??= _establish(allowDuringTeardown: allowDuringTeardown)
-        .whenComplete(() {
+    // Share native establishment, but each caller revalidates its own captured
+    // config after waiting. Another caller's admitted context is not ours.
+    final pending = _inFlight ??=
+        _establish(
+          config: config,
+          allowDuringTeardown: allowDuringTeardown,
+        ).whenComplete(() {
           _inFlight = null;
         });
+    final result = await pending;
+    if (!await _getSpFeatureGateUsecase.execute(config: config)) {
+      return const Err(SpUnsupportedNetwork());
+    }
+    switch (result) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: null):
+        return const Ok(null);
+      case Ok():
+        return _snapshot(config);
+    }
+  }
+
+  Future<Result<SpWallet?, SpFailure>> _snapshot(SpBackendConfig config) async {
+    switch (_repository.network()) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value) when value == config.network:
+        break;
+      case Ok():
+        return const Err(SpUnsupportedNetwork());
+    }
+    final snapshot = _repository.snapshot();
+    if (!await _getSpFeatureGateUsecase.execute(config: config)) {
+      return const Err(SpUnsupportedNetwork());
+    }
+    return switch (snapshot) {
+      Err(:final failure) => Err(failure),
+      Ok(value: final wallet) => Ok(
+        SpWallet(
+          network: config.network,
+          spAddress: wallet.spAddress,
+          balance: wallet.balance,
+          isScanning: wallet.isScanning,
+          lastScannedHeight: wallet.lastScannedHeight,
+        ),
+      ),
+    };
   }
 
   Future<Result<SpWallet?, SpFailure>> _establish({
+    required SpBackendConfig config,
     required bool allowDuringTeardown,
   }) async {
     if (!allowDuringTeardown && _repository.teardownInProgress) {
@@ -102,16 +152,6 @@ class EnsureSpSessionUsecase {
         break;
     }
 
-    final SpBackendConfig config;
-    switch (await _configRepository.fetchOrNull()) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(value: final stored?):
-        config = stored;
-      case Ok():
-        return const Ok(null);
-    }
-
     final Secret secret;
     try {
       switch (await _getSpSecretUsecase.execute(config.network)) {
@@ -132,6 +172,9 @@ class EnsureSpSessionUsecase {
       return const Ok(null);
     }
 
+    if (!await _getSpFeatureGateUsecase.execute(config: config)) {
+      return const Err(SpUnsupportedNetwork());
+    }
     final created = await _repository.createFromSecret(
       network: config.network,
       secret: secret,
@@ -141,6 +184,6 @@ class EnsureSpSessionUsecase {
       matchConcurrencyFactor: config.matchConcurrencyFactor,
     );
     if (created case Err(:final failure)) return Err(failure);
-    return _repository.snapshot();
+    return _snapshot(config);
   }
 }

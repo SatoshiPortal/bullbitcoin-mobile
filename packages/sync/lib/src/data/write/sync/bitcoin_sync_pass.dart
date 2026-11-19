@@ -357,8 +357,8 @@ Set<String> _takeInputs(bdk.CanonicalTx tx) {
 /// unconfirmed visibility; canonical confirmation is separate chain evidence.
 /// A tracked spend that left the canonical set is settled, for this pass
 /// only, when a canonical transaction spends one of its recorded inputs and
-/// is confirmed, or is itself a tracked spend observed in this pass. An
-/// eviction is one endpoint's omission: like any absence, it settles nothing.
+/// is confirmed. An unconfirmed replacement, tracked or foreign, and an
+/// eviction are insufficient: like any absence, they settle nothing.
 SpendEvidence _spendEvidence(
   bdk.Wallet wallet,
   Map<String, Set<String>> tracked,
@@ -416,16 +416,12 @@ SpendEvidence _spendEvidence(
       }
     }
     if (displaced.isNotEmpty) {
-      // Outpoints spent by a confirmed transaction, or by a tracked
-      // replacement this pass observed.
+      // Only positive canonical confirmation settles an absent transaction.
       final spent = <String>{};
       for (final tx in wallet.transactions()) {
-        final id = tx.transaction.computeTxid();
         final confirmed = tx.chainPosition is bdk.ConfirmedChainPosition;
-        final proof = confirmed || observed.contains(id.toString());
-        id.dispose();
         final outpoints = _takeInputs(tx);
-        if (proof) spent.addAll(outpoints);
+        if (confirmed) spent.addAll(outpoints);
       }
       settled.addAll(
         displaced.where((id) => tracked[id]?.any(spent.contains) ?? false),

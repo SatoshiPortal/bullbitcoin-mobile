@@ -1,3 +1,6 @@
+import 'package:primitives/primitives.dart' show NetworkEnv;
+import 'package:bull_ui/bull_ui.dart' show BullBorderedTile;
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -35,6 +38,24 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  for (final environment in [null, ...NetworkEnv.values]) {
+    testWidgets(
+      'custom swap editor admits only known historical network $environment',
+      (tester) async {
+        await pump(
+          tester,
+          SwapSettingsState(loaded: true, swapServerEnvironment: environment),
+        );
+        expect(
+          find.byType(BullBorderedTile),
+          environment == NetworkEnv.mainnet || environment == NetworkEnv.testnet
+              ? findsOneWidget
+              : findsNothing,
+        );
+      },
+    );
   }
 
   testWidgets('the provider override is offered only in dev mode', (

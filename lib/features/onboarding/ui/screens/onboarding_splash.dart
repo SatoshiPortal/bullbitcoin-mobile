@@ -12,7 +12,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullText, BullTypography, Gap, BullTypographyX;
+    show BullShapesX, BullText, BullTypography, Gap, BullTypographyX;
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({super.key, this.loading = false});
@@ -101,55 +101,62 @@ class _Actions extends StatelessWidget {
       );
     }
 
-    return Column(
-      crossAxisAlignment: .stretch,
-      children: [
-        if (creating || loading) ...[
-          Center(
-            child: CircularProgressIndicator(
-              color: context.appColors.onPrimaryFixed,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.appColors.surfaceFixed,
+        borderRadius: BorderRadius.circular(context.bullShapes.card),
+      ),
+      child: Column(
+        crossAxisAlignment: .stretch,
+        children: [
+          if (creating || loading) ...[
+            Center(
+              child: CircularProgressIndicator(
+                color: context.appColors.primaryFixed,
+              ),
             ),
-          ),
-        ] else ...[
-          const CreateWalletButton(),
-          const Gap(10),
-          const RecoverWalletButton(),
-          const Gap(16),
-          Center(
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MultiBlocProvider(
-                      providers: [
-                        BlocProvider(
-                          create: (_) => locator<ElectrumSettingsBloc>()
-                            ..add(
-                              const ElectrumSettingsLoaded(isLiquid: false),
-                            ),
-                        ),
-                      ],
-                      child: const AdvancedOptions(),
+          ] else ...[
+            const CreateWalletButton(),
+            const Gap(10),
+            const RecoverWalletButton(),
+            const Gap(8),
+            Center(
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                  tapTargetSize: MaterialTapTargetSize.padded,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (_) => locator<ElectrumSettingsBloc>()
+                              ..add(
+                                const ElectrumSettingsLoaded(isLiquid: false),
+                              ),
+                          ),
+                        ],
+                        child: const AdvancedOptions(),
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: Text(
-                context.loc.onboardingAdvancedOptionsTitle,
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.onPrimaryFixed.withValues(
-                    alpha: 0.9,
-                  ),
-                  decoration: TextDecoration.underline,
-                  decorationColor: context.appColors.onPrimaryFixed.withValues(
-                    alpha: 0.9,
+                  );
+                },
+                child: Text(
+                  context.loc.onboardingAdvancedOptionsTitle,
+                  style: context.bullType.body.copyWith(
+                    color: context.appColors.primaryFixed,
+                    decoration: TextDecoration.underline,
+                    decorationColor: context.appColors.primaryFixed,
                   ),
                 ),
               ),
             ),
-          ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

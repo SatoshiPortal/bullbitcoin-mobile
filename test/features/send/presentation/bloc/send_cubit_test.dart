@@ -7850,6 +7850,52 @@ void main() {
       expect(failure.maximumSat, isNull);
     });
 
+    test(
+      'unreadable Payjoin reservations create no swap and ask for a relaunch',
+      () async {
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        stubRoute(SwapRoute.boltz);
+        when(() => validateBitcoinSelectionUsecase.execute(walletId: 'w1'))
+            .thenThrow(
+              ValidateBitcoinSelectionException(
+                'Failed to load Payjoin-reserved UTXOs',
+              ),
+            );
+        cubit.setStateForTest(lightningAmountState());
+
+        await cubit.onAmountConfirmed();
+
+        expect(cubit.state.failure, isA<SendRelaunchRequiredFailure>());
+        verifyNever(
+          () => createBoltzSendSwapUsecase.execute(
+            wallet: any(named: 'wallet'),
+            invoice: any(named: 'invoice'),
+          ),
+        );
+      },
+    );
+
+    test('readable Payjoin reservations let the swap be created', () async {
+      final cubit = buildCubit();
+      addTearDown(cubit.close);
+      stubRoute(SwapRoute.boltz);
+      when(() => validateBitcoinSelectionUsecase.execute(walletId: 'w1'))
+          .thenAnswer((_) async => []);
+      stubCreate(const Err(boltz.SwapsBoltzRejectedFailure()));
+      cubit.setStateForTest(lightningAmountState());
+
+      await cubit.onAmountConfirmed();
+
+      expect(cubit.state.failure, isNot(isA<SendRelaunchRequiredFailure>()));
+      verify(
+        () => createBoltzSendSwapUsecase.execute(
+          wallet: any(named: 'wallet'),
+          invoice: any(named: 'invoice'),
+        ),
+      ).called(1);
+    });
+
     test('an exchange-only route never asks Boltz', () async {
       final cubit = buildCubit();
       addTearDown(cubit.close);

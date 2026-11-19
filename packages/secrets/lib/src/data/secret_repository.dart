@@ -122,6 +122,17 @@ class SecretRepository {
     orElse: InvalidMnemonicFailure.new,
   );
 
+  /// Public Bark identity only; no keystore access or retained child material.
+  Future<Result<Fingerprint, SecretFailure>> previewArkFingerprint({
+    required List<String> words,
+  }) {
+    final candidate = List<String>.of(words);
+    return boundary(
+      () => Isolate.run(() => Deriver.fingerprint.arkFingerprint(candidate)),
+      orElse: UseSecretFailure.new,
+    );
+  }
+
   /// Public descriptors of words that are not stored, for each of [scriptTypes]: nothing is read from or written to the keystore.
   ///
   /// One seed serves every script type, so the PBKDF2 runs once. It is derived, used and wiped inside one isolate; only the public descriptor strings cross back. The material is seed-only, so no library ever receives the words. Invalid words are an [InvalidMnemonicFailure]; a failed derivation is a [UseSecretFailure].

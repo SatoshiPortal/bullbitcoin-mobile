@@ -1,3 +1,5 @@
+import 'package:bull_sdk/bull_sdk.dart' show BullSdk;
+
 import '../../../frozen_outpoints_fixture.dart';
 
 import 'package:bb_mobile/core/utils/payment_request.dart';
@@ -5,6 +7,8 @@ import 'package:bb_mobile/features/send/domain/broadcast_failure.dart';
 import 'package:bb_mobile/features/swap/public/swap_facade.dart'
     show OrderSwapQuote;
 import 'package:bb_mobile/features/send/public/send_facade.dart';
+
+import 'package:sync/sync.dart' as native;
 
 import 'dart:async';
 import 'dart:typed_data';
@@ -219,6 +223,7 @@ void main() {
   late _MockPrepareBitcoin prepareBitcoin;
   late _MockValidateBitcoinSelection validateBitcoinSelection;
   late _MockCalculateBitcoin calculateBitcoin;
+  late _MockCalculateLiquid calculateLiquid;
   late _MockGetReceiveAddress getReceiveAddress;
   late _MockGetUtxos getUtxos;
   late _MockSignBitcoin signBitcoin;
@@ -246,7 +251,7 @@ void main() {
     validateBitcoinSelectionUsecase: validateBitcoinSelection,
     prepareLiquidSendUsecase: prepareLiquid,
     calculateBitcoinAbsoluteFeesUsecase: calculateBitcoin,
-    calculateLiquidAbsoluteFeesUsecase: _MockCalculateLiquid(),
+    calculateLiquidAbsoluteFeesUsecase: calculateLiquid,
     getWalletUsecase: getWallet,
     signBitcoinTxUsecase: signBitcoin,
     signLiquidTxUsecase: signLiquid,
@@ -310,6 +315,7 @@ void main() {
     prepareBitcoin = _MockPrepareBitcoin();
     validateBitcoinSelection = _MockValidateBitcoinSelection();
     calculateBitcoin = _MockCalculateBitcoin();
+    calculateLiquid = _MockCalculateLiquid();
     getReceiveAddress = _MockGetReceiveAddress();
     getUtxos = _MockGetUtxos();
     signBitcoin = _MockSignBitcoin();
@@ -2239,6 +2245,200 @@ void main() {
   });
 
   group('Boltz-first transfers', () {
+    group('regtest MAX lockup estimates', () {
+      setUpAll(() => BullSdk.init());
+      tearDownAll(BullSdk.dispose);
+      for (final isLiquid in [false, true]) {
+        for (final selectedOnly in [false, true]) {
+          test(
+            'regtest MAX prices a concrete Taproot lockup on ${isLiquid ? 'Liquid' : 'Bitcoin'} selected=$selectedOnly',
+            () async {
+              final source = (isLiquid ? _liquidWallet() : _wallet()).copyWith(
+                network: isLiquid
+                    ? Network.liquidRegtest
+                    : Network.bitcoinRegtest,
+                balanceSat: BigInt.from(100000),
+              );
+              final destination =
+                  (isLiquid
+                          ? _destinationWallet()
+                          : _liquidWallet(id: 'wallet-2'))
+                      .copyWith(
+                        network: isLiquid
+                            ? Network.bitcoinRegtest
+                            : Network.liquidRegtest,
+                      );
+              when(() => getSwapRoute.execute())
+                  .thenAnswer((_) async => SwapRoute.boltz);
+              final selected = isLiquid
+                  ? WalletUtxo.liquid(
+                      walletId: source.id,
+                      txId: 'fixture-selected',
+                      vout: 0,
+                      scriptPubkey: '',
+                      amountSat: BigInt.from(30000),
+                      standardAddress: 'ert1fixture',
+                      confidentialAddress: 'el1fixture',
+                    )
+                  : WalletUtxo.bitcoin(
+                      walletId: source.id,
+                      txId: 'fixture-selected',
+                      vout: 0,
+                      scriptPubkey: Uint8List(0),
+                      amountSat: BigInt.from(30000),
+                      address: 'bcrt1fixture',
+                    );
+              final priced = <String>[];
+              when(
+                () => prepareBitcoin.execute(
+                  walletId: source.id,
+                  recipients: any(named: 'recipients'),
+                  networkFee: any(named: 'networkFee'),
+                  selectedInputs: any(named: 'selectedInputs'),
+                ),
+              ).thenAnswer((invocation) async {
+                final recipients =
+                    invocation.namedArguments[#recipients]
+                        as List<BitcoinTransactionRecipient>;
+                priced.add(recipients.single.address);
+                return Ok((
+                  unsignedPsbt: 'max-regtest',
+                  txSize: 120,
+                  isToSelf: false,
+                  recipientAmountsSat: <Sats>[],
+                ));
+              });
+              when(() => calculateBitcoin.execute(psbt: 'max-regtest'))
+                  .thenAnswer((_) async => 500);
+              when(
+                () => prepareLiquid.execute(
+                  walletId: source.id,
+                  address: any(named: 'address'),
+                  feeRate: any(named: 'feeRate'),
+                  drain: true,
+                ),
+              ).thenAnswer((invocation) async {
+                priced.add(invocation.namedArguments[#address] as String);
+                return const Ok('max-regtest');
+              });
+              when(() => calculateLiquid.execute(pset: 'max-regtest'))
+                  .thenAnswer((_) async => 500);
+              when(
+                () => createBitcoinToLiquid.execute(
+                  sendWalletId: source.id,
+                  amountSat: any(named: 'amountSat'),
+                  destination: any(named: 'destination'),
+                ),
+              ).thenAnswer(
+                (_) async => const Err(SwapsBoltzRejectedFailure('fixture')),
+              );
+              when(
+                () => createLiquidToBitcoin.execute(
+                  sendWalletId: source.id,
+                  amountSat: any(named: 'amountSat'),
+                  destination: any(named: 'destination'),
+                ),
+              ).thenAnswer(
+                (_) async => const Err(SwapsBoltzRejectedFailure('fixture')),
+              );
+              bloc.emit(
+                TransferState(
+                  fromWallet: source,
+                  toWallet: destination,
+                  bitcoinUnit: BitcoinUnit.sats,
+                  maxAmountSat: selectedOnly ? 29000 : 99000,
+                  selectedUtxos: selectedOnly ? [selected] : [],
+                  bitcoinNetworkFees: _feeOptions(),
+                  liquidNetworkFees: _feeOptions(),
+                  receiveExactAmount: false,
+                ),
+              );
+              bloc.add(
+                TransferEvent.swapCreated(selectedOnly ? '29000' : '99000'),
+              );
+              await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+              expect(
+                priced,
+                hasLength(1),
+                reason: 'Regtest MAX must reach concrete lockup preparation rather than return null',
+              );
+              expect(priced.single, startsWith(isLiquid ? 'el1p' : 'bcrt1p'));
+              expect(
+                priced.single.length,
+                isLiquid ? 120 : 64,
+                reason:
+                    '32-byte Taproot witness program, confidential on Liquid',
+              );
+              expect(
+                await native.validateAddress(
+                  priced.single,
+                  isLiquid ? LiquidNetwork.regtest : BitcoinNetwork.regtest,
+                ),
+                isA<Ok>(),
+              );
+              if (isLiquid) {
+                verify(
+                  () => createLiquidToBitcoin.execute(
+                    sendWalletId: source.id,
+                    amountSat: selectedOnly ? 29500 : 99500,
+                    destination: any(named: 'destination'),
+                  ),
+                ).called(1);
+              } else {
+                verify(
+                  () => createBitcoinToLiquid.execute(
+                    sendWalletId: source.id,
+                    amountSat: selectedOnly ? 29500 : 99500,
+                    destination: any(named: 'destination'),
+                  ),
+                ).called(1);
+              }
+            },
+          );
+        }
+      }
+
+      for (final isLiquid in [false, true]) {
+        test(
+          'regtest MAX refuses insufficient known balance on ${isLiquid ? 'Liquid' : 'Bitcoin'}',
+          () async {
+            final source = (isLiquid ? _liquidWallet() : _wallet()).copyWith(
+              network: isLiquid
+                  ? Network.liquidRegtest
+                  : Network.bitcoinRegtest,
+              balanceSat: BigInt.from(500),
+            );
+            final destination =
+                (isLiquid
+                        ? _destinationWallet()
+                        : _liquidWallet(id: 'wallet-2'))
+                    .copyWith(
+                      network: isLiquid
+                          ? Network.bitcoinRegtest
+                          : Network.liquidRegtest,
+                    );
+            bloc.emit(
+              TransferState(
+                fromWallet: source,
+                toWallet: destination,
+                bitcoinUnit: BitcoinUnit.sats,
+                maxAmountSat: 99000,
+                bitcoinNetworkFees: _feeOptions(),
+                liquidNetworkFees: _feeOptions(),
+                receiveExactAmount: false,
+              ),
+            );
+            bloc.add(const TransferEvent.swapCreated('99000'));
+            await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+            verifyZeroInteractions(prepareBitcoin);
+            verifyZeroInteractions(prepareLiquid);
+            verifyZeroInteractions(createBitcoinToLiquid);
+            verifyZeroInteractions(createLiquidToBitcoin);
+          },
+        );
+      }
+    });
+
     TransferState crossChain({bool receiveExactAmount = false}) =>
         TransferState(
           fromWallet: _wallet(balanceSat: BigInt.from(100000)),
@@ -2321,6 +2521,61 @@ void main() {
           outNetwork: any(named: 'outNetwork'),
         ),
       );
+    });
+
+    group('Payjoin reservations (network switched without a relaunch)', () {
+      void stubReservations({required bool readable}) {
+        final stub = when(
+          () => validateBitcoinSelection.execute(walletId: 'wallet-1'),
+        );
+        if (readable) {
+          stub.thenAnswer((_) async => []);
+        } else {
+          stub.thenThrow(
+            ValidateBitcoinSelectionException(
+              'Failed to load Payjoin-reserved UTXOs',
+            ),
+          );
+        }
+      }
+
+      test(
+        'unreadable reservations create no swap and ask for a relaunch',
+        () async {
+          when(() => getSwapRoute.execute())
+              .thenAnswer((_) async => SwapRoute.boltz);
+          stubReservations(readable: false);
+          bloc.emit(crossChain());
+
+          bloc.add(const TransferEvent.swapCreated('1000'));
+          await bloc.stream.firstWhere((state) => state.swapFailure != null);
+
+          expect(bloc.state.swapFailure, isA<SwapRelaunchRequiredFailure>());
+          expect(bloc.state.swap, isNull);
+          verifyNever(
+            () => createBitcoinToLiquid.execute(
+              sendWalletId: any(named: 'sendWalletId'),
+              amountSat: any(named: 'amountSat'),
+              destination: any(named: 'destination'),
+            ),
+          );
+        },
+      );
+
+      test('after a relaunch the swap proceeds', () async {
+        when(() => getSwapRoute.execute())
+            .thenAnswer((_) async => SwapRoute.boltz);
+        stubReservations(readable: true);
+        stubCreateChain(Ok(_swap()));
+        stubLockupBuild();
+        bloc.emit(crossChain());
+
+        bloc.add(const TransferEvent.swapCreated('1000'));
+        await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+
+        expect(bloc.state.swapFailure, isNull);
+        expect(bloc.state.swap?.id, 'swap-1');
+      });
     });
 
     group('from a Liquid wallet that must consolidate', () {

@@ -1,6 +1,7 @@
 import 'package:bull_ui/src/theme/bull_typography.dart';
 
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:bull_ui/src/theme/bull_icon.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
@@ -9,9 +10,9 @@ import 'package:bull_ui/src/theme/bull_tokens.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
-/// A compact, accessible shortcut at a stable height across text scales: a
-/// round icon disc over a one-line label on its own, or icon over label with
-/// no disc as one cell of a [BullQuickActionBar].
+/// A compact, accessible shortcut: a round icon disc over a one-line label on
+/// its own, or icon over label with no disc as one cell of a
+/// [BullQuickActionBar].
 class BullQuickAction extends StatelessWidget {
   const BullQuickAction({
     required this.label,
@@ -70,7 +71,7 @@ class BullQuickAction extends StatelessWidget {
               ? TooltipTriggerMode.longPress
               : TooltipTriggerMode.manual,
           child: SizedBox(
-            height: flat ? BullQuickActionBar.height : height,
+            height: flat ? null : height,
             child: Opacity(
               opacity: disabled ? 0.4 : 1,
               child: Material(
@@ -87,13 +88,19 @@ class BullQuickAction extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: BullSpacing.xxs,
-                      vertical: flat ? BullSpacing.xxs / 2 : BullSpacing.xxs,
+                      vertical: flat
+                          ? BullQuickActionBar._verticalPadding
+                          : BullSpacing.xxs,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (flat)
-                          BullIcon(icon, size: 24, color: foreground)
+                          BullIcon(
+                            icon,
+                            size: BullQuickActionBar._iconSize,
+                            color: foreground,
+                          )
                         else
                           Container(
                             width: _disc,
@@ -114,7 +121,9 @@ class BullQuickAction extends StatelessWidget {
                             ),
                           ),
                         SizedBox(
-                          height: flat ? BullSpacing.xxs : BullSpacing.xs,
+                          height: flat
+                              ? BullQuickActionBar._labelGap
+                              : BullSpacing.xs,
                         ),
                         Text(
                           label,
@@ -123,7 +132,7 @@ class BullQuickAction extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style:
                               (flat
-                                      ? context.bullType.label
+                                      ? BullQuickActionBar._labelStyle(context)
                                       : context.bullType.body.copyWith(
                                           fontWeight: FontWeight.w500,
                                         ))
@@ -155,8 +164,28 @@ class BullQuickActionBar extends StatelessWidget {
   /// The actions, left to right.
   final List<Widget> children;
 
-  /// Height of the card.
-  static const double height = 72;
+  /// Minimum height, shared with the home wallet cards.
+  static const double minHeight = 90;
+
+  /// Padding above the icon and below the label.
+  static const double _verticalPadding = BullSpacing.xs;
+
+  static const double _iconSize = 24;
+
+  static const double _labelGap = BullSpacing.xxs;
+
+  static TextStyle _labelStyle(BuildContext context) =>
+      context.bullType.label.copyWith(fontWeight: FontWeight.w600);
+
+  /// [minHeight], or taller when a large text scale needs room for the label.
+  static double heightOf(BuildContext context) {
+    if (_labelStyle(context) case TextStyle(:final fontSize?, :final height?)) {
+      final label = MediaQuery.textScalerOf(context).scale(fontSize) * height;
+      final content = 2 * _verticalPadding + _iconSize + _labelGap + label;
+      return math.max(content, minHeight);
+    }
+    return minHeight;
+  }
 
   /// Whether [context] sits inside a [BullQuickActionBar].
   static bool of(BuildContext context) =>
@@ -189,8 +218,9 @@ class BullQuickActionBar extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(borderRadius: radius),
           child: SizedBox(
-            height: height,
+            height: heightOf(context),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (final (index, child) in children.indexed) ...[
                   if (index > 0)

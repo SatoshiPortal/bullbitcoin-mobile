@@ -42,7 +42,8 @@ void main() {
     getServer = _MockGetSwapServerUsecase();
     setServer = _MockSetSwapServerUsecase();
     when(() => getServer.execute()).thenAnswer(
-      (_) async => (server: SwapServer.mainnetDefault, isTestnet: false),
+      (_) async =>
+          (server: SwapServer.mainnetDefault, environment: NetworkEnv.mainnet),
     );
     when(() => getSettings.execute()).thenAnswer(
       (_) async => const Ok((
@@ -156,7 +157,8 @@ void main() {
 
   test('marks the testnet default as the default on testnet', () async {
     when(() => getServer.execute()).thenAnswer(
-      (_) async => (server: SwapServer.testnetDefault, isTestnet: true),
+      (_) async =>
+          (server: SwapServer.testnetDefault, environment: NetworkEnv.testnet),
     );
     final cubit = build();
     addTearDown(cubit.close);

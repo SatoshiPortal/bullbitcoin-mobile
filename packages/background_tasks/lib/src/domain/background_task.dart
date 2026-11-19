@@ -1,5 +1,6 @@
 enum BackgroundTask {
   walletsSync('wallets-sync', 'com.bullbitcoin.mobile.wallets-sync-id'),
+  arkRenewal('ark-renewal', 'com.bullbitcoin.mobile.ark-renewal-id'),
   // Replaced by walletsSync; kept so a run the previous version scheduled
   // still completes, and so their schedules can be cancelled by name.
   bitcoinSync('bitcoin-sync', 'com.bullbitcoin.mobile.bitcoin-sync-id'),

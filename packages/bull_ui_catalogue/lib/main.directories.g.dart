@@ -322,6 +322,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'BullServerTile',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Default',
+            builder:
+                _bull_ui_catalogue_use_cases_use_cases.bullServerTileUseCase,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'BullSettingsEntryItem',
         useCases: [
           _widgetbook.WidgetbookUseCase(

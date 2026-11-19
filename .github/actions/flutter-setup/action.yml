@@ -22,6 +22,37 @@ inputs:
 runs:
   using: composite
   steps:
+    # Bark's prost-build needs protoc even when a native cache is cold in a
+    # unit-test shard. Install for the host before any dependency/codegen hook.
+    - name: Install pinned protobuf compiler
+      shell: bash
+      run: |
+        case "$(uname -m)" in
+          x86_64)
+            protoc_arch=x86_64
+            protoc_sha=f3340e28a83d1c637d8bafdeed92b9f7db6a384c26bca880a6e5217b40a4328b
+            ;;
+          aarch64|arm64)
+            protoc_arch=aarch_64
+            protoc_sha=6018147740548e0e0f764408c87f4cd040e6e1c1203e13aeacaf811892b604f3
+            ;;
+          *) echo "Unsupported protoc host architecture: $(uname -m)" >&2; exit 1 ;;
+        esac
+        # Official release asset digests:
+        # https://github.com/protocolbuffers/protobuf/releases/expanded_assets/v33.1
+        protoc_archive="$RUNNER_TEMP/protoc-33.1-linux-${protoc_arch}.zip"
+        protoc_dir="$RUNNER_TEMP/protoc-33.1"
+        curl --retry 5 --retry-all-errors -fL \
+          "https://github.com/protocolbuffers/protobuf/releases/download/v33.1/protoc-33.1-linux-${protoc_arch}.zip" \
+          -o "$protoc_archive"
+        echo "$protoc_sha  $protoc_archive" | sha256sum --check --strict
+        mkdir -p "$protoc_dir"
+        unzip -q -o "$protoc_archive" -d "$protoc_dir"
+        test "$("$protoc_dir/bin/protoc" --version)" = 'libprotoc 33.1'
+        test -f "$protoc_dir/include/google/protobuf/descriptor.proto"
+        echo "$protoc_dir/bin" >> "$GITHUB_PATH"
+        echo "PROTOC=$protoc_dir/bin/protoc" >> "$GITHUB_ENV"
+
     # Native Assets hooks compile the Rust crates with these pinned compilers.
     # Every caller, the cache warmer included, installs them here so that the
     # compilers, PATH and RUSTUP_* variables match across jobs. The arm64
@@ -42,6 +73,10 @@ runs:
         # Official hosted Payjoin explicitly selects its own compiler.
         rustup toolchain install "$PAYJOIN_RUST_VERSION" --profile minimal
         rustup component add --toolchain "$PAYJOIN_RUST_VERSION" clippy rustfmt
+        # Bark selects its own compiler; host std matches the runner architecture.
+        rustup toolchain install "$BARK_RUST_VERSION" --profile minimal
+        rustup component add --toolchain "$BARK_RUST_VERSION" clippy rustfmt
+        rustup run "$BARK_RUST_VERSION" rustc --version | grep -F "rustc $BARK_RUST_VERSION"
         rustup run "$RUST_VERSION" rustc --version | grep -F "rustc $RUST_VERSION"
         rustup run "$PAYJOIN_RUST_VERSION" rustc --version | grep -F "rustc $PAYJOIN_RUST_VERSION"
         echo RUSTUP_AUTO_INSTALL=0 >> "$GITHUB_ENV"

@@ -2,7 +2,12 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullShapesX, Gap, BullTypographyX;
+    show
+        BullFadingLinearProgress,
+        BullQuickActionBar,
+        BullShapesX,
+        Gap,
+        BullTypographyX;
 
 class WalletCard extends StatelessWidget {
   const WalletCard({
@@ -43,7 +48,9 @@ class WalletCard extends StatelessWidget {
           color: context.appColors.walletCardBackground,
           borderRadius: BorderRadius.circular(context.bullShapes.card),
           child: Container(
-            constraints: const BoxConstraints(minHeight: 90),
+            constraints: const BoxConstraints(
+              minHeight: BullQuickActionBar.minHeight,
+            ),
             decoration: BoxDecoration(
               color: context.appColors.walletCardBackground,
               border: Border(left: BorderSide(color: tagColor, width: 4)),

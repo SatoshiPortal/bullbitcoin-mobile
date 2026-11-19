@@ -1235,6 +1235,80 @@ void main() {
   });
 
   group('broadcast', () {
+    for (final asPsbt in [false, true]) {
+      test('acceptance persists the actual broadcast inputs before observation '
+          '(PSBT=$asPsbt)', () async {
+        // Saved/signed bytes may contain inputs that differ from an earlier
+        // build. The obligation must describe the bytes actually sent.
+        final transaction = asPsbt
+            ? SignedPsbt(_fundingPsbt([_b, _c], finalised: true))
+            : SignedBitcoinTransaction(_transaction([_b, _c]));
+        final receipt = ok(
+          await stores.spend.broadcast(
+            signedForGeneration(
+              key: bitcoin.key,
+              generation: generation(bitcoin.key),
+              transaction: transaction,
+            ),
+          ),
+        );
+        expect(receipt.durable, isTrue);
+        final gate = SpendGateStoreDatasource.openExisting(
+          spendGateStorePath(dir.path),
+        );
+        try {
+          expect(gate.trackedInputs(bitcoin)[receipt.txid], {
+            '${_b.txId}:${_b.vout}',
+            '${_c.txId}:${_c.vout}',
+          });
+          expect(gate.isObserved(bitcoin.key, receipt.txid), isFalse);
+        } finally {
+          gate.close();
+        }
+      });
+    }
+
+    test(
+      'storage retry retains the actual accepted broadcast inputs',
+      () async {
+        final db = sqlite3.open(spendGateStorePath(dir.path));
+        addTearDown(db.close);
+        db.execute(
+          "CREATE TRIGGER fail_record BEFORE INSERT ON broadcasts BEGIN SELECT RAISE(FAIL, 'storage unavailable'); END",
+        );
+        final receipt = ok(
+          await stores.spend.broadcast(
+            signedForGeneration(
+              key: bitcoin.key,
+              generation: generation(bitcoin.key),
+              transaction: SignedBitcoinTransaction(_transaction([_b, _c])),
+            ),
+          ),
+        );
+        expect(receipt.durable, isFalse);
+        expect(
+          await stores.spendGate.check(bitcoin.key),
+          BitcoinSpendStatus.unavailable,
+        );
+        db.execute('DROP TRIGGER fail_record');
+        expect(
+          await stores.spendGate.check(bitcoin.key),
+          BitcoinSpendStatus.pending,
+        );
+        final gate = SpendGateStoreDatasource.openExisting(
+          spendGateStorePath(dir.path),
+        );
+        try {
+          expect(gate.trackedInputs(bitcoin)[receipt.txid], {
+            '${_b.txId}:${_b.vout}',
+            '${_c.txId}:${_c.vout}',
+          });
+        } finally {
+          gate.close();
+        }
+      },
+    );
+
     Future<UnsignedSpend> built({
       SpendOwner? by,
       List<Outpoint>? selected,

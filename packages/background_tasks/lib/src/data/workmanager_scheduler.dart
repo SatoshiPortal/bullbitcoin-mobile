@@ -65,11 +65,7 @@ Future<void> applyBackgroundTaskSchedule({
   if (scheduler == null && !mobile) return;
   final platform = scheduler ?? WorkmanagerScheduler();
   await platform.initialize(dispatcher);
-  final previous = _pendingSchedule;
-  final finished = Completer<void>();
-  _pendingSchedule = finished.future;
-  try {
-    await previous;
+  await _serializeSchedule(() async {
     if (generation != _scheduleGeneration) return;
     final interval = await intervals.read();
     for (final obsolete in [
@@ -110,7 +106,47 @@ Future<void> applyBackgroundTaskSchedule({
       );
     }
     log.config('Background sync interval applied=${interval.name}');
+  });
+}
+
+Future<void> _serializeSchedule(Future<void> Function() action) async {
+  final previous = _pendingSchedule;
+  final finished = Completer<void>();
+  _pendingSchedule = finished.future;
+  try {
+    await previous;
+    await action();
   } finally {
     finished.complete();
   }
+}
+
+int _arkScheduleGeneration = 0;
+
+/// Android Ark safety maintenance has its own admission decision, independent
+/// of the ordinary sync interval and rollout gate. A funded-off account still
+/// requires renewal. Only an authoritative empty/disabled inventory permits
+/// renewalRequired:false. No secrets enter WorkManager inputs.
+Future<void> applyArkRenewalSchedule({
+  required BackgroundTaskDispatcher dispatcher,
+  required bool renewalRequired,
+  BackgroundTaskSchedulerPort? scheduler,
+}) async {
+  final generation = ++_arkScheduleGeneration;
+  if (scheduler == null && !Platform.isAndroid) return;
+  final platform = scheduler ?? WorkmanagerScheduler();
+  await platform.initialize(dispatcher);
+  await _serializeSchedule(() async {
+    if (generation != _arkScheduleGeneration) return;
+    if (!renewalRequired) {
+      await platform.cancelByUniqueName(BackgroundTask.arkRenewal.id);
+      return;
+    }
+    await platform.registerPeriodic(
+      uniqueName: BackgroundTask.arkRenewal.id,
+      taskName: BackgroundTask.arkRenewal.name,
+      frequency: const Duration(hours: 1),
+      requiresNetwork: true,
+    );
+  });
 }

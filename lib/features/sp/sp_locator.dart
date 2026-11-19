@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/sp/domain/usecases/get_sp_active_network_usecase.dart';
+
 import 'dart:async';
 
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -211,8 +213,14 @@ class SpLocator {
         files: locator<SpAccountFilesPort>(),
       ),
     );
+    locator.registerFactory<GetSpActiveNetworkUsecase>(
+      () => GetSpActiveNetworkUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
     locator.registerFactory<GetSpFeatureGateUsecase>(
       () => GetSpFeatureGateUsecase(
+        configRepository: locator<SpBackendConfigRepository>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
@@ -424,6 +432,7 @@ class SpLocator {
     );
     locator.registerFactory<SpSetupCubit>(
       () => SpSetupCubit(
+        getSpActiveNetworkUsecase: locator<GetSpActiveNetworkUsecase>(),
         createSpWalletUsecase: locator<CreateSpWalletUsecase>(),
         testSpBackendUsecase: locator<TestSpBackendUsecase>(),
         getSpBackendDefaultsUsecase: locator<GetSpBackendDefaultsUsecase>(),

@@ -49,6 +49,9 @@ class WizardRepositoryImpl implements WizardRepository {
     if (choices.touched.contains(WizardField.exchangeAccess)) {
       await _datasource.writePendingExchangeAccess(choices.exchangeAccess);
     }
+    if (choices.touched.contains(WizardField.backgroundTasks)) {
+      await _datasource.writePendingBackgroundTasks(choices.backgroundTasks);
+    }
     final consent = choices.reportingConsent;
     if (choices.touched.contains(WizardField.reportingConsent) &&
         consent != null) {
@@ -67,11 +70,13 @@ class WizardRepositoryImpl implements WizardRepository {
     final currency = await _datasource.readPendingCurrency();
     final errorReporting = await _datasource.readPendingErrorReporting();
     final exchangeAccess = await _datasource.readPendingExchangeAccess();
+    final backgroundTasks = await _datasource.readPendingBackgroundTasks();
     if (languageName == null &&
         themeName == null &&
         currency == null &&
         errorReporting == null &&
-        exchangeAccess == null) {
+        exchangeAccess == null &&
+        backgroundTasks == null) {
       return null;
     }
     final pendingVersion = await _datasource.readPendingVersion() ?? 0;
@@ -85,8 +90,10 @@ class WizardRepositoryImpl implements WizardRepository {
     if (currency != null) touched.add(WizardField.defaultCurrency);
     if (errorReporting != null) touched.add(WizardField.reportingConsent);
     if (exchangeAccess != null) touched.add(WizardField.exchangeAccess);
+    if (backgroundTasks != null) touched.add(WizardField.backgroundTasks);
     return WizardChoices(
       exchangeAccess: exchangeAccess ?? true,
+      backgroundTasks: backgroundTasks ?? true,
       language: languageName == null
           ? Language.unitedStatesEnglish
           : Language.fromName(languageName),

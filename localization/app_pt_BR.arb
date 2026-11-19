@@ -278,10 +278,6 @@
   "@ledgerButtonNeedHelp": {
     "description": "Button label to show help/troubleshooting instructions"
   },
-  "mempoolServerNotUsed": "Não usado (servidor personalizado ativo)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
-  },
   "backupWalletErrorSaveBackup": "Falhado para salvar o backup",
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
@@ -4998,10 +4994,6 @@
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "mempoolCustomServerLabel": "CUSTOM",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "appSettingsDevModeTitle": "Modo de desenvolvimento",
   "exchangeTestnetBasicAuthTitle": "Credenciais da exchange testnet",
   "exchangeTestnetBasicAuthDescription": "Autenticação básica HTTP para as páginas web da exchange testnet (login e KYC).",
@@ -7410,10 +7402,6 @@
   "@buyStandardWithdrawal": {
     "description": "Regular withdrawal option"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "Quando ativado, este servidor será usado para estimativa de taxa. Quando desativado, o servidor de mempool do Bull Bitcoin será usado em vez disso.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "electrumInvalidNumberError": "Insira um número válido",
   "@electrumInvalidNumberError": {
     "description": "Validation error for non-numeric input"
@@ -8959,10 +8947,6 @@
   "@settingsScreenTitle": {
     "description": "The title of the settings screen"
   },
-  "mempoolCustomServerEdit": "Editar",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
@@ -9030,10 +9014,6 @@
   "seedsignerStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "@seedsignerStep14": {
     "description": "SeedSigner final instruction about broadcasting"
-  },
-  "mempoolSettingsUseForFeeEstimation": "Uso para estimativa de taxas",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "passportStep5": "   - Aumente o brilho da tela em seu dispositivo",
   "@passportStep5": {
@@ -10484,7 +10464,6 @@
   "homeActionTransfer": "Swap",
   "backupCardTitle": "Proteja seus bitcoins.",
   "backupCardSubtitle": "Faça o backup da sua carteira agora.",
-  "mempoolCustomServerNoSsl": "Sem SSL",
   "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
   "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",
   "onboardingAdvancedOptionsTitle": "Opções avançadas",
@@ -10493,7 +10472,6 @@
   "onboardingAdvancedOptionsCustomMempool": "Servidor Mempool personalizado",
   "onboardingAdvancedOptionsCustomRecoverbull": "Servidor Recoverbull personalizado",
   "onboardingAdvancedOptionsFooter": "Você pode alterar essas configurações mais tarde nas configurações do aplicativo",
-  "onboardingAdvancedOptionsDone": "Concluído",
   "appStartupContactSupportMessage": "Entre em contato com o suporte em app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "A BitBox só é compatível com Android",
   "pinCodeSaveError": "Não foi possível salvar seu PIN. Por favor, tente novamente.",
@@ -10808,7 +10786,6 @@
   "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor",
   "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool",
   "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado",
-  "mempoolCustomServerSsl": "SSL",
   "mempoolErrorUnexpected": "Ocorreu um erro inesperado",
   "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",
   "receivePayjoinNoUtxos": "Receba fundos primeiro para ativar isso.\nUTXOs são necessários para usar o payjoin.",
@@ -11282,5 +11259,16 @@
   "settingsSourceCodeTitle": "Código-fonte",
   "torSettingsStatusNoInternetOrBlocked": "Sem internet ou rede censurada",
   "torSettingsDescNoInternetOrBlocked": "Esta rede não tem acesso à internet ou bloqueia o Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado."
+  "torSettingsExternalProxyUnavailableDescription": "O Bull não conseguiu se conectar ao proxy SOCKS5 configurado.",
+  "serverEncrypted": "Criptografado",
+  "serverUnencrypted": "Não criptografado",
+  "backgroundTasksTitle": "Tarefas em segundo plano",
+  "blockedInSystemSettings": "Bloqueado nas configurações do sistema",
+  "notificationsBlockedMessage": "As notificações estão bloqueadas nas configurações do sistema.",
+  "notificationsTitle": "Notificações",
+  "openSystemSettings": "Abrir configurações do sistema",
+  "permissionsTitle": "Permissões",
+  "settingsSearchPermissionsKeywords": "notificações|tarefas em segundo plano|bateria|alertas",
+  "wizardBackgroundTasksDescription": "Verifica pagamentos com o app fechado.",
+  "wizardNotificationsDescription": "Saiba quando um pagamento chegar."
 }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/swap/domain/boltz_lockup_estimate_address.dart';
 import 'package:bb_mobile/features/send/public/send_facade.dart'
     show
         SendConsolidationRequiredFailure,
@@ -621,6 +622,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         if (generation != _transactionGeneration) return;
         emit(state.copyWith(swapRoute: route));
         if (route.startsWithBoltz) {
+          // Before any swap exists: a funding failure afterwards would leave
+          // an orphan swap behind.
+          if (!await _spendPreconditionsReadable(emit, generation)) return;
           final boltzFailure = await _createBoltzChainTransfer(
             emit,
             inputAmountSat: inputAmountSat,
@@ -785,6 +789,27 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
   /// the failure when Boltz could not create the swap, so the caller can
   /// decide on the exchange fallback; nothing is created or signed then.
   /// Once the swap exists every later failure throws, never falls back.
+  /// Bitcoin funding reads the Payjoin reservations; when they cannot be read
+  /// (the runtime still serves the network the app launched on) funding would
+  /// fail after the swap was created. Emits the relaunch failure and returns
+  /// false in that case.
+  Future<bool> _spendPreconditionsReadable(
+    Emitter<TransferState> emit,
+    int generation,
+  ) async {
+    final fromWallet = state.fromWallet;
+    if (fromWallet == null || fromWallet.isLiquid) return true;
+    try {
+      await _validateBitcoinSelectionUsecase.execute(walletId: fromWallet.id);
+      return true;
+    } on ValidateBitcoinSelectionException {
+      if (generation == _transactionGeneration) {
+        emit(state.copyWith(swapFailure: const SwapRelaunchRequiredFailure()));
+      }
+      return false;
+    }
+  }
+
   Future<SwapsFailure?> _createBoltzChainTransfer(
     Emitter<TransferState> emit, {
     required int inputAmountSat,
@@ -2512,19 +2537,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     Wallet fromWallet, {
     required NetworkFee networkFee,
   }) async {
-    final lockupAddress = switch (fromWallet.network) {
-      Network.bitcoinMainnet =>
-        'bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4',
-      Network.bitcoinTestnet =>
-        'tb1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskqjfymf6',
-      Network.liquidMainnet => 'lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24',
-      Network.liquidTestnet => 'tlq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0w78z5h5l8mzyz',
-      Network.bitcoinRegtest || Network.liquidRegtest => null,
-    };
-    if (lockupAddress == null) return null;
     return _drainableAmountSat(
       fromWallet,
-      address: lockupAddress,
+      address: boltzLockupEstimateAddress(fromWallet.network),
       networkFee: networkFee,
     );
   }

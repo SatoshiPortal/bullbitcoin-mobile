@@ -26,6 +26,7 @@ abstract final class BullIcons {
   static const IconData checkCircle = Icons.check_circle;
   static const IconData schedule = Icons.schedule;
   static const IconData contentCopy = Icons.content_copy;
+  static const IconData qrCodeScanner = Icons.qr_code_scanner;
   static const IconData sell = Icons.sell;
   static const IconData close = Icons.close;
   static const IconData check = Icons.check;

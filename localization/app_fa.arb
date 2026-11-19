@@ -1048,7 +1048,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Custom Server",
+  "mempoolSettingsCustomServer": "سرور سفارشی",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },
@@ -1261,10 +1261,6 @@
   "transactionFilterTransfer": "مبادله",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "mempoolServerNotUsed": "استفاده نکردن (Server Active server)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
   },
   "receiveConfirming": "تایید...{count}/{required}",
   "@receiveConfirming": {
@@ -5553,10 +5549,6 @@
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
-  "mempoolCustomServerLabel": "CUSTOM",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "انتقال هزینه",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -6927,10 +6919,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "هنگامی که فعال می شود، این سرور برای برآورد هزینه استفاده می شود. هنگامی که غیرفعال می شود، سرور Impool Bitcoin به جای آن استفاده می شود.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "هزینه های سفارشی",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -8202,10 +8190,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "ویرایش Edit",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "گزینه Extended Public Key",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -8258,10 +8242,6 @@
   "buyVerificationInProgress": "توسعه در پیشرفت ...",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
-  },
-  "mempoolSettingsUseForFeeEstimation": "استفاده از برآورد هزینه",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "روش پرداخت",
   "@buyPaymentMethod": {
@@ -10356,7 +10336,6 @@
   "homeActionTransfer": "مبادله",
   "backupCardTitle": "از بیت‌کوین خود محافظت کنید.",
   "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید.",
-  "mempoolCustomServerNoSsl": "بدون SSL",
   "autoswapTargetBalanceLabel": "موجودی هدف کیف پول فوری",
   "autoswapMaximumBalanceLabel": "حداکثر موجودی کیف پول فوری",
   "onboardingAdvancedOptionsTitle": "گزینه‌های پیشرفته",
@@ -10365,7 +10344,6 @@
   "onboardingAdvancedOptionsCustomMempool": "سرور Mempool سفارشی",
   "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
   "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
-  "onboardingAdvancedOptionsDone": "انجام شد",
   "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
   "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود",
   "pinCodeSaveError": "ذخیره پین شما ممکن نبود. لطفاً دوباره تلاش کنید.",
@@ -10933,7 +10911,6 @@
   "exchangeSupportChatPickFilesFailed": "انتخاب فایل‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatAttachLogsFailed": "پیوست کردن گزارش‌ها ممکن نشد. لطفاً دوباره امتحان کنید.",
   "exchangeSupportChatFetchFileDataFailed": "دریافت داده‌ی فایل ممکن نشد",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "خطایی غیرمنتظره رخ داد",
   "mempoolErrorUpdateSettingsFailed": "به‌روزرسانی تنظیمات ممکن نشد: {error}",
@@ -11270,5 +11247,16 @@
   "settingsSourceCodeTitle": "کد منبع",
   "torSettingsStatusNoInternetOrBlocked": "اینترنت وجود ندارد یا شبکه سانسور شده است",
   "torSettingsDescNoInternetOrBlocked": "این شبکه به اینترنت دسترسی ندارد یا Tor را مسدود می‌کند.",
-  "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود."
+  "torSettingsExternalProxyUnavailableDescription": "Bull نتوانست به پراکسی SOCKS5 پیکربندی‌شده وصل شود.",
+  "serverEncrypted": "رمزگذاری‌شده",
+  "serverUnencrypted": "رمزگذاری‌نشده",
+  "backgroundTasksTitle": "وظایف پس‌زمینه",
+  "blockedInSystemSettings": "در تنظیمات سیستم مسدود است",
+  "notificationsBlockedMessage": "اعلان‌ها در تنظیمات سیستم مسدود شده‌اند.",
+  "notificationsTitle": "اعلان‌ها",
+  "openSystemSettings": "باز کردن تنظیمات سیستم",
+  "permissionsTitle": "مجوزها",
+  "settingsSearchPermissionsKeywords": "اعلان‌ها|وظایف پس‌زمینه|باتری|هشدارها",
+  "wizardBackgroundTasksDescription": "بررسی پرداخت‌ها وقتی برنامه بسته است.",
+  "wizardNotificationsDescription": "از رسیدن پرداخت باخبر شوید."
 }

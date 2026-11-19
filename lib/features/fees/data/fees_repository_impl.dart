@@ -6,9 +6,7 @@ import 'package:bb_mobile/core/fees/data/mappers/mempool_fees_mapper.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
-import 'package:bb_mobile/core/mempool/domain/repositories/mempool_settings_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
@@ -16,14 +14,12 @@ class FeesRepositoryImpl implements FeesRepository {
   final ElectrumServersPort _electrumServers;
   final RegtestFeesDatasource _regtestFeesDatasource;
   final FeesDatasource _feesDatasource;
-  final MempoolSettingsRepository _mempoolSettingsRepository;
   final MempoolServerRepository _mempoolServerRepository;
 
   const FeesRepositoryImpl({
     required this._feesDatasource,
     required this._electrumServers,
     this._regtestFeesDatasource = const RegtestFeesDatasource(),
-    required this._mempoolSettingsRepository,
     required this._mempoolServerRepository,
   });
 
@@ -65,17 +61,6 @@ class FeesRepositoryImpl implements FeesRepository {
       isTestnet: isTestnet,
       isLiquid: false,
     );
-    final settingsResult = await _mempoolSettingsRepository.fetchByNetwork(
-      network,
-    );
-    final settings = switch (settingsResult) {
-      Ok(:final value) => value,
-      Err() => throw MempoolFeesException('Failed to fetch mempool settings'),
-    };
-    if (!settings.useForFeeEstimation) {
-      return _bbMempoolUrl(isTestnet: isTestnet);
-    }
-
     final customResult = await _mempoolServerRepository.fetchCustomServer(
       network,
     );
@@ -98,8 +83,4 @@ class FeesRepositoryImpl implements FeesRepository {
     };
     return defaultServer.fullUrl;
   }
-
-  String _bbMempoolUrl({required bool isTestnet}) => isTestnet
-      ? 'https://${ApiServiceConstants.testnetMempoolUrlPath}'
-      : 'https://${ApiServiceConstants.bbMempoolUrlPath}';
 }

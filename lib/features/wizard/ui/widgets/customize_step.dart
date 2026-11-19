@@ -18,8 +18,9 @@ import 'package:bull_ui/bull_ui.dart'
         BullTypographyX;
 
 /// Settings page of the wizard, built from the controls of the app settings:
-/// switches for dark mode and the exchange, menus for the language and the
-/// default currency.
+/// menus for the language and the default currency, switches for dark mode,
+/// the exchange and background tasks, then notifications once background
+/// tasks are on.
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
     super.key,
@@ -30,6 +31,11 @@ class CustomizeStep extends StatelessWidget {
     required this.onExchangePicked,
     required this.onLanguagePicked,
     required this.onCurrencyPicked,
+    required this.backgroundTasks,
+    required this.onBackgroundTasksPicked,
+    required this.notificationsAllowed,
+    required this.notificationsRefused,
+    required this.onNotificationsPicked,
   });
 
   /// `null` hides the exchange row, where the platform does not allow it.
@@ -41,12 +47,25 @@ class CustomizeStep extends StatelessWidget {
   final ValueChanged<Language> onLanguagePicked;
   final ValueChanged<String> onCurrencyPicked;
 
+  /// `null` hides background tasks and notifications, where the platform
+  /// cannot run them.
+  final bool? backgroundTasks;
+  final ValueChanged<bool> onBackgroundTasksPicked;
+
+  /// Read from the system.
+  final bool notificationsAllowed;
+
+  /// The system turned down the request: only its settings can grant it.
+  final bool notificationsRefused;
+  final ValueChanged<bool> onNotificationsPicked;
+
   @override
   Widget build(BuildContext context) {
     final loc = context.loc;
     final vGap = Device.screen.height * 0.02;
     final divider = Divider(height: 1, color: context.appColors.border);
     final exchange = exchangeAccess;
+    final background = backgroundTasks;
     return WizardStepLayout(
       page: WizardPage.customize,
       title: loc.wizardCustomizeTitle,
@@ -61,37 +80,6 @@ class CustomizeStep extends StatelessWidget {
             ),
           ),
           SizedBox(height: vGap),
-          MergeSemantics(
-            child: BullSettingsEntryItem(
-              icon: Icons.dark_mode_outlined,
-              title: loc.settingsDarkModeTitle,
-              contentPadding: EdgeInsets.zero,
-              // Shows the theme in use, as the dark mode switch of the app
-              // settings does.
-              trailing: BullSwitch(
-                value: Theme.of(context).brightness == Brightness.dark,
-                onChanged: (dark) => onThemePicked(
-                  dark ? AppThemeMode.dark : AppThemeMode.light,
-                ),
-              ),
-            ),
-          ),
-          if (exchange != null) ...[
-            divider,
-            MergeSemantics(
-              child: BullSettingsEntryItem(
-                icon: Icons.currency_exchange,
-                title: loc.wizardExchangeTitle,
-                subtitle: loc.wizardExchangeDescription,
-                contentPadding: EdgeInsets.zero,
-                trailing: BullSwitch(
-                  value: exchange,
-                  onChanged: onExchangePicked,
-                ),
-              ),
-            ),
-          ],
-          divider,
           BullSettingsEntryItem(
             icon: Icons.language,
             title: loc.settingsLanguageTitle,
@@ -128,6 +116,69 @@ class CustomizeStep extends StatelessWidget {
               onChanged: onCurrencyPicked,
             ),
           ),
+          divider,
+          MergeSemantics(
+            child: BullSettingsEntryItem(
+              icon: Icons.dark_mode_outlined,
+              title: loc.settingsDarkModeTitle,
+              contentPadding: EdgeInsets.zero,
+              // Shows the theme in use, as the dark mode switch of the app
+              // settings does.
+              trailing: BullSwitch(
+                value: Theme.of(context).brightness == Brightness.dark,
+                onChanged: (dark) => onThemePicked(
+                  dark ? AppThemeMode.dark : AppThemeMode.light,
+                ),
+              ),
+            ),
+          ),
+          if (exchange != null) ...[
+            divider,
+            MergeSemantics(
+              child: BullSettingsEntryItem(
+                icon: Icons.currency_exchange,
+                title: loc.wizardExchangeTitle,
+                subtitle: loc.wizardExchangeDescription,
+                contentPadding: EdgeInsets.zero,
+                trailing: BullSwitch(
+                  value: exchange,
+                  onChanged: onExchangePicked,
+                ),
+              ),
+            ),
+          ],
+          if (background != null) ...[
+            divider,
+            MergeSemantics(
+              child: BullSettingsEntryItem(
+                icon: Icons.sync,
+                title: loc.backgroundTasksTitle,
+                subtitle: loc.wizardBackgroundTasksDescription,
+                contentPadding: EdgeInsets.zero,
+                trailing: BullSwitch(
+                  value: background,
+                  onChanged: onBackgroundTasksPicked,
+                ),
+              ),
+            ),
+            if (background) ...[
+              divider,
+              MergeSemantics(
+                child: BullSettingsEntryItem(
+                  icon: Icons.notifications_none,
+                  title: loc.notificationsTitle,
+                  subtitle: notificationsRefused
+                      ? loc.blockedInSystemSettings
+                      : loc.wizardNotificationsDescription,
+                  contentPadding: EdgeInsets.zero,
+                  trailing: BullSwitch(
+                    value: notificationsAllowed,
+                    onChanged: onNotificationsPicked,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ],
       ),
     );

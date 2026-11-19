@@ -98,7 +98,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "Custom Server",
+  "mempoolSettingsCustomServer": "Προσαρμοσμένος διακομιστής",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },
@@ -345,10 +345,6 @@
   "transactionFilterTransfer": "Ανταλλαγή",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "mempoolServerNotUsed": "Δεν χρησιμοποιείται (συνεργάτης πελατών)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
   },
   "exchangeLandingRecommendedExchange": "Προτεινόμενο Bitcoin Exchange",
   "@exchangeLandingRecommendedExchange": {
@@ -4873,10 +4869,6 @@
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
-  "mempoolCustomServerLabel": "CUSTOM",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "Μεταφορά",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -6326,10 +6318,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "Όταν ενεργοποιηθεί, αυτός ο server θα χρησιμοποιηθεί για την εκτίμηση των τελών. Όταν απενεργοποιηθεί, ο διακομιστής mempool της Bull θα χρησιμοποιηθεί αντ 'αυτού.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "Custom Fee",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -7631,10 +7619,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "Επεξεργασία επεξεργασίας",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "Κάντε κλικ Extended Public Key",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -7687,10 +7671,6 @@
   "buyVerificationInProgress": "Εποπτεία στην πρόοδο...",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
-  },
-  "mempoolSettingsUseForFeeEstimation": "Χρήση για εκτίμηση Fee",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "Μέθοδος πληρωμής",
   "@buyPaymentMethod": {
@@ -10472,7 +10452,6 @@
   "homeActionTransfer": "Ανταλλαγή",
   "backupCardTitle": "Προστατέψτε τα bitcoin σας.",
   "backupCardSubtitle": "Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα.",
-  "mempoolCustomServerNoSsl": "Χωρίς SSL",
   "autoswapTargetBalanceLabel": "Στόχος υπολοίπου άμεσου πορτοφολιού",
   "autoswapMaximumBalanceLabel": "Μέγιστο υπόλοιπο άμεσου πορτοφολιού",
   "onboardingAdvancedOptionsTitle": "Σύνθετες επιλογές",
@@ -10481,7 +10460,6 @@
   "onboardingAdvancedOptionsCustomMempool": "Προσαρμοσμένος διακομιστής Mempool",
   "onboardingAdvancedOptionsCustomRecoverbull": "Προσαρμοσμένος διακομιστής Recoverbull",
   "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
-  "onboardingAdvancedOptionsDone": "Τέλος",
   "appStartupContactSupportMessage": "Επικοινωνήστε με την υποστήριξη στο app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "Το BitBox υποστηρίζεται μόνο σε Android",
   "pinCodeSaveError": "Αδυναμία αποθήκευσης PIN. Παρακαλώ δοκιμάστε ξανά.",
@@ -10933,7 +10911,6 @@
   "backupWarningBackupNow": "ΝΑΙ",
   "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
   "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα",
   "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",
@@ -11270,5 +11247,16 @@
   "settingsSourceCodeTitle": "Πηγαίος κώδικας",
   "torSettingsStatusNoInternetOrBlocked": "Χωρίς internet ή λογοκριμένο δίκτυο",
   "torSettingsDescNoInternetOrBlocked": "Αυτό το δίκτυο δεν έχει πρόσβαση στο internet ή μπλοκάρει το Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5."
+  "torSettingsExternalProxyUnavailableDescription": "Το Bull δεν μπόρεσε να συνδεθεί στον ρυθμισμένο διακομιστή μεσολάβησης SOCKS5.",
+  "serverEncrypted": "Κρυπτογραφημένο",
+  "serverUnencrypted": "Μη κρυπτογραφημένο",
+  "backgroundTasksTitle": "Εργασίες στο παρασκήνιο",
+  "blockedInSystemSettings": "Αποκλείστηκε στις ρυθμίσεις συστήματος",
+  "notificationsBlockedMessage": "Οι ειδοποιήσεις έχουν αποκλειστεί στις ρυθμίσεις συστήματος.",
+  "notificationsTitle": "Ειδοποιήσεις",
+  "openSystemSettings": "Άνοιγμα ρυθμίσεων συστήματος",
+  "permissionsTitle": "Άδειες",
+  "settingsSearchPermissionsKeywords": "ειδοποιήσεις|εργασίες παρασκηνίου|μπαταρία|ειδοποιήσεις πληρωμών",
+  "wizardBackgroundTasksDescription": "Ελέγχει πληρωμές με κλειστή την εφαρμογή.",
+  "wizardNotificationsDescription": "Μάθετε πότε φτάνει μια πληρωμή."
 }

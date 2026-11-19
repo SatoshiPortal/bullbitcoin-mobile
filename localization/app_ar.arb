@@ -118,7 +118,7 @@
   "@sellInstitutionNumber": {
     "description": "Label for bank institution code"
   },
-  "mempoolSettingsCustomServer": "خادم الجمارك",
+  "mempoolSettingsCustomServer": "خادم مخصص",
   "@mempoolSettingsCustomServer": {
     "description": "Label for custom mempool server section"
   },
@@ -369,10 +369,6 @@
   "transactionFilterTransfer": "مبادلة",
   "@transactionFilterTransfer": {
     "description": "Filter option to show only transfer/swap transactions"
-  },
-  "mempoolServerNotUsed": "غير مستخدمة (الخدمة الجمركية العاملة)",
-  "@mempoolServerNotUsed": {
-    "description": "Label shown when default server is not used because custom server is active"
   },
   "receiveConfirming": "Confirming... ({count}/{required})",
   "@receiveConfirming": {
@@ -5166,10 +5162,6 @@
   "@transactionSwapInfoClaimableSwap": {
     "description": "Additional info for claimable swaps"
   },
-  "mempoolCustomServerLabel": "CUSTOM",
-  "@mempoolCustomServerLabel": {
-    "description": "Label badge for custom server"
-  },
   "transferFeeLabel": "Transfer Fee",
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
@@ -6764,10 +6756,6 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "وعند التمكين، سيستخدم هذا الخادم لتقدير الرسوم. عندما تُعَوَّل، خادم (بول بيتكين) سيُستخدم بدلاً من ذلك.",
-  "@mempoolSettingsUseForFeeEstimationDescription": {
-    "description": "Description for use for fee estimation toggle"
-  },
   "sendCustomFee": "الرسوم الجمركية",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
@@ -8209,10 +8197,6 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "Edit",
-  "@mempoolCustomServerEdit": {
-    "description": "Button text to edit custom mempool server"
-  },
   "importQrDeviceKruxStep2": "مفتاح عمومي ممتد",
   "@importQrDeviceKruxStep2": {
     "description": "Krux instruction step 2"
@@ -8269,10 +8253,6 @@
   "buyVerificationInProgress": "التحقق من التقدم...",
   "@buyVerificationInProgress": {
     "description": "Status during KYC review"
-  },
-  "mempoolSettingsUseForFeeEstimation": "استخدام تقدير الرسوم",
-  "@mempoolSettingsUseForFeeEstimation": {
-    "description": "Label for use for fee estimation toggle"
   },
   "buyPaymentMethod": "طريقة الدفع",
   "@buyPaymentMethod": {
@@ -10360,7 +10340,6 @@
   "homeActionTransfer": "مبادلة",
   "backupCardTitle": "احمِ بيتكوين الخاص بك.",
   "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن.",
-  "mempoolCustomServerNoSsl": "بدون SSL",
   "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
   "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
   "onboardingAdvancedOptionsTitle": "خيارات متقدمة",
@@ -10369,7 +10348,6 @@
   "onboardingAdvancedOptionsCustomMempool": "خادم Mempool مخصص",
   "onboardingAdvancedOptionsCustomRecoverbull": "خادم Recoverbull مخصص",
   "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
-  "onboardingAdvancedOptionsDone": "تم",
   "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
   "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط",
   "pinCodeSaveError": "تعذر حفظ رمز PIN الخاص بك. يرجى المحاولة مرة أخرى.",
@@ -10936,7 +10914,6 @@
   "exchangeSupportChatPickFilesFailed": "فشل اختيار الملفات. يرجى المحاولة مرة أخرى.",
   "exchangeSupportChatAttachLogsFailed": "فشل إرفاق السجلات. يرجى المحاولة مرة أخرى.",
   "exchangeSupportChatFetchFileDataFailed": "فشل جلب بيانات الملف",
-  "mempoolCustomServerSsl": "SSL",
   "importWatchOnlyXpubLabel": "XPUB",
   "mempoolErrorUnexpected": "حدث خطأ غير متوقع",
   "mempoolErrorUpdateSettingsFailed": "فشل تحديث الإعدادات: {error}",
@@ -11273,5 +11250,16 @@
   "settingsSourceCodeTitle": "الشيفرة المصدرية",
   "torSettingsStatusNoInternetOrBlocked": "لا يوجد إنترنت أو الشبكة خاضعة للرقابة",
   "torSettingsDescNoInternetOrBlocked": "هذه الشبكة لا تملك اتصالًا بالإنترنت، أو أنها تحظر Tor.",
-  "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ."
+  "torSettingsExternalProxyUnavailableDescription": "تعذّر على Bull الاتصال بوكيل SOCKS5 المُعدّ.",
+  "serverEncrypted": "مشفّر",
+  "serverUnencrypted": "غير مشفّر",
+  "backgroundTasksTitle": "المهام في الخلفية",
+  "blockedInSystemSettings": "محظور في إعدادات النظام",
+  "notificationsBlockedMessage": "الإشعارات محظورة في إعدادات النظام.",
+  "notificationsTitle": "الإشعارات",
+  "openSystemSettings": "فتح إعدادات النظام",
+  "permissionsTitle": "الأذونات",
+  "settingsSearchPermissionsKeywords": "الإشعارات|المهام في الخلفية|البطارية|التنبيهات",
+  "wizardBackgroundTasksDescription": "يتحقق من المدفوعات والتطبيق مغلق.",
+  "wizardNotificationsDescription": "اعرف عند وصول دفعة."
 }

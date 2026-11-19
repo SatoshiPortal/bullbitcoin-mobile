@@ -1,7 +1,11 @@
+import 'dart:io' show exit;
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bull_ui/bull_ui.dart' show BullPickerChip, BullPickerItem;
+import 'package:bull_ui/bull_ui.dart'
+    show BullDialog, BullPickerChip, BullPickerItem;
+import 'package:primitives/primitives.dart' show RegtestHostProfile;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,13 +31,44 @@ class TestnetModeSwitch extends StatelessWidget {
           value: Environment.testnet,
           label: context.loc.electrumTestnet,
         ),
-        BullPickerItem(
-          value: Environment.regtest,
-          label: context.loc.electrumRegtest,
-        ),
+        if (RegtestHostProfile.isConfigured)
+          BullPickerItem(
+            value: Environment.regtest,
+            label: context.loc.electrumRegtest,
+          ),
       ],
-      onChanged: (environment) =>
-          context.read<SettingsCubit>().selectNetwork(environment),
+      onChanged: (environment) async {
+        final cubit = context.read<SettingsCubit>();
+        final restartRequired = await cubit.selectNetwork(environment);
+        if (restartRequired && context.mounted) {
+          await showNetworkRestartDialog(context);
+        }
+      },
     );
   }
+}
+
+/// Blocks the app after a switch that changes a runtime captured at launch:
+/// nothing may run on the old network, so the only action closes the process.
+Future<void> showNetworkRestartDialog(
+  BuildContext context, {
+  VoidCallback? onClose,
+}) {
+  return BullDialog.show<void>(
+    context: context,
+    isDismissible: false,
+    builder: (dialogContext) => PopScope(
+      canPop: false,
+      child: AlertDialog(
+        title: Text(dialogContext.loc.networkRestartDialogTitle),
+        content: Text(dialogContext.loc.networkRestartDialogMessage),
+        actions: [
+          TextButton(
+            onPressed: onClose ?? () => exit(0),
+            child: Text(dialogContext.loc.networkRestartDialogAction),
+          ),
+        ],
+      ),
+    ),
+  );
 }

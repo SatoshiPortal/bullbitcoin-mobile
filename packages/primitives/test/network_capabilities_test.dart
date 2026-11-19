@@ -6,6 +6,7 @@ void main() {
     NetworkCapability.softwareWallet,
     NetworkCapability.exchange,
     NetworkCapability.swaps,
+    NetworkCapability.automaticSwaps,
     NetworkCapability.payjoin,
     NetworkCapability.hardwareWallet,
     NetworkCapability.silentPayments,
@@ -16,6 +17,7 @@ void main() {
     NetworkCapability.softwareWallet,
     NetworkCapability.exchange,
     NetworkCapability.swaps,
+    NetworkCapability.automaticSwaps,
     NetworkCapability.hardwareWallet,
     NetworkCapability.publicExplorer,
     NetworkCapability.publicFeeEstimates,
@@ -27,6 +29,7 @@ void main() {
     LiquidNetwork.testnet: historicalLiquid,
     BitcoinNetwork.regtest: {
       NetworkCapability.softwareWallet,
+      NetworkCapability.ark,
       NetworkCapability.swaps,
       NetworkCapability.payjoin,
     },

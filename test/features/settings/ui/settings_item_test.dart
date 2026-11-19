@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, NetworkEnv;
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_settings_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
@@ -16,6 +16,21 @@ import 'package:go_router/go_router.dart';
 class _Settings extends Mock implements SettingsCubit {}
 
 void main() {
+  test('Ark notification test is shown only in developer mode', () {
+    final disabled = buildSettingsItems(localization: AppLocalizationsEn());
+    final enabled = buildSettingsItems(
+      localization: AppLocalizationsEn(),
+      isDevModeEnabled: true,
+    );
+    expect(
+      disabled.where((item) => item.id == SettingsItemId.arkDebugNotification),
+      isEmpty,
+    );
+    expect(
+      enabled.where((item) => item.id == SettingsItemId.arkDebugNotification),
+      hasLength(1),
+    );
+  });
   for (final environment in Environment.values) {
     testWidgets('wallet settings skip unavailable entries on $environment', (
       tester,
@@ -68,8 +83,10 @@ void main() {
     tester,
   ) async {
     final localization = AppLocalizationsEn();
-    final item = buildSettingsItems(localization: localization)
-        .byId(SettingsItemId.importWallet);
+    final item = buildSettingsItems(
+      environment: NetworkEnv.mainnet,
+      localization: localization,
+    ).byId(SettingsItemId.importWallet);
     final router = GoRouter(
       routes: [
         GoRoute(

@@ -76,6 +76,11 @@ final class SendSwapRouteUnavailableFailure extends SendFailure {
   }) : super(logMessage);
 }
 
+/// Ark routing is disabled, unavailable, or incompatible with this send mode.
+final class SendArkRouteUnavailableFailure extends SendFailure {
+  const SendArkRouteUnavailableFailure();
+}
+
 final class SendRateLimitedFailure extends SendFailure {
   final Duration? retryAfter;
 
@@ -149,4 +154,10 @@ final class SendPayjoinPausedFailure extends SendFailure {
 
 final class SendConsolidationRequiredFailure extends SendFailure {
   const SendConsolidationRequiredFailure([super.logMessage]);
+}
+
+/// The app runs on the network it launched with, not the one now selected:
+/// spend preconditions cannot be read, so no swap is created.
+final class SendRelaunchRequiredFailure extends SendFailure {
+  const SendRelaunchRequiredFailure([super.logMessage]);
 }

@@ -33,6 +33,7 @@ extension SendFailureL10n on SendFailure {
       context.loc.sendErrorAddressNetworkMismatch,
     SendInsufficientFundsForFeesFailure() =>
       context.loc.sendErrorInsufficientFundsForFees,
+    SendRelaunchRequiredFailure() => context.loc.networkRelaunchRequiredError,
     SendSelectedCoinsUnavailableFailure() =>
       context.loc.sendErrorSelectedCoinsUnavailable,
     SendSelectedCoinsInsufficientFailure() =>
@@ -65,6 +66,7 @@ extension SendFailureL10n on SendFailure {
           : context.loc.sendErrorConfirmationFailed,
     SendPriceUnavailableFailure() =>
       context.loc.bitcoinPriceExchangeRateUnavailable,
+    SendArkRouteUnavailableFailure() ||
     SendUnexpectedFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

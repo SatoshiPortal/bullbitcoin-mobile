@@ -662,6 +662,31 @@ m.Widget bullBadgeUseCase(m.BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(name: 'Default', type: BullServerTile)
+m.Widget bullServerTileUseCase(m.BuildContext context) {
+  final unencrypted = context.knobs.boolean(label: 'unencrypted');
+  return _frame(
+    context,
+    m.SizedBox(
+      width: 360,
+      child: BullServerTile(
+        title: 'electrum.example.com:50002',
+        statusColor: context.bull.success,
+        statusLabel: 'Online',
+        badgeLabel: unencrypted ? 'Unencrypted' : 'Encrypted',
+        badgeIsWarning: unencrypted,
+        showDragHandle: context.knobs.boolean(label: 'drag handle'),
+        disabled: context.knobs.boolean(label: 'disabled'),
+        disabledLabel: 'Not used',
+        onDelete: context.knobs.boolean(label: 'deletable', initialValue: true)
+            ? () {}
+            : null,
+        deleteTooltip: 'Delete',
+      ),
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Default', type: BullBorderedTile)
 m.Widget bullBorderedTileUseCase(m.BuildContext context) {
   return _frame(
