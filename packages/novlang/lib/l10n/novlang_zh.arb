@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "账户设置",
   "app__exchangeTestnetBasicAuthTitle_apple": "测试网账户凭证",
   "app__exchangeTestnetBasicAuthDescription_apple": "测试网账户网页（登录和 KYC）的 HTTP 基本认证。",
-  "app__exchangeAccountTitle_apple": "账户",
-  "app__exchangeAccountSettingsTitle_apple": "账户设置",
   "app__walletDeletionErrorOngoingSwaps_apple": "您无法删除有进行中转账的钱包。",
   "app__onboardingSplashDescription_apple": "主权自托管的 Bitcoin 钱包及仅限 Bitcoin 的服务。",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin 转账需要一些时间才能确认。",

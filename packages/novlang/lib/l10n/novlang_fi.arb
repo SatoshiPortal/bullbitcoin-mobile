@@ -37,8 +37,6 @@
   "app__settingsExchangeSettingsTitle_apple": "Tilin asetukset",
   "app__exchangeTestnetBasicAuthTitle_apple": "Testnet-tilin tunnukset",
   "app__exchangeTestnetBasicAuthDescription_apple": "HTTP basic auth testnet-tilin verkkosivuille (kirjautuminen ja KYC).",
-  "app__exchangeAccountTitle_apple": "Tili",
-  "app__exchangeAccountSettingsTitle_apple": "Tilin asetukset",
   "app__walletDeletionErrorOngoingSwaps_apple": "Et voi poistaa lompakkoa, jossa on käynnissä olevia siirtoja.",
   "app__onboardingSplashDescription_apple": "Suvereeni itsesäilytyksellä toimiva Bitcoin-lompakko ja vain Bitcoiniin keskittyvät palvelut.",
   "app__sendSlowPaymentWarningDescription_apple": "Bitcoin-siirrot kestävät hetken vahvistua.",
