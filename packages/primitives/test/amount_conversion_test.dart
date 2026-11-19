@@ -60,7 +60,7 @@ void main() {
   });
 
   test(
-    'fiat cannot publish overflow, impossible supply or an invalid quote',
+    'fiat rejects invalid quotes without applying the bitcoin field cap',
     () {
       for (final rate in [0.0, -1.0, double.nan, double.infinity]) {
         expect(Sats.tryFromFiat('1', rate), isNull);
@@ -69,8 +69,14 @@ void main() {
         expect(Sats.tryFromFiat(text, 80000), isNull, reason: text);
       }
       expect(Sats.tryFromFiat('21000000', 1)?.value, Sats.maxBitcoinSupply);
-      expect(Sats.tryFromFiat('21000001', 1), isNull);
-      expect(Sats.tryFromFiat('1${'0' * 400}', 1), isNull);
+      expect(
+        Sats.tryFromFiat('21000001', 1)?.value,
+        BigInt.parse('2100000100000000'),
+      );
+      expect(
+        Sats.tryFromFiat('1${'0' * 400}', 1)?.value,
+        BigInt.from(10).pow(408),
+      );
     },
   );
 }
