@@ -3,6 +3,17 @@ import 'package:test/test.dart';
 
 void main() {
   test(
+    'fiat display rounds decimal half cents without a double intermediate',
+    () {
+      expect(Sats.fromInt(1249580).toFiatText(125000, decimals: 2), '1561.98');
+      expect(Sats.fromInt(1).toFiatText(500000, decimals: 2), '0.01');
+      expect(Sats.fromInt(1).toFiatText(125000, decimals: 2), '0.00');
+      expect(Sats.fromInt(100000000).toFiatText(125000, decimals: 0), '125000');
+      expect(Sats.fromInt(1).toFiatText(0, decimals: 2), isNull);
+    },
+  );
+
+  test(
     'bitcoin text preserves every satoshi over repeated representations',
     () {
       for (final digits in ['0', '1', '100000000', '2100000000000000']) {

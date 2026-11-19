@@ -7,6 +7,34 @@ import 'package:primitives/primitives.dart';
 void main() {
   final quotedAt = DateTime.utc(2026, 11, 19, 14, 32);
 
+  testWidgets('Max fiat approximation rounds a half cent up', (tester) async {
+    final canonical = TextEditingController(text: '1249580');
+    addTearDown(canonical.dispose);
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullAmountInput(
+          canonicalUnit: BitcoinUnit.sats,
+          amountController: canonical,
+          isMax: true,
+          maxAmountSat: BigInt.from(1249580),
+          defaultCurrencyCode: 'CAD',
+          currencies: [
+            BullAmountCurrency(
+              code: 'CAD',
+              decimals: 2,
+              price: 125000,
+              priceAt: quotedAt,
+            ),
+          ],
+        ),
+      ),
+    );
+    expect(
+      tester.widgetList<Text>(find.byType(Text)).map((text) => text.data),
+      contains('≈ 1,561.98 CAD'),
+    );
+  });
+
   testWidgets('currency and conversion icons use the amount text color', (
     tester,
   ) async {
