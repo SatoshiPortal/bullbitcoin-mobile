@@ -4841,5 +4841,8 @@
   "permissionsTitle": "Autorisations",
   "settingsSearchPermissionsKeywords": "notifications|tâches en arrière-plan|batterie|alertes",
   "wizardBackgroundTasksDescription": "Vérifie les paiements app fermée.",
-  "wizardNotificationsDescription": "Sachez quand un paiement arrive."
+  "wizardNotificationsDescription": "Sachez quand un paiement arrive.",
+  "swapReceiveExactAmountUnavailable": "Le montant reçu est indiqué lors de la vérification.",
+  "swapArkMaxUnavailable": "MAX n’est pas disponible ici. Saisissez un montant qui laisse une marge pour les frais réseau.",
+  "swapArkMaxUnavailableShort": "MAX indisponible : prévoir les frais."
 }

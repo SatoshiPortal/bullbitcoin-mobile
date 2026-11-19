@@ -357,7 +357,7 @@
   "@paymentAddressHint": {
     "description": "Ark payment journey label"
   },
-  "paymentScanHint": "Scan a payment address or invoice.",
+  "paymentScanHint": "Scan a QR code to pay instantly over Ark.",
   "@paymentScanHint": {
     "description": "Ark payment journey label"
   },
@@ -563,5 +563,416 @@
   "arkActions": "Ark actions",
   "@arkActions": {
     "description": "Accessible name for the menu of Ark account actions."
+  },
+  "arkOffTitle": "Ark is off",
+  "@arkOffTitle": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "arkOffBody": "Turn on Ark to send bitcoin instantly and with lower fees.",
+  "@arkOffBody": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryActive": "Active",
+  "@inventoryActive": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryExpiring": "Expiring",
+  "@inventoryExpiring": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryRenew": "Renew",
+  "@inventoryRenew": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryKeys": "Keys",
+  "@inventoryKeys": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryBoardingLimits": "Boarding limits",
+  "@inventoryBoardingLimits": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryTiming": "Timing",
+  "@inventoryTiming": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryMailboxKey": "Mailbox public key",
+  "@inventoryMailboxKey": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryExitDelta": "VTXO exit delta",
+  "@inventoryExitDelta": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryAutoRenew": "Auto-renew before expiry",
+  "@inventoryAutoRenew": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryOnline": "Online",
+  "@inventoryOnline": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryOffline": "Offline",
+  "@inventoryOffline": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryServerError": "Can’t reach the Ark server",
+  "@inventoryServerError": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryServerErrorBody": "Check your connection and try again.",
+  "@inventoryServerErrorBody": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryCachedInfo": "Can’t reach the Ark server. Showing info from the last connection.",
+  "@inventoryCachedInfo": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryBlocks": "{count} blocks",
+  "@inventoryBlocks": {
+    "description": "Ark inventory/settings parity with design source",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "inventorySeconds": "{count} sec",
+  "@inventorySeconds": {
+    "description": "Ark inventory/settings parity with design source",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryExpiresIn": "Expires in {count} blocks",
+  "@inventoryExpiresIn": {
+    "description": "Ark inventory/settings parity with design source",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryExpiringIn": "Expiring · in {count} blocks",
+  "@inventoryExpiringIn": {
+    "description": "Ark inventory/settings parity with design source",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryNextExpiry": "Next expiry in {count} blocks",
+  "@inventoryNextExpiry": {
+    "description": "Ark inventory/settings parity with design source",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryExpiredNote": "This VTXO has expired and can’t be renewed.",
+  "@inventoryExpiredNote": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryLockedNote": "This VTXO can’t be spent or renewed until its pending operation finishes.",
+  "@inventoryLockedNote": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryRenewNote": "Auto-renew is configured {count} blocks before expiry. Open the app regularly to keep your VTXOs current.",
+  "@inventoryRenewNote": {
+    "description": "Ark inventory/settings parity with design source",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryVtxoId": "VTXO ID",
+  "@inventoryVtxoId": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryAnchor": "Anchor point",
+  "@inventoryAnchor": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryExpires": "Expires",
+  "@inventoryExpires": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryBlocksLeft": "Blocks left",
+  "@inventoryBlocksLeft": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryTotal": "Total excluding expired VTXOs",
+  "@inventoryTotal": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryEmptyTitle": "No VTXOs yet",
+  "@inventoryEmptyTitle": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryEmptyBody": "Bitcoin you receive shows up here.",
+  "@inventoryEmptyBody": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryTechnicalDetails": "Technical details",
+  "@inventoryTechnicalDetails": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryOpenAccount": "Open Ark wallet",
+  "@inventoryOpenAccount": {
+    "description": "Ark inventory/settings parity with design source"
+  },
+  "inventoryServerPublicKey": "Server public key",
+  "@inventoryServerPublicKey": {
+    "description": "Ark information mockup label; units are part of the value"
+  },
+  "inventoryMinimumBoard": "Minimum board amount",
+  "@inventoryMinimumBoard": {
+    "description": "Ark information mockup label; units are part of the value"
+  },
+  "inventoryMaximumVtxo": "Maximum VTXO amount",
+  "@inventoryMaximumVtxo": {
+    "description": "Ark information mockup label; units are part of the value"
+  },
+  "inventoryConfirmations": "Required confirmations",
+  "@inventoryConfirmations": {
+    "description": "Ark information mockup label; units are part of the value"
+  },
+  "inventoryLifetime": "VTXO lifetime",
+  "@inventoryLifetime": {
+    "description": "Ark information mockup label; units are part of the value"
+  },
+  "inventoryRoundInterval": "Round interval",
+  "@inventoryRoundInterval": {
+    "description": "Ark information mockup label; units are part of the value"
+  },
+  "payFrom": "Pay from",
+  "@payFrom": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "additionalInformation": "Additional Information",
+  "@additionalInformation": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "additionalInformationHint": "Add an amount or message for sender",
+  "@additionalInformationHint": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "arkAddressInformationUnavailable": "Amounts and messages cannot be added to this Ark address. Use a Lightning invoice to request an amount.",
+  "@arkAddressInformationUnavailable": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "noteOptional": "Note (optional)",
+  "@noteOptional": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "paymentNoteUnavailable": "Notes are not supported for this payment.",
+  "@paymentNoteUnavailable": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "addressActions": "Address",
+  "@addressActions": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "maxBalanceInputHint": "The final amount and network fees are checked before confirmation.",
+  "@maxBalanceInputHint": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardMinimumWithNetworkFees": "Minimum amount {minimum} + network fees",
+  "@boardMinimumWithNetworkFees": {
+    "description": "Ark UI parity with the supplied screen designs",
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      }
+    }
+  },
+  "boardAmountBelowMinimum": "Amount is too low. Minimum is {minimum} + fees",
+  "@boardAmountBelowMinimum": {
+    "description": "Ark UI parity with the supplied screen designs",
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      }
+    }
+  },
+  "boardFeeEstimate": "Fee estimate",
+  "@boardFeeEstimate": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardArkBalanceReceives": "Ark balance receives",
+  "@boardArkBalanceReceives": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardArkBoardingFee": "Ark boarding fee",
+  "@boardArkBoardingFee": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardEstimateUnavailable": "Fee estimate unavailable",
+  "@boardEstimateUnavailable": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardMinimumUnavailable": "Minimum amount unavailable",
+  "@boardMinimumUnavailable": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardStarted": "Boarding started",
+  "@boardStarted": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardStartedDescription": "Your on-chain bitcoin is moving into Ark. It will become spendable after the board completes.",
+  "@boardStartedDescription": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardFundingTransaction": "Funding transaction",
+  "@boardFundingTransaction": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardFundingId": "Funding ID",
+  "@boardFundingId": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardFundingOptions": "Funding transaction {id}. Show options",
+  "@boardFundingOptions": {
+    "description": "Ark UI parity with the supplied screen designs",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "boardFundingIdCopied": "Funding ID copied",
+  "@boardFundingIdCopied": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardFundingUnavailable": "Funding transaction unavailable",
+  "@boardFundingUnavailable": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardCopyFundingId": "Copy transaction ID",
+  "@boardCopyFundingId": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardCopyLink": "Copy link",
+  "@boardCopyLink": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardViewInExplorer": "View in explorer",
+  "@boardViewInExplorer": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardLinkCopied": "Link copied",
+  "@boardLinkCopied": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "boardVerificationPending": "Boarding status needs verification",
+  "@boardVerificationPending": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "exitHoldToStart": "Hold to start exit",
+  "@exitHoldToStart": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitKeepHolding": "Keep holding…",
+  "@exitKeepHolding": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitConfirmAccessible": "Confirm emergency exit",
+  "@exitConfirmAccessible": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitNoCancellation": "A started exit cannot be canceled from this app. Progress and claim remain explicit actions.",
+  "@exitNoCancellation": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitIntendedDestination": "Intended claim destination",
+  "@exitIntendedDestination": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitReserveFees": "Exit transaction fees are paid from the Ark on-chain reserve. Claim fees are reviewed separately before claiming.",
+  "@exitReserveFees": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitUnrolling": "Unrolling exit transactions",
+  "@exitUnrolling": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitDelay": "Exit delay",
+  "@exitDelay": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitManualClaim": "Review a claim when the exit is claimable. No automatic claim is authorized.",
+  "@exitManualClaim": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitYourExits": "Your exits",
+  "@exitYourExits": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitReviewTitle": "Review exit",
+  "@exitReviewTitle": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitClaimAction": "Claim",
+  "@exitClaimAction": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitDetailsTitle": "Exit details",
+  "@exitDetailsTitle": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations"
+  },
+  "exitConfirmedAtBlock": "Confirmed at block {height}",
+  "@exitConfirmedAtBlock": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "exitBlocksRemaining": "{count} blocks remaining",
+  "@exitBlocksRemaining": {
+    "description": "Emergency exit presentation over explicitly reviewed native operations",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "exitCanceled": "Exit canceled",
+  "@exitCanceled": {
+    "description": "Observed native exit canceled phase; does not authorize a claim"
+  },
+  "movementBoardedLabel": "Boarded",
+  "@movementBoardedLabel": {
+    "description": "Ark wallet and transfer parity presentation"
+  },
+  "movementReceivedLabel": "Received",
+  "@movementReceivedLabel": {
+    "description": "Ark wallet and transfer parity presentation"
+  },
+  "activityStartHint": "Receive bitcoin or board from your on-chain wallet to start using Ark.",
+  "@activityStartHint": {
+    "description": "Ark wallet and transfer parity presentation"
+  },
+  "pasteAddress": "Paste recipient’s address",
+  "@pasteAddress": {
+    "description": "Ark wallet and transfer parity presentation"
+  },
+  "inventoryHtlcSendExpiryDelta": "Outgoing HTLC expiry delta",
+  "@inventoryHtlcSendExpiryDelta": {
+    "description": "Observed native Ark server parameter; unknown without matching configured endpoint"
+  },
+  "inventoryHtlcExpiryDelta": "Lightning / Ark HTLC expiry difference",
+  "@inventoryHtlcExpiryDelta": {
+    "description": "Observed native Ark server parameter; unknown without matching configured endpoint"
+  },
+  "inventoryRoundNonceCount": "Nonces per round",
+  "@inventoryRoundNonceCount": {
+    "description": "Observed native Ark server parameter; unknown without matching configured endpoint"
   }
 }

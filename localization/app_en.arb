@@ -15748,5 +15748,17 @@
   "wizardNotificationsDescription": "Know when a payment arrives.",
   "@wizardNotificationsDescription": {
     "description": "Short line under the notifications switch of the wizard."
+  },
+  "swapReceiveExactAmountUnavailable": "The amount received is shown during review.",
+  "@swapReceiveExactAmountUnavailable": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "swapArkMaxUnavailable": "MAX is unavailable here. Enter an amount that leaves room for network fees.",
+  "@swapArkMaxUnavailable": {
+    "description": "Ark UI parity with the supplied screen designs"
+  },
+  "swapArkMaxUnavailableShort": "MAX unavailable: reserve network fees.",
+  "@swapArkMaxUnavailableShort": {
+    "description": "Ark wallet and transfer parity presentation"
   }
 }
