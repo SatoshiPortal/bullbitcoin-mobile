@@ -1,7 +1,14 @@
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/ui/ark_vtxos_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, BullButton, BullTopBar, ValueKey, GestureDetector;
+    show
+        BullBorderedTile,
+        BullButton,
+        BullTopBar,
+        ValueKey,
+        GestureDetector,
+        BullText,
+        BullTextRole;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -69,6 +76,32 @@ void main() {
     network: BitcoinNetwork.regtest,
     serverIdentity: 'other-server',
   );
+  testWidgets('retired VTXOs do not inflate the total or live count', (
+    tester,
+  ) async {
+    await paint(
+      tester,
+      view(
+        values: [
+          coin('live'),
+          coin('spent', state: ArkVtxoState.spent),
+          coin('exited', state: ArkVtxoState.exited),
+          coin('abandoned', state: ArkVtxoState.abandonedBoard),
+        ],
+      ),
+      [],
+    );
+    expect(find.text('1 VTXOs'), findsOneWidget);
+    final total = tester.widget<BullText>(
+      find.byWidgetPredicate(
+        (widget) => widget is BullText && widget.role == BullTextRole.headline,
+      ),
+    );
+    expect(total.text, '1,234 sats');
+    expect(find.text('4 VTXOs'), findsNothing);
+    expect(find.text('4,936 sats'), findsNothing);
+  });
+
   testWidgets('account replacement clears same-string selection', (
     tester,
   ) async {
