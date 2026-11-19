@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
-import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/presentation/receive_failure_l10n.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:bull_pricer/bull_pricer.dart';
+import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:primitives/primitives.dart';
 
 class ReceiveAmountInput extends StatefulWidget {
   const ReceiveAmountInput({super.key, required this.focusNode});
@@ -16,71 +16,68 @@ class ReceiveAmountInput extends StatefulWidget {
 
 class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
   late final TextEditingController _amountController;
-  late final VoidCallback _focusListener;
 
   @override
   void initState() {
     super.initState();
-    final bloc = context.read<ReceiveBloc>();
-    _amountController = TextEditingController(text: bloc.state.inputAmount);
-    _amountController.addListener(() {
-      final text = _amountController.text;
-      if (text != bloc.state.inputAmount) {
-        bloc.add(ReceiveAmountInputChanged(text));
-      }
-    });
-    _focusListener = () {
-      if (!widget.focusNode.hasFocus) {
-        // Reset selection to end without showing the cursor when the field
-        // loses focus.
-        final currentText = _amountController.text;
-        _amountController.value = TextEditingValue(
-          text: currentText,
-          selection: TextSelection.collapsed(offset: currentText.length),
-        );
-      }
-    };
-    widget.focusNode.addListener(_focusListener);
+    final sats = context.read<ReceiveBloc>().state.inputAmountSat;
+    _amountController = TextEditingController(text: sats == 0 ? '' : '$sats');
   }
 
   @override
   void dispose() {
     _amountController.dispose();
-    widget.focusNode.removeListener(_focusListener);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final inputCurrency = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.inputAmountCurrencyCode,
-    );
-    final availableInputCurrencies = context.select<ReceiveBloc, List<String>>(
-      (bloc) => bloc.state.inputAmountCurrencyCodes,
-    );
-    final amountEquivalent = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedAmountInputEquivalent,
-    );
-    final amountFailure = context.select<ReceiveBloc, ReceiveFailure?>(
-      (bloc) => bloc.state.hasAmountInputFailure ? bloc.state.failure : null,
-    );
-
+    final state = context.watch<ReceiveBloc>().state;
     return BlocListener<ReceiveBloc, ReceiveState>(
       listenWhen: (previous, current) =>
+          previous.type != current.type ||
+          previous.wallet?.id != current.wallet?.id ||
+          previous.inputAmount != current.inputAmount ||
           previous.inputAmountCurrencyCode != current.inputAmountCurrencyCode,
-      listener: (_, _) => _amountController.clear(),
-      child: PriceInput(
-        currency: inputCurrency,
-        amountEquivalent: amountEquivalent,
-        availableCurrencies: availableInputCurrencies,
+      listener: (_, state) {
+        final canonical = state.inputAmount.isEmpty
+            ? ''
+            : state.inputAmountSat.toString();
+        if (_amountController.text != canonical) {
+          _amountController.text = canonical;
+        }
+      },
+      child: BullAmountInput(
+        key: ValueKey((state.walletAdmitted, state.wallet?.id, state.type)),
+        canonicalUnit: BitcoinUnit.sats,
         amountController: _amountController,
         focusNode: widget.focusNode,
-        onCurrencyChanged: (currencyCode) {
-          context.read<ReceiveBloc>().add(
-            ReceiveAmountCurrencyChanged(currencyCode),
-          );
-        },
-        error: amountFailure?.toTranslated(context),
+        isLiquid: state.type == ReceiveType.liquid,
+        defaultCurrencyCode: state.fiatCurrencyCode,
+        initialCurrencyCode: state.amountConversion?.currencyCode,
+        currencies: [
+          for (final currency in SupportedCurrency.values)
+            BullAmountCurrency(
+              code: currency.code,
+              decimals: currency.decimals,
+              price: state.amountQuotes[currency]?.fiatAmount,
+              priceAt: state.amountQuotes[currency]?.fetchedAt,
+            ),
+        ],
+        onEntryChanged: (entry) => context.read<ReceiveBloc>().add(
+          ReceiveAmountEntryChanged(
+            sats: entry.sats,
+            currencyCode: entry.currencyCode,
+            text: entry.text,
+            rate: entry.price,
+            quotedAt: entry.priceAt,
+            isValid: entry.isValid,
+            isEdit: entry.isEdit,
+          ),
+        ),
+        error: state.hasAmountInputFailure
+            ? state.failure?.toTranslated(context)
+            : null,
       ),
     );
   }
