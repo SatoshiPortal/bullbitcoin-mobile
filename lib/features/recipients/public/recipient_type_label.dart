@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_type.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// The translated name of [recipientType].

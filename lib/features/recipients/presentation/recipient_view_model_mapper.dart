@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/recipients/domain/entities/recipient.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_details.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/recipient_details.dart';
 import 'package:bb_mobile/features/recipients/public/recipient_view_model.dart';
 
 extension RecipientViewModelMapper on Recipient {

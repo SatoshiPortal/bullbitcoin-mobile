@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/sell/domain/sell_failure.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/sell/domain/sell_payin_source_v2.dart';
-import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
+import 'package:bb_mobile/features/sell/presentation/sell_bloc.dart';
 import 'package:bb_mobile/features/sell/presentation/sell_failure_l10n.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';

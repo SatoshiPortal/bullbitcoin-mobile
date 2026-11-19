@@ -1,28 +1,28 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/features/settings/domain/settings_entity.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
+import 'package:bb_mobile/features/recipients/domain/repositories/recipients_repository.dart';
 import 'package:bb_mobile/features/recipients/data/interac_security_details_repository_impl.dart';
-import 'package:bb_mobile/features/recipients/domain/interac_security_details.dart';
+import 'package:bb_mobile/features/recipients/domain/entities/interac_security_details.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockRecipientsGateway extends Mock implements RecipientsGatewayPort {}
+class _MockRecipientsRepository extends Mock implements RecipientsRepository {}
 
 class _MockSettingsRepository extends Mock implements SettingsRepository {}
 
 void main() {
-  late _MockRecipientsGateway recipientsGateway;
+  late _MockRecipientsRepository recipientsRepository;
   late _MockSettingsRepository settingsRepository;
   late InteracSecurityDetailsRepositoryImpl repository;
   late InteracSecurityDetails details;
 
   setUp(() {
-    recipientsGateway = _MockRecipientsGateway();
+    recipientsRepository = _MockRecipientsRepository();
     settingsRepository = _MockSettingsRepository();
     repository = InteracSecurityDetailsRepositoryImpl(
-      recipientsGateway,
+      recipientsRepository,
       settingsRepository,
     );
     details = (InteracSecurityDetails.create(
@@ -42,7 +42,7 @@ void main() {
       ),
     );
     when(
-      () => recipientsGateway.updateInteracSecurityDetails(
+      () => recipientsRepository.updateInteracSecurityDetails(
         recipientId: any(named: 'recipientId'),
         email: any(named: 'email'),
         securityQuestion: any(named: 'securityQuestion'),
@@ -54,7 +54,7 @@ void main() {
       await repository.update(details),
       isA<Err<void, RecipientsFailure>>(),
     );
-    verifyZeroInteractions(recipientsGateway);
+    verifyZeroInteractions(recipientsRepository);
   });
 
   test('updates security details on mainnet', () async {
@@ -66,7 +66,7 @@ void main() {
       ),
     );
     when(
-      () => recipientsGateway.updateInteracSecurityDetails(
+      () => recipientsRepository.updateInteracSecurityDetails(
         recipientId: any(named: 'recipientId'),
         email: any(named: 'email'),
         securityQuestion: any(named: 'securityQuestion'),
@@ -79,7 +79,7 @@ void main() {
 
     expect(result, isA<Ok<void, RecipientsFailure>>());
     verify(
-      () => recipientsGateway.updateInteracSecurityDetails(
+      () => recipientsRepository.updateInteracSecurityDetails(
         recipientId: 'recipient-1',
         email: 'person@example.com',
         securityQuestion: 'Favourite city?',
@@ -98,7 +98,7 @@ void main() {
       ),
     );
     when(
-      () => recipientsGateway.updateInteracSecurityDetails(
+      () => recipientsRepository.updateInteracSecurityDetails(
         recipientId: any(named: 'recipientId'),
         email: any(named: 'email'),
         securityQuestion: any(named: 'securityQuestion'),
@@ -112,7 +112,7 @@ void main() {
     expect(result, isA<Ok<void, RecipientsFailure>>());
 
     verify(
-      () => recipientsGateway.updateInteracSecurityDetails(
+      () => recipientsRepository.updateInteracSecurityDetails(
         recipientId: 'recipient-1',
         email: 'person@example.com',
         securityQuestion: 'Favourite city?',
@@ -122,7 +122,7 @@ void main() {
     ).called(1);
   });
 
-  test('forwards a gateway failure untouched', () async {
+  test('forwards a repository failure untouched', () async {
     when(() => settingsRepository.fetch()).thenAnswer(
       (_) async => const SettingsEntity(
         environment: Environment.mainnet,
@@ -131,7 +131,7 @@ void main() {
       ),
     );
     when(
-      () => recipientsGateway.updateInteracSecurityDetails(
+      () => recipientsRepository.updateInteracSecurityDetails(
         recipientId: any(named: 'recipientId'),
         email: any(named: 'email'),
         securityQuestion: any(named: 'securityQuestion'),
@@ -144,7 +144,7 @@ void main() {
 
     switch (result) {
       case Ok():
-        fail('a gateway failure must not be reported as an update');
+        fail('a repository failure must not be reported as an update');
       case Err(:final failure):
         expect(failure, isA<RecipientsNetworkFailure>());
         expect(failure.logMessage, isNull);
@@ -165,7 +165,7 @@ void main() {
         expect(failure.logMessage, isNull);
     }
     verifyNever(
-      () => recipientsGateway.updateInteracSecurityDetails(
+      () => recipientsRepository.updateInteracSecurityDetails(
         recipientId: any(named: 'recipientId'),
         email: any(named: 'email'),
         securityQuestion: any(named: 'securityQuestion'),
