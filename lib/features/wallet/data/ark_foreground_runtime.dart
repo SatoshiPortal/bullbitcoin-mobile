@@ -175,6 +175,76 @@ Future<Result<void, ArkFailure>> prepareArkCustodyReferences(
   }
 }
 
+/// Local Send admission over startup's existing custody inventory only.
+/// No runtime, native client, provisioning or maintenance is started here.
+Future<Result<List<ArkAccountId>, ArkFailure>> listLocalArkRoutingAccounts(
+  GetIt locator, {
+  required BitcoinNetwork network,
+  required Uri arkUrl,
+  required Uri primaryEsploraUrl,
+  ArkPreferencesRepository? preferences,
+}) async {
+  if (!NetworkCapabilities.supports(network, NetworkCapability.ark)) {
+    return const Err(ArkNetworkUnavailableFailure());
+  }
+  // A paste never creates an owner or retries opening its custody registry.
+  if (!locator.isRegistered<_RegistryReferenceOwner>()) {
+    return const Err(ArkFeatureStorageFailure());
+  }
+  final owner = locator<_RegistryReferenceOwner>();
+  final registry = owner.registry;
+  if (registry == null) return const Err(ArkFeatureStorageFailure());
+  final selection = _WalletArkSelection(
+    locator<SettingsRepository>(),
+    locator<WalletMetadataDatasource>(),
+    arkUrl,
+    primaryEsploraUrl,
+  );
+  final ArkAccountConfig config;
+  switch (await selection.selectedAccount()) {
+    case Err(:final failure):
+      return Err(failure);
+    case Ok(:final value):
+      config = value;
+  }
+  if (config.id.network != network) {
+    return const Err(ArkNetworkUnavailableFailure());
+  }
+  final List<ArkAccountConfig> accounts;
+  switch (await registry.list()) {
+    case Err(:final failure):
+      return Err(failure);
+    case Ok(:final value):
+      accounts = value;
+  }
+  final matching = accounts.where((entry) => entry.id == config.id).toList();
+  if (matching.isEmpty) return const Ok([]);
+  if (matching.length != 1 || !_sameArkConfiguration(matching.single, config)) {
+    return const Err(ArkAccountRecoveryFailure());
+  }
+  final enabled =
+      await (preferences ?? SharedPreferencesArkPreferencesRepository())
+          .isEnabled(config.id);
+  final current = await selection.selectedAccount();
+  if (!identical(owner.registry, registry) ||
+      current is! Ok<ArkAccountConfig, ArkFailure> ||
+      !_sameArkConfiguration(current.value, config)) {
+    return const Err(ArkServiceUnavailableFailure());
+  }
+  return switch (enabled) {
+    Err(:final failure) => Err(failure),
+    Ok(value: true) => Ok(List.unmodifiable([config.id])),
+    Ok() => const Ok([]),
+  };
+}
+
+bool _sameArkConfiguration(ArkAccountConfig a, ArkAccountConfig b) =>
+    a.id == b.id &&
+    a.arkUrl == b.arkUrl &&
+    a.primaryEsploraUrl == b.primaryEsploraUrl &&
+    a.fallbackEsploraUrl == b.fallbackEsploraUrl &&
+    a.renewalThresholdBlocks == b.renewalThresholdBlocks;
+
 /// Open the foreground composition after wallet services are registered.
 ///
 /// [initializeNew] is an explicit host authorization for a controlled first

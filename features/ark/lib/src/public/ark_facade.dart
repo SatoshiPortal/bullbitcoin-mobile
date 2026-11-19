@@ -223,3 +223,14 @@ final class ArkFacade {
     ArkReceiveRequest request,
   ) => _receive.execute(account, request);
 }
+
+/// Local routing inventory resolved against the host's current account context.
+final class ArkAddressRoutingFacade {
+  final Future<Result<List<ArkAccountId>, ArkFailure>> Function(BitcoinNetwork)
+  _accounts;
+  const ArkAddressRoutingFacade(this._accounts);
+  @useResult
+  Future<Result<List<ArkAccountId>, ArkFailure>> listEnabledAccounts(
+    BitcoinNetwork network,
+  ) => _accounts(network);
+}

@@ -10,11 +10,15 @@ final class SendArkRequest {
     : accounts = List.unmodifiable(accounts);
 }
 
-/// Pure classification followed by local Ark account admission. No native
-/// wallet opens for a paste. Existing Bitcoin/BIP21 parsing remains independent.
+/// Pure classification precedes local account admission without opening a
+/// native wallet or maintenance. Ordinary Bitcoin/BIP21 parsing is independent.
 final class RecognizeArkAddressUsecase {
   final ArkFacade? _ark;
-  const RecognizeArkAddressUsecase(this._ark);
+  final ArkAddressRoutingFacade? _routing;
+  const RecognizeArkAddressUsecase(this._ark) : _routing = null;
+  const RecognizeArkAddressUsecase.resolving(ArkAddressRoutingFacade routing)
+    : _routing = routing,
+      _ark = null;
   Future<Result<SendArkRequest?, SendFailure>> execute({
     required String input,
     required Network network,
@@ -25,8 +29,16 @@ final class RecognizeArkAddressUsecase {
     if (!recognizes(value, network)) return const Ok(null);
     if (restricted) return const Err(SendArkRouteUnavailableFailure());
     final ark = _ark;
-    if (ark == null) return const Err(SendArkRouteUnavailableFailure());
-    switch (await ark.listEnabledAccounts(arkNetwork)) {
+    final routing = _routing;
+    final Future<Result<List<ArkAccountId>, ArkFailure>> accounts;
+    if (routing != null) {
+      accounts = routing.listEnabledAccounts(arkNetwork);
+    } else if (ark != null) {
+      accounts = ark.listEnabledAccounts(arkNetwork);
+    } else {
+      return const Err(SendArkRouteUnavailableFailure());
+    }
+    switch (await accounts) {
       case Err():
         return const Err(SendArkRouteUnavailableFailure());
       case Ok(value: final accounts) when accounts.isEmpty:

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:background_tasks/background_tasks.dart';
-import 'package:ark/ark.dart' show ArkSnapshot;
+import 'package:ark/ark.dart' show ArkAccountId, ArkSnapshot;
 
 import 'package:bb_mobile/core/fees/domain/repositories/fees_repository.dart';
 import 'package:bb_mobile/features/wallet/data/ark_foreground_runtime.dart';
@@ -13,7 +13,11 @@ import 'package:secrets/secrets.dart';
 import 'package:bull_ark/ark_setup.dart' show ArkPreferencesRepository;
 import 'package:bull_ark/ark_ui_setup.dart';
 import 'package:bull_ark/bull_ark.dart'
-    show ArkFailure, ArkServiceUnavailableFailure, ArkTransferFacade;
+    show
+        ArkFailure,
+        ArkServiceUnavailableFailure,
+        ArkTransferFacade,
+        ArkAddressRoutingFacade;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -118,6 +122,9 @@ final class ArkForegroundHost {
         };
       }),
     );
+    locator.registerSingleton<ArkAddressRoutingFacade>(
+      ArkAddressRoutingFacade(host.listEnabledAccounts),
+    );
     await host.prepare();
   }
 
@@ -136,6 +143,25 @@ final class ArkForegroundHost {
         await prepareArkMaintenanceSchedule(_locator, dispatcher)) {
       await current();
     }
+  }
+
+  /// Reads the existing local routing inventory without opening a runtime.
+  Future<Result<List<ArkAccountId>, ArkFailure>> listEnabledAccounts(
+    BitcoinNetwork network,
+  ) async {
+    final generation = _generation;
+    if (_closed) return const Err(ArkServiceUnavailableFailure());
+    final result = await listLocalArkRoutingAccounts(
+      _locator,
+      network: network,
+      arkUrl: _ark,
+      primaryEsploraUrl: _esplora,
+      preferences: _preferences,
+    );
+    if (_closed || generation != _generation) {
+      return const Err(ArkServiceUnavailableFailure());
+    }
+    return result;
   }
 
   /// The runtime matching the current selection, opening one if needed.

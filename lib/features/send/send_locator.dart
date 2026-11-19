@@ -1,4 +1,4 @@
-import 'package:bull_ark/bull_ark.dart' show ArkFacade;
+import 'package:bull_ark/bull_ark.dart' show ArkAddressRoutingFacade;
 
 import 'domain/usecases/recognize_ark_address_usecase.dart';
 import 'presentation/send_ark_cubit.dart';
@@ -257,8 +257,10 @@ class SendLocator {
   static void registerBlocs(GetIt locator) {
     locator.registerFactory<SendArkCubit>(
       () => SendArkCubit(
-        locator.isRegistered<ArkFacade>()
-            ? RecognizeArkAddressUsecase(locator<ArkFacade>())
+        locator.isRegistered<ArkAddressRoutingFacade>()
+            ? RecognizeArkAddressUsecase.resolving(
+                locator<ArkAddressRoutingFacade>(),
+              )
             : null,
       ),
     );
