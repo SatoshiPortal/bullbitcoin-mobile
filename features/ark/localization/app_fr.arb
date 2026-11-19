@@ -289,5 +289,6 @@
   "pasteAddress": "Coller l’adresse du destinataire",
   "inventoryHtlcSendExpiryDelta": "Délai d’expiration des HTLC sortants",
   "inventoryHtlcExpiryDelta": "Écart d’expiration des HTLC Lightning / Ark",
-  "inventoryRoundNonceCount": "Nonces par round"
+  "inventoryRoundNonceCount": "Nonces par round",
+  "inventoryBlockHeight": "Bloc {height}"
 }

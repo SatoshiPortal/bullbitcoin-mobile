@@ -974,5 +974,14 @@
   "inventoryRoundNonceCount": "Nonces per round",
   "@inventoryRoundNonceCount": {
     "description": "Observed native Ark server parameter; unknown without matching configured endpoint"
+  },
+  "inventoryBlockHeight": "Block {height}",
+  "@inventoryBlockHeight": {
+    "description": "Absolute expiry block height, distinct from a remaining quantity of blocks",
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
   }
 }
