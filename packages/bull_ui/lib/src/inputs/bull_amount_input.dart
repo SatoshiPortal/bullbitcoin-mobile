@@ -35,6 +35,7 @@ class BullAmountInput extends StatefulWidget {
     this.maxLoading = false,
     this.isLiquid = false,
     this.compact = false,
+    this.inCard = false,
     this.showControls = true,
   });
 
@@ -53,6 +54,10 @@ class BullAmountInput extends StatefulWidget {
   final bool maxLoading;
   final bool isLiquid;
   final bool compact;
+
+  /// Inside a card (Swap): headline size, and the error line takes room only
+  /// while there is an error.
+  final bool inCard;
   final bool showControls;
 
   @override
@@ -583,7 +588,11 @@ class _BullAmountInputState extends State<BullAmountInput> {
   Widget _numberRow(BuildContext context, String equivalent) {
     final l10n = BullUiLocalizations.of(context);
     final base =
-        (widget.compact ? context.bullType.body : context.bullType.display)
+        (widget.compact
+                ? context.bullType.body
+                : widget.inCard
+                ? context.bullType.headline
+                : context.bullType.display)
             .copyWith(fontWeight: FontWeight.w500, color: context.bull.text);
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -757,7 +766,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (!widget.compact || error != null)
+          if ((!widget.compact && !widget.inCard) || error != null)
             ExcludeSemantics(
               excluding: error == null,
               child: Semantics(
@@ -776,7 +785,8 @@ class _BullAmountInputState extends State<BullAmountInput> {
                 ),
               ),
             ),
-          if (!widget.compact) const SizedBox(height: BullSpacing.xs),
+          if (!widget.compact && (!widget.inCard || error != null))
+            const SizedBox(height: BullSpacing.xs),
           if (widget.compact)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
