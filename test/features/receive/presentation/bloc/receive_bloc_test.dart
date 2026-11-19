@@ -411,6 +411,37 @@ void main() {
     await payjoinMinAmountChangeController.close();
   });
 
+  test(
+    'a preset Bitcoin receive still discovers the chain wallet choices',
+    () async {
+      final first = _testWallet(origin: 'first');
+      final second = _testWallet(origin: 'second');
+      when(() => getWallets.execute(onlyBitcoin: true))
+          .thenAnswer((_) async => Ok([first, second]));
+      final bloc = buildBloc(wallet: first);
+      addTearDown(bloc.close);
+      bloc.add(ReceiveBitcoinStarted(first));
+      await pumpEventQueue();
+      expect(bloc.state.wallets.map((wallet) => wallet.id), [
+        'first',
+        'second',
+      ]);
+    },
+  );
+
+  test(
+    'an explicit receive wallet choice overrides the entry wallet',
+    () async {
+      final first = _testWallet(origin: 'first');
+      final second = _testWallet(origin: 'second');
+      final bloc = buildBloc(wallet: first);
+      addTearDown(bloc.close);
+      bloc.add(ReceiveBitcoinStarted(second));
+      await pumpEventQueue();
+      expect(bloc.state.wallet?.id, 'second');
+    },
+  );
+
   test('fiat requests above the protocol limit cannot become a QR', () async {
     final bloc = buildBloc();
     addTearDown(bloc.close);
