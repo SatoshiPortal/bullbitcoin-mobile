@@ -10,10 +10,12 @@ enum _VtxoFilter { all, spendable, locked, expired }
 class ArkVtxosScreen extends StatefulWidget {
   final ArkSnapshot snapshot;
   final ValueChanged<List<String>> onRenew;
+  final VoidCallback? onBoard;
   const ArkVtxosScreen({
     super.key,
     required this.snapshot,
     required this.onRenew,
+    this.onBoard,
   });
   @override
   State<ArkVtxosScreen> createState() => _ArkVtxosScreenState();
@@ -77,6 +79,17 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
     if (widget.snapshot.account != account) return;
     final ids = _selected.intersection(_eligible(widget.snapshot));
     if (ids.isNotEmpty) widget.onRenew(List.unmodifiable(ids));
+  }
+
+  void _board(ArkAccountId account, VoidCallback capability) {
+    if (!mounted ||
+        widget.snapshot.account != account ||
+        !identical(widget.onBoard, capability) ||
+        !_current(widget.snapshot) ||
+        widget.snapshot.vtxos.isNotEmpty) {
+      return;
+    }
+    capability();
   }
 
   bool _expired(ArkVtxo vtxo) {
@@ -195,6 +208,7 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
   Widget build(BuildContext context) {
     final l10n = arkLocalizationsOf(context);
     final snapshot = widget.snapshot;
+    final board = widget.onBoard;
     final eligible = _eligible(snapshot);
     final selection = _selected.intersection(eligible);
     final details = _uniqueVtxo(_detailsId);
@@ -266,6 +280,17 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                     textAlign: TextAlign.center,
                                     color: context.bull.textMuted,
                                   ),
+                                  if (board != null) ...[
+                                    const Gap(BullSpacing.lg),
+                                    BullButton.big(
+                                      label: l10n.boardToArk,
+                                      onPressed: () =>
+                                          _board(snapshot.account, board),
+                                      outlined: true,
+                                      bgColor: context.bull.surface,
+                                      textColor: context.bull.text,
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -428,16 +453,17 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                       ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(BullSpacing.md),
-              child: BullButton.big(
-                label: l10n.renew,
-                onPressed: () => _review(snapshot.account),
-                disabled: selection.isEmpty,
-                bgColor: context.bull.text,
-                textColor: context.bull.background,
+            if (snapshot.vtxos.isNotEmpty || !_current(snapshot))
+              Padding(
+                padding: const EdgeInsets.all(BullSpacing.md),
+                child: BullButton.big(
+                  label: l10n.renew,
+                  onPressed: () => _review(snapshot.account),
+                  disabled: selection.isEmpty,
+                  bgColor: context.bull.text,
+                  textColor: context.bull.background,
+                ),
               ),
-            ),
           ],
         ),
       ),

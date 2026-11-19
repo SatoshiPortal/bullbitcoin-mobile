@@ -556,9 +556,22 @@ class _ArkPageState extends State<_ArkPage> {
     if (!_live(owner) || snapshot.account != widget.feature._config.id) {
       return const ArkUnavailableScreen();
     }
+    final publication = owner.state;
     return switch (widget.kind) {
       _Kind.vtxos => ArkVtxosScreen(
         snapshot: snapshot,
+        onBoard:
+            _enabled &&
+                publication is ArkObserved &&
+                identical(publication.snapshot, snapshot)
+            ? () {
+                if (_live(owner) &&
+                    _enabled &&
+                    identical(owner.state, publication)) {
+                  _open(owner, _Kind.board);
+                }
+              }
+            : null,
         onRenew: (ids) {
           if (_live(owner)) {
             _open(
