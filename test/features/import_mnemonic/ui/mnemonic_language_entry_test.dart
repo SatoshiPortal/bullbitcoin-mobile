@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/import_mnemonic/ui/widgets/mnemonic_widget.da
 import 'package:bb_mobile/localizations.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bull_ui/bull_ui.dart'
-    show BullMnemonicKeyboard, BullSecretTextInput, BullSegmented;
+    show BullButton, BullMnemonicKeyboard, BullSecretTextInput, BullSegmented;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:unorm_dart/unorm_dart.dart';
@@ -350,7 +350,7 @@ void main() {
     expect(submitted, isNull);
     // The ambiguity notice offers both readings; choosing one keeps the words.
     final french = find.widgetWithText(
-      TextButton,
+      BullButton,
       loc(tester).mnemonicLanguageName('french'),
     );
     await tester.ensureVisible(french);
@@ -495,7 +495,7 @@ void main() {
       // French is already current: the key changes nothing, the notice's
       // reading answers the new phrase.
       final french = find.widgetWithText(
-        TextButton,
+        BullButton,
         loc(tester).mnemonicLanguageName('french'),
       );
       await tester.ensureVisible(french);
