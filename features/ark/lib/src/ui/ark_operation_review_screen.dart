@@ -36,6 +36,8 @@ class ArkOperationReviewScreen extends StatefulWidget {
 
 class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
   late StreamSubscription<ArkOperationState> _subscription;
+  Timer? _reviewExpiry;
+  ArkOperationReview? _expiredReview;
   bool _owns(ArkOperationCubit owner, ArkAccountId account) =>
       mounted &&
       !owner.isClosed &&
@@ -50,8 +52,47 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     final owner = widget.cubit;
     final account = owner.account;
     _subscription = owner.stream.listen((_) {
-      if (_owns(owner, account)) setState(() {});
-    });
+      if (_owns(owner, account)) {
+        _watchExpiry(owner);
+        setState(() {});
+      }
+    }, onDone: () => _reviewExpiry?.cancel());
+    _watchExpiry(owner);
+  }
+
+  void _watchExpiry(ArkOperationCubit owner) {
+    _reviewExpiry?.cancel();
+    _expiredReview = null;
+    final review = owner.state;
+    if (review is! ArkOperationReview) return;
+    final remaining = review.quote.validUntil.difference(
+      DateTime.now().toUtc(),
+    );
+    if (remaining <= Duration.zero) {
+      _expiredReview = review;
+    } else {
+      _reviewExpiry = Timer(remaining, () {
+        if (_current(owner, owner.account, review)) {
+          setState(() => _expiredReview = review);
+        }
+      });
+    }
+  }
+
+  bool _reviewExpired(ArkOperationReview review) =>
+      identical(_expiredReview, review) ||
+      !DateTime.now().toUtc().isBefore(review.quote.validUntil);
+
+  void _reviewAgain(
+    ArkOperationCubit owner,
+    ArkAccountId account,
+    ArkOperationReview review,
+  ) {
+    if (_current(owner, account, review) &&
+        _reviewExpired(review) &&
+        ModalRoute.of(context)?.isCurrent == true) {
+      unawaited(owner.load());
+    }
   }
 
   @override
@@ -71,6 +112,7 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
 
   @override
   void dispose() {
+    _reviewExpiry?.cancel();
     unawaited(_subscription.cancel());
     super.dispose();
   }
@@ -114,7 +156,7 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
         !identical(current.quote, rendered.quote) ||
         current.quote.account != account ||
         !_hasReviewFacts(owner, current.quote) ||
-        !DateTime.now().toUtc().isBefore(current.quote.validUntil) ||
+        _reviewExpired(current) ||
         ModalRoute.of(context)?.isCurrent != true) {
       return;
     }
@@ -241,6 +283,15 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                               if (reviewed.quote.account != account)
                                 BullInfoBar(message: l10n.unavailable),
                               if (reviewed.quote.account == account) ...[
+                                if (_reviewExpired(reviewed)) ...[
+                                  BullInfoBar(message: l10n.expired),
+                                  _button(
+                                    context,
+                                    l10n.review,
+                                    () =>
+                                        _reviewAgain(owner, account, reviewed),
+                                  ),
+                                ],
                                 if (_exitProgress(owner, reviewed.quote) ||
                                     owner.request
                                         is ArkEmergencyExitQuoteRequest)
@@ -397,15 +448,12 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                               ? ArkExitHoldButton(
                                   key: ValueKey((owner, reviewed)),
                                   reviewIdentity: (owner, reviewed),
-                                  enabled: _hasReviewFacts(
-                                    owner,
-                                    reviewed.quote,
-                                  ),
+                                  enabled:
+                                      !_reviewExpired(reviewed) &&
+                                      _hasReviewFacts(owner, reviewed.quote),
                                   current: () =>
                                       _current(owner, account, reviewed) &&
-                                      DateTime.now().toUtc().isBefore(
-                                        reviewed.quote.validUntil,
-                                      ),
+                                      !_reviewExpired(reviewed),
                                   onConfirm: () =>
                                       _confirm(owner, account, reviewed),
                                 )
@@ -414,10 +462,9 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                                   l10n.confirm,
                                   () => _confirm(owner, account, reviewed),
                                   primary: true,
-                                  disabled: !_hasReviewFacts(
-                                    owner,
-                                    reviewed.quote,
-                                  ),
+                                  disabled:
+                                      _reviewExpired(reviewed) ||
+                                      !_hasReviewFacts(owner, reviewed.quote),
                                 ),
                         ),
                   ],
