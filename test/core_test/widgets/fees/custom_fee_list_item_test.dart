@@ -274,23 +274,20 @@ void main() {
       expect(previewCount, 0);
     });
 
-    testWidgets('the sat/vByte rate field caps input at 2 decimals', (
+    testWidgets('the rate rejects a paste that would change its value', (
       tester,
     ) async {
-      // The field used to allow 8 decimals (BTC-derived): a user could type
-      // "0.12345678", the model snapped it to the nearest sat/kwu, and the
-      // prefill re-rendered it as "0.12" — typed ≠ stored ≠ shown. The
-      // 2-decimal cap keeps the field consistent with _formatForInput.
       NetworkFee? armed;
       await pumpTile(tester, onArm: (fee) => armed = fee);
-
+      await tester.enterText(find.byType(TextFormField), '0.12');
+      await tester.pump();
+      final before = armed;
       await tester.enterText(find.byType(TextFormField), '0.12345678');
       await tester.pump();
-
       final field = tester.widget<TextFormField>(find.byType(TextFormField));
-      expect(field.controller!.text, '0.12');
-      // What was armed matches what's shown — no hidden extra precision.
-      expect((armed! as RelativeFee).satPerVbyte, closeTo(0.12, 0.003));
+      expect(field.controller?.text, '0.12');
+      expect(armed, before);
+      expect(armed, isA<RelativeFee>());
     });
   });
 
@@ -314,7 +311,7 @@ void main() {
       'renders the real fee verbatim when previewFeeSat is supplied',
       (tester) async {
         await pumpTile(tester, previewFeeSat: 29);
-        await tester.enterText(find.byType(TextFormField), '0.132');
+        await tester.enterText(find.byType(TextFormField), '0.13');
         await tester.pumpAndSettle();
         expect(find.textContaining('~ 29 sats'), findsAtLeastNWidgets(1));
       },
