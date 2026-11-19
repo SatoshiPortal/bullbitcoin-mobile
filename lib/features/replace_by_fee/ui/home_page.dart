@@ -122,11 +122,9 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
                       const Gap(16),
                     ],
 
-                    BullButton.big(
+                    BullButton.primary(
                       label: context.loc.replaceByFeeBroadcastButton,
                       onPressed: () => cubit.broadcast(),
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
                     ),
                   ],
                 ),

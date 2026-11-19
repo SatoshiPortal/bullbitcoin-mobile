@@ -67,12 +67,10 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               style: context.bullType.body.copyWith(color: context.bull.error),
             ),
             const Gap(BullSpacing.md),
-            BullButton.big(
+            BullButton.secondary(
               label: context.loc.retry,
               onPressed: () =>
                   context.read<AccountInfoCubit>().loadAccountInfo(),
-              bgColor: context.bull.onSurface,
-              textColor: context.bull.surface,
             ),
           ],
         ),

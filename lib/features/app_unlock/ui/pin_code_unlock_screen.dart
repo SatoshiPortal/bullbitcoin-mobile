@@ -209,17 +209,20 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
             child: BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
               selector: (state) => state.canSubmit,
               builder: (context, canSubmit) {
-                return BullButton.big(
+                return BullButton.primary(
                   label: context.loc.appUnlockButton,
                   textStyle: context.bullType.subtitle.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
-                  bgColor: context.appColors.primary,
-                  disabled: !canSubmit,
-                  onPressed: () => context.read<AppUnlockBloc>().add(
-                    const AppUnlockSubmitted(),
-                  ),
-                  textColor: context.appColors.onPrimary,
+                  onPressed: (!canSubmit)
+                      ? null
+                      : () {
+                          if (canSubmit) {
+                            context.read<AppUnlockBloc>().add(
+                              const AppUnlockSubmitted(),
+                            );
+                          }
+                        },
                 );
               },
             ),

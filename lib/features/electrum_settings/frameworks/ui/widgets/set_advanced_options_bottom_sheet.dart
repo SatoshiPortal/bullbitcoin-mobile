@@ -9,6 +9,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullBottomSheet,
         BullButton,
         BullInfoCard,
@@ -479,47 +480,48 @@ class _SetAdvancedOptionsBottomSheetState
                           Row(
                             children: [
                               Expanded(
-                                child: BullButton.small(
+                                child: BullButton.secondary(
+                                  size: BullButtonSize.small,
                                   label: context.loc.electrumReset,
-                                  disabled: state.isSavingAdvancedOptions,
-                                  onPressed: () {
-                                    _formKey.currentState!.reset();
-                                    final options = context
-                                        .read<ElectrumSettingsBloc>()
-                                        .state
-                                        .advancedOptions;
-                                    // Reset with the current saved options
-                                    _stopGap.text =
-                                        options?.stopGap.toString() ?? '';
-                                    _timeout.text =
-                                        options?.timeout.toString() ?? '';
-                                    _retry.text =
-                                        options?.retry.toString() ?? '';
-                                    setState(
-                                      () => _validateDomain =
-                                          options?.validateDomain ?? true,
-                                    );
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                  bgColor: context.appColors.transparent,
-                                  outlined: true,
+                                  onPressed: (state.isSavingAdvancedOptions)
+                                      ? null
+                                      : () {
+                                          final form = _formKey.currentState;
+                                          if (form == null) return;
+                                          form.reset();
+                                          final options = context
+                                              .read<ElectrumSettingsBloc>()
+                                              .state
+                                              .advancedOptions;
+                                          // Reset with the current saved options
+                                          _stopGap.text =
+                                              options?.stopGap.toString() ?? '';
+                                          _timeout.text =
+                                              options?.timeout.toString() ?? '';
+                                          _retry.text =
+                                              options?.retry.toString() ?? '';
+                                          setState(
+                                            () => _validateDomain =
+                                                options?.validateDomain ?? true,
+                                          );
+                                          FocusScope.of(context).unfocus();
+                                        },
                                   textStyle: context.bullType.subtitle.copyWith(
                                     fontWeight: FontWeight.w700,
                                   ),
-                                  textColor: context.appColors.onSurface,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: BullButton.small(
+                                child: BullButton.primary(
+                                  size: BullButtonSize.small,
                                   label: context.loc.electrumConfirm,
-                                  disabled: state.isSavingAdvancedOptions,
-                                  onPressed: _confirm,
-                                  bgColor: context.appColors.onSurface,
+                                  onPressed: (state.isSavingAdvancedOptions)
+                                      ? null
+                                      : _confirm,
                                   textStyle: context.bullType.subtitle.copyWith(
                                     fontWeight: FontWeight.w700,
                                   ),
-                                  textColor: context.appColors.surface,
                                 ),
                               ),
                             ],

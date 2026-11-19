@@ -38,7 +38,7 @@ Future<void> _pumpInput(WidgetTester tester, TransferBloc bloc) =>
 void main() {
   setUpAll(BullSdk.init);
   tearDownAll(BullSdk.dispose);
-  testWidgets('offers named secondary Scan and Paste buttons at 44 dp', (
+  testWidgets('offers named secondary Scan and Paste buttons at 48 dp', (
     tester,
   ) async {
     final bloc = _Transfer();
@@ -54,7 +54,7 @@ void main() {
         (widget) => widget is BullButton && widget.label == label,
       );
       expect(button, findsOneWidget, reason: label);
-      expect(tester.getSize(button).height, 44);
+      expect(tester.getSize(button).height, 48);
     }
     await tester.pumpWidget(const SizedBox.shrink());
     await bloc.close();

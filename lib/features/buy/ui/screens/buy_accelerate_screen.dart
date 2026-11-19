@@ -133,25 +133,22 @@ class BuyAccelerateScreen extends StatelessWidget {
                 if (isAcceleratingOrder)
                   const Center(child: BullLoader.small())
                 else
-                  BullButton.big(
+                  BullButton.secondary(
                     label: context.loc.buyWaitForFreeWithdrawal,
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop();
                     },
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.secondary,
                   ),
                 const Gap(16),
-                BullButton.big(
+                BullButton.primary(
                   label: context.loc.buyConfirmExpress,
-                  disabled: isAcceleratingOrder || !hasOrder,
-                  onPressed: () {
-                    context.read<BuyBloc>().add(
-                      const BuyEvent.accelerateTransactionConfirmed(),
-                    );
-                  },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
+                  onPressed: (isAcceleratingOrder || !hasOrder)
+                      ? null
+                      : () {
+                          context.read<BuyBloc>().add(
+                            const BuyEvent.accelerateTransactionConfirmed(),
+                          );
+                        },
                 ),
               ],
             ),

@@ -183,20 +183,19 @@ class BuyConfirmScreen extends StatelessWidget {
                     textStyle: context.bullType.body,
                   )
                 else
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.buyConfirmPurchase,
-                    disabled:
-                        buyOrder == null ||
-                        isConfirmingOrder ||
-                        isRefreshingOrder ||
-                        isLoading,
-                    onPressed: () {
-                      context.read<BuyBloc>().add(
-                        const BuyEvent.confirmOrder(),
-                      );
-                    },
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
+                    onPressed:
+                        (buyOrder == null ||
+                            isConfirmingOrder ||
+                            isRefreshingOrder ||
+                            isLoading)
+                        ? null
+                        : () {
+                            context.read<BuyBloc>().add(
+                              const BuyEvent.confirmOrder(),
+                            );
+                          },
                   ),
               ],
             ),

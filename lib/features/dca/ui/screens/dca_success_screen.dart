@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -31,11 +30,9 @@ class DcaSuccessScreen extends StatelessWidget {
         DcaBuyFrequency.monthly => context.loc.dcaSuccessMessageMonthly(amount),
       }),
       actions: [
-        BullButton.big(
+        BullButton.secondary(
           label: context.loc.dcaBackToHomeButton,
           onPressed: goHome,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
         ),
       ],
     );

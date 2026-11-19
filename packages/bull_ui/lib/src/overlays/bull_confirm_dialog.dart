@@ -7,8 +7,8 @@ import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Yes/no confirmation in the kit's [BullDialog] shell: a title, a message and
-/// a cancel/confirm button pair. A [destructive] confirmation (delete, stop)
-/// paints its confirm button with the theme's error colour.
+/// a secondary cancel button and a primary confirmation button.
+/// [destructive] remains accepted for compatibility during migration.
 ///
 /// The kit has no localisation, so every label comes translated from the
 /// caller.
@@ -86,21 +86,18 @@ class BullConfirmDialog extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: BullButton.small(
+                child: BullButton.secondary(
+                  size: BullButtonSize.small,
                   label: cancelLabel,
                   onPressed: () => Navigator.of(context).pop(false),
-                  bgColor: colors.transparent,
-                  outlined: true,
-                  textColor: colors.secondary,
                 ),
               ),
               const Gap(BullSpacing.sm),
               Expanded(
-                child: BullButton.small(
+                child: BullButton.primary(
+                  size: BullButtonSize.small,
                   label: confirmLabel,
                   onPressed: () => Navigator.of(context).pop(true),
-                  bgColor: destructive ? colors.error : colors.primary,
-                  textColor: destructive ? colors.onError : colors.onPrimary,
                 ),
               ),
             ],

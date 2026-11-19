@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
@@ -13,7 +12,7 @@ import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart'
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullBorderedTile, Gap, BullTypographyX;
+    show BullButton, BullBorderedTile, Gap, BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatefulWidget {
@@ -197,23 +196,22 @@ class ReceiveAmountContinueButton extends StatelessWidget {
         16,
         16 + MediaQuery.of(context).padding.bottom,
       ),
-      child: BBButton.big(
+      child: BullButton.primary(
         label: context.loc.receiveContinue,
-        onPressed: () {
-          final bloc = context.read<ReceiveBloc>();
-          if (!bloc.state.canConfirmAmount) return;
-          if (canReuseConfirmedReceiveDetails(bloc.state)) {
-            // If an amount was already confirmed previously and the user didn't
-            // change it, we don't need to confirm it again.
-            onContinueNavigation?.call() ?? context.pop();
-          } else {
-            bloc.add(const ReceiveAmountConfirmed());
-          }
-        },
-        disabled:
-            !state.canConfirmAmount || creatingSwap || hasAmountInputFailure,
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
+        onPressed:
+            (!state.canConfirmAmount || creatingSwap || hasAmountInputFailure)
+            ? null
+            : () {
+                final bloc = context.read<ReceiveBloc>();
+                if (!bloc.state.canConfirmAmount) return;
+                if (canReuseConfirmedReceiveDetails(bloc.state)) {
+                  // If an amount was already confirmed previously and the user didn't
+                  // change it, we don't need to confirm it again.
+                  onContinueNavigation?.call() ?? context.pop();
+                } else {
+                  bloc.add(const ReceiveAmountConfirmed());
+                }
+              },
       ),
     );
   }

@@ -7,11 +7,11 @@ import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/tor_p
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAdvancedOptionsLink,
         BullFadingLinearProgress,
         BullPullableBody,
         BullSegmented,
-        Gap,
-        BullTypographyX;
+        Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -80,16 +80,9 @@ class ElectrumSettingsScreen extends StatelessWidget {
           ],
           bottomChild: Padding(
             padding: const EdgeInsets.all(16),
-            child: TextButton(
+            child: BullAdvancedOptionsLink(
+              label: context.loc.electrumAdvancedOptions,
               onPressed: () => SetAdvancedOptionsBottomSheet.show(context),
-              child: Text(
-                context.loc.electrumAdvancedOptions,
-                style: context.bullType.body.copyWith(
-                  color: context.appColors.primary,
-                  decoration: TextDecoration.underline,
-                  decorationColor: context.appColors.primary,
-                ),
-              ),
             ),
           ),
         ),

@@ -54,6 +54,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAdvancedOptionsLink,
         BullAmountInput,
         BullAmountCurrency,
         BullAmountInputValue,
@@ -155,20 +156,16 @@ class SendAddressScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: BullButton.big(
+                  child: BullButton.secondary(
                     label: context.loc.cancel,
                     onPressed: () => Navigator.of(dialogContext).pop(false),
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
                   ),
                 ),
                 const Gap(12),
                 Expanded(
-                  child: BullButton.big(
+                  child: BullButton.primary(
                     label: context.loc.sendRemove,
                     onPressed: () => Navigator.of(dialogContext).pop(true),
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
                   ),
                 ),
               ],
@@ -421,18 +418,17 @@ class SendContinueWithAddressButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SendCubit>().state;
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.sendContinue,
-      onPressed: () => context.read<SendCubit>().continueOnAddressConfirmed(),
-      disabled:
-          state.copiedRawPaymentRequest.trim().isEmpty ||
-          state.hasInvalidAdditionalRecipient ||
-          state.addingInternalRecipient ||
-          state.loadingBestWallet ||
-          state.creatingSwap ||
-          state.selectedInputsUnavailable,
-      bgColor: context.appColors.primary,
-      textColor: context.appColors.onPrimary,
+      onPressed:
+          (state.copiedRawPaymentRequest.trim().isEmpty ||
+              state.hasInvalidAdditionalRecipient ||
+              state.addingInternalRecipient ||
+              state.loadingBestWallet ||
+              state.creatingSwap ||
+              state.selectedInputsUnavailable)
+          ? null
+          : () => context.read<SendCubit>().continueOnAddressConfirmed(),
     );
   }
 }
@@ -1343,30 +1339,29 @@ class SendAmountConfirmButton extends StatelessWidget {
     final usesRecipientList = context.select(
       (SendCubit cubit) => cubit.state.usesRecipientList,
     );
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.sendContinue,
-      onPressed: () {
-        final cubit = context.read<SendCubit>();
-        final currentAmount = amountController.text;
-        final fixedAmount = cubit.state.hasFixedRequestAmount;
-        if (!fixedAmount &&
-            !cubit.state.usesRecipientList &&
-            currentAmount != cubit.state.amount) {
-          cubit.amountChanged(amount: currentAmount);
-        }
-        cubit.onAmountConfirmed();
-      },
-      disabled:
-          amountConfirmedClicked ||
-          creatingSwap ||
-          loadingBestWallet ||
-          !context.select(
-            (SendCubit cubit) => cubit.state.hasValidAmountEntry,
-          ) ||
-          !recipientAmountsValid ||
-          (!usesRecipientList && inputAmountSat <= 0),
-      bgColor: context.appColors.primary,
-      textColor: context.appColors.onPrimary,
+      onPressed:
+          (amountConfirmedClicked ||
+              creatingSwap ||
+              loadingBestWallet ||
+              !context.select(
+                (SendCubit cubit) => cubit.state.hasValidAmountEntry,
+              ) ||
+              !recipientAmountsValid ||
+              (!usesRecipientList && inputAmountSat <= 0))
+          ? null
+          : () {
+              final cubit = context.read<SendCubit>();
+              final currentAmount = amountController.text;
+              final fixedAmount = cubit.state.hasFixedRequestAmount;
+              if (!fixedAmount &&
+                  !cubit.state.usesRecipientList &&
+                  currentAmount != cubit.state.amount) {
+                cubit.amountChanged(amount: currentAmount);
+              }
+              cubit.onAmountConfirmed();
+            },
     );
   }
 }
@@ -1648,22 +1643,19 @@ class _BottomButtons extends StatelessWidget {
           if ((isBitcoinWallet || (isOnchainSend && !isSweep)) &&
               !hasFinalizedTx &&
               !isSpMode) ...[
-            BullButton.big(
+            BullAdvancedOptionsLink(
               label: context.loc.sendAdvancedSettings,
-              disabled: transactionBusy,
-              onPressed: () {
-                BullBottomSheet.show(
-                  context: context,
-                  child: BlocProvider.value(
-                    value: context.read<SendCubit>(),
-                    child: const AdvancedOptionsBottomSheet(),
-                  ),
-                );
-              },
-              borderColor: context.appColors.secondary,
-              outlined: true,
-              bgColor: context.appColors.transparent,
-              textColor: context.appColors.secondary,
+              onPressed: (transactionBusy)
+                  ? null
+                  : () {
+                      BullBottomSheet.show(
+                        context: context,
+                        child: BlocProvider.value(
+                          value: context.read<SendCubit>(),
+                          child: const AdvancedOptionsBottomSheet(),
+                        ),
+                      );
+                    },
             ),
             const Gap(12),
           ],
@@ -1695,16 +1687,15 @@ class ConfirmSendButton extends StatelessWidget {
     final disableSendButton = context.select(
       (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
-    return BullButton.big(
+    return BullButton.primary(
       label: hasFinalizedTx
           ? context.loc.sendBroadcastTransaction
           : context.loc.sendConfirm,
-      onPressed: () {
-        context.read<SendCubit>().onConfirmTransactionClicked();
-      },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
-      disabled: disableSendButton,
+      onPressed: (disableSendButton)
+          ? null
+          : () {
+              context.read<SendCubit>().onConfirmTransactionClicked();
+            },
     );
   }
 }
@@ -2698,12 +2689,10 @@ class SendSendingScreen extends StatelessWidget {
                 ),
                 if (pausedFailure != null && canRetryProposal) ...[
                   const Gap(16),
-                  BullButton.big(
+                  BullButton.secondary(
                     onPressed: () =>
                         context.read<SendCubit>().retryPayjoinProposal(),
                     label: context.loc.retry,
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
                   ),
                 ],
                 if (pausedFailure == null &&
@@ -2969,7 +2958,7 @@ class SendSucessScreen extends StatelessWidget {
             ],
             const Spacer(flex: 2),
             if (hasDetails)
-              BullButton.big(
+              BullButton.secondary(
                 label: context.loc.sendViewDetails,
                 onPressed: () {
                   if (walletTransaction != null) {
@@ -3023,8 +3012,6 @@ class SendSucessScreen extends StatelessWidget {
                     );
                   }
                 },
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
               ),
             const Gap(32),
           ],
@@ -3047,7 +3034,7 @@ class ShowPsbtButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet!.signerDevice,
     );
 
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.sendShowPsbt,
       onPressed: () {
         // The PSBT route and the broadcast after signing take the wallet
@@ -3065,8 +3052,6 @@ class ShowPsbtButton extends StatelessWidget {
           ),
         );
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -3092,7 +3077,7 @@ class SignLedgerButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.sendSignWithLedger,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -3119,8 +3104,6 @@ class SignLedgerButton extends StatelessWidget {
           }
         }
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 }
@@ -3146,7 +3129,7 @@ class SignBitBoxButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
 
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.sendSignWithBitBox,
       onPressed: () async {
         if (unsignedPsbt == null) return;
@@ -3178,8 +3161,6 @@ class SignBitBoxButton extends StatelessWidget {
           }
         }
       },
-      bgColor: context.appColors.secondary,
-      textColor: context.appColors.onSecondary,
     );
   }
 

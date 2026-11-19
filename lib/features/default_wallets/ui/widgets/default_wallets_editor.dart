@@ -100,11 +100,9 @@ class _EditorContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            BullButton.big(
+            BullButton.secondary(
               label: context.loc.retry,
               onPressed: () => context.read<DefaultWalletsCubit>().init(),
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
             ),
           ],
         ),
@@ -203,16 +201,13 @@ class _WalletAddressFieldState extends State<_WalletAddressField> {
               ),
             ),
             if (hasAddress && !isEditing)
-              TextButton(
+              BullButton.secondary(
+                label: context.loc.delete,
                 onPressed: state.isSaving
                     ? null
                     : () => cubit.deleteWallet(type),
-                child: BullText(
-                  context.loc.delete,
-                  style: context.bullType.label
-                      .copyWith(fontWeight: FontWeight.w400)
-                      .copyWith(color: context.appColors.error),
-                ),
+                size: BullButtonSize.small,
+                compact: true,
               ),
           ],
         ),
@@ -246,12 +241,9 @@ class _WalletAddressFieldState extends State<_WalletAddressField> {
           Row(
             children: [
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: context.loc.cancel,
-                  onPressed: () => cubit.cancelEditing(),
-                  disabled: isSaving,
-                  bgColor: context.appColors.surfaceContainerHighest,
-                  textColor: context.appColors.onSurface,
+                  onPressed: (isSaving) ? null : () => cubit.cancelEditing(),
                 ),
               ),
               const SizedBox(width: 12),
@@ -276,12 +268,11 @@ class _WalletAddressFieldState extends State<_WalletAddressField> {
                           ),
                         ),
                       )
-                    : BullButton.big(
+                    : BullButton.primary(
                         label: context.loc.save,
-                        onPressed: () => cubit.saveWallet(type),
-                        disabled: !_isValid,
-                        bgColor: context.appColors.onSurface,
-                        textColor: context.appColors.surface,
+                        onPressed: (!_isValid)
+                            ? null
+                            : () => cubit.saveWallet(type),
                       ),
               ),
             ],

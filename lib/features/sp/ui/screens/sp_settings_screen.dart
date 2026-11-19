@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_notification_console_text.dart';
@@ -13,6 +12,8 @@ import 'package:bb_mobile/features/sp/ui/sp_router.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_config_form.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
+        BullButton,
         BullConfirmDialog,
         BullSettingsEntryItem,
         BullShapesX,
@@ -140,21 +141,20 @@ class _BackendConfigSection extends StatelessWidget {
               helperText: context.loc.spSettingsNetworkHelper,
             ),
           ),
-          submit: BBButton.big(
-            onPressed: () async {
-              final confirmed = await _confirm(
-                context,
-                title: context.loc.spSaveBackendConfigTitle,
-                content: context.loc.spSaveBackendConfigContent,
-                confirmLabel: context.loc.save,
-              );
-              if (!confirmed || !context.mounted) return;
-              await cubit.saveBackendConfig();
-            },
+          submit: BullButton.primary(
+            onPressed: (!state.canSave || isRevoking)
+                ? null
+                : () async {
+                    final confirmed = await _confirm(
+                      context,
+                      title: context.loc.spSaveBackendConfigTitle,
+                      content: context.loc.spSaveBackendConfigContent,
+                      confirmLabel: context.loc.save,
+                    );
+                    if (!confirmed || !context.mounted) return;
+                    await cubit.saveBackendConfig();
+                  },
             label: context.loc.spSaveBackendConfigButton,
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
-            disabled: !state.canSave || isRevoking,
           ),
         ),
       ],
@@ -304,15 +304,12 @@ class _NotificationConsoleSection extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            BBButton.small(
+            BullButton.secondary(
+              size: BullButtonSize.small,
               compact: true,
               label: context.loc.spClearButton,
-              onPressed: cubit.clearConsole,
-              disabled: console.isEmpty,
-              bgColor: context.appColors.transparent,
-              textColor: context.appColors.secondary,
+              onPressed: (console.isEmpty) ? null : cubit.clearConsole,
               textStyle: context.bullType.caption,
-              outlined: true,
             ),
           ],
         ),

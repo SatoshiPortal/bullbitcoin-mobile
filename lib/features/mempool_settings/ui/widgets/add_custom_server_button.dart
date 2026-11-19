@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
@@ -23,14 +22,11 @@ class AddCustomServerButton extends StatelessWidget {
       enabled: !processing,
       onTap: processing ? null : add,
       excludeSemantics: true,
-      child: BullButton.big(
+      child: BullButton.primary(
         label: context.loc.mempoolSettingsCustomServer,
         iconData: Icons.add,
         iconFirst: true,
-        bgColor: context.appColors.primary,
-        textColor: context.appColors.onPrimary,
-        disabled: processing,
-        onPressed: add,
+        onPressed: (processing) ? null : add,
       ),
     );
   }

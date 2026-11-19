@@ -141,17 +141,20 @@ class _ConfirmButton extends StatelessWidget {
       child: BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
         selector: (state) => state.canConfirm,
         builder: (context, canConfirm) {
-          return BullButton.big(
+          return BullButton.primary(
             label: context.loc.pinCodeConfirm,
             textStyle: context.bullType.subtitle.copyWith(
               fontWeight: FontWeight.w700,
             ),
-            bgColor: context.appColors.primary,
-            disabled: !canConfirm,
-            onPressed: () => context.read<PinCodeSettingBloc>().add(
-              const PinCodeSettingPinCodeConfirmed(),
-            ),
-            textColor: context.appColors.onPrimary,
+            onPressed: (!canConfirm)
+                ? null
+                : () {
+                    if (canConfirm) {
+                      context.read<PinCodeSettingBloc>().add(
+                        const PinCodeSettingPinCodeConfirmed(),
+                      );
+                    }
+                  },
           );
         },
       ),

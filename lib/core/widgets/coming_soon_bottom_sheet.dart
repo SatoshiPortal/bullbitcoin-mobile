@@ -81,14 +81,12 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
-              BullButton.big(
+              BullButton.secondary(
                 label: context.loc.okButton,
                 onPressed: () {
                   Navigator.of(context).pop();
                   onDismissed?.call();
                 },
-                bgColor: context.appColors.onSurface,
-                textColor: context.appColors.surface,
               ),
             ],
           ),

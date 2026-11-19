@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/app_startup/ui/screens/restore_default_secret_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bb_mobile/features/app_startup/domain/app_startup_failure.dart';
@@ -14,7 +13,7 @@ import 'package:bb_mobile/router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullShapesX, BullSupportButton, Gap, BullTypographyX;
+    show BullButton, BullShapesX, BullSupportButton, Gap, BullTypographyX;
 
 class AppStartupWidget extends StatefulWidget {
   const AppStartupWidget({super.key, required this.app});
@@ -149,11 +148,9 @@ class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
               // backup brings it back, checked against the missing wallet.
               if (failure is AppStartupMissingDefaultSecretFailure) ...[
                 const SizedBox(height: 24),
-                BBButton.big(
+                BullButton.secondary(
                   onPressed: () => setState(() => _restoring = true),
                   label: context.loc.appStartupRestoreSecretButton,
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ],
               const SizedBox(height: 24),

@@ -105,7 +105,7 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
             ),
       actions: [
         if (order != null)
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.sellViewDetailsButton,
             onPressed: () {
               final txId = order.payjoin?.txid;
@@ -123,8 +123,6 @@ class _SellSuccessScreenState extends State<SellSuccessScreen> {
                 );
               }
             },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
       ],
     );

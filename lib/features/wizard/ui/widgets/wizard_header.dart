@@ -1,9 +1,8 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullText, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 
 /// Top bar shown above the wizard PageView: BULL logo on the left, Skip
 /// action on the right.
@@ -22,14 +21,11 @@ class WizardHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Image.asset(Assets.logos.bbLogoSmall.path, width: 32, height: 32),
-          TextButton(
+          BullButton.secondary(
+            label: context.loc.wizardSkipButton,
             onPressed: onSkip,
-            child: BullText(
-              context.loc.wizardSkipButton,
-              style: context.bullType.body
-                  .copyWith(fontWeight: FontWeight.w500)
-                  .copyWith(color: context.appColors.onSurfaceVariant),
-            ),
+            compact: true,
+            size: BullButtonSize.small,
           ),
         ],
       ),

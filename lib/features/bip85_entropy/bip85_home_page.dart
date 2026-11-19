@@ -99,20 +99,16 @@ class _Bip85HomePageView extends StatelessWidget {
                     child: Row(
                       children: [
                         Expanded(
-                          child: BullButton.big(
+                          child: BullButton.secondary(
                             onPressed: () => cubit.deriveNextMnemonic(),
                             label: context.loc.bip85NextMnemonic,
-                            bgColor: context.appColors.onSurface,
-                            textColor: context.appColors.surface,
                           ),
                         ),
                         Gap(Device.screen.width * 0.01),
                         Expanded(
-                          child: BullButton.big(
+                          child: BullButton.secondary(
                             onPressed: () => cubit.deriveNextHex(),
                             label: context.loc.bip85NextHex,
-                            bgColor: context.appColors.onSurface,
-                            textColor: context.appColors.surface,
                           ),
                         ),
                       ],

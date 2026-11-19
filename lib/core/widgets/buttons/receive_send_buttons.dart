@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap;
 import 'package:material_ui/material_ui.dart';
 
 /// The paired receive/send row pinned to the bottom of a wallet screen.
@@ -24,29 +22,23 @@ class ReceiveSendButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.appColors;
     return Row(
       children: [
         Expanded(
-          child: BBButton.big(
+          child: BullButton.secondary(
             iconData: Icons.arrow_downward,
             label: receiveLabel,
             iconFirst: true,
             onPressed: onReceive,
-            bgColor: colors.actionButton,
-            textColor: colors.onActionButton,
           ),
         ),
         const Gap(4),
         Expanded(
-          child: BBButton.big(
+          child: BullButton.secondary(
             iconData: Icons.crop_free,
             label: sendLabel,
             iconFirst: true,
-            onPressed: onSend,
-            bgColor: colors.actionButton,
-            textColor: colors.onActionButton,
-            disabled: sendDisabled,
+            onPressed: (sendDisabled) ? null : onSend,
           ),
         ),
       ],

@@ -18,6 +18,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAdvancedOptionsLink,
         BullBottomSheet,
         BullButton,
         BullFadingLinearProgress,
@@ -377,13 +378,8 @@ class SwapPageState extends State<SwapPage> {
         crossAxisAlignment: .stretch,
         children: [
           if (showAdvancedOptions) ...[
-            BullButton.big(
+            BullAdvancedOptionsLink(
               label: context.loc.sendAdvancedOptions,
-              height: _actionHeight,
-              bgColor: context.appColors.transparent,
-              textColor: context.appColors.secondary,
-              outlined: true,
-              borderColor: context.appColors.secondary,
               onPressed: () {
                 BullBottomSheet.show(
                   context: context,
@@ -405,21 +401,20 @@ class SwapPageState extends State<SwapPage> {
                 !state.amountEntryValid ||
                 state.inputAmountSat <= 0,
             builder: (context, disabled) {
-              return BullButton.big(
+              return BullButton.primary(
                 label: context.loc.swapContinueButton,
                 height: _actionHeight,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-                disabled: disabled,
-                onPressed: () {
-                  final form = _formKey.currentState;
-                  if (form == null || !form.validate()) {
-                    return;
-                  }
-                  context.read<TransferBloc>().add(
-                    TransferEvent.swapCreated(_amountController.text),
-                  );
-                },
+                onPressed: (disabled)
+                    ? null
+                    : () {
+                        final form = _formKey.currentState;
+                        if (form == null || !form.validate()) {
+                          return;
+                        }
+                        context.read<TransferBloc>().add(
+                          TransferEvent.swapCreated(_amountController.text),
+                        );
+                      },
               );
             },
           ),

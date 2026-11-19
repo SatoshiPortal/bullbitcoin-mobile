@@ -1,3 +1,5 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
+
 import 'dart:async';
 
 import 'package:screen_privacy/screen_privacy.dart';
@@ -73,13 +75,17 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
             title: Text(context.loc.onboardingScanUnavailableTitle),
             content: Text(context.loc.onboardingScanUnavailableMessage),
             actions: [
-              TextButton(
+              BullButton.secondary(
+                label: context.loc.retry,
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(context.loc.retry),
+                size: BullButtonSize.small,
+                compact: true,
               ),
-              TextButton(
+              BullButton.secondary(
+                label: context.loc.onboardingContinueWithoutChecking,
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(context.loc.onboardingContinueWithoutChecking),
+                size: BullButtonSize.small,
+                compact: true,
               ),
             ],
           ),
@@ -100,13 +106,17 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
               '${context.loc.emptyWalletMessage}\n\n${context.loc.emptyWalletBitcoinOnly}',
             ),
             actions: [
-              TextButton(
+              BullButton.secondary(
+                label: context.loc.correct,
                 onPressed: () => Navigator.pop(context, false),
-                child: Text(context.loc.correct),
+                size: BullButtonSize.small,
+                compact: true,
               ),
-              TextButton(
+              BullButton.primary(
+                label: context.loc.continueButton,
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(context.loc.continueButton),
+                size: BullButtonSize.small,
+                compact: true,
               ),
             ],
           ),

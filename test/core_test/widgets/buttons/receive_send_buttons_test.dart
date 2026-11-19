@@ -1,6 +1,6 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullText;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/buttons/receive_send_buttons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,7 +10,7 @@ void main() {
     (AppThemeType.light, AppColors.light),
     (AppThemeType.dark, AppColors.dark),
   ]) {
-    testWidgets('both buttons are filled in the action button roles ($type)', (
+    testWidgets('both buttons are filled secondary actions ($type)', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -26,12 +26,28 @@ void main() {
           ),
         ),
       );
-      final buttons = tester.widgetList<BBButton>(find.byType(BBButton));
+      final buttons = tester.widgetList<BullButton>(find.byType(BullButton));
       expect(buttons, hasLength(2));
       for (final button in buttons) {
-        expect(button.bgColor, colors.actionButton);
-        expect(button.textColor, colors.onActionButton);
-        expect(button.outlined, isFalse);
+        final scope = find.byWidget(button);
+        final fill =
+            tester
+                    .widget<Container>(
+                      find
+                          .descendant(
+                            of: scope,
+                            matching: find.byType(Container),
+                          )
+                          .first,
+                    )
+                    .decoration
+                as BoxDecoration;
+        final text = tester.widget<BullText>(
+          find.descendant(of: scope, matching: find.byType(BullText)),
+        );
+        expect(fill.color, colors.secondary);
+        expect(text.color, colors.onSecondary);
+        expect(fill.border, isNull);
       }
     });
   }

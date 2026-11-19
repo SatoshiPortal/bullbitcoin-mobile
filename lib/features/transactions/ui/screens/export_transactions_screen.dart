@@ -146,17 +146,19 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
-                  child: BullButton.big(
+                  child: BullButton.secondary(
                     label: context.loc.exportTransactionsButton,
-                    onPressed: () async {
-                      if (isLoading) return;
-                      await cubit.exportCsv(start: _startDate, end: _endDate);
-                    },
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
+                    onPressed: (isLoading)
+                        ? null
+                        : () async {
+                            if (isLoading) return;
+                            await cubit.exportCsv(
+                              start: _startDate,
+                              end: _endDate,
+                            );
+                          },
                     iconData: Icons.file_download,
                     iconFirst: true,
-                    disabled: isLoading,
                   ),
                 ),
               ],

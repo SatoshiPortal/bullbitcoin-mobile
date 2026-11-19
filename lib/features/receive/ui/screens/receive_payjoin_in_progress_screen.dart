@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/text/currency_text.dart';
 import 'package:bb_mobile/features/receive/domain/receive_failure.dart';
@@ -15,6 +14,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullCountdown,
         BullFadingLinearProgress,
         BullTopBar,
@@ -307,15 +307,13 @@ class PayjoinInProgressPage extends StatelessWidget {
           ),
           const Spacer(flex: 2),
           if (isFallbackCompleted && payjoinId != null)
-            BBButton.big(
+            BullButton.secondary(
               label: context.loc.receiveViewDetails,
               onPressed: () => context.goNamed(
                 TransactionsRoute.payjoinTransactionDetails.name,
                 pathParameters: {'payjoinId': payjoinId},
                 queryParameters: {'returnHome': 'true'},
               ),
-              bgColor: context.appColors.secondary,
-              textColor: context.appColors.onSecondary,
             )
           else if (canManuallyBroadcastOriginal)
             const ReceiveBroadcastPayjoinButton(),
@@ -352,17 +350,16 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
             maxLines: 2,
           ),
           const Gap(16),
-          BBButton.big(
+          BullButton.secondary(
             label: context.loc.receivePaymentNormally,
-            disabled: isBroadcasting,
-            onPressed: () {
-              log.info('Receive payment normally');
-              context.read<ReceiveBloc>().add(
-                const ReceivePayjoinOriginalTxBroadcasted(),
-              );
-            },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
+            onPressed: (isBroadcasting)
+                ? null
+                : () {
+                    log.info('Receive payment normally');
+                    context.read<ReceiveBloc>().add(
+                      const ReceivePayjoinOriginalTxBroadcasted(),
+                    );
+                  },
           ),
           const Gap(16),
           if (broadcastFailure != null) ...[

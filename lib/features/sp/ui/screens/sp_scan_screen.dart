@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/sp/domain/sp_config.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_cubit.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/presentation/scan_start_ticks.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_state.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_blindbit_behind_card.dart';
-import 'package:bull_ui/bull_ui.dart' show BullInputText, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButtonSize, BullButton, BullInputText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -93,8 +93,6 @@ class _ScanningView extends StatelessWidget {
         _BottomAction(
           label: context.loc.spScanStopButton,
           onPressed: () => unawaited(context.read<SpCubit>().stopScan()),
-          bgColor: context.appColors.error,
-          textColor: context.appColors.onError,
         ),
       ],
     );
@@ -382,14 +380,12 @@ class _ScanStartChooserState extends State<_ScanStartChooser> {
                   runSpacing: 4,
                   children: [
                     for (final t in ticks)
-                      BBButton.small(
+                      BullButton.secondary(
+                        size: BullButtonSize.small,
                         compact: true,
                         label: t.label,
                         onPressed: () => _setHeight(t.height),
-                        bgColor: context.appColors.transparent,
-                        textColor: context.appColors.secondary,
                         textStyle: context.bullType.caption,
-                        outlined: true,
                       ),
                   ],
                 ),
@@ -560,31 +556,18 @@ String _phaseLabel(BuildContext context, SpScanPhase phase) => switch (phase) {
   SpScanPhase.spend => context.loc.spScanPhaseCheckingSpends,
 };
 
-/// The bottom-pinned action button shared by every scan-page view. Defaults to
-/// the secondary colours; the stop action overrides them.
+/// The bottom-pinned secondary action shared by every scan-page view.
 class _BottomAction extends StatelessWidget {
-  const _BottomAction({
-    required this.label,
-    required this.onPressed,
-    this.bgColor,
-    this.textColor,
-  });
+  const _BottomAction({required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
-  final Color? bgColor;
-  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-      child: BBButton.big(
-        label: label,
-        onPressed: onPressed,
-        bgColor: bgColor ?? context.appColors.secondary,
-        textColor: textColor ?? context.appColors.onSecondary,
-      ),
+      child: BullButton.secondary(label: label, onPressed: onPressed),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dar
 import 'package:bb_mobile/features/default_wallets/public/default_wallets_facade.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullBorderedTile,
         BullButton,
         BullInfoCard,
@@ -69,16 +70,16 @@ class AutoBuyScreen extends StatelessWidget {
                 ),
               AutoBuyStep.intro => _IntroStep(isRestricted: state.isRestricted),
               AutoBuyStep.wallets => defaultWalletsFacade.buildEditor(
-                footerBuilder: (context, wallets, status) => BullButton.big(
+                footerBuilder: (context, wallets, status) => BullButton.primary(
                   label: context.loc.continueButton,
-                  disabled:
-                      !wallets.hasAnyWallet ||
-                      status.isEditing ||
-                      status.isSaving,
-                  onPressed: () =>
-                      context.read<AutoBuyCubit>().showConfirmation(wallets),
-                  bgColor: context.appColors.onSurface,
-                  textColor: context.appColors.surface,
+                  onPressed:
+                      (!wallets.hasAnyWallet ||
+                          status.isEditing ||
+                          status.isSaving)
+                      ? null
+                      : () => context.read<AutoBuyCubit>().showConfirmation(
+                          wallets,
+                        ),
                 ),
               ),
               AutoBuyStep.confirm => const _ConfirmStep(),
@@ -124,11 +125,10 @@ class _StatusLoadFailure extends StatelessWidget {
           children: [
             Text(message, textAlign: TextAlign.center),
             const Gap(BullSpacing.md),
-            BullButton.small(
+            BullButton.secondary(
+              size: BullButtonSize.small,
               label: context.loc.retry,
               onPressed: onRetry,
-              bgColor: context.appColors.onSurface,
-              textColor: context.appColors.surface,
             ),
           ],
         ),
@@ -216,11 +216,9 @@ class _IntroStep extends StatelessWidget {
                 tagColor: context.appColors.error,
               )
             else
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.autoBuyGetStarted,
                 onPressed: () => context.read<AutoBuyCubit>().showWallets(),
-                bgColor: context.appColors.onSurface,
-                textColor: context.appColors.surface,
               ),
           ],
         ),
@@ -284,11 +282,9 @@ class _ConfirmStep extends StatelessWidget {
             if (state.isSaving)
               const BullShimmerLine(height: 52, padding: EdgeInsets.zero)
             else if (!state.isActive)
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.autoBuyActivate,
                 onPressed: () => context.read<AutoBuyCubit>().setEnabled(true),
-                bgColor: context.appColors.onSurface,
-                textColor: context.appColors.surface,
               ),
           ],
         ),

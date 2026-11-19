@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
@@ -127,37 +128,19 @@ class CopyInput extends StatelessWidget {
         ),
         actions: [
           if (canCopy)
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: context.appColors.secondary,
-                textStyle: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+            BullButton.secondary(
+              label: context.loc.copyDialogButton,
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: clipboardText ?? text));
               },
-              child: Text(
-                context.loc.copyDialogButton,
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              size: BullButtonSize.small,
+              compact: true,
             ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: context.appColors.primary,
-              textStyle: context.bullType.body.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+          BullButton.secondary(
+            label: context.loc.closeDialogButton,
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(
-              context.loc.closeDialogButton,
-              style: context.bullType.body.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            size: BullButtonSize.small,
+            compact: true,
           ),
         ],
       ),

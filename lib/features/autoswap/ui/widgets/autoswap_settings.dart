@@ -633,17 +633,14 @@ class _SaveButton extends StatelessWidget {
     final isDisabled =
         saving || !enabled || (enabled && selectedWalletId == null);
 
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.autoswapSaveButton,
-      disabled: isDisabled,
-      onPressed: isDisabled
-          ? () {}
+      onPressed: (isDisabled)
+          ? null
           : () => context.read<AutoSwapSettingsCubit>().updateSettings(),
-      bgColor: context.appColors.onSurface,
       textStyle: context.bullType.subtitle.copyWith(
         fontWeight: FontWeight.w700,
       ),
-      textColor: context.appColors.surface,
     );
   }
 }

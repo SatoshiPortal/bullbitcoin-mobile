@@ -105,11 +105,9 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             ),
             const Gap(24),
           ],
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.sendDone,
             onPressed: context.pop,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

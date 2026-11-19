@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/autobuy/public/autobuy_facade.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -18,7 +17,7 @@ import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_failure_banner.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullErrorState, BullPullableBody, BullSupportButton, Gap;
+    show BullButton, BullErrorState, BullPullableBody, BullSupportButton, Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -156,31 +155,22 @@ class ExchangeHomeScreen extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: BBButton.big(
+                  child: BullButton.secondary(
                     iconData: Icons.arrow_downward,
                     label: context.loc.exchangeHomeDepositButton,
                     iconFirst: true,
                     onPressed: () =>
                         context.pushNamed(FundExchangeRoute.fundExchange.name),
-                    bgColor: context.appColors.secondaryFixed,
-                    textColor: context.appColors.onSecondaryFixed,
-                    outlined: true,
-                    borderColor: context.appColors.onSecondaryFixed,
                   ),
                 ),
                 const Gap(4),
                 Expanded(
-                  child: BBButton.big(
+                  child: BullButton.secondary(
                     iconData: Icons.arrow_upward,
                     label: context.loc.exchangeHomeWithdrawButton,
                     iconFirst: true,
-                    disabled: false,
                     onPressed: () =>
                         context.pushNamed(WithdrawRoute.withdraw.name),
-                    bgColor: context.appColors.secondaryFixed,
-                    textColor: context.appColors.onSecondaryFixed,
-                    outlined: true,
-                    borderColor: context.appColors.onSecondaryFixed,
                   ),
                 ),
               ],

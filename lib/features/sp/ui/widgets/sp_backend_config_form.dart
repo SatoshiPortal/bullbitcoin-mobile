@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_backend_form_state.dart';
 import 'package:bb_mobile/features/sp/presentation/sp_failure_l10n.dart';
 import 'package:bb_mobile/features/sp/ui/widgets/sp_backend_url_field.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart' show BullButton, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 
 /// The backend-config form shared by the setup and settings pages: the
@@ -99,14 +98,11 @@ class _SpBackendConfigFormState<S extends SpBackendFormState<S>>
         widget.networkField,
         const Gap(16),
         if (state.network == BitcoinNetwork.regtest) ...[
-          BBButton.big(
-            onPressed: state.isFetchingDefaults
-                ? () {}
+          BullButton.secondary(
+            onPressed: (state.isFetchingDefaults || widget.isBusy)
+                ? null
                 : widget.onFetchDefaults,
             label: context.loc.spFetchRegtestDefaults,
-            bgColor: context.appColors.surface,
-            textColor: context.appColors.onSurface,
-            disabled: state.isFetchingDefaults || widget.isBusy,
           ),
           const Gap(16),
         ],

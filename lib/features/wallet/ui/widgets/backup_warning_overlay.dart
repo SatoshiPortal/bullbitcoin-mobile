@@ -128,27 +128,22 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                       ),
                     ),
                     const Gap(24),
-                    BullButton.big(
+                    BullButton.primary(
                       label: context.loc.backupWarningBackupNow,
                       onPressed: () {
                         context.pushNamed(
                           BackupSettingsSubroute.backupOptions.name,
                         );
                       },
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
                     ),
                     const Gap(12),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: context.loc.backupWarningBackupLater,
                       onPressed: () {
                         context.read<WalletBloc>().add(
                           const DismissBackupWarning(),
                         );
                       },
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.onSurface,
-                      outlined: true,
                     ),
                   ],
                 ),

@@ -71,30 +71,25 @@ class PinSettingsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   if (backupRequired) ...[
-                    BullButton.big(
+                    BullButton.secondary(
                       label: context.loc.backupSettingsStartBackup,
                       onPressed: onBackUp,
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
                     ),
                     const Gap(16),
                   ],
-                  BullButton.big(
-                    disabled: backupRequired,
+                  BullButton.secondary(
                     label: isPinCodeSet
                         ? context.loc.pinCodeChangeButton
                         : context.loc.pinCodeCreateButton,
-                    onPressed: () => bloc.add(const PinCodeCreate()),
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
+                    onPressed: (backupRequired)
+                        ? null
+                        : () => bloc.add(const PinCodeCreate()),
                   ),
                   const Gap(16),
                   if (isPinCodeSet)
-                    BullButton.big(
+                    BullButton.primary(
                       label: context.loc.pinCodeRemoveButton,
                       onPressed: () => bloc.add(const PinCodeDelete()),
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
                     ),
                   const Gap(24),
                 ],

@@ -210,12 +210,9 @@ class _BullPaymentDestinationInputState
           Row(
             children: [
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: widget.pasteLabel,
-                  onPressed: widget.onPaste,
-                  disabled: !widget.enabled,
-                  bgColor: colors.secondary,
-                  textColor: colors.onSecondary,
+                  onPressed: (!widget.enabled) ? null : widget.onPaste,
                   iconData: Icons.paste_sharp,
                   iconFirst: true,
                   height: 44,
@@ -226,12 +223,9 @@ class _BullPaymentDestinationInputState
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: widget.scanLabel,
-                  onPressed: widget.onScan,
-                  disabled: !widget.enabled,
-                  bgColor: colors.secondary,
-                  textColor: colors.onSecondary,
+                  onPressed: (!widget.enabled) ? null : widget.onScan,
                   iconData: Icons.qr_code_scanner,
                   iconFirst: true,
                   height: 44,

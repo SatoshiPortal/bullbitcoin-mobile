@@ -303,11 +303,9 @@ class _AddCustomServerBottomSheetState
                     ),
                   ),
                   const Gap(24),
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
                   ),
                 ],
               ),

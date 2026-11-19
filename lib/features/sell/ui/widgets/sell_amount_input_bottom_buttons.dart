@@ -90,18 +90,16 @@ class _SellAmountInputBottomButtonsState
             tagColor: context.appColors.onTertiary,
           ),
           const Gap(16.0),
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.sellCompleteKYC,
             onPressed: () {
               context.pushReplacementNamed(ExchangeRoute.exchangeKyc.name);
             },
-            bgColor: context.appColors.primary,
-            textColor: context.appColors.onPrimary,
           ),
         ],
       );
     } else {
-      return BullButton.big(
+      return BullButton.primary(
         label: context.loc.sellSendPaymentContinue,
         onPressed: () {
           if (widget.formKey.currentState!.validate()) {
@@ -124,8 +122,6 @@ class _SellAmountInputBottomButtonsState
             );
           }
         },
-        bgColor: context.appColors.secondary,
-        textColor: context.appColors.onSecondary,
       );
     }
   }

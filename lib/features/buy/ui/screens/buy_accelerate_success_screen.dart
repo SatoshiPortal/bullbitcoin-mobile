@@ -41,7 +41,7 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
           const Gap(16),
         ],
         if (buyOrder != null)
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.buyViewDetails,
             onPressed: () {
               context.pushNamed(
@@ -49,8 +49,6 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
                 pathParameters: {'orderId': buyOrder.orderId},
               );
             },
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
           ),
       ],
     );

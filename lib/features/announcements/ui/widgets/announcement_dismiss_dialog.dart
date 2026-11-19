@@ -50,26 +50,22 @@ class _AnnouncementDismissDialogBody extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: BullButton.small(
+              child: BullButton.secondary(
+                size: BullButtonSize.small,
                 label: context.loc.announcementDismissConfirmRead,
                 onPressed: () =>
                     Navigator.of(dialogContext)
                         .pop(AnnouncementDismissChoice.read),
-                bgColor: colors.surface,
-                textColor: colors.text,
-                outlined: true,
-                borderColor: colors.outline,
               ),
             ),
             const Gap(12),
             Expanded(
-              child: BullButton.small(
+              child: BullButton.primary(
+                size: BullButtonSize.small,
                 label: context.loc.announcementDismissConfirmAction,
                 onPressed: () =>
                     Navigator.of(dialogContext)
                         .pop(AnnouncementDismissChoice.dismiss),
-                bgColor: colors.error,
-                textColor: colors.onError,
               ),
             ),
           ],

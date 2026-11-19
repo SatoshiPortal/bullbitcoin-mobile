@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:material_ui/material_ui.dart';
@@ -16,20 +15,21 @@ class CreateWalletButton extends StatelessWidget {
           bloc.state.step == OnboardingStep.create,
     );
 
-    return BullButton.big(
+    return BullButton.primary(
       label: context.loc.onboardingCreateNewWallet,
-      bgColor: context.appColors.primaryFixed,
-      textColor: context.appColors.onPrimaryFixed,
       iconData: Icons.account_balance_wallet_outlined,
       // Visually + functionally disable the button the moment the bloc
       // emits loading. Combined with the bloc-level early-return guard
       // and the use-case idempotency check, closes the rapid-tap race
       // that produced duplicate default wallets (#2015).
-      disabled: creating,
-      onPressed: () {
-        if (creating) return;
-        context.read<OnboardingBloc>().add(const OnboardingCreateNewWallet());
-      },
+      onPressed: (creating)
+          ? null
+          : () {
+              if (creating) return;
+              context.read<OnboardingBloc>().add(
+                const OnboardingCreateNewWallet(),
+              );
+            },
     );
   }
 }

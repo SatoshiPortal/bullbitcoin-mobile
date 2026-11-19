@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
@@ -78,9 +79,11 @@ class TorProxyWidget extends StatelessWidget {
           ),
         ),
         const Gap(8),
-        TextButton(
+        BullButton.secondary(
+          label: context.loc.torSettingsLearnAboutOrbot,
           onPressed: () => _learnAboutOrbot(context),
-          child: Text(context.loc.torSettingsLearnAboutOrbot),
+          size: BullButtonSize.small,
+          compact: true,
         ),
         Card(
           child: BullSettingsEntryItem(

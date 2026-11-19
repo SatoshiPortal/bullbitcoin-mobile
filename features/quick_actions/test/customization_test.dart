@@ -170,7 +170,7 @@ void main() {
   });
 
   for (final locale in ['en', 'fr']) {
-    testWidgets('two sections and a secondary fixed reset in $locale', (
+    testWidgets('two sections and a filled secondary reset in $locale', (
       tester,
     ) async {
       final storage = MemoryStorage();
@@ -191,7 +191,20 @@ void main() {
       expect(find.text('These favorites appear in More'), findsNothing);
       expect(storage.value, isNull);
       final reset = tester.widget<BullButton>(find.byType(BullButton));
-      expect(reset.outlined, isTrue);
+      expect(reset.outlined, isFalse);
+      final resetDecoration =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(
+                          of: find.byType(BullButton),
+                          matching: find.byType(Container),
+                        )
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      expect(resetDecoration.color, testBullTheme.secondary);
       expect(
         tester.getRect(find.text(l10n.reset)).bottom,
         lessThanOrEqualTo(

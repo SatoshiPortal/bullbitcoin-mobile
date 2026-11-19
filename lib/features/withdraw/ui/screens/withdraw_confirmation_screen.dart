@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/public/recipients_facade.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_failure_l10n.dart';
@@ -10,6 +9,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullFadingLinearProgress,
         BullScrollableColumn,
         BullShimmerLine,
@@ -255,12 +255,9 @@ class _ConfirmButton extends StatelessWidget {
           const Gap(16),
         ],
         const Gap(16),
-        BBButton.big(
+        BullButton.primary(
           label: context.loc.withdrawConfirmButton,
-          disabled: isConfirmingWithdrawal,
-          onPressed: onConfirmPressed,
-          bgColor: context.appColors.onSurface,
-          textColor: context.appColors.surface,
+          onPressed: (isConfirmingWithdrawal) ? null : onConfirmPressed,
         ),
       ],
     );

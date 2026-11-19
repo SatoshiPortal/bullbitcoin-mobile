@@ -59,11 +59,9 @@ class WalletDeletionFailedSheet extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const Gap(24),
-            BullButton.big(
+            BullButton.primary(
               label: loc.walletDeletionFailedOkButton,
               onPressed: () => Navigator.of(context).pop(),
-              bgColor: colors.error,
-              textColor: colors.onError,
             ),
           ],
         ),

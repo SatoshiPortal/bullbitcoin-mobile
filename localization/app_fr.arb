@@ -4842,5 +4842,8 @@
   "amountInputHeader": "Montants en",
   "pinCodeLengthHint": "Saisissez {min} à {max} chiffres",
   "pinCodeShowPin": "Afficher le code PIN",
-  "pinCodeHidePin": "Masquer le code PIN"
+  "pinCodeHidePin": "Masquer le code PIN",
+  "exchangeSupportChatAttachFileTooltip": "Joindre un fichier",
+  "exchangeSupportChatAttachLogsTooltip": "Joindre les journaux",
+  "exchangeSupportChatSendTooltip": "Envoyer le message"
 }

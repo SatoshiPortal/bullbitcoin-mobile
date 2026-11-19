@@ -141,41 +141,31 @@ class SepaVirtualPayeeActivationView extends StatelessWidget {
                     crossAxisAlignment: .stretch,
                     children: [
                       if (state.isActive)
-                        BullButton.big(
+                        BullButton.primary(
                           label: context.loc.recipientsContinue,
                           onPressed: onActivated,
-                          bgColor: colors.primary,
-                          textColor: colors.onPrimary,
                         )
                       else ...[
                         if (failure != null) ...[
-                          BullButton.big(
+                          BullButton.primary(
                             label: context.loc.retry,
                             onPressed: () => context
                                 .read<SepaVirtualPayeeActivationCubit>()
                                 .retry(),
-                            bgColor: colors.primary,
-                            textColor: colors.onPrimary,
                           ),
                           const Gap(12),
                         ],
-                        BullButton.big(
+                        BullButton.secondary(
                           label: context
                               .loc
                               .recipientsConfidentialSepaUseRegularSepa,
                           onPressed: onUseRegularSepa,
-                          bgColor: colors.surface,
-                          textColor: colors.text,
-                          outlined: true,
-                          borderColor: colors.outline,
                         ),
                         if (onReturnHome != null) ...[
                           const Gap(12),
-                          BullButton.big(
+                          BullButton.secondary(
                             label: context.loc.recipientsReturnHome,
                             onPressed: onReturnHome,
-                            bgColor: colors.primary,
-                            textColor: colors.onPrimary,
                           ),
                         ],
                       ],

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -70,27 +69,22 @@ class PrivacyNoticeBottomSheet extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: BullButton.big(
+                          child: BullButton.secondary(
                             label: context.loc.electrumPrivacyNoticeCancel,
                             onPressed: () => Navigator.of(context).pop(false),
-                            bgColor: context.appColors.transparent,
-                            outlined: true,
                             textStyle: context.bullType.subtitle.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
-                            textColor: context.appColors.secondary,
                           ),
                         ),
                         const Gap(16),
                         Expanded(
-                          child: BullButton.big(
+                          child: BullButton.primary(
                             label: context.loc.electrumPrivacyNoticeSave,
                             onPressed: () => Navigator.of(context).pop(true),
-                            bgColor: context.appColors.secondary,
                             textStyle: context.bullType.subtitle.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
-                            textColor: context.appColors.onSecondary,
                           ),
                         ),
                       ],

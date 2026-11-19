@@ -36,6 +36,16 @@ has a `Foundation/` section showcasing colours, radius, spacing and the text sca
 Fonts (Golos Text, Bebas Neue) are declared at the app root and resolve by family name
 across the workspace — `bull_ui` references them by name and does not re-ship the `.ttf`s.
 
+## Action buttons
+
+Use `BullButton.primary` for the single action that confirms or advances a screen (including deletion), and `BullButton.secondary` for alternatives, cancel actions and symmetric choices. Both resolve fill and foreground from the injected theme (`primary`/`onPrimary` and `secondary`/`onSecondary`); ordinary buttons never use fixed tokens or error colors. A screen may have no primary action.
+
+Pass `onPressed: null` to disable a role button. `size: BullButtonSize.small` and `compact: true` affect layout, and retain a minimum 48 dp target when the parent permits it. Use `BullInlineIconButton` with a translated tooltip for icon-only actions. In a pair, use icons on both buttons or neither.
+
+`BullAdvancedOptionsLink` is reserved for advanced options: an underlined primary-colored label with a minimum 48 dp target. Labels and tooltips come translated from the consumer.
+
+The legacy `BullButton.big`/`.small` constructors and their appearance parameters remain during the Ark migration. Their `bgColor`/`textColor` properties represent explicit legacy colors; role buttons resolve their colors at build time and leave these properties null. The `onPressed` getter remains non-null for existing consumers; use `disabled` to inspect availability.
+
 ## Import surface
 
 Consumers import a single barrel:
@@ -93,10 +103,10 @@ until the dependency is abstracted out of the widget:
 | Widget | Blocker |
 | --- | --- |
 | `CopyInput`, `BBKeyboardActions` | depend on `package:bb_mobile/*` localization / app utils. |
-| `BBButton` (`buttons/button.dart`) | already superseded by `BullButton`; not a 1:1 copy. |
+| `BBButton` (`buttons/button.dart`) | removed; its callers now use `BullButton`. |
 | Cards: `ActionCard`, `AutoswapWarningCard`, `BackupCard`, `BalanceCard`, `ProviderCart`, `WalletCard` | `package:bb_mobile/*` (router, l10n, feature models, `Assets`). |
 | `BBKeyboardActions` | needs `package:keyboard_actions/keyboard_actions.dart`, not declared in `bull_ui/pubspec.yaml` (no new deps rule). |
 | Bottom sheets: `AdvancedOptions`, `ComingSoon`, `Warning`, `NotLoggedIn`, `DeleteAccount*`, `Logout*`, `TranslationWarning` | `context.loc` localization and/or `package:bb_mobile/*` router & assets. |
 | Cards: `AutoswapWarningCard` | `context.loc` (`autoswapWarningCard*` strings) + `context.font` from `package:bb_mobile/core/utils/build_context_x.dart`. |
-| Loading: `ProgressScreen`, `StatusScreen` | `ProgressScreen` imports `package:bb_mobile/generated/flutter_gen/assets.gen.dart`; `StatusScreen` uses `context.loc` + `BBButton`. |
+| Loading: `ProgressScreen`, `StatusScreen` | `ProgressScreen` imports `package:bb_mobile/generated/flutter_gen/assets.gen.dart`; `StatusScreen` uses `context.loc` + `BullButton`. |
 | Viewers: `AddressViewer`, `TransactionViewer`, `InvoiceViewer`, `LogViewer`, `QrScanner`, `NfcScanner`, `ShareLogs`, `Bip85Derivation`, `MnemonicWidget`, `CoinSelectionBottomSheet`, `AppLanguagePicker`, `BackupSuccessScreen`, `PriceInput`, `TransactionsByDayList`, `BalanceRow`, `RecoverbullVaultProviderSelector` | `package:bb_mobile/*` (entities, l10n, assets, feature blocs). |

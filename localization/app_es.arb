@@ -5072,5 +5072,8 @@
   "amountInputHeader": "Importes en",
   "pinCodeLengthHint": "Introduce de {min} a {max} dígitos",
   "pinCodeShowPin": "Mostrar PIN",
-  "pinCodeHidePin": "Ocultar PIN"
+  "pinCodeHidePin": "Ocultar PIN",
+  "exchangeSupportChatAttachFileTooltip": "Adjuntar un archivo",
+  "exchangeSupportChatAttachLogsTooltip": "Adjuntar registros",
+  "exchangeSupportChatSendTooltip": "Enviar mensaje"
 }

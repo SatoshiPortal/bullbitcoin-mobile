@@ -145,36 +145,24 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       textColor: context.appColors.onPrimary,
                     ),
                     const Gap(12),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: loc.appInitErrorShareLogsButton,
                       iconData: Icons.share,
                       iconFirst: true,
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.text,
-                      borderColor: context.appColors.border,
-                      outlined: true,
                       onPressed: () => _shareLogs(context, loc),
                     ),
                     const Gap(12),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: loc.logsShareOptionExport,
                       iconData: Icons.file_download_outlined,
                       iconFirst: true,
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.text,
-                      borderColor: context.appColors.border,
-                      outlined: true,
                       onPressed: () => _exportLogs(context, loc),
                     ),
                     const Gap(12),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: loc.deleteLogsTitle,
                       iconData: Icons.delete_outline,
                       iconFirst: true,
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.error,
-                      borderColor: context.appColors.error,
-                      outlined: true,
                       onPressed: () => _deleteLogs(context, loc),
                     ),
                     const Gap(16),
@@ -251,14 +239,10 @@ class _ErrorDetailsState extends State<_ErrorDetails> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BullButton.big(
+        BullButton.secondary(
           label: widget.label,
           iconData: _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
           iconFirst: true,
-          outlined: true,
-          bgColor: context.appColors.surface,
-          textColor: context.appColors.text,
-          borderColor: context.appColors.border,
           onPressed: () => setState(() => _expanded = !_expanded),
         ),
         if (_expanded) ...[

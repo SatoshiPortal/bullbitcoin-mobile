@@ -7,7 +7,13 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_ro
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullInfoCard, BullText, Gap, BullTypographyX;
+    show
+        BullButtonSize,
+        BullButton,
+        BullInfoCard,
+        BullText,
+        Gap,
+        BullTypographyX;
 import 'package:go_router/go_router.dart';
 
 class ImportQrDevicePage extends StatelessWidget {
@@ -60,28 +66,24 @@ class ImportQrDevicePage extends StatelessWidget {
             Gap(Device.screen.height * 0.05),
             Column(
               children: [
-                BullButton.small(
+                BullButton.secondary(
+                  size: BullButtonSize.small,
                   label: context.loc.importQrDeviceButtonOpenCamera,
                   onPressed: () => context.pushNamed(
                     ImportWatchOnlyWalletRoutes.scan.name,
                     extra: device,
                   ),
-                  bgColor: context.appColors.surface,
-                  textColor: context.appColors.text,
-                  outlined: true,
                 ),
 
                 Gap(Device.screen.height * 0.02),
-                BullButton.small(
+                BullButton.secondary(
+                  size: BullButtonSize.small,
                   label: context.loc.importQrDeviceButtonInstructions,
                   onPressed: () => DeviceInstructionsBottomSheet.show(
                     context,
                     title: instructionsTitle,
                     instructions: instructions,
                   ),
-                  bgColor: context.appColors.surface,
-                  textColor: context.appColors.text,
-                  outlined: true,
                 ),
               ],
             ),

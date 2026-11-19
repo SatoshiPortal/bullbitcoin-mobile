@@ -9,7 +9,6 @@ import 'package:bb_mobile/features/exchange/domain/usecases/get_support_chat_mes
 import 'package:bb_mobile/features/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_failure_l10n.dart';
@@ -20,6 +19,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullInlineIconButton,
         BullInputText,
         BullShapesX,
         Gap,
@@ -377,34 +377,26 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
-                    label: '',
-                    iconData: Icons.attach_file,
-                    disabled: false,
+                  child: BullInlineIconButton(
+                    icon: Icon(Icons.attach_file),
+                    tooltip: context.loc.exchangeSupportChatAttachFileTooltip,
+
                     onPressed: () {
                       context.read<ExchangeSupportChatCubit>().addAttachment();
                     },
-                    bgColor: context.appColors.surfaceContainer,
-                    textColor: context.appColors.onSurface,
-                    width: 52,
-                    height: 52,
                   ),
                 ),
                 const Gap(8),
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
-                    label: '',
-                    iconData: Icons.description,
-                    disabled: false,
+                  child: BullInlineIconButton(
+                    icon: Icon(Icons.description),
+                    tooltip: context.loc.exchangeSupportChatAttachLogsTooltip,
+
                     onPressed: () {
                       context.read<ExchangeSupportChatCubit>().attachLogs();
                     },
-                    bgColor: context.appColors.surfaceContainer,
-                    textColor: context.appColors.onSurface,
-                    width: 52,
-                    height: 52,
                   ),
                 ),
                 const Gap(8),
@@ -428,25 +420,19 @@ class _MessageInputState extends State<_MessageInput> {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: BBButton.big(
-                    label: '',
-                    iconData: Icons.send,
-                    disabled:
-                        state.sendingMessage ||
-                        state.newMessageText.trim().isEmpty,
-                    onPressed: () {
-                      context.read<ExchangeSupportChatCubit>().sendMessage();
-                    },
-                    bgColor:
-                        Color.lerp(
-                          context.appColors.primary,
-                          context.appColors.secondaryFixed,
-                          0.2,
-                        ) ??
-                        context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
-                    width: 52,
-                    height: 52,
+                  child: BullInlineIconButton(
+                    icon: Icon(Icons.send),
+                    tooltip: context.loc.exchangeSupportChatSendTooltip,
+
+                    onPressed:
+                        (state.sendingMessage ||
+                            state.newMessageText.trim().isEmpty)
+                        ? null
+                        : () {
+                            context
+                                .read<ExchangeSupportChatCubit>()
+                                .sendMessage();
+                          },
                   ),
                 ),
               ],

@@ -164,11 +164,9 @@ class SwapInProgressPage extends StatelessWidget {
                   ),
                   const Gap(16),
                 ],
-                BullButton.big(
+                BullButton.secondary(
                   label: context.loc.swapGoHomeButton,
                   onPressed: () => context.goNamed(WalletRoute.walletHome.name),
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
                 const Gap(32),
               ],

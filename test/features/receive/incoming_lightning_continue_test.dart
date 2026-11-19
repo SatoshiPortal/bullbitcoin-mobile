@@ -1,8 +1,8 @@
-import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, bullUiLocalizationsDelegate;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:bb_mobile/features/receive/domain/enums/receive_network_type.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 
 import 'dart:async';
@@ -241,15 +241,15 @@ void main() {
             () => wallets.execute(onlyLiquid: true, onlyDefaults: true),
           );
         }
-        // BBButton uses IgnorePointer when disabled; still attempt the real tap.
+        // BullButton uses IgnorePointer when disabled; still attempt the real tap.
         await tester.tap(find.text('Continue'), warnIfMissed: false);
         await tester.pump();
         expect(errors, isEmpty);
         final button = find.descendant(
           of: find.byType(ReceiveAmountContinueButton),
-          matching: find.byType(BBButton),
+          matching: find.byType(BullButton),
         );
-        expect(tester.widget<BBButton>(button).disabled, isTrue);
+        expect(tester.widget<BullButton>(button).disabled, isTrue);
         if (unsupported) {
           await tester.enterText(find.byType(TextField), '1000');
           await tester.pump();
@@ -257,8 +257,8 @@ void main() {
           await tester.pumpAndSettle();
           expect(bloc.state.admissionFailure, refusal);
           expect(bloc.state.failure, refusal);
-          expect(tester.widget<BBButton>(button).disabled, isTrue);
-          // BBButton uses IgnorePointer when disabled; still attempt the real tap.
+          expect(tester.widget<BullButton>(button).disabled, isTrue);
+          // BullButton uses IgnorePointer when disabled; still attempt the real tap.
           await tester.tap(find.text('Continue'), warnIfMissed: false);
           await tester.pump();
         }

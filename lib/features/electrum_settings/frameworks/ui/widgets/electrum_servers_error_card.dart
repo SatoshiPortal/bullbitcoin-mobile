@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/electrum_settings/domain/electrum_settings_failure.dart';
@@ -23,10 +24,12 @@ class ElectrumServersErrorCard extends StatelessWidget {
       ),
       if (failure is ElectrumServersExternalTorProxyUnavailableFailure) ...[
         const Gap(4),
-        TextButton(
+        BullButton.secondary(
+          label: context.loc.electrumOpenTorSettings,
           onPressed: () =>
               context.pushNamed(const TorSettingsFacade().settingsRouteName),
-          child: Text(context.loc.electrumOpenTorSettings),
+          size: BullButtonSize.small,
+          compact: true,
         ),
       ],
     ],

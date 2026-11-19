@@ -136,12 +136,11 @@ class ServerConfirmationPage extends StatelessWidget {
                   ),
                 ],
                 const Spacer(),
-                BullButton.big(
+                BullButton.primary(
                   label: context.loc.recoverbullContinue,
-                  disabled: state.busy || state.settings == null,
-                  onPressed: () => _accept(context),
-                  bgColor: context.bull.onSurface,
-                  textColor: context.bull.surface,
+                  onPressed: (state.busy || state.settings == null)
+                      ? null
+                      : () => _accept(context),
                 ),
                 const Gap(8),
                 const VaultKeyInsteadButton(),

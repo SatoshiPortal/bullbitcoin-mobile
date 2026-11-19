@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/public/payment_destination.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullButton, Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButtonSize, BullButton, Gap, BullTypographyX;
 
 class OpenTheCameraWidget extends StatelessWidget {
   final OnScannedPaymentRequestCallback onScannedPaymentRequest;
@@ -38,28 +39,26 @@ class OpenTheCameraWidget extends StatelessWidget {
           const Gap(24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 52),
-            child: BullButton.small(
-              outlined: true,
-              disabled: disabled,
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, _, _) => FullScreenScannerPage(
-                      onScannedPaymentRequest: onScannedPaymentRequest,
-                    ),
-                    transitionsBuilder: (
-                      context,
-                      animation,
-                      secondaryAnimation,
-                      child,
-                    ) => child,
-                  ),
-                );
-              },
+            child: BullButton.secondary(
+              size: BullButtonSize.small,
+              onPressed: (disabled)
+                  ? null
+                  : () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder: (context, _, _) => FullScreenScannerPage(
+                            onScannedPaymentRequest: onScannedPaymentRequest,
+                          ),
+                          transitionsBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) => child,
+                        ),
+                      );
+                    },
               label: context.loc.sendOpenTheCamera,
-              bgColor: context.appColors.surface,
-              borderColor: context.appColors.text,
-              textColor: context.appColors.text,
             ),
           ),
           const Gap(24),

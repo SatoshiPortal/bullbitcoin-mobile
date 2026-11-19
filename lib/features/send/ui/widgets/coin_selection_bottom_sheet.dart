@@ -137,12 +137,11 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             shrinkWrap: true,
           ),
           const Gap(24),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.sendDone,
-            onPressed: context.pop,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
-            disabled: !isAmountSufficient || selectionIsShort,
+            onPressed: (!isAmountSufficient || selectionIsShort)
+                ? null
+                : context.pop,
           ),
           const Gap(24),
         ],

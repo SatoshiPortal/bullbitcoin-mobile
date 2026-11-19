@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/domain/entities/virtual_iban.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/usecases/get_account_owner_name_usecase.dart';
@@ -209,7 +208,10 @@ void main() {
       tester.widget<BBSegmentedButton>(find.byType(BBSegmentedButton)).selected,
       RecipientType.sepaEur.name,
     );
-    expect(tester.widget<BBButton>(find.byType(BBButton)).disabled, isFalse);
+    expect(
+      tester.widget<BullButton>(find.byType(BullButton)).disabled,
+      isFalse,
+    );
     await tester.tap(find.text(loc.recipientsContinue));
     verify(() => bloc.add(const RecipientsEvent.selected(_recipient)))
         .called(1);

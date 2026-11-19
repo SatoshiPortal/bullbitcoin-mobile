@@ -228,12 +228,10 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                             color: context.bull.textMuted,
                           ),
                         ),
-                        BullButton.small(
+                        BullButton.secondary(
+                          size: BullButtonSize.small,
                           label: context.loc.swapMaxButton,
-                          disabled: true,
-                          bgColor: context.bull.surface,
-                          textColor: context.bull.textMuted,
-                          onPressed: () {},
+                          onPressed: null,
                         ),
                       ],
                     ),
@@ -276,14 +274,11 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
             ),
             Padding(
               padding: const EdgeInsets.all(BullSpacing.lg),
-              child: BullButton.big(
+              child: BullButton.primary(
                 label: context.loc.swapContinueButton,
-                disabled: widget.busy || transfer == null || failure != null,
-                bgColor: context.bull.text,
-                textColor: context.bull.background,
-                onPressed: () {
-                  if (transfer != null) widget.onContinue(transfer);
-                },
+                onPressed: (widget.busy || transfer == null || failure != null)
+                    ? null
+                    : () => widget.onContinue(transfer),
               ),
             ),
           ],

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_failure_l10n.dart';
@@ -11,7 +10,12 @@ import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_excha
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullFadingLinearProgress, BullShapesX, Gap, BullTypographyX;
+    show
+        BullButton,
+        BullFadingLinearProgress,
+        BullShapesX,
+        Gap,
+        BullTypographyX;
 
 class FundExchangeWarningBottomSheet extends StatefulWidget {
   const FundExchangeWarningBottomSheet({super.key});
@@ -169,18 +173,17 @@ class _FundExchangeWarningBottomSheetState
                 ),
                 const Gap(8.0),
               ],
-              BBButton.big(
+              BullButton.primary(
                 label: context.loc.fundExchangeContinueButton,
-                disabled: !_hasConfirmedNoCoercion || _isLoading,
-                onPressed: () {
-                  if (_hasConfirmedNoCoercion) {
-                    context.read<FundExchangeBloc>().add(
-                      const FundExchangeEvent.scamWarningConsentSubmitted(),
-                    );
-                  }
-                },
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
+                onPressed: (!_hasConfirmedNoCoercion || _isLoading)
+                    ? null
+                    : () {
+                        if (_hasConfirmedNoCoercion) {
+                          context.read<FundExchangeBloc>().add(
+                            const FundExchangeEvent.scamWarningConsentSubmitted(),
+                          );
+                        }
+                      },
               ),
               const Gap(8.0),
             ],

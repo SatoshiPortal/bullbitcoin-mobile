@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/domain/recipients_failure.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/confidential_sepa_availability.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
@@ -13,6 +12,7 @@ import 'package:bb_mobile/features/recipients/presentation/recipients_failure_l1
 import 'package:bb_mobile/features/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButton,
         BullRefreshIndicator,
         BullShapesX,
         BullShimmerBox,
@@ -231,16 +231,17 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             );
           },
         ),
-        BBButton.big(
+        BullButton.primary(
           label: context.loc.recipientsContinue,
-          disabled: _selectedRecipient == null,
-          onPressed: () {
-            context.read<RecipientsBloc>().add(
-              RecipientsEvent.selected(_selectedRecipient!),
-            );
-          },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
+          onPressed: (_selectedRecipient == null)
+              ? null
+              : () {
+                  final selected = _selectedRecipient;
+                  if (selected == null) return;
+                  context.read<RecipientsBloc>().add(
+                    RecipientsEvent.selected(selected),
+                  );
+                },
         ),
       ],
     );

@@ -275,22 +275,17 @@ class _WizardScreenState extends State<WizardScreen> {
                               else
                                 SizedBox(
                                   width: double.infinity,
-                                  child: BullButton.big(
-                                    label: isLast
-                                        ? context.loc.getStartedButton
-                                        : context.loc.wizardNextButton,
-                                    onPressed: () => _advance(c),
-                                    // Same scheme as `CreateWalletButton`
-                                    // on the splash: high-contrast
-                                    // against the red bg on page 1;
-                                    // brand red elsewhere.
-                                    bgColor: isWelcome
-                                        ? context.appColors.secondaryFixed
-                                        : context.appColors.primary,
-                                    textColor: isWelcome
-                                        ? context.appColors.onSecondaryFixed
-                                        : context.appColors.onPrimary,
-                                  ),
+                                  child: isWelcome
+                                      ? BullButton.secondary(
+                                          label: context.loc.wizardNextButton,
+                                          onPressed: () => _advance(c),
+                                        )
+                                      : BullButton.primary(
+                                          label: isLast
+                                              ? context.loc.getStartedButton
+                                              : context.loc.wizardNextButton,
+                                          onPressed: () => _advance(c),
+                                        ),
                                 ),
                             ],
                           ),

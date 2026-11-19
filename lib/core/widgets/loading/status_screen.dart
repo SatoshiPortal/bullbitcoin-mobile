@@ -33,15 +33,13 @@ class StatusScreen extends StatelessWidget {
       backgroundColor: context.appColors.surface,
       body: BullStackedPage(
         bottomChild: (!isLoading && onTap != null)
-            ? BullButton.big(
+            ? BullButton.secondary(
                 label:
                     buttonText ??
                     (hasError
                         ? context.loc.statusScreenTryAgain
                         : context.loc.statusScreenContinue),
-                onPressed: onTap!,
-                textColor: context.appColors.onSecondary,
-                bgColor: context.appColors.secondary,
+                onPressed: onTap,
               )
             : const SizedBox.shrink(),
         child: SafeArea(

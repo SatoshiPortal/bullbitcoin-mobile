@@ -95,13 +95,11 @@ class _PaySinpeSuccessScreenState extends State<PaySinpeSuccessScreen> {
               const Spacer(),
               SizedBox(
                 width: double.infinity,
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: context.loc.payDone,
                   onPressed: () {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ),
               const Gap(24),

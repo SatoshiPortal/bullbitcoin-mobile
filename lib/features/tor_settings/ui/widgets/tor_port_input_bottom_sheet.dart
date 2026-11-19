@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:material_ui/material_ui.dart';
@@ -126,11 +125,9 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
                 autofocus: true,
               ),
               const Gap(24),
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.torSettingsSaveButton,
                 onPressed: _submit,
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
               ),
             ],
           ),

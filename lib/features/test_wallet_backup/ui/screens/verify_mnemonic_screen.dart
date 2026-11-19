@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/app_bar_widget.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullButton,
         BullScreenPrivacyGate,
         BullSecretTextInput,
@@ -277,11 +278,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
                             color: context.appColors.error,
                           ),
                         const Gap(16),
-                        BullButton.small(
+                        BullButton.primary(
+                          size: BullButtonSize.small,
                           label: context.loc.continueButton,
                           onPressed: _verifyPassphrase,
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
                         ),
                       ] else
                         _Challenge(
@@ -381,11 +381,10 @@ class _Challenge extends StatelessWidget {
                     .copyWith(color: context.appColors.error),
               ),
               const Gap(16),
-              BullButton.small(
+              BullButton.secondary(
+                size: BullButtonSize.small,
                 label: context.loc.retry,
                 onPressed: retry,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

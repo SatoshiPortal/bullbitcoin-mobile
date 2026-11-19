@@ -68,11 +68,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               style: context.bullType.body.copyWith(color: context.bull.error),
             ),
             const Gap(BullSpacing.md),
-            BullButton.big(
+            BullButton.secondary(
               label: context.loc.retry,
               onPressed: () => context.read<StatisticsCubit>().loadStatistics(),
-              bgColor: context.bull.onSurface,
-              textColor: context.bull.surface,
             ),
           ],
         ),

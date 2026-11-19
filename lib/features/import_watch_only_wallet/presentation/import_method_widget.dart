@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -13,14 +12,11 @@ class ImportMethodWidget extends StatelessWidget {
     return Column(
       children: [
         const Gap(12),
-        BullButton.big(
+        BullButton.secondary(
           label: context.loc.importWatchOnlyScanQR,
           onPressed: () =>
               context.replaceNamed(ImportWatchOnlyWalletRoutes.scan.name),
           iconData: Icons.qr_code_scanner,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
-          outlined: true,
         ),
         const Gap(12),
       ],

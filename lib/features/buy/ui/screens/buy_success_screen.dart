@@ -145,7 +145,7 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
             },
           ),
         const Gap(16),
-        BullButton.big(
+        BullButton.secondary(
           label: context.loc.buyViewDetails,
           onPressed: () {
             context.pushNamed(
@@ -153,8 +153,6 @@ class _BuySuccessScreenState extends State<BuySuccessScreen> {
               pathParameters: {'orderId': buyOrder.orderId},
             );
           },
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
         ),
       ],
     );

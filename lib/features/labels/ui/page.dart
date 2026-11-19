@@ -111,30 +111,30 @@ class Bip329LabelsPage extends StatelessWidget {
                       textAlign: .center,
                     ),
                     const Spacer(),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: context.loc.bip329LabelsImportButton,
-                      onPressed: () async {
-                        if (isLoading) return;
-                        await cubit.importLabelsFromFile(LabelFormat.bip329);
-                      },
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
+                      onPressed: (isLoading)
+                          ? null
+                          : () async {
+                              if (isLoading) return;
+                              await cubit.importLabelsFromFile(
+                                LabelFormat.bip329,
+                              );
+                            },
                       iconData: Icons.file_upload,
                       iconFirst: true,
-                      disabled: isLoading,
                     ),
                     const Gap(12),
-                    BullButton.big(
+                    BullButton.secondary(
                       label: context.loc.bip329LabelsExportButton,
-                      onPressed: () async {
-                        if (isLoading) return;
-                        await cubit.exportLabels(LabelFormat.bip329);
-                      },
-                      bgColor: context.appColors.onSurface,
-                      textColor: context.appColors.surface,
+                      onPressed: (isLoading)
+                          ? null
+                          : () async {
+                              if (isLoading) return;
+                              await cubit.exportLabels(LabelFormat.bip329);
+                            },
                       iconData: Icons.file_download,
                       iconFirst: true,
-                      disabled: isLoading,
                     ),
                     const Gap(20),
                   ],

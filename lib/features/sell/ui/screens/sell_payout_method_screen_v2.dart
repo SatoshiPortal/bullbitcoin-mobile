@@ -145,7 +145,6 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
     final confidentialAvailable =
         payout.availability != null &&
         payout.availability != ConfidentialSepaAvailability.unavailable;
-    final colors = context.bull;
     final options = {
       _PayoutMethod.balance: (context.loc.sellPayoutBalance, ''),
       _PayoutMethod.sepa: (
@@ -255,12 +254,11 @@ class _SellPayoutMethodScreenV2State extends State<SellPayoutMethodScreenV2> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-                child: BullButton.big(
+                child: BullButton.primary(
                   label: context.loc.recipientsContinue,
-                  disabled: busy || !options.containsKey(_method),
-                  onPressed: _continue,
-                  bgColor: colors.primary,
-                  textColor: colors.onPrimary,
+                  onPressed: (busy || !options.containsKey(_method))
+                      ? null
+                      : _continue,
                 ),
               ),
             ],

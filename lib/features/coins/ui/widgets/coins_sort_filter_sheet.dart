@@ -139,20 +139,16 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
           Row(
             children: [
               Expanded(
-                child: BullButton.big(
+                child: BullButton.secondary(
                   label: loc.coinsReset,
                   onPressed: () {
                     widget.onReset();
                   },
-                  bgColor: colors.transparent,
-                  textColor: colors.primary,
-                  outlined: true,
-                  borderColor: colors.primary,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: BullButton.big(
+                child: BullButton.primary(
                   label: loc.coinsApply,
                   onPressed: () {
                     widget.onApply(
@@ -164,8 +160,6 @@ class _CoinsSortFilterSheetState extends State<CoinsSortFilterSheet> {
                       ),
                     );
                   },
-                  bgColor: colors.primary,
-                  textColor: colors.onPrimary,
                 ),
               ),
             ],

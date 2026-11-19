@@ -56,11 +56,9 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                 style: context.bullType.body,
               ),
               const Gap(16),
-              BullButton.big(
+              BullButton.primary(
                 label: context.loc.exchangeAccessDisableConfirm,
                 onPressed: () => Navigator.of(context).pop(true),
-                bgColor: context.bull.primary,
-                textColor: context.bull.onPrimary,
               ),
             ],
           ),
@@ -162,12 +160,11 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                 style: context.bullType.body,
                               ),
                               const Gap(16),
-                              BullButton.big(
+                              BullButton.primary(
                                 label: context.loc.exchangeAccessRetryLogout,
-                                disabled: state.busy,
-                                onPressed: () => _logout(cubit),
-                                bgColor: context.bull.primary,
-                                textColor: context.bull.onPrimary,
+                                onPressed: (state.busy)
+                                    ? null
+                                    : () => _logout(cubit),
                               ),
                             ],
                             if (unreadable) ...[
@@ -176,25 +173,21 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                 style: context.bullType.body,
                               ),
                               const Gap(16),
-                              BullButton.big(
+                              BullButton.primary(
                                 label: context.loc.exchangeTradingRetry,
-                                disabled: state.busy,
-                                onPressed: cubit.retry,
-                                bgColor: context.bull.primary,
-                                textColor: context.bull.onPrimary,
+                                onPressed: (state.busy) ? null : cubit.retry,
                               ),
                               const Gap(12),
-                              BullButton.big(
+                              BullButton.secondary(
                                 label: context.loc.exchangeAccessReset,
-                                disabled: state.busy,
-                                onPressed: () async {
-                                  if (await _confirmLogout(context) &&
-                                      !cubit.isClosed) {
-                                    await _logout(cubit);
-                                  }
-                                },
-                                bgColor: context.bull.primary,
-                                textColor: context.bull.onPrimary,
+                                onPressed: (state.busy)
+                                    ? null
+                                    : () async {
+                                        if (await _confirmLogout(context) &&
+                                            !cubit.isClosed) {
+                                          await _logout(cubit);
+                                        }
+                                      },
                               ),
                             ],
                             if (state.failure case final failure?) ...[
@@ -208,16 +201,15 @@ class ExchangeAccessSettingsScreen extends StatelessWidget {
                                 !unreadable &&
                                 (signedIn || (allowed && enabled))) ...[
                               const Gap(24),
-                              BullButton.big(
+                              BullButton.primary(
                                 label: signedIn
                                     ? context.loc.settingsAccountSettingsTitle
                                     : context.loc.exchangeAccessSignIn,
-                                disabled: state.busy,
-                                onPressed: signedIn
+                                onPressed: (state.busy)
+                                    ? null
+                                    : signedIn
                                     ? onOpenAccount
                                     : onAuthenticate,
-                                bgColor: context.bull.primary,
-                                textColor: context.bull.onPrimary,
                               ),
                             ],
                           ],

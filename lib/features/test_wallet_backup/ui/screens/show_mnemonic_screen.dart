@@ -16,6 +16,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullButtonSize,
         BullButton,
         BullScreenPrivacyGate,
         BullShapesX,
@@ -83,7 +84,7 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Column(
                       children: [
-                        BullButton.big(
+                        BullButton.primary(
                           label: context.loc.testBackupNext,
                           onPressed: () {
                             Navigator.of(context).push(
@@ -93,8 +94,6 @@ class _ShowMnemonicScreenState extends State<ShowMnemonicScreen>
                               ),
                             );
                           },
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
                         ),
                         Gap(Device.screen.height * 0.05),
                       ],
@@ -409,11 +408,10 @@ class _DisplayError extends StatelessWidget {
       ),
       if (onRetry case final retry?) ...[
         const Gap(16),
-        BullButton.small(
+        BullButton.secondary(
+          size: BullButtonSize.small,
           label: context.loc.retry,
           onPressed: retry,
-          bgColor: context.appColors.secondary,
-          textColor: context.appColors.onSecondary,
         ),
       ],
     ],

@@ -641,11 +641,10 @@ class _ErrorState extends StatelessWidget {
               style: context.bullType.body.copyWith(color: colors.textMuted),
             ),
             const SizedBox(height: 16),
-            BullButton.small(
+            BullButton.primary(
+              size: BullButtonSize.small,
               label: context.loc.coinsErrorRetry,
               onPressed: cubit.refresh,
-              bgColor: colors.primary,
-              textColor: colors.onPrimary,
             ),
           ],
         ),

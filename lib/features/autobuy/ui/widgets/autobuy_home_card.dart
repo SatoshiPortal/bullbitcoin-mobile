@@ -1,3 +1,4 @@
+import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_cubit.dart';
 import 'package:bb_mobile/features/autobuy/presentation/autobuy_failure_l10n.dart';
@@ -97,20 +98,25 @@ class AutoBuyHomeCard extends StatelessWidget {
           const Gap(BullSpacing.sm),
           Text(context.loc.autoBuyCancelMessage, style: context.bullType.body),
           const Gap(BullSpacing.lg),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          OverflowBar(
+            alignment: MainAxisAlignment.end,
+            spacing: BullSpacing.xs,
+            overflowSpacing: BullSpacing.xs,
             children: [
-              TextButton(
+              BullButton.secondary(
+                label: context.loc.cancel,
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text(context.loc.cancel),
+                size: BullButtonSize.small,
+                compact: true,
               ),
-              const Gap(BullSpacing.xs),
-              TextButton(
+              BullButton.primary(
+                label: context.loc.autoBuyDeactivateConfirm,
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
                   cubit.setEnabled(false);
                 },
-                child: Text(context.loc.autoBuyDeactivateConfirm),
+                size: BullButtonSize.small,
+                compact: true,
               ),
             ],
           ),

@@ -21,6 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAdvancedOptionsLink,
         BullAsyncStatus,
         BullBottomSheet,
         BullButton,
@@ -422,24 +423,21 @@ class _BottomButtons extends StatelessWidget {
             !wallet.isLiquid &&
             !isConfirmingPayment &&
             !isPayinBroadcast) ...[
-          BullButton.big(
-            label: context.loc.sellAdvancedSettings,
+          BullAdvancedOptionsLink(
             // Changing coin selection or RBF mid-confirmation would rebuild the
             // transaction under the payment being sent.
-            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
-            onPressed: () {
-              BullBottomSheet.show(
-                context: context,
-                child: BlocProvider.value(
-                  value: context.read<SellBloc>(),
-                  child: const SellAdvancedOptionsBottomSheet(),
-                ),
-              );
-            },
-            bgColor: context.appColors.transparent,
-            textColor: context.appColors.secondary,
-            outlined: true,
-            borderColor: context.appColors.secondary,
+            label: context.loc.sellAdvancedSettings,
+            onPressed: (!isReady || isConfirmingPayment || isPayinBroadcast)
+                ? null
+                : () {
+                    BullBottomSheet.show(
+                      context: context,
+                      child: BlocProvider.value(
+                        value: context.read<SellBloc>(),
+                        child: const SellAdvancedOptionsBottomSheet(),
+                      ),
+                    );
+                  },
           ),
           const Gap(16),
         ],
@@ -453,14 +451,13 @@ class _BottomButtons extends StatelessWidget {
             onAction: () => _leavePastDeadlinePayin(context),
           )
         else if (paused != null && !isPayinBroadcast)
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.retry,
-            disabled: retrying || !paused.canRetryProposal,
-            onPressed: () => context.read<SellBloc>().add(
-              const SellEvent.payjoinProposalRetryRequested(),
-            ),
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
+            onPressed: (retrying || !paused.canRetryProposal)
+                ? null
+                : () => context.read<SellBloc>().add(
+                    const SellEvent.payjoinProposalRetryRequested(),
+                  ),
           )
         else if (isConfirmingPayment || isPayinBroadcast)
           BullAsyncStatus.progress(
@@ -471,12 +468,11 @@ class _BottomButtons extends StatelessWidget {
             textStyle: context.bullType.body,
           )
         else
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.sellSendPaymentContinue,
-            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
-            onPressed: onContinuePressed,
-            bgColor: context.appColors.secondary,
-            textColor: context.appColors.onSecondary,
+            onPressed: (!isReady || isConfirmingPayment || isPayinBroadcast)
+                ? null
+                : onContinuePressed,
           ),
       ],
     );

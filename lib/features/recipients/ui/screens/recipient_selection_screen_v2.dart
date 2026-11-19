@@ -280,19 +280,16 @@ class _RecipientSelectionViewV2State extends State<_RecipientSelectionViewV2> {
                       failure.toTranslated(context),
                       style: context.bullType.body,
                     ),
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.recipientsContinue,
-                    disabled:
-                        !selectionIsCurrent || !canSelect || state.isLoading,
-                    onPressed: () {
-                      if (selected != null) {
-                        context.read<RecipientsBloc>().add(
-                          RecipientsEvent.selected(selected),
-                        );
-                      }
-                    },
-                    bgColor: colors.primary,
-                    textColor: colors.onPrimary,
+                    onPressed:
+                        (!selectionIsCurrent || !canSelect || state.isLoading)
+                        ? null
+                        : () {
+                            context.read<RecipientsBloc>().add(
+                              RecipientsEvent.selected(selected),
+                            );
+                          },
                   ),
                   const Gap(16),
                 ],

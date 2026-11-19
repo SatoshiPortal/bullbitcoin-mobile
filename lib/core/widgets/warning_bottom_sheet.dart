@@ -72,14 +72,12 @@ class WarningBottomSheet extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const Gap(16),
-              BullButton.big(
+              BullButton.primary(
                 label: confirmLabel,
                 onPressed: () {
                   onConfirm();
                   context.pop();
                 },
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
               ),
             ],
           ),

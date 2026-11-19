@@ -32,6 +32,42 @@ void main() {
       expect(left, 1);
     });
 
+    testWidgets('preserves explicit primary action colours', (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        wrapWithTheme(
+          Scaffold(
+            body: BullReferenceNotice(
+              message: 'Keep the reference',
+              reference: 'public-reference',
+              copiedMessage: 'Copied',
+              actionLabel: 'Continue',
+              actionBgColor: testBullTheme.primary,
+              actionTextColor: testBullTheme.onPrimary,
+              onAction: () => taps++,
+            ),
+          ),
+        ),
+      );
+      final scope = find.byType(BullButton);
+      final fill =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(of: scope, matching: find.byType(Container))
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      final text = tester.widget<BullText>(
+        find.descendant(of: scope, matching: find.byType(BullText)),
+      );
+      expect(fill.color, testBullTheme.primary);
+      expect(text.color, testBullTheme.onPrimary);
+      await tester.tap(find.text('Continue'));
+      expect(taps, 1);
+    });
+
     testWidgets('defaults to the tertiary card and secondary action', (
       tester,
     ) async {
@@ -52,9 +88,21 @@ void main() {
       final card = tester.widget<BullInfoCard>(find.byType(BullInfoCard));
       expect(card.tagColor, testBullTheme.tertiary);
       expect(card.bgColor, testBullTheme.tertiaryContainer);
-      final button = tester.widget<BullButton>(find.byType(BullButton));
-      expect(button.bgColor, testBullTheme.secondary);
-      expect(button.textColor, testBullTheme.onSecondary);
+      final scope = find.byType(BullButton);
+      final fill =
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(of: scope, matching: find.byType(Container))
+                        .first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      final text = tester.widget<BullText>(
+        find.descendant(of: scope, matching: find.byType(BullText)),
+      );
+      expect(fill.color, testBullTheme.secondary);
+      expect(text.color, testBullTheme.onSecondary);
     });
   });
 }

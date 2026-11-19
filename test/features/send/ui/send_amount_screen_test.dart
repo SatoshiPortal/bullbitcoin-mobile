@@ -51,6 +51,45 @@ Wallet _wallet() => Wallet(
 );
 
 void main() {
+  testWidgets(
+    'invalid canonical entry blocks Continue despite previous positive sats',
+    (tester) async {
+      final cubit = _MockSendCubit();
+      final state = SendState(
+        amount: '2500',
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
+        amountEntryValid: false,
+      );
+      expect(state.effectiveAmountSat, greaterThan(0));
+      expect(state.hasValidAmountEntry, isFalse);
+      when(() => cubit.state).thenReturn(state);
+      when(() => cubit.stream).thenAnswer((_) => const Stream.empty());
+      final controller = TextEditingController(text: 'invalid');
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: const [
+            bullUiLocalizationsDelegate,
+            ...appLocalizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: BlocProvider<SendCubit>.value(
+            value: cubit,
+            child: Scaffold(
+              body: SendAmountConfirmButton(amountController: controller),
+            ),
+          ),
+        ),
+      );
+      final action = find.widgetWithText(BullButton, 'Continue');
+      expect(tester.widget<BullButton>(action).disabled, isTrue);
+      await tester.tap(action, warnIfMissed: false);
+      verifyNever(() => cubit.onAmountConfirmed());
+      verifyNever(() => cubit.amountChanged(amount: any(named: 'amount')));
+    },
+  );
+
   for (final entry in <String, PaymentRequest>{
     'PSBT': const PaymentRequest.psbt(psbt: 'cHNidP8='),
     'Bitcoin address · 2,500 sats from the QR': const PaymentRequest.bip21(

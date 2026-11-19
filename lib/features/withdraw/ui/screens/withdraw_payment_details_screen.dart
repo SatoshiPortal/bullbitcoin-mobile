@@ -228,12 +228,9 @@ class _WithdrawPaymentDetailsScreenState
                   ],
                   const Spacer(),
                   const Gap(24),
-                  BullButton.big(
+                  BullButton.primary(
                     label: context.loc.recipientsContinue,
-                    disabled: isCreatingOrder,
-                    onPressed: _submit,
-                    bgColor: colors.primary,
-                    textColor: colors.onPrimary,
+                    onPressed: (isCreatingOrder) ? null : _submit,
                   ),
                 ],
               ),

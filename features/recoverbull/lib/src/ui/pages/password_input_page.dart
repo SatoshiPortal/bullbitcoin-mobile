@@ -324,52 +324,42 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                               ),
                               const Gap(16),
                               if (confirming)
-                                BullButton.small(
+                                BullButton.secondary(
+                                  size: BullButtonSize.small,
                                   label: context.loc.recoverbullGoBackEdit,
-                                  bgColor: context.bull.transparent,
-                                  textColor: context.bull.info,
-                                  textStyle: context.bullType.caption,
                                   onPressed: () => setState(() {
                                     _validatedPassword = '';
                                     _inputController.clear();
                                   }),
                                 )
                               else if (!widget.vaultKeyOnly)
-                                Row(
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
-                                    Expanded(
-                                      child: BullButton.big(
-                                        label: _inputType == InputType.pin
-                                            ? context
-                                                  .loc
-                                                  .recoverbullSwitchToPassword
-                                            : context
-                                                  .loc
-                                                  .recoverbullSwitchToPIN,
-                                        bgColor: context.bull.transparent,
-                                        textColor: context.bull.info,
-                                        textStyle: context.bullType.caption,
-                                        onPressed: () => _switchTo(
-                                          _inputType == InputType.pin
-                                              ? InputType.password
-                                              : InputType.pin,
-                                        ),
+                                    BullButton.secondary(
+                                      label: _inputType == InputType.pin
+                                          ? context
+                                                .loc
+                                                .recoverbullSwitchToPassword
+                                          : context.loc.recoverbullSwitchToPIN,
+                                      onPressed: () => _switchTo(
+                                        _inputType == InputType.pin
+                                            ? InputType.password
+                                            : InputType.pin,
                                       ),
                                     ),
                                     if (_inputType != InputType.vaultKey &&
-                                        hasVaultKeyInput)
-                                      Expanded(
-                                        child: BullButton.small(
-                                          label: context
-                                              .loc
-                                              .recoverbullEnterVaultKeyInstead,
-                                          bgColor: context.bull.transparent,
-                                          textColor: context.bull.info,
-                                          textStyle: context.bullType.caption,
-                                          onPressed: () =>
-                                              _switchTo(InputType.vaultKey),
-                                        ),
+                                        hasVaultKeyInput) ...[
+                                      const Gap(8),
+                                      BullButton.secondary(
+                                        label: context
+                                            .loc
+                                            .recoverbullEnterVaultKeyInstead,
+                                        onPressed: () =>
+                                            _switchTo(InputType.vaultKey),
                                       ),
+                                    ],
                                   ],
                                 ),
                               if (needsPassphraseAck) ...[
@@ -434,21 +424,20 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                       if (_inputType == InputType.pin) const Gap(12),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 60),
-                        child: BullButton.big(
+                        child: BullButton.primary(
                           label: confirming
                               ? context.loc.recoverbullConfirm
                               : context.loc.recoverbullContinue,
                           textStyle: context.bullType.subtitle.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
-                          bgColor: context.bull.onSurface,
-                          textColor: context.bull.surface,
-                          disabled:
-                              state.busy ||
-                              (confirming &&
-                                  needsPassphraseAck &&
-                                  !_passphraseAccepted),
-                          onPressed: () => _continue(flow, needsPassphraseAck),
+                          onPressed:
+                              (state.busy ||
+                                  (confirming &&
+                                      needsPassphraseAck &&
+                                      !_passphraseAccepted))
+                              ? null
+                              : () => _continue(flow, needsPassphraseAck),
                         ),
                       ),
                     ],
@@ -482,11 +471,10 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                 ),
                 textAlign: .center,
               ),
-              BullButton.small(
+              BullButton.secondary(
+                size: BullButtonSize.small,
                 label: context.loc.recoverbullRetry,
                 onPressed: () => _retryPrivacy(),
-                bgColor: context.bull.secondary,
-                textColor: context.bull.onSecondary,
               ),
             ],
           )
@@ -512,27 +500,24 @@ class _PendingBackup extends StatelessWidget {
             maxLines: 6,
           ),
           const Gap(24),
-          BullButton.big(
+          BullButton.primary(
             label: context.loc.recoverbullRetryProviderSave,
-            bgColor: context.bull.onSurface,
-            textColor: context.bull.surface,
-            disabled: busy,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const VaultProviderSelectionPage(),
-              ),
-            ),
+            onPressed: (busy)
+                ? null
+                : () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const VaultProviderSelectionPage(),
+                    ),
+                  ),
           ),
           const Gap(12),
-          BullButton.big(
+          BullButton.secondary(
             label: context.loc.recoverbullDiscardPendingBackup,
-            bgColor: context.bull.surface,
-            textColor: context.bull.onSurface,
-            outlined: true,
-            borderColor: context.bull.onSurface,
-            disabled: busy,
-            onPressed: () =>
-                context.read<VaultFlowCubit>().abandonPendingProviderSave(),
+            onPressed: (busy)
+                ? null
+                : () => context
+                      .read<VaultFlowCubit>()
+                      .abandonPendingProviderSave(),
           ),
         ],
       ),
