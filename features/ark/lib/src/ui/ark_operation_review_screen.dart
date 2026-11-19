@@ -212,6 +212,18 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
     final owner = widget.cubit;
     final account = owner.account;
     final state = owner.state;
+    final title = state is ArkOperationReview && state.quote.account == account
+        ? switch ((owner.request, state.quote.kind)) {
+            (ArkRenewalQuoteRequest(), ArkOperationKind.renewal) => l10n.renew,
+            (ArkEmergencyExitQuoteRequest(), ArkOperationKind.emergencyExit) =>
+              l10n.exitReviewTitle,
+            (ArkExitProgressQuoteRequest(), ArkOperationKind.exitProgress) =>
+              l10n.exitProgressTitle,
+            (ArkClaimQuoteRequest(), ArkOperationKind.claim) =>
+              l10n.exitClaimAction,
+            _ => l10n.review,
+          }
+        : l10n.review;
     final sheet =
         widget.modalReview &&
         state is! ArkOperationSubmitted &&
@@ -248,9 +260,9 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                         bottom: BullSpacing.sm,
                       ),
                       child: BullTopBar(
-                        title: l10n.review,
+                        title: title,
                         titleWidget: BullText(
-                          l10n.review,
+                          title,
                           role: BullTextRole.subtitle,
                         ),
                         onBack: () => _cancel(owner, state),
@@ -315,16 +327,20 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                                   items: [
                                     BullDetailsTableItem(
                                       label: l10n.amount,
-                                      displayValue: reviewed.quote.amount.value
-                                          .toString(),
+                                      displayValue: formatArkSatsNumber(
+                                        context,
+                                        reviewed.quote.amount,
+                                      ),
                                     ),
                                     BullDetailsTableItem(
                                       label:
                                           _exitProgress(owner, reviewed.quote)
                                           ? l10n.exitProgressEstimatedFee
                                           : l10n.feeInSats,
-                                      displayValue: reviewed.quote.fee.value
-                                          .toString(),
+                                      displayValue: formatArkSatsNumber(
+                                        context,
+                                        reviewed.quote.fee,
+                                      ),
                                     ),
                                     if (_exitProgress(owner, reviewed.quote) ||
                                         owner.request
@@ -338,25 +354,33 @@ class _ArkOperationReviewScreenState extends State<ArkOperationReviewScreen> {
                                       ),
                                       BullDetailsTableItem(
                                         label: l10n.exitProgressReserveExposure,
-                                        displayValue:
-                                            reviewed
-                                                .quote
-                                                .confirmedReserveExposure
-                                                ?.value
-                                                .toString() ??
-                                            l10n.unknown,
+                                        displayValue: switch (reviewed
+                                            .quote
+                                            .confirmedReserveExposure) {
+                                          final exposure? =>
+                                            formatArkSatsNumber(
+                                              context,
+                                              exposure,
+                                            ),
+                                          _ => l10n.unknown,
+                                        },
                                       ),
                                     ],
                                     if (reviewed.quote.maxClaimFee
                                         case final maximum?)
                                       BullDetailsTableItem(
                                         label: l10n.exitMaximumClaimFee,
-                                        displayValue: maximum.value.toString(),
+                                        displayValue: formatArkSatsNumber(
+                                          context,
+                                          maximum,
+                                        ),
                                       ),
                                     BullDetailsTableItem(
                                       label: l10n.netInSats,
-                                      displayValue: reviewed.quote.net.value
-                                          .toString(),
+                                      displayValue: formatArkSatsNumber(
+                                        context,
+                                        reviewed.quote.net,
+                                      ),
                                     ),
                                     if (reviewed.quote.destination
                                         case final destination?)

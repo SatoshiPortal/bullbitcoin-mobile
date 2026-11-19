@@ -292,7 +292,7 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                 if (exit.status == ArkExitStatus.claimable)
                   _button(
                     context,
-                    l10n.review,
+                    l10n.exitClaimAction,
                     () => _claim(rendered, exit.id),
                     disabled: !_claimable(exit.id),
                   ),
@@ -307,12 +307,13 @@ class _ArkExitsScreenState extends State<ArkExitsScreen> {
                   }
                 }, disabled: false),
               if (_hasDetails) BullInfoBar(message: l10n.foregroundExit),
-              _button(
-                context,
-                l10n.review,
-                () => _review(rendered, progress: true),
-                disabled: !_current || !_hasDetails,
-              ),
+              if (_hasDetails)
+                _button(
+                  context,
+                  l10n.exitProgressTitle,
+                  () => _review(rendered, progress: true),
+                  disabled: !_current || !_hasDetails,
+                ),
             ],
           ),
         ),
