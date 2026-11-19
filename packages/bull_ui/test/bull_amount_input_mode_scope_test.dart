@@ -42,6 +42,7 @@ void main() {
                               true,
                               bitcoinMessage: 'Bitcoin default',
                               fiatMessage: 'Fiat default',
+                              failureMessage: 'Preference failed',
                             ),
                           ),
                     child: const Text('Set fiat'),

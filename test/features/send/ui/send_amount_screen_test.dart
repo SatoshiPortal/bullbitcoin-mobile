@@ -15,7 +15,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmountScope,
         BullAmountSnapshot,
         BullAmountUnitToggle,
-        BullBitcoinAmountInput,
+        BullAmountInput,
         BullButton,
         BullDropdown,
         bullUiLocalizationsDelegate;
@@ -189,7 +189,7 @@ void main() {
         ),
       );
       expect(find.text('Amount set by the payment request'), findsOneWidget);
-      expect(find.byType(BullBitcoinAmountInput), findsNothing);
+      expect(find.byType(BullAmountInput), findsNothing);
       expect(find.text('MAX'), findsNothing);
       final button = tester.widget<BullButton>(
         find.widgetWithText(BullButton, 'Continue'),
@@ -263,9 +263,7 @@ void main() {
     );
     await tester.pump();
 
-    final input = tester.widget<BullBitcoinAmountInput>(
-      find.byType(BullBitcoinAmountInput),
-    );
+    final input = tester.widget<BullAmountInput>(find.byType(BullAmountInput));
     expect(input.readOnly, isFalse);
     expect(input.isMax, isFalse);
     expect(find.text('MAX'), findsOneWidget);
@@ -366,8 +364,8 @@ void main() {
     );
     await tester.pump();
 
-    final inputFinder = find.byType(BullBitcoinAmountInput);
-    final input = tester.widget<BullBitcoinAmountInput>(inputFinder);
+    final inputFinder = find.byType(BullAmountInput);
+    final input = tester.widget<BullAmountInput>(inputFinder);
     expect(input.amountController.text, '10000');
     await tester.tap(
       find.descendant(
@@ -524,9 +522,7 @@ void main() {
     );
     await tester.pump();
 
-    final input = tester.widget<BullBitcoinAmountInput>(
-      find.byType(BullBitcoinAmountInput),
-    );
+    final input = tester.widget<BullAmountInput>(find.byType(BullAmountInput));
     expect(input.readOnly, isTrue);
     expect(input.isMax, isTrue);
     expect(find.text('MAX'), findsNWidgets(2));
