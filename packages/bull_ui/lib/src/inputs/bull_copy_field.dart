@@ -75,7 +75,6 @@ class BullCopyField extends StatelessWidget {
         ),
         if (toCopy.isNotEmpty)
           IconButton(
-            visualDensity: VisualDensity.compact,
             iconSize: 20,
             tooltip:
                 copyLabel ?? MaterialLocalizations.of(context).copyButtonLabel,
