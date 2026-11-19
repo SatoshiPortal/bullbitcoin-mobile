@@ -1,4 +1,5 @@
 import 'package:ark/ark.dart';
+import 'package:intl/intl.dart';
 import 'package:bull_ui/bull_ui.dart';
 
 import '../domain/ark_failure.dart';
@@ -50,7 +51,7 @@ class ArkInformationScreen extends StatelessWidget {
               ),
             ),
             const Gap(BullSpacing.sm),
-            BullDetailsTable(flat: true, items: rows),
+            BullDetailsTable(flat: true, dividerHeight: 1, items: rows),
           ],
         ),
       );
@@ -87,8 +88,13 @@ class ArkInformationScreen extends StatelessWidget {
         : null;
     final error = failure;
     final retry = onRetry;
+    String integer(int? value) => value == null
+        ? l10n.unknown
+        : NumberFormat.decimalPattern(
+            Localizations.localeOf(context).toString(),
+          ).format(value);
     String blocks(int? value) =>
-        value == null ? l10n.unknown : l10n.inventoryBlocks(value.toString());
+        value == null ? l10n.unknown : l10n.inventoryBlocks(integer(value));
     return BullScaffold(
       body: SafeArea(
         child: Column(
@@ -145,14 +151,16 @@ class ArkInformationScreen extends StatelessWidget {
                     ] else ...[
                       _section(context, l10n.arkServer, [
                         BullDetailsTableItem(
+                          compact: true,
                           label: config.arkUrl.host,
                           displayValue: online == null
                               ? l10n.unknown
                               : online
                               ? l10n.inventoryOnline
                               : l10n.inventoryOffline,
-                          displayWidget: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          displayWidget: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: BullSpacing.sm,
                             children: [
                               Container(
                                 width: 10,
@@ -166,7 +174,6 @@ class ArkInformationScreen extends StatelessWidget {
                                       : context.bull.error,
                                 ),
                               ),
-                              const Gap(BullSpacing.sm),
                               BullText(
                                 online == null
                                     ? l10n.unknown
@@ -188,6 +195,7 @@ class ArkInformationScreen extends StatelessWidget {
                         BullInfoBar(message: l10n.stale),
                       _section(context, l10n.inventoryKeys, [
                         BullDetailsTableItem(
+                          compact: true,
                           label: l10n.inventoryServerPublicKey,
                           displayValue: info == null
                               ? l10n.unknown
@@ -209,6 +217,7 @@ class ArkInformationScreen extends StatelessWidget {
                       ]),
                       _section(context, l10n.inventoryBoardingLimits, [
                         BullDetailsTableItem(
+                          compact: true,
                           label: l10n.inventoryMinimumBoard,
                           displayValue: formatArkObservedSats(
                             context,
@@ -216,6 +225,7 @@ class ArkInformationScreen extends StatelessWidget {
                           ),
                         ),
                         BullDetailsTableItem(
+                          compact: true,
                           label: l10n.inventoryMaximumVtxo,
                           displayValue: formatArkObservedSats(
                             context,
@@ -223,10 +233,9 @@ class ArkInformationScreen extends StatelessWidget {
                           ),
                         ),
                         BullDetailsTableItem(
+                          compact: true,
                           label: l10n.inventoryConfirmations,
-                          displayValue:
-                              info?.boardConfirmations?.toString() ??
-                              l10n.unknown,
+                          displayValue: integer(info?.boardConfirmations),
                         ),
                       ]),
                       _section(context, l10n.inventoryTiming, [
@@ -239,8 +248,7 @@ class ArkInformationScreen extends StatelessWidget {
                           displayValue: info?.roundIntervalSeconds == null
                               ? l10n.unknown
                               : l10n.inventorySeconds(
-                                  info?.roundIntervalSeconds.toString() ??
-                                      l10n.unknown,
+                                  integer(info?.roundIntervalSeconds),
                                 ),
                         ),
                         BullDetailsTableItem(

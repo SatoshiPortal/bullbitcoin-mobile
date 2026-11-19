@@ -1,4 +1,5 @@
 import 'package:ark/ark.dart';
+import 'package:intl/intl.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:primitives/primitives.dart' show Sats;
 
@@ -152,6 +153,31 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
     };
   }
 
+  String _integer(BuildContext context, int? value) => value == null
+      ? context.loc.unknown
+      : NumberFormat.decimalPattern(Localizations.localeOf(context).toString())
+            .format(value);
+
+  Widget _scroll({
+    required Widget child,
+    required EdgeInsets padding,
+    required bool fill,
+  }) => LayoutBuilder(
+    builder: (context, viewport) => SingleChildScrollView(
+      padding: padding,
+      child: fill
+          ? ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: (viewport.maxHeight - padding.vertical)
+                    .clamp(0.0, viewport.maxHeight)
+                    .toDouble(),
+              ),
+              child: child,
+            )
+          : child,
+    ),
+  );
+
   String _status(BuildContext context, ArkVtxo vtxo) {
     final l10n = context.loc;
     final blocks = _blocks(vtxo);
@@ -185,7 +211,7 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
               constraints: const BoxConstraints(minHeight: 48),
               child: BullFilterChip.selectable(
                 label:
-                    '${_label(context, filter)} ${inventory.where((v) => _matches(v, filter)).length}',
+                    '${_label(context, filter)} ${_integer(context, inventory.where((v) => _matches(v, filter)).length)}',
                 selected: _filter == filter,
                 selectionColor: context.bull.secondary,
                 onSelected: (_) => setState(() => _filter = filter),
@@ -210,7 +236,9 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
     final note = switch (kind) {
       _VtxoFilter.expired => l10n.inventoryExpiredNote,
       _VtxoFilter.locked => l10n.inventoryLockedNote,
-      _ when renewalDue => l10n.inventoryRenewNote(threshold.toString()),
+      _ when renewalDue => l10n.inventoryRenewNote(
+        _integer(context, threshold),
+      ),
       _ => null,
     };
     return Column(
@@ -260,25 +288,29 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
             ),
             BullDetailsTableItem(
               label: l10n.inventoryExpires,
-              displayValue: l10n.inventoryBlocks(vtxo.expiryHeight.toString()),
+              displayValue: l10n.inventoryBlockHeight(
+                _integer(context, vtxo.expiryHeight),
+              ),
             ),
             BullDetailsTableItem(
               label: l10n.inventoryBlocksLeft,
               displayValue: blocks == null
                   ? l10n.unknown
-                  : (blocks < 0 ? 0 : blocks).toString(),
+                  : _integer(context, blocks < 0 ? 0 : blocks),
             ),
             BullDetailsTableItem(
               label: l10n.vtxoCreated,
               displayValue: l10n.unknown,
             ),
             BullDetailsTableItem(
+              compact: true,
               label: l10n.inventoryVtxoId,
               displayValue: _short(vtxo.id),
               copyValue: vtxo.id,
               copiedMessage: l10n.copied,
             ),
             BullDetailsTableItem(
+              compact: true,
               label: l10n.inventoryAnchor,
               displayValue: switch (vtxo.anchor) {
                 final anchor? => _short(anchor),
@@ -350,12 +382,16 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
+              child: _scroll(
+                fill: rawEmpty && details == null,
                 padding: const EdgeInsets.all(BullSpacing.md),
                 child: details != null
                     ? _details(context, details)
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: rawEmpty
+                            ? MainAxisAlignment.spaceBetween
+                            : MainAxisAlignment.start,
                         children: [
                           if (snapshot.stale) BullInfoBar(message: l10n.stale),
                           if (!_observed(snapshot))
@@ -388,7 +424,7 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                   ),
                                   BullText(
                                     complete
-                                        ? '${live.length} ${l10n.vtxoCount}'
+                                        ? '${_integer(context, live.length)} ${l10n.vtxoCount}'
                                         : l10n.unknown,
                                     role: BullTextRole.label,
                                     color: context.bull.textMuted,
@@ -406,12 +442,16 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                             ),
                             const Gap(BullSpacing.md),
                           ],
-                          _filters(context, inventory),
-                          const Gap(BullSpacing.md),
-                          if (rawEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: BullSpacing.md,
+                            ),
+                            child: _filters(context, inventory),
+                          ),
+                          if (rawEmpty) ...[
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: BullSpacing.xxl,
+                                vertical: BullSpacing.zero,
                               ),
                               child: Column(
                                 children: [
@@ -437,7 +477,9 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                   ),
                                   if (board != null) ...[
                                     const Gap(BullSpacing.lg),
-                                    BullButton.big(
+                                    BullButton.small(
+                                      compact: true,
+                                      height: 48,
                                       label: l10n.boardToArk,
                                       onPressed: () =>
                                           _board(snapshot.account, board),
@@ -447,8 +489,9 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                   ],
                                 ],
                               ),
-                            )
-                          else if (values.isEmpty)
+                            ),
+                            const SizedBox.shrink(),
+                          ] else if (values.isEmpty)
                             Padding(
                               padding: const EdgeInsets.all(BullSpacing.lg),
                               child: BullText(
@@ -462,7 +505,7 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                           for (final vtxo in values)
                             Padding(
                               padding: const EdgeInsets.only(
-                                bottom: BullSpacing.xs,
+                                bottom: BullSpacing.zero,
                               ),
                               child: Semantics(
                                 button: true,
@@ -470,6 +513,10 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                     '${formatArkObservedSats(context, vtxo.amount)}, ${_status(context, vtxo)}, ${l10n.vtxoDetails}',
                                 child: BullBorderedTile(
                                   key: ValueKey('vtxo-details-${vtxo.id}'),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: BullSpacing.md,
+                                    vertical: BullSpacing.xs,
+                                  ),
                                   onTap: () =>
                                       _openDetails(snapshot.account, vtxo.id),
                                   backgroundColor: context.bull.surface,
@@ -501,7 +548,7 @@ class _ArkVtxosScreenState extends State<ArkVtxosScreen> {
                                       ),
                                       const SizedBox(
                                         width: 48,
-                                        height: 48,
+                                        height: 46,
                                         child: Center(
                                           child: BullIcon(
                                             BullIcons.chevronRight,

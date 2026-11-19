@@ -174,6 +174,7 @@ class _ArkSettingsScreenState extends State<ArkSettingsScreen> {
               if (settings != null) ...[
                 Row(
                   children: [
+                    const SizedBox(height: BullSpacing.xxxl),
                     Expanded(
                       child: BullText(l10n.title, role: BullTextRole.body),
                     ),
