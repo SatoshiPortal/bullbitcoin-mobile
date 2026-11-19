@@ -514,10 +514,11 @@ class _BullAmountInputState extends State<BullAmountInput> {
         label: l10n.amountBitcoin,
         enabled: _canChangeRepresentation || _canRecoverBitcoin,
       ),
-      for (final currency in ordered)
+      for (final (index, currency) in ordered.indexed)
         BullPickerItem(
           value: currency.code,
           label: currency.code,
+          dividerBefore: first != null && index == 1,
           enabled: currency.hasPrice && _canChangeRepresentation,
           disabledReason: currency.hasPrice
               ? (_canChangeRepresentation ? null : l10n.amountIncomplete)
@@ -533,10 +534,13 @@ class _BullAmountInputState extends State<BullAmountInput> {
           dividerBefore: true,
         ),
     ];
+    // The list and its "Always start in" row stay visible together, as one
+    // choice, instead of hiding the preference below the fold.
     final chosen = await showBullDropdownMenu(
       anchor: anchor,
       items: items,
       value: current,
+      maxHeightFactor: 0.75,
     );
     if (!mounted || chosen == null) return;
     final value = items[chosen].value;

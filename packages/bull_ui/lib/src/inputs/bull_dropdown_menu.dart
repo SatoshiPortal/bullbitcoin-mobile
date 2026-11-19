@@ -9,7 +9,8 @@ import 'package:material_ui/material_ui.dart';
 /// The one menu behind every Bull dropdown: a flat [BullTheme.surface] panel
 /// with a hairline [BullTheme.primary] outline and the [BullShapes.input]
 /// corner, opened directly under [anchor], the selected row in bold
-/// [BullTheme.primary] text. Scrolls past half the screen.
+/// [BullTheme.primary] text. Scrolls past [maxHeightFactor] of the screen;
+/// the menu moves up when it would not fit under [anchor].
 ///
 /// Resolves with the index of the tapped item, or null when dismissed, so an
 /// item whose value is null stays distinguishable from a dismissal.
@@ -18,6 +19,7 @@ Future<int?> showBullDropdownMenu<T>({
   required List<BullPickerItem<T>> items,
   required T? value,
   bool matchAnchorWidth = false,
+  double maxHeightFactor = 0.5,
 }) {
   final colors = anchor.bull;
   final shapes = anchor.bullShapes;
@@ -51,7 +53,7 @@ Future<int?> showBullDropdownMenu<T>({
       maxWidth: matchAnchorWidth
           ? box.size.width
           : overlay.size.width - 2 * BullSpacing.md,
-      maxHeight: overlay.size.height * 0.5,
+      maxHeight: overlay.size.height * maxHeightFactor,
     ),
     items: [
       for (var i = 0; i < items.length; i++) ...[
