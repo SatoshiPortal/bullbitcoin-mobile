@@ -89,7 +89,11 @@ Future<void> openForm(WidgetTester tester, Rig r, String kind) async {
   await accountPage(tester, r);
   tester.widget<ArkAccountScreen>(find.byType(ArkAccountScreen)).onExits();
   await frame(tester);
-  final label = kind == 'start' ? 'Start emergency exit' : 'Review';
+  final label = switch (kind) {
+    'start' => 'Start emergency exit',
+    'claim' => 'Claim',
+    _ => 'Progress emergency exits',
+  };
   tester
       .widget<BullButton>(find.widgetWithText(BullButton, label).first)
       .onPressed();

@@ -333,7 +333,7 @@ void main() {
       await pumpState(tester);
       expect(r.client.calls, ['quote']);
       expect(details(tester), {
-        'Amount in sats': '1000',
+        'Amount in sats': '1,000',
         'Fee (sats)': '100',
         'Net amount (sats)': '900',
         'Payment address or BOLT11 invoice': 'reviewed-destination',
