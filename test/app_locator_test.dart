@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/electrum_settings/domain/regtest_electrum_profile.dart';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
@@ -14,7 +13,7 @@ import 'features/wallet/data/ark_funding_test_fixture.dart';
 import 'package:primitives/primitives.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumFailure, ElectrumSaveFailure;
+    show ElectrumFailure, ElectrumSaveFailure, RegtestElectrumProfile;
 
 import 'dart:io';
 

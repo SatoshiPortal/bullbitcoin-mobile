@@ -1,7 +1,6 @@
-import 'package:bb_mobile/features/electrum_settings/domain/regtest_electrum_profile.dart';
 import 'package:bb_mobile/features/wallet/public/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/electrum_settings/public/electrum_settings_facade.dart'
-    show ElectrumFailure;
+    show ElectrumFailure, RegtestElectrumProfile;
 import 'package:bb_mobile/background_setup.dart';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:bb_mobile/features/status_check/status_core_locator.dart';
