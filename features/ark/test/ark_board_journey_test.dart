@@ -16,6 +16,7 @@ import 'fake_ark_client.dart';
 ArkBoardPreparation prepared({
   ArkAccountId? owner,
   String binding = 'original-review',
+  Sats? amount,
 }) => ArkBoardPreparation(
   operationId: 'original-operation',
   reviewBinding: binding,
@@ -23,10 +24,10 @@ ArkBoardPreparation prepared({
   sourceWalletId: 'source-wallet',
   sourceParent: account().parent,
   sourceGeneration: 7,
-  fundingAmount: Sats.fromInt(1000),
+  fundingAmount: amount ?? Sats.fromInt(1000),
   minerFee: Sats.fromInt(100),
   arkFee: Sats.fromInt(10),
-  net: Sats.fromInt(990),
+  net: Sats((amount?.value ?? BigInt.from(1000)) - BigInt.from(10)),
   feeRate: FeeRate(2),
   unsignedTxid: '1' * 64,
   expiryHeight: 500,

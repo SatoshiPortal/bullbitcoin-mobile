@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import 'ark_board_journey_test.dart' show prepared;
-import 'ark_information_widget_test.dart' show app, config, details;
+import 'ark_information_widget_test.dart' show app, config;
 import 'ark_operations_test.dart' show Preferences;
 import 'fake_ark_board_funding.dart';
 
@@ -62,10 +62,12 @@ void main() {
       expect(find.widgetWithText(BullButton, 'Confirm'), findsNothing);
       // A synchronous refusal can coalesce Busy and Editing into one frame.
       // The replacement input must not retain the consumed form's latch.
-      rig.funding.prepared = Ok(prepared());
+      final accepted = prepared(amount: Sats.fromInt(minimum));
+      rig.funding.prepared = Ok(accepted);
+      rig.funding.observed = Ok(accepted);
       tester
           .widget<BullInputText>(find.byType(BullInputText))
-          .onChanged('1000');
+          .onChanged('$minimum');
       await tester.pump();
       button(tester, 'Board').onPressed();
       await tester.pumpAndSettle();
@@ -86,11 +88,10 @@ void main() {
       input.onReviewRequest?.call(rig.cubit.config, Sats.fromInt(1000));
       await tester.pumpAndSettle();
       expect(rig.funding.calls, ['prepare', 'read']);
-      expect(details(tester), containsPair('Amount in sats', '1000'));
-      expect(details(tester), containsPair('Miner fee (sats)', '100'));
-      expect(details(tester), containsPair('Ark board fee (sats)', '10'));
-      expect(details(tester), containsPair('Source debit (sats)', '1100'));
-      expect(details(tester), containsPair('Net amount (sats)', '990'));
+      expect(find.text('1,000 sats'), findsNWidgets(2));
+      for (final value in ['100 sats', '10 sats', '1,100 sats', '990 sats']) {
+        expect(find.text(value), findsOneWidget);
+      }
       final confirm = button(tester, 'Confirm').onPressed;
       expect(confirm, isNotNull);
       confirm.call();

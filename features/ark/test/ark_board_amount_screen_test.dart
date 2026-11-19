@@ -1,3 +1,4 @@
+import 'package:material_ui/material_ui.dart' show TextField, FocusManager;
 import 'package:ark/ark.dart';
 import 'package:bull_ark/src/ui/ark_board_amount_screen.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -32,16 +33,8 @@ void main() {
     expect(input(tester).hint, '0');
     expect(find.textContaining('00112233/regtest/'), findsNothing);
     expect(find.text('Available on-chain'), findsOneWidget);
-    expect(
-      find.text('FAST fee policy only. No fee speed selection.'),
-      findsOneWidget,
-    );
-    expect(
-      find.text(
-        'The actual miner fee and source debit are determined in the future funding review.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Fee estimate unavailable'), findsOneWidget);
+    expect(find.text('Minimum amount unavailable'), findsOneWidget);
     expect(find.text('0 sat'), findsNothing);
     expect(find.text('Slow'), findsNothing);
     await edit(tester, '42');
@@ -324,5 +317,44 @@ void main() {
     expect(events, hasLength(1));
     expect(identical(events.single.$1, supplied), true);
     expect(events.single.$2.value, BigInt.from(42));
+  });
+  testWidgets('sats stays visible beside disabled Max through amount editing', (
+    tester,
+  ) async {
+    var reviews = 0;
+    await tester.pumpWidget(
+      app(
+        ArkBoardAmountScreen(
+          config: config(),
+          onReviewRequest: (_, _) => reviews++,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final scope = find.byType(ArkBoardAmountScreen);
+    Finder unit() =>
+        find.descendant(of: scope, matching: find.text('sats')).hitTestable();
+    BullButton maximum() => tester.widget<BullButton>(
+      find.descendant(
+        of: scope,
+        matching: find.widgetWithText(BullButton, 'Max'),
+      ),
+    );
+    expect(unit(), findsOneWidget);
+    expect(maximum().disabled, true);
+    await tester.tap(find.byType(TextField));
+    await tester.pumpAndSettle();
+    expect(unit(), findsOneWidget);
+    await tester.enterText(find.byType(TextField), '42');
+    await tester.pumpAndSettle();
+    expect(unit(), findsOneWidget);
+    expect(input(tester).value, '42');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    expect(unit(), findsOneWidget);
+    expect(maximum().disabled, true);
+    expect(input(tester).value, '42');
+    expect(reviews, 0);
+    expect(tester.takeException(), isNull);
   });
 }
