@@ -24,6 +24,8 @@ class _NoTorSessionPort implements MempoolTorSessionPort {
 
 void main() {
   late HttpServer server;
+  // mempool.bullbitcoin.com answers 404 here while serving the block by hash.
+  var servesBlockHeight = true;
 
   setUp(() async {
     server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
@@ -32,7 +34,10 @@ void main() {
       request.response.statusCode = 200;
       if (path == '/api/v1/blocks/tip/height') {
         request.response.write('880000');
-      } else if (path == '/api/block-height/0') {
+      } else if (path == '/api/block/$_bitcoinMainnetGenesis') {
+        request.response.headers.contentType = ContentType.json;
+        request.response.write('{"id":"$_bitcoinMainnetGenesis","height":0}');
+      } else if (path == '/api/block-height/0' && servesBlockHeight) {
         // A Bitcoin mainnet server, whatever network the caller asked for.
         request.response.write(_bitcoinMainnetGenesis);
       } else {
@@ -43,7 +48,39 @@ void main() {
   });
 
   tearDown(() async {
+    servesBlockHeight = true;
     await server.close(force: true);
+  });
+
+  Future<Result<void, MempoolFailure>> validate(MempoolServerNetwork network) =>
+      HttpMempoolServerValidator(
+        torSessionPort: _NoTorSessionPort(),
+        torHttpClientFactory: const TorHttpClientFactory(),
+      ).validateServer(
+        url: '${server.address.address}:${server.port}',
+        network: network,
+        enableSsl: false,
+      );
+
+  test(
+    'accepts a Bitcoin mainnet server without the block-height route',
+    () async {
+      servesBlockHeight = false;
+
+      expect(
+        await validate(MempoolServerNetwork.bitcoinMainnet),
+        isA<Ok<void, MempoolFailure>>(),
+      );
+    },
+  );
+
+  test('rejects a Bitcoin mainnet server configured as testnet', () async {
+    final result = await validate(MempoolServerNetwork.bitcoinTestnet);
+
+    expect(
+      (result as Err).failure,
+      isA<MempoolValidationNetworkMismatchFailure>(),
+    );
   });
 
   test('rejects a Bitcoin server configured as a Liquid mempool', () async {
