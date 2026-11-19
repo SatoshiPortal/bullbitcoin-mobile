@@ -31,6 +31,7 @@ class SwapAmountInput extends StatelessWidget {
       canonicalUnit: state.bitcoinUnit,
       amountController: amountController,
       focusNode: focusNode,
+      readOnly: state.continueClicked || state.isCreatingSwap,
       defaultCurrencyCode: state.fiatCurrencyCode,
       isLiquid: state.fromWallet?.isLiquid == true,
       isMax: state.isMaxSelected,
