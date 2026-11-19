@@ -559,5 +559,9 @@
     "description": "Expandable technical details of a Board funding review."
   },
   "boardConfirmation": "Confirm board",
-  "@boardConfirmation": {}
+  "@boardConfirmation": {},
+  "arkActions": "Ark actions",
+  "@arkActions": {
+    "description": "Accessible name for the menu of Ark account actions."
+  }
 }

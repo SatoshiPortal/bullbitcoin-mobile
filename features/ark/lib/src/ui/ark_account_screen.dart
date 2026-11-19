@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ark/ark.dart';
 import 'package:bull_ui/bull_ui.dart';
+import 'package:primitives/primitives.dart' show Sats;
 
 import '../domain/ark_display_data_port.dart';
 import 'ark_amount.dart';
@@ -13,6 +14,8 @@ import '../presentation/ark_movement_l10n.dart';
 import 'ark_attention.dart';
 
 enum _AccountAction { send, receive, board, vtxos, exits, info }
+
+enum _MenuAction { refresh, board, vtxos, exits, info }
 
 /// Caller owns the cubit lifetime and supplies navigation capabilities. The
 /// screen never reaches into a host feature, repository, locator or router.
@@ -162,6 +165,9 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                 title: l10n.title,
                 titleWidget: BullText(l10n.title, role: BullTextRole.subtitle),
                 onBack: () => Navigator.pop(context),
+                actionIcon: BullIcons.settings,
+                actionTooltip: l10n.arkActions,
+                onAction: () => _showActions(context, owner, account),
               ),
             ),
             if (snapshot != null)
@@ -238,62 +244,9 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
                       ),
                       _activity(context, snapshot),
                       const Gap(BullSpacing.md),
-                      BullDetailsTable(
-                        items: [
-                          BullDetailsTableItem(
-                            label: l10n.spendableInSats,
-                            displayValue: formatArkObservedSats(
-                              context,
-                              snapshot.spendable,
-                              withUnit: false,
-                            ),
-                          ),
-                          BullDetailsTableItem(
-                            label: l10n.pendingInSats,
-                            displayValue: formatArkObservedSats(
-                              context,
-                              snapshot.pending,
-                              withUnit: false,
-                            ),
-                          ),
-                          BullDetailsTableItem(
-                            label: l10n.reserveInSats,
-                            displayValue: formatArkObservedSats(
-                              context,
-                              snapshot.confirmedReserve,
-                              withUnit: false,
-                            ),
-                          ),
-                        ],
-                      ),
+                      _balanceDetails(context, snapshot),
                     ],
                     const Gap(BullSpacing.md),
-                    _button(
-                      context,
-                      l10n.refresh,
-                      () => _refresh(owner, account),
-                    ),
-                    _button(
-                      context,
-                      l10n.boardToArk,
-                      () => _open(owner, account, _AccountAction.board),
-                      disabled: !widget.enabled,
-                    ),
-                    _button(
-                      context,
-                      l10n.vtxos,
-                      () => _open(owner, account, _AccountAction.vtxos),
-                    ),
-                    _button(
-                      context,
-                      l10n.exits,
-                      () => _open(owner, account, _AccountAction.exits),
-                    ),
-                    _button(
-                      context,
-                      l10n.arkInfo,
-                      () => _open(owner, account, _AccountAction.info),
-                    ),
                     BullInfoBar(message: l10n.backgroundNotice),
                   ],
                 ),
@@ -302,6 +255,69 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showActions(
+    BuildContext context,
+    ArkCubit owner,
+    ArkAccountId account,
+  ) async {
+    if (!_bound(owner, account)) return;
+    final choice = await BullBottomSheet.show<_MenuAction>(
+      context: context,
+      child: _ActionsSheet(
+        isCurrentOwner: () => mounted && _bound(owner, account),
+        boardEnabled: () => widget.enabled,
+        button: _button,
+      ),
+    );
+    if (choice == null || !mounted || !_bound(owner, account)) return;
+    switch (choice) {
+      case _MenuAction.refresh:
+        await _refresh(owner, account);
+      case _MenuAction.board:
+        _open(owner, account, _AccountAction.board);
+      case _MenuAction.vtxos:
+        _open(owner, account, _AccountAction.vtxos);
+      case _MenuAction.exits:
+        _open(owner, account, _AccountAction.exits);
+      case _MenuAction.info:
+        _open(owner, account, _AccountAction.info);
+    }
+  }
+
+  /// Pending and reserve stay visible when non-zero or unknown. With amounts
+  /// hidden the row is always present so its presence discloses nothing.
+  Widget _balanceDetails(BuildContext context, ArkSnapshot snapshot) {
+    final l10n = context.loc;
+    final hidden = !arkAmountsVisible(context);
+    bool show(Sats? value) =>
+        hidden || value == null || value.value != BigInt.zero;
+    final items = [
+      if (show(snapshot.pending))
+        BullDetailsTableItem(
+          label: l10n.pendingInSats,
+          displayValue: formatArkObservedSats(
+            context,
+            snapshot.pending,
+            withUnit: false,
+          ),
+        ),
+      if (show(snapshot.confirmedReserve))
+        BullDetailsTableItem(
+          label: l10n.reserveInSats,
+          displayValue: formatArkObservedSats(
+            context,
+            snapshot.confirmedReserve,
+            withUnit: false,
+          ),
+        ),
+    ];
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: BullSpacing.md),
+      child: BullDetailsTable(items: items),
     );
   }
 
@@ -330,9 +346,24 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Gap(BullSpacing.md),
-        BullText(l10n.observedActivity, style: null),
+        if (snapshot.movements.isNotEmpty)
+          BullText(l10n.observedActivity, style: null),
         if (snapshot.movements.isEmpty)
-          BullInfoBar(message: l10n.activityObservationsUnavailable),
+          Padding(
+            key: const ValueKey('ark-empty-activity'),
+            padding: const EdgeInsets.symmetric(vertical: BullSpacing.xl),
+            child: Column(
+              children: [
+                BullIcon(BullIcons.history, size: 32),
+                const Gap(BullSpacing.sm),
+                BullText(
+                  l10n.activityObservationsUnavailable,
+                  role: BullTextRole.label,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
         for (final movement in snapshot.movements) ...[
           const Gap(BullSpacing.xs),
           BullText(movement.kind.toTranslated(context), style: null),
@@ -395,4 +426,74 @@ class _ArkAccountScreenState extends State<ArkAccountScreen> {
       disabled: disabled,
     ),
   );
+}
+
+/// The sheet owns one choice. It pops only its own, still-current route, so a
+/// callback kept after a Back or barrier dismissal can neither close a route
+/// opened later nor feed a result to another sheet.
+class _ActionsSheet extends StatefulWidget {
+  final bool Function() isCurrentOwner;
+  final bool Function() boardEnabled;
+  final Widget Function(
+    BuildContext context,
+    String label,
+    VoidCallback action, {
+    bool disabled,
+  })
+  button;
+  const _ActionsSheet({
+    required this.isCurrentOwner,
+    required this.boardEnabled,
+    required this.button,
+  });
+
+  @override
+  State<_ActionsSheet> createState() => _ActionsSheetState();
+}
+
+class _ActionsSheetState extends State<_ActionsSheet> {
+  bool _consumed = false;
+  ModalRoute<Object?>? _route;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _route ??= ModalRoute.of(context);
+  }
+
+  void _choose(_MenuAction value) {
+    final route = _route;
+    if (_consumed || !mounted || route == null) return;
+    if (!route.isCurrent || !widget.isCurrentOwner()) return;
+    if (value == _MenuAction.board && !widget.boardEnabled()) return;
+    _consumed = true;
+    Navigator.pop<_MenuAction>(context, value);
+  }
+
+  Widget _action(String label, _MenuAction value, {bool disabled = false}) =>
+      widget.button(context, label, () => _choose(value), disabled: disabled);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.loc;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(BullSpacing.md),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _action(l10n.refresh, _MenuAction.refresh),
+            _action(
+              l10n.boardToArk,
+              _MenuAction.board,
+              disabled: !widget.boardEnabled(),
+            ),
+            _action(l10n.vtxos, _MenuAction.vtxos),
+            _action(l10n.exits, _MenuAction.exits),
+            _action(l10n.arkInfo, _MenuAction.info),
+          ],
+        ),
+      ),
+    );
+  }
 }

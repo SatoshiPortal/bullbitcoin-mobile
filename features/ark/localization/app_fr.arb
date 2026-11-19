@@ -199,5 +199,6 @@
   "arkWalletSubtitle": "Bitcoin hors chaîne",
   "nextRound": "Prochain round",
   "boardDetails": "Détails de la transaction",
-  "boardConfirmation": "Confirmer le dépôt"
+  "boardConfirmation": "Confirmer le dépôt",
+  "arkActions": "Actions Ark"
 }
