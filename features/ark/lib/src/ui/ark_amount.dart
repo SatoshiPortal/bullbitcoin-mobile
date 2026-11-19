@@ -6,15 +6,18 @@ import 'package:primitives/primitives.dart';
 import '../presentation/ark_l10n.dart';
 
 /// Locale-aware satoshi text, preserving the integer without floating conversion.
-String formatArkSats(BuildContext context, Sats amount) {
+String formatArkSats(BuildContext context, Sats amount) =>
+    context.loc.walletBalance(formatArkSatsNumber(context, amount));
+
+/// Locale-aware integer text without a unit or floating-point conversion.
+String formatArkSatsNumber(BuildContext context, Sats amount) {
   final separator = NumberFormat.decimalPattern(
     Localizations.localeOf(context).toString(),
   ).symbols.GROUP_SEP;
-  final value = amount.value.toString().replaceAllMapped(
+  return amount.value.toString().replaceAllMapped(
     RegExp(r'\B(?=(\d{3})+(?!\d))'),
     (_) => separator,
   );
-  return context.loc.walletBalance(value);
 }
 
 bool arkAmountsVisible(BuildContext context) {
@@ -30,7 +33,9 @@ String formatArkObservedSats(
 }) {
   if (!arkAmountsVisible(context)) return context.loc.hiddenAmount;
   if (amount == null) return context.loc.unknown;
-  return withUnit ? formatArkSats(context, amount) : amount.value.toString();
+  return withUnit
+      ? formatArkSats(context, amount)
+      : formatArkSatsNumber(context, amount);
 }
 
 /// A display equivalent from the host's network-scoped price observation.

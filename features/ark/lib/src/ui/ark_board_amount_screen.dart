@@ -37,6 +37,7 @@ class ArkBoardAmountScreen extends StatefulWidget {
 
 class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
   String _amount = '';
+  final FocusNode _amountFocus = FocusNode();
   int _epoch = 0;
   Object? _inputToken;
   bool _consumed = false;
@@ -48,9 +49,12 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
   @override
   void initState() {
     super.initState();
+    _amountFocus.addListener(_focusChanged);
     _rememberRefusal();
     _scheduleMinimumExpiry();
   }
+
+  void _focusChanged() => setState(() {});
 
   void _rememberRefusal() {
     _refusedMinimum = switch (widget.failure) {
@@ -165,6 +169,8 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
   @override
   void dispose() {
     _minimumExpiry?.cancel();
+    _amountFocus.removeListener(_focusChanged);
+    _amountFocus.dispose();
     _inputToken = null;
     super.dispose();
   }
@@ -342,7 +348,10 @@ class _ArkBoardAmountScreenState extends State<ArkBoardAmountScreen> {
                               enabled: !_consumed,
                               child: BullInputText(
                                 hideBorder: true,
-                                value: raw,
+                                focusNode: _amountFocus,
+                                value: !_amountFocus.hasFocus && amount != null
+                                    ? formatArkSatsNumber(context, amount)
+                                    : raw,
                                 hint: Sats.zero.value.toString(),
                                 style: context.bullType.headline,
                                 digitsOnly: true,
