@@ -15762,5 +15762,24 @@
         "type": "String"
       }
     }
+  },
+  "amountEnteredAtRate": "You entered {amount} {currency} · rate of {time}",
+  "@amountEnteredAtRate": {
+    "description": "Original fiat entry and the time of its frozen conversion quote.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "amountInputHeader": "Amounts in",
+  "@amountInputHeader": {
+    "description": "Shared input unit heading for multiple send recipients."
   }
 }

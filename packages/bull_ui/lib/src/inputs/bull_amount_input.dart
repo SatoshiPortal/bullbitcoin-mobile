@@ -34,6 +34,8 @@ class BullAmountInput extends StatefulWidget {
     this.maxAmountSat,
     this.maxLoading = false,
     this.isLiquid = false,
+    this.compact = false,
+    this.showControls = true,
   });
 
   final BitcoinUnit canonicalUnit;
@@ -50,6 +52,8 @@ class BullAmountInput extends StatefulWidget {
   final BigInt? maxAmountSat;
   final bool maxLoading;
   final bool isLiquid;
+  final bool compact;
+  final bool showControls;
 
   @override
   State<BullAmountInput> createState() => _BullAmountInputState();
@@ -186,8 +190,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
         widget.amountController.text == _lastCanonical;
     final maxChanged =
         oldWidget.isMax != widget.isMax ||
-        oldWidget.maxAmountSat != widget.maxAmountSat ||
-        oldWidget.maxLoading != widget.maxLoading;
+        (widget.isMax &&
+            (oldWidget.maxAmountSat != widget.maxAmountSat ||
+                oldWidget.maxLoading != widget.maxLoading));
     if (controllerChanged ||
         (maxChanged && !preserveExit && !_editedOutOfMax)) {
       _syncCanonical();
@@ -573,10 +578,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
 
   Widget _numberRow(BuildContext context, String equivalent) {
     final l10n = BullUiLocalizations.of(context);
-    final base = context.bullType.display.copyWith(
-      fontWeight: FontWeight.w500,
-      color: context.bull.text,
-    );
+    final base =
+        (widget.compact ? context.bullType.body : context.bullType.display)
+            .copyWith(fontWeight: FontWeight.w500, color: context.bull.text);
     return LayoutBuilder(
       builder: (context, constraints) {
         double measure(String text) => (TextPainter(
@@ -586,7 +590,9 @@ class _BullAmountInputState extends State<BullAmountInput> {
         )..layout()).width;
         final number = _shown;
         final separateIcon =
-            _fiatCurrency == null && widget.currencies.isNotEmpty
+            widget.showControls &&
+                _fiatCurrency == null &&
+                widget.currencies.isNotEmpty
             ? BullSpacing.xxl
             : BullSpacing.zero;
         final unitPadding =
@@ -599,7 +605,8 @@ class _BullAmountInputState extends State<BullAmountInput> {
         var scale = constraints.maxWidth.isFinite && needed > 0
             ? math.min(1.0, math.max(0.0, available - unitPadding) / needed)
             : 1.0;
-        if (unitWidth * scale + unitPadding < BullSpacing.xxl &&
+        if (widget.showControls &&
+            unitWidth * scale + unitPadding < BullSpacing.xxl &&
             numberWidth > 0) {
           scale = math.min(
             1.0,
@@ -616,7 +623,10 @@ class _BullAmountInputState extends State<BullAmountInput> {
           children: [
             Flexible(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: BullSpacing.xxl),
+                constraints: BoxConstraints(
+                  minWidth: BullSpacing.xxl,
+                  minHeight: widget.compact ? BullSpacing.xxl : 0,
+                ),
                 child: IntrinsicWidth(
                   child: Semantics(
                     label: '${l10n.amountField} $_unitCode',
@@ -658,7 +668,14 @@ class _BullAmountInputState extends State<BullAmountInput> {
                 ),
               ),
             ),
-            if (_fiatCurrency == null) ...[
+            if (!widget.showControls)
+              Text(
+                _unitCode,
+                style: context.bullType.body.copyWith(
+                  color: context.bull.textMuted,
+                ),
+              ),
+            if (widget.showControls && _fiatCurrency == null) ...[
               BullAmountUnitToggle(
                 text: _unitCode,
                 unit: _unit,
@@ -682,7 +699,7 @@ class _BullAmountInputState extends State<BullAmountInput> {
                     ),
                   ),
                 ),
-            ] else
+            ] else if (widget.showControls)
               Builder(
                 builder: (anchor) => Tooltip(
                   message: l10n.amountCurrency(_unitCode),
@@ -730,67 +747,81 @@ class _BullAmountInputState extends State<BullAmountInput> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ExcludeSemantics(
-            excluding: error == null,
-            child: Semantics(
-              liveRegion: error != null,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: BullSpacing.xxl),
-                child: Text(
-                  error ?? '\n',
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: context.bull.error,
+          if (!widget.compact || error != null)
+            ExcludeSemantics(
+              excluding: error == null,
+              child: Semantics(
+                liveRegion: error != null,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: BullSpacing.xxl),
+                  child: Text(
+                    error ?? '\n',
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: context.bull.error,
+                    ),
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
                   ),
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: BullSpacing.xs),
-          _numberRow(context, equivalent),
-          const SizedBox(height: BullSpacing.xxs),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  equivalent,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: context.bull.textMuted,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+          if (!widget.compact) const SizedBox(height: BullSpacing.xs),
+          if (widget.compact)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: BullSpacing.xs),
+              decoration: BoxDecoration(
+                color: context.bull.surface,
+                border: Border.all(color: context.bull.secondaryFixedDim),
+                borderRadius: BorderRadius.circular(context.bullShapes.input),
               ),
-              if (flipTarget != null)
-                IconButton(
-                  tooltip: _fiatCurrency == null
-                      ? l10n.amountEnterFiat(flipTarget)
-                      : l10n.amountEnterBitcoin,
-                  onPressed:
-                      (!_canChangeRepresentation &&
-                              !(_fiatCurrency != null && _canRecoverBitcoin)) ||
-                          (_fiatCurrency == null &&
-                              _currency(flipTarget)?.hasPrice != true)
-                      ? null
-                      : () => _selectCurrency(
-                          _fiatCurrency == null ? flipTarget : null,
-                        ),
-                  icon: Icon(
-                    Icons.swap_vert,
-                    color: context.bull.text,
-                    size: BullSpacing.lg,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: BullSpacing.xxl,
-                    minHeight: BullSpacing.xxl,
+              child: _numberRow(context, equivalent),
+            )
+          else
+            _numberRow(context, equivalent),
+          if (!widget.compact) const SizedBox(height: BullSpacing.xxs),
+          if (!widget.compact)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    equivalent,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: context.bull.textMuted,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-            ],
-          ),
+                if (widget.showControls && flipTarget != null)
+                  IconButton(
+                    tooltip: _fiatCurrency == null
+                        ? l10n.amountEnterFiat(flipTarget)
+                        : l10n.amountEnterBitcoin,
+                    onPressed:
+                        (!_canChangeRepresentation &&
+                                !(_fiatCurrency != null &&
+                                    _canRecoverBitcoin)) ||
+                            (_fiatCurrency == null &&
+                                _currency(flipTarget)?.hasPrice != true)
+                        ? null
+                        : () => _selectCurrency(
+                            _fiatCurrency == null ? flipTarget : null,
+                          ),
+                    icon: Icon(
+                      Icons.swap_vert,
+                      color: context.bull.text,
+                      size: BullSpacing.lg,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: BullSpacing.xxl,
+                      minHeight: BullSpacing.xxl,
+                    ),
+                  ),
+              ],
+            ),
           if (_showMax) ...[
             const SizedBox(height: BullSpacing.xxs),
             Center(
