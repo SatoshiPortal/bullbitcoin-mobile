@@ -290,5 +290,7 @@
   "inventoryHtlcSendExpiryDelta": "Délai d’expiration des HTLC sortants",
   "inventoryHtlcExpiryDelta": "Écart d’expiration des HTLC Lightning / Ark",
   "inventoryRoundNonceCount": "Nonces par round",
-  "inventoryBlockHeight": "Bloc {height}"
+  "inventoryBlockHeight": "Bloc {height}",
+  "operationDetails": "Détails de l’opération",
+  "operationRequestCompleted": "Demande terminée. Le règlement on-chain et la fin du round restent distincts."
 }

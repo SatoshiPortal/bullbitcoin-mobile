@@ -983,5 +983,13 @@
         "type": "String"
       }
     }
+  },
+  "operationDetails": "Operation details",
+  "@operationDetails": {
+    "description": "Operation result presentation; this does not assert chain settlement or round completion."
+  },
+  "operationRequestCompleted": "Request completed. Chain settlement and round completion are separate.",
+  "@operationRequestCompleted": {
+    "description": "Operation result presentation; this does not assert chain settlement or round completion."
   }
 }
