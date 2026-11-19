@@ -1831,6 +1831,18 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Block {height}'**
   String inventoryBlockHeight(String height);
+
+  /// Operation result presentation; this does not assert chain settlement or round completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation details'**
+  String get operationDetails;
+
+  /// Operation result presentation; this does not assert chain settlement or round completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Request completed. Chain settlement and round completion are separate.'**
+  String get operationRequestCompleted;
 }
 
 class _ArkLocalizationsDelegate

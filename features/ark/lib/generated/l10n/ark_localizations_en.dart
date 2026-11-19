@@ -959,4 +959,11 @@ class ArkLocalizationsEn extends ArkLocalizations {
   String inventoryBlockHeight(String height) {
     return 'Block $height';
   }
+
+  @override
+  String get operationDetails => 'Operation details';
+
+  @override
+  String get operationRequestCompleted =>
+      'Request completed. Chain settlement and round completion are separate.';
 }

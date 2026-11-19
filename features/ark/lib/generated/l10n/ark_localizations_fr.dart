@@ -971,4 +971,11 @@ class ArkLocalizationsFr extends ArkLocalizations {
   String inventoryBlockHeight(String height) {
     return 'Bloc $height';
   }
+
+  @override
+  String get operationDetails => 'Détails de l’opération';
+
+  @override
+  String get operationRequestCompleted =>
+      'Demande terminée. Le règlement on-chain et la fin du round restent distincts.';
 }
