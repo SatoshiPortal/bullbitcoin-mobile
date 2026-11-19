@@ -4830,7 +4830,7 @@
   "swapArkBelowMinimum": "Montant trop faible. Minimum : {amount} sats + frais",
   "swapArkFeeReview": "Les frais et le montant reçu sont confirmés lors de la prochaine vérification.",
   "swapArkRouteUnavailable": "Ce transfert est indisponible.",
-  "swapInternalTransferDescription": "Transférez facilement des bitcoins entre vos portefeuilles. Ne gardez dans le portefeuille de paiements instantanés que les fonds nécessaires aux dépenses courantes."
+  "swapInternalTransferDescription": "Transférez facilement des bitcoins entre vos portefeuilles. Ne gardez dans le portefeuille de paiements instantanés que les fonds nécessaires aux dépenses courantes.",
   "serverEncrypted": "Chiffré",
   "serverUnencrypted": "Non chiffré",
   "backgroundTasksTitle": "Tâches en arrière-plan",
