@@ -109,7 +109,10 @@ void main() {
     fixture.close();
   });
 
-  Future<(ArkFundingBinding, String)> review({DateTime? validUntil}) async {
+  Future<(ArkFundingBinding, String)> review({
+    DateTime? validUntil,
+    bool saveReview = true,
+  }) async {
     final context = jsonEncode({
       'version': 1,
       'account': account.canonical,
@@ -146,10 +149,159 @@ void main() {
       'expiryHeight': 10000,
       'minerFee': facts.feeSat,
     });
-    sourceOk(await fixture.store.saveBoardReview('operation', payload));
+    if (saveReview) {
+      sourceOk(await fixture.store.saveBoardReview('operation', payload));
+    }
     return (
       binding,
       sha256.convert(utf8.encode('$publicFundingPsbt\n$payload')).toString(),
+    );
+  }
+
+  test(
+    'an expired unsigned Board without a review can release its holds',
+    () async {
+      final data = await review(
+        validUntil: DateTime.now().toUtc().subtract(const Duration(seconds: 1)),
+        saveReview: false,
+      );
+      expect(
+        sourceOk(
+          await fixture.store.expiredUnsignedBoardReview(
+            'operation',
+            DateTime.now().toUtc(),
+          ),
+        ),
+        isTrue,
+      );
+      sourceOk(
+        await fixture.store.tombstoneNeverSigned(
+          expected: data.$1,
+          admittedRevision: fundingStamp,
+        ),
+      );
+      expect(sourceOk(await fixture.store.reservations()), isEmpty);
+      expect(
+        sourceOk(await fixture.store.pendingForAccount(account.canonical)),
+        isNull,
+      );
+      expect(
+        sourceOk(
+          await fixture.store.readNeverSignedBoard(
+            accountIdentity: account.canonical,
+            sourceParent: account.parent,
+            network: BitcoinNetwork.regtest,
+            operationId: 'operation',
+            fundingTxid: data.$1.unsignedTxid,
+          ),
+        ),
+        isNull,
+      );
+    },
+  );
+
+  test('an unexpired Board without a review retains its reservation', () async {
+    await review(saveReview: false);
+    expect(
+      sourceOk(
+        await fixture.store.expiredUnsignedBoardReview(
+          'operation',
+          DateTime.now().toUtc(),
+        ),
+      ),
+      isFalse,
+    );
+    expect(sourceOk(await fixture.store.reservations()), hasLength(1));
+    expect(
+      sourceOk(await fixture.store.pendingForAccount(account.canonical)),
+      'operation',
+    );
+  });
+
+  test(
+    'a never-signed tombstone without a review supplies no native facts',
+    () async {
+      final data = await review(saveReview: false);
+      sourceOk(
+        await fixture.store.tombstoneNeverSigned(
+          expected: data.$1,
+          admittedRevision: fundingStamp,
+        ),
+      );
+      expect(
+        await fixture.store.readNeverSignedBoard(
+          accountIdentity: account.canonical,
+          sourceParent: account.parent,
+          network: BitcoinNetwork.regtest,
+          operationId: 'operation',
+          fundingTxid: data.$1.unsignedTxid,
+        ),
+        isA<Ok<ArkNeverSignedBoardFacts?, SyncFailure>>().having(
+          (result) => result.value,
+          'no invented registration facts',
+          isNull,
+        ),
+      );
+    },
+  );
+
+  for (final signingWins in [false, true]) {
+    test(
+      'two connections keep signing and tombstone exclusive signingWins=$signingWins',
+      () async {
+        final data = await review(
+          validUntil: DateTime.now().toUtc().subtract(
+            const Duration(seconds: 1),
+          ),
+        );
+        final other = sourceOk(
+          SqliteArkFundingReservations.open(fixture.path, foreground: false),
+        );
+        try {
+          if (signingWins) {
+            sourceOk(
+              await other.admitBoardSigning(
+                expected: data.$1,
+                admittedRevision: fundingStamp,
+              ),
+            );
+            expect(
+              await fixture.store.tombstoneNeverSigned(
+                expected: data.$1,
+                admittedRevision: fundingStamp,
+              ),
+              isA<Err>(),
+            );
+            expect(
+              sourceOk(
+                await fixture.store.expiredUnsignedBoardReview(
+                  'operation',
+                  DateTime.now().toUtc(),
+                ),
+              ),
+              isFalse,
+            );
+            expect(sourceOk(await fixture.store.reservations()), hasLength(1));
+          } else {
+            sourceOk(
+              await fixture.store.tombstoneNeverSigned(
+                expected: data.$1,
+                admittedRevision: fundingStamp,
+              ),
+            );
+            expect(
+              await other.admitBoardSigning(
+                expected: data.$1,
+                admittedRevision: fundingStamp,
+              ),
+              isA<Err>(),
+            );
+            expect(sourceOk(await other.reservations()), isEmpty);
+          }
+        } finally {
+          other.close();
+        }
+      },
     );
   }
 
@@ -328,7 +480,7 @@ void main() {
           );
         }
         expect(keystore.reads, 0);
-        verifyNever(() => metadata.fetch(any()));
+        verify(() => metadata.fetch(fundingWalletId)).called(1);
         expect(
           sourceOk(await fixture.store.readBoardReview('operation')).phase,
           phase,

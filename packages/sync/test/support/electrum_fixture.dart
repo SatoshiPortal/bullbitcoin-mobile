@@ -45,9 +45,16 @@ final class ElectrumFixture {
 
   /// [scripts] maps `ext0`..`ext5`, `int0`..`int2` to the wallet's script
   /// pubkeys in hex. `ext3` and above must stay unrevealed for S7.
-  static Future<ElectrumFixture> start(Map<String, String> scripts) async {
+  static Future<ElectrumFixture> start(
+    Map<String, String> scripts, {
+    bool regtest = false,
+  }) async {
     final ready = ReceivePort();
-    final isolate = await Isolate.spawn(_serve, [ready.sendPort, scripts]);
+    final isolate = await Isolate.spawn(_serve, [
+      ready.sendPort,
+      scripts,
+      regtest,
+    ]);
     final [commands as SendPort, port as int] = await ready.first as List;
     return ElectrumFixture._(isolate, commands, port);
   }
@@ -118,7 +125,10 @@ final class ElectrumFixture {
 
   static Future<void> _serve(List<Object?> args) async {
     final ready = args[0] as SendPort;
-    final chain = _Chain((args[1] as Map).cast<String, String>());
+    final chain = _Chain(
+      (args[1] as Map).cast<String, String>(),
+      args[2] as bool,
+    );
     final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
     server.listen((socket) {
       // A client may drop the connection after an error reply; that must not
@@ -164,7 +174,8 @@ final class _Chain {
   final Map<String, String> scripts;
   Map<String, Uint8List> txs = {};
   List<List<String>> blocks = [[]];
-  List<Uint8List> headers = [_genesis];
+  final Uint8List genesis;
+  late List<Uint8List> headers = [genesis];
   List<String> mempool = [];
   int? snapshot;
   bool broadcastsVisible = false;
@@ -173,8 +184,9 @@ final class _Chain {
   Set<String> scriptHashes = {};
   Set<String> fetchedTxids = {};
 
-  _Chain(Map<String, String> walletScripts)
-    : scripts = {...walletScripts, 'foreign': '0014${'ab' * 20}'};
+  _Chain(Map<String, String> walletScripts, bool regtest)
+    : genesis = regtest ? _regtestGenesis : _genesis,
+      scripts = {...walletScripts, 'foreign': '0014${'ab' * 20}'};
 
   List<Object> takeRequests() {
     final taken = [counts, scriptHashes, fetchedTxids];
@@ -462,7 +474,7 @@ final class _Chain {
 
   void _build(List<List<String>> confirmed, String branch) {
     blocks = [[], ...confirmed];
-    headers = [_genesis];
+    headers = [genesis];
     for (var h = 1; h <= confirmed.length; h++) {
       final tag = h < branch.length ? branch[h] : branch[branch.length - 1];
       final ids = confirmed[h - 1].isNotEmpty
@@ -524,13 +536,29 @@ final _genesis = _header(
   414098458,
 );
 
-Uint8List _header(Uint8List prev, Uint8List merkle, int time, int nonce) {
+final _regtestGenesis = _header(
+  Uint8List(32),
+  _reversed(
+    _bytes('4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b'),
+  ),
+  1296688602,
+  2,
+  bits: 0x207fffff,
+);
+
+Uint8List _header(
+  Uint8List prev,
+  Uint8List merkle,
+  int time,
+  int nonce, {
+  int bits = 0x1d00ffff,
+}) {
   final b = BytesBuilder()
     ..add(_u32(1))
     ..add(prev)
     ..add(merkle)
     ..add(_u32(time))
-    ..add(_u32(0x1d00ffff))
+    ..add(_u32(bits))
     ..add(_u32(nonce));
   return b.toBytes();
 }
