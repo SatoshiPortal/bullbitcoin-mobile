@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/electrum_settings/domain/regtest_electrum_profile.dart';
 import 'package:ark/ark.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bb_mobile/features/wallet/public/ark_funding_setup.dart';
@@ -388,6 +389,7 @@ void main() {
       startPayjoinRecovery: false,
       startOrderSwapWatcher: false,
       startAutoswapWatcher: false,
+      regtestProfile: RegtestElectrumProfile(host: '127.0.0.1'),
     );
     expect(result, isA<Err<void, ElectrumFailure>>());
     expect(
