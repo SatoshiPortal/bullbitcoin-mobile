@@ -1825,6 +1825,12 @@ abstract class ArkLocalizations {
   /// In en, this message translates to:
   /// **'Nonces per round'**
   String get inventoryRoundNonceCount;
+
+  /// Absolute expiry block height, distinct from a remaining quantity of blocks
+  ///
+  /// In en, this message translates to:
+  /// **'Block {height}'**
+  String inventoryBlockHeight(String height);
 }
 
 class _ArkLocalizationsDelegate

@@ -954,4 +954,9 @@ class ArkLocalizationsEn extends ArkLocalizations {
 
   @override
   String get inventoryRoundNonceCount => 'Nonces per round';
+
+  @override
+  String inventoryBlockHeight(String height) {
+    return 'Block $height';
+  }
 }
