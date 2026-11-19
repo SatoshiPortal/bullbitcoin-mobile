@@ -23,6 +23,8 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   final SetCustomMempoolServerUsecase _setCustomServerUsecase;
   final DeleteCustomMempoolServerUsecase _deleteCustomServerUsecase;
   final MempoolServerValidatorPort _validator;
+  // Latest probe per row (custom or default); an older probe never writes.
+  final _latestProbe = <bool, int>{};
 
   MempoolSettingsCubit({
     required this._loadDataUsecase,
@@ -126,6 +128,8 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
     if (server.status.isChecking) {
       return;
     }
+    final probe = (_latestProbe[server.isCustom] ?? 0) + 1;
+    _latestProbe[server.isCustom] = probe;
 
     final network = MempoolServerNetwork.fromEnvironment(
       isTestnet: server.isTestnet,
@@ -147,9 +151,10 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
       network: network,
       enableSsl: server.enableSsl,
     )).fold((_) => true, (_) => false);
-    // The screen may have closed, switched network or deleted this server
-    // while the probe ran; never write a stale server back into the state.
-    if (isClosed || !_shows(server)) return;
+    // The screen may have closed, started a newer probe, switched network or
+    // deleted this server while the probe ran; never write a stale answer.
+    if (isClosed || _latestProbe[server.isCustom] != probe) return;
+    if (!_shows(server)) return;
 
     final finalServer = server.copyWith(
       status: isValid
