@@ -88,7 +88,7 @@ class BullDetailsTableItem extends StatefulWidget {
   /// Left-hand row label.
   final String label;
 
-  /// Compact rows use wider labels, grow naturally and keep 48 dp actions.
+  /// Compact rows grow naturally and keep 48 dp actions.
   final bool compact;
 
   /// Right-hand value rendered as text when [displayWidget] is null.
@@ -140,6 +140,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
   Widget build(BuildContext context) {
     final colors = context.bull;
     final labels = widget.compact ? MaterialLocalizations.of(context) : null;
+    final wideLabel = widget.compact && (widget.copyValue?.isEmpty ?? true);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -153,7 +154,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
             children: [
               // Label
               Expanded(
-                flex: widget.compact ? 3 : 2,
+                flex: wideLabel ? 3 : 2,
                 child: Text(
                   widget.label,
                   style: context.bullType.body.copyWith(
@@ -164,7 +165,7 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
 
               // Value + copy icon + expand icon
               Expanded(
-                flex: widget.compact ? 2 : 3,
+                flex: wideLabel ? 2 : 3,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
