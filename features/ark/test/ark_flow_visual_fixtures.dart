@@ -10,16 +10,14 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../../features/ark/test/ark_account_screen_test.dart' as wallet;
-import '../../../features/ark/test/ark_board_screen_test.dart' as board;
-import '../../../features/ark/test/ark_exit_request_screen_test.dart'
-    as request;
-import '../../../features/ark/test/ark_exits_screen_test.dart' as exits;
-import '../../../features/ark/test/ark_information_widget_test.dart' as info;
-import '../../../features/ark/test/ark_operation_review_screen_test.dart'
-    as review;
-import '../../../features/ark/test/ark_operations_test.dart' show account;
-import '../../../features/ark/test/ark_vtxos_screen_test.dart' as vtxos;
+import 'ark_account_screen_test.dart' as wallet;
+import 'ark_board_screen_test.dart' as board;
+import 'ark_exit_request_screen_test.dart' as request;
+import 'ark_exits_screen_test.dart' as exits;
+import 'ark_information_widget_test.dart' as info;
+import 'ark_operation_review_screen_test.dart' as review;
+import 'ark_operations_test.dart' show account;
+import 'ark_vtxos_screen_test.dart' as vtxos;
 
 /// Each frame is a real screen with public, synthetic native observations.
 /// No fixture registers a wallet, opens a client or possesses signing keys.

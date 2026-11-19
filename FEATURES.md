@@ -79,6 +79,7 @@ graph TB
     ARK --> NOTIFICATIONS
     ARK_NATIVE --> PRIMITIVES
     TRANSFER --> ARK
+    SWAPS --> ARK
     TRANSFER -->|public receive address| WALLETS
     SEND --> ARK
     SETTINGS --> ARK

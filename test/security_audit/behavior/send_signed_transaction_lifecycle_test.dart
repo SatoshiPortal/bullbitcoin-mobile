@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:primitives/primitives.dart' show Ok;
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_send_bitcoin_transaction_usecase.dart';
 
 // Behavioral proof for two audit findings on SendCubit:
@@ -467,95 +468,111 @@ void main() {
   });
 
   group('send MAX', () {
-    test('caps MAX at the spendable balance, excluding frozen coins', () async {
-      const walletBalanceSat = 140000;
-      const frozenSat = 40000;
-      const absoluteFeesSat = 500;
+    // No input currency, and a fiat one: a fiat input must not make MAX fail.
+    for (final (inputCode, rate) in [('', null), ('CAD', 100000.0)]) {
+      test('caps MAX at the spendable balance, excluding frozen coins '
+          '(input "$inputCode")', () async {
+        const walletBalanceSat = 140000;
+        const frozenSat = 40000;
+        const absoluteFeesSat = 500;
 
-      final liquidWallet = Wallet(
-        origin: 'ct(slip77(..))',
-        label: 'Instant payments',
-        network: Network.liquidMainnet,
-        isDefault: true,
-        masterFingerprint: 'aabbccdd',
-        xpubFingerprint: 'aabbccdd',
-        scriptType: ScriptType.bip84,
-        xpub: 'xpub',
-        externalPublicDescriptor: 'desc',
-        internalPublicDescriptor: 'desc',
-        signer: SignerEntity.local,
-        signerDevice: null,
-        balanceSat: BigInt.from(walletBalanceSat),
-      );
+        final liquidWallet = Wallet(
+          origin: 'ct(slip77(..))',
+          label: 'Instant payments',
+          network: Network.liquidMainnet,
+          isDefault: true,
+          masterFingerprint: 'aabbccdd',
+          xpubFingerprint: 'aabbccdd',
+          scriptType: ScriptType.bip84,
+          xpub: 'xpub',
+          externalPublicDescriptor: 'desc',
+          internalPublicDescriptor: 'desc',
+          signer: SignerEntity.local,
+          signerDevice: null,
+          balanceSat: BigInt.from(walletBalanceSat),
+        );
 
-      WalletUtxo utxo({required int amountSat, required bool isFrozen}) =>
-          WalletUtxo.liquid(
-            walletId: liquidWallet.id,
-            txId: 'utxo-$amountSat',
-            vout: 0,
-            scriptPubkey: '00',
-            amountSat: BigInt.from(amountSat),
-            standardAddress: 'ex1qstandard',
-            confidentialAddress: 'lq1qconfidential',
-            isFrozen: isFrozen,
+        WalletUtxo utxo({required int amountSat, required bool isFrozen}) =>
+            WalletUtxo.liquid(
+              walletId: liquidWallet.id,
+              txId: 'utxo-$amountSat',
+              vout: 0,
+              scriptPubkey: '00',
+              amountSat: BigInt.from(amountSat),
+              standardAddress: 'ex1qstandard',
+              confidentialAddress: 'lq1qconfidential',
+              isFrozen: isFrozen,
+            );
+
+        when(
+          () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
+        ).thenAnswer(
+          (_) async => [
+            utxo(amountSat: walletBalanceSat - frozenSat, isFrozen: false),
+            utxo(amountSat: frozenSat, isFrozen: true),
+          ],
+        );
+        when(
+          () => checkLiquidConsolidationUsecase.execute(
+            walletId: any(named: 'walletId'),
+          ),
+        ).thenAnswer((_) async => false);
+        when(
+          () => prepareLiquidSendUsecase.execute(
+            walletId: any(named: 'walletId'),
+            address: any(named: 'address'),
+            feeRate: any(named: 'feeRate'),
+            amountSat: any(named: 'amountSat'),
+            drain: any(named: 'drain'),
+            hasFrozenInputs: true,
+          ),
+        ).thenAnswer((_) async => const Ok('pset-base64'));
+        when(
+          () => calculateLiquidAbsoluteFeesUsecase.execute(
+            pset: any(named: 'pset'),
+          ),
+        ).thenAnswer((_) async => absoluteFeesSat);
+
+        // RelativeFee carries sat/kwu: 500 = 2 sat/vB, 25 = the 0.1 relay floor.
+        const feeOptions = FeeOptions(
+          fastest: RelativeFee(500),
+          economic: RelativeFee(250),
+          slow: RelativeFee(250),
+          minRelay: RelativeFee(25),
+        );
+
+        cubit.seed(
+          SendState(
+            step: SendStep.amount,
+            selectedWallet: SendWalletBitcoin(liquidWallet),
+            sendMax: true,
+            copiedRawPaymentRequest: 'ex1qrecipient',
+            bitcoinFeesList: feeOptions,
+            liquidFeesList: feeOptions,
+            inputAmountCurrencyCode: inputCode,
+            exchangeRate: rate,
+          ),
+        );
+
+        await cubit.createTransaction();
+
+        expect(
+          cubit.state.confirmedAmountSat,
+          walletBalanceSat - frozenSat - absoluteFeesSat,
+          reason: 'frozen coins are not spendable, so MAX cannot include them',
+        );
+        expect(cubit.state.failure, isNull);
+        if (rate != null) {
+          expect(
+            cubit.state.amount,
+            ConvertAmount.satsToFiat(
+              walletBalanceSat - frozenSat - absoluteFeesSat,
+              rate,
+            ).toString(),
           );
-
-      when(
-        () => getWalletUtxosUsecase.execute(walletId: any(named: 'walletId')),
-      ).thenAnswer(
-        (_) async => [
-          utxo(amountSat: walletBalanceSat - frozenSat, isFrozen: false),
-          utxo(amountSat: frozenSat, isFrozen: true),
-        ],
-      );
-      when(
-        () => checkLiquidConsolidationUsecase.execute(
-          walletId: any(named: 'walletId'),
-        ),
-      ).thenAnswer((_) async => false);
-      when(
-        () => prepareLiquidSendUsecase.execute(
-          walletId: any(named: 'walletId'),
-          address: any(named: 'address'),
-          feeRate: any(named: 'feeRate'),
-          amountSat: any(named: 'amountSat'),
-          drain: any(named: 'drain'),
-          hasFrozenInputs: true,
-        ),
-      ).thenAnswer((_) async => const Ok('pset-base64'));
-      when(
-        () => calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: any(named: 'pset'),
-        ),
-      ).thenAnswer((_) async => absoluteFeesSat);
-
-      // RelativeFee carries sat/kwu: 500 = 2 sat/vB, 25 = the 0.1 relay floor.
-      const feeOptions = FeeOptions(
-        fastest: RelativeFee(500),
-        economic: RelativeFee(250),
-        slow: RelativeFee(250),
-        minRelay: RelativeFee(25),
-      );
-
-      cubit.seed(
-        SendState(
-          step: SendStep.amount,
-          selectedWallet: SendWalletBitcoin(liquidWallet),
-          sendMax: true,
-          copiedRawPaymentRequest: 'ex1qrecipient',
-          bitcoinFeesList: feeOptions,
-          liquidFeesList: feeOptions,
-        ),
-      );
-
-      await cubit.createTransaction();
-
-      expect(
-        cubit.state.confirmedAmountSat,
-        walletBalanceSat - frozenSat - absoluteFeesSat,
-        reason: 'frozen coins are not spendable, so MAX cannot include them',
-      );
-    });
+        }
+      });
+    }
   });
 
   group('broadcast bookkeeping', () {
