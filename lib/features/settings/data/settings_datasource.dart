@@ -36,6 +36,12 @@ class SettingsDatasource {
     );
   }
 
+  Future<void> setStartAmountsInFiat(bool fiat) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), startAmountsInFiat: Value(fiat)),
+    );
+  }
+
   Future<void> setBitcoinUnit(BitcoinUnit bitcoinUnit) async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), bitcoinUnit: Value(bitcoinUnit.name)),

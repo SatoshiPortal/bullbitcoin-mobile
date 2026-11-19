@@ -11,6 +11,17 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveAmountCurrencyChanged;
   const factory ReceiveEvent.receiveAmountInputChanged(String amount) =
       ReceiveAmountInputChanged;
+  const factory ReceiveEvent.receiveAmountQuotesRequested() =
+      ReceiveAmountQuotesRequested;
+  const factory ReceiveEvent.receiveAmountEntryChanged({
+    required BigInt? sats,
+    required String currencyCode,
+    required String text,
+    required double? rate,
+    required DateTime? quotedAt,
+    required bool isValid,
+    required bool isEdit,
+  }) = ReceiveAmountEntryChanged;
   const factory ReceiveEvent.receiveAmountConfirmed() = ReceiveAmountConfirmed;
   const factory ReceiveEvent.receiveNoteChanged(String note) =
       ReceiveNoteChanged;

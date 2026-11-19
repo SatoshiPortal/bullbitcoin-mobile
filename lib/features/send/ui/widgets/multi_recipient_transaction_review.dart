@@ -1,3 +1,5 @@
+import '../../domain/send_amount_conversion.dart';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/address_viewer.dart';
@@ -17,6 +19,7 @@ class MultiRecipientTransactionReview extends StatelessWidget {
   final VoidCallback? onFeePriorityTap;
   final Widget? feeWarning;
   final Widget? selectedCoinsDetails;
+  final Map<int, SendAmountConversion> conversions;
 
   const MultiRecipientTransactionReview({
     super.key,
@@ -30,6 +33,7 @@ class MultiRecipientTransactionReview extends StatelessWidget {
     required this.onFeePriorityTap,
     required this.feeWarning,
     this.selectedCoinsDetails,
+    this.conversions = const {},
   });
 
   Widget _divider(BuildContext context) =>
@@ -81,6 +85,21 @@ class MultiRecipientTransactionReview extends StatelessWidget {
                       ),
               ),
             ),
+            if (conversions[recipients[index].id] case final conversion?)
+              Text(
+                context.loc.amountEnteredAtRate(
+                  conversion.enteredText,
+                  conversion.currencyCode,
+                  MaterialLocalizations.of(context).formatTimeOfDay(
+                    TimeOfDay.fromDateTime(conversion.quotedAt.toLocal()),
+                    alwaysUse24HourFormat: true,
+                  ),
+                ),
+                style: context.bullType.label.copyWith(
+                  color: context.appColors.textMuted,
+                ),
+                textAlign: TextAlign.end,
+              ),
             _divider(context),
           ],
           if (label.isNotEmpty) ...[

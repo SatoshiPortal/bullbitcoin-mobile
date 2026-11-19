@@ -411,6 +411,80 @@ void main() {
     await payjoinMinAmountChangeController.close();
   });
 
+  test('fiat requests above the protocol limit cannot become a QR', () async {
+    final bloc = buildBloc();
+    addTearDown(bloc.close);
+    bloc.emit(
+      ReceiveState(
+        wallet: _testWallet(),
+        walletAdmitted: true,
+        type: ReceiveType.bitcoin,
+        inputAmountCurrencyCode: 'sats',
+      ),
+    );
+    bloc.add(
+      ReceiveAmountEntryChanged(
+        sats: BigInt.from(3000000000000000),
+        currencyCode: 'USD',
+        text: '3000000000000',
+        rate: 100000,
+        quotedAt: DateTime.utc(2026),
+        isValid: true,
+        isEdit: true,
+      ),
+    );
+    await pumpEventQueue();
+    expect(bloc.state.canConfirmAmount, isFalse);
+    expect(bloc.state.failure, isA<ReceiveAmountAboveProtocolLimitFailure>());
+    expect(bloc.state.confirmedAmountSat, isNull);
+  });
+
+  test('the QR freezes fiat metadata and a later unavailable quote blocks a new QR', () async {
+    final bloc = buildBloc();
+    addTearDown(bloc.close);
+    bloc.emit(
+      ReceiveState(
+        wallet: _testWallet(),
+        walletAdmitted: true,
+        type: ReceiveType.bitcoin,
+        inputAmountCurrencyCode: 'sats',
+      ),
+    );
+    final at = DateTime.utc(2026, 11, 19, 14, 32);
+    bloc.add(
+      ReceiveAmountEntryChanged(
+        sats: BigInt.from(10000),
+        currencyCode: 'CAD',
+        text: '12.50',
+        rate: 125000,
+        quotedAt: at,
+        isValid: true,
+        isEdit: true,
+      ),
+    );
+    await pumpEventQueue();
+    bloc.add(const ReceiveAmountConfirmed());
+    await pumpEventQueue();
+    final frozen = bloc.state.confirmedConversion;
+    expect(bloc.state.confirmedAmountSat, 10000);
+    expect(frozen?.enteredText, '12.50');
+    expect(frozen?.quotedAt, at);
+    bloc.add(
+      ReceiveAmountEntryChanged(
+        sats: BigInt.from(10000),
+        currencyCode: 'CAD',
+        text: '12.50',
+        rate: null,
+        quotedAt: null,
+        isValid: false,
+        isEdit: false,
+      ),
+    );
+    await pumpEventQueue();
+    expect(bloc.state.canConfirmAmount, isFalse);
+    expect(bloc.state.confirmedConversion, same(frozen));
+  });
+
   for (final preset in [false, true]) {
     for (final warm in [false, true]) {
       test(

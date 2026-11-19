@@ -7,6 +7,7 @@ class SettingsModel {
   final int id;
   final Environment environment;
   final BitcoinUnit bitcoinUnit;
+  final bool startAmountsInFiat;
   final Language language;
   final String currency;
   final bool hideAmounts;
@@ -26,6 +27,7 @@ class SettingsModel {
     required this.id,
     required this.environment,
     required this.bitcoinUnit,
+    this.startAmountsInFiat = false,
     required this.language,
     required this.currency,
     required this.hideAmounts,
@@ -47,6 +49,7 @@ class SettingsModel {
       id: id,
       environment: environment.name,
       bitcoinUnit: bitcoinUnit.name,
+      startAmountsInFiat: startAmountsInFiat,
       language: language.name,
       currency: currency,
       hideAmounts: hideAmounts,
@@ -69,6 +72,7 @@ class SettingsModel {
       id: row.id,
       environment: Environment.fromName(row.environment),
       bitcoinUnit: BitcoinUnit.fromName(row.bitcoinUnit),
+      startAmountsInFiat: row.startAmountsInFiat,
       language: Language.fromName(row.language),
       currency: row.currency,
       hideAmounts: row.hideAmounts,

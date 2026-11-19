@@ -42,11 +42,12 @@ class SwapRouter {
             current.signedPsbt.isNotEmpty &&
             ((current.swap != null && current.swap is ChainSwap) ||
                 current.isSameChainTransfer),
-        listener: (context, state) {
-          context.pushNamed(
-            SwapRoute.confirmSwap.name,
-            extra: context.read<TransferBloc>(),
-          );
+        listener: (context, state) async {
+          final bloc = context.read<TransferBloc>();
+          await context.pushNamed(SwapRoute.confirmSwap.name, extra: bloc);
+          if (!bloc.isClosed && bloc.state.txId.isEmpty) {
+            bloc.add(const TransferEvent.amountEditingResumed());
+          }
         },
         child: const InternalTransferPage(),
       ),

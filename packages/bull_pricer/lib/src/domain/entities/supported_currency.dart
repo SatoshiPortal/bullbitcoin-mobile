@@ -1,19 +1,22 @@
 /// The fiat currencies the price service quotes.
 enum SupportedCurrency {
-  usd('USD', 'US'),
-  cad('CAD', 'CA'),
-  mxn('MXN', 'MX'),
-  crc('CRC', 'CR'),
-  eur('EUR', 'EU'),
-  ars('ARS', 'AR'),
-  cop('COP', 'CO');
+  usd('USD', 'US', 2),
+  cad('CAD', 'CA', 2),
+  mxn('MXN', 'MX', 2),
+  crc('CRC', 'CR', 2),
+  eur('EUR', 'EU', 2),
+  ars('ARS', 'AR', 2),
+  cop('COP', 'CO', 0);
 
   final String code;
 
   /// Two-letter region of the currency (ISO 3166-1, `EU` for the euro).
   final String region;
 
-  const SupportedCurrency(this.code, this.region);
+  /// The precision used by the wallet for this supported currency.
+  final int decimals;
+
+  const SupportedCurrency(this.code, this.region, this.decimals);
 
   /// The flag emoji of [region].
   String get flag => String.fromCharCodes([

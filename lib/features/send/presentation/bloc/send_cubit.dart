@@ -1,3 +1,6 @@
+import '../../domain/send_amount_conversion.dart';
+import '../../domain/usecases/get_send_amount_quotes_usecase.dart';
+
 import 'package:bb_mobile/features/send/domain/fixed_amount_wallet_choice_policy.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_internal_recipient_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/retry_payjoin_proposal_usecase.dart';
@@ -118,6 +121,7 @@ class SendCubit extends Cubit<SendState>
     implements FeeModalActions, FeeModalViewState {
   SendCubit({
     this._prepareInternalRecipientUsecase,
+    this._getSendAmountQuotesUsecase,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._wallet,
     this.mode = const SendModeBitcoin(),
@@ -216,12 +220,28 @@ class SendCubit extends Cubit<SendState>
   int _internalRecipientGeneration = 0;
   final SendMode mode;
   bool get isSpMode => mode is SendModeSp;
+  int? get preparedMaxAmountSat {
+    if (!state.isMaxSend ||
+        state.buildingTransaction ||
+        state.failure != null) {
+      return null;
+    }
+    if (isSpMode) return _spDraft == null ? null : state.confirmedAmountSat;
+    if (state.usesRecipientList) {
+      return state.recipientAmountsSat.length == 1
+          ? state.recipientAmountsSat.single
+          : null;
+    }
+    return state.unsignedPsbt == null ? null : state.maxSpendableBalanceSat;
+  }
+
   final LabelsFacade _labelsFacade;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final GetSendPayjoinEnabledUsecase _getSendPayjoinEnabledUsecase;
   final GetSendExchangeRateUsecase _getSendExchangeRateUsecase;
+  final GetSendAmountQuotesUsecase? _getSendAmountQuotesUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
@@ -278,7 +298,6 @@ class SendCubit extends Cubit<SendState>
   final DropPendingSwapLockupUsecase _dropPendingSwapLockupUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
 
-  SpRecipient? _spRecipient;
   SpTxDraft? _spDraft;
   final ResolveSelectedInputsUsecase _resolveSelectedInputsUsecase;
   final ValidateCoinControlPaymentRequestUsecase
@@ -310,11 +329,14 @@ class SendCubit extends Cubit<SendState>
   int _nextRecipientId = 1;
   final Map<int, int> _recipientInputGenerations = {};
   Timer? _recipientPreviewTimer;
+  Timer? _amountQuoteTimer;
+  bool _loadingAmountQuotes = false;
 
   @override
   Future<void> close() async {
     _internalRecipientGeneration++;
     _recipientPreviewTimer?.cancel();
+    _amountQuoteTimer?.cancel();
     await (
       _orderSwapSubscription?.cancel() ?? Future.value(),
       _boltzSwapSubscription?.cancel() ?? Future.value(),
@@ -449,6 +471,9 @@ class SendCubit extends Cubit<SendState>
           amountConfirmedClicked: false,
         ),
       );
+      // Quotes are not refreshed on the confirm step; editing resumes with a
+      // current rate rather than the one from before the confirmation.
+      unawaited(refreshAmountQuotes());
     }
   }
 
@@ -540,15 +565,11 @@ class SendCubit extends Cubit<SendState>
     }
 
     await _setSelectedWallet(wallet, manual: true);
-    final unit = state.bitcoinUnit ?? BitcoinUnit.sats;
-    final totalSat = state.spendableBalanceSat;
-    final amount = unit == BitcoinUnit.btc
-        ? ConvertAmount.satsToBtc(totalSat).toStringAsFixed(8)
-        : totalSat.toString();
+    final amount = state.spendableBalanceSat.toString();
     emit(
       state.copyWith(
         amount: state.failure == null ? amount : '',
-        inputAmountCurrencyCode: unit.code,
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
         loadingBestWallet: false,
       ),
     );
@@ -704,6 +725,13 @@ class SendCubit extends Cubit<SendState>
       emit(
         state.copyWith(
           paymentRequest: paymentRequest,
+          amountConversion: (paymentRequest.amountSat ?? 0) > 0
+              ? null
+              : state.amountConversion,
+          confirmedConversion: null,
+          recipientConversions: (paymentRequest.amountSat ?? 0) > 0
+              ? const {}
+              : state.recipientConversions,
           recipientDrafts: drafts,
           internalRecipientWallets: _internalWalletsFor(drafts),
           qrAmountRecipientIds: _qrAmountsFor(drafts),
@@ -1031,6 +1059,9 @@ class SendCubit extends Cubit<SendState>
     emit(
       state.copyWith(
         recipientDrafts: recipients,
+        invalidAmountRecipientIds: {...state.invalidAmountRecipientIds}
+          ..remove(id),
+        recipientConversions: {...state.recipientConversions}..remove(id),
         qrAmountRecipientIds: {...state.qrAmountRecipientIds}..remove(id),
         internalRecipientWallets: {...state.internalRecipientWallets}
           ..remove(id),
@@ -1107,6 +1138,62 @@ class SendCubit extends Cubit<SendState>
     }
   }
 
+  void recipientEntryChanged(
+    int id,
+    BigInt? sats, {
+    required bool isValid,
+    required bool isEdit,
+    required String currencyCode,
+    required String text,
+    required double? rate,
+    required DateTime? quotedAt,
+  }) {
+    if (state.amountConfirmedClicked) return;
+    final amountFailure = SendAmountConversion.validateQuantity(sats);
+    if (amountFailure != null) {
+      emit(
+        state.copyWith(
+          invalidAmountRecipientIds: {...state.invalidAmountRecipientIds, id},
+          recipientConversions: {...state.recipientConversions}..remove(id),
+          failure: amountFailure,
+        ),
+      );
+      return;
+    }
+    final invalid = {...state.invalidAmountRecipientIds};
+    if (isValid) {
+      invalid.remove(id);
+    } else {
+      invalid.add(id);
+    }
+    final conversions = {...state.recipientConversions};
+    if (isEdit) {
+      conversions.remove(id);
+      final conversion = SendAmountConversion.fromEdit(
+        sats: sats,
+        currencyCode: currencyCode,
+        text: text,
+        rate: rate,
+        quotedAt: quotedAt,
+      );
+      if (conversion != null) conversions[id] = conversion;
+    }
+    emit(
+      state.copyWith(
+        invalidAmountRecipientIds: invalid,
+        recipientConversions: conversions,
+      ),
+    );
+    if (!isEdit) return;
+    final unit = BitcoinUnit.fromCode(state.inputAmountCurrencyCode);
+    unawaited(
+      recipientAmountChanged(
+        id,
+        sats == null ? '' : Sats(sats).toBitcoinText(unit),
+      ),
+    );
+  }
+
   Future<void> recipientAmountChanged(int id, String amount) async {
     final recipient = state.recipientDrafts.firstWhere((r) => r.id == id);
     if (recipient.receivesRemainder) return;
@@ -1139,6 +1226,12 @@ class SendCubit extends Cubit<SendState>
     emit(
       state.copyWith(
         recipientDrafts: recipients,
+        invalidAmountRecipientIds: receivesRemainder
+            ? ({...state.invalidAmountRecipientIds}..remove(id))
+            : state.invalidAmountRecipientIds,
+        recipientConversions: receivesRemainder
+            ? ({...state.recipientConversions}..remove(id))
+            : state.recipientConversions,
         recipientAmountsSat: const [],
         failure: null,
       ),
@@ -1274,6 +1367,10 @@ class SendCubit extends Cubit<SendState>
     emit(
       state.copyWith(
         amount: recipients.first.amount,
+        amountConversion: id == 0 ? null : state.amountConversion,
+        recipientConversions: {...state.recipientConversions}..remove(id),
+        invalidAmountRecipientIds: {...state.invalidAmountRecipientIds}
+          ..remove(id),
         inputAmountCurrencyCode: inputCurrencyCode,
         recipientDrafts: recipients,
         qrAmountRecipientIds: {
@@ -1918,19 +2015,97 @@ class SendCubit extends Cubit<SendState>
       state.copyWith(
         fiatCurrencyCode: fiatCurrency,
         bitcoinUnit: bitcoinUnit,
-        inputAmountCurrencyCode: bitcoinUnit.code,
+        inputAmountCurrencyCode: BitcoinUnit.sats.code,
         payjoinGloballyEnabled: payjoinEnabled,
       ),
     );
   }
 
   Future<void> _loadCurrencyData() async {
+    await refreshAmountQuotes();
+    if (isClosed) return;
+    if (_getSendAmountQuotesUsecase != null) {
+      _amountQuoteTimer ??= Timer.periodic(
+        const Duration(minutes: 1),
+        (_) => unawaited(refreshAmountQuotes()),
+      );
+    }
     final exchangeRate = await _exchangeRate();
     emit(
       state.copyWith(
         fiatCurrencyCodes: SupportedCurrency.codes,
         exchangeRate: exchangeRate,
       ),
+    );
+  }
+
+  Future<void> refreshAmountQuotes() async {
+    final quotes = _getSendAmountQuotesUsecase;
+    if (quotes == null ||
+        _loadingAmountQuotes ||
+        state.amountConfirmedClicked ||
+        state.step == SendStep.confirm) {
+      return;
+    }
+    _loadingAmountQuotes = true;
+    try {
+      final result = await quotes.execute();
+      if (isClosed) return;
+      switch (result) {
+        case Ok(:final value):
+          emit(state.copyWith(amountQuotes: value));
+        case Err():
+          emit(state.copyWith(amountQuotes: const {}));
+      }
+    } finally {
+      _loadingAmountQuotes = false;
+    }
+  }
+
+  void amountEntryChanged({
+    required BigInt? sats,
+    required String currencyCode,
+    required String text,
+    required double? rate,
+    required DateTime? quotedAt,
+    required bool isValid,
+    required bool isEdit,
+  }) {
+    if (state.hasFixedRequestAmount || state.amountConfirmedClicked) return;
+    final amountFailure = SendAmountConversion.validateQuantity(sats);
+    if (amountFailure != null) {
+      emit(
+        state.copyWith(
+          amountEntryValid: false,
+          amountConversion: null,
+          failure: amountFailure,
+        ),
+      );
+      return;
+    }
+    final conversion = isEdit
+        ? SendAmountConversion.fromEdit(
+            sats: sats,
+            currencyCode: currencyCode,
+            text: text,
+            rate: rate,
+            quotedAt: quotedAt,
+          )
+        : state.amountConversion;
+    emit(
+      state.copyWith(
+        amountEntryValid: isValid,
+        amountConversion: conversion,
+        confirmedConversion: null,
+      ),
+    );
+    if (!isEdit) return;
+    final unit = BitcoinUnit.values
+        .where((unit) => unit.code == state.inputAmountCurrencyCode)
+        .firstOrNull;
+    if (unit == null) return;
+    unawaited(
+      amountChanged(amount: sats == null ? '' : Sats(sats).toBitcoinText(unit)),
     );
   }
 
@@ -1997,6 +2172,8 @@ class SendCubit extends Cubit<SendState>
       emit(
         state.copyWith(
           amount: validatedAmount,
+          amountConversion: isMax ? null : state.amountConversion,
+          amountEntryValid: isMax ? true : state.amountEntryValid,
           recipientDrafts: recipientDrafts,
           recipientAmountsSat: amountChanged
               ? const []
@@ -2012,6 +2189,8 @@ class SendCubit extends Cubit<SendState>
       // a stale cached PSBT for A. Skip the clear when the validator
       // bounced the input (validatedAmount == state.amount).
       if (amountChanged) clearBitcoinFeePreviews();
+      _scheduleRecipientPreview();
+      if (isMax && !state.usesRecipientList) await createTransaction();
       if (isSpMode) return;
       // Don't update wallet when MAX is clicked to avoid changing network and triggering chain swaps
       if (!isMax) {
@@ -2149,7 +2328,15 @@ class SendCubit extends Cubit<SendState>
 
   void noteChanged(String note) => emit(state.copyWith(label: note));
 
+  SendAmountConversion? _conversionMatching(
+    SendAmountConversion? conversion,
+    int amountSat,
+  ) => conversion != null && conversion.producedAmount(amountSat)
+      ? conversion
+      : null;
+
   Future<void> onAmountConfirmed() async {
+    if (!state.hasValidAmountEntry) return;
     _recipientPreviewTimer?.cancel();
     _bitcoinPreviewEpoch++;
     clearFailure();
@@ -2192,6 +2379,19 @@ class SendCubit extends Cubit<SendState>
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
+        confirmedConversion: _conversionMatching(
+          state.hasFixedRequestAmount || state.usesRecipientList
+              ? null
+              : state.amountConversion,
+          state.effectiveAmountSat,
+        ),
+        confirmedRecipientConversions: Map.unmodifiable({
+          for (final recipient in state.recipientDrafts)
+            recipient.id: ?_conversionMatching(
+              state.recipientConversions[recipient.id],
+              state.recipientAmountSat(recipient),
+            ),
+        }),
         confirmedAmountSat: state.usesRecipientList
             ? state.totalFixedRecipientAmountSat
             : state.effectiveAmountSat,
@@ -3021,7 +3221,14 @@ class SendCubit extends Cubit<SendState>
   /// stale fees for a different tx shape.
   void clearBitcoinFeePreviews() {
     _bitcoinPreviewEpoch++;
-    emit(state.copyWith(feePreviewCache: BitcoinFeePreviewCache.empty));
+    emit(
+      state.copyWith(
+        feePreviewCache: BitcoinFeePreviewCache.empty,
+        recipientAmountsSat: state.step == SendStep.amount && state.isMaxSend
+            ? const []
+            : state.recipientAmountsSat,
+      ),
+    );
   }
 
   /// Recipient address for preview builds. Mirrors what
@@ -3155,6 +3362,7 @@ class SendCubit extends Cubit<SendState>
         transactionGeneration: generation,
         invalidatePreparedTransaction: false,
       );
+      if (generation != _transactionGeneration || isClosed) return false;
       if (isSpMode) {
         await _buildSpTransaction();
         return state.failure == null && _spDraft != null;
@@ -3302,13 +3510,9 @@ class SendCubit extends Cubit<SendState>
         }
         if (state.isMaxSend && !state.usesRecipientList) {
           final maxAmountSat = state.maxSpendableBalanceSat;
-          // convert to btc or fiat based on selected currency
-          final rate = state.exchangeRate;
-          final maxAmount = state.bitcoinUnit == BitcoinUnit.btc
-              ? ConvertAmount.satsToBtc(maxAmountSat)
-              : state.isInputAmountFiat && rate != null
-              ? ConvertAmount.satsToFiat(maxAmountSat, rate)
-              : maxAmountSat;
+          final maxAmount = Sats.fromInt(
+            maxAmountSat,
+          ).toBitcoinText(BitcoinUnit.fromCode(state.inputAmountCurrencyCode));
           emit(
             state.copyWith(
               amount: maxAmount.toString(),
@@ -4215,8 +4419,7 @@ class SendCubit extends Cubit<SendState>
     );
     if (isStale()) return;
     switch (result) {
-      case Ok(value: final recipient):
-        _spRecipient = recipient;
+      case Ok():
         final recipientChanged =
             state.paymentRequestAddress != rawPaymentRequest;
         emit(
@@ -4238,7 +4441,6 @@ class SendCubit extends Cubit<SendState>
   }
 
   void _clearSpRecipient(SendFailure failure) {
-    _spRecipient = null;
     final recipientCleared = state.paymentRequest != null;
     emit(
       state.copyWith(
@@ -4253,23 +4455,27 @@ class SendCubit extends Cubit<SendState>
   /// Simulates the SP spend so the confirm step can show a real fee and, for
   /// MAX, the amount left after it.
   Future<void> _buildSpTransaction() async {
+    final generation = _transactionGeneration;
     final amountSat = Sats.fromInt(state.inputAmountSat);
     final validated = await _validateSpRecipientForSendUsecase.execute(
       input: state.paymentRequestAddress,
       amountSat: amountSat,
       isMax: state.sendMax,
     );
+    if (isClosed || generation != _transactionGeneration) return;
+    final SpRecipient recipient;
     switch (validated) {
       case Ok(value: final value):
-        _spRecipient = value;
+        recipient = value;
       case Err(failure: final failure):
         emit(state.copyWith(failure: failure, buildingTransaction: false));
         return;
     }
     final prepared = await _prepareSpPaymentForSendUsecase.execute(
-      recipients: [_spRecipient!],
+      recipients: [recipient],
       fee: state.selectedFee ?? state.bitcoinFeesList?.fastest,
     );
+    if (isClosed || generation != _transactionGeneration) return;
     switch (prepared) {
       case Ok(value: final draft):
         _spDraft = draft;
@@ -4277,9 +4483,9 @@ class SendCubit extends Cubit<SendState>
             ? draft.outputs.first.amountSat.value.toInt()
             : state.inputAmountSat;
         final amount = state.sendMax
-            ? state.inputAmountCurrencyCode == BitcoinUnit.btc.code
-                  ? ConvertAmount.satsToBtc(outputAmount).toString()
-                  : outputAmount.toString()
+            ? Sats.fromInt(outputAmount).toBitcoinText(
+                BitcoinUnit.fromCode(state.inputAmountCurrencyCode),
+              )
             : state.amount;
         emit(
           state.copyWith(
@@ -4864,6 +5070,7 @@ class SendCubit extends Cubit<SendState>
   /// The unsigned PSBT goes too: it is the reference
   /// [updateSignedBitcoinTx] verifies a hardware signature against.
   void _invalidateSignedTransaction({bool cancelInFlightBuild = true}) {
+    _spDraft = null;
     if (cancelInFlightBuild) _transactionGeneration++;
     if (state.signedBitcoinTx == null &&
         state.signedBitcoinPsbt == null &&

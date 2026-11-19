@@ -9,6 +9,20 @@ sealed class TransferEvent with _$TransferEvent {
   }) = TransferWalletsChanged;
   const factory TransferEvent.amountChanged(String amount) =
       TransferAmountChanged;
+  const factory TransferEvent.amountQuotesRequested() =
+      TransferAmountQuotesRequested;
+  const factory TransferEvent.amountEditingResumed() =
+      TransferAmountEditingResumed;
+  const factory TransferEvent.maxSelected() = TransferMaxSelected;
+  const factory TransferEvent.amountEntryChanged({
+    required BigInt? sats,
+    required String currencyCode,
+    required String text,
+    required double? rate,
+    required DateTime? quotedAt,
+    required bool isValid,
+    required bool isEdit,
+  }) = TransferAmountEntryChanged;
   const factory TransferEvent.swapCreated(String amount) = TransferSwapCreated;
   const factory TransferEvent.confirmed() = TransferConfirmed;
   const factory TransferEvent.sendToExternalToggled(bool enabled) =

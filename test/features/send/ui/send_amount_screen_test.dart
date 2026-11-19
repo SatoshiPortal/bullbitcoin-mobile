@@ -1,3 +1,4 @@
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:bb_mobile/features/send/presentation/send_wallet_view.dart';
 
@@ -15,11 +16,10 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmountScope,
         BullAmountSnapshot,
         BullAmountUnitToggle,
-        BullBitcoinAmountInput,
+        BullAmountInput,
         BullButton,
         BullDropdown,
         bullUiLocalizationsDelegate;
-import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/send/domain/send_failure.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -189,7 +189,7 @@ void main() {
         ),
       );
       expect(find.text('Amount set by the payment request'), findsOneWidget);
-      expect(find.byType(BullBitcoinAmountInput), findsNothing);
+      expect(find.byType(BullAmountInput), findsNothing);
       expect(find.text('MAX'), findsNothing);
       final button = tester.widget<BullButton>(
         find.widgetWithText(BullButton, 'Continue'),
@@ -263,9 +263,7 @@ void main() {
     );
     await tester.pump();
 
-    final input = tester.widget<BullBitcoinAmountInput>(
-      find.byType(BullBitcoinAmountInput),
-    );
+    final input = tester.widget<BullAmountInput>(find.byType(BullAmountInput));
     expect(input.readOnly, isFalse);
     expect(input.isMax, isFalse);
     expect(find.text('MAX'), findsOneWidget);
@@ -366,8 +364,8 @@ void main() {
     );
     await tester.pump();
 
-    final inputFinder = find.byType(BullBitcoinAmountInput);
-    final input = tester.widget<BullBitcoinAmountInput>(inputFinder);
+    final inputFinder = find.byType(BullAmountInput);
+    final input = tester.widget<BullAmountInput>(inputFinder);
     expect(input.amountController.text, '10000');
     await tester.tap(
       find.descendant(
@@ -393,7 +391,17 @@ void main() {
     );
     await tester.pump();
     expect(input.amountController.text, '20000');
-    verify(() => cubit.amountChanged(amount: '20000')).called(1);
+    verify(
+      () => cubit.amountEntryChanged(
+        sats: BigInt.from(20000),
+        currencyCode: 'BTC',
+        text: '0.0002',
+        rate: null,
+        quotedAt: null,
+        isValid: true,
+        isEdit: true,
+      ),
+    ).called(1);
     final continueButton = tester
         .widgetList<BullButton>(find.byType(BullButton))
         .singleWhere((button) => button.label == 'Continue');
@@ -524,12 +532,11 @@ void main() {
     );
     await tester.pump();
 
-    final input = tester.widget<BullBitcoinAmountInput>(
-      find.byType(BullBitcoinAmountInput),
-    );
-    expect(input.readOnly, isTrue);
+    final input = tester.widget<BullAmountInput>(find.byType(BullAmountInput));
+    expect(input.readOnly, isFalse);
     expect(input.isMax, isTrue);
-    expect(find.text('MAX'), findsNWidgets(2));
+    expect(find.text('MAX'), findsOneWidget);
+    expect(find.text('MAX · balance minus fees'), findsOneWidget);
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('Send remaining balance'), findsNothing);
 
@@ -560,6 +567,14 @@ void main() {
       fiatCurrencyCodes: const ['USD'],
       fiatCurrencyCode: 'USD',
       exchangeRate: 50000,
+      amountQuotes: {
+        SupportedCurrency.usd: BitcoinPrice(
+          currency: SupportedCurrency.usd,
+          fiatAmount: 100000,
+          fetchedAt: DateTime.utc(2026),
+        ),
+      },
+      recipientAmountsSat: const [10000, 10000],
       recipientDrafts: const [
         (
           id: 0,
@@ -599,13 +614,40 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byType(PriceInput), findsNothing);
+    expect(find.text('≈ 20.00 USD'), findsOneWidget);
     expect(find.text('Rest goes to'), findsOneWidget);
     expect(find.byType(BullDropdown<int>), findsOneWidget);
     expect(find.byType(Switch), findsNothing);
     expect(find.byType(Radio<int>), findsNothing);
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('MAX'), findsNothing);
+    final input = tester.widget<BullAmountInput>(find.byType(BullAmountInput));
+    expect(input.amountController.text, '10000');
+    await tester.tap(find.byType(BullAmountUnitToggle));
+    await tester.pump();
+    expect(find.text('0.0001'), findsOneWidget);
+    expect(input.amountController.text, '10000');
+    await tester.enterText(
+      find.descendant(
+        of: find.byType(BullAmountInput),
+        matching: find.byType(TextField),
+      ),
+      '0.0002',
+    );
+    await tester.pump();
+    expect(input.amountController.text, '20000');
+    verify(
+      () => cubit.recipientEntryChanged(
+        0,
+        BigInt.from(20000),
+        isValid: true,
+        isEdit: true,
+        currencyCode: 'BTC',
+        text: '0.0002',
+        rate: null,
+        quotedAt: null,
+      ),
+    ).called(1);
   });
 
   testWidgets('confirmation shows the selected coin count and total', (

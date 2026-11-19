@@ -94,6 +94,10 @@ void main() {
                   )
                   .getSingle();
               expect(row.read<String>('network'), 'bitcoinRegtest');
+              final preference = await relaunch
+                  .select(relaunch.settings)
+                  .getSingle();
+              expect(preference.startAmountsInFiat, isTrue);
             }
 
             final labels = await relaunch.select(relaunch.labels).get();
@@ -138,6 +142,9 @@ void _seedLabels(File file, int version) {
   final db = sqlite3.open(file.path);
   try {
     if (version == 16) {
+      db.execute(
+        "INSERT INTO settings (id, environment, bitcoin_unit, language, currency, hide_amounts, is_superuser, start_amounts_in_fiat) VALUES (1, 'mainnet', 'sats', 'unitedStatesEnglish', 'CAD', 0, 0, 1)",
+      );
       db.execute('''INSERT INTO wallet_metadatas
         (id, network, master_fingerprint, xpub_fingerprint,
          is_encrypted_vault_tested, is_physical_backup_tested, xpub,

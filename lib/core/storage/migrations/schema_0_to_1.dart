@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/settings/data/settings_seeds.dart';
 import 'package:bb_mobile/core/storage/database_seeds.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bull_logger/bull_logger.dart';
@@ -35,7 +36,7 @@ class Schema0To1 {
     //
     // Make sure to only seed NEW columns/rows and don't overwrite existing data.
     await Future.wait([
-      DatabaseSeeds.seedDefaultSettings(m.database as SqliteDatabase),
+      SettingsSeeds.seed(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultElectrumServers(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultElectrumSettings(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultAutoSwap(m.database as SqliteDatabase),

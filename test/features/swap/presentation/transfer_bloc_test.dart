@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/swap/domain/usecases/get_swap_amount_quotes_usecase.dart';
+import 'package:bull_pricer/bull_pricer.dart';
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 
 import '../../../frozen_outpoints_fixture.dart';
@@ -243,8 +245,10 @@ void main() {
 
   TransferBloc buildBloc({
     BroadcastBitcoinTransactionUsecase? bitcoinBroadcast,
+    GetSwapAmountQuotesUsecase? amountQuotes,
   }) => TransferBloc(
     getSettingsUsecase: getSettings,
+    getSwapAmountQuotesUsecase: amountQuotes,
     getWalletsUsecase: getWallets,
     getNetworkFeesUsecase: getNetworkFees,
     prepareBitcoinSendUsecase: prepareBitcoin,
@@ -366,6 +370,163 @@ void main() {
   });
 
   tearDown(() => bloc.close());
+
+  test('late quotes and input notifications cannot change a confirmed direct transfer', () async {
+    when(getSettings.execute).thenAnswer(
+      (_) async => const SettingsEntity(
+        environment: Environment.testnet,
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+      ),
+    );
+    var reads = 0;
+    final pending =
+        Completer<
+          Result<Map<SupportedCurrency, BitcoinPrice>, PricerFailure>
+        >();
+    final quotes = GetSwapAmountQuotesUsecase(
+      settings: getSettings,
+      read: ({required network}) {
+        reads++;
+        return pending.future;
+      },
+    );
+    final flow = buildBloc(amountQuotes: quotes);
+    addTearDown(flow.close);
+    flow.emit(const TransferState(amount: '25000'));
+    flow.add(const TransferEvent.amountQuotesRequested());
+    await pumpEventQueue();
+    expect(reads, 1);
+    flow.emit(flow.state.copyWith(signedPsbt: 'signed'));
+    pending.complete(
+      Ok({
+        SupportedCurrency.cad: BitcoinPrice(
+          currency: SupportedCurrency.cad,
+          fiatAmount: 100000,
+          fetchedAt: DateTime.utc(2026),
+        ),
+      }),
+    );
+    await pumpEventQueue();
+    expect(flow.state.amountQuotes, isEmpty);
+    flow.add(
+      TransferEvent.amountEntryChanged(
+        sats: BigInt.from(31250),
+        currencyCode: 'CAD',
+        text: '31.25',
+        rate: 100000,
+        quotedAt: DateTime.utc(2026),
+        isValid: true,
+        isEdit: true,
+      ),
+    );
+    await pumpEventQueue();
+    expect(flow.state.signedPsbt, 'signed');
+    expect(flow.state.inputAmountSat, 25000);
+    flow.add(const TransferEvent.amountEditingResumed());
+    await pumpEventQueue();
+    expect(flow.state.signedPsbt, isEmpty);
+    expect(flow.state.amountQuotes[SupportedCurrency.cad]?.fiatAmount, 100000);
+  });
+
+  test('changing the source wallet keeps the canonical Max in sync', () async {
+    final source = _wallet(balanceSat: BigInt.from(10000));
+    final replacement = source.copyWith(
+      origin: 'empty',
+      balanceSat: BigInt.zero,
+    );
+    final destination = _destinationWallet();
+    bloc.emit(
+      TransferState(
+        fromWallet: source,
+        toWallet: destination,
+        amount: '9000',
+        maxAmountSat: 9000,
+        maxSelected: true,
+      ),
+    );
+    bloc.add(
+      TransferEvent.walletsChanged(
+        fromWallet: replacement,
+        toWallet: destination,
+      ),
+    );
+    await pumpEventQueue();
+    expect(bloc.state.maxAmountSat, 0);
+    expect(bloc.state.inputAmountSat, 0);
+  });
+
+  test('BIP21 one-sat amounts remain exact with BTC display', () async {
+    when(
+      () => detectBitcoin.execute(
+        data: 'bitcoin:one-sat',
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer(
+      (_) async => const PaymentRequest.bip21(
+        network: Network.bitcoinTestnet,
+        uri: 'bitcoin:fixture?amount=0.00000001',
+        address: 'tb1qfixture',
+        amountSat: 1,
+      ),
+    );
+    bloc.emit(
+      TransferState(
+        fromWallet: _liquidWallet(),
+        sendToExternal: true,
+        bitcoinUnit: BitcoinUnit.btc,
+      ),
+    );
+    bloc.add(const TransferEvent.externalAddressChanged('bitcoin:one-sat'));
+    await pumpEventQueue();
+    expect(bloc.state.inputAmountSat, 1);
+  });
+
+  test('a BIP21 amount replaces the previous Max and fiat intent', () async {
+    when(
+      () => detectBitcoin.execute(
+        data: 'bitcoin:fixture',
+        environment: any(named: 'environment'),
+      ),
+    ).thenAnswer(
+      (_) async => const PaymentRequest.bip21(
+        network: Network.bitcoinTestnet,
+        uri: 'bitcoin:fixture?amount=0.000025',
+        address: 'tb1qfixture',
+        amountSat: 2500,
+      ),
+    );
+    bloc.emit(
+      TransferState(
+        fromWallet: _liquidWallet(),
+        sendToExternal: true,
+        amount: '10000',
+        maxAmountSat: 10000,
+        maxSelected: true,
+      ),
+    );
+    bloc.add(const TransferEvent.externalAddressChanged('bitcoin:fixture'));
+    await pumpEventQueue();
+    expect(bloc.state.isMaxSelected, isFalse);
+    expect(bloc.state.inputAmountSat, 2500);
+    expect(bloc.state.amountConversion, isNull);
+  });
+
+  test(
+    'Max is explicit and editing the same number exits the intent',
+    () async {
+      bloc.emit(const TransferState(amount: '25000', maxAmountSat: 25000));
+      expect(bloc.state.isMaxSelected, isFalse);
+      bloc.add(const TransferEvent.maxSelected());
+      await pumpEventQueue();
+      expect(bloc.state.isMaxSelected, isTrue);
+      expect(bloc.state.receiveExactAmount, isFalse);
+      bloc.add(const TransferEvent.amountChanged('25000'));
+      await pumpEventQueue();
+      expect(bloc.state.isMaxSelected, isFalse);
+      expect(bloc.state.inputAmountSat, 25000);
+    },
+  );
 
   test('destination switch clears the old receive address', () async {
     final source = _wallet(balanceSat: BigInt.zero);
@@ -823,6 +984,20 @@ void main() {
     },
   );
 
+  test('missing network fees block creation with a typed failure', () async {
+    bloc.emit(
+      TransferState(
+        fromWallet: _wallet(balanceSat: BigInt.from(2000)),
+        toWallet: _destinationWallet(),
+        bitcoinUnit: BitcoinUnit.sats,
+      ),
+    );
+    bloc.add(const TransferEvent.swapCreated('1000'));
+    await bloc.stream.firstWhere((state) => !state.isCreatingSwap);
+    expect(bloc.state.swapFailure, isA<SwapInvalidStateFailure>());
+    expect(bloc.state.signedPsbt, isEmpty);
+  });
+
   test('blocked transfer build exposes spend failure', () async {
     when(
       () => prepareBitcoin.execute(
@@ -1198,6 +1373,7 @@ void main() {
         bitcoinNetworkFees: _feeOptions(),
         receiveAddress: 'cached-destination',
         maxAmountSat: 128800,
+        maxSelected: true,
         amount: '128800',
       ),
     );
@@ -2347,6 +2523,7 @@ void main() {
                   toWallet: destination,
                   bitcoinUnit: BitcoinUnit.sats,
                   maxAmountSat: selectedOnly ? 29000 : 99000,
+                  maxSelected: true,
                   selectedUtxos: selectedOnly ? [selected] : [],
                   bitcoinNetworkFees: _feeOptions(),
                   liquidNetworkFees: _feeOptions(),
@@ -2423,6 +2600,7 @@ void main() {
                 toWallet: destination,
                 bitcoinUnit: BitcoinUnit.sats,
                 maxAmountSat: 99000,
+                maxSelected: true,
                 bitcoinNetworkFees: _feeOptions(),
                 liquidNetworkFees: _feeOptions(),
                 receiveExactAmount: false,
@@ -2903,7 +3081,7 @@ void main() {
       when(() => calculateBitcoin.execute(psbt: 'max-psbt'))
           .thenAnswer((_) async => 500);
       stubCreateChain(const Err(SwapsBoltzRejectedFailure()));
-      bloc.emit(crossChain().copyWith(maxAmountSat: 99000));
+      bloc.emit(crossChain().copyWith(maxAmountSat: 99000, maxSelected: true));
 
       bloc.add(const TransferEvent.swapCreated('99000'));
       await bloc.stream.firstWhere((state) => !state.isCreatingSwap);

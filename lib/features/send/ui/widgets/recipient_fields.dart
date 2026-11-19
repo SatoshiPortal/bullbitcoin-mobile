@@ -271,6 +271,9 @@ class RecipientAmounts extends StatelessWidget {
   final Set<int> qrAmountRecipientIds;
   final int? feeSat;
   final int fixedTotalSat;
+  final Widget? amountHeader;
+  final Widget Function(SendRecipientDraft recipient, FocusNode? focusNode)?
+  amountFieldBuilder;
   final String? error;
   final ValueChanged<int> onRemoveRecipient;
   final Future<void> Function(int id, String value) onAmountChanged;
@@ -293,6 +296,8 @@ class RecipientAmounts extends StatelessWidget {
     this.qrAmountRecipientIds = const {},
     this.feeSat,
     this.fixedTotalSat = 0,
+    this.amountHeader,
+    this.amountFieldBuilder,
   });
 
   @override
@@ -318,7 +323,17 @@ class RecipientAmounts extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(context.loc.sendRecipients, style: context.bullType.body),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                context.loc.sendRecipients,
+                style: context.bullType.body,
+              ),
+            ),
+            ?amountHeader,
+          ],
+        ),
         for (var index = 0; index < recipients.length; index++) ...[
           Builder(
             builder: (context) {
@@ -375,22 +390,34 @@ class RecipientAmounts extends StatelessWidget {
                         const Gap(8),
                         SizedBox(
                           width: 150,
-                          child: BullInputText(
-                            key: ValueKey(
-                              'send-recipient-amount-${recipient.id}',
-                            ),
-                            onChanged: (value) =>
-                                onAmountChanged(recipient.id, value),
-                            value: recipient.receivesRemainder
-                                ? context.loc.sendRemaining
-                                : recipient.amount,
-                            hint: context.loc.coreScreensAmountLabel,
-                            suffixText: inputCurrency,
-                            style: context.bullType.body,
-                            onlyNumbers: true,
-                            focusNode: focusNodes[recipient.id],
-                            disabled: recipient.receivesRemainder,
-                          ),
+                          child:
+                              !recipient.receivesRemainder &&
+                                  amountFieldBuilder != null
+                              ? Semantics(
+                                  label: context.loc.sendRecipientNumber(
+                                    index + 1,
+                                  ),
+                                  child: amountFieldBuilder?.call(
+                                    recipient,
+                                    focusNodes[recipient.id],
+                                  ),
+                                )
+                              : BullInputText(
+                                  key: ValueKey(
+                                    'send-recipient-amount-${recipient.id}',
+                                  ),
+                                  onChanged: (value) =>
+                                      onAmountChanged(recipient.id, value),
+                                  value: recipient.receivesRemainder
+                                      ? context.loc.sendRemaining
+                                      : recipient.amount,
+                                  hint: context.loc.coreScreensAmountLabel,
+                                  suffixText: inputCurrency,
+                                  style: context.bullType.body,
+                                  onlyNumbers: true,
+                                  focusNode: focusNodes[recipient.id],
+                                  disabled: recipient.receivesRemainder,
+                                ),
                         ),
                       ],
                     ),

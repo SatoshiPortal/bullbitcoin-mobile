@@ -9,9 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton, Gap, BullTypographyX;
 
 class SwapBalanceRow extends StatelessWidget {
-  const SwapBalanceRow({super.key, required this.amountController});
-
-  final TextEditingController amountController;
+  const SwapBalanceRow({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +29,6 @@ class SwapBalanceRow extends StatelessWidget {
     final maxAmountSat = context.select(
       (TransferBloc bloc) => bloc.state.maxAmountSat,
     );
-    final maxAmount = bitcoinUnit == BitcoinUnit.sats
-        ? maxAmountSat
-        : ConvertAmount.satsToBtc(maxAmountSat ?? 0);
 
     return Row(
       children: [
@@ -48,17 +43,14 @@ class SwapBalanceRow extends StatelessWidget {
         const Spacer(),
         BullButton.small(
           label: context.loc.swapMaxButton,
-          height: 30,
+          height: 48,
           width: 51,
           bgColor: context.appColors.secondaryFixedDim,
           textColor: context.appColors.secondary,
           textStyle: context.bullType.label,
           disabled: maxAmountSat == null || maxAmountSat <= 0,
           onPressed: () {
-            context.read<TransferBloc>().add(
-              const TransferEvent.receiveExactAmountToggled(false),
-            );
-            amountController.text = maxAmount.toString();
+            context.read<TransferBloc>().add(const TransferEvent.maxSelected());
           },
         ),
       ],
