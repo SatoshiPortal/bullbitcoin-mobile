@@ -1937,6 +1937,40 @@ void main() {
     });
   });
 
+  test(
+    'an Exchange result retains the message submitted for creation',
+    () async {
+      final pending = Completer<Result<OrderSwapRecord, ReceiveFailure>>();
+      final record = _receiveOrderSwapRecord();
+      when(
+        () => createOrderSwap.execute(
+          wallet: any(named: 'wallet'),
+          amountSat: 1000,
+          note: 'Original',
+        ),
+      ).thenAnswer((_) => pending.future);
+      when(() => watchOrderSwap.execute(record.localId))
+          .thenAnswer((_) => const Stream.empty());
+      final bloc = buildBloc(
+        wallet: _testWallet(network: Network.liquidTestnet),
+      );
+      addTearDown(bloc.close);
+      bloc.add(const ReceiveLightningStarted());
+      await pumpEventQueue();
+      bloc.add(const ReceiveNoteChanged('Original'));
+      bloc.add(const ReceiveAmountInputChanged('1000'));
+      bloc.add(const ReceiveAmountConfirmed());
+      await pumpEventQueue();
+      expect(bloc.state.creatingSwap, isTrue);
+      bloc.add(const ReceiveNoteChanged('Later draft'));
+      await pumpEventQueue();
+      pending.complete(Ok(record));
+      await pumpEventQueue();
+      expect(bloc.state.note, 'Later draft');
+      expect(bloc.state.confirmedNote, 'Original');
+    },
+  );
+
   test('ignores an in-flight order swap update after close', () async {
     final record = _receiveOrderSwapRecord();
     final lateStream = _LateOrderSwapStream();
@@ -2053,6 +2087,29 @@ void main() {
       await pumpEventQueue();
       return bloc;
     }
+
+    test(
+      'a late draft edit cannot replace the signed invoice message',
+      () async {
+        final pending =
+            Completer<Result<swaps.LnReceiveSwap, swaps.SwapsFailure>>();
+        when(
+          () => createBoltzSwap.execute(
+            wallet: any(named: 'wallet'),
+            amountSat: any(named: 'amountSat'),
+            note: any(named: 'note'),
+          ),
+        ).thenAnswer((_) => pending.future);
+        final bloc = await confirmLightning(note: 'Original');
+        expect(bloc.state.creatingSwap, isTrue);
+        bloc.add(const ReceiveNoteChanged('Later draft'));
+        await pumpEventQueue();
+        pending.complete(Ok(_boltzReceiveSwap()));
+        await pumpEventQueue();
+        expect(bloc.state.note, 'Later draft');
+        expect(bloc.state.confirmedNote, 'Original');
+      },
+    );
 
     test('creates the invoice through Boltz and labels the claim address '
         'with the note', () async {
