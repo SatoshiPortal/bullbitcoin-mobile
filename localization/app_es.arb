@@ -5060,7 +5060,7 @@
   "sendTotalDebited": "Total debitado",
   "sendLightningInvoiceAmount": "Factura Lightning · {amount} sats",
   "sendSilentPaymentAddress": "Dirección de pago silencioso",
-  "sendPsbtRequest": "PSBT"
+  "sendPsbtRequest": "PSBT",
   "serverEncrypted": "Cifrado",
   "serverUnencrypted": "Sin cifrar",
   "backgroundTasksTitle": "Tareas en segundo plano",
