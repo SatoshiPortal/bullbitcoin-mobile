@@ -18,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAdvancedOptionsLink,
         BullAsyncStatus,
         BullBottomSheet,
         BullButton,
@@ -497,22 +498,19 @@ class _BottomButtons extends StatelessWidget {
             !wallet.isLiquid &&
             !isConfirmingPayment &&
             !isPayinBroadcast) ...[
-          BullButton.big(
+          BullAdvancedOptionsLink(
             label: context.loc.payAdvancedSettings,
-            disabled: !isReady || isConfirmingPayment || isPayinBroadcast,
-            onPressed: () {
-              BullBottomSheet.show(
-                context: context,
-                child: BlocProvider.value(
-                  value: context.read<PayBloc>(),
-                  child: const PayAdvancedOptionsBottomSheet(),
-                ),
-              );
-            },
-            bgColor: context.appColors.transparent,
-            textColor: context.appColors.secondary,
-            outlined: true,
-            borderColor: context.appColors.secondary,
+            onPressed: (!isReady || isConfirmingPayment || isPayinBroadcast)
+                ? null
+                : () {
+                    BullBottomSheet.show(
+                      context: context,
+                      child: BlocProvider.value(
+                        value: context.read<PayBloc>(),
+                        child: const PayAdvancedOptionsBottomSheet(),
+                      ),
+                    );
+                  },
           ),
           const Gap(16),
         ],

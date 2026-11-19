@@ -53,6 +53,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAdvancedOptionsLink,
         BullBitcoinAmountInput,
         BullBorderedTile,
         BullBottomSheet,
@@ -1493,22 +1494,19 @@ class _BottomButtons extends StatelessWidget {
           if ((isBitcoinWallet || (isOnchainSend && !isSweep)) &&
               !hasFinalizedTx &&
               !isSpMode) ...[
-            BullButton.big(
+            BullAdvancedOptionsLink(
               label: context.loc.sendAdvancedSettings,
-              disabled: transactionBusy,
-              onPressed: () {
-                BullBottomSheet.show(
-                  context: context,
-                  child: BlocProvider.value(
-                    value: context.read<SendCubit>(),
-                    child: const AdvancedOptionsBottomSheet(),
-                  ),
-                );
-              },
-              borderColor: context.appColors.secondary,
-              outlined: true,
-              bgColor: context.appColors.transparent,
-              textColor: context.appColors.secondary,
+              onPressed: (transactionBusy)
+                  ? null
+                  : () {
+                      BullBottomSheet.show(
+                        context: context,
+                        child: BlocProvider.value(
+                          value: context.read<SendCubit>(),
+                          child: const AdvancedOptionsBottomSheet(),
+                        ),
+                      );
+                    },
             ),
             const Gap(12),
           ],

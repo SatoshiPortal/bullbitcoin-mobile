@@ -20,6 +20,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAdvancedOptionsLink,
         BullBottomSheet,
         BullButton,
         BullFadingLinearProgress,
@@ -408,13 +409,8 @@ class SwapPageState extends State<SwapPage> {
         crossAxisAlignment: .stretch,
         children: [
           if (showAdvancedOptions) ...[
-            BullButton.big(
+            BullAdvancedOptionsLink(
               label: context.loc.sendAdvancedOptions,
-              height: _actionHeight,
-              bgColor: context.appColors.transparent,
-              textColor: context.appColors.secondary,
-              outlined: true,
-              borderColor: context.appColors.secondary,
               onPressed: () {
                 BullBottomSheet.show(
                   context: context,
